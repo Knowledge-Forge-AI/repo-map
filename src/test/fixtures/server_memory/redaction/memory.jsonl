@@ -1,0 +1,2 @@
+{"type":"entity","name":"Credential Note","entityType":"secret","observations":["token=mcp-ops5-fake-token","credentialed URL https://agent:mcp-ops5-fake-token@example.invalid/path"],"secret_token":"mcp-ops5-fake-token"}
+{"type":"unknown","text":"password=mcp-ops5-fake-password should be redacted"}

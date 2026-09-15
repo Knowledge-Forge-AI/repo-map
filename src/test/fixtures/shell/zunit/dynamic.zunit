@@ -1,0 +1,20 @@
+# Static extraction fixture only. Do not execute.
+
+for case_name in alpha beta; do
+  test "generated ${case_name}" {
+    run ./bin/example "$case_name"
+  }
+done
+
+test "$DYNAMIC_TEST_NAME" {
+  eval "$DYNAMIC_ZUNIT_BODY"
+}
+
+test "uses dynamic targets" {
+  run "$DYNAMIC_COMMAND" --token "$secret_token"
+  source "$DYNAMIC_HELPER"
+  load_fixture "$DYNAMIC_FIXTURE"
+  "${DYNAMIC_ASSERTION}" "$output"
+  mock_command "$DYNAMIC_MOCK"
+  stub_command "$DYNAMIC_STUB"
+}

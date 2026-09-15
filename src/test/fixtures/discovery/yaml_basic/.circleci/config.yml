@@ -1,0 +1,13 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/ruby:3.3
+    environment:
+      API_TOKEN: fake-circle-token
+workflows:
+  build:
+    jobs:
+      - build

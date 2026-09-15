@@ -1,0 +1,13 @@
+# RepoMap Notice
+
+RepoMap is stewarded by Samuel Leighton Lair.
+
+Copyright (c) 2026 Samuel Leighton Lair and RepoMap contributors.
+
+Releases after the `apache-2.0-final` tag are licensed under
+AGPL-3.0-or-later. Commercial licenses are available for proprietary terms.
+Commercial licensing contact: lair001@gmail.com.
+
+Code at or before the `apache-2.0-final` tag remains available under the
+Apache License, Version 2.0. Those prior Apache-2.0 grants are not revoked by
+the license change for future RepoMap releases.

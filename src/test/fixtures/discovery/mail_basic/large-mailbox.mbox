@@ -1,0 +1,21 @@
+From MAILER-DAEMON Tue Jun 30 12:00:00 2026
+Message-ID: <large-mbox-one@example.invalid>
+From: Example Sender <alice@example.invalid>
+To: Example Receiver <bob@example.invalid>
+Subject: Large mailbox one
+
+First body text must not appear.
+From MAILER-DAEMON Tue Jun 30 12:01:00 2026
+Message-ID: <large-mbox-two@example.invalid>
+From: Example Sender <alice@example.invalid>
+To: Example Receiver <bob@example.invalid>
+Subject: Large mailbox two
+
+Second body text must not appear.
+From MAILER-DAEMON Tue Jun 30 12:02:00 2026
+Message-ID: <large-mbox-three@example.invalid>
+From: Example Sender <alice@example.invalid>
+To: Example Receiver <bob@example.invalid>
+Subject: Large mailbox three
+
+Third body text must not appear.

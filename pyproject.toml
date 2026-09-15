@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools==83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repomap-kg"
+version = "0.1.0"
+description = "Deterministic knowledge graph builder for polyglot repositories."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
+authors = [{ name = "RepoMap contributors" }]
+dependencies = [
+  "psycopg[binary]==3.2.12",
+  "typing-extensions==4.16.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "coverage[toml]>=7",
+  "pytest>=8",
+  "pytest-xdist>=3",
+]
+scale-tools = [
+  "psutil==7.2.2",
+  "docker==7.2.0",
+]
+static-analysis = [
+  "mypy==2.1.0",
+  "ruff==0.16.2",
+  "types-docker==7.2.0.20260819",
+  "types-psutil==7.2.2.20260518",
+  "types-requests==2.33.0.20260518",
+]
+
+[project.scripts]
+repomap-kg = "repomap_kg.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = [
+  "src/test/unit/python",
+  "src/test/int/python",
+]
+python_files = ["*.test.py"]
+pythonpath = [
+  "src/main/python",
+  "src/test/support/python",
+]
+addopts = [
+  "--strict-config",
+  "--strict-markers",
+  "--import-mode=importlib",
+]
+markers = [
+  "unit: unit tests",
+  "int: integration tests",
+  "requires_build_profile: visible real-build debt excluded from ordinary unit/int/staging",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src/main/python" }
+
+[tool.setuptools.packages.find]
+where = ["src/main/python"]
+
+[tool.setuptools.data-files]
+"share/repomap-kg/rdbms" = [
+  "src/main/resources/rdbms/changelog.yaml",
+]
+"share/repomap-kg/rdbms/2026/06" = [
+  "src/main/resources/rdbms/2026/06/*.sql",
+]
+"share/repomap-kg/rdbms/2026/07" = [
+  "src/main/resources/rdbms/2026/07/*.sql",
+]
+"share/repomap-kg/rdbms/2026/09" = [
+  "src/main/resources/rdbms/2026/09/*.sql",
+]
+"share/repomap-kg/coordinator-rdbms" = [
+  "src/main/resources/coordinator-rdbms/changelog.yaml",
+]
+"share/repomap-kg/coordinator-rdbms/2026/07" = [
+  "src/main/resources/coordinator-rdbms/2026/07/*.sql",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+  "E9",
+  "F821",
+  "F822",
+  "F823",
+]
+
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true

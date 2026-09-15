@@ -1,0 +1,12 @@
+{
+  "workflow_runs": [
+    {
+      "artifacts_url": "https://api.github.com/repos/fixture-owner/fixture-repo/actions/runs/3001/artifacts?token=fixture-private-key",
+      "conclusion": "success",
+      "id": 3001,
+      "logs_url": "https://api.github.com/repos/fixture-owner/fixture-repo/actions/runs/3001/logs?token=fixture-private-key",
+      "name": "CI",
+      "status": "completed"
+    }
+  ]
+}

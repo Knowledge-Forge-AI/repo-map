@@ -1,0 +1,2663 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:017f8827313fc128caec95fc3927b24adfada513fdcc7b877fb5611c35701ee6",
+      "evidence_key": "evidence:15:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/root_path",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:040d2f8ea24302ef34b3f07a79e8b38e6bf2357460e7ba11981e65e9b10c04a7",
+      "evidence_key": "evidence:8:events.jsonl:1-1:repo-config:events.jsonl#config-reference:/path:0:record-0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:0ebe395df24911016ef4f733baf3c1e9936a53079e9564d7322258e66c00cda2",
+      "evidence_key": "evidence:13:mcp/repo-map/config.json:2-2:repo-config:mcp/repo-map/config.json#config-path:/projects",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:13233b50225fb48878edadfa6184b8c9ce477d0c4c7fff6ee058b28ed3715cbc",
+      "evidence_key": "evidence:25:mcp/repo-map/config.json:19-19:repo-config:mcp/repo-map/config.json#config-path:/api_key",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:17cdfd4cdeeba4a4cc81e7e548413e261cade9e025d9acf1973f632d48f89872",
+      "evidence_key": "evidence:17:mcp/repo-map/config.json:8-8:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:18b046898f4aa6acfba5dbcead0330334daad57a6b46acadd35a443a21fab1e4",
+      "evidence_key": "evidence:19:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/command",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1dab039d0da94c0ddce8bec4b908821ceea7abce377cf6a5b189ce73f2c6d407",
+      "evidence_key": "evidence:31:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/TOKEN:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:20be305deaadc09ccb060a76e870713e3da5cf04c226e3c80d27146500d771a0",
+      "evidence_key": "evidence:12:mcp/repo-map/config.json:0-0:repo-config:mcp/repo-map/config.json#config-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:2a85c076b25e8a3bd41771b97b1dcb237bfce8d8ff3df32f9338d4dac279c474",
+      "evidence_key": "evidence:27:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/command:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3405883712baa24025de59203f4f329c8904960d590612423a2ed0fd8abee5ae",
+      "evidence_key": "evidence:24:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/url",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:38808e8e874902a0ee0acde5d5f5a16d6c58fcf60501bc09c909d856098f48b2",
+      "evidence_key": "evidence:28:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/args:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:38dfec5488410b95dd2068f01687746629f02eff6d41731fb712a1a09dd1cc00",
+      "evidence_key": "evidence:26:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-reference:/projects/repo-map/root_path:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3be1924a355c5c02c9f03b755e6520d52231d1567c6338837f47de89433950f7",
+      "evidence_key": "evidence:14:mcp/repo-map/config.json:3-3:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3da36d8ca1955a140146a690819c63fcca0c17784cc7b1d8aecdadb26860d123",
+      "evidence_key": "evidence:29:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3da36d8ca1955a140146a690819c63fcca0c17784cc7b1d8aecdadb26860d123",
+      "evidence_key": "evidence:30:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3f2f2359d122f40231c948961ada8043c12c7a02d3c79bacd0aa6288979b81e8",
+      "evidence_key": "evidence:4:events.jsonl:1-1:repo-config:events.jsonl#config-path:/event:record-0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3f2f2359d122f40231c948961ada8043c12c7a02d3c79bacd0aa6288979b81e8",
+      "evidence_key": "evidence:6:events.jsonl:4-4:repo-config:events.jsonl#config-path:/event:record-1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:5739ed995add95e342f349554ea168c4632577c67511b3be8491e80b38aa10eb",
+      "evidence_key": "evidence:5:events.jsonl:1-1:repo-config:events.jsonl#config-path:/path:record-0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:58262a3c267b8003121fe02c6f92acf86d3ca4350e87b1a1e9bf35b9a2f02819",
+      "evidence_key": "evidence:20:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/args",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:63ae0751e146606135c96f2ba5d61d20f5e7b94b8236600657c91d0750fff1e2",
+      "evidence_key": "evidence:7:events.jsonl:4-4:repo-config:events.jsonl#config-path:/command:record-1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:681e2dfc5fee9fb93c32a07da0ea189b057dbafedff3574ca1eb9f5322b8dcd7",
+      "evidence_key": "evidence:21:mcp/repo-map/config.json:12-12:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:866ad0e84fe8ec7eb588cd1d556271ce5c43545eb83847da173dd2ec464cf315",
+      "evidence_key": "evidence:38:settings.jsonc:3-3:repo-config:settings.jsonc#config-reference:/program:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8e10ce6e2f350b97cdb10f402422a59ce5987325b3dd1d91a557c066b2087004",
+      "evidence_key": "evidence:37:settings.jsonc:5-5:repo-config:settings.jsonc#config-path:/paths",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a004f537a59dc8f7ed6c144cbdd1dd3973ecc22f2a99ff1f2667f9c46f759fe2",
+      "evidence_key": "evidence:36:settings.jsonc:4-4:repo-config:settings.jsonc#config-path:/docs_url",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a0eb66a1a7e6e8d6a1dfc8799a1bd46b4e0ef5276a65d301ee2b0d3850090beb",
+      "evidence_key": "evidence:34:settings.jsonc:0-0:repo-config:settings.jsonc#config-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cdb0b30f9d94938528ac4bf06edb4faf26d7e3a9eed32e0296daa3bc4ad35bd5",
+      "evidence_key": "evidence:1:events.jsonl:0-0:repo-config:events.jsonl#config-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d38a1f81645d97081fae4485dff2f62698d97c193de514368f9b8d893430572a",
+      "evidence_key": "evidence:35:settings.jsonc:3-3:repo-config:settings.jsonc#config-path:/program",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:dcd47e23451fa9f837554609e34d586c835a59d7a6e57a0d3e70fb3e39de4872",
+      "evidence_key": "evidence:22:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:dd06e47ba5560ff1c65d272c82ec9dc18629318fce3cf04344a37aefededbccb",
+      "evidence_key": "evidence:23:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/TOKEN",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e2df9274b4ef9d4e799721654f3c13d11f6f5f3e768f4a32ebe09ea19a22bcea",
+      "evidence_key": "evidence:32:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/url:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e5ae96de0fa51e71545ed0a87457d6449b213b2d25a6d5a22f683a5d0ec3e85c",
+      "evidence_key": "evidence:18:mcp/repo-map/config.json:9-9:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e606a80b9a0dc0f15b7a9432b1a1d1519103d4a30933e0530648eafe0a355920",
+      "evidence_key": "evidence:16:mcp/repo-map/config.json:5-5:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/pg_database",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ea26c2e5d54a0bd33fc98c786f302d8f15a3d4d28b1033478aab5f29410a2b54",
+      "evidence_key": "evidence:39:settings.jsonc:4-4:repo-config:settings.jsonc#config-reference:/docs_url:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f3b71a96eb67cfb5c9a0bd1844f713c0856f2219e30dada6549dd0cfe628cb08",
+      "evidence_key": "evidence:9:events.jsonl:4-4:repo-config:events.jsonl#config-reference:/command:0:record-1",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:f3b71a96eb67cfb5c9a0bd1844f713c0856f2219e30dada6549dd0cfe628cb08",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/command"
+        ],
+        "raw_keys": [
+          "command"
+        ],
+        "raw_value_summaries": [
+          "repomap-kg"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "tool"
+        ],
+        "resolution_reasons": [
+          "simple-command-field"
+        ]
+      },
+      "source_key": "config.path:file%3Aevents.jsonl:%2Fcommand",
+      "target_key": "tool:repomap-kg"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:040d2f8ea24302ef34b3f07a79e8b38e6bf2357460e7ba11981e65e9b10c04a7",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/path"
+        ],
+        "raw_keys": [
+          "path"
+        ],
+        "raw_value_summaries": [
+          "./mcp/repo-map/config.json"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "relative-file-reference"
+        ]
+      },
+      "source_key": "config.path:file%3Aevents.jsonl:%2Fpath",
+      "target_key": "file:mcp/repo-map/config.json"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:38808e8e874902a0ee0acde5d5f5a16d6c58fcf60501bc09c909d856098f48b2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/mcp_servers/repomap/args"
+        ],
+        "raw_keys": [
+          "args"
+        ],
+        "raw_value_summaries": [
+          "repomap-kg"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "tool"
+        ],
+        "resolution_reasons": [
+          "simple-command-field"
+        ]
+      },
+      "source_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fargs",
+      "target_key": "tool:repomap-kg"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:2a85c076b25e8a3bd41771b97b1dcb237bfce8d8ff3df32f9338d4dac279c474",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/mcp_servers/repomap/command"
+        ],
+        "raw_keys": [
+          "command"
+        ],
+        "raw_value_summaries": [
+          "repomap-kg"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "tool"
+        ],
+        "resolution_reasons": [
+          "simple-command-field"
+        ]
+      },
+      "source_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fcommand",
+      "target_key": "tool:repomap-kg"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:3da36d8ca1955a140146a690819c63fcca0c17784cc7b1d8aecdadb26860d123",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG"
+        ],
+        "raw_keys": [
+          "REPOMAP_MCP_CONFIG"
+        ],
+        "raw_value_summaries": [
+          "REPOMAP_MCP_CONFIG",
+          "$REPOMAP_MCP_CONFIG"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "env"
+        ],
+        "resolution_reasons": [
+          "env-object-key",
+          "env-var-reference"
+        ]
+      },
+      "source_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG",
+      "target_key": "env:REPOMAP_MCP_CONFIG"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:1dab039d0da94c0ddce8bec4b908821ceea7abce377cf6a5b189ce73f2c6d407",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/mcp_servers/repomap/env/TOKEN"
+        ],
+        "raw_keys": [
+          "TOKEN"
+        ],
+        "redacted_observed": true,
+        "reference_kinds": [
+          "env"
+        ],
+        "resolution_reasons": [
+          "env-object-key"
+        ]
+      },
+      "source_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FTOKEN",
+      "target_key": "env:TOKEN"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:e2df9274b4ef9d4e799721654f3c13d11f6f5f3e768f4a32ebe09ea19a22bcea",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/mcp_servers/repomap/url"
+        ],
+        "raw_keys": [
+          "url"
+        ],
+        "raw_value_summaries": [
+          "https://example.com/docs"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "external.url"
+        ],
+        "resolution_reasons": [
+          "url-literal"
+        ]
+      },
+      "source_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Furl",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:38dfec5488410b95dd2068f01687746629f02eff6d41731fb712a1a09dd1cc00",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/projects/repo-map/root_path"
+        ],
+        "raw_keys": [
+          "root_path"
+        ],
+        "raw_value_summaries": [
+          "projects/repo-map"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "relative-file-reference"
+        ]
+      },
+      "source_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Froot_path",
+      "target_key": "file:projects/repo-map"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:ea26c2e5d54a0bd33fc98c786f302d8f15a3d4d28b1033478aab5f29410a2b54",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/docs_url"
+        ],
+        "raw_keys": [
+          "docs_url"
+        ],
+        "raw_value_summaries": [
+          "mailto:dev@example.com"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "external.url"
+        ],
+        "resolution_reasons": [
+          "url-literal"
+        ]
+      },
+      "source_key": "config.path:file%3Asettings.jsonc:%2Fdocs_url",
+      "target_key": "external.url:mailto%3Adev%40example.com"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:866ad0e84fe8ec7eb588cd1d556271ce5c43545eb83847da173dd2ec464cf315",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "pointers": [
+          "/program"
+        ],
+        "raw_keys": [
+          "program"
+        ],
+        "raw_value_summaries": [
+          "repomap-kg"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "tool"
+        ],
+        "resolution_reasons": [
+          "simple-command-field"
+        ]
+      },
+      "source_key": "config.path:file%3Asettings.jsonc:%2Fprogram",
+      "target_key": "tool:repomap-kg"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:cdb0b30f9d94938528ac4bf06edb4faf26d7e3a9eed32e0296daa3bc4ad35bd5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_roles": [
+          "log"
+        ],
+        "formats": [
+          "jsonl"
+        ]
+      },
+      "source_key": "file:events.jsonl",
+      "target_key": "config.document:file%3Aevents.jsonl"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:63ae0751e146606135c96f2ba5d61d20f5e7b94b8236600657c91d0750fff1e2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "jsonl"
+        ],
+        "pointers": [
+          "/command"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:events.jsonl",
+      "target_key": "config.path:file%3Aevents.jsonl:%2Fcommand"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3f2f2359d122f40231c948961ada8043c12c7a02d3c79bacd0aa6288979b81e8",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "jsonl"
+        ],
+        "pointers": [
+          "/event"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:events.jsonl",
+      "target_key": "config.path:file%3Aevents.jsonl:%2Fevent"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:5739ed995add95e342f349554ea168c4632577c67511b3be8491e80b38aa10eb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "jsonl"
+        ],
+        "pointers": [
+          "/path"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:events.jsonl",
+      "target_key": "config.path:file%3Aevents.jsonl:%2Fpath"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:20be305deaadc09ccb060a76e870713e3da5cf04c226e3c80d27146500d771a0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_roles": [
+          "mcp-config"
+        ],
+        "formats": [
+          "json"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:13233b50225fb48878edadfa6184b8c9ce477d0c4c7fff6ee058b28ed3715cbc",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/api_key"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fapi_key"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:17cdfd4cdeeba4a4cc81e7e548413e261cade9e025d9acf1973f632d48f89872",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers"
+        ],
+        "value_types": [
+          "object"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e5ae96de0fa51e71545ed0a87457d6449b213b2d25a6d5a22f683a5d0ec3e85c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap"
+        ],
+        "value_types": [
+          "object"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:58262a3c267b8003121fe02c6f92acf86d3ca4350e87b1a1e9bf35b9a2f02819",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap/args"
+        ],
+        "value_types": [
+          "array"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fargs"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:18b046898f4aa6acfba5dbcead0330334daad57a6b46acadd35a443a21fab1e4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap/command"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fcommand"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:681e2dfc5fee9fb93c32a07da0ea189b057dbafedff3574ca1eb9f5322b8dcd7",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap/env"
+        ],
+        "value_types": [
+          "object"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:dcd47e23451fa9f837554609e34d586c835a59d7a6e57a0d3e70fb3e39de4872",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:dd06e47ba5560ff1c65d272c82ec9dc18629318fce3cf04344a37aefededbccb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap/env/TOKEN"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FTOKEN"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3405883712baa24025de59203f4f329c8904960d590612423a2ed0fd8abee5ae",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/mcp_servers/repomap/url"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Furl"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:0ebe395df24911016ef4f733baf3c1e9936a53079e9564d7322258e66c00cda2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/projects"
+        ],
+        "value_types": [
+          "object"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3be1924a355c5c02c9f03b755e6520d52231d1567c6338837f47de89433950f7",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/projects/repo-map"
+        ],
+        "value_types": [
+          "object"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e606a80b9a0dc0f15b7a9432b1a1d1519103d4a30933e0530648eafe0a355920",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/projects/repo-map/pg_database"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Fpg_database"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:017f8827313fc128caec95fc3927b24adfada513fdcc7b877fb5611c35701ee6",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "json"
+        ],
+        "pointers": [
+          "/projects/repo-map/root_path"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:mcp/repo-map/config.json",
+      "target_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Froot_path"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:a0eb66a1a7e6e8d6a1dfc8799a1bd46b4e0ef5276a65d301ee2b0d3850090beb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_roles": [
+          "config"
+        ],
+        "formats": [
+          "jsonc"
+        ]
+      },
+      "source_key": "file:settings.jsonc",
+      "target_key": "config.document:file%3Asettings.jsonc"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:a004f537a59dc8f7ed6c144cbdd1dd3973ecc22f2a99ff1f2667f9c46f759fe2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "jsonc"
+        ],
+        "pointers": [
+          "/docs_url"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:settings.jsonc",
+      "target_key": "config.path:file%3Asettings.jsonc:%2Fdocs_url"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:8e10ce6e2f350b97cdb10f402422a59ce5987325b3dd1d91a557c066b2087004",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "jsonc"
+        ],
+        "pointers": [
+          "/paths"
+        ],
+        "value_types": [
+          "array"
+        ]
+      },
+      "source_key": "file:settings.jsonc",
+      "target_key": "config.path:file%3Asettings.jsonc:%2Fpaths"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:d38a1f81645d97081fae4485dff2f62698d97c193de514368f9b8d893430572a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "jsonc"
+        ],
+        "pointers": [
+          "/program"
+        ],
+        "value_types": [
+          "string"
+        ]
+      },
+      "source_key": "file:settings.jsonc",
+      "target_key": "config.path:file%3Asettings.jsonc:%2Fprogram"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:events.jsonl:0-0:repo-discovery:events.jsonl",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "9cbbb50e32ebed2c36fd1bc385455ed36c580201269605c0dedd03490f9c1b1e",
+        "executable": false,
+        "generated": false,
+        "language": "jsonl",
+        "role": "unknown"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": null,
+      "evidence_key": "evidence:1:events.jsonl:0-0:repo-config:events.jsonl#config-document",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_role": "log",
+        "format": "jsonl",
+        "parse_error_count": 1,
+        "parser": "stdlib-json",
+        "path_count": 4,
+        "record_count": 2,
+        "top_level_type": "mixed-jsonl"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.document",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:2:events.jsonl:1-1:repo-config:events.jsonl#jsonl-record:1",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "jsonl",
+        "line_number": 1,
+        "record_index": 0,
+        "redacted_keys": [],
+        "safe_keys": [
+          "event",
+          "path"
+        ],
+        "top_level_type": "object"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.jsonl_record",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#jsonl-record:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:3:events.jsonl:4-4:repo-config:events.jsonl#jsonl-record:4",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "jsonl",
+        "line_number": 4,
+        "record_index": 1,
+        "redacted_keys": [],
+        "safe_keys": [
+          "command",
+          "event"
+        ],
+        "top_level_type": "object"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.jsonl_record",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#jsonl-record:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:4:events.jsonl:1-1:repo-config:events.jsonl#config-path:/event:record-0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/event",
+        "format": "jsonl",
+        "pointer": "/event",
+        "redacted": false,
+        "value_summary": "start",
+        "value_type": "string"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-path:/event:record-0",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:5:events.jsonl:1-1:repo-config:events.jsonl#config-path:/path:record-0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/path",
+        "format": "jsonl",
+        "pointer": "/path",
+        "redacted": false,
+        "value_summary": "./mcp/repo-map/config.json",
+        "value_type": "string"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-path:/path:record-0",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:6:events.jsonl:4-4:repo-config:events.jsonl#config-path:/event:record-1",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/event",
+        "format": "jsonl",
+        "pointer": "/event",
+        "redacted": false,
+        "value_summary": "stop",
+        "value_type": "string"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-path:/event:record-1",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:7:events.jsonl:4-4:repo-config:events.jsonl#config-path:/command:record-1",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/command",
+        "format": "jsonl",
+        "pointer": "/command",
+        "redacted": false,
+        "value_summary": "repomap-kg",
+        "value_type": "string"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-path:/command:record-1",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:8:events.jsonl:1-1:repo-config:events.jsonl#config-reference:/path:0:record-0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "jsonl",
+        "pointer": "/path",
+        "raw_key": "path",
+        "raw_value_summary": "./mcp/repo-map/config.json",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "relative-file-reference",
+        "source_document_key": "config.document:file%3Aevents.jsonl",
+        "source_path_key": "config.path:file%3Aevents.jsonl:%2Fpath"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-reference:/path:0:record-0",
+      "start_line": 1
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:9:events.jsonl:4-4:repo-config:events.jsonl#config-reference:/command:0:record-1",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "jsonl",
+        "pointer": "/command",
+        "raw_key": "command",
+        "raw_value_summary": "repomap-kg",
+        "redacted": false,
+        "reference_kind": "tool",
+        "resolution_reason": "simple-command-field",
+        "source_document_key": "config.document:file%3Aevents.jsonl",
+        "source_path_key": "config.path:file%3Aevents.jsonl:%2Fcommand"
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-reference:/command:0:record-1",
+      "start_line": 4
+    },
+    {
+      "confidence": "unknown",
+      "end_line": 3,
+      "evidence_key": "evidence:10:events.jsonl:3-3:repo-config:events.jsonl#config-parse-error:3",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_number": 10,
+        "error_kind": "malformed-jsonl-line",
+        "format": "jsonl",
+        "line_number": 3,
+        "message_summary": "Expecting value",
+        "parser": "stdlib-json",
+        "recovered": true
+      },
+      "path": "events.jsonl",
+      "raw_kind": "config.parse_error",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "events.jsonl#config-parse-error:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:11:mcp/repo-map/config.json:0-0:repo-discovery:mcp/repo-map/config.json",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "b90d37c976abb5c8f2f4ee61c6a2f617367f41d0842b2c56950211556ad85406",
+        "executable": false,
+        "generated": false,
+        "language": "json",
+        "role": "unknown"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:12:mcp/repo-map/config.json:0-0:repo-config:mcp/repo-map/config.json#config-document",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_role": "mcp-config",
+        "format": "json",
+        "parse_error_count": 0,
+        "parser": "stdlib-json",
+        "path_count": 13,
+        "top_level_type": "object"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.document",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:13:mcp/repo-map/config.json:2-2:repo-config:mcp/repo-map/config.json#config-path:/projects",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects",
+        "format": "json",
+        "pointer": "/projects",
+        "redacted": false,
+        "value_type": "object"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 13,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/projects",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:14:mcp/repo-map/config.json:3-3:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects/repo-map",
+        "format": "json",
+        "pointer": "/projects/repo-map",
+        "redacted": false,
+        "value_type": "object"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 14,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/projects/repo-map",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:15:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/root_path",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects/repo-map/root_path",
+        "format": "json",
+        "pointer": "/projects/repo-map/root_path",
+        "redacted": false,
+        "value_summary": "projects/repo-map",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 15,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/projects/repo-map/root_path",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:16:mcp/repo-map/config.json:5-5:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/pg_database",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects/repo-map/pg_database",
+        "format": "json",
+        "pointer": "/projects/repo-map/pg_database",
+        "redacted": false,
+        "value_summary": "repomap_repo_map",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 16,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/projects/repo-map/pg_database",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 8,
+      "evidence_key": "evidence:17:mcp/repo-map/config.json:8-8:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers",
+        "format": "json",
+        "pointer": "/mcp_servers",
+        "redacted": false,
+        "value_type": "object"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 17,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers",
+      "start_line": 8
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 9,
+      "evidence_key": "evidence:18:mcp/repo-map/config.json:9-9:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap",
+        "redacted": false,
+        "value_type": "object"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 18,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap",
+      "start_line": 9
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 10,
+      "evidence_key": "evidence:19:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/command",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/command",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/command",
+        "redacted": false,
+        "value_summary": "repomap-kg",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 19,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap/command",
+      "start_line": 10
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 11,
+      "evidence_key": "evidence:20:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/args",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "array_policy": "summary-only",
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/args",
+        "format": "json",
+        "item_count": 3,
+        "pointer": "/mcp_servers/repomap/args",
+        "redacted": false,
+        "value_summaries": [
+          "repomap-kg",
+          "mcp",
+          "serve"
+        ],
+        "value_type": "array"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 20,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap/args",
+      "start_line": 11
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 12,
+      "evidence_key": "evidence:21:mcp/repo-map/config.json:12-12:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/env",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env",
+        "redacted": false,
+        "value_type": "object"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 21,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env",
+      "start_line": 12
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 13,
+      "evidence_key": "evidence:22:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+        "redacted": false,
+        "value_summary": "$REPOMAP_MCP_CONFIG",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 22,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+      "start_line": 13
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 14,
+      "evidence_key": "evidence:23:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/TOKEN",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/env/TOKEN",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/TOKEN",
+        "redacted": true,
+        "redaction_reason": "secret-prone-key",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 23,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/TOKEN",
+      "start_line": 14
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 16,
+      "evidence_key": "evidence:24:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/url",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/url",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/url",
+        "redacted": false,
+        "value_summary": "https://example.com/docs",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 24,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/mcp_servers/repomap/url",
+      "start_line": 16
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 19,
+      "evidence_key": "evidence:25:mcp/repo-map/config.json:19-19:repo-config:mcp/repo-map/config.json#config-path:/api_key",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/api_key",
+        "format": "json",
+        "pointer": "/api_key",
+        "redacted": true,
+        "redaction_reason": "secret-prone-key",
+        "value_type": "string"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 25,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-path:/api_key",
+      "start_line": 19
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:26:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-reference:/projects/repo-map/root_path:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/projects/repo-map/root_path",
+        "raw_key": "root_path",
+        "raw_value_summary": "projects/repo-map",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "relative-file-reference",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Froot_path"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 26,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/projects/repo-map/root_path:0",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 10,
+      "evidence_key": "evidence:27:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/command:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/command",
+        "raw_key": "command",
+        "raw_value_summary": "repomap-kg",
+        "redacted": false,
+        "reference_kind": "tool",
+        "resolution_reason": "simple-command-field",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fcommand"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 27,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/command:0",
+      "start_line": 10
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 11,
+      "evidence_key": "evidence:28:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/args:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/args",
+        "raw_key": "args",
+        "raw_value_summary": "repomap-kg",
+        "redacted": false,
+        "reference_kind": "tool",
+        "resolution_reason": "simple-command-field",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fargs"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 28,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/args:0",
+      "start_line": 11
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 13,
+      "evidence_key": "evidence:29:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+        "raw_key": "REPOMAP_MCP_CONFIG",
+        "raw_value_summary": "REPOMAP_MCP_CONFIG",
+        "redacted": false,
+        "reference_kind": "env",
+        "resolution_reason": "env-object-key",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 29,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:0",
+      "start_line": 13
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 13,
+      "evidence_key": "evidence:30:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:1",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+        "raw_key": "REPOMAP_MCP_CONFIG",
+        "raw_value_summary": "$REPOMAP_MCP_CONFIG",
+        "redacted": false,
+        "reference_kind": "env",
+        "resolution_reason": "env-var-reference",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 30,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:1",
+      "start_line": 13
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 14,
+      "evidence_key": "evidence:31:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/TOKEN:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/TOKEN",
+        "raw_key": "TOKEN",
+        "redacted": true,
+        "redaction_reason": "secret-prone-key",
+        "reference_kind": "env",
+        "resolution_reason": "env-object-key",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FTOKEN"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 31,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/TOKEN:0",
+      "start_line": 14
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 16,
+      "evidence_key": "evidence:32:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/url:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/url",
+        "raw_key": "url",
+        "raw_value_summary": "https://example.com/docs",
+        "redacted": false,
+        "reference_kind": "external.url",
+        "resolution_reason": "url-literal",
+        "source_document_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+        "source_path_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Furl"
+      },
+      "path": "mcp/repo-map/config.json",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 32,
+      "raw_schema_version": 1,
+      "raw_source_id": "mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/url:0",
+      "start_line": 16
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:33:settings.jsonc:0-0:repo-discovery:settings.jsonc",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "8cda72ba7db98a9f28e8ad86798e1e6a03502a2c82ffa4d32a394acfe0d1b1c8",
+        "executable": false,
+        "generated": false,
+        "language": "jsonc",
+        "role": "unknown"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 33,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": null,
+      "evidence_key": "evidence:34:settings.jsonc:0-0:repo-config:settings.jsonc#config-document",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_role": "config",
+        "format": "jsonc",
+        "parse_error_count": 0,
+        "parser": "jsonc-conservative",
+        "path_count": 3,
+        "top_level_type": "object"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "config.document",
+      "raw_observation_ordinal": 34,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc#config-document",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:35:settings.jsonc:3-3:repo-config:settings.jsonc#config-path:/program",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/program",
+        "format": "jsonc",
+        "pointer": "/program",
+        "redacted": false,
+        "value_summary": "repomap-kg",
+        "value_type": "string"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 35,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc#config-path:/program",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:36:settings.jsonc:4-4:repo-config:settings.jsonc#config-path:/docs_url",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/docs_url",
+        "format": "jsonc",
+        "pointer": "/docs_url",
+        "redacted": false,
+        "value_summary": "mailto:dev@example.com",
+        "value_type": "string"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 36,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc#config-path:/docs_url",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:37:settings.jsonc:5-5:repo-config:settings.jsonc#config-path:/paths",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "array_policy": "summary-only",
+        "container_type": "object",
+        "display_path": "/paths",
+        "format": "jsonc",
+        "item_count": 1,
+        "pointer": "/paths",
+        "redacted": false,
+        "value_summaries": [
+          "mcp/repo-map/config.json"
+        ],
+        "value_type": "array"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "config.path",
+      "raw_observation_ordinal": 37,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc#config-path:/paths",
+      "start_line": 5
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:38:settings.jsonc:3-3:repo-config:settings.jsonc#config-reference:/program:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "jsonc",
+        "pointer": "/program",
+        "raw_key": "program",
+        "raw_value_summary": "repomap-kg",
+        "redacted": false,
+        "reference_kind": "tool",
+        "resolution_reason": "simple-command-field",
+        "source_document_key": "config.document:file%3Asettings.jsonc",
+        "source_path_key": "config.path:file%3Asettings.jsonc:%2Fprogram"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 38,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc#config-reference:/program:0",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:39:settings.jsonc:4-4:repo-config:settings.jsonc#config-reference:/docs_url:0",
+      "extractor": "repo-config",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "jsonc",
+        "pointer": "/docs_url",
+        "raw_key": "docs_url",
+        "raw_value_summary": "mailto:dev@example.com",
+        "redacted": false,
+        "reference_kind": "external.url",
+        "resolution_reason": "url-literal",
+        "source_document_key": "config.document:file%3Asettings.jsonc",
+        "source_path_key": "config.path:file%3Asettings.jsonc:%2Fdocs_url"
+      },
+      "path": "settings.jsonc",
+      "raw_kind": "config.reference",
+      "raw_observation_ordinal": 39,
+      "raw_schema_version": 1,
+      "raw_source_id": "settings.jsonc#config-reference:/docs_url:0",
+      "start_line": 4
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "config.document:file%3Aevents.jsonl",
+      "evidence_key": "evidence:1:events.jsonl:0-0:repo-config:events.jsonl#config-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+      "evidence_key": "evidence:12:mcp/repo-map/config.json:0-0:repo-config:mcp/repo-map/config.json#config-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.document:file%3Asettings.jsonc",
+      "evidence_key": "evidence:34:settings.jsonc:0-0:repo-config:settings.jsonc#config-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fcommand",
+      "evidence_key": "evidence:7:events.jsonl:4-4:repo-config:events.jsonl#config-path:/command:record-1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fcommand",
+      "evidence_key": "evidence:9:events.jsonl:4-4:repo-config:events.jsonl#config-reference:/command:0:record-1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fevent",
+      "evidence_key": "evidence:4:events.jsonl:1-1:repo-config:events.jsonl#config-path:/event:record-0",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fevent",
+      "evidence_key": "evidence:6:events.jsonl:4-4:repo-config:events.jsonl#config-path:/event:record-1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fpath",
+      "evidence_key": "evidence:5:events.jsonl:1-1:repo-config:events.jsonl#config-path:/path:record-0",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fpath",
+      "evidence_key": "evidence:8:events.jsonl:1-1:repo-config:events.jsonl#config-reference:/path:0:record-0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fapi_key",
+      "evidence_key": "evidence:25:mcp/repo-map/config.json:19-19:repo-config:mcp/repo-map/config.json#config-path:/api_key",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers",
+      "evidence_key": "evidence:17:mcp/repo-map/config.json:8-8:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap",
+      "evidence_key": "evidence:18:mcp/repo-map/config.json:9-9:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fargs",
+      "evidence_key": "evidence:20:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/args",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fargs",
+      "evidence_key": "evidence:28:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/args:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fcommand",
+      "evidence_key": "evidence:19:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/command",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fcommand",
+      "evidence_key": "evidence:27:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/command:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv",
+      "evidence_key": "evidence:21:mcp/repo-map/config.json:12-12:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG",
+      "evidence_key": "evidence:22:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG",
+      "evidence_key": "evidence:29:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG",
+      "evidence_key": "evidence:30:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FTOKEN",
+      "evidence_key": "evidence:23:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/TOKEN",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FTOKEN",
+      "evidence_key": "evidence:31:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/TOKEN:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Furl",
+      "evidence_key": "evidence:24:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/url",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Furl",
+      "evidence_key": "evidence:32:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/url:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects",
+      "evidence_key": "evidence:13:mcp/repo-map/config.json:2-2:repo-config:mcp/repo-map/config.json#config-path:/projects",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map",
+      "evidence_key": "evidence:14:mcp/repo-map/config.json:3-3:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Fpg_database",
+      "evidence_key": "evidence:16:mcp/repo-map/config.json:5-5:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/pg_database",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Froot_path",
+      "evidence_key": "evidence:15:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/root_path",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Froot_path",
+      "evidence_key": "evidence:26:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-reference:/projects/repo-map/root_path:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fdocs_url",
+      "evidence_key": "evidence:36:settings.jsonc:4-4:repo-config:settings.jsonc#config-path:/docs_url",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fdocs_url",
+      "evidence_key": "evidence:39:settings.jsonc:4-4:repo-config:settings.jsonc#config-reference:/docs_url:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fpaths",
+      "evidence_key": "evidence:37:settings.jsonc:5-5:repo-config:settings.jsonc#config-path:/paths",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fprogram",
+      "evidence_key": "evidence:35:settings.jsonc:3-3:repo-config:settings.jsonc#config-path:/program",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fprogram",
+      "evidence_key": "evidence:38:settings.jsonc:3-3:repo-config:settings.jsonc#config-reference:/program:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "env:REPOMAP_MCP_CONFIG",
+      "evidence_key": "evidence:29:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "env:REPOMAP_MCP_CONFIG",
+      "evidence_key": "evidence:30:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "env:TOKEN",
+      "evidence_key": "evidence:31:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/env/TOKEN:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs",
+      "evidence_key": "evidence:32:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/url:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:mailto%3Adev%40example.com",
+      "evidence_key": "evidence:39:settings.jsonc:4-4:repo-config:settings.jsonc#config-reference:/docs_url:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "evidence_key": "evidence:0:events.jsonl:0-0:repo-discovery:events.jsonl",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "evidence_key": "evidence:1:events.jsonl:0-0:repo-config:events.jsonl#config-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "evidence_key": "evidence:4:events.jsonl:1-1:repo-config:events.jsonl#config-path:/event:record-0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "evidence_key": "evidence:5:events.jsonl:1-1:repo-config:events.jsonl#config-path:/path:record-0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "evidence_key": "evidence:6:events.jsonl:4-4:repo-config:events.jsonl#config-path:/event:record-1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "evidence_key": "evidence:7:events.jsonl:4-4:repo-config:events.jsonl#config-path:/command:record-1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:11:mcp/repo-map/config.json:0-0:repo-discovery:mcp/repo-map/config.json",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:12:mcp/repo-map/config.json:0-0:repo-config:mcp/repo-map/config.json#config-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:13:mcp/repo-map/config.json:2-2:repo-config:mcp/repo-map/config.json#config-path:/projects",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:14:mcp/repo-map/config.json:3-3:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:15:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/root_path",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:16:mcp/repo-map/config.json:5-5:repo-config:mcp/repo-map/config.json#config-path:/projects/repo-map/pg_database",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:17:mcp/repo-map/config.json:8-8:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:18:mcp/repo-map/config.json:9-9:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:19:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/command",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:20:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/args",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:21:mcp/repo-map/config.json:12-12:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:22:mcp/repo-map/config.json:13-13:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:23:mcp/repo-map/config.json:14-14:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/env/TOKEN",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:24:mcp/repo-map/config.json:16-16:repo-config:mcp/repo-map/config.json#config-path:/mcp_servers/repomap/url",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:25:mcp/repo-map/config.json:19-19:repo-config:mcp/repo-map/config.json#config-path:/api_key",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "evidence_key": "evidence:8:events.jsonl:1-1:repo-config:events.jsonl#config-reference:/path:0:record-0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:projects/repo-map",
+      "evidence_key": "evidence:26:mcp/repo-map/config.json:4-4:repo-config:mcp/repo-map/config.json#config-reference:/projects/repo-map/root_path:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:settings.jsonc",
+      "evidence_key": "evidence:33:settings.jsonc:0-0:repo-discovery:settings.jsonc",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:settings.jsonc",
+      "evidence_key": "evidence:34:settings.jsonc:0-0:repo-config:settings.jsonc#config-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:settings.jsonc",
+      "evidence_key": "evidence:35:settings.jsonc:3-3:repo-config:settings.jsonc#config-path:/program",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:settings.jsonc",
+      "evidence_key": "evidence:36:settings.jsonc:4-4:repo-config:settings.jsonc#config-path:/docs_url",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:settings.jsonc",
+      "evidence_key": "evidence:37:settings.jsonc:5-5:repo-config:settings.jsonc#config-path:/paths",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "tool:repomap-kg",
+      "evidence_key": "evidence:27:mcp/repo-map/config.json:10-10:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/command:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "tool:repomap-kg",
+      "evidence_key": "evidence:28:mcp/repo-map/config.json:11-11:repo-config:mcp/repo-map/config.json#config-reference:/mcp_servers/repomap/args:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "tool:repomap-kg",
+      "evidence_key": "evidence:38:settings.jsonc:3-3:repo-config:settings.jsonc#config-reference:/program:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "tool:repomap-kg",
+      "evidence_key": "evidence:9:events.jsonl:4-4:repo-config:events.jsonl#config-reference:/command:0:record-1",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "config.document:file%3Aevents.jsonl",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "log",
+      "graph_key_version": 1,
+      "kind": "config.document",
+      "metadata": {
+        "document_role": "log",
+        "format": "jsonl",
+        "parse_error_count": 1,
+        "parser": "stdlib-json",
+        "path_count": 4,
+        "record_count": 2,
+        "top_level_type": "mixed-jsonl"
+      }
+    },
+    {
+      "canonical_key": "config.document:file%3Amcp%2Frepo-map%2Fconfig.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "mcp-config",
+      "graph_key_version": 1,
+      "kind": "config.document",
+      "metadata": {
+        "document_role": "mcp-config",
+        "format": "json",
+        "parse_error_count": 0,
+        "parser": "stdlib-json",
+        "path_count": 13,
+        "top_level_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.document:file%3Asettings.jsonc",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "config",
+      "graph_key_version": 1,
+      "kind": "config.document",
+      "metadata": {
+        "document_role": "config",
+        "format": "jsonc",
+        "parse_error_count": 0,
+        "parser": "jsonc-conservative",
+        "path_count": 3,
+        "top_level_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fcommand",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/command",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/command",
+        "format": "jsonl",
+        "pointer": "/command",
+        "redacted": false,
+        "value_summary": "repomap-kg",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fevent",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/event",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/event",
+        "format": "jsonl",
+        "pointer": "/event",
+        "redacted": false,
+        "value_summary": "start",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Aevents.jsonl:%2Fpath",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/path",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/path",
+        "format": "jsonl",
+        "pointer": "/path",
+        "redacted": false,
+        "value_summary": "./mcp/repo-map/config.json",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fapi_key",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/api_key",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/api_key",
+        "format": "json",
+        "pointer": "/api_key",
+        "redacted": true,
+        "redaction_reason": "secret-prone-key",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers",
+        "format": "json",
+        "pointer": "/mcp_servers",
+        "redacted": false,
+        "value_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap",
+        "redacted": false,
+        "value_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fargs",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap/args",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "array_policy": "summary-only",
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/args",
+        "format": "json",
+        "item_count": 3,
+        "pointer": "/mcp_servers/repomap/args",
+        "redacted": false,
+        "value_summaries": [
+          "repomap-kg",
+          "mcp",
+          "serve"
+        ],
+        "value_type": "array"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fcommand",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap/command",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/command",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/command",
+        "redacted": false,
+        "value_summary": "repomap-kg",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap/env",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/env",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env",
+        "redacted": false,
+        "value_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FREPOMAP_MCP_CONFIG",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/REPOMAP_MCP_CONFIG",
+        "redacted": false,
+        "value_summary": "$REPOMAP_MCP_CONFIG",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Fenv%2FTOKEN",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap/env/TOKEN",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/env/TOKEN",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/env/TOKEN",
+        "redacted": true,
+        "redaction_reason": "secret-prone-key",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fmcp_servers%2Frepomap%2Furl",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/mcp_servers/repomap/url",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/mcp_servers/repomap/url",
+        "format": "json",
+        "pointer": "/mcp_servers/repomap/url",
+        "redacted": false,
+        "value_summary": "https://example.com/docs",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/projects",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects",
+        "format": "json",
+        "pointer": "/projects",
+        "redacted": false,
+        "value_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/projects/repo-map",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects/repo-map",
+        "format": "json",
+        "pointer": "/projects/repo-map",
+        "redacted": false,
+        "value_type": "object"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Fpg_database",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/projects/repo-map/pg_database",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects/repo-map/pg_database",
+        "format": "json",
+        "pointer": "/projects/repo-map/pg_database",
+        "redacted": false,
+        "value_summary": "repomap_repo_map",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Amcp%2Frepo-map%2Fconfig.json:%2Fprojects%2Frepo-map%2Froot_path",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/projects/repo-map/root_path",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/projects/repo-map/root_path",
+        "format": "json",
+        "pointer": "/projects/repo-map/root_path",
+        "redacted": false,
+        "value_summary": "projects/repo-map",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fdocs_url",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "/docs_url",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/docs_url",
+        "format": "jsonc",
+        "pointer": "/docs_url",
+        "redacted": false,
+        "value_summary": "mailto:dev@example.com",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fpaths",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "/paths",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "array_policy": "summary-only",
+        "container_type": "object",
+        "display_path": "/paths",
+        "format": "jsonc",
+        "item_count": 1,
+        "pointer": "/paths",
+        "redacted": false,
+        "value_summaries": [
+          "mcp/repo-map/config.json"
+        ],
+        "value_type": "array"
+      }
+    },
+    {
+      "canonical_key": "config.path:file%3Asettings.jsonc:%2Fprogram",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "/program",
+      "graph_key_version": 1,
+      "kind": "config.path",
+      "metadata": {
+        "container_type": "object",
+        "display_path": "/program",
+        "format": "jsonc",
+        "pointer": "/program",
+        "redacted": false,
+        "value_summary": "repomap-kg",
+        "value_type": "string"
+      }
+    },
+    {
+      "canonical_key": "env:REPOMAP_MCP_CONFIG",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "REPOMAP_MCP_CONFIG",
+      "graph_key_version": 1,
+      "kind": "env",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "env:TOKEN",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "TOKEN",
+      "graph_key_version": 1,
+      "kind": "env",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Fdocs",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:mailto%3Adev%40example.com",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "mailto%3Adev%40example.com",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:events.jsonl",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "events.jsonl",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "9cbbb50e32ebed2c36fd1bc385455ed36c580201269605c0dedd03490f9c1b1e",
+        "executable": false,
+        "generated": false,
+        "language": "jsonl",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:mcp/repo-map/config.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "mcp/repo-map/config.json",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "b90d37c976abb5c8f2f4ee61c6a2f617367f41d0842b2c56950211556ad85406",
+        "executable": false,
+        "generated": false,
+        "language": "json",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:projects/repo-map",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "projects/repo-map",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:settings.jsonc",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "settings.jsonc",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "8cda72ba7db98a9f28e8ad86798e1e6a03502a2c82ffa4d32a394acfe0d1b1c8",
+        "executable": false,
+        "generated": false,
+        "language": "jsonc",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "tool:repomap-kg",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "repomap-kg",
+      "graph_key_version": 1,
+      "kind": "tool",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 34,
+    "edges": 32,
+    "errors": 0,
+    "evidence": 40,
+    "infos": 0,
+    "node_evidence_links": 71,
+    "nodes": 31,
+    "raw_observations": 40,
+    "warnings": 0
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:5bb76d451d8834ed9956344a5297ef2a4be1e5499cb8c17e7ec6e7c4eb25bff5",
+      "evidence_key": "evidence:0:scripts/maintain.sh:5-5:repo-shell:scripts/maintain.sh#host-mutation:5:brew-install",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:5bb76d451d8834ed9956344a5297ef2a4be1e5499cb8c17e7ec6e7c4eb25bff5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "mutates_host",
+      "metadata": {
+        "argv_examples": [
+          [
+            "brew",
+            "install",
+            "jq"
+          ]
+        ],
+        "effective_argv_examples": [
+          [
+            "brew",
+            "install",
+            "jq"
+          ]
+        ],
+        "privileged_observed": false,
+        "reasons": [
+          "brew install"
+        ],
+        "tools": [
+          "brew"
+        ]
+      },
+      "source_key": "file:scripts/maintain.sh",
+      "target_key": "host.category:package-management"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:0:scripts/maintain.sh:5-5:repo-shell:scripts/maintain.sh#host-mutation:5:brew-install",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argv": [
+          "brew",
+          "install",
+          "jq"
+        ],
+        "category": "package-management",
+        "effective_argv": [
+          "brew",
+          "install",
+          "jq"
+        ],
+        "privileged": false,
+        "raw": "brew install jq",
+        "reason": "brew install",
+        "tool": "brew"
+      },
+      "path": "scripts/maintain.sh",
+      "raw_kind": "shell.host_mutation",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/maintain.sh#host-mutation:5:brew-install",
+      "start_line": 5
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:scripts/maintain.sh",
+      "evidence_key": "evidence:0:scripts/maintain.sh:5-5:repo-shell:scripts/maintain.sh#host-mutation:5:brew-install",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "host.category:package-management",
+      "evidence_key": "evidence:0:scripts/maintain.sh:5-5:repo-shell:scripts/maintain.sh#host-mutation:5:brew-install",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:scripts/maintain.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "scripts/maintain.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "host.category:package-management",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "package-management",
+      "graph_key_version": 1,
+      "kind": "host.category",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 0
+  }
+}

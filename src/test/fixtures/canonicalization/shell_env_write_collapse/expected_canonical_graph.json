@@ -1,0 +1,136 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:f950f097c6992e0318a1391cf1da37b30e82f4eb9192b502c9cf92f7e8da26c4",
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-write:1:foo",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f950f097c6992e0318a1391cf1da37b30e82f4eb9192b502c9cf92f7e8da26c4",
+      "evidence_key": "evidence:1:scripts/build.sh:2-2:repo-shell:scripts/build.sh#env-write:2:foo",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "manual",
+      "conflict": false,
+      "edge_key": "canonical-edge:f950f097c6992e0318a1391cf1da37b30e82f4eb9192b502c9cf92f7e8da26c4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "writes_env",
+      "metadata": {
+        "operations": [
+          "write"
+        ],
+        "scopes": [
+          "shell",
+          "command"
+        ],
+        "values": [
+          "bar",
+          "baz"
+        ]
+      },
+      "source_key": "file:scripts/build.sh",
+      "target_key": "env:FOO"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-write:1:foo",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "operation": "write",
+        "scope": "shell",
+        "value": "bar",
+        "variable": "FOO"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.env",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#env-write:1:foo",
+      "start_line": 1
+    },
+    {
+      "confidence": "manual",
+      "end_line": 2,
+      "evidence_key": "evidence:1:scripts/build.sh:2-2:repo-shell:scripts/build.sh#env-write:2:foo",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "operation": "write",
+        "scope": "command",
+        "value": "baz",
+        "variable": "FOO"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.env",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#env-write:2:foo",
+      "start_line": 2
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "env:FOO",
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-write:1:foo",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "env:FOO",
+      "evidence_key": "evidence:1:scripts/build.sh:2-2:repo-shell:scripts/build.sh#env-write:2:foo",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-write:1:foo",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:1:scripts/build.sh:2-2:repo-shell:scripts/build.sh#env-write:2:foo",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "env:FOO",
+      "confidence": "manual",
+      "conflict": false,
+      "display_name": "FOO",
+      "graph_key_version": 1,
+      "kind": "env",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "confidence": "manual",
+      "conflict": false,
+      "display_name": "scripts/build.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 2,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 2,
+    "infos": 0,
+    "node_evidence_links": 4,
+    "nodes": 2,
+    "raw_observations": 2,
+    "warnings": 0
+  }
+}

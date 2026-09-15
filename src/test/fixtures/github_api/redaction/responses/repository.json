@@ -1,0 +1,9 @@
+{
+  "access_token": "fixture-github-token",
+  "archive_url": "https://api.github.com/repos/fixture-owner/fixture-repo/{archive_format}{/ref}",
+  "clone_url": "https://fixture-github-token@example.invalid/fixture-owner/fixture-repo.git",
+  "full_name": "fixture-owner/fixture-repo",
+  "logs_url": "https://api.github.com/repos/fixture-owner/fixture-repo/actions/runs/3001/logs?token=fixture-private-key",
+  "name": "fixture-repo",
+  "secret": "fixture-secret-value"
+}

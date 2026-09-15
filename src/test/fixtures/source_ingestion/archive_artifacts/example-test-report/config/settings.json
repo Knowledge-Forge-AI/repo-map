@@ -1,0 +1,9 @@
+{
+  "report": {
+    "entry": "../index.html",
+    "output": "static/report.css"
+  },
+  "credentials": {
+    "token": "fixture-secret"
+  }
+}

@@ -1,0 +1,2879 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:0bac107fae0751d2eb814d50b3ce9ee13cb485405a63f4da9c5d1bf5c4d549ea",
+      "evidence_key": "evidence:3:chapter.tex:2-2:repo-documents:chapter.tex#latex-command:/commands/ref:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:189c43d73fcac97aab80a0460b16372792eb205b1d038e24d6bbd86dc3822851",
+      "evidence_key": "evidence:32:paper.tex:5-5:repo-documents:paper.tex#latex-command:/commands/bibliography:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1e29920fe7aa04d0aed139289eb985ba4f872400f341d62a9002ecfb4b7fdaa9",
+      "evidence_key": "evidence:37:paper.tex:6-6:repo-documents:paper.tex#document-reference:6:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:20ba4963645ee808a5c99b1e7d324e05804e54129041e5a60b3c9a2b124aa1e5",
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:379da4a1bdd2e0ac9a7fc2b1d9200717cd142e8489a3083982c313e5454c7e1e",
+      "evidence_key": "evidence:21:notes.txt:0-0:repo-documents:notes.txt#document-text",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:379da4a1bdd2e0ac9a7fc2b1d9200717cd142e8489a3083982c313e5454c7e1e",
+      "evidence_key": "evidence:22:notes.txt:1-1:repo-documents:notes.txt#document-section:/sections/overview",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:379da4a1bdd2e0ac9a7fc2b1d9200717cd142e8489a3083982c313e5454c7e1e",
+      "evidence_key": "evidence:23:notes.txt:4-4:repo-documents:notes.txt#document-section:/sections/local-references",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3b319dc3a9c5fee9cef1773c886151cbf003b62e5589623cf1378fdc144db10d",
+      "evidence_key": "evidence:23:notes.txt:4-4:repo-documents:notes.txt#document-section:/sections/local-references",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:40c63b822fe732ecdf53f4ab02edc2dd1c0fe09528d0480a0947fbeb57f38010",
+      "evidence_key": "evidence:13:data.tsv:0-0:repo-documents:data.tsv#document-table",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:419ec4bcf961227f989feb121d301d8f5a6677c08a7c02405791164773076fe8",
+      "evidence_key": "evidence:30:paper.tex:3-3:repo-documents:paper.tex#latex-command:/commands/input:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:4e8544cb2731907809101fb0cdfeaa15d8bc3101ca4844b7273623c09c6055d9",
+      "evidence_key": "evidence:29:paper.tex:2-2:repo-documents:paper.tex#latex-command:/commands/label:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:5a2309530b9bdb1914650aeee0ebcc0ecffd912d286701edcfe93fefa912edd9",
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:688ea96d0f89b010e4ce08bad5fb8ebc35075dcda367094bf9be736142e647b3",
+      "evidence_key": "evidence:34:paper.tex:3-3:repo-documents:paper.tex#document-reference:3:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:725efa7a344118525d902c026e1f2849d8f2d0b2fa53a4c88a78c0f8f6b5f459",
+      "evidence_key": "evidence:2:chapter.tex:1-1:repo-documents:chapter.tex#latex-section:/sections/1-chapter",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7adc37e181a0d4d3e25927c52cb38ab36e2ab387940c53f1010758b9f7a738e0",
+      "evidence_key": "evidence:10:data.csv:2-2:repo-documents:data.csv#document-reference:2:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7cb76ea1856177cf452118d904712ff56232aa922315eef3385d37bb88c44273",
+      "evidence_key": "evidence:25:notes.txt:5-5:repo-documents:notes.txt#document-reference:5:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:27:paper.tex:0-0:repo-documents:paper.tex#latex-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:28:paper.tex:1-1:repo-documents:paper.tex#latex-section:/sections/1-intro",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:29:paper.tex:2-2:repo-documents:paper.tex#latex-command:/commands/label:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:30:paper.tex:3-3:repo-documents:paper.tex#latex-command:/commands/input:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:31:paper.tex:4-4:repo-documents:paper.tex#latex-command:/commands/includegraphics:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:32:paper.tex:5-5:repo-documents:paper.tex#latex-command:/commands/bibliography:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "evidence_key": "evidence:33:paper.tex:6-6:repo-documents:paper.tex#latex-command:/commands/url:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:83d95813889573da8d00adc1453562626e83028fbcc3a3cf56d8ba42fb6c5b65",
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8eb35d4a467b3deb6efb1c7d16708fd206ebcb9631b89bbb8a86551dd3ea9730",
+      "evidence_key": "evidence:13:data.tsv:0-0:repo-documents:data.tsv#document-table",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8eb35d4a467b3deb6efb1c7d16708fd206ebcb9631b89bbb8a86551dd3ea9730",
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8eb35d4a467b3deb6efb1c7d16708fd206ebcb9631b89bbb8a86551dd3ea9730",
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8eb35d4a467b3deb6efb1c7d16708fd206ebcb9631b89bbb8a86551dd3ea9730",
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:96e6cb7f8c15380bfe32abb7aa8bcb603fb42c03c615ca2073a9a9bfab875d75",
+      "evidence_key": "evidence:11:data.csv:3-3:repo-documents:data.csv#document-reference:3:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a3de0a5642087538aa13cc6051fd3b81505a08ffa70d8435d47b2b53bec199ad",
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a7f60a4cec58855788fb52cb0f70de419920a9a2c590948321d740f105c0b35a",
+      "evidence_key": "evidence:31:paper.tex:4-4:repo-documents:paper.tex#latex-command:/commands/includegraphics:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:be909c887f0deeb03a801d2b9883a88ed75f5db6d5fe8bb425883648c2f0acb5",
+      "evidence_key": "evidence:22:notes.txt:1-1:repo-documents:notes.txt#document-section:/sections/overview",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d11f914416602ff8ca643a65a787650af9ae5f18663ab30f3a36cc0d2ab20ebf",
+      "evidence_key": "evidence:35:paper.tex:4-4:repo-documents:paper.tex#document-reference:4:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d617827b8ad1fb54e58cfa59c973ee49b1df9cf0b442b12d2bf3abe61a9b292a",
+      "evidence_key": "evidence:24:notes.txt:2-2:repo-documents:notes.txt#document-reference:2:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d7466a4f4a624c1f1fd63edab45f33c13024f6dd598f420713d01f8234c69e03",
+      "evidence_key": "evidence:33:paper.tex:6-6:repo-documents:paper.tex#latex-command:/commands/url:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:db53d437f87c1870fa33317cf6785a6352d90b3f592e47142240658e36eab96a",
+      "evidence_key": "evidence:28:paper.tex:1-1:repo-documents:paper.tex#latex-section:/sections/1-intro",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ddc938a23c9bc534e0c515d5174bf7c0afff6d190b7f7d8a507a5d9e9f4e8198",
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:df032d9bf9940737b44d24bc25de8f73d156802c71daa71edba79d5e4fab56dd",
+      "evidence_key": "evidence:1:chapter.tex:0-0:repo-documents:chapter.tex#latex-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:df032d9bf9940737b44d24bc25de8f73d156802c71daa71edba79d5e4fab56dd",
+      "evidence_key": "evidence:2:chapter.tex:1-1:repo-documents:chapter.tex#latex-section:/sections/1-chapter",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:df032d9bf9940737b44d24bc25de8f73d156802c71daa71edba79d5e4fab56dd",
+      "evidence_key": "evidence:3:chapter.tex:2-2:repo-documents:chapter.tex#latex-command:/commands/ref:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ec680a12f933fdb80e4106b11ead2d25288707cacaa23c752333bf19c0f55c69",
+      "evidence_key": "evidence:5:data.csv:0-0:repo-documents:data.csv#document-table",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:eded4acbe6ba6f0f57121af6c2e3e697a0462ccce7576a270d6517e290b3adb0",
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ef33c66c95af16179db4bd80a78bd33b675c9e2e4efdec303b5d1c435bf1b4bb",
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f03fee1df62871c5f68629723923a66c842b1e608f5307e42029d85af873d53c",
+      "evidence_key": "evidence:36:paper.tex:5-5:repo-documents:paper.tex#document-reference:5:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f4a704d5937a49c05bfa8bc8905df3d233486d6d650ca7b93fe4f245c35b2506",
+      "evidence_key": "evidence:5:data.csv:0-0:repo-documents:data.csv#document-table",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f4a704d5937a49c05bfa8bc8905df3d233486d6d650ca7b93fe4f245c35b2506",
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f4a704d5937a49c05bfa8bc8905df3d233486d6d650ca7b93fe4f245c35b2506",
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f4a704d5937a49c05bfa8bc8905df3d233486d6d650ca7b93fe4f245c35b2506",
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f4a704d5937a49c05bfa8bc8905df3d233486d6d650ca7b93fe4f245c35b2506",
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:0bac107fae0751d2eb814d50b3ce9ee13cb485405a63f4da9c5d1bf5c4d549ea",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "ref"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/commands/ref:1"
+        ]
+      },
+      "source_key": "document.file:file%3Achapter.tex",
+      "target_key": "document.latex_command:file%3Achapter.tex:%2Fcommands%2Fref%3A1"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:725efa7a344118525d902c026e1f2849d8f2d0b2fa53a4c88a78c0f8f6b5f459",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "section"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/sections/1-chapter"
+        ]
+      },
+      "source_key": "document.file:file%3Achapter.tex",
+      "target_key": "document.section:file%3Achapter.tex:%2Fsections%2F1-chapter"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ec680a12f933fdb80e4106b11ead2d25288707cacaa23c752333bf19c0f55c69",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "pointers": [
+          "/table"
+        ]
+      },
+      "source_key": "document.file:file%3Adata.csv",
+      "target_key": "document.table:file%3Adata.csv:%2Ftable"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:40c63b822fe732ecdf53f4ab02edc2dd1c0fe09528d0480a0947fbeb57f38010",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "tsv"
+        ],
+        "pointers": [
+          "/table"
+        ]
+      },
+      "source_key": "document.file:file%3Adata.tsv",
+      "target_key": "document.table:file%3Adata.tsv:%2Ftable"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:3b319dc3a9c5fee9cef1773c886151cbf003b62e5589623cf1378fdc144db10d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "txt"
+        ],
+        "pointers": [
+          "/sections/local-references"
+        ]
+      },
+      "source_key": "document.file:file%3Anotes.txt",
+      "target_key": "document.section:file%3Anotes.txt:%2Fsections%2Flocal-references"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:be909c887f0deeb03a801d2b9883a88ed75f5db6d5fe8bb425883648c2f0acb5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "txt"
+        ],
+        "pointers": [
+          "/sections/overview"
+        ]
+      },
+      "source_key": "document.file:file%3Anotes.txt",
+      "target_key": "document.section:file%3Anotes.txt:%2Fsections%2Foverview"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:189c43d73fcac97aab80a0460b16372792eb205b1d038e24d6bbd86dc3822851",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "bibliography"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/commands/bibliography:4"
+        ]
+      },
+      "source_key": "document.file:file%3Apaper.tex",
+      "target_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fbibliography%3A4"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:a7f60a4cec58855788fb52cb0f70de419920a9a2c590948321d740f105c0b35a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "includegraphics"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/commands/includegraphics:3"
+        ]
+      },
+      "source_key": "document.file:file%3Apaper.tex",
+      "target_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fincludegraphics%3A3"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:419ec4bcf961227f989feb121d301d8f5a6677c08a7c02405791164773076fe8",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "input"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/commands/input:2"
+        ]
+      },
+      "source_key": "document.file:file%3Apaper.tex",
+      "target_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Finput%3A2"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:4e8544cb2731907809101fb0cdfeaa15d8bc3101ca4844b7273623c09c6055d9",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "label"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/commands/label:1"
+        ]
+      },
+      "source_key": "document.file:file%3Apaper.tex",
+      "target_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Flabel%3A1"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:d7466a4f4a624c1f1fd63edab45f33c13024f6dd598f420713d01f8234c69e03",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "url"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/commands/url:5"
+        ]
+      },
+      "source_key": "document.file:file%3Apaper.tex",
+      "target_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Furl%3A5"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:db53d437f87c1870fa33317cf6785a6352d90b3f592e47142240658e36eab96a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "section"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/sections/1-intro"
+        ]
+      },
+      "source_key": "document.file:file%3Apaper.tex",
+      "target_key": "document.section:file%3Apaper.tex:%2Fsections%2F1-intro"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:f03fee1df62871c5f68629723923a66c842b1e608f5307e42029d85af873d53c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "commands": [
+          "bibliography"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "references.bib"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "latex-bibliography"
+        ]
+      },
+      "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fbibliography%3A4",
+      "target_key": "file:references.bib"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:d11f914416602ff8ca643a65a787650af9ae5f18663ab30f3a36cc0d2ab20ebf",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "commands": [
+          "includegraphics"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "figures/diagram.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "latex-includegraphics"
+        ]
+      },
+      "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fincludegraphics%3A3",
+      "target_key": "file:figures/diagram.png"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:688ea96d0f89b010e4ce08bad5fb8ebc35075dcda367094bf9be736142e647b3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "commands": [
+          "input"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "chapter.tex"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "latex-input"
+        ]
+      },
+      "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Finput%3A2",
+      "target_key": "file:chapter.tex"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:1e29920fe7aa04d0aed139289eb985ba4f872400f341d62a9002ecfb4b7fdaa9",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "commands": [
+          "url"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "https://example.com/paper"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "url"
+        ],
+        "resolution_reasons": [
+          "latex-url"
+        ]
+      },
+      "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Furl%3A5",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Fpaper"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:7cb76ea1856177cf452118d904712ff56232aa922315eef3385d37bb88c44273",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "txt"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "figures/diagram.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "path-like-string"
+        ]
+      },
+      "source_key": "document.section:file%3Anotes.txt:%2Fsections%2Flocal-references",
+      "target_key": "file:figures/diagram.png"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:d617827b8ad1fb54e58cfa59c973ee49b1df9cf0b442b12d2bf3abe61a9b292a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "txt"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "https://example.com/docs1"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "url"
+        ],
+        "resolution_reasons": [
+          "url-literal"
+        ]
+      },
+      "source_key": "document.section:file%3Anotes.txt:%2Fsections%2Foverview",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ef33c66c95af16179db4bd80a78bd33b675c9e2e4efdec303b5d1c435bf1b4bb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "pointers": [
+          "/table/columns/account_number"
+        ],
+        "type_summaries": [
+          "redacted"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.csv:%2Ftable",
+      "target_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Faccount_number"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:eded4acbe6ba6f0f57121af6c2e3e697a0462ccce7576a270d6517e290b3adb0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "pointers": [
+          "/table/columns/amount"
+        ],
+        "type_summaries": [
+          "integer"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.csv:%2Ftable",
+      "target_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Famount"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:20ba4963645ee808a5c99b1e7d324e05804e54129041e5a60b3c9a2b124aa1e5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "pointers": [
+          "/table/columns/homepage"
+        ],
+        "type_summaries": [
+          "url-like"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.csv:%2Ftable",
+      "target_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Fhomepage"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ddc938a23c9bc534e0c515d5174bf7c0afff6d190b7f7d8a507a5d9e9f4e8198",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "pointers": [
+          "/table/columns/name"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.csv:%2Ftable",
+      "target_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Fname"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:7adc37e181a0d4d3e25927c52cb38ab36e2ab387940c53f1010758b9f7a738e0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "https://example.com/alpha"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "url"
+        ],
+        "resolution_reasons": [
+          "url-literal"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.csv:%2Ftable",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Falpha"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:96e6cb7f8c15380bfe32abb7aa8bcb603fb42c03c615ca2073a9a9bfab875d75",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "https://example.com/beta"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "url"
+        ],
+        "resolution_reasons": [
+          "url-literal"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.csv:%2Ftable",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Fbeta"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:5a2309530b9bdb1914650aeee0ebcc0ecffd912d286701edcfe93fefa912edd9",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "tsv"
+        ],
+        "pointers": [
+          "/table/columns/active"
+        ],
+        "type_summaries": [
+          "boolean"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "target_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Factive"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:83d95813889573da8d00adc1453562626e83028fbcc3a3cf56d8ba42fb6c5b65",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "tsv"
+        ],
+        "pointers": [
+          "/table/columns/name"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "target_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Fname"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a3de0a5642087538aa13cc6051fd3b81505a08ffa70d8435d47b2b53bec199ad",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "tsv"
+        ],
+        "pointers": [
+          "/table/columns/started"
+        ],
+        "type_summaries": [
+          "date-like"
+        ]
+      },
+      "source_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "target_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Fstarted"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:df032d9bf9940737b44d24bc25de8f73d156802c71daa71edba79d5e4fab56dd",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "section",
+          "ref"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/sections/1-chapter",
+          "/commands/ref:1"
+        ]
+      },
+      "source_key": "file:chapter.tex",
+      "target_key": "document.file:file%3Achapter.tex"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:f4a704d5937a49c05bfa8bc8905df3d233486d6d650ca7b93fe4f245c35b2506",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "csv"
+        ],
+        "pointers": [
+          "/table",
+          "/table/columns/name",
+          "/table/columns/amount",
+          "/table/columns/account_number",
+          "/table/columns/homepage"
+        ],
+        "type_summaries": [
+          "text",
+          "integer",
+          "redacted",
+          "url-like"
+        ]
+      },
+      "source_key": "file:data.csv",
+      "target_key": "document.file:file%3Adata.csv"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8eb35d4a467b3deb6efb1c7d16708fd206ebcb9631b89bbb8a86551dd3ea9730",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "tsv"
+        ],
+        "pointers": [
+          "/table",
+          "/table/columns/name",
+          "/table/columns/active",
+          "/table/columns/started"
+        ],
+        "type_summaries": [
+          "text",
+          "boolean",
+          "date-like"
+        ]
+      },
+      "source_key": "file:data.tsv",
+      "target_key": "document.file:file%3Adata.tsv"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:379da4a1bdd2e0ac9a7fc2b1d9200717cd142e8489a3083982c313e5454c7e1e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "txt"
+        ],
+        "pointers": [
+          "/sections/overview",
+          "/sections/local-references"
+        ]
+      },
+      "source_key": "file:notes.txt",
+      "target_key": "document.file:file%3Anotes.txt"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8099db3b5625e8105aae819ba862dc0d822e99c189f425f2cb552744b7eaafe5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "commands": [
+          "section",
+          "label",
+          "input",
+          "includegraphics",
+          "bibliography",
+          "url"
+        ],
+        "formats": [
+          "latex"
+        ],
+        "pointers": [
+          "/sections/1-intro",
+          "/commands/label:1",
+          "/commands/input:2",
+          "/commands/includegraphics:3",
+          "/commands/bibliography:4",
+          "/commands/url:5"
+        ]
+      },
+      "source_key": "file:paper.tex",
+      "target_key": "document.file:file%3Apaper.tex"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:chapter.tex:0-0:repo-discovery:chapter.tex",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "6ba082cf74d794333634d21eb42e97d19ede582043084fefc403c32f5bce5861",
+        "executable": false,
+        "generated": false,
+        "language": "latex",
+        "role": "unknown"
+      },
+      "path": "chapter.tex",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "chapter.tex",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:1:chapter.tex:0-0:repo-documents:chapter.tex#latex-document",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command_count": 1,
+        "compiled": false,
+        "format": "latex",
+        "line_count": 2,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 0,
+        "section_count": 1
+      },
+      "path": "chapter.tex",
+      "raw_kind": "document.latex_document",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "chapter.tex#latex-document",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:2:chapter.tex:1-1:repo-documents:chapter.tex#latex-section:/sections/1-chapter",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command": "section",
+        "document_key": "document.file:file%3Achapter.tex",
+        "format": "latex",
+        "heading_level": 3,
+        "heading_summary": "Chapter",
+        "pointer": "/sections/1-chapter",
+        "redacted": false
+      },
+      "path": "chapter.tex",
+      "raw_kind": "document.latex_section",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "chapter.tex#latex-section:/sections/1-chapter",
+      "start_line": 1
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 2,
+      "evidence_key": "evidence:3:chapter.tex:2-2:repo-documents:chapter.tex#latex-command:/commands/ref:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argument_summary": "sec:intro",
+        "command": "ref",
+        "document_key": "document.file:file%3Achapter.tex",
+        "format": "latex",
+        "pointer": "/commands/ref:1",
+        "redacted": false
+      },
+      "path": "chapter.tex",
+      "raw_kind": "document.latex_command",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "chapter.tex#latex-command:/commands/ref:1",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:4:data.csv:0-0:repo-discovery:data.csv",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "53ddbf67e06ed33d4c05151db8702e16c9b24279b2e951d75fcdb41ecc955d83",
+        "executable": false,
+        "generated": false,
+        "language": "csv",
+        "role": "unknown"
+      },
+      "path": "data.csv",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:5:data.csv:0-0:repo-documents:data.csv#document-table",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count": 4,
+        "delimiter": ",",
+        "document_key": "document.file:file%3Adata.csv",
+        "format": "csv",
+        "header_present": true,
+        "parser": "stdlib-csv",
+        "pointer": "/table",
+        "row_count": 2
+      },
+      "path": "data.csv",
+      "raw_kind": "document.table_document",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-table",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 0,
+        "column_name_summary": "name",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/name",
+        "redacted": false,
+        "table_key": "document.table:file%3Adata.csv:%2Ftable",
+        "type_summary": "text"
+      },
+      "path": "data.csv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-column:/table/columns/name",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "amount",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/amount",
+        "redacted": false,
+        "table_key": "document.table:file%3Adata.csv:%2Ftable",
+        "type_summary": "integer"
+      },
+      "path": "data.csv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-column:/table/columns/amount",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "[redacted]",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/account_number",
+        "redacted": true,
+        "redaction_reason": "secret-prone-column-name",
+        "table_key": "document.table:file%3Adata.csv:%2Ftable",
+        "type_summary": "redacted"
+      },
+      "path": "data.csv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-column:/table/columns/account_number",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 3,
+        "column_name_summary": "homepage",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/homepage",
+        "redacted": false,
+        "table_key": "document.table:file%3Adata.csv:%2Ftable",
+        "type_summary": "url-like"
+      },
+      "path": "data.csv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-column:/table/columns/homepage",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 2,
+      "evidence_key": "evidence:10:data.csv:2-2:repo-documents:data.csv#document-reference:2:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "csv",
+        "not_fetched": true,
+        "raw_value_summary": "https://example.com/alpha",
+        "redacted": false,
+        "reference_kind": "url",
+        "resolution_reason": "url-literal",
+        "source_key": "document.table:file%3Adata.csv:%2Ftable"
+      },
+      "path": "data.csv",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-reference:2:0",
+      "start_line": 2
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:11:data.csv:3-3:repo-documents:data.csv#document-reference:3:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "csv",
+        "not_fetched": true,
+        "raw_value_summary": "https://example.com/beta",
+        "redacted": false,
+        "reference_kind": "url",
+        "resolution_reason": "url-literal",
+        "source_key": "document.table:file%3Adata.csv:%2Ftable"
+      },
+      "path": "data.csv",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.csv#document-reference:3:1",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:12:data.tsv:0-0:repo-discovery:data.tsv",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "9fe6ab4eff200387fe8ab732792fc4882d68b981aba5e3406edf031b9ee2d64f",
+        "executable": false,
+        "generated": false,
+        "language": "tsv",
+        "role": "unknown"
+      },
+      "path": "data.tsv",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.tsv",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:13:data.tsv:0-0:repo-documents:data.tsv#document-table",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count": 3,
+        "delimiter": "\\t",
+        "document_key": "document.file:file%3Adata.tsv",
+        "format": "tsv",
+        "header_present": true,
+        "parser": "stdlib-csv",
+        "pointer": "/table",
+        "row_count": 2
+      },
+      "path": "data.tsv",
+      "raw_kind": "document.table_document",
+      "raw_observation_ordinal": 13,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.tsv#document-table",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 0,
+        "column_name_summary": "name",
+        "format": "tsv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/name",
+        "redacted": false,
+        "table_key": "document.table:file%3Adata.tsv:%2Ftable",
+        "type_summary": "text"
+      },
+      "path": "data.tsv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 14,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.tsv#document-column:/table/columns/name",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "active",
+        "format": "tsv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/active",
+        "redacted": false,
+        "table_key": "document.table:file%3Adata.tsv:%2Ftable",
+        "type_summary": "boolean"
+      },
+      "path": "data.tsv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 15,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.tsv#document-column:/table/columns/active",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "started",
+        "format": "tsv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/started",
+        "redacted": false,
+        "table_key": "document.table:file%3Adata.tsv:%2Ftable",
+        "type_summary": "date-like"
+      },
+      "path": "data.tsv",
+      "raw_kind": "document.table_column",
+      "raw_observation_ordinal": 16,
+      "raw_schema_version": 1,
+      "raw_source_id": "data.tsv#document-column:/table/columns/started",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:17:figures/diagram.png:0-0:repo-discovery:figures/diagram.png",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "c775150218333b94b629f3ca16c37ac073eda11478d5e262556ba620fd5503a7",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      },
+      "path": "figures/diagram.png",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 17,
+      "raw_schema_version": 1,
+      "raw_source_id": "figures/diagram.png",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:18:ignored.docx:0-0:repo-discovery:ignored.docx",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "bace9d1be24759a924273b0044b61655355e5f18d4bf1e1fa59fb7ba37e576ec",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      },
+      "path": "ignored.docx",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 18,
+      "raw_schema_version": 1,
+      "raw_source_id": "ignored.docx",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:19:ignored.pdf:0-0:repo-discovery:ignored.pdf",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "50dbdf6a3ea6aed19668a9a807e32654911fc2c509c62f51d904546389e21976",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      },
+      "path": "ignored.pdf",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 19,
+      "raw_schema_version": 1,
+      "raw_source_id": "ignored.pdf",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:20:notes.txt:0-0:repo-discovery:notes.txt",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "507abc00a9cff863e7dc8b7c4d54e32d923d48c8be4b2c37c29202f8ec443a90",
+        "executable": false,
+        "generated": false,
+        "language": "text",
+        "role": "unknown"
+      },
+      "path": "notes.txt",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 20,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.txt",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:21:notes.txt:0-0:repo-documents:notes.txt#document-text",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "byte_count": 202,
+        "format": "txt",
+        "line_count": 7,
+        "paragraph_count": 3,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 2,
+        "section_count": 2,
+        "summary_redacted": true
+      },
+      "path": "notes.txt",
+      "raw_kind": "document.text_document",
+      "raw_observation_ordinal": 21,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.txt#document-text",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:22:notes.txt:1-1:repo-documents:notes.txt#document-section:/sections/overview",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "document.file:file%3Anotes.txt",
+        "format": "txt",
+        "heading_level": 1,
+        "heading_summary": "Overview",
+        "pointer": "/sections/overview",
+        "redacted": false
+      },
+      "path": "notes.txt",
+      "raw_kind": "document.text_section",
+      "raw_observation_ordinal": 22,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.txt#document-section:/sections/overview",
+      "start_line": 1
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:23:notes.txt:4-4:repo-documents:notes.txt#document-section:/sections/local-references",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "document.file:file%3Anotes.txt",
+        "format": "txt",
+        "heading_level": 2,
+        "heading_summary": "Local References",
+        "pointer": "/sections/local-references",
+        "redacted": false
+      },
+      "path": "notes.txt",
+      "raw_kind": "document.text_section",
+      "raw_observation_ordinal": 23,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.txt#document-section:/sections/local-references",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 2,
+      "evidence_key": "evidence:24:notes.txt:2-2:repo-documents:notes.txt#document-reference:2:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "txt",
+        "not_fetched": true,
+        "raw_value_summary": "https://example.com/docs1",
+        "redacted": false,
+        "reference_kind": "url",
+        "resolution_reason": "url-literal",
+        "source_key": "document.section:file%3Anotes.txt:%2Fsections%2Foverview"
+      },
+      "path": "notes.txt",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 24,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.txt#document-reference:2:0",
+      "start_line": 2
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:25:notes.txt:5-5:repo-documents:notes.txt#document-reference:5:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "txt",
+        "not_fetched": true,
+        "raw_value_summary": "figures/diagram.png",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "path-like-string",
+        "source_key": "document.section:file%3Anotes.txt:%2Fsections%2Flocal-references"
+      },
+      "path": "notes.txt",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 25,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.txt#document-reference:5:1",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:26:paper.tex:0-0:repo-discovery:paper.tex",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "8c97269271262e01697de3203fa4b90f78b60c2c479cd364d5fd18a848732937",
+        "executable": false,
+        "generated": false,
+        "language": "latex",
+        "role": "unknown"
+      },
+      "path": "paper.tex",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 26,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:27:paper.tex:0-0:repo-documents:paper.tex#latex-document",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command_count": 5,
+        "compiled": false,
+        "format": "latex",
+        "line_count": 6,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 4,
+        "section_count": 1
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_document",
+      "raw_observation_ordinal": 27,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-document",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:28:paper.tex:1-1:repo-documents:paper.tex#latex-section:/sections/1-intro",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command": "section",
+        "document_key": "document.file:file%3Apaper.tex",
+        "format": "latex",
+        "heading_level": 3,
+        "heading_summary": "Intro",
+        "pointer": "/sections/1-intro",
+        "redacted": false
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_section",
+      "raw_observation_ordinal": 28,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-section:/sections/1-intro",
+      "start_line": 1
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 2,
+      "evidence_key": "evidence:29:paper.tex:2-2:repo-documents:paper.tex#latex-command:/commands/label:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argument_summary": "sec:intro",
+        "command": "label",
+        "document_key": "document.file:file%3Apaper.tex",
+        "format": "latex",
+        "pointer": "/commands/label:1",
+        "redacted": false
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_command",
+      "raw_observation_ordinal": 29,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-command:/commands/label:1",
+      "start_line": 2
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:30:paper.tex:3-3:repo-documents:paper.tex#latex-command:/commands/input:2",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argument_summary": "chapter",
+        "command": "input",
+        "document_key": "document.file:file%3Apaper.tex",
+        "format": "latex",
+        "pointer": "/commands/input:2",
+        "redacted": false
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_command",
+      "raw_observation_ordinal": 30,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-command:/commands/input:2",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:31:paper.tex:4-4:repo-documents:paper.tex#latex-command:/commands/includegraphics:3",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argument_summary": "figures/diagram.png",
+        "command": "includegraphics",
+        "document_key": "document.file:file%3Apaper.tex",
+        "format": "latex",
+        "pointer": "/commands/includegraphics:3",
+        "redacted": false
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_command",
+      "raw_observation_ordinal": 31,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-command:/commands/includegraphics:3",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:32:paper.tex:5-5:repo-documents:paper.tex#latex-command:/commands/bibliography:4",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argument_summary": "references",
+        "command": "bibliography",
+        "document_key": "document.file:file%3Apaper.tex",
+        "format": "latex",
+        "pointer": "/commands/bibliography:4",
+        "redacted": false
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_command",
+      "raw_observation_ordinal": 32,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-command:/commands/bibliography:4",
+      "start_line": 5
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 6,
+      "evidence_key": "evidence:33:paper.tex:6-6:repo-documents:paper.tex#latex-command:/commands/url:5",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argument_summary": "https://example.com/paper",
+        "command": "url",
+        "document_key": "document.file:file%3Apaper.tex",
+        "format": "latex",
+        "pointer": "/commands/url:5",
+        "redacted": false
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.latex_command",
+      "raw_observation_ordinal": 33,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#latex-command:/commands/url:5",
+      "start_line": 6
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:34:paper.tex:3-3:repo-documents:paper.tex#document-reference:3:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command": "input",
+        "format": "latex",
+        "not_fetched": true,
+        "raw_value_summary": "chapter.tex",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "latex-input",
+        "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Finput%3A2"
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 34,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#document-reference:3:0",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:35:paper.tex:4-4:repo-documents:paper.tex#document-reference:4:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command": "includegraphics",
+        "format": "latex",
+        "not_fetched": true,
+        "raw_value_summary": "figures/diagram.png",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "latex-includegraphics",
+        "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fincludegraphics%3A3"
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 35,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#document-reference:4:1",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:36:paper.tex:5-5:repo-documents:paper.tex#document-reference:5:2",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command": "bibliography",
+        "format": "latex",
+        "not_fetched": true,
+        "raw_value_summary": "references.bib",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "latex-bibliography",
+        "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fbibliography%3A4"
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 36,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#document-reference:5:2",
+      "start_line": 5
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 6,
+      "evidence_key": "evidence:37:paper.tex:6-6:repo-documents:paper.tex#document-reference:6:3",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "command": "url",
+        "format": "latex",
+        "not_fetched": true,
+        "raw_value_summary": "https://example.com/paper",
+        "redacted": false,
+        "reference_kind": "url",
+        "resolution_reason": "latex-url",
+        "source_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Furl%3A5"
+      },
+      "path": "paper.tex",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 37,
+      "raw_schema_version": 1,
+      "raw_source_id": "paper.tex#document-reference:6:3",
+      "start_line": 6
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:38:references.bib:0-0:repo-discovery:references.bib",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "0a13868df10a0a0fb0be5f8d8b8c4b7c53677974ea0186d943bfd691be97ec48",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      },
+      "path": "references.bib",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 38,
+      "raw_schema_version": 1,
+      "raw_source_id": "references.bib",
+      "start_line": null
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Faccount_number",
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Famount",
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Fhomepage",
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Fname",
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Factive",
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Fname",
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Fstarted",
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Achapter.tex",
+      "evidence_key": "evidence:1:chapter.tex:0-0:repo-documents:chapter.tex#latex-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Achapter.tex",
+      "evidence_key": "evidence:2:chapter.tex:1-1:repo-documents:chapter.tex#latex-section:/sections/1-chapter",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Achapter.tex",
+      "evidence_key": "evidence:3:chapter.tex:2-2:repo-documents:chapter.tex#latex-command:/commands/ref:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.csv",
+      "evidence_key": "evidence:5:data.csv:0-0:repo-documents:data.csv#document-table",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.csv",
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.csv",
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.csv",
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.csv",
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.tsv",
+      "evidence_key": "evidence:13:data.tsv:0-0:repo-documents:data.tsv#document-table",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.tsv",
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.tsv",
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.tsv",
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.txt",
+      "evidence_key": "evidence:21:notes.txt:0-0:repo-documents:notes.txt#document-text",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.txt",
+      "evidence_key": "evidence:22:notes.txt:1-1:repo-documents:notes.txt#document-section:/sections/overview",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.txt",
+      "evidence_key": "evidence:23:notes.txt:4-4:repo-documents:notes.txt#document-section:/sections/local-references",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:27:paper.tex:0-0:repo-documents:paper.tex#latex-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:28:paper.tex:1-1:repo-documents:paper.tex#latex-section:/sections/1-intro",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:29:paper.tex:2-2:repo-documents:paper.tex#latex-command:/commands/label:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:30:paper.tex:3-3:repo-documents:paper.tex#latex-command:/commands/input:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:31:paper.tex:4-4:repo-documents:paper.tex#latex-command:/commands/includegraphics:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:32:paper.tex:5-5:repo-documents:paper.tex#latex-command:/commands/bibliography:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "evidence_key": "evidence:33:paper.tex:6-6:repo-documents:paper.tex#latex-command:/commands/url:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Achapter.tex:%2Fcommands%2Fref%3A1",
+      "evidence_key": "evidence:3:chapter.tex:2-2:repo-documents:chapter.tex#latex-command:/commands/ref:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fbibliography%3A4",
+      "evidence_key": "evidence:32:paper.tex:5-5:repo-documents:paper.tex#latex-command:/commands/bibliography:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fbibliography%3A4",
+      "evidence_key": "evidence:36:paper.tex:5-5:repo-documents:paper.tex#document-reference:5:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fincludegraphics%3A3",
+      "evidence_key": "evidence:31:paper.tex:4-4:repo-documents:paper.tex#latex-command:/commands/includegraphics:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fincludegraphics%3A3",
+      "evidence_key": "evidence:35:paper.tex:4-4:repo-documents:paper.tex#document-reference:4:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Finput%3A2",
+      "evidence_key": "evidence:30:paper.tex:3-3:repo-documents:paper.tex#latex-command:/commands/input:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Finput%3A2",
+      "evidence_key": "evidence:34:paper.tex:3-3:repo-documents:paper.tex#document-reference:3:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Flabel%3A1",
+      "evidence_key": "evidence:29:paper.tex:2-2:repo-documents:paper.tex#latex-command:/commands/label:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Furl%3A5",
+      "evidence_key": "evidence:33:paper.tex:6-6:repo-documents:paper.tex#latex-command:/commands/url:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Furl%3A5",
+      "evidence_key": "evidence:37:paper.tex:6-6:repo-documents:paper.tex#document-reference:6:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.section:file%3Achapter.tex:%2Fsections%2F1-chapter",
+      "evidence_key": "evidence:2:chapter.tex:1-1:repo-documents:chapter.tex#latex-section:/sections/1-chapter",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.txt:%2Fsections%2Flocal-references",
+      "evidence_key": "evidence:23:notes.txt:4-4:repo-documents:notes.txt#document-section:/sections/local-references",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.txt:%2Fsections%2Flocal-references",
+      "evidence_key": "evidence:25:notes.txt:5-5:repo-documents:notes.txt#document-reference:5:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.txt:%2Fsections%2Foverview",
+      "evidence_key": "evidence:22:notes.txt:1-1:repo-documents:notes.txt#document-section:/sections/overview",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.txt:%2Fsections%2Foverview",
+      "evidence_key": "evidence:24:notes.txt:2-2:repo-documents:notes.txt#document-reference:2:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.section:file%3Apaper.tex:%2Fsections%2F1-intro",
+      "evidence_key": "evidence:28:paper.tex:1-1:repo-documents:paper.tex#latex-section:/sections/1-intro",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:10:data.csv:2-2:repo-documents:data.csv#document-reference:2:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:11:data.csv:3-3:repo-documents:data.csv#document-reference:3:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:5:data.csv:0-0:repo-documents:data.csv#document-table",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "evidence_key": "evidence:13:data.tsv:0-0:repo-documents:data.tsv#document-table",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Falpha",
+      "evidence_key": "evidence:10:data.csv:2-2:repo-documents:data.csv#document-reference:2:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fbeta",
+      "evidence_key": "evidence:11:data.csv:3-3:repo-documents:data.csv#document-reference:3:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs1",
+      "evidence_key": "evidence:24:notes.txt:2-2:repo-documents:notes.txt#document-reference:2:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fpaper",
+      "evidence_key": "evidence:37:paper.tex:6-6:repo-documents:paper.tex#document-reference:6:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:chapter.tex",
+      "evidence_key": "evidence:0:chapter.tex:0-0:repo-discovery:chapter.tex",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:chapter.tex",
+      "evidence_key": "evidence:1:chapter.tex:0-0:repo-documents:chapter.tex#latex-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:chapter.tex",
+      "evidence_key": "evidence:2:chapter.tex:1-1:repo-documents:chapter.tex#latex-section:/sections/1-chapter",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:chapter.tex",
+      "evidence_key": "evidence:34:paper.tex:3-3:repo-documents:paper.tex#document-reference:3:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:chapter.tex",
+      "evidence_key": "evidence:3:chapter.tex:2-2:repo-documents:chapter.tex#latex-command:/commands/ref:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "evidence_key": "evidence:4:data.csv:0-0:repo-discovery:data.csv",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "evidence_key": "evidence:5:data.csv:0-0:repo-documents:data.csv#document-table",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "evidence_key": "evidence:6:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/name",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "evidence_key": "evidence:7:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/amount",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "evidence_key": "evidence:8:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/account_number",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "evidence_key": "evidence:9:data.csv:0-0:repo-documents:data.csv#document-column:/table/columns/homepage",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.tsv",
+      "evidence_key": "evidence:12:data.tsv:0-0:repo-discovery:data.tsv",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:data.tsv",
+      "evidence_key": "evidence:13:data.tsv:0-0:repo-documents:data.tsv#document-table",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.tsv",
+      "evidence_key": "evidence:14:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/name",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.tsv",
+      "evidence_key": "evidence:15:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/active",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:data.tsv",
+      "evidence_key": "evidence:16:data.tsv:0-0:repo-documents:data.tsv#document-column:/table/columns/started",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:figures/diagram.png",
+      "evidence_key": "evidence:17:figures/diagram.png:0-0:repo-discovery:figures/diagram.png",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:figures/diagram.png",
+      "evidence_key": "evidence:25:notes.txt:5-5:repo-documents:notes.txt#document-reference:5:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:figures/diagram.png",
+      "evidence_key": "evidence:35:paper.tex:4-4:repo-documents:paper.tex#document-reference:4:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:ignored.docx",
+      "evidence_key": "evidence:18:ignored.docx:0-0:repo-discovery:ignored.docx",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:ignored.pdf",
+      "evidence_key": "evidence:19:ignored.pdf:0-0:repo-discovery:ignored.pdf",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:notes.txt",
+      "evidence_key": "evidence:20:notes.txt:0-0:repo-discovery:notes.txt",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:notes.txt",
+      "evidence_key": "evidence:21:notes.txt:0-0:repo-documents:notes.txt#document-text",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:notes.txt",
+      "evidence_key": "evidence:22:notes.txt:1-1:repo-documents:notes.txt#document-section:/sections/overview",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:notes.txt",
+      "evidence_key": "evidence:23:notes.txt:4-4:repo-documents:notes.txt#document-section:/sections/local-references",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:26:paper.tex:0-0:repo-discovery:paper.tex",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:27:paper.tex:0-0:repo-documents:paper.tex#latex-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:28:paper.tex:1-1:repo-documents:paper.tex#latex-section:/sections/1-intro",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:29:paper.tex:2-2:repo-documents:paper.tex#latex-command:/commands/label:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:30:paper.tex:3-3:repo-documents:paper.tex#latex-command:/commands/input:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:31:paper.tex:4-4:repo-documents:paper.tex#latex-command:/commands/includegraphics:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:32:paper.tex:5-5:repo-documents:paper.tex#latex-command:/commands/bibliography:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "evidence_key": "evidence:33:paper.tex:6-6:repo-documents:paper.tex#latex-command:/commands/url:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:references.bib",
+      "evidence_key": "evidence:36:paper.tex:5-5:repo-documents:paper.tex#document-reference:5:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:references.bib",
+      "evidence_key": "evidence:38:references.bib:0-0:repo-discovery:references.bib",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Faccount_number",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "[redacted]",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "[redacted]",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/account_number",
+        "redacted": true,
+        "redaction_reason": "secret-prone-column-name",
+        "type_summary": "redacted"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Famount",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "amount",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "amount",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/amount",
+        "redacted": false,
+        "type_summary": "integer"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Fhomepage",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "homepage",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 3,
+        "column_name_summary": "homepage",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/homepage",
+        "redacted": false,
+        "type_summary": "url-like"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.csv:%2Ftable%2Fcolumns%2Fname",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "name",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 0,
+        "column_name_summary": "name",
+        "format": "csv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/name",
+        "redacted": false,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Factive",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "active",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "active",
+        "format": "tsv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/active",
+        "redacted": false,
+        "type_summary": "boolean"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Fname",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "name",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 0,
+        "column_name_summary": "name",
+        "format": "tsv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/name",
+        "redacted": false,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Adata.tsv:%2Ftable%2Fcolumns%2Fstarted",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "started",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "started",
+        "format": "tsv",
+        "non_empty_count": 2,
+        "pointer": "/table/columns/started",
+        "redacted": false,
+        "type_summary": "date-like"
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Achapter.tex",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "chapter.tex",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "compiled": false,
+        "format": "latex",
+        "line_count": 2,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 0,
+        "section_count": 1
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.csv",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "data.csv",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "format": "csv",
+        "parser": "stdlib-csv"
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Adata.tsv",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "data.tsv",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "format": "tsv",
+        "parser": "stdlib-csv"
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.txt",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "notes.txt",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "byte_count": 202,
+        "format": "txt",
+        "line_count": 7,
+        "paragraph_count": 3,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 2,
+        "section_count": 2,
+        "summary_redacted": true
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Apaper.tex",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "paper.tex",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "compiled": false,
+        "format": "latex",
+        "line_count": 6,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 4,
+        "section_count": 1
+      }
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Achapter.tex:%2Fcommands%2Fref%3A1",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "ref",
+      "graph_key_version": 1,
+      "kind": "document.latex_command",
+      "metadata": {
+        "argument_summary": "sec:intro",
+        "command": "ref",
+        "format": "latex",
+        "pointer": "/commands/ref:1",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fbibliography%3A4",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "bibliography",
+      "graph_key_version": 1,
+      "kind": "document.latex_command",
+      "metadata": {
+        "argument_summary": "references",
+        "command": "bibliography",
+        "format": "latex",
+        "pointer": "/commands/bibliography:4",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Fincludegraphics%3A3",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "includegraphics",
+      "graph_key_version": 1,
+      "kind": "document.latex_command",
+      "metadata": {
+        "argument_summary": "figures/diagram.png",
+        "command": "includegraphics",
+        "format": "latex",
+        "pointer": "/commands/includegraphics:3",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Finput%3A2",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "input",
+      "graph_key_version": 1,
+      "kind": "document.latex_command",
+      "metadata": {
+        "argument_summary": "chapter",
+        "command": "input",
+        "format": "latex",
+        "pointer": "/commands/input:2",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Flabel%3A1",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "label",
+      "graph_key_version": 1,
+      "kind": "document.latex_command",
+      "metadata": {
+        "argument_summary": "sec:intro",
+        "command": "label",
+        "format": "latex",
+        "pointer": "/commands/label:1",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.latex_command:file%3Apaper.tex:%2Fcommands%2Furl%3A5",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "url",
+      "graph_key_version": 1,
+      "kind": "document.latex_command",
+      "metadata": {
+        "argument_summary": "https://example.com/paper",
+        "command": "url",
+        "format": "latex",
+        "pointer": "/commands/url:5",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.section:file%3Achapter.tex:%2Fsections%2F1-chapter",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "Chapter",
+      "graph_key_version": 1,
+      "kind": "document.section",
+      "metadata": {
+        "command": "section",
+        "format": "latex",
+        "heading_level": 3,
+        "heading_summary": "Chapter",
+        "pointer": "/sections/1-chapter",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.txt:%2Fsections%2Flocal-references",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "Local References",
+      "graph_key_version": 1,
+      "kind": "document.section",
+      "metadata": {
+        "format": "txt",
+        "heading_level": 2,
+        "heading_summary": "Local References",
+        "pointer": "/sections/local-references",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.txt:%2Fsections%2Foverview",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "Overview",
+      "graph_key_version": 1,
+      "kind": "document.section",
+      "metadata": {
+        "format": "txt",
+        "heading_level": 1,
+        "heading_summary": "Overview",
+        "pointer": "/sections/overview",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.section:file%3Apaper.tex:%2Fsections%2F1-intro",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "Intro",
+      "graph_key_version": 1,
+      "kind": "document.section",
+      "metadata": {
+        "command": "section",
+        "format": "latex",
+        "heading_level": 3,
+        "heading_summary": "Intro",
+        "pointer": "/sections/1-intro",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.csv:%2Ftable",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/table",
+      "graph_key_version": 1,
+      "kind": "document.table",
+      "metadata": {
+        "column_count": 4,
+        "delimiter": ",",
+        "format": "csv",
+        "header_present": true,
+        "parser": "stdlib-csv",
+        "pointer": "/table",
+        "row_count": 2
+      }
+    },
+    {
+      "canonical_key": "document.table:file%3Adata.tsv:%2Ftable",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/table",
+      "graph_key_version": 1,
+      "kind": "document.table",
+      "metadata": {
+        "column_count": 3,
+        "delimiter": "\\t",
+        "format": "tsv",
+        "header_present": true,
+        "parser": "stdlib-csv",
+        "pointer": "/table",
+        "row_count": 2
+      }
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Falpha",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Falpha",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fbeta",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Fbeta",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs1",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Fdocs1",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fpaper",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Fpaper",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:chapter.tex",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "chapter.tex",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "6ba082cf74d794333634d21eb42e97d19ede582043084fefc403c32f5bce5861",
+        "executable": false,
+        "generated": false,
+        "language": "latex",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:data.csv",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "data.csv",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "53ddbf67e06ed33d4c05151db8702e16c9b24279b2e951d75fcdb41ecc955d83",
+        "executable": false,
+        "generated": false,
+        "language": "csv",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:data.tsv",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "data.tsv",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "9fe6ab4eff200387fe8ab732792fc4882d68b981aba5e3406edf031b9ee2d64f",
+        "executable": false,
+        "generated": false,
+        "language": "tsv",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:figures/diagram.png",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "figures/diagram.png",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "c775150218333b94b629f3ca16c37ac073eda11478d5e262556ba620fd5503a7",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:ignored.docx",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ignored.docx",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "bace9d1be24759a924273b0044b61655355e5f18d4bf1e1fa59fb7ba37e576ec",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:ignored.pdf",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ignored.pdf",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "50dbdf6a3ea6aed19668a9a807e32654911fc2c509c62f51d904546389e21976",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:notes.txt",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "notes.txt",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "507abc00a9cff863e7dc8b7c4d54e32d923d48c8be4b2c37c29202f8ec443a90",
+        "executable": false,
+        "generated": false,
+        "language": "text",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:paper.tex",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "paper.tex",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "8c97269271262e01697de3203fa4b90f78b60c2c479cd364d5fd18a848732937",
+        "executable": false,
+        "generated": false,
+        "language": "latex",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:references.bib",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "references.bib",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "0a13868df10a0a0fb0be5f8d8b8c4b7c53677974ea0186d943bfd691be97ec48",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 49,
+    "edges": 32,
+    "errors": 0,
+    "evidence": 39,
+    "infos": 0,
+    "node_evidence_links": 95,
+    "nodes": 37,
+    "raw_observations": 39,
+    "warnings": 0
+  }
+}

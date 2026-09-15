@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!DOCTYPE beans [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<beans>
+  <bean id="bad" class="com.example.Bad">&xxe;</bean>
+</beans>

@@ -1,0 +1,10 @@
+{
+  "name": "repomap-pre-review-tools",
+  "private": true,
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "malskanner": "0.1.3",
+    "prompt-defense-audit": "1.8.1"
+  }
+}

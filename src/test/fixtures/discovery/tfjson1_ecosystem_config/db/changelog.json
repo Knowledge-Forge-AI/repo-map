@@ -1,0 +1,17 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "1",
+        "author": "fixture",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "example"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+# Static extraction example only. Do not execute.
+
+describe "command expectations"
+
+test "captures normal output" {
+  run ./bin/example status --format text
+  assert_success
+  assert_equal "$status" 0
+  assert_output --partial "ready"
+  refute_output "failure"
+}
+
+test "captures stderr intent" {
+  run ./bin/example fetch https://example.invalid/status
+  assert_failure
+  assert_output --partial "unavailable"
+}
+
+test "checks file-like expectation syntax" {
+  run ./bin/example render ./fixtures/input.txt
+  assert_file_exists ./fixtures/input.txt
+  assert_dir_exists ./fixtures
+}

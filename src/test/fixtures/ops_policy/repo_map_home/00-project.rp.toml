@@ -1,0 +1,37 @@
+schema_version = 1
+
+[service]
+mode = "local"
+mcp_transport = "stdio"
+log_level = "info"
+
+[postgres]
+host = "127.0.0.1"
+port = 5432
+database = "repomap"
+user = "repo_map"
+password_env = "REPOMAP_PG_PASSWORD"
+
+[[graphs]]
+id = "codex-vc"
+name = "Codex VC Fixture"
+root_path = "src/test/fixtures/ops_policy/codex_vc"
+repository_name = "codex-vc"
+privacy = "private-ops"
+enabled = true
+mcp_visible = true
+extractor_profile = "private-ops"
+refresh_policy = "manual"
+exclude_paths = [
+  ".git",
+  ".serena",
+  ".venv",
+  "__pycache__",
+  "mcp/server-memory/memory.jsonl",
+  "mcp/server-memory/serena",
+]
+
+[server_memory]
+enabled = true
+path = "src/test/fixtures/ops_policy/server_memory/memory.jsonl"
+mode = "read_only"

@@ -1,0 +1,4 @@
+name: generic-example
+settings:
+  config_path: ./configs/app.yml
+  homepage: https://example.invalid/docs

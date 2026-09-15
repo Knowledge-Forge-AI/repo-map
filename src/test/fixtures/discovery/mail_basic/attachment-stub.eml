@@ -1,0 +1,19 @@
+Message-ID: <attachment-message@example.invalid>
+Date: Tue, 30 Jun 2026 14:00:00 +0000
+From: Attachment Sender <alice@example.invalid>
+To: Attachment Receiver <bob@example.invalid>
+Subject: Attachment fixture
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="mix-boundary"
+
+--mix-boundary
+Content-Type: text/plain; charset=utf-8
+
+Attachment notice body must not appear.
+--mix-boundary
+Content-Type: text/plain
+Content-Disposition: attachment; filename="invoice-secret-code.txt"
+Content-Transfer-Encoding: base64
+
+c2Vuc2l0aXZlIGF0dGFjaG1lbnQgYm9keQ==
+--mix-boundary--

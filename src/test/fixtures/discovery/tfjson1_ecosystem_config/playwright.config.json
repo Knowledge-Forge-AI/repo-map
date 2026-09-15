@@ -1,0 +1,8 @@
+{
+  "testDir": "./tests/e2e",
+  "projects": [
+    {"name": "chromium"},
+    {"name": "webkit"}
+  ],
+  "reporter": [["html", {"outputFolder": "playwright-report"}]]
+}

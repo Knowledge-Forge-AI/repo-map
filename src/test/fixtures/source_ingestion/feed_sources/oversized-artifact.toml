@@ -1,0 +1,20 @@
+[source]
+id = "example-oversized-feed"
+type = "feed.rss"
+display_name = "Example Oversized Feed"
+
+[policy]
+status = "allowed_with_limits"
+preferred_method = "rss"
+rate_limit = "1 request per 15 minutes"
+timeout_seconds = 10
+max_artifact_bytes = 8
+max_items_per_run = 100
+robots_policy = "fixture"
+terms_policy = "fixture"
+requires_manual_review = false
+
+[acquisition]
+url = "https://example.invalid/oversized.xml"
+method = "GET"
+user_agent = "RepoMap feed ingestion test fixture"

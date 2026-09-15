@@ -1,0 +1,103 @@
+{
+  "diagnostics": [
+    {
+      "category": "malformed_percent_escape",
+      "field": "target",
+      "message": "raw target is not a valid canonical key: malformed percent escape",
+      "path": "scripts/build.sh",
+      "placeholder_key": "unknown:file:unresolved-shell-source",
+      "raw_observation_ordinal": 0,
+      "raw_source_id": "scripts/build.sh#source:7:malformed",
+      "severity": "warning",
+      "value": "file:bad%2"
+    }
+  ],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:956df06b215780303650884a9cc0612a50fdbcb4945ea1f26e2e3f6174e3d432",
+      "evidence_key": "evidence:0:scripts/build.sh:7-7:repo-shell:scripts/build.sh#source:7:malformed",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:956df06b215780303650884a9cc0612a50fdbcb4945ea1f26e2e3f6174e3d432",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "sources",
+      "metadata": {
+        "sources": [
+          "$maybe_common"
+        ]
+      },
+      "source_key": "file:scripts/build.sh",
+      "target_key": "unknown:file:unresolved-shell-source"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 7,
+      "evidence_key": "evidence:0:scripts/build.sh:7-7:repo-shell:scripts/build.sh#source:7:malformed",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "source": "$maybe_common"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.source",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#source:7:malformed",
+      "start_line": 7
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:7-7:repo-shell:scripts/build.sh#source:7:malformed",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:file:unresolved-shell-source",
+      "evidence_key": "evidence:0:scripts/build.sh:7-7:repo-shell:scripts/build.sh#source:7:malformed",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "scripts/build.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "unknown:file:unresolved-shell-source",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "unresolved-shell-source",
+      "graph_key_version": 1,
+      "kind": "unknown",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 1
+  }
+}

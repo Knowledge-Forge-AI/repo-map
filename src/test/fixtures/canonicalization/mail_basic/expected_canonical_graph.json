@@ -1,0 +1,828 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:17451dd9bbd62c7c3cda5bc5240ea0923f3a593d9e913bef355cd01294163b57",
+      "evidence_key": "evidence:3:sample.mbox:0-0:repo-email:sample.mbox#mbox-message:1#email-message",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1aeed40b8693736637873f2be177bce1094f3763824d8b3979cc813393de0fca",
+      "evidence_key": "evidence:4:single-message.eml:0-0:repo-email:single-message.eml#email-message",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:44c83f93119c8c119d1051dc06168af7b9c4536279b14fe60635885e5cdaf99f",
+      "evidence_key": "evidence:8:single-message.eml:0-0:repo-email:single-message.eml#email-thread-hint:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a0d300d8e8b3a4393112a492f8ed72bfb8ed599c2917c255a0f4edfc29483724",
+      "evidence_key": "evidence:9:single-message.eml:0-0:repo-email:single-message.eml#email-reference:in_reply_to:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:bafc1f6e25538b1d220ff5785130f9b6b3d9ca0afddb9da5143c30235f8ce7fb",
+      "evidence_key": "evidence:6:single-message.eml:0-0:repo-email:single-message.eml#email-part:/parts/1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cb46ee03ddaead112c1071ca343ed3f82fa31c01843d52b0a9c5cd9005369fad",
+      "evidence_key": "evidence:2:sample.mbox:0-0:repo-email:sample.mbox#email-mailbox",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:eebd96c29215fda10161e90f4875966137aa28a87fa867bcadc6fb6dcd943fab",
+      "evidence_key": "evidence:7:single-message.eml:0-0:repo-email:single-message.eml#email-attachment:/parts/2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:faa41150fb4fae63233d8b0efdfd54df603529baa4d740492b25533e3db741e0",
+      "evidence_key": "evidence:5:single-message.eml:0-0:repo-email:single-message.eml#email-address:from:3333333333333333",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:17451dd9bbd62c7c3cda5bc5240ea0923f3a593d9e913bef355cd01294163b57",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "mbox"
+        ],
+        "identity_strengths": [
+          "message_id"
+        ]
+      },
+      "source_key": "email.mailbox:file%3Asample.mbox",
+      "target_key": "email.message:file%3Asample.mbox:message%3Abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:eebd96c29215fda10161e90f4875966137aa28a87fa867bcadc6fb6dcd943fab",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "content_dispositions": [
+          "attachment"
+        ],
+        "formats": [
+          "eml"
+        ],
+        "part_paths": [
+          "/parts/2"
+        ]
+      },
+      "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "target_key": "email.attachment_stub:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fattachments%2F1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:bafc1f6e25538b1d220ff5785130f9b6b3d9ca0afddb9da5143c30235f8ce7fb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "content_dispositions": [
+          "inline"
+        ],
+        "content_types": [
+          "text/plain"
+        ],
+        "formats": [
+          "eml"
+        ],
+        "part_paths": [
+          "/parts/1"
+        ]
+      },
+      "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "target_key": "email.part:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fparts%2F1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:44c83f93119c8c119d1051dc06168af7b9c4536279b14fe60635885e5cdaf99f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "eml"
+        ],
+        "identity_strengths": [
+          "message-id-reference"
+        ],
+        "thread_hint_kinds": [
+          "in_reply_to"
+        ]
+      },
+      "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "target_key": "email.thread_hint:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fthread%2Fin_reply_to%2F1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:faa41150fb4fae63233d8b0efdfd54df603529baa4d740492b25533e3db741e0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "address_domains": [
+          "example.invalid"
+        ],
+        "address_roles": [
+          "from"
+        ],
+        "formats": [
+          "eml"
+        ],
+        "redacted_observed": true,
+        "redaction_reasons": [
+          "email-address-hashed"
+        ]
+      },
+      "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "target_key": "email.address:addrhash%3A3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a0d300d8e8b3a4393112a492f8ed72bfb8ed599c2917c255a0f4edfc29483724",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "eml"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "message-id-reference"
+        ],
+        "reference_kinds": [
+          "in_reply_to"
+        ],
+        "thread_hint_kinds": [
+          "in_reply_to"
+        ]
+      },
+      "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "target_key": "unknown:email-message:message%3A555555555555555555555555"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cb46ee03ddaead112c1071ca343ed3f82fa31c01843d52b0a9c5cd9005369fad",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "mbox"
+        ],
+        "identity_strengths": [
+          "file_key"
+        ],
+        "mailbox_parse_statuses": [
+          "parsed"
+        ]
+      },
+      "source_key": "file:sample.mbox",
+      "target_key": "email.mailbox:file%3Asample.mbox"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1aeed40b8693736637873f2be177bce1094f3763824d8b3979cc813393de0fca",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "eml"
+        ],
+        "identity_strengths": [
+          "message_id"
+        ]
+      },
+      "source_key": "file:single-message.eml",
+      "target_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:single-message.eml:0-0:repo-email:single-message.eml",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "sha256:mail1-fixture",
+        "executable": false,
+        "generated": false,
+        "language": "eml",
+        "role": "mail"
+      },
+      "path": "single-message.eml",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:1:sample.mbox:0-0:repo-email:sample.mbox",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "sha256:mail2-fixture",
+        "executable": false,
+        "generated": false,
+        "language": "mbox",
+        "role": "mail"
+      },
+      "path": "sample.mbox",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "sample.mbox",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:2:sample.mbox:0-0:repo-email:sample.mbox#email-mailbox",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_key": "file:sample.mbox",
+        "format": "mbox",
+        "identity_strength": "file_key",
+        "mailbox_byte_count": 512,
+        "mailbox_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mailbox_message_count": 1,
+        "mailbox_message_count_limited": false,
+        "mailbox_parse_status": "parsed",
+        "parser": "stdlib-email"
+      },
+      "path": "sample.mbox",
+      "raw_kind": "email.mailbox",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "sample.mbox#email-mailbox",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:3:sample.mbox:0-0:repo-email:sample.mbox#mbox-message:1#email-message",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attachment_count": 0,
+        "bcc_count": 0,
+        "cc_count": 0,
+        "date": "2026-01-02T03:04:05+00:00",
+        "date_parse_status": "parsed",
+        "file_key": "file:sample.mbox",
+        "format": "mbox",
+        "from_count": 1,
+        "has_attachments": false,
+        "has_remote_references": false,
+        "has_text_html": false,
+        "has_text_plain": true,
+        "identity_strength": "message_id",
+        "mailbox_file_key": "file:sample.mbox",
+        "mbox_message_identity": "message:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "mbox_message_ordinal": 1,
+        "message_id_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "message_id_present": true,
+        "message_id_valid": true,
+        "parser": "stdlib-email",
+        "redacted": true,
+        "redaction_reason": "email-message-sensitive-metadata",
+        "reply_to_count": 0,
+        "return_path_count": 0,
+        "sender_count": 0,
+        "source_key": "email.mailbox:file%3Asample.mbox",
+        "subject_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "subject_present": true,
+        "subject_preview_redacted": "<redacted>",
+        "text_html_part_count": 0,
+        "text_plain_part_count": 1,
+        "to_count": 1
+      },
+      "path": "sample.mbox",
+      "raw_kind": "email.message",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "sample.mbox#mbox-message:1#email-message",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:4:single-message.eml:0-0:repo-email:single-message.eml#email-message",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attachment_count": 1,
+        "bcc_count": 0,
+        "cc_count": 0,
+        "date": "2026-01-02T03:04:05+00:00",
+        "date_parse_status": "parsed",
+        "format": "eml",
+        "from_count": 1,
+        "has_attachments": true,
+        "has_remote_references": false,
+        "has_text_html": false,
+        "has_text_plain": true,
+        "identity_strength": "message_id",
+        "message_id_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "message_id_present": true,
+        "message_id_valid": true,
+        "parser": "stdlib-email",
+        "redacted": true,
+        "redaction_reason": "email-message-sensitive-metadata",
+        "reply_to_count": 0,
+        "return_path_count": 0,
+        "sender_count": 0,
+        "subject_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "subject_present": true,
+        "subject_preview_redacted": "<redacted>",
+        "text_html_part_count": 0,
+        "text_plain_part_count": 1,
+        "to_count": 1
+      },
+      "path": "single-message.eml",
+      "raw_kind": "email.message",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml#email-message",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:5:single-message.eml:0-0:repo-email:single-message.eml#email-address:from:3333333333333333",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "address_display_name_redacted": true,
+        "address_domain": "example.invalid",
+        "address_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+        "address_role": "from",
+        "format": "eml",
+        "parser": "stdlib-email",
+        "redacted": true,
+        "redaction_reason": "email-address-hashed",
+        "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "path": "single-message.eml",
+      "raw_kind": "email.address",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml#email-address:from:3333333333333333",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:single-message.eml:0-0:repo-email:single-message.eml#email-part:/parts/1",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "charset": "utf-8",
+        "content_disposition": "inline",
+        "content_id_present": false,
+        "content_type": "text/plain",
+        "format": "eml",
+        "inline": true,
+        "mime_type": "text/plain",
+        "parser": "stdlib-email",
+        "part_byte_count": 32,
+        "part_depth": 1,
+        "part_index": 1,
+        "part_path": "/parts/1",
+        "redacted": true,
+        "redaction_reason": "body-content-omitted",
+        "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+        "transfer_encoding": "7bit"
+      },
+      "path": "single-message.eml",
+      "raw_kind": "email.part",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml#email-part:/parts/1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:7:single-message.eml:0-0:repo-email:single-message.eml#email-attachment:/parts/2",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attachment_byte_count": 8,
+        "attachment_filename_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+        "attachment_filename_redacted": "<redacted>.txt",
+        "attachment_mime_type": "text/plain",
+        "content_disposition": "attachment",
+        "content_id_present": false,
+        "format": "eml",
+        "inline": false,
+        "parser": "stdlib-email",
+        "part_path": "/parts/2",
+        "redacted": true,
+        "redaction_reason": "attachment-content-omitted",
+        "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "path": "single-message.eml",
+      "raw_kind": "email.attachment_stub",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml#email-attachment:/parts/2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:8:single-message.eml:0-0:repo-email:single-message.eml#email-thread-hint:1",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "eml",
+        "identity_strength": "message-id-reference",
+        "not_fetched": true,
+        "parser": "stdlib-email",
+        "reference_kind": "in_reply_to",
+        "referenced_message_id_hash": "5555555555555555555555555555555555555555555555555555555555555555",
+        "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+        "thread_hint_kind": "in_reply_to"
+      },
+      "path": "single-message.eml",
+      "raw_kind": "email.thread_hint",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml#email-thread-hint:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:9:single-message.eml:0-0:repo-email:single-message.eml#email-reference:in_reply_to:1",
+      "extractor": "repo-email",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "eml",
+        "not_fetched": true,
+        "parser": "stdlib-email",
+        "raw_value_summary": "message-id-reference",
+        "reference_kind": "in_reply_to",
+        "source_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+        "target_key": "unknown:email-message:message%3A555555555555555555555555",
+        "thread_hint_kind": "in_reply_to"
+      },
+      "path": "single-message.eml",
+      "raw_kind": "email.reference",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "single-message.eml#email-reference:in_reply_to:1",
+      "start_line": null
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "email.address:addrhash%3A3333333333333333333333333333333333333333333333333333333333333333",
+      "evidence_key": "evidence:5:single-message.eml:0-0:repo-email:single-message.eml#email-address:from:3333333333333333",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "email.attachment_stub:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fattachments%2F1",
+      "evidence_key": "evidence:7:single-message.eml:0-0:repo-email:single-message.eml#email-attachment:/parts/2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "email.mailbox:file%3Asample.mbox",
+      "evidence_key": "evidence:2:sample.mbox:0-0:repo-email:sample.mbox#email-mailbox",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "email.mailbox:file%3Asample.mbox",
+      "evidence_key": "evidence:3:sample.mbox:0-0:repo-email:sample.mbox#mbox-message:1#email-message",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "email.message:file%3Asample.mbox:message%3Abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "evidence_key": "evidence:3:sample.mbox:0-0:repo-email:sample.mbox#mbox-message:1#email-message",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "evidence_key": "evidence:4:single-message.eml:0-0:repo-email:single-message.eml#email-message",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "evidence_key": "evidence:5:single-message.eml:0-0:repo-email:single-message.eml#email-address:from:3333333333333333",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "evidence_key": "evidence:6:single-message.eml:0-0:repo-email:single-message.eml#email-part:/parts/1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "evidence_key": "evidence:7:single-message.eml:0-0:repo-email:single-message.eml#email-attachment:/parts/2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "evidence_key": "evidence:8:single-message.eml:0-0:repo-email:single-message.eml#email-thread-hint:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "evidence_key": "evidence:9:single-message.eml:0-0:repo-email:single-message.eml#email-reference:in_reply_to:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "email.part:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fparts%2F1",
+      "evidence_key": "evidence:6:single-message.eml:0-0:repo-email:single-message.eml#email-part:/parts/1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "email.thread_hint:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fthread%2Fin_reply_to%2F1",
+      "evidence_key": "evidence:8:single-message.eml:0-0:repo-email:single-message.eml#email-thread-hint:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:sample.mbox",
+      "evidence_key": "evidence:1:sample.mbox:0-0:repo-email:sample.mbox",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:sample.mbox",
+      "evidence_key": "evidence:2:sample.mbox:0-0:repo-email:sample.mbox#email-mailbox",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:single-message.eml",
+      "evidence_key": "evidence:0:single-message.eml:0-0:repo-email:single-message.eml",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:single-message.eml",
+      "evidence_key": "evidence:4:single-message.eml:0-0:repo-email:single-message.eml#email-message",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:email-message:message%3A555555555555555555555555",
+      "evidence_key": "evidence:9:single-message.eml:0-0:repo-email:single-message.eml#email-reference:in_reply_to:1",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "email.address:addrhash%3A3333333333333333333333333333333333333333333333333333333333333333",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.invalid",
+      "graph_key_version": 1,
+      "kind": "email.address",
+      "metadata": {
+        "address_display_name_redacted": true,
+        "address_domain": "example.invalid",
+        "address_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+        "address_role": "from",
+        "format": "eml",
+        "parser": "stdlib-email",
+        "redacted": true,
+        "redaction_reason": "email-address-hashed"
+      }
+    },
+    {
+      "canonical_key": "email.attachment_stub:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fattachments%2F1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/parts/2",
+      "graph_key_version": 1,
+      "kind": "email.attachment_stub",
+      "metadata": {
+        "attachment_byte_count": 8,
+        "attachment_filename_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+        "attachment_filename_redacted": "<redacted>.txt",
+        "attachment_mime_type": "text/plain",
+        "content_disposition": "attachment",
+        "content_id_present": false,
+        "format": "eml",
+        "inline": false,
+        "parser": "stdlib-email",
+        "part_path": "/parts/2",
+        "redacted": true,
+        "redaction_reason": "attachment-content-omitted"
+      }
+    },
+    {
+      "canonical_key": "email.mailbox:file%3Asample.mbox",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "email mailbox (1 messages)",
+      "graph_key_version": 1,
+      "kind": "email.mailbox",
+      "metadata": {
+        "format": "mbox",
+        "identity_strength": "file_key",
+        "mailbox_byte_count": 512,
+        "mailbox_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mailbox_message_count": 1,
+        "mailbox_message_count_limited": false,
+        "mailbox_parse_status": "parsed",
+        "parser": "stdlib-email"
+      }
+    },
+    {
+      "canonical_key": "email.message:file%3Asample.mbox:message%3Abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "email message bbbbbbbbbbbb",
+      "graph_key_version": 1,
+      "kind": "email.message",
+      "metadata": {
+        "attachment_count": 0,
+        "bcc_count": 0,
+        "cc_count": 0,
+        "date": "2026-01-02T03:04:05+00:00",
+        "date_parse_status": "parsed",
+        "format": "mbox",
+        "from_count": 1,
+        "has_attachments": false,
+        "has_remote_references": false,
+        "has_text_html": false,
+        "has_text_plain": true,
+        "identity_strength": "message_id",
+        "mailbox_file_key": "file:sample.mbox",
+        "mbox_message_identity": "message:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "mbox_message_ordinal": 1,
+        "message_id_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "message_id_present": true,
+        "message_id_valid": true,
+        "parser": "stdlib-email",
+        "redacted": true,
+        "redaction_reason": "email-message-sensitive-metadata",
+        "reply_to_count": 0,
+        "return_path_count": 0,
+        "sender_count": 0,
+        "subject_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "subject_present": true,
+        "subject_preview_redacted": "<redacted>",
+        "text_html_part_count": 0,
+        "text_plain_part_count": 1,
+        "to_count": 1
+      }
+    },
+    {
+      "canonical_key": "email.message:file%3Asingle-message.eml:message%3A1111111111111111111111111111111111111111111111111111111111111111",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "email message 111111111111",
+      "graph_key_version": 1,
+      "kind": "email.message",
+      "metadata": {
+        "attachment_count": 1,
+        "bcc_count": 0,
+        "cc_count": 0,
+        "date": "2026-01-02T03:04:05+00:00",
+        "date_parse_status": "parsed",
+        "format": "eml",
+        "from_count": 1,
+        "has_attachments": true,
+        "has_remote_references": false,
+        "has_text_html": false,
+        "has_text_plain": true,
+        "identity_strength": "message_id",
+        "message_id_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "message_id_present": true,
+        "message_id_valid": true,
+        "parser": "stdlib-email",
+        "redacted": true,
+        "redaction_reason": "email-message-sensitive-metadata",
+        "reply_to_count": 0,
+        "return_path_count": 0,
+        "sender_count": 0,
+        "subject_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "subject_present": true,
+        "subject_preview_redacted": "<redacted>",
+        "text_html_part_count": 0,
+        "text_plain_part_count": 1,
+        "to_count": 1
+      }
+    },
+    {
+      "canonical_key": "email.part:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fparts%2F1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/parts/1",
+      "graph_key_version": 1,
+      "kind": "email.part",
+      "metadata": {
+        "charset": "utf-8",
+        "content_disposition": "inline",
+        "content_id_present": false,
+        "content_type": "text/plain",
+        "format": "eml",
+        "inline": true,
+        "mime_type": "text/plain",
+        "parser": "stdlib-email",
+        "part_byte_count": 32,
+        "part_depth": 1,
+        "part_index": 1,
+        "part_path": "/parts/1",
+        "redacted": true,
+        "redaction_reason": "body-content-omitted",
+        "transfer_encoding": "7bit"
+      }
+    },
+    {
+      "canonical_key": "email.thread_hint:email.message%3Afile%253Asingle-message.eml%3Amessage%253A1111111111111111111111111111111111111111111111111111111111111111:%2Fthread%2Fin_reply_to%2F1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "in_reply_to",
+      "graph_key_version": 1,
+      "kind": "email.thread_hint",
+      "metadata": {
+        "format": "eml",
+        "identity_strength": "message-id-reference",
+        "not_fetched": true,
+        "parser": "stdlib-email",
+        "reference_kind": "in_reply_to",
+        "referenced_message_id_hash": "5555555555555555555555555555555555555555555555555555555555555555",
+        "thread_hint_kind": "in_reply_to"
+      }
+    },
+    {
+      "canonical_key": "file:sample.mbox",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "sample.mbox",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "sha256:mail2-fixture",
+        "executable": false,
+        "generated": false,
+        "language": "mbox",
+        "role": "mail"
+      }
+    },
+    {
+      "canonical_key": "file:single-message.eml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "single-message.eml",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "sha256:mail1-fixture",
+        "executable": false,
+        "generated": false,
+        "language": "eml",
+        "role": "mail"
+      }
+    },
+    {
+      "canonical_key": "unknown:email-message:message%3A555555555555555555555555",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "message%3A555555555555555555555555",
+      "graph_key_version": 1,
+      "kind": "unknown",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 8,
+    "edges": 8,
+    "errors": 0,
+    "evidence": 10,
+    "infos": 0,
+    "node_evidence_links": 18,
+    "nodes": 10,
+    "raw_observations": 10,
+    "warnings": 0
+  }
+}

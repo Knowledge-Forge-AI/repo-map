@@ -1,0 +1,9 @@
+# Static extraction fixture only. Do not execute.
+
+test "skipped network case" {
+  skip "requires network"
+}
+
+test "future edge case" {
+  todo "add edge case"
+}

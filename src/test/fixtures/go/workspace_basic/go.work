@@ -1,0 +1,9 @@
+go 1.25
+toolchain go1.25.3
+
+use (
+	./app
+	./lib
+)
+
+replace example.invalid/shared => ./lib

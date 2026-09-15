@@ -1,0 +1,68 @@
+# Shareable RepoMap operations config.
+# This file is safe to use as a project template and should not contain secrets.
+
+schema_version = 1
+
+[service]
+mode = "local"
+mcp_transport = "stdio"
+log_level = "info"
+
+[runtime]
+container_runtime = "docker"
+server_host_port = 55880
+bind_host = "127.0.0.1"
+
+[runtime.postgres]
+direct_host_port_enabled = false
+host_port = 55432
+bind_host = "127.0.0.1"
+
+[postgres]
+host = "postgres"
+port = 5432
+database = "repomap"
+user = "repomap"
+password_env = "REPOMAP_PG_PASSWORD"
+
+[[graphs]]
+id = "repo-map"
+name = "RepoMap"
+root_path = "./repo-map"
+repository_name = "repo-map"
+database = "repomap_repo_map"
+privacy = "public-dev"
+enabled = true
+mcp_visible = true
+extractor_profile = "default"
+refresh_policy = "manual"
+exclude_paths = [
+  ".git",
+  ".serena",
+  ".venv",
+  "__pycache__",
+  ".pytest_cache",
+  ".ruff_cache",
+  "node_modules",
+  ".terraform",
+]
+
+[[sources.feed]]
+id = "example-feed"
+graph_id = "repo-map"
+url = "https://example.invalid/feed.xml"
+enabled = false
+
+[[sources.github]]
+id = "example-github"
+graph_id = "repo-map"
+owner = "example"
+repo = "repo"
+mode = "public_readonly"
+enabled = false
+
+[[sources.api]]
+id = "example-api"
+graph_id = "repo-map"
+source_class = "api.rest"
+enabled = false

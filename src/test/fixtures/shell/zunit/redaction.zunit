@@ -1,0 +1,18 @@
+# Static extraction fixture only. Do not execute.
+
+describe "FAKE_ZUNIT_SUITE_TOKEN"
+
+test "FAKE_ZUNIT_TEST_TOKEN" {
+  run ./bin/example
+}
+
+test "redacts expected output" {
+  run ./bin/example --token "FAKE_ZUNIT_ARG_TOKEN"
+  assert_output "FAKE_ZUNIT_OUTPUT_TOKEN"
+  skip "FAKE_ZUNIT_SKIP_TOKEN"
+  todo "FAKE_ZUNIT_TODO_TOKEN"
+}
+
+source "./helpers/FAKE_ZUNIT_HELPER_TOKEN.zsh"
+load_fixture "./fixtures/FAKE_ZUNIT_FIXTURE_TOKEN.txt"
+stub_command curl --stdout "FAKE_ZUNIT_STUB_TOKEN"

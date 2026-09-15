@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap MCP Smoke Test"
+  short_description: "Verify a configured RepoMap MCP connection"
+  default_prompt: "Use $repomap-mcp-smoke-test to verify a configured RepoMap MCP connection."

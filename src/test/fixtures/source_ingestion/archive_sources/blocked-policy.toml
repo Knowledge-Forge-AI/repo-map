@@ -1,0 +1,20 @@
+[source]
+id = "example-blocked-artifact"
+type = "static_artifact"
+display_name = "Example Blocked Artifact"
+
+[policy]
+status = "blocked_terms_risk"
+max_artifact_bytes = 5242880
+max_file_count = 100
+max_depth = 10
+symlink_policy = "do_not_follow"
+hidden_files = false
+retention_policy = "retain-local-path-and-hash"
+requires_manual_review = false
+
+[artifact]
+path = "archive_artifacts/example-test-report"
+kind = "directory"
+profile = "fixture-corpus"
+entry_document = "index.html"

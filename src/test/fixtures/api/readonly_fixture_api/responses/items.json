@@ -1,0 +1,9 @@
+{
+  "items": [
+    {
+      "id": "item-1",
+      "name": "Fixture item",
+      "secret": "fixture-secret-value"
+    }
+  ]
+}

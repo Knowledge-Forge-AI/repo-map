@@ -1,0 +1,20 @@
+Message-ID: <inline-cid-message@example.invalid>
+Date: Tue, 30 Jun 2026 14:30:00 +0000
+From: Inline Sender <alice@example.invalid>
+To: Inline Receiver <bob@example.invalid>
+Subject: Inline CID fixture
+MIME-Version: 1.0
+Content-Type: multipart/related; boundary="rel-boundary"
+
+--rel-boundary
+Content-Type: text/html; charset=utf-8
+
+<html><body><img src="cid:diagram@example.invalid">Inline HTML body must not appear.</body></html>
+--rel-boundary
+Content-Type: image/png
+Content-Disposition: inline; filename="inline-diagram.png"
+Content-ID: <diagram@example.invalid>
+Content-Transfer-Encoding: base64
+
+iVBORw0KGgo=
+--rel-boundary--

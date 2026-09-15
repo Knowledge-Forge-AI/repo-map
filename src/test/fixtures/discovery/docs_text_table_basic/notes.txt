@@ -1,0 +1,7 @@
+# Overview
+See data.csv and https://example.com/docs1.
+
+## Local References
+Open figures/diagram.png and paper.tex.
+
+This line mentions a password-like value that must not leak: docs1-sensitive-secret.

@@ -1,0 +1,105 @@
+{
+  "diagnostics": [
+    {
+      "category": "conflicting_evidence",
+      "field": "metadata.content_hash",
+      "message": "file metadata has conflicting evidence for content_hash",
+      "path": "src/app.py",
+      "placeholder_key": null,
+      "raw_observation_ordinal": 1,
+      "raw_source_id": "src/app.py:second",
+      "severity": "warning",
+      "value": "sha256:second"
+    }
+  ],
+  "edge_evidence_links": [],
+  "edges": [],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": null,
+      "evidence_key": "evidence:0:src/app.py:0-0:repo-discovery:src/app.py:first",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "sha256:first",
+        "executable": false,
+        "generated": false,
+        "language": "python",
+        "role": "source"
+      },
+      "path": "src/app.py",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/app.py:first",
+      "start_line": null
+    },
+    {
+      "confidence": "manual",
+      "end_line": null,
+      "evidence_key": "evidence:1:src/app.py:0-0:repo-discovery:src/app.py:second",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "sha256:second",
+        "executable": false,
+        "generated": false,
+        "language": "python",
+        "role": "source"
+      },
+      "path": "src/app.py",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/app.py:second",
+      "start_line": null
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:src/app.py",
+      "evidence_key": "evidence:0:src/app.py:0-0:repo-discovery:src/app.py:first",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:src/app.py",
+      "evidence_key": "evidence:1:src/app.py:0-0:repo-discovery:src/app.py:second",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:src/app.py",
+      "confidence": "manual",
+      "conflict": true,
+      "display_name": "src/app.py",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": [
+          "sha256:first",
+          "sha256:second"
+        ],
+        "executable": false,
+        "generated": false,
+        "language": "python",
+        "role": "source"
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 0,
+    "edges": 0,
+    "errors": 0,
+    "evidence": 2,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 1,
+    "raw_observations": 2,
+    "warnings": 1
+  }
+}

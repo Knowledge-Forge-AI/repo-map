@@ -1,0 +1,39 @@
+name: repomap-main-source-policy
+
+# Private repo-map_dev main-source policy (REPOMAP-CI-PIPE0).
+#
+# main is promoted from staging and from nothing else. This lane fails
+# immediately for any other source and runs no expensive work: no dependency
+# install, no Go, no Docker, no Postgres, no test suite.
+#
+# This is a cheap advisory topology check, not the security boundary. It does
+# not close, label, or otherwise mutate the pull request, and it holds no write
+# permission. The future JACA git broker enforces the same policy
+# authoritatively by refusing to move main for any other source.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, ready_for_review, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repomap-main-source-policy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repomap-main-source-policy:
+    name: repomap-main-source-policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check the promotion source
+        run: python3 tools/ci/promotion_policy.py

@@ -1,0 +1,28 @@
+[source]
+source_id = "fixture-email-export"
+source_type = "local.directory"
+corpus_kind = "email_export"
+policy_status = "allowed_with_limits"
+root_path = "."
+
+[limits]
+max_files = 100
+max_total_bytes = 200000
+max_file_bytes = 20000
+max_depth = 8
+follow_symlinks = false
+include_hidden = false
+
+[include]
+extensions = [".eml", ".mbox", ".js", ".zip", ".warc", ".pdf"]
+
+[exclude]
+directories = ["node_modules"]
+paths = []
+
+[retention]
+policy = "local_user_controlled"
+
+[redaction]
+profile = "strict"
+sensitivity = "private"

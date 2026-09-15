@@ -1,0 +1,8 @@
+WARC/1.1
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:malformed>
+WARC-Date: 2026-06-30T12:00:00Z
+Content-Type: text/html
+Content-Length: 100
+
+short

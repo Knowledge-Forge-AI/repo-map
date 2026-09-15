@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap Development Standards"
+  short_description: "Apply RepoMap development and review standards"
+  default_prompt: "Use $repo-map-development-standards to review a RepoMap change against project standards."

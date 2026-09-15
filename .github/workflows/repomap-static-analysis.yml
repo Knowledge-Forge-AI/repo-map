@@ -1,0 +1,92 @@
+name: repomap-static-analysis
+
+# Private repo-map_dev PR Fast lane (REPOMAP-CI1, retiered by REPOMAP-CI-PIPE0).
+#
+# Trust boundary: GitHub-hosted Linux, private repository only, repository-local
+# workflow, one aggregated pre-review process, read-only permissions,
+# unpersisted credentials, no secrets, no Docker, no Postgres, and no test suite
+# execution. Go, Node, and Java exist only for pinned offline/static check tools.
+#
+# This is the cheap feedback lane for pull requests targeting staging.
+# pull_request:synchronize is the push-to-open-PR feedback signal, so there is
+# deliberately no second arbitrary branch push trigger. Exhaustive qualification
+# lives in repomap-staging-gate and runs only on an explicit logical gate
+# request.
+
+on:
+  pull_request:
+    branches: [staging]
+    types: [opened, reopened, ready_for_review, synchronize]
+    paths:
+      - "src/main/python/**"
+      - "src/main/go/**"
+      - "src/test/**"
+      - "tools/**"
+      - "docs/**"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "pyproject.toml"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repomap-static-analysis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repomap-static-analysis:
+    name: repomap-static-analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Set up Go for govulncheck
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: src/main/go/go.mod
+          cache: false
+
+      - name: Set up Node for local instruction scanners
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.0.0
+        with:
+          node-version: "24"
+
+      - name: Set up Java for offline Liquibase validation
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Materialize the pinned pre-review toolchain
+        run: |
+          python3 tools/ci/bootstrap_pre_review.py \
+            --tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"
+
+      - name: Run every pre-review check and aggregate once
+        run: |
+          "${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python" \
+            tools/ci/run_pre_review.py \
+            --evidence-dir "${RUNNER_TEMP}/repomap-pre-review-evidence" \
+            --tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"
+
+      - name: Retain bounded sanitized pre-review evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: repomap-pre-review-evidence
+          path: ${{ runner.temp }}/repomap-pre-review-evidence
+          if-no-files-found: error
+          retention-days: 7

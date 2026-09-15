@@ -1,0 +1,317 @@
+"""Shared contract data for storage row tests."""
+
+from __future__ import annotations
+
+from repomap_kg.observations.raw import RawObservation
+from repomap_test_support.storage_rows_contract_examples import (
+    _file_observation,
+    _nix_summary_payload,
+    _shell_observation,
+    file_observation,
+    nix_summary_payload,
+    shell_observation,
+)
+
+
+CRITICAL_WRITE_ROW_FIELDS = {
+    "FileRow": (
+        "path",
+        "language",
+        "role",
+        "confidence",
+        "content_hash",
+        "executable",
+        "generated",
+        "metadata_json",
+    ),
+    "RawObservationRow": (
+        "ordinal",
+        "schema_version",
+        "kind",
+        "source_id",
+        "path",
+        "payload_json",
+        "payload_hash",
+    ),
+    "CanonicalNodeRow": (
+        "graph_key_version",
+        "canonical_key",
+        "kind",
+        "display_name",
+        "metadata_json",
+        "confidence",
+        "conflict",
+    ),
+    "CanonicalEdgeRow": (
+        "edge_key",
+        "graph_key_version",
+        "source_key",
+        "edge_kind",
+        "target_key",
+        "identity_metadata_json",
+        "identity_metadata_hash",
+        "metadata_json",
+        "confidence",
+        "conflict",
+    ),
+    "CanonicalEvidenceRow": (
+        "evidence_key",
+        "graph_key_version",
+        "raw_observation_ordinal",
+        "raw_schema_version",
+        "raw_kind",
+        "raw_source_id",
+        "path",
+        "start_line",
+        "end_line",
+        "extractor",
+        "extractor_version",
+        "confidence",
+        "metadata_json",
+    ),
+    "CanonicalNodeEvidenceLinkRow": (
+        "canonical_key",
+        "evidence_key",
+        "link_kind",
+    ),
+    "CanonicalEdgeEvidenceLinkRow": (
+        "graph_key_version",
+        "source_key",
+        "edge_kind",
+        "target_key",
+        "identity_metadata_hash",
+        "evidence_key",
+        "link_kind",
+    ),
+    "CanonicalLoadRows": (
+        "nodes",
+        "edges",
+        "evidence",
+        "node_evidence_links",
+        "edge_evidence_links",
+    ),
+    "PreparedCanonicalLoad": (
+        "result",
+        "raw_rows",
+        "canonical_rows",
+    ),
+}
+
+PURE_HELPER_EXPORT_NAMES = (
+    "raw_observation_payload_hash",
+    "identity_metadata_hash",
+    "optional_manifest_text",
+    "manifest_int",
+    "manifest_counter",
+    "manifest_list",
+    "payload_text",
+    "payload_string",
+    "payload_bool",
+    "payload_optional_bool",
+    "payload_string_tuple",
+    "payload_json_object",
+    "payload_count_map",
+    "payload_required_count_map",
+    "payload_required_bool_map",
+    "payload_int",
+    "payload_optional_int",
+    "payload_optional_text",
+    "clean_yaml_value",
+    "metadata_text",
+    "metadata_bool",
+    "optional_text",
+    "sha256_text",
+    "canonical_json_text",
+    "canonical_json_value",
+)
+
+FILE_INDEX_ROW_EXPORT_NAMES = (
+    "FileRow",
+    "file_rows_from_observations",
+)
+
+CANONICAL_ROW_EXPORT_NAMES = (
+    "RawObservationRow",
+    "CanonicalNodeRow",
+    "CanonicalEdgeRow",
+    "CanonicalEvidenceRow",
+    "CanonicalNodeEvidenceLinkRow",
+    "CanonicalEdgeEvidenceLinkRow",
+    "CanonicalLoadRows",
+    "PreparedCanonicalLoad",
+    "raw_observation_rows_from_observations",
+    "canonical_rows_from_result",
+    "canonical_edge_link_row",
+)
+
+CANONICAL_READBACK_ROW_EXPORT_NAMES = (
+    "CanonicalNodeRecord",
+    "CanonicalEdgeRecord",
+    "CanonicalEdgeEvidenceRecord",
+    "CanonicalEdgeExplanationRecord",
+    "CanonicalNeighborhoodRecord",
+    "canonical_node_record_from_storage_payload",
+    "canonical_edge_record_from_storage_payload",
+    "canonical_edge_explanation_from_storage_payload",
+    "canonical_neighborhood_from_storage_payload",
+    "canonical_edge_evidence_record_from_storage_payload",
+    "raw_observation_reference_from_storage_payload",
+)
+
+SOURCE_ROW_EXPORT_NAMES = (
+    "IngestedSourceRecord",
+    "SourceSummaryRecord",
+    "SourceRunRecord",
+    "SourceFeedItemRecord",
+    "SourceReferenceRecord",
+    "ingested_source_record_from_storage_payload",
+    "source_summary_from_storage_payload",
+    "source_run_record_from_storage_payload",
+    "source_feed_item_record_from_storage_payload",
+    "source_reference_record_from_storage_payload",
+)
+
+SUMMARY_ROW_EXPORT_NAMES = (
+    "LoadSummary",
+    "CanonicalLoadSummary",
+    "CanonicalStorageSummaryRecord",
+    "RubySummaryRecord",
+    "JSSummaryRecord",
+    "JSFrameworkSummaryRecord",
+    "OpenAPISummaryRecord",
+    "TerraformSummaryRecord",
+    "PythonSummaryRecord",
+    "NixSummaryRecord",
+    "EmailSummaryRecord",
+    "BulkSummaryRecord",
+    "APISummaryRecord",
+    "bulk_manifest_summary_payload",
+    "read_bulk_manifest_payloads",
+    "api_manifest_summary_payload",
+    "read_api_manifest_payloads",
+    "canonical_storage_summary_from_payload",
+    "ruby_summary_from_storage_payload",
+    "js_summary_from_storage_payload",
+    "js_framework_summary_from_storage_payload",
+    "openapi_summary_from_storage_payload",
+    "terraform_summary_from_storage_payload",
+    "python_summary_from_storage_payload",
+    "nix_summary_from_storage_payload",
+    "email_summary_from_storage_payload",
+    "bulk_summary_from_storage_payload",
+    "api_summary_from_storage_payload",
+    "load_summary_from_payload",
+    "canonical_load_summary_from_payload",
+)
+
+SUMMARY_ROW_STORAGE_EXPORT_NAMES = (
+    "LoadSummary",
+    "CanonicalLoadSummary",
+    "CanonicalStorageSummaryRecord",
+    "load_summary_from_payload",
+    "canonical_load_summary_from_payload",
+    "canonical_storage_summary_from_payload",
+)
+
+SUMMARY_ROW_LANGUAGE_EXPORT_NAMES = (
+    "RubySummaryRecord",
+    "JSSummaryRecord",
+    "JSFrameworkSummaryRecord",
+    "PythonSummaryRecord",
+    "ruby_summary_from_storage_payload",
+    "js_summary_from_storage_payload",
+    "js_framework_summary_from_storage_payload",
+    "python_summary_from_storage_payload",
+)
+
+SUMMARY_ROW_DOMAIN_EXPORT_NAMES = (
+    "OpenAPISummaryRecord",
+    "TerraformSummaryRecord",
+    "EmailSummaryRecord",
+    "openapi_summary_from_storage_payload",
+    "terraform_summary_from_storage_payload",
+    "email_summary_from_storage_payload",
+)
+
+SUMMARY_ROW_MANIFEST_EXPORT_NAMES = (
+    "BulkSummaryRecord",
+    "APISummaryRecord",
+    "bulk_manifest_summary_payload",
+    "read_bulk_manifest_payloads",
+    "api_manifest_summary_payload",
+    "read_api_manifest_payloads",
+    "bulk_summary_from_storage_payload",
+    "api_summary_from_storage_payload",
+)
+
+SUMMARY_ROW_NIX_EXPORT_NAMES = (
+    "NixSummaryRecord",
+    "nix_summary_from_storage_payload",
+)
+
+JSONABLE_ROW_EXPORT_NAMES = (
+    "canonical_node_records_to_jsonable",
+    "canonical_edge_records_to_jsonable",
+    "canonical_edge_explanation_to_jsonable",
+    "canonical_neighborhood_to_jsonable",
+    "canonical_storage_summary_to_jsonable",
+    "ruby_summary_to_jsonable",
+    "js_summary_to_jsonable",
+    "js_framework_summary_to_jsonable",
+    "openapi_summary_to_jsonable",
+    "terraform_summary_to_jsonable",
+    "python_summary_to_jsonable",
+    "nix_summary_to_jsonable",
+    "email_summary_to_jsonable",
+    "bulk_summary_to_jsonable",
+    "api_summary_to_jsonable",
+    "ingested_source_records_to_jsonable",
+    "source_summary_to_jsonable",
+    "source_run_records_to_jsonable",
+    "source_feed_item_records_to_jsonable",
+    "source_reference_records_to_jsonable",
+)
+
+TABLE_ROW_EXPORT_NAMES = (
+    "format_canonical_node_table",
+    "format_canonical_edge_table",
+    "format_canonical_neighborhood_table",
+    "format_canonical_edge_explanation_table",
+    "format_canonical_storage_summary_table",
+    "format_ruby_summary_table",
+    "format_count_summary",
+    "format_bool_summary",
+    "format_js_summary_table",
+    "format_js_framework_summary_table",
+    "format_openapi_summary_table",
+    "format_terraform_summary_table",
+    "format_python_summary_table",
+    "format_nix_summary_table",
+    "format_email_summary_table",
+    "format_bulk_summary_table",
+    "format_api_summary_table",
+)
+
+__all__ = [
+    "CANONICAL_READBACK_ROW_EXPORT_NAMES",
+    "CANONICAL_ROW_EXPORT_NAMES",
+    "CRITICAL_WRITE_ROW_FIELDS",
+    "FILE_INDEX_ROW_EXPORT_NAMES",
+    "JSONABLE_ROW_EXPORT_NAMES",
+    "PURE_HELPER_EXPORT_NAMES",
+    "RawObservation",
+    "SOURCE_ROW_EXPORT_NAMES",
+    "SUMMARY_ROW_DOMAIN_EXPORT_NAMES",
+    "SUMMARY_ROW_EXPORT_NAMES",
+    "SUMMARY_ROW_LANGUAGE_EXPORT_NAMES",
+    "SUMMARY_ROW_MANIFEST_EXPORT_NAMES",
+    "SUMMARY_ROW_NIX_EXPORT_NAMES",
+    "SUMMARY_ROW_STORAGE_EXPORT_NAMES",
+    "TABLE_ROW_EXPORT_NAMES",
+    "_file_observation",
+    "_nix_summary_payload",
+    "_shell_observation",
+    "file_observation",
+    "nix_summary_payload",
+    "shell_observation",
+]

@@ -1,0 +1,392 @@
+{
+  "schema": "repomap-python-fixture-authority-v1",
+  "version": 1,
+  "fixture_root": "src/test/fixtures",
+  "entries": [
+    {
+      "path": "src/test/fixtures/bulk/mixed_corpus/src/example.py",
+      "role": "inert_data",
+      "content_sha256": "06d73874d132b338fb4c6937a5aff727203a0c1daa56a6ee0d3b5d9bc7ecb842",
+      "consumer": [
+        "src/test/int/python/repomap_kg/source_ingestion/api_github_bulk.int.test.py",
+        "src/test/int/python/repomap_kg/storage/load_sources/bulk_api_sources.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Static parser input for the mixed-corpus source; bulk ingestion reads this tree as data.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/direct_pytest/collection_error.test.py",
+      "role": "executable_first_party",
+      "content_sha256": "fbebf25178ffa85d8a7c6ff9d65424f27bc140754d024f8703eabbee0fcd10df",
+      "consumer": [
+        "src/test/int/python/repomap_test_support/scale28_diag1_fix2_direct_pytest.int.test.py"
+      ],
+      "consumption_mode": "direct_execution",
+      "source_shape": "valid",
+      "rationale": "Standalone pytest collection-error program executed by the direct-run lifecycle owner.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/direct_pytest/failing.test.py",
+      "role": "executable_first_party",
+      "content_sha256": "59d87ca50ae46525cfc4ea74bf03e1f28df1d7ef8919a7c31389258fdc65a390",
+      "consumer": [
+        "src/test/int/python/repomap_test_support/scale28_diag1_fix2_direct_pytest.int.test.py"
+      ],
+      "consumption_mode": "direct_execution",
+      "source_shape": "valid",
+      "rationale": "Standalone pytest failure program executed by the direct-run lifecycle owner.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/direct_pytest/passing.test.py",
+      "role": "executable_first_party",
+      "content_sha256": "a68e2b8800d640214cd042bc1da18477b5004da7ca8c48d842cc9f043301dc82",
+      "consumer": [
+        "src/test/int/python/repomap_test_support/scale28_diag1_fix2_direct_pytest.int.test.py"
+      ],
+      "consumption_mode": "direct_execution",
+      "source_shape": "valid",
+      "rationale": "Standalone pytest success program executed by the direct-run lifecycle owner.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/discovery/python_package/src/main/python/pkg/app.py",
+      "role": "inert_data",
+      "content_sha256": "418ee8f8c562968e50cfc7f3613a680f3810f2548c28be6ec37e8a5a4758087b",
+      "consumer": [
+        "src/test/int/python/repomap_kg/storage/canonical_readback_profiles/python_profile.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Python package source supplied to the discovery parser; the readback test treats it as input data.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/discovery/python_package/src/main/python/pkg/lib/helper.py",
+      "role": "inert_data",
+      "content_sha256": "76b26c40fd1de8995c9a5457c2bd4cf363c42d1f88a66f4d583bc10295f2062a",
+      "consumer": [
+        "src/test/int/python/repomap_kg/storage/canonical_readback_profiles/python_profile.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Python package helper source supplied to the discovery parser as static fixture data.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_ecosystem/dogfood/src/test/unit/python/repomap_kg/test_dogfood.py",
+      "role": "inert_data",
+      "content_sha256": "6ee0b6d7cd89e8e3a254b3374d79b1bfc51aab050bb9c12257e8d254177995b8",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Dogfood test source is parsed to exercise ecosystem observations and remains static fixture data.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_ecosystem/tests/malformed/test_bad.py",
+      "role": "inert_data",
+      "content_sha256": "b9901de619d2283d96d7e60528077f43fed558a8a1df05c854f45abf52ca20ca",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "malformed",
+      "rationale": "Intentionally malformed Python source is consumed only to verify static parse-error observations.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_ecosystem/tests/pytest/test_fixtures.py",
+      "role": "inert_data",
+      "content_sha256": "f311f052bd0f894aa80f7fca746615378eb59fbfcc84ed246f21a75c5ca1925f",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Pytest fixture declarations are parsed for ecosystem metadata and are never imported by the consumer.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_ecosystem/tests/pytest/test_sample.py",
+      "role": "inert_data",
+      "content_sha256": "bf91764c6f1e17a5b679da621a00330843c37c064bdb233448f0ceba0e53ab8e",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Pytest sample declarations are parsed for ecosystem metadata and remain static fixture input.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_ecosystem/tests/unittest/test_sample.py",
+      "role": "inert_data",
+      "content_sha256": "ad0a83463e624bc972ecf58dd47e1d97f8d2180fc09d02f97ea4bd206394178f",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Unittest sample declarations are parsed for ecosystem metadata and remain static fixture input.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/basic/app/apps.py",
+      "role": "inert_data",
+      "content_sha256": "64ec0c4d2a5a4a35d87137cacfdb27f847f7496fa184e2f40547da784578b424",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django app configuration is parsed for web-framework observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/basic/app/models.py",
+      "role": "inert_data",
+      "content_sha256": "d1b8a71bad42543883a0cc53b16146b677fbf4be43e87b4fee02ce570c599de5",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django model declarations are parsed for web-framework observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/basic/app/views.py",
+      "role": "inert_data",
+      "content_sha256": "b32040cc2c3c67ed75ab9c3cd164aa5fe6c5980a742e5b192227a3af54f4669f",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django view declarations are parsed for web-framework observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/basic/manage.py",
+      "role": "inert_data",
+      "content_sha256": "069e0791a565eebeef88417ba0864fba3804136a4583d8dc77c85694030f890f",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django management entrypoint is parsed for source observations and is not launched by fixture consumers.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/basic/project/settings.py",
+      "role": "inert_data",
+      "content_sha256": "437dc34d5b8800959b73ce2e6b3999c3679f7eb1e2de3aa16dd6c1ff8476e866",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django settings are parsed for configuration and redaction observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/basic/project/urls.py",
+      "role": "inert_data",
+      "content_sha256": "2ae3bce269961c99a4763155059abb90a5b1a8f4451a01df82bf3c5144afe356",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django URL declarations are parsed for route observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/include/project/urls.py",
+      "role": "inert_data",
+      "content_sha256": "6c1a48b93fca0226008d26750580b45c12791ab3cc0a24a7d15f227747628194",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django include URL declarations are parsed for route observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/django/redaction/settings.py",
+      "role": "inert_data",
+      "content_sha256": "4d59184b48d95e5ecd58d1bfddfe66c27199389528774f25e81dd5990206308b",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Django redaction settings are parsed to verify secret handling without executing fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/fastapi/basic/main.py",
+      "role": "inert_data",
+      "content_sha256": "aa1dac9bb715e4f6129e95b1b4f13dbac966f3e60621dd85b211eea1ef4ae812",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "FastAPI application declarations are parsed for route observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/fastapi/dependencies/main.py",
+      "role": "inert_data",
+      "content_sha256": "e970f89cdd861082d6174a65514ccdd37f57342e287f393345f16859b60073d1",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "FastAPI dependency declarations are parsed for web observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/fastapi/dynamic/routes.py",
+      "role": "inert_data",
+      "content_sha256": "fccf86c7572790e41d51309f4b01803d62d467e27a7288ddff3691fe94ddbbf8",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Dynamic FastAPI route declarations are parsed for bounded observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/fastapi/redaction/config.py",
+      "role": "inert_data",
+      "content_sha256": "be4254e7aea97933f67a96cf51d60c2ef9a1619e2cf26cccc59e36932c4f5154",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "FastAPI redaction configuration is parsed to verify secret handling without execution.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/fastapi/router/api.py",
+      "role": "inert_data",
+      "content_sha256": "9f3019ab5ce75dda36142c649737aa7125e24fd800268eadf4d58bba85ff34ca",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "FastAPI router declarations are parsed for route observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/flask/add_url_rule/app.py",
+      "role": "inert_data",
+      "content_sha256": "4e3c979cf1d375b85d8e8e66c46701eaa4346c58aedec94ffa8deed10e4d45b4",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Flask add_url_rule declarations are parsed for route observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/flask/basic/app.py",
+      "role": "inert_data",
+      "content_sha256": "fa34518c1d88ed6e6e715fc43278fb96969a2bbd05e8590e90a0e1dba12fedd1",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Flask application and route declarations are parsed as static fixture source for observations.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/flask/blueprints/routes.py",
+      "role": "inert_data",
+      "content_sha256": "dfc65fbaa824484c63b1f87879c369d1729e267f4c40e933d4bd293ab4e943c5",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Flask blueprint route declarations are parsed for observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/flask/dynamic/routes.py",
+      "role": "inert_data",
+      "content_sha256": "63dcbe046541941f9704d93694a1d64e5ffbefdcc2874c60f2fdaa328ae35a93",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Dynamic Flask route declarations are parsed for bounded observations as static fixture source.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/flask/redaction/config.py",
+      "role": "inert_data",
+      "content_sha256": "8edd1b2247ad41008430902342a68fa3fecf9aa9f97767f05b02dfea324fd653",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "valid",
+      "rationale": "Flask redaction configuration is parsed to verify secret handling without execution.",
+      "provenance": null
+    },
+    {
+      "path": "src/test/fixtures/python_web/malformed/bad.py",
+      "role": "inert_data",
+      "content_sha256": "e5c39b5d9e483c96898f2970978fee4d8e5a3814e685d9ab37365a5aa333b5ad",
+      "consumer": [
+        "src/test/int/python/repomap_kg/cli/discover_ecosystems.int.test.py",
+        "src/test/int/python/repomap_kg/storage/domain_summaries/python_profiles.int.test.py"
+      ],
+      "consumption_mode": "static_extraction",
+      "source_shape": "malformed",
+      "rationale": "Intentionally malformed web Python source is consumed only to verify static parse-error observations.",
+      "provenance": null
+    }
+  ]
+}

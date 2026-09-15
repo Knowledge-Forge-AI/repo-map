@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="service" class="com.example.Service">
+    <property name="repository" ref="repository"/>
+    <property name="configPath" value="./config/service.properties"/>
+    <property name="jdbcUrl" value="${db.url}"/>
+    <property name="DB_PASSWORD" value="${env.DB_PASSWORD}"/>
+    <property name="api_key" value="xml2-fixture-spring-secret"/>
+    <constructor-arg value="https://example.com/service"/>
+  </bean>
+  <bean id="repository" class="com.example.Repository"/>
+</beans>

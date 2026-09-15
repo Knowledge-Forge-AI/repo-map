@@ -1,0 +1,13 @@
+[source]
+source_id = "fixture-blocked-policy"
+source_type = "local.directory"
+corpus_kind = "generic_local_corpus"
+policy_status = "blocked"
+root_path = "."
+
+[limits]
+max_files = 10
+max_total_bytes = 10000
+max_file_bytes = 1000
+max_depth = 4
+follow_symlinks = false

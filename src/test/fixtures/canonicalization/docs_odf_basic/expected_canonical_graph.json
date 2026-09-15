@@ -1,0 +1,2755 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:17ed012f754234bcb971153def9e022a5232872b7cf30a43123516b3773b6025",
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1fbcd842b50be7c1cee2db2c61767f053c2198086633026212e9f5f10cc29631",
+      "evidence_key": "evidence:34:template.ott:1-1:repo-documents:template.ott#document-reference:1:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1feba072f98321ac210c3811170de7ad017b841b1f9067697ff6f3071479cc05",
+      "evidence_key": "evidence:22:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1feba072f98321ac210c3811170de7ad017b841b1f9067697ff6f3071479cc05",
+      "evidence_key": "evidence:23:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1feba072f98321ac210c3811170de7ad017b841b1f9067697ff6f3071479cc05",
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1feba072f98321ac210c3811170de7ad017b841b1f9067697ff6f3071479cc05",
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1feba072f98321ac210c3811170de7ad017b841b1f9067697ff6f3071479cc05",
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:2f7a6b96d35520556047c998c62b14bd75a82c62e728d81d08c3ee9e9072878a",
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:385825baa560e6c5f495e1468c64da2e0d248e5b2fe33a9063340d64689d5490",
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:385825baa560e6c5f495e1468c64da2e0d248e5b2fe33a9063340d64689d5490",
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:385825baa560e6c5f495e1468c64da2e0d248e5b2fe33a9063340d64689d5490",
+      "evidence_key": "evidence:7:notes.odt:0-0:repo-documents:notes.odt#odf-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:385825baa560e6c5f495e1468c64da2e0d248e5b2fe33a9063340d64689d5490",
+      "evidence_key": "evidence:8:notes.odt:0-0:repo-documents:notes.odt#odf-heading:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:385825baa560e6c5f495e1468c64da2e0d248e5b2fe33a9063340d64689d5490",
+      "evidence_key": "evidence:9:notes.odt:0-0:repo-documents:notes.odt#odf-table:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:5b0eb8c738b09e6696ee3c3fd1c1fe7197fa0d919a303fbe9ac9d959aeae8123",
+      "evidence_key": "evidence:13:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:68e598744856254601983a6e2cb3b1264190ca481a3cea785007d3296c0eed66",
+      "evidence_key": "evidence:16:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7320da2ceb0b2410f27a65af15a2af6c987f02c900ab65a0f81431e0029fea8a",
+      "evidence_key": "evidence:35:template.ott:1-1:repo-documents:template.ott#document-reference:1:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:745cc8cb935b8c4ecfa4abd4e3f5ab09c96a40eaa22743b6fe8dca4916b99462",
+      "evidence_key": "evidence:20:sheet-template.ots:1-1:repo-documents:sheet-template.ots#document-reference:1:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7abe631ad509c6808a5fe83516eaed6d973a33e0379848477e5c6771885b43b3",
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:83f8c168605cf3d125e1dec707c3b36745231b91d0ec9463af1dfab054c34f56",
+      "evidence_key": "evidence:12:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8889fc6f1d24687366703080f860bbe107f65b273af8f0acb9b756adbae01f7f",
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b976597020bd923bd5e9b92a000bc9e16b6949c7d4d36c9bc99dc12f738055b9",
+      "evidence_key": "evidence:30:template.ott:0-0:repo-documents:template.ott#odf-heading:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:bcbb300cb017ce9c104c0db69f6ce338a3f17a791d1233023ec2f86ed835789c",
+      "evidence_key": "evidence:9:notes.odt:0-0:repo-documents:notes.odt#odf-table:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:beb63f1fe01f7d565417465f1eda89aa439da47fc784e3abde3147c1d054161e",
+      "evidence_key": "evidence:27:spreadsheet.ods:1-1:repo-documents:spreadsheet.ods#document-reference:1:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cae9507347d5291390033347de913bbb99d4f5d0d78665f6fce8d71f8e330f7e",
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cdca1afdd37631ec773e24e3ef5c6f5d96b977b6d700038c6c283932696ad62c",
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cdeb630fc5a02c99d67bbc5813c6af38da868b570fa12588e454a7aae7e8bd43",
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ce9e7b760b00fd9589f25f9b4a7483d5e9e21cda032895e8a7f7ec74d1d0d606",
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d76687e9e74dc3c3ed78f92de795242979e9d3a2240f0c364d0fd0c5af6fe130",
+      "evidence_key": "evidence:29:template.ott:0-0:repo-documents:template.ott#odf-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d76687e9e74dc3c3ed78f92de795242979e9d3a2240f0c364d0fd0c5af6fe130",
+      "evidence_key": "evidence:30:template.ott:0-0:repo-documents:template.ott#odf-heading:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d76687e9e74dc3c3ed78f92de795242979e9d3a2240f0c364d0fd0c5af6fe130",
+      "evidence_key": "evidence:31:template.ott:0-0:repo-documents:template.ott#odf-table:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d76687e9e74dc3c3ed78f92de795242979e9d3a2240f0c364d0fd0c5af6fe130",
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d76687e9e74dc3c3ed78f92de795242979e9d3a2240f0c364d0fd0c5af6fe130",
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d8054483caa66157f54130d6a87decb1149bd73c04cce9b599d27422af8c1f4c",
+      "evidence_key": "evidence:8:notes.odt:0-0:repo-documents:notes.odt#odf-heading:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d98877a4138f1dfc995897658302efbc52319b95531b2919292278696464bdf1",
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e2dabe058b5ab3a21174c13128e0ecf326de5aee24a511bbbc0991552a1ab793",
+      "evidence_key": "evidence:23:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e3448e108f8b4c4f2bd13f0deda74cc065f3f310e2051ab445ed66e03890b42d",
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f545350a3fe587536d2e3fdb4cd43065888b65e6b2d0df07e1f0f7d62b7574d0",
+      "evidence_key": "evidence:15:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f545350a3fe587536d2e3fdb4cd43065888b65e6b2d0df07e1f0f7d62b7574d0",
+      "evidence_key": "evidence:16:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f545350a3fe587536d2e3fdb4cd43065888b65e6b2d0df07e1f0f7d62b7574d0",
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f545350a3fe587536d2e3fdb4cd43065888b65e6b2d0df07e1f0f7d62b7574d0",
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f545350a3fe587536d2e3fdb4cd43065888b65e6b2d0df07e1f0f7d62b7574d0",
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:fa63e9c555071388429069589cf495803754ed6466711e1817e8a40a70a4d67e",
+      "evidence_key": "evidence:31:template.ott:0-0:repo-documents:template.ott#odf-table:1",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:d8054483caa66157f54130d6a87decb1149bd73c04cce9b599d27422af8c1f4c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "odt"
+        ],
+        "pointers": [
+          "/sections/overview"
+        ],
+        "source_parts": [
+          "content.xml"
+        ]
+      },
+      "source_key": "document.file:file%3Anotes.odt",
+      "target_key": "document.section:file%3Anotes.odt:%2Fsections%2Foverview"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:bcbb300cb017ce9c104c0db69f6ce338a3f17a791d1233023ec2f86ed835789c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "odt"
+        ],
+        "pointers": [
+          "/tables/tasks"
+        ],
+        "source_parts": [
+          "content.xml"
+        ]
+      },
+      "source_key": "document.file:file%3Anotes.odt",
+      "target_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:5b0eb8c738b09e6696ee3c3fd1c1fe7197fa0d919a303fbe9ac9d959aeae8123",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "odt"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "Pictures/local-image.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "package-part"
+        ],
+        "resolution_reasons": [
+          "odf-manifest-entry"
+        ]
+      },
+      "source_key": "document.file:file%3Anotes.odt",
+      "target_key": "unknown:document.reference:odf-internal-package-part"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:68e598744856254601983a6e2cb3b1264190ca481a3cea785007d3296c0eed66",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ots"
+        ],
+        "pointers": [
+          "/sheets/budget"
+        ],
+        "source_parts": [
+          "content.xml"
+        ]
+      },
+      "source_key": "document.file:file%3Asheet-template.ots",
+      "target_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:745cc8cb935b8c4ecfa4abd4e3f5ab09c96a40eaa22743b6fe8dca4916b99462",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "ots"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "Pictures/local-image.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "package-part"
+        ],
+        "resolution_reasons": [
+          "odf-manifest-entry"
+        ]
+      },
+      "source_key": "document.file:file%3Asheet-template.ots",
+      "target_key": "unknown:document.reference:odf-internal-package-part"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e2dabe058b5ab3a21174c13128e0ecf326de5aee24a511bbbc0991552a1ab793",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ods"
+        ],
+        "pointers": [
+          "/sheets/budget"
+        ],
+        "source_parts": [
+          "content.xml"
+        ]
+      },
+      "source_key": "document.file:file%3Aspreadsheet.ods",
+      "target_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:beb63f1fe01f7d565417465f1eda89aa439da47fc784e3abde3147c1d054161e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "ods"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "Pictures/local-image.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "package-part"
+        ],
+        "resolution_reasons": [
+          "odf-manifest-entry"
+        ]
+      },
+      "source_key": "document.file:file%3Aspreadsheet.ods",
+      "target_key": "unknown:document.reference:odf-internal-package-part"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:b976597020bd923bd5e9b92a000bc9e16b6949c7d4d36c9bc99dc12f738055b9",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ott"
+        ],
+        "pointers": [
+          "/sections/overview"
+        ],
+        "source_parts": [
+          "content.xml"
+        ]
+      },
+      "source_key": "document.file:file%3Atemplate.ott",
+      "target_key": "document.section:file%3Atemplate.ott:%2Fsections%2Foverview"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:fa63e9c555071388429069589cf495803754ed6466711e1817e8a40a70a4d67e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ott"
+        ],
+        "pointers": [
+          "/tables/tasks"
+        ],
+        "source_parts": [
+          "content.xml"
+        ]
+      },
+      "source_key": "document.file:file%3Atemplate.ott",
+      "target_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:7320da2ceb0b2410f27a65af15a2af6c987f02c900ab65a0f81431e0029fea8a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "ott"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "Pictures/local-image.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "package-part"
+        ],
+        "resolution_reasons": [
+          "odf-manifest-entry"
+        ]
+      },
+      "source_key": "document.file:file%3Atemplate.ott",
+      "target_key": "unknown:document.reference:odf-internal-package-part"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:83f8c168605cf3d125e1dec707c3b36745231b91d0ec9463af1dfab054c34f56",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "odt"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "https://example.com/docs2"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "url"
+        ],
+        "resolution_reasons": [
+          "odf-xlink-href"
+        ]
+      },
+      "source_key": "document.section:file%3Anotes.odt:%2Fsections%2Foverview",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs2"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:1fbcd842b50be7c1cee2db2c61767f053c2198086633026212e9f5f10cc29631",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "formats": [
+          "ott"
+        ],
+        "not_fetched": true,
+        "raw_value_summaries": [
+          "https://example.com/docs2"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "url"
+        ],
+        "resolution_reasons": [
+          "odf-xlink-href"
+        ]
+      },
+      "source_key": "document.section:file%3Atemplate.ott:%2Fsections%2Foverview",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs2"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8889fc6f1d24687366703080f860bbe107f65b273af8f0acb9b756adbae01f7f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ots"
+        ],
+        "pointers": [
+          "/sheets/budget/columns/amount"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "decimal"
+        ]
+      },
+      "source_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "target_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Famount"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cdeb630fc5a02c99d67bbc5813c6af38da868b570fa12588e454a7aae7e8bd43",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ots"
+        ],
+        "pointers": [
+          "/sheets/budget/columns/api_key"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "redacted"
+        ]
+      },
+      "source_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "target_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Fapi_key"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ce9e7b760b00fd9589f25f9b4a7483d5e9e21cda032895e8a7f7ec74d1d0d606",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ots"
+        ],
+        "pointers": [
+          "/sheets/budget/columns/item"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "target_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Fitem"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:2f7a6b96d35520556047c998c62b14bd75a82c62e728d81d08c3ee9e9072878a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ods"
+        ],
+        "pointers": [
+          "/sheets/budget/columns/amount"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "decimal"
+        ]
+      },
+      "source_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "target_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Famount"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cae9507347d5291390033347de913bbb99d4f5d0d78665f6fce8d71f8e330f7e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ods"
+        ],
+        "pointers": [
+          "/sheets/budget/columns/api_key"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "redacted"
+        ]
+      },
+      "source_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "target_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Fapi_key"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:7abe631ad509c6808a5fe83516eaed6d973a33e0379848477e5c6771885b43b3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ods"
+        ],
+        "pointers": [
+          "/sheets/budget/columns/item"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "target_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Fitem"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cdca1afdd37631ec773e24e3ef5c6f5d96b977b6d700038c6c283932696ad62c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "odt"
+        ],
+        "pointers": [
+          "/tables/tasks/columns/owner"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+      "target_key": "document.column:file%3Anotes.odt:%2Ftables%2Ftasks%2Fcolumns%2Fowner"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e3448e108f8b4c4f2bd13f0deda74cc065f3f310e2051ab445ed66e03890b42d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "odt"
+        ],
+        "pointers": [
+          "/tables/tasks/columns/status"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+      "target_key": "document.column:file%3Anotes.odt:%2Ftables%2Ftasks%2Fcolumns%2Fstatus"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:17ed012f754234bcb971153def9e022a5232872b7cf30a43123516b3773b6025",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ott"
+        ],
+        "pointers": [
+          "/tables/tasks/columns/owner"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+      "target_key": "document.column:file%3Atemplate.ott:%2Ftables%2Ftasks%2Fcolumns%2Fowner"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:d98877a4138f1dfc995897658302efbc52319b95531b2919292278696464bdf1",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "ott"
+        ],
+        "pointers": [
+          "/tables/tasks/columns/status"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+      "target_key": "document.column:file%3Atemplate.ott:%2Ftables%2Ftasks%2Fcolumns%2Fstatus"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:385825baa560e6c5f495e1468c64da2e0d248e5b2fe33a9063340d64689d5490",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_kinds": [
+          "odt"
+        ],
+        "formats": [
+          "odt"
+        ],
+        "pointers": [
+          "/sections/overview",
+          "/tables/tasks",
+          "/tables/tasks/columns/status",
+          "/tables/tasks/columns/owner"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "template_observed": false,
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "file:notes.odt",
+      "target_key": "document.file:file%3Anotes.odt"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:f545350a3fe587536d2e3fdb4cd43065888b65e6b2d0df07e1f0f7d62b7574d0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_kinds": [
+          "ots"
+        ],
+        "formats": [
+          "ots"
+        ],
+        "pointers": [
+          "/sheets/budget",
+          "/sheets/budget/columns/item",
+          "/sheets/budget/columns/amount",
+          "/sheets/budget/columns/api_key"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "template_observed": true,
+        "type_summaries": [
+          "text",
+          "decimal",
+          "redacted"
+        ]
+      },
+      "source_key": "file:sheet-template.ots",
+      "target_key": "document.file:file%3Asheet-template.ots"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1feba072f98321ac210c3811170de7ad017b841b1f9067697ff6f3071479cc05",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_kinds": [
+          "ods"
+        ],
+        "formats": [
+          "ods"
+        ],
+        "pointers": [
+          "/sheets/budget",
+          "/sheets/budget/columns/item",
+          "/sheets/budget/columns/amount",
+          "/sheets/budget/columns/api_key"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "template_observed": false,
+        "type_summaries": [
+          "text",
+          "decimal",
+          "redacted"
+        ]
+      },
+      "source_key": "file:spreadsheet.ods",
+      "target_key": "document.file:file%3Aspreadsheet.ods"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:d76687e9e74dc3c3ed78f92de795242979e9d3a2240f0c364d0fd0c5af6fe130",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "document_kinds": [
+          "ott"
+        ],
+        "formats": [
+          "ott"
+        ],
+        "pointers": [
+          "/sections/overview",
+          "/tables/tasks",
+          "/tables/tasks/columns/status",
+          "/tables/tasks/columns/owner"
+        ],
+        "source_parts": [
+          "content.xml"
+        ],
+        "template_observed": true,
+        "type_summaries": [
+          "text"
+        ]
+      },
+      "source_key": "file:template.ott",
+      "target_key": "document.file:file%3Atemplate.ott"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:dangerous.odt:0-0:repo-discovery:dangerous.odt",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "64bf5305e923f44ffb28702801fbb4a3343979d87a48c7f2da8c2def2a94a4ae",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      },
+      "path": "dangerous.odt",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "dangerous.odt",
+      "start_line": null
+    },
+    {
+      "confidence": "unknown",
+      "end_line": null,
+      "evidence_key": "evidence:1:dangerous.odt:0-0:repo-documents:dangerous.odt#document-parse-error:dangerous-xml",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "error_kind": "dangerous-xml",
+        "format": "odt",
+        "message_summary": "ODF part content.xml contains disallowed XML constructs",
+        "parser": "stdlib-document-conservative",
+        "recovered": false
+      },
+      "path": "dangerous.odt",
+      "raw_kind": "document.parse_error",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "dangerous.odt#document-parse-error:dangerous-xml",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:2:ignored.docx:0-0:repo-discovery:ignored.docx",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "18641b3fe26fe8ca16e249f2ae3972b50fa1d5e5159c2639b130da2990d1c763",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      },
+      "path": "ignored.docx",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "ignored.docx",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:3:ignored.xlsx:0-0:repo-discovery:ignored.xlsx",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "aa13ef1cf8eb5d65f5dba613334d3a563e81f06f6acbc6355ab4713277ae3dfe",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      },
+      "path": "ignored.xlsx",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "ignored.xlsx",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:4:malformed.odt:0-0:repo-discovery:malformed.odt",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "f300f6a921e42e9c177aa31cb9085db9067972ed4901536757e8e339158c6814",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      },
+      "path": "malformed.odt",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "malformed.odt",
+      "start_line": null
+    },
+    {
+      "confidence": "unknown",
+      "end_line": null,
+      "evidence_key": "evidence:5:malformed.odt:0-0:repo-documents:malformed.odt#document-parse-error:malformed-zip",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "error_kind": "malformed-zip",
+        "format": "odt",
+        "message_summary": "ODF package is not a valid ZIP archive",
+        "parser": "stdlib-document-conservative",
+        "recovered": false
+      },
+      "path": "malformed.odt",
+      "raw_kind": "document.parse_error",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "malformed.odt#document-parse-error:malformed-zip",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:notes.odt:0-0:repo-discovery:notes.odt",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "eba3323ec2ae781a9b4e3864e61296cf951503e83f93ceedf9c45eb1ef5a275c",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      },
+      "path": "notes.odt",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:7:notes.odt:0-0:repo-documents:notes.odt#odf-document",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_kind": "odt",
+        "format": "odt",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "heading_count": 1,
+        "macro_script_ignored": true,
+        "package_byte_count": 1593,
+        "package_parser": "stdlib-zipfile",
+        "package_part_count": 4,
+        "paragraph_count": 2,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 2,
+        "sheet_count": 0,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": false,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3320
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.odf_document",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#odf-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:8:notes.odt:0-0:repo-documents:notes.odt#odf-heading:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "document.file:file%3Anotes.odt",
+        "format": "odt",
+        "heading_level": 1,
+        "heading_summary": "Overview",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sections/overview",
+        "redacted": false,
+        "source_part": "content.xml"
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.odf_text",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#odf-heading:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:9:notes.odt:0-0:repo-documents:notes.odt#odf-table:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count": 2,
+        "display_name": "Tasks",
+        "document_key": "document.file:file%3Anotes.odt",
+        "format": "odt",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks",
+        "redacted": false,
+        "row_count": 1,
+        "source_part": "content.xml"
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.odf_table",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#odf-table:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "Status",
+        "format": "odt",
+        "non_empty_count": 1,
+        "parent_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks/columns/status",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "text"
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#odf-table:1:column:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "Owner",
+        "format": "odt",
+        "non_empty_count": 1,
+        "parent_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks/columns/owner",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "text"
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#odf-table:1:column:2",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:12:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "odt",
+        "not_fetched": true,
+        "raw_value_summary": "https://example.com/docs2",
+        "redacted": false,
+        "reference_kind": "url",
+        "resolution_reason": "odf-xlink-href",
+        "source_key": "document.section:file%3Anotes.odt:%2Fsections%2Foverview"
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#document-reference:1:0",
+      "start_line": 1
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:13:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "odt",
+        "not_fetched": true,
+        "raw_value_summary": "Pictures/local-image.png",
+        "redacted": false,
+        "reference_kind": "package-part",
+        "resolution_reason": "odf-manifest-entry",
+        "source_key": "document.file:file%3Anotes.odt"
+      },
+      "path": "notes.odt",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 13,
+      "raw_schema_version": 1,
+      "raw_source_id": "notes.odt#document-reference:1:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:14:sheet-template.ots:0-0:repo-discovery:sheet-template.ots",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "5bd137d0ff89e9b66b0d0b84336adb39b460735e654d74611dd4df16e104710b",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 14,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:15:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-document",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count_summary": 3,
+        "document_kind": "ots",
+        "format": "ots",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "heading_count": 0,
+        "macro_script_ignored": true,
+        "package_byte_count": 1605,
+        "package_parser": "stdlib-zipfile",
+        "package_part_count": 4,
+        "paragraph_count": 0,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 1,
+        "row_count_summary": 2,
+        "sheet_count": 1,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": true,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3531
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "document.odf_document",
+      "raw_observation_ordinal": 15,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots#odf-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:16:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count": 3,
+        "display_name": "Budget",
+        "document_key": "document.file:file%3Asheet-template.ots",
+        "format": "ots",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget",
+        "redacted": false,
+        "row_count": 2,
+        "source_part": "content.xml"
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "document.odf_sheet",
+      "raw_observation_ordinal": 16,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots#odf-sheet:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "item",
+        "format": "ots",
+        "non_empty_count": 2,
+        "parent_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget/columns/item",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "text"
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 17,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots#odf-sheet:1:column:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "amount",
+        "format": "ots",
+        "non_empty_count": 2,
+        "parent_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget/columns/amount",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "decimal"
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 18,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots#odf-sheet:1:column:2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 3,
+        "column_name_summary": "[redacted]",
+        "format": "ots",
+        "non_empty_count": 1,
+        "parent_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget/columns/api_key",
+        "redacted": true,
+        "redaction_reason": "secret-prone-column-or-value",
+        "source_part": "content.xml",
+        "type_summary": "redacted"
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 19,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots#odf-sheet:1:column:3",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:20:sheet-template.ots:1-1:repo-documents:sheet-template.ots#document-reference:1:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ots",
+        "not_fetched": true,
+        "raw_value_summary": "Pictures/local-image.png",
+        "redacted": false,
+        "reference_kind": "package-part",
+        "resolution_reason": "odf-manifest-entry",
+        "source_key": "document.file:file%3Asheet-template.ots"
+      },
+      "path": "sheet-template.ots",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 20,
+      "raw_schema_version": 1,
+      "raw_source_id": "sheet-template.ots#document-reference:1:0",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:21:spreadsheet.ods:0-0:repo-discovery:spreadsheet.ods",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "5bd137d0ff89e9b66b0d0b84336adb39b460735e654d74611dd4df16e104710b",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 21,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:22:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-document",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count_summary": 3,
+        "document_kind": "ods",
+        "format": "ods",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "heading_count": 0,
+        "macro_script_ignored": true,
+        "package_byte_count": 1605,
+        "package_parser": "stdlib-zipfile",
+        "package_part_count": 4,
+        "paragraph_count": 0,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 1,
+        "row_count_summary": 2,
+        "sheet_count": 1,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": false,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3531
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "document.odf_document",
+      "raw_observation_ordinal": 22,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods#odf-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:23:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count": 3,
+        "display_name": "Budget",
+        "document_key": "document.file:file%3Aspreadsheet.ods",
+        "format": "ods",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget",
+        "redacted": false,
+        "row_count": 2,
+        "source_part": "content.xml"
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "document.odf_sheet",
+      "raw_observation_ordinal": 23,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods#odf-sheet:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "item",
+        "format": "ods",
+        "non_empty_count": 2,
+        "parent_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget/columns/item",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "text"
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 24,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods#odf-sheet:1:column:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "amount",
+        "format": "ods",
+        "non_empty_count": 2,
+        "parent_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget/columns/amount",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "decimal"
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 25,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods#odf-sheet:1:column:2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 3,
+        "column_name_summary": "[redacted]",
+        "format": "ods",
+        "non_empty_count": 1,
+        "parent_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget/columns/api_key",
+        "redacted": true,
+        "redaction_reason": "secret-prone-column-or-value",
+        "source_part": "content.xml",
+        "type_summary": "redacted"
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 26,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods#odf-sheet:1:column:3",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:27:spreadsheet.ods:1-1:repo-documents:spreadsheet.ods#document-reference:1:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ods",
+        "not_fetched": true,
+        "raw_value_summary": "Pictures/local-image.png",
+        "redacted": false,
+        "reference_kind": "package-part",
+        "resolution_reason": "odf-manifest-entry",
+        "source_key": "document.file:file%3Aspreadsheet.ods"
+      },
+      "path": "spreadsheet.ods",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 27,
+      "raw_schema_version": 1,
+      "raw_source_id": "spreadsheet.ods#document-reference:1:0",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:28:template.ott:0-0:repo-discovery:template.ott",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "eba3323ec2ae781a9b4e3864e61296cf951503e83f93ceedf9c45eb1ef5a275c",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      },
+      "path": "template.ott",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 28,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:29:template.ott:0-0:repo-documents:template.ott#odf-document",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_kind": "ott",
+        "format": "ott",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "heading_count": 1,
+        "macro_script_ignored": true,
+        "package_byte_count": 1593,
+        "package_parser": "stdlib-zipfile",
+        "package_part_count": 4,
+        "paragraph_count": 2,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 2,
+        "sheet_count": 0,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": true,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3320
+      },
+      "path": "template.ott",
+      "raw_kind": "document.odf_document",
+      "raw_observation_ordinal": 29,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#odf-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:30:template.ott:0-0:repo-documents:template.ott#odf-heading:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "document.file:file%3Atemplate.ott",
+        "format": "ott",
+        "heading_level": 1,
+        "heading_summary": "Overview",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sections/overview",
+        "redacted": false,
+        "source_part": "content.xml"
+      },
+      "path": "template.ott",
+      "raw_kind": "document.odf_text",
+      "raw_observation_ordinal": 30,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#odf-heading:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:31:template.ott:0-0:repo-documents:template.ott#odf-table:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_count": 2,
+        "display_name": "Tasks",
+        "document_key": "document.file:file%3Atemplate.ott",
+        "format": "ott",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks",
+        "redacted": false,
+        "row_count": 1,
+        "source_part": "content.xml"
+      },
+      "path": "template.ott",
+      "raw_kind": "document.odf_table",
+      "raw_observation_ordinal": 31,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#odf-table:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "Status",
+        "format": "ott",
+        "non_empty_count": 1,
+        "parent_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks/columns/status",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "text"
+      },
+      "path": "template.ott",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 32,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#odf-table:1:column:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "Owner",
+        "format": "ott",
+        "non_empty_count": 1,
+        "parent_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks/columns/owner",
+        "redacted": false,
+        "redaction_reason": null,
+        "source_part": "content.xml",
+        "type_summary": "text"
+      },
+      "path": "template.ott",
+      "raw_kind": "document.odf_column",
+      "raw_observation_ordinal": 33,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#odf-table:1:column:2",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:34:template.ott:1-1:repo-documents:template.ott#document-reference:1:0",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ott",
+        "not_fetched": true,
+        "raw_value_summary": "https://example.com/docs2",
+        "redacted": false,
+        "reference_kind": "url",
+        "resolution_reason": "odf-xlink-href",
+        "source_key": "document.section:file%3Atemplate.ott:%2Fsections%2Foverview"
+      },
+      "path": "template.ott",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 34,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#document-reference:1:0",
+      "start_line": 1
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:35:template.ott:1-1:repo-documents:template.ott#document-reference:1:1",
+      "extractor": "repo-documents",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ott",
+        "not_fetched": true,
+        "raw_value_summary": "Pictures/local-image.png",
+        "redacted": false,
+        "reference_kind": "package-part",
+        "resolution_reason": "odf-manifest-entry",
+        "source_key": "document.file:file%3Atemplate.ott"
+      },
+      "path": "template.ott",
+      "raw_kind": "document.reference",
+      "raw_observation_ordinal": 35,
+      "raw_schema_version": 1,
+      "raw_source_id": "template.ott#document-reference:1:1",
+      "start_line": 1
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "document.column:file%3Anotes.odt:%2Ftables%2Ftasks%2Fcolumns%2Fowner",
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Anotes.odt:%2Ftables%2Ftasks%2Fcolumns%2Fstatus",
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Famount",
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Fapi_key",
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Fitem",
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Famount",
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Fapi_key",
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Fitem",
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Atemplate.ott:%2Ftables%2Ftasks%2Fcolumns%2Fowner",
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.column:file%3Atemplate.ott:%2Ftables%2Ftasks%2Fcolumns%2Fstatus",
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "evidence_key": "evidence:13:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "evidence_key": "evidence:7:notes.odt:0-0:repo-documents:notes.odt#odf-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "evidence_key": "evidence:8:notes.odt:0-0:repo-documents:notes.odt#odf-heading:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "evidence_key": "evidence:9:notes.odt:0-0:repo-documents:notes.odt#odf-table:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "evidence_key": "evidence:15:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "evidence_key": "evidence:16:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "evidence_key": "evidence:20:sheet-template.ots:1-1:repo-documents:sheet-template.ots#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "evidence_key": "evidence:22:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "evidence_key": "evidence:23:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "evidence_key": "evidence:27:spreadsheet.ods:1-1:repo-documents:spreadsheet.ods#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "evidence_key": "evidence:29:template.ott:0-0:repo-documents:template.ott#odf-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "evidence_key": "evidence:30:template.ott:0-0:repo-documents:template.ott#odf-heading:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "evidence_key": "evidence:31:template.ott:0-0:repo-documents:template.ott#odf-table:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "evidence_key": "evidence:35:template.ott:1-1:repo-documents:template.ott#document-reference:1:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.odt:%2Fsections%2Foverview",
+      "evidence_key": "evidence:12:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.odt:%2Fsections%2Foverview",
+      "evidence_key": "evidence:8:notes.odt:0-0:repo-documents:notes.odt#odf-heading:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.section:file%3Atemplate.ott:%2Fsections%2Foverview",
+      "evidence_key": "evidence:30:template.ott:0-0:repo-documents:template.ott#odf-heading:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.section:file%3Atemplate.ott:%2Fsections%2Foverview",
+      "evidence_key": "evidence:34:template.ott:1-1:repo-documents:template.ott#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:16:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:23:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+      "evidence_key": "evidence:9:notes.odt:0-0:repo-documents:notes.odt#odf-table:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+      "evidence_key": "evidence:31:template.ott:0-0:repo-documents:template.ott#odf-table:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs2",
+      "evidence_key": "evidence:12:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs2",
+      "evidence_key": "evidence:34:template.ott:1-1:repo-documents:template.ott#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:dangerous.odt",
+      "evidence_key": "evidence:0:dangerous.odt:0-0:repo-discovery:dangerous.odt",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:ignored.docx",
+      "evidence_key": "evidence:2:ignored.docx:0-0:repo-discovery:ignored.docx",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:ignored.xlsx",
+      "evidence_key": "evidence:3:ignored.xlsx:0-0:repo-discovery:ignored.xlsx",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:malformed.odt",
+      "evidence_key": "evidence:4:malformed.odt:0-0:repo-discovery:malformed.odt",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "evidence_key": "evidence:10:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "evidence_key": "evidence:11:notes.odt:0-0:repo-documents:notes.odt#odf-table:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "evidence_key": "evidence:6:notes.odt:0-0:repo-discovery:notes.odt",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "evidence_key": "evidence:7:notes.odt:0-0:repo-documents:notes.odt#odf-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "evidence_key": "evidence:8:notes.odt:0-0:repo-documents:notes.odt#odf-heading:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "evidence_key": "evidence:9:notes.odt:0-0:repo-documents:notes.odt#odf-table:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "evidence_key": "evidence:14:sheet-template.ots:0-0:repo-discovery:sheet-template.ots",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "evidence_key": "evidence:15:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "evidence_key": "evidence:16:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "evidence_key": "evidence:17:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "evidence_key": "evidence:18:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "evidence_key": "evidence:19:sheet-template.ots:0-0:repo-documents:sheet-template.ots#odf-sheet:1:column:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "evidence_key": "evidence:21:spreadsheet.ods:0-0:repo-discovery:spreadsheet.ods",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "evidence_key": "evidence:22:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "evidence_key": "evidence:23:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "evidence_key": "evidence:24:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "evidence_key": "evidence:25:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "evidence_key": "evidence:26:spreadsheet.ods:0-0:repo-documents:spreadsheet.ods#odf-sheet:1:column:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "evidence_key": "evidence:28:template.ott:0-0:repo-discovery:template.ott",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "evidence_key": "evidence:29:template.ott:0-0:repo-documents:template.ott#odf-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "evidence_key": "evidence:30:template.ott:0-0:repo-documents:template.ott#odf-heading:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "evidence_key": "evidence:31:template.ott:0-0:repo-documents:template.ott#odf-table:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "evidence_key": "evidence:32:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "evidence_key": "evidence:33:template.ott:0-0:repo-documents:template.ott#odf-table:1:column:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:document.reference:odf-internal-package-part",
+      "evidence_key": "evidence:13:notes.odt:1-1:repo-documents:notes.odt#document-reference:1:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:document.reference:odf-internal-package-part",
+      "evidence_key": "evidence:20:sheet-template.ots:1-1:repo-documents:sheet-template.ots#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:document.reference:odf-internal-package-part",
+      "evidence_key": "evidence:27:spreadsheet.ods:1-1:repo-documents:spreadsheet.ods#document-reference:1:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:document.reference:odf-internal-package-part",
+      "evidence_key": "evidence:35:template.ott:1-1:repo-documents:template.ott#document-reference:1:1",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "document.column:file%3Anotes.odt:%2Ftables%2Ftasks%2Fcolumns%2Fowner",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Owner",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "Owner",
+        "format": "odt",
+        "non_empty_count": 1,
+        "pointer": "/tables/tasks/columns/owner",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Anotes.odt:%2Ftables%2Ftasks%2Fcolumns%2Fstatus",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Status",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "Status",
+        "format": "odt",
+        "non_empty_count": 1,
+        "pointer": "/tables/tasks/columns/status",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Famount",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "amount",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "amount",
+        "format": "ots",
+        "non_empty_count": 2,
+        "pointer": "/sheets/budget/columns/amount",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "decimal"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Fapi_key",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "[redacted]",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 3,
+        "column_name_summary": "[redacted]",
+        "format": "ots",
+        "non_empty_count": 1,
+        "pointer": "/sheets/budget/columns/api_key",
+        "redacted": true,
+        "redaction_reason": "secret-prone-column-or-value",
+        "type_summary": "redacted"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Asheet-template.ots:%2Fsheets%2Fbudget%2Fcolumns%2Fitem",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "item",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "item",
+        "format": "ots",
+        "non_empty_count": 2,
+        "pointer": "/sheets/budget/columns/item",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Famount",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "amount",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "amount",
+        "format": "ods",
+        "non_empty_count": 2,
+        "pointer": "/sheets/budget/columns/amount",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "decimal"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Fapi_key",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "[redacted]",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 3,
+        "column_name_summary": "[redacted]",
+        "format": "ods",
+        "non_empty_count": 1,
+        "pointer": "/sheets/budget/columns/api_key",
+        "redacted": true,
+        "redaction_reason": "secret-prone-column-or-value",
+        "type_summary": "redacted"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget%2Fcolumns%2Fitem",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "item",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "item",
+        "format": "ods",
+        "non_empty_count": 2,
+        "pointer": "/sheets/budget/columns/item",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Atemplate.ott:%2Ftables%2Ftasks%2Fcolumns%2Fowner",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Owner",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 2,
+        "column_name_summary": "Owner",
+        "format": "ott",
+        "non_empty_count": 1,
+        "pointer": "/tables/tasks/columns/owner",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.column:file%3Atemplate.ott:%2Ftables%2Ftasks%2Fcolumns%2Fstatus",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Status",
+      "graph_key_version": 1,
+      "kind": "document.column",
+      "metadata": {
+        "column_index": 1,
+        "column_name_summary": "Status",
+        "format": "ott",
+        "non_empty_count": 1,
+        "pointer": "/tables/tasks/columns/status",
+        "redacted": false,
+        "redaction_reason": null,
+        "type_summary": "text"
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Anotes.odt",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "notes.odt",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "document_kind": "odt",
+        "format": "odt",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "heading_count": 1,
+        "macro_script_ignored": true,
+        "package_byte_count": 1593,
+        "package_part_count": 4,
+        "paragraph_count": 2,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 2,
+        "sheet_count": 0,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": false,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3320
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Asheet-template.ots",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "sheet-template.ots",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "column_count_summary": 3,
+        "document_kind": "ots",
+        "format": "ots",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "heading_count": 0,
+        "macro_script_ignored": true,
+        "package_byte_count": 1605,
+        "package_part_count": 4,
+        "paragraph_count": 0,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 1,
+        "row_count_summary": 2,
+        "sheet_count": 1,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": true,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3531
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Aspreadsheet.ods",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "spreadsheet.ods",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "column_count_summary": 3,
+        "document_kind": "ods",
+        "format": "ods",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "heading_count": 0,
+        "macro_script_ignored": true,
+        "package_byte_count": 1605,
+        "package_part_count": 4,
+        "paragraph_count": 0,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 1,
+        "row_count_summary": 2,
+        "sheet_count": 1,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": false,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3531
+      }
+    },
+    {
+      "canonical_key": "document.file:file%3Atemplate.ott",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "template.ott",
+      "graph_key_version": 1,
+      "kind": "document.file",
+      "metadata": {
+        "document_kind": "ott",
+        "format": "ott",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "heading_count": 1,
+        "macro_script_ignored": true,
+        "package_byte_count": 1593,
+        "package_part_count": 4,
+        "paragraph_count": 2,
+        "parsed_part_count": 4,
+        "parser": "stdlib-document-conservative",
+        "reference_count": 2,
+        "sheet_count": 0,
+        "skipped_part_count": 0,
+        "style_count": 1,
+        "table_count": 1,
+        "template": true,
+        "title_summary": "DOCS2 Fixture",
+        "total_uncompressed_bytes": 3320
+      }
+    },
+    {
+      "canonical_key": "document.section:file%3Anotes.odt:%2Fsections%2Foverview",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Overview",
+      "graph_key_version": 1,
+      "kind": "document.section",
+      "metadata": {
+        "format": "odt",
+        "heading_level": 1,
+        "heading_summary": "Overview",
+        "pointer": "/sections/overview",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.section:file%3Atemplate.ott:%2Fsections%2Foverview",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Overview",
+      "graph_key_version": 1,
+      "kind": "document.section",
+      "metadata": {
+        "format": "ott",
+        "heading_level": 1,
+        "heading_summary": "Overview",
+        "pointer": "/sections/overview",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "document.sheet:file%3Asheet-template.ots:%2Fsheets%2Fbudget",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Budget",
+      "graph_key_version": 1,
+      "kind": "document.sheet",
+      "metadata": {
+        "column_count": 3,
+        "display_name": "Budget",
+        "format": "ots",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget",
+        "redacted": false,
+        "row_count": 2
+      }
+    },
+    {
+      "canonical_key": "document.sheet:file%3Aspreadsheet.ods:%2Fsheets%2Fbudget",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Budget",
+      "graph_key_version": 1,
+      "kind": "document.sheet",
+      "metadata": {
+        "column_count": 3,
+        "display_name": "Budget",
+        "format": "ods",
+        "formula_count": 1,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/sheets/budget",
+        "redacted": false,
+        "row_count": 2
+      }
+    },
+    {
+      "canonical_key": "document.table:file%3Anotes.odt:%2Ftables%2Ftasks",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Tasks",
+      "graph_key_version": 1,
+      "kind": "document.table",
+      "metadata": {
+        "column_count": 2,
+        "display_name": "Tasks",
+        "format": "odt",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks",
+        "redacted": false,
+        "row_count": 1
+      }
+    },
+    {
+      "canonical_key": "document.table:file%3Atemplate.ott:%2Ftables%2Ftasks",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Tasks",
+      "graph_key_version": 1,
+      "kind": "document.table",
+      "metadata": {
+        "column_count": 2,
+        "display_name": "Tasks",
+        "format": "ott",
+        "formula_count": 0,
+        "formulas_evaluated": false,
+        "header_present": true,
+        "parser": "stdlib-document-conservative",
+        "pointer": "/tables/tasks",
+        "redacted": false,
+        "row_count": 1
+      }
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Fdocs2",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Fdocs2",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:dangerous.odt",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "dangerous.odt",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "64bf5305e923f44ffb28702801fbb4a3343979d87a48c7f2da8c2def2a94a4ae",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:ignored.docx",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ignored.docx",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "18641b3fe26fe8ca16e249f2ae3972b50fa1d5e5159c2639b130da2990d1c763",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:ignored.xlsx",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ignored.xlsx",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "aa13ef1cf8eb5d65f5dba613334d3a563e81f06f6acbc6355ab4713277ae3dfe",
+        "executable": false,
+        "generated": false,
+        "language": "unknown",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:malformed.odt",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "malformed.odt",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "f300f6a921e42e9c177aa31cb9085db9067972ed4901536757e8e339158c6814",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:notes.odt",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "notes.odt",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "eba3323ec2ae781a9b4e3864e61296cf951503e83f93ceedf9c45eb1ef5a275c",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:sheet-template.ots",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "sheet-template.ots",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "5bd137d0ff89e9b66b0d0b84336adb39b460735e654d74611dd4df16e104710b",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:spreadsheet.ods",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "spreadsheet.ods",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "5bd137d0ff89e9b66b0d0b84336adb39b460735e654d74611dd4df16e104710b",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:template.ott",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "template.ott",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "eba3323ec2ae781a9b4e3864e61296cf951503e83f93ceedf9c45eb1ef5a275c",
+        "executable": false,
+        "generated": false,
+        "language": "odf",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "unknown:document.reference:odf-internal-package-part",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "odf-internal-package-part",
+      "graph_key_version": 1,
+      "kind": "unknown",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 42,
+    "edges": 26,
+    "errors": 0,
+    "evidence": 36,
+    "infos": 0,
+    "node_evidence_links": 86,
+    "nodes": 30,
+    "raw_observations": 36,
+    "warnings": 0
+  }
+}

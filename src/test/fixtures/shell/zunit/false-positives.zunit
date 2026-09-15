@@ -1,0 +1,56 @@
+# Static extraction fixture only. Do not execute.
+
+# describe "commented suite"
+# test "commented test" {
+#   run rm -rf ./out
+#   assert_success
+#   mock_command git status --short
+#   stub_command curl --fail https://example.invalid/api
+#   skip "commented"
+# }
+
+example_string='test "string test" { run curl https://example.invalid }'
+another_string="describe \"string suite\""
+assertion_string='assert_output "not extracted"'
+mock_string='mock_command docker ps'
+stub_string='stub_command curl --fail https://example.invalid/api'
+
+example_array=(
+  'test "array test" { run ./bin/example }'
+  'assert_success'
+  'mock_command git status --short'
+  'stub_command curl --fail https://example.invalid/api'
+)
+
+cat <<'ZUNIT_EXAMPLE'
+describe "heredoc suite"
+test "heredoc test" {
+  run ./bin/example
+  assert_output "heredoc output"
+  mock_command git status --short
+  skip "heredoc skip"
+}
+ZUNIT_EXAMPLE
+
+case "$1" in
+  test)
+    print -r -- "case label, not a test"
+    ;;
+  assert_success)
+    print -r -- "case label, not an assertion"
+    ;;
+  mock_command)
+    print -r -- "case label, not a mock"
+    ;;
+  skip)
+    print -r -- "case label, not a skip"
+    ;;
+esac
+
+assert_helper() {
+  print -r -- "ordinary helper function"
+}
+
+mock_command_helper() {
+  print -r -- "ordinary helper function"
+}

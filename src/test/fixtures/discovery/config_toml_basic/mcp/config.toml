@@ -1,0 +1,27 @@
+[mcp_servers.repomap]
+command = "python3"
+args = ["-m", "repomap_kg.server.mcp"]
+cwd = "src/main/python"
+docs_url = "https://example.com/docs"
+api_key = "cfg2-sensitive-api-key"
+dotted.guide_path = "docs/guide.md"
+
+[mcp_servers.repomap.env]
+PYTHONPATH = "src/main/python"
+TOKEN = "cfg2-sensitive-token"
+
+[projects.repo-map]
+root_path = "projects/repo-map"
+pg_database = "repomap_repo_map"
+
+[[tools]]
+name = "repomap"
+command = "repomap-kg"
+path = "bin/tool"
+
+[[tools]]
+id = "helper"
+command = "python3"
+
+[[anonymous]]
+command = "do-not-index-with-number"

@@ -1,0 +1,4 @@
+source "https://example.invalid/rubygems"
+
+gem "rack", "~> 3.0"
+gem "minitest", "~> 5.0"

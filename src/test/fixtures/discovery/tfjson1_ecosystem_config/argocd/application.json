@@ -1,0 +1,18 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Application",
+  "metadata": {
+    "name": "app"
+  },
+  "spec": {
+    "source": {
+      "repoURL": "https://example.invalid/repo.git",
+      "path": "deploy/app",
+      "targetRevision": "main"
+    },
+    "destination": {
+      "namespace": "default",
+      "server": "https://kubernetes.default.svc"
+    }
+  }
+}

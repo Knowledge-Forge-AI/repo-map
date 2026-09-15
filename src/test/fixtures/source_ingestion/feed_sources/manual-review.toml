@@ -1,0 +1,20 @@
+[source]
+id = "example-manual-review-feed"
+type = "feed.rss"
+display_name = "Example Manual Review Feed"
+
+[policy]
+status = "manual_review_required"
+preferred_method = "rss"
+rate_limit = "1 request per 15 minutes"
+timeout_seconds = 10
+max_artifact_bytes = 1048576
+max_items_per_run = 100
+robots_policy = "fixture"
+terms_policy = "fixture"
+requires_manual_review = true
+
+[acquisition]
+url = "https://example.invalid/manual-review.xml"
+method = "GET"
+user_agent = "RepoMap feed ingestion test fixture"

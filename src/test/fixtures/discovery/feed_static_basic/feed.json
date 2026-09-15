@@ -1,0 +1,45 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "RepoMap JSON Feed Fixture",
+  "home_page_url": "https://example.com/repomap/",
+  "feed_url": "https://example.com/repomap/feed.json",
+  "authors": [
+    {
+      "name": "JSON Feed Writer",
+      "email": "json-writer@example.com"
+    }
+  ],
+  "items": [
+    {
+      "id": "json-item-1",
+      "url": "https://example.com/repomap/json/1",
+      "title": "JSON ID Item",
+      "content_html": "<p>JSON fixture content.</p><script>throw new Error()</script>",
+      "date_published": "2026-06-30T12:45:00Z",
+      "tags": ["json-category"],
+      "attachments": [
+        {
+          "url": "assets/json-item.json",
+          "mime_type": "application/json"
+        }
+      ]
+    },
+    {
+      "url": "articles/json-link-fallback.html",
+      "title": "JSON Link Fallback",
+      "date_modified": "2026-06-30T13:45:00Z"
+    },
+    {
+      "title": "JSON Weak Fallback",
+      "date_published": "2026-06-30T14:45:00Z"
+    },
+    {
+      "id": "json-duplicate",
+      "title": "JSON Duplicate A"
+    },
+    {
+      "id": "json-duplicate",
+      "title": "JSON Duplicate B"
+    }
+  ]
+}

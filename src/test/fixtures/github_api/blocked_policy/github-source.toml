@@ -1,0 +1,49 @@
+[source]
+source_id = "github-blocked-fixture"
+source_type = "api.rest"
+api_source_class = "api.github.repository"
+provider_name = "GitHub"
+provider_product = "GitHub REST API"
+policy_status = "blocked"
+owner = "fixture-owner"
+repository = "fixture-repo"
+repository_visibility = "public"
+read_only = true
+mutation_allowed = false
+credential_mode = "none_public_readonly"
+
+[consent]
+consent_ref = "local_consent_ref:github-blocked-fixture-2026-07"
+authorized_operations = ["read"]
+authorized_data_classes = ["repository_metadata"]
+revoked = false
+mutation_allowed = false
+
+[limits]
+max_requests_per_run = 1
+max_requests_per_minute = 10
+max_pages_per_endpoint = 1
+max_items_per_endpoint = 100
+max_bytes_per_run = 1048576
+max_concurrent_requests = 1
+max_retries = 0
+
+[retention]
+policy = "local_user_controlled"
+raw_response_retention = "minimized"
+redacted_response_retention = "retain"
+
+[redaction]
+profile = "strict"
+sensitivity = "public_metadata"
+
+[[endpoints]]
+name = "repository"
+method = "GET"
+path = "/repos/{owner}/{repo}"
+purpose = "Export repository metadata"
+response_type = "application/json"
+max_page_size = 1
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/repository.json"

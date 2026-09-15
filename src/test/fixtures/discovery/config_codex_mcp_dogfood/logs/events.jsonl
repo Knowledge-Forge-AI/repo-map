@@ -1,0 +1,4 @@
+{"event": "tool-call", "command": "repomap-kg", "path": "mcp/repo-map/config.json", "env": {"REPOMAP_MCP_CONFIG": "$REPOMAP_MCP_CONFIG"}}
+{"event": "open-docs", "docs_url": "https://example.com/log"}
+{"event":
+{"event": "secret", "token": "cfg3-jsonl-secret-token"}

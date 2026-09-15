@@ -1,0 +1,207 @@
+{
+  "schema": "repomap-pre-review-tools-v1",
+  "tools": {
+    "golangci-lint": {
+      "product": "golangci-lint",
+      "repository": "https://github.com/golangci/golangci-lint",
+      "license": "GPL-3.0-only",
+      "version": "2.6.2",
+      "immutable_pin": "v2.6.2",
+      "integrity": "SHA-256 over the official release archive",
+      "linux_architecture_support": ["amd64"],
+      "network_behavior": "bootstrap downloads one exact GitHub release asset; scan may resolve Go modules through the configured Go proxy",
+      "exit_semantics": "0 clean; nonzero finding, configuration, bootstrap, or internal failure blocks",
+      "machine_readable_output": "golangci-lint JSON output is supported; the unit runner currently emits bounded text",
+      "current_baseline": "zero findings",
+      "suppression_mechanism": ".golangci.yml and source-level nolint directives",
+      "blocking_mapping": "every nonzero exit blocks",
+      "sanitized_artifact_policy": "paths and diagnostic text only; no environment capture",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "golangci-lint-2.6.2-darwin-arm64.tar.gz",
+          "binary_path": "golangci-lint-2.6.2-darwin-arm64/golangci-lint",
+          "sha256": "6164de2b9a9e6b4b8deea57c5072ada5d6d41bf5cca0b2f744e7b3d6e818fe0d",
+          "url": "https://github.com/golangci/golangci-lint/releases/download/v2.6.2/golangci-lint-2.6.2-darwin-arm64.tar.gz"
+        },
+        "linux-amd64": {
+          "archive": "golangci-lint-2.6.2-linux-amd64.tar.gz",
+          "binary_path": "golangci-lint-2.6.2-linux-amd64/golangci-lint",
+          "sha256": "499c864b5fd9841c4fa8e80b5e2be30f73f085cf186f1b111ff81a2783b7de12",
+          "url": "https://github.com/golangci/golangci-lint/releases/download/v2.6.2/golangci-lint-2.6.2-linux-amd64.tar.gz"
+        }
+      }
+    },
+    "actionlint": {
+      "product": "actionlint",
+      "repository": "https://github.com/rhysd/actionlint",
+      "license": "MIT",
+      "version": "1.7.12",
+      "immutable_pin": "v1.7.12",
+      "integrity": "SHA-256 over official release archives",
+      "linux_architecture_support": ["amd64"],
+      "network_behavior": "bootstrap downloads one exact GitHub release asset; scan is offline",
+      "exit_semantics": "0 clean; nonzero finding or tool failure blocks",
+      "machine_readable_output": "JSON Lines through a repository-owned format template",
+      "current_baseline": "zero findings",
+      "suppression_mechanism": "workflow-source actionlint comments",
+      "blocking_mapping": "every finding and every tool failure blocks",
+      "sanitized_artifact_policy": "workflow-relative paths and diagnostics only",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "actionlint_1.7.12_darwin_arm64.tar.gz",
+          "binary_path": "actionlint",
+          "sha256": "aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f",
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_arm64.tar.gz"
+        },
+        "linux-amd64": {
+          "archive": "actionlint_1.7.12_linux_amd64.tar.gz",
+          "binary_path": "actionlint",
+          "sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz"
+        }
+      }
+    },
+    "zizmor": {
+      "product": "zizmor",
+      "repository": "https://github.com/zizmorcore/zizmor",
+      "license": "MIT",
+      "version": "1.29.0",
+      "immutable_pin": "v1.29.0",
+      "integrity": "SHA-256 over official release archives",
+      "linux_architecture_support": ["amd64"],
+      "network_behavior": "bootstrap downloads one exact GitHub release asset; scan uses --offline",
+      "exit_semantics": "0 clean; finding exits are accepted only within the explicit no-regression baseline; tool failures block",
+      "machine_readable_output": "JSON",
+      "current_baseline": "repository-owned finding-count ratchet",
+      "suppression_mechanism": "zizmor workflow comments recorded by suppression visibility",
+      "blocking_mapping": "finding count above baseline or any invalid/internal result blocks",
+      "sanitized_artifact_policy": "workflow-relative finding metadata only",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "zizmor-aarch64-apple-darwin.tar.gz",
+          "binary_path": "zizmor",
+          "sha256": "720322fade9e83a9c7953944c438f2ba942636b86b96a8f0e6b15ce94c8a6b6f",
+          "url": "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-aarch64-apple-darwin.tar.gz"
+        },
+        "linux-amd64": {
+          "archive": "zizmor-x86_64-unknown-linux-gnu.tar.gz",
+          "binary_path": "zizmor",
+          "sha256": "dd96df044a6e8538d5f423790f453bdd03d49e5b2bcc38214acc41a2f1297839",
+          "url": "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-x86_64-unknown-linux-gnu.tar.gz"
+        }
+      }
+    },
+    "betterleaks": {
+      "product": "Betterleaks",
+      "repository": "https://github.com/betterleaks/betterleaks",
+      "license": "MIT",
+      "version": "1.8.1",
+      "immutable_pin": "v1.8.1",
+      "integrity": "SHA-256 over official release archives",
+      "linux_architecture_support": ["amd64"],
+      "network_behavior": "bootstrap downloads one exact GitHub release asset; scan is static and local with validation disabled",
+      "exit_semantics": "0 clean; finding or tool failure blocks",
+      "machine_readable_output": "JSON",
+      "current_baseline": "zero findings",
+      "suppression_mechanism": "repository Betterleaks configuration; suppressions are inventoried",
+      "blocking_mapping": "every finding and every tool failure blocks",
+      "sanitized_artifact_policy": "100 percent matched-value redaction; no validation callbacks",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "betterleaks_1.8.1_darwin_arm64.tar.gz",
+          "binary_path": "betterleaks",
+          "sha256": "8e80f33b5f2a7426b390347b9fd466033723cb94b6bdffa7572632e2eaec964e",
+          "url": "https://github.com/betterleaks/betterleaks/releases/download/v1.8.1/betterleaks_1.8.1_darwin_arm64.tar.gz"
+        },
+        "linux-amd64": {
+          "archive": "betterleaks_1.8.1_linux_x64.tar.gz",
+          "binary_path": "betterleaks",
+          "sha256": "efa407244e1ea8e35f582b8a42becdeac08bdead04f68eb752adda722d583c2a",
+          "url": "https://github.com/betterleaks/betterleaks/releases/download/v1.8.1/betterleaks_1.8.1_linux_x64.tar.gz"
+        }
+      }
+    },
+    "hadolint": {
+      "product": "Hadolint",
+      "repository": "https://github.com/hadolint/hadolint",
+      "license": "GPL-3.0-only",
+      "version": "2.15.1",
+      "immutable_pin": "v2.15.1",
+      "integrity": "SHA-256 over official release binaries",
+      "linux_architecture_support": ["amd64"],
+      "network_behavior": "bootstrap downloads one exact GitHub release asset; scan is offline",
+      "exit_semantics": "0 clean; finding exits are accepted only within the explicit no-regression baseline; tool failures block",
+      "machine_readable_output": "JSON",
+      "current_baseline": "repository-owned finding-count ratchet",
+      "suppression_mechanism": "Dockerfile hadolint comments recorded by suppression visibility",
+      "blocking_mapping": "finding count above baseline or any invalid/internal result blocks",
+      "sanitized_artifact_policy": "tracked Dockerfile-relative diagnostics only",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "hadolint-macos-arm64",
+          "binary_path": "hadolint",
+          "format": "raw",
+          "sha256": "5c09f3213f8e40406abe048233d985eebef336d4a6a20021be47fadb6cf480a2",
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-macos-arm64"
+        },
+        "linux-amd64": {
+          "archive": "hadolint-linux-x86_64",
+          "binary_path": "hadolint",
+          "format": "raw",
+          "sha256": "c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507",
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64"
+        }
+      }
+    },
+    "uv": {
+      "product": "uv",
+      "repository": "https://github.com/astral-sh/uv",
+      "license": "Apache-2.0 OR MIT",
+      "version": "0.9.30",
+      "immutable_pin": "0.9.30",
+      "integrity": "SHA-256 over official release archives",
+      "linux_architecture_support": ["amd64"],
+      "network_behavior": "bootstrap downloads one exact GitHub release asset; drift checks query explicit PyPI authority through the repository-owned immutable upload cutoff",
+      "exit_semantics": "0 generated successfully; every nonzero exit blocks",
+      "machine_readable_output": "deterministic requirements locks",
+      "current_baseline": "both tracked requirements locks reproduce byte-for-byte",
+      "suppression_mechanism": "none",
+      "blocking_mapping": "generation failure or byte drift blocks",
+      "sanitized_artifact_policy": "package names, versions, and distribution hashes only",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "uv-aarch64-apple-darwin.tar.gz", "binary_path": "uv-aarch64-apple-darwin/uv", "sha256": "03a5d9ec7f7d588446b2ec226d13ff6300055e55365eca8f3fab39f342b0e805", "url": "https://github.com/astral-sh/uv/releases/download/0.9.30/uv-aarch64-apple-darwin.tar.gz"
+        },
+        "linux-amd64": {
+          "archive": "uv-x86_64-unknown-linux-gnu.tar.gz", "binary_path": "uv-x86_64-unknown-linux-gnu/uv", "sha256": "8b3762374972daa7a74bbc6896cc73229ca69a07403dd9f9ea3805a51ffd7582", "url": "https://github.com/astral-sh/uv/releases/download/0.9.30/uv-x86_64-unknown-linux-gnu.tar.gz"
+        }
+      }
+    },
+    "pip-audit": {
+      "product": "pip-audit", "repository": "https://github.com/pypa/pip-audit", "license": "Apache-2.0", "version": "2.10.1", "immutable_pin": "PyPI 2.10.1 with transitive hashed lock", "integrity": "uv-generated SHA-256 hashes for every Python distribution", "linux_architecture_support": ["amd64"], "network_behavior": "bootstrap uses PyPI; audit queries the PyPI vulnerability service without uploading source", "exit_semantics": "0 clean; 1 vulnerabilities; operational failures block", "machine_readable_output": "JSON", "current_baseline": "repository-owned vulnerability-count ratchet", "suppression_mechanism": "explicit vulnerability IDs only", "blocking_mapping": "new vulnerability or invalid/internal result blocks", "sanitized_artifact_policy": "package names, versions, and vulnerability IDs only"
+    },
+    "govulncheck": {
+      "product": "govulncheck", "repository": "https://github.com/golang/vuln", "license": "BSD-3-Clause", "version": "1.1.4", "immutable_pin": "golang.org/x/vuln/cmd/govulncheck@v1.1.4", "integrity": "Go module checksum database", "linux_architecture_support": ["amd64"], "network_behavior": "bootstrap uses the Go proxy/checksum database; audit queries the Go vulnerability database without uploading source", "exit_semantics": "0 clean; 3 vulnerabilities; operational failures block", "machine_readable_output": "JSON", "current_baseline": "zero reachable findings", "suppression_mechanism": "none adopted", "blocking_mapping": "every reachable finding and every failure blocks", "sanitized_artifact_policy": "module/package/symbol and vulnerability metadata only"
+    },
+    "semgrep": {
+      "product": "Semgrep CLI", "repository": "https://github.com/semgrep/semgrep", "license": "LGPL-2.1-or-later", "version": "1.174.0", "immutable_pin": "PyPI 1.174.0 with transitive hashed lock", "integrity": "uv-generated SHA-256 hashes for every Python distribution", "linux_architecture_support": ["amd64"], "network_behavior": "bootstrap uses PyPI; scan uses repository-owned rules with metrics off and no login", "exit_semantics": "0 clean; 1 finding under --error; operational failures block", "machine_readable_output": "JSON", "current_baseline": "zero findings for repository-owned rules", "suppression_mechanism": "nosemgrep directives recorded by suppression visibility", "blocking_mapping": "every finding and every failure blocks", "sanitized_artifact_policy": "relative paths, rule IDs, and bounded diagnostics only"
+    },
+    "malskanner": {
+      "product": "MalSkanner", "repository": "https://github.com/octolabo/malskanner", "license": "MIT", "version": "0.1.3", "immutable_pin": "npm 0.1.3 with package-lock integrity", "integrity": "npm package-lock v3 SHA-512 integrity", "linux_architecture_support": ["amd64"], "network_behavior": "bootstrap uses npm; deterministic scan is local and never uses --ai or ANTHROPIC_API_KEY", "exit_semantics": "0 OK; 1 WARN; 2 REFUSE", "machine_readable_output": "JSON", "current_baseline": "OK with zero findings", "suppression_mechanism": "none adopted", "blocking_mapping": "RepoMap policy blocks WARN and REFUSE", "sanitized_artifact_policy": "finding metadata only; matched content is omitted from retained evidence", "version_attestation": "npm package and integrity lock are 0.1.3; the upstream 0.1.3 package contains a stale CLI banner reporting 0.1.1"
+    },
+    "prompt-defense-audit": {
+      "product": "Prompt Defense Audit", "repository": "https://github.com/ppcvote/prompt-defense-audit", "license": "MIT", "version": "1.8.1", "immutable_pin": "npm 1.8.1 with package-lock integrity", "integrity": "npm package-lock v3 SHA-512 integrity", "linux_architecture_support": ["amd64"], "network_behavior": "bootstrap uses npm; scan is local regex with no model or API key", "exit_semantics": "0 completed; RepoMap evaluates structured results against a no-regression baseline", "machine_readable_output": "JSON", "current_baseline": "score and finding-count ratchet over the declared effective bundle", "suppression_mechanism": "none adopted", "blocking_mapping": "score decrease or finding-count increase blocks; tool failure blocks", "sanitized_artifact_policy": "counts and grade only; instruction contents are not retained", "attestation_limit": "grade is static prompt coverage, not runtime-resistance proof"
+    },
+    "liquibase": {
+      "product": "Liquibase Community", "repository": "https://github.com/liquibase/liquibase", "license": "Apache-2.0", "version": "5.0.1", "immutable_pin": "v5.0.1", "integrity": "SHA-256 over the official release archive", "linux_architecture_support": ["amd64"], "network_behavior": "bootstrap downloads the exact release; validation uses offline:postgresql without secrets or a database", "exit_semantics": "0 valid; every validation or operational failure blocks", "machine_readable_output": "bounded text", "current_baseline": "both canonical changelog roots validate", "suppression_mechanism": "none adopted", "blocking_mapping": "every nonzero exit blocks", "sanitized_artifact_policy": "changelog-relative validation diagnostics only",
+      "assets": {
+        "darwin-arm64": {
+          "archive": "liquibase-5.0.1.tar.gz", "format": "distribution", "sha256": "3ae11ccdcd4c080e421e5fd043bdbd624d56fcfc9b294d5d9d898cb8b074e449", "url": "https://github.com/liquibase/liquibase/releases/download/v5.0.1/liquibase-5.0.1.tar.gz"
+        },
+        "linux-amd64": {
+          "archive": "liquibase-5.0.1.tar.gz", "format": "distribution", "sha256": "3ae11ccdcd4c080e421e5fd043bdbd624d56fcfc9b294d5d9d898cb8b074e449", "url": "https://github.com/liquibase/liquibase/releases/download/v5.0.1/liquibase-5.0.1.tar.gz"
+        }
+      }
+    }
+  }
+}

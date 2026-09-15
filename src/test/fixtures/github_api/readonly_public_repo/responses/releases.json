@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Fixture release",
+    "tag_name": "v1.0.0",
+    "tarball_url": "https://api.github.com/repos/fixture-owner/fixture-repo/tarball/v1.0.0",
+    "zipball_url": "https://api.github.com/repos/fixture-owner/fixture-repo/zipball/v1.0.0"
+  }
+]

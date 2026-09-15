@@ -1,0 +1,48 @@
+{
+  "terraform": {
+    "required_version": ">= 1.6.0",
+    "required_providers": {
+      "aws": {
+        "source": "hashicorp/aws",
+        "version": "~> 5.0"
+      }
+    },
+    "backend": {
+      "s3": {
+        "bucket": "example-state",
+        "key": "state/app.tfstate"
+      }
+    }
+  },
+  "provider": {
+    "aws": {
+      "region": "us-east-1"
+    }
+  },
+  "resource": {
+    "aws_s3_bucket": {
+      "app": {
+        "bucket": "fixture-app",
+        "secret_key": "fake-tfjson-terraform-secret"
+      }
+    }
+  },
+  "module": {
+    "vpc": {
+      "source": "terraform-aws-modules/vpc/aws"
+    }
+  },
+  "variable": {
+    "region": {
+      "type": "string"
+    }
+  },
+  "output": {
+    "bucket_name": {
+      "value": "${aws_s3_bucket.app.id}"
+    }
+  },
+  "locals": {
+    "name": "app"
+  }
+}

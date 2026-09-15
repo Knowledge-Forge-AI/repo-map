@@ -1,0 +1,12 @@
+{
+  "clone_url": "https://fixture-github-token@example.invalid/fixture-owner/fixture-repo.git",
+  "default_branch": "main",
+  "full_name": "fixture-owner/fixture-repo",
+  "git_url": "git://example.invalid/fixture-owner/fixture-repo.git",
+  "html_url": "https://example.invalid/fixture-owner/fixture-repo",
+  "id": 1001,
+  "name": "fixture-repo",
+  "private": false,
+  "secret": "fixture-secret-value",
+  "ssh_url": "git@example.invalid:fixture-owner/fixture-repo.git"
+}

@@ -1,0 +1,21 @@
+# Static extraction example only. Do not execute.
+
+source "./helpers/common.zsh"
+source "./helpers/assertions.zsh"
+
+fixture_path="./fixtures/public-input.txt"
+
+mock_command git status --short
+stub_command curl --fail https://example.invalid/api
+
+test "uses a static fixture" {
+  run ./bin/example --input "$fixture_path"
+  assert_success
+  assert_output --partial "fixture"
+}
+
+test "uses mock declarations" {
+  mock_command docker ps
+  run ./bin/example containers
+  assert_success
+}

@@ -1,0 +1,28 @@
+[source]
+source_id = "fixture-mixed-corpus"
+source_type = "local.directory"
+corpus_kind = "mixed_corpus"
+policy_status = "allowed_with_limits"
+root_path = "."
+
+[limits]
+max_files = 100
+max_total_bytes = 300000
+max_file_bytes = 30000
+max_depth = 8
+follow_symlinks = false
+include_hidden = false
+
+[include]
+extensions = [".md", ".yaml", ".html", ".js", ".eml", ".py", ".rb"]
+
+[exclude]
+directories = []
+paths = []
+
+[retention]
+policy = "local_user_controlled"
+
+[redaction]
+profile = "strict"
+sensitivity = "private"

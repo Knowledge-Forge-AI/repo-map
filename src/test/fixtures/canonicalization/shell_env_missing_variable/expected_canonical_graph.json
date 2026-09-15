@@ -1,0 +1,103 @@
+{
+  "diagnostics": [
+    {
+      "category": "missing_required_metadata",
+      "field": "metadata.variable",
+      "message": "shell.env observation requires variable metadata",
+      "path": "scripts/build.sh",
+      "placeholder_key": "unknown:env:missing-variable",
+      "raw_observation_ordinal": 0,
+      "raw_source_id": "scripts/build.sh#env-read:1:missing",
+      "severity": "warning",
+      "value": null
+    }
+  ],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:1793314a49ca74af54b0b6028586c55b8e823a75ee9be54542fd14ff53b747f1",
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-read:1:missing",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:1793314a49ca74af54b0b6028586c55b8e823a75ee9be54542fd14ff53b747f1",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "reads_env",
+      "metadata": {
+        "operations": [
+          "read"
+        ]
+      },
+      "source_key": "file:scripts/build.sh",
+      "target_key": "unknown:env:missing-variable"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 1,
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-read:1:missing",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "operation": "read"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.env",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#env-read:1:missing",
+      "start_line": 1
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-read:1:missing",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:env:missing-variable",
+      "evidence_key": "evidence:0:scripts/build.sh:1-1:repo-shell:scripts/build.sh#env-read:1:missing",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "scripts/build.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "unknown:env:missing-variable",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "missing-variable",
+      "graph_key_version": 1,
+      "kind": "unknown",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 1
+  }
+}

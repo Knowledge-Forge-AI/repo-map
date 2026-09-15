@@ -1,0 +1,3 @@
+service:
+  url: https://example.invalid/service
+  apiToken: fake-token-for-redaction

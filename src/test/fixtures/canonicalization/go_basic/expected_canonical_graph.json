@@ -1,0 +1,639 @@
+{
+  "diagnostics": [
+    {
+      "category": "go_canonical_accounting",
+      "field": null,
+      "message": "bounded Go canonicalization accounting",
+      "path": null,
+      "placeholder_key": null,
+      "raw_observation_ordinal": null,
+      "raw_source_id": null,
+      "severity": "info",
+      "value": {
+        "canonical_edges": 10,
+        "canonical_nodes": 6,
+        "duplicate_declaration_evidence": 0,
+        "evidence_links": 18,
+        "identity_collisions": 0,
+        "unresolved_relationships": 1
+      }
+    }
+  ],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:007689988783f0727115eca0669639447d4a7b75f766a5f33ef7d965d362fe0e",
+      "evidence_key": "evidence:3:main.go:1-1:repo-go:main.go#go.package:1:project",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:24ce90ca218a39cab693d1dd65f3e9ddb3e2c34b9efe323db9fb70c8da542207",
+      "evidence_key": "evidence:4:main.go:3-3:repo-go:main.go#go.type:3:Service",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:29d04d883e84aaaaa4976be71e1c7c2eb0f1957ee837e3e86cb23f41bf9aa746",
+      "evidence_key": "evidence:1:go.mod:1-1:repo-go:go.mod#go.module:1:example.invalid/project",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:2e68a6b256901e93119fae839a53c9693ad8ef0c93392ed1524cc0cdf2db7afb",
+      "evidence_key": "evidence:3:main.go:1-1:repo-go:main.go#go.package:1:project",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:32b1a87daa08ff7b886aefb89f1979eb7eac8e06c136e88af9bacb8d7438c5e4",
+      "evidence_key": "evidence:5:main.go:5-5:repo-go:main.go#go.method:5:Service.Run",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:93e9823a38756630b9b660977de34919a5db3d5d25cc6d5619278c1e54935885",
+      "evidence_key": "evidence:7:internal/task/task.go:1-1:repo-go:internal/task/task.go#go.package:1:task",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:b399bdb9ada8dd49ca75958b30b228fbc8a340959949f7162b42ae03aa4d8443",
+      "evidence_key": "evidence:8:main.go:2-2:repo-go:main.go#go.import:2:example.invalid/project/internal/task",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:c5d0e92390aa659f517d6b76aed7f11fc878d8e5214c3378e47ba87aab16b61e",
+      "evidence_key": "evidence:1:go.mod:1-1:repo-go:go.mod#go.module:1:example.invalid/project",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:e03ab60c754d1f60db3256c4a61f29a96c279938da5c88001554783383f5f152",
+      "evidence_key": "evidence:7:internal/task/task.go:1-1:repo-go:internal/task/task.go#go.package:1:task",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:ef2335b0435efdaf76f86fd138ea6e71e7db15ab9c39a697461e706de60081b3",
+      "evidence_key": "evidence:5:main.go:5-5:repo-go:main.go#go.method:5:Service.Run",
+      "link_kind": "observed"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:c5d0e92390aa659f517d6b76aed7f11fc878d8e5214c3378e47ba87aab16b61e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_module",
+        "resolution": "exact"
+      },
+      "source_key": "file:go.mod",
+      "target_key": "go.source-module.v2:canonical-go_basic:.:example.invalid%2Fproject"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e03ab60c754d1f60db3256c4a61f29a96c279938da5c88001554783383f5f152",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_package",
+        "resolution": "exact"
+      },
+      "source_key": "file:internal/task/task.go",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:internal%2Ftask:task"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:2e68a6b256901e93119fae839a53c9693ad8ef0c93392ed1524cc0cdf2db7afb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_package",
+        "resolution": "exact"
+      },
+      "source_key": "file:main.go",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:32b1a87daa08ff7b886aefb89f1979eb7eac8e06c136e88af9bacb8d7438c5e4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "method_of",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-method.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service:Run",
+      "target_key": "go.source-type.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:007689988783f0727115eca0669639447d4a7b75f766a5f33ef7d965d362fe0e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "contains",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_basic:.:example.invalid%2Fproject",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:93e9823a38756630b9b660977de34919a5db3d5d25cc6d5619278c1e54935885",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "contains",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_basic:.:example.invalid%2Fproject",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:internal%2Ftask:task"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:29d04d883e84aaaaa4976be71e1c7c2eb0f1957ee837e3e86cb23f41bf9aa746",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "instance_of",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_basic:.:example.invalid%2Fproject",
+      "target_key": "go.module:example.invalid%2Fproject"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ef2335b0435efdaf76f86fd138ea6e71e7db15ab9c39a697461e706de60081b3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_method",
+        "resolution": "exact"
+      },
+      "source_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+      "target_key": "go.source-method.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service:Run"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:24ce90ca218a39cab693d1dd65f3e9ddb3e2c34b9efe323db9fb70c8da542207",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_type",
+        "resolution": "exact"
+      },
+      "source_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+      "target_key": "go.source-type.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:b399bdb9ada8dd49ca75958b30b228fbc8a340959949f7162b42ae03aa4d8443",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "imports",
+      "metadata": {
+        "alias": null,
+        "blank_import": false,
+        "dot_import": false,
+        "resolution": "bounded_local"
+      },
+      "source_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:internal%2Ftask:task"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:go.mod:0-0:repo-go:go.mod#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "config"
+      },
+      "path": "go.mod",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "go.mod#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:1:go.mod:1-1:repo-go:go.mod#go.module:1:example.invalid/project",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "directive": "module"
+      },
+      "path": "go.mod",
+      "raw_kind": "go.module",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "go.mod#go.module:1:example.invalid/project",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:2:main.go:0-0:repo-go:main.go#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      },
+      "path": "main.go",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "main.go#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:3:main.go:1-1:repo-go:main.go#go.package:1:project",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "external_test_package": false,
+        "generated": false,
+        "package_name": "project",
+        "test_file": false,
+        "vendor": false
+      },
+      "path": "main.go",
+      "raw_kind": "go.package",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "main.go#go.package:1:project",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:4:main.go:3-3:repo-go:main.go#go.type:3:Service",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "exported": true,
+        "generated": false,
+        "package_name": "project",
+        "vendor": false
+      },
+      "path": "main.go",
+      "raw_kind": "go.type",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "main.go#go.type:3:Service",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:5:main.go:5-5:repo-go:main.go#go.method:5:Service.Run",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "exported": true,
+        "generated": false,
+        "package_name": "project",
+        "receiver_base": "Service",
+        "receiver_pointer": true,
+        "vendor": false
+      },
+      "path": "main.go",
+      "raw_kind": "go.method",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "main.go#go.method:5:Service.Run",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:internal/task/task.go:0-0:repo-go:internal/task/task.go#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      },
+      "path": "internal/task/task.go",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "internal/task/task.go#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:7:internal/task/task.go:1-1:repo-go:internal/task/task.go#go.package:1:task",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "external_test_package": false,
+        "generated": false,
+        "package_name": "task",
+        "test_file": false,
+        "vendor": false
+      },
+      "path": "internal/task/task.go",
+      "raw_kind": "go.package",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "internal/task/task.go#go.package:1:task",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:8:main.go:2-2:repo-go:main.go#go.import:2:example.invalid/project/internal/task",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "alias": null,
+        "blank_import": false,
+        "dot_import": false,
+        "package_name": "project"
+      },
+      "path": "main.go",
+      "raw_kind": "go.import",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "main.go#go.import:2:example.invalid/project/internal/task",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 6,
+      "evidence_key": "evidence:9:main.go:6-6:repo-go:main.go#go.call:6:Execute",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "package_name": "project",
+        "resolution": "syntactic"
+      },
+      "path": "main.go",
+      "raw_kind": "go.call",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "main.go#go.call:6:Execute",
+      "start_line": 6
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:go.mod",
+      "evidence_key": "evidence:0:go.mod:0-0:repo-go:go.mod#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:internal/task/task.go",
+      "evidence_key": "evidence:6:internal/task/task.go:0-0:repo-go:internal/task/task.go#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:main.go",
+      "evidence_key": "evidence:2:main.go:0-0:repo-go:main.go#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.module:example.invalid%2Fproject",
+      "evidence_key": "evidence:1:go.mod:1-1:repo-go:go.mod#go.module:1:example.invalid/project",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-method.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service:Run",
+      "evidence_key": "evidence:5:main.go:5-5:repo-go:main.go#go.method:5:Service.Run",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-module.v2:canonical-go_basic:.:example.invalid%2Fproject",
+      "evidence_key": "evidence:1:go.mod:1-1:repo-go:go.mod#go.module:1:example.invalid/project",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+      "evidence_key": "evidence:3:main.go:1-1:repo-go:main.go#go.package:1:project",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:internal%2Ftask:task",
+      "evidence_key": "evidence:7:internal/task/task.go:1-1:repo-go:internal/task/task.go#go.package:1:task",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:internal%2Ftask:task",
+      "evidence_key": "evidence:8:main.go:2-2:repo-go:main.go#go.import:2:example.invalid/project/internal/task",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-type.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service",
+      "evidence_key": "evidence:4:main.go:3-3:repo-go:main.go#go.type:3:Service",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-type.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service",
+      "evidence_key": "evidence:5:main.go:5-5:repo-go:main.go#go.method:5:Service.Run",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:go.mod",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "go.mod",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "config"
+      }
+    },
+    {
+      "canonical_key": "file:internal/task/task.go",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "internal/task/task.go",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      }
+    },
+    {
+      "canonical_key": "file:main.go",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "main.go",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      }
+    },
+    {
+      "canonical_key": "go.module:example.invalid%2Fproject",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.invalid/project",
+      "graph_key_version": 1,
+      "kind": "go.module",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_observed": true,
+        "duplicate_declaration_evidence_count": 0,
+        "identity_format": "go-v1",
+        "module_path": "example.invalid/project",
+        "supporting_evidence_count": 0
+      }
+    },
+    {
+      "canonical_key": "go.source-method.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service:Run",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Service.Run",
+      "graph_key_version": 1,
+      "kind": "go.source_method",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_kind": "go.source_method",
+        "declaration_name": "Run",
+        "duplicate_declaration_evidence_count": 0,
+        "exported": true,
+        "generated": false,
+        "generic": false,
+        "identity_format": "go-source-v2",
+        "receiver_base": "Service",
+        "receiver_pointer": true,
+        "source_package_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-module.v2:canonical-go_basic:.:example.invalid%2Fproject",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.invalid/project",
+      "graph_key_version": 1,
+      "kind": "go.source_module",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_observed": true,
+        "duplicate_declaration_evidence_count": 0,
+        "identity_format": "go-source-v2",
+        "module_path": "example.invalid/project",
+        "repository_relative_module_root": ".",
+        "repository_scope": "canonical-go_basic",
+        "semantic_module_key": "go.module:example.invalid%2Fproject",
+        "supporting_evidence_count": 0
+      }
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "project",
+      "graph_key_version": 1,
+      "kind": "go.source_package",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "duplicate_declaration_evidence_count": 0,
+        "external_test_package": false,
+        "identity_format": "go-source-v2",
+        "identity_source": "module",
+        "import_path": "example.invalid/project",
+        "module_path": "example.invalid/project",
+        "module_relative_directory": ".",
+        "package_name": "project",
+        "repository_relative_directory": ".",
+        "repository_scope": "canonical-go_basic",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:internal%2Ftask:task",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "task",
+      "graph_key_version": 1,
+      "kind": "go.source_package",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "duplicate_declaration_evidence_count": 0,
+        "external_test_package": false,
+        "identity_format": "go-source-v2",
+        "identity_source": "module",
+        "import_path": "example.invalid/project/internal/task",
+        "module_path": "example.invalid/project",
+        "module_relative_directory": "internal/task",
+        "package_name": "task",
+        "repository_relative_directory": "internal/task",
+        "repository_scope": "canonical-go_basic",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-type.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_basic%253A.%253Aexample.invalid%25252Fproject%3A.%3Aproject:Service",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Service",
+      "graph_key_version": 1,
+      "kind": "go.source_type",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_kind": "go.source_type",
+        "declaration_name": "Service",
+        "duplicate_declaration_evidence_count": 0,
+        "exported": true,
+        "generated": false,
+        "generic": false,
+        "identity_format": "go-source-v2",
+        "source_package_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_basic%3A.%3Aexample.invalid%252Fproject:.:project",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 10,
+    "edges": 10,
+    "errors": 0,
+    "evidence": 10,
+    "infos": 1,
+    "node_evidence_links": 11,
+    "nodes": 9,
+    "raw_observations": 10,
+    "warnings": 0
+  }
+}

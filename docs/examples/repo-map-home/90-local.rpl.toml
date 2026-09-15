@@ -1,0 +1,70 @@
+# Local/private RepoMap operations overlay.
+# Copy this pattern into REPOMAP_HOME and keep machine-specific files private.
+# Graph ids below are neutral examples; use your own local names.
+
+schema_version = 1
+
+[[graphs]]
+id = "private-ops"
+name = "Private Ops"
+root_path = "./private-placeholder/private-ops"
+repository_name = "private-ops"
+database = "repomap_private_ops"
+privacy = "private-ops"
+enabled = false
+mcp_visible = false
+extractor_profile = "private-ops"
+refresh_policy = "manual"
+exclude_paths = [
+  ".git",
+  ".serena",
+  ".venv",
+  "__pycache__",
+  "mcp/server-memory/memory.jsonl",
+  "mcp/server-memory/serena",
+]
+
+[[graphs]]
+id = "private-notes"
+name = "Private Notes"
+root_path = "./private-placeholder/private-notes"
+repository_name = "private-notes"
+database = "repomap_private_notes"
+privacy = "private-memory"
+enabled = false
+mcp_visible = false
+extractor_profile = "private-memory"
+refresh_policy = "manual"
+exclude_paths = [
+  ".git",
+  ".serena",
+  "__pycache__",
+]
+
+[[graphs]]
+id = "private-config"
+name = "Private Config"
+root_path = "./private-placeholder/private-config"
+repository_name = "private-config"
+database = "repomap_private_config"
+privacy = "private-config"
+enabled = false
+mcp_visible = false
+extractor_profile = "nix-config"
+refresh_policy = "manual"
+exclude_paths = [
+  ".git",
+  ".serena",
+  ".venv",
+  "__pycache__",
+  "node_modules",
+  ".terraform",
+  "result",
+  "result-*",
+  "secrets.local",
+]
+
+[server_memory]
+enabled = false
+path = "./private-placeholder/server-memory"
+mode = "read_only"

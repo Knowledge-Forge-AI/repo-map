@@ -1,0 +1,7 @@
+project: repo-map
+server:
+  endpoint: http://localhost:9121
+  token: fake-serena-token
+tools:
+  repo_map:
+    path: ./tools/repo-map

@@ -1,0 +1,808 @@
+{
+  "diagnostics": [
+    {
+      "category": "go_canonical_accounting",
+      "field": null,
+      "message": "bounded Go canonicalization accounting",
+      "path": null,
+      "placeholder_key": null,
+      "raw_observation_ordinal": null,
+      "raw_source_id": null,
+      "severity": "info",
+      "value": {
+        "canonical_edges": 12,
+        "canonical_nodes": 8,
+        "duplicate_declaration_evidence": 1,
+        "evidence_links": 21,
+        "identity_collisions": 0,
+        "unresolved_relationships": 1
+      }
+    }
+  ],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:06163a8bd0df2a3a9da21c4993a4b2e9b57b3acf59b39b6631531ddb9648e23c",
+      "evidence_key": "evidence:8:one/main.go:2-2:repo-go:one/main.go#go.function:2:First",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:41996878c61ba7ac9c30ca5c60c467485f570cf4b378c4f0dea348494f6795e8",
+      "evidence_key": "evidence:5:two/go.mod:1-1:repo-go:two/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:4e17332eb08e1a025db887b05e457002380bdebf54d30d47b41d4a9974e586fe",
+      "evidence_key": "evidence:7:two/main.go:1-1:repo-go:two/main.go#go.package:1:main",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:55efcc2e2a93d70311734f2e766e9adb9ef75d349163a710eedf983e440aa0cb",
+      "evidence_key": "evidence:3:one/main.go:1-1:repo-go:one/main.go#go.package:1:main",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:57a1cb891f90490f95b52da48348d85924eb004fe38cb9298f49c406b6adf9cf",
+      "evidence_key": "evidence:10:two/main.go:2-2:repo-go:two/main.go#go.function:2:Second",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:7f4dd2d70b988ec361393de941a97825844bf84aafae72c8ad950f3f12441da3",
+      "evidence_key": "evidence:7:two/main.go:1-1:repo-go:two/main.go#go.package:1:main",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:95d5b45d49434981adff297c5fbc8d8864d31f7fcdb04dae3fb8d9b71719684a",
+      "evidence_key": "evidence:12:two/pkg/pkg.go:1-1:repo-go:two/pkg/pkg.go#go.package:1:pkg",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:cbb4b3ffe5888200bcf7b80222efca096a5d4a4b54fe70464cad94c34695dad0",
+      "evidence_key": "evidence:5:two/go.mod:1-1:repo-go:two/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:cebca25e174728e7571b8ec9716ca9e3438355e522df843d0406c3a0b34a5cb5",
+      "evidence_key": "evidence:1:one/go.mod:1-1:repo-go:one/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:cf50cc394aa80bafcdd6cb5e582ea80c682c032c4c8485f09c95a99174613220",
+      "evidence_key": "evidence:1:one/go.mod:1-1:repo-go:one/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:f0d190716655d51e9f20589a413db9f45247388351c197e1ee55bb51dfa3f85b",
+      "evidence_key": "evidence:12:two/pkg/pkg.go:1-1:repo-go:two/pkg/pkg.go#go.package:1:pkg",
+      "link_kind": "observed"
+    },
+    {
+      "edge_key": "canonical-edge:fe93ee314b6c8f7ad277e60a018a036f75b302f170517ab47128eb9765746f69",
+      "evidence_key": "evidence:3:one/main.go:1-1:repo-go:one/main.go#go.package:1:main",
+      "link_kind": "observed"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cf50cc394aa80bafcdd6cb5e582ea80c682c032c4c8485f09c95a99174613220",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_module",
+        "resolution": "exact"
+      },
+      "source_key": "file:one/go.mod",
+      "target_key": "go.source-module.v2:canonical-go_duplicate_modules:one:example.invalid%2Fshared"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:fe93ee314b6c8f7ad277e60a018a036f75b302f170517ab47128eb9765746f69",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_package",
+        "resolution": "exact"
+      },
+      "source_key": "file:one/main.go",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Aone%3Aexample.invalid%252Fshared:.:main"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cbb4b3ffe5888200bcf7b80222efca096a5d4a4b54fe70464cad94c34695dad0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_module",
+        "resolution": "exact"
+      },
+      "source_key": "file:two/go.mod",
+      "target_key": "go.source-module.v2:canonical-go_duplicate_modules:two:example.invalid%2Fshared"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:7f4dd2d70b988ec361393de941a97825844bf84aafae72c8ad950f3f12441da3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_package",
+        "resolution": "exact"
+      },
+      "source_key": "file:two/main.go",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:.:main"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:f0d190716655d51e9f20589a413db9f45247388351c197e1ee55bb51dfa3f85b",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_package",
+        "resolution": "exact"
+      },
+      "source_key": "file:two/pkg/pkg.go",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:pkg:pkg"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:55efcc2e2a93d70311734f2e766e9adb9ef75d349163a710eedf983e440aa0cb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "contains",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_duplicate_modules:one:example.invalid%2Fshared",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Aone%3Aexample.invalid%252Fshared:.:main"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cebca25e174728e7571b8ec9716ca9e3438355e522df843d0406c3a0b34a5cb5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "instance_of",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_duplicate_modules:one:example.invalid%2Fshared",
+      "target_key": "go.module:example.invalid%2Fshared"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:4e17332eb08e1a025db887b05e457002380bdebf54d30d47b41d4a9974e586fe",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "contains",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_duplicate_modules:two:example.invalid%2Fshared",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:.:main"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:95d5b45d49434981adff297c5fbc8d8864d31f7fcdb04dae3fb8d9b71719684a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "contains",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_duplicate_modules:two:example.invalid%2Fshared",
+      "target_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:pkg:pkg"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:41996878c61ba7ac9c30ca5c60c467485f570cf4b378c4f0dea348494f6795e8",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "instance_of",
+      "metadata": {
+        "resolution": "exact"
+      },
+      "source_key": "go.source-module.v2:canonical-go_duplicate_modules:two:example.invalid%2Fshared",
+      "target_key": "go.module:example.invalid%2Fshared"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:06163a8bd0df2a3a9da21c4993a4b2e9b57b3acf59b39b6631531ddb9648e23c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_function",
+        "resolution": "exact"
+      },
+      "source_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Aone%3Aexample.invalid%252Fshared:.:main",
+      "target_key": "go.source-function.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_duplicate_modules%253Aone%253Aexample.invalid%25252Fshared%3A.%3Amain:First"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:57a1cb891f90490f95b52da48348d85924eb004fe38cb9298f49c406b6adf9cf",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "declares",
+      "metadata": {
+        "declaration_kind": "go.source_function",
+        "resolution": "exact"
+      },
+      "source_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:.:main",
+      "target_key": "go.source-function.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_duplicate_modules%253Atwo%253Aexample.invalid%25252Fshared%3A.%3Amain:Second"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:one/go.mod:0-0:repo-go:one/go.mod#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "config"
+      },
+      "path": "one/go.mod",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "one/go.mod#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:1:one/go.mod:1-1:repo-go:one/go.mod#go.module:1:example.invalid/shared",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "directive": "module"
+      },
+      "path": "one/go.mod",
+      "raw_kind": "go.module",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "one/go.mod#go.module:1:example.invalid/shared",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:2:one/main.go:0-0:repo-go:one/main.go#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      },
+      "path": "one/main.go",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "one/main.go#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:3:one/main.go:1-1:repo-go:one/main.go#go.package:1:main",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "external_test_package": false,
+        "generated": false,
+        "package_name": "main",
+        "test_file": false,
+        "vendor": false
+      },
+      "path": "one/main.go",
+      "raw_kind": "go.package",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "one/main.go#go.package:1:main",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:4:two/go.mod:0-0:repo-go:two/go.mod#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "config"
+      },
+      "path": "two/go.mod",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/go.mod#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:5:two/go.mod:1-1:repo-go:two/go.mod#go.module:1:example.invalid/shared",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "directive": "module"
+      },
+      "path": "two/go.mod",
+      "raw_kind": "go.module",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/go.mod#go.module:1:example.invalid/shared",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:two/main.go:0-0:repo-go:two/main.go#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      },
+      "path": "two/main.go",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/main.go#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:7:two/main.go:1-1:repo-go:two/main.go#go.package:1:main",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "external_test_package": false,
+        "generated": false,
+        "package_name": "main",
+        "test_file": false,
+        "vendor": false
+      },
+      "path": "two/main.go",
+      "raw_kind": "go.package",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/main.go#go.package:1:main",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:8:one/main.go:2-2:repo-go:one/main.go#go.function:2:First",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "exported": true,
+        "generated": false,
+        "package_name": "main",
+        "vendor": false
+      },
+      "path": "one/main.go",
+      "raw_kind": "go.function",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "one/main.go#go.function:2:First",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:9:one/main.go:3-3:repo-go:one/main.go#go.import:3:example.invalid/shared/pkg",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "alias": null,
+        "blank_import": false,
+        "dot_import": false,
+        "package_name": "main"
+      },
+      "path": "one/main.go",
+      "raw_kind": "go.import",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "one/main.go#go.import:3:example.invalid/shared/pkg",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:10:two/main.go:2-2:repo-go:two/main.go#go.function:2:Second",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "exported": true,
+        "generated": false,
+        "package_name": "main",
+        "vendor": false
+      },
+      "path": "two/main.go",
+      "raw_kind": "go.function",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/main.go#go.function:2:Second",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:11:two/pkg/pkg.go:0-0:repo-go:two/pkg/pkg.go#file",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      },
+      "path": "two/pkg/pkg.go",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/pkg/pkg.go#file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:12:two/pkg/pkg.go:1-1:repo-go:two/pkg/pkg.go#go.package:1:pkg",
+      "extractor": "repo-go",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "external_test_package": false,
+        "generated": false,
+        "package_name": "pkg",
+        "test_file": false,
+        "vendor": false
+      },
+      "path": "two/pkg/pkg.go",
+      "raw_kind": "go.package",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "two/pkg/pkg.go#go.package:1:pkg",
+      "start_line": 1
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:one/go.mod",
+      "evidence_key": "evidence:0:one/go.mod:0-0:repo-go:one/go.mod#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:one/main.go",
+      "evidence_key": "evidence:2:one/main.go:0-0:repo-go:one/main.go#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:two/go.mod",
+      "evidence_key": "evidence:4:two/go.mod:0-0:repo-go:two/go.mod#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:two/main.go",
+      "evidence_key": "evidence:6:two/main.go:0-0:repo-go:two/main.go#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:two/pkg/pkg.go",
+      "evidence_key": "evidence:11:two/pkg/pkg.go:0-0:repo-go:two/pkg/pkg.go#file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.module:example.invalid%2Fshared",
+      "evidence_key": "evidence:1:one/go.mod:1-1:repo-go:one/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.module:example.invalid%2Fshared",
+      "evidence_key": "evidence:5:two/go.mod:1-1:repo-go:two/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-function.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_duplicate_modules%253Aone%253Aexample.invalid%25252Fshared%3A.%3Amain:First",
+      "evidence_key": "evidence:8:one/main.go:2-2:repo-go:one/main.go#go.function:2:First",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-function.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_duplicate_modules%253Atwo%253Aexample.invalid%25252Fshared%3A.%3Amain:Second",
+      "evidence_key": "evidence:10:two/main.go:2-2:repo-go:two/main.go#go.function:2:Second",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-module.v2:canonical-go_duplicate_modules:one:example.invalid%2Fshared",
+      "evidence_key": "evidence:1:one/go.mod:1-1:repo-go:one/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-module.v2:canonical-go_duplicate_modules:two:example.invalid%2Fshared",
+      "evidence_key": "evidence:5:two/go.mod:1-1:repo-go:two/go.mod#go.module:1:example.invalid/shared",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Aone%3Aexample.invalid%252Fshared:.:main",
+      "evidence_key": "evidence:3:one/main.go:1-1:repo-go:one/main.go#go.package:1:main",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:.:main",
+      "evidence_key": "evidence:7:two/main.go:1-1:repo-go:two/main.go#go.package:1:main",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:pkg:pkg",
+      "evidence_key": "evidence:12:two/pkg/pkg.go:1-1:repo-go:two/pkg/pkg.go#go.package:1:pkg",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:one/go.mod",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "one/go.mod",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "config"
+      }
+    },
+    {
+      "canonical_key": "file:one/main.go",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "one/main.go",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      }
+    },
+    {
+      "canonical_key": "file:two/go.mod",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "two/go.mod",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "config"
+      }
+    },
+    {
+      "canonical_key": "file:two/main.go",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "two/main.go",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      }
+    },
+    {
+      "canonical_key": "file:two/pkg/pkg.go",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "two/pkg/pkg.go",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "generated": false,
+        "language": "go",
+        "role": "source"
+      }
+    },
+    {
+      "canonical_key": "go.module:example.invalid%2Fshared",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.invalid/shared",
+      "graph_key_version": 1,
+      "kind": "go.module",
+      "metadata": {
+        "declaration_evidence_count": 2,
+        "declaration_observed": true,
+        "duplicate_declaration_evidence_count": 1,
+        "identity_format": "go-v1",
+        "module_path": "example.invalid/shared",
+        "supporting_evidence_count": 0
+      }
+    },
+    {
+      "canonical_key": "go.source-function.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_duplicate_modules%253Aone%253Aexample.invalid%25252Fshared%3A.%3Amain:First",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "First",
+      "graph_key_version": 1,
+      "kind": "go.source_function",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_kind": "go.source_function",
+        "declaration_name": "First",
+        "duplicate_declaration_evidence_count": 0,
+        "exported": true,
+        "generated": false,
+        "generic": false,
+        "identity_format": "go-source-v2",
+        "source_package_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Aone%3Aexample.invalid%252Fshared:.:main",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-function.v2:go.source-package.v2%3Ago.source-module.v2%253Acanonical-go_duplicate_modules%253Atwo%253Aexample.invalid%25252Fshared%3A.%3Amain:Second",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Second",
+      "graph_key_version": 1,
+      "kind": "go.source_function",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_kind": "go.source_function",
+        "declaration_name": "Second",
+        "duplicate_declaration_evidence_count": 0,
+        "exported": true,
+        "generated": false,
+        "generic": false,
+        "identity_format": "go-source-v2",
+        "source_package_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:.:main",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-module.v2:canonical-go_duplicate_modules:one:example.invalid%2Fshared",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.invalid/shared",
+      "graph_key_version": 1,
+      "kind": "go.source_module",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_observed": true,
+        "duplicate_declaration_evidence_count": 0,
+        "identity_format": "go-source-v2",
+        "module_path": "example.invalid/shared",
+        "repository_relative_module_root": "one",
+        "repository_scope": "canonical-go_duplicate_modules",
+        "semantic_module_key": "go.module:example.invalid%2Fshared",
+        "supporting_evidence_count": 0
+      }
+    },
+    {
+      "canonical_key": "go.source-module.v2:canonical-go_duplicate_modules:two:example.invalid%2Fshared",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.invalid/shared",
+      "graph_key_version": 1,
+      "kind": "go.source_module",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "declaration_observed": true,
+        "duplicate_declaration_evidence_count": 0,
+        "identity_format": "go-source-v2",
+        "module_path": "example.invalid/shared",
+        "repository_relative_module_root": "two",
+        "repository_scope": "canonical-go_duplicate_modules",
+        "semantic_module_key": "go.module:example.invalid%2Fshared",
+        "supporting_evidence_count": 0
+      }
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Aone%3Aexample.invalid%252Fshared:.:main",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "main",
+      "graph_key_version": 1,
+      "kind": "go.source_package",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "duplicate_declaration_evidence_count": 0,
+        "external_test_package": false,
+        "identity_format": "go-source-v2",
+        "identity_source": "module",
+        "import_path": "example.invalid/shared",
+        "module_path": "example.invalid/shared",
+        "module_relative_directory": ".",
+        "package_name": "main",
+        "repository_relative_directory": "one",
+        "repository_scope": "canonical-go_duplicate_modules",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:.:main",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "main",
+      "graph_key_version": 1,
+      "kind": "go.source_package",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "duplicate_declaration_evidence_count": 0,
+        "external_test_package": false,
+        "identity_format": "go-source-v2",
+        "identity_source": "module",
+        "import_path": "example.invalid/shared",
+        "module_path": "example.invalid/shared",
+        "module_relative_directory": ".",
+        "package_name": "main",
+        "repository_relative_directory": "two",
+        "repository_scope": "canonical-go_duplicate_modules",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    },
+    {
+      "canonical_key": "go.source-package.v2:go.source-module.v2%3Acanonical-go_duplicate_modules%3Atwo%3Aexample.invalid%252Fshared:pkg:pkg",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "pkg",
+      "graph_key_version": 1,
+      "kind": "go.source_package",
+      "metadata": {
+        "declaration_evidence_count": 1,
+        "duplicate_declaration_evidence_count": 0,
+        "external_test_package": false,
+        "identity_format": "go-source-v2",
+        "identity_source": "module",
+        "import_path": "example.invalid/shared/pkg",
+        "module_path": "example.invalid/shared",
+        "module_relative_directory": "pkg",
+        "package_name": "pkg",
+        "repository_relative_directory": "two/pkg",
+        "repository_scope": "canonical-go_duplicate_modules",
+        "supporting_evidence_count": 0,
+        "vendor": false
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 12,
+    "edges": 12,
+    "errors": 0,
+    "evidence": 13,
+    "infos": 1,
+    "node_evidence_links": 14,
+    "nodes": 13,
+    "raw_observations": 13,
+    "warnings": 0
+  }
+}

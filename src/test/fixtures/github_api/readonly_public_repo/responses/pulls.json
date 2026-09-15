@@ -1,0 +1,8 @@
+[
+  {
+    "diff_url": "https://example.invalid/fixture-owner/fixture-repo/pull/2.diff",
+    "number": 2,
+    "patch_url": "https://example.invalid/fixture-owner/fixture-repo/pull/2.patch",
+    "title": "Fixture pull"
+  }
+]

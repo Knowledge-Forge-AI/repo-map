@@ -1,0 +1,33 @@
+{
+  "allocated_bytes": 0,
+  "barrier_released": true,
+  "categories": {
+    "ambiguous": 0,
+    "foreign": 0,
+    "opaque": 0,
+    "valid": 0
+  },
+  "completed_at_seconds": 2,
+  "confirmation_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "entries": [],
+  "entry_count": 0,
+  "force_live": false,
+  "inode_count": 0,
+  "inventory_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "live_count": 0,
+  "marker_count": 0,
+  "operation_id": "cccccccccccccccccccccccccccccccc",
+  "outcome": "completed",
+  "override_pins": false,
+  "pin_count": 0,
+  "point_of_no_return": true,
+  "project": "repo-map_dev",
+  "removed_allocated_bytes": 0,
+  "removed_entry_count": 0,
+  "removed_inode_count": 0,
+  "schema": "repomap-test-operator-reclamation-v1",
+  "scope_class": "selected_run_directory_contents",
+  "started_at_seconds": 1,
+  "state": "completed",
+  "unknown_count": 0
+}

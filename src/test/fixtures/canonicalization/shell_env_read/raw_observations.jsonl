@@ -1,0 +1,1 @@
+{"confidence":"heuristic","end_line":8,"extractor":"repo-shell","extractor_version":"0.1.0","kind":"shell.env","metadata":{"operation":"read","raw":"echo \"$PATH\"","variable":"PATH"},"name":"PATH","path":"scripts/build.sh","schema_version":1,"source_id":"scripts/build.sh#env-read:8:path","start_line":8,"target":"env:PATH"}

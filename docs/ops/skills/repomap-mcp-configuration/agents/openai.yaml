@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap MCP Configuration"
+  short_description: "Configure RepoMap's read-only MCP server"
+  default_prompt: "Use $repomap-mcp-configuration to configure a read-only RepoMap MCP server."

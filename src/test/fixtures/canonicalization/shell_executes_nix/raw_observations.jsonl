@@ -1,0 +1,1 @@
+{"confidence":"heuristic","end_line":12,"extractor":"repo-shell","extractor_version":"0.1.0","kind":"shell.command","metadata":{"argv":["nix","build",".#checks"],"command":"nix","raw":"nix build .#checks"},"name":"nix build","path":"bin/tool","schema_version":1,"source_id":"bin/tool#call:12:nix-build","start_line":12,"target":"tool:nix"}

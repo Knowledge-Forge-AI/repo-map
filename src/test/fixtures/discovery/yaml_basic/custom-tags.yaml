@@ -1,0 +1,3 @@
+service:
+  token_ref: !vault fake-vault-token
+  include_file: !include ./values-extra.yml

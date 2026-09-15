@@ -1,0 +1,9 @@
+{
+  "name": "example-js-fixture",
+  "private": true,
+  "dependencies": {
+    "react": "example",
+    "@angular/core": "example",
+    "vue": "example"
+  }
+}

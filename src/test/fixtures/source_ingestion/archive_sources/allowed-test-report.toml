@@ -1,0 +1,20 @@
+[source]
+id = "example-test-report"
+type = "test_report.artifact"
+display_name = "Example Test Report"
+
+[policy]
+status = "allowed"
+max_artifact_bytes = 5242880
+max_file_count = 100
+max_depth = 10
+symlink_policy = "do_not_follow"
+hidden_files = false
+retention_policy = "retain-local-path-and-hash"
+requires_manual_review = false
+
+[artifact]
+path = "archive_artifacts/example-test-report"
+kind = "directory"
+profile = "test-report"
+entry_document = "index.html"

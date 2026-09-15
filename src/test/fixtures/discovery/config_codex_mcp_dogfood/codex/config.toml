@@ -1,0 +1,35 @@
+[profiles.default]
+model = "gpt-5"
+instructions_file = "prompts/default.md"
+config_path = "mcp/repo-map/config.json"
+homepage_url = "mailto:ops@example.com"
+refresh_token = "cfg3-toml-secret-refresh-token"
+
+[mcp_servers.repomap]
+command = "python3"
+args = ["-m", "repomap_kg.server.mcp"]
+cwd = "src/main/python"
+env_path = "env/repomap.env"
+
+[mcp_servers.repomap.env]
+REPOMAP_MCP_CONFIG = "$REPOMAP_MCP_CONFIG"
+API_KEY = "cfg3-toml-secret-api-key"
+
+[[projects]]
+name = "repo-map"
+root_path = "projects/repo-map"
+pg_database = "repomap_repo_map"
+
+[[projects]]
+project = "codex-vc"
+root_path = "../codex-vc"
+pg_database = "repomap_codex_vc"
+
+[[tools]]
+name = "repo-map-cli"
+command = "repomap-kg"
+path = "bin/repomap"
+
+[[tools]]
+name = "python-runner"
+command = "python3"

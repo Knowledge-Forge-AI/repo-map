@@ -1,0 +1,3228 @@
+{
+  "schema": "repomap-python-type-ownership-v1",
+  "resolution": "longest-component-prefix-wins",
+  "entries": [
+    {
+      "module_prefix": "repomap_kg",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.__main__",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.__main__ under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.artifacts under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._canonical",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T0",
+      "justification": "Canonical JSON and digest primitives are dependency-pure durable publication-bundle contract code shared across implementations.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._manifest_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._parity_sealing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing >=80% Python retention forecast governs present maintenance. Exact dependency-independent module admitted cleanly; future architecture placement and descendant forecasts remain deferred.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._store_common",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._store_filesystem",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._store_memory",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.bundle",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Portable publication bundle structure and validation are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.conformance",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing language-retention forecast preserved; dependency-coherent implementation admitted under zero-added-debt quality and lineage checks.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.parity_harness",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.artifacts.parity_harness under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.receipt",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Portable publication receipt contracts and serialization are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.references",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Portable artifact reference indices and relative addressing are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.source_sealer",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.store",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts.validator",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing language-retention forecast preserved; dependency-coherent implementation admitted under zero-added-debt quality and lineage checks.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.canonicalization",
+      "match": "subtree",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Family canonicalization and semantic graph construction are durable Python work beyond the initial hard seed.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.canonicalization.core",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-seed",
+      "justification": "The canonicalization result builder is a high-leverage semantic root used across language families.",
+      "disposition": "retained_python_hard_now"
+    },
+    {
+      "module_prefix": "repomap_kg.canonicalization.diagnostics",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-seed",
+      "justification": "Deterministic semantic diagnostics are part of the retained canonicalization core.",
+      "disposition": "retained_python_hard_now"
+    },
+    {
+      "module_prefix": "repomap_kg.canonicalization.records",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T0",
+      "justification": "Versioned canonical node, edge, evidence, diagnostic, and result records form the current publication-bundle boundary.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.cli",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._local_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._local_parser",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._observations_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._observations_dispatch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._ops_baselines_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._ops_baselines_dispatch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._ops_control_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._ops_control_dispatch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._ops_refresh_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._ops_refresh_dispatch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._parser_ops_control",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._parser_ops_control under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._parser_ops_graph",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._parser_ops_graph under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._parser_sources",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._parser_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._storage_parser_summaries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli._storage_parser_summaries under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.coordinator_runtime_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.coordinator_runtime_commands under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.coordinator_service_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.dispatch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.host_mutator_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.host_mutator_commands under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.main",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.main under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.ops_graph_file_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.parser",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.parser under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.release_cluster_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.source_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.staging_event_instrumentation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.staging_event_instrumentation under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.storage_edge_explanation_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.storage_parser",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.cli.storage_parser under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.storage_readback_edge_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.storage_readback_node_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli.storage_summary_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_coalescing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_coalescing under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_listing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_maintenance",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_maintenance under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_ownership",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_ownership under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_polling",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_polling under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_reconciliation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_reconciliation under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_schema",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_schema under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_startup",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_state",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_state under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_submission",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._control_submission under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._control_types",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._coordinator_protocols",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._coordinator_protocols under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._core_disposition",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._core_disposition under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._lifecycle_authority",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._lifecycle_authority under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._lifecycle_upgrade",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._lifecycle_upgrade under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._portable_authority",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._portable_capability",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._portable_capability under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._portable_materialization",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._portable_materialization under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._portable_semantic_adapter",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._portable_semantic_adapter under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._portable_worker_launch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._portable_worker_launch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._process_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._process_contracts under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._process_supervision_windows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._process_supervision_windows under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._protocol_core",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._protocol_core under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._protocol_execution",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._protocol_execution under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._protocol_session",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._protocol_session under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._protocol_validation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._protocol_validation under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._refresh_capability",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._refresh_capability under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._refresh_capability_io",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._refresh_capability_io under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._refresh_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._refresh_execution",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._refresh_execution under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._refresh_generation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._service_endpoints",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._service_endpoints under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._service_handlers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._service_handlers under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._transport_validation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain the cohesive repomap_kg.coordinator._transport_validation implementation owner under zero-new-debt Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._worker_environment",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._worker_launch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._worker_launch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.client",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.client under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.configured_refresh",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.configured_refresh under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.contracts",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "immutable_snapshot_and_job_contract",
+      "enforcement_tier": "T0",
+      "justification": "Versioned job requests bind source, config, extractor, and canonicalizer generations across the control and semantic boundary.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.core",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.core under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.desired_state",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.desired_state under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.endpoint",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.endpoint under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.job_control",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.job_control under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.job_listing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.limits",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "immutable_snapshot_and_job_contract",
+      "enforcement_tier": "T0",
+      "justification": "Closed request limits are validation parameters of the versioned cross-language job contract.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.local_lifecycle",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.local_lifecycle under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.local_mode",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.local_mode under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.polling",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.polling under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.portable_worker",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.portable_worker under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.process_supervision",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.process_supervision under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.protocol",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.protocol under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.refresh_adapter",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.refresh_adapter under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.refresh_worker",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.refresh_worker under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.semantics",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.service",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.service under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.startup_recovery",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retained-Python forecast governs dependency-independent startup recovery maintenance. Abstract mixin hook typing preserves the concrete coordinator implementation; future architecture placement remains deferred.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.storage",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.storage under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.transport",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.transport under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.windows_security",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator.windows_security under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.extractors",
+      "match": "subtree",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Observation selection and semantic extraction remain Python until a smaller parser-only boundary is explicit.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.extractors.languages.go_helper",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "parser_result_boundary",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.extractors.languages.go_process",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "parser_result_boundary",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.extractors.languages.go_protocol",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_or_rust_parsers",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing >=80% Python retention forecast governs present maintenance. Exact dependency-independent module admitted cleanly; future architecture placement and descendant forecasts remain deferred.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.extractors.shared",
+      "match": "subtree",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-seed",
+      "justification": "Shared observation emission, bounded scanning, and redaction are high-leverage retained semantic helpers.",
+      "disposition": "retained_python_hard_now"
+    },
+    {
+      "module_prefix": "repomap_kg.graph",
+      "match": "subtree",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Graph discovery and semantic identity logic remain Python beyond the initial hard seed.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph._key_namespaces",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "graph_identity_contract",
+      "enforcement_tier": "T0",
+      "justification": "Canonical key namespace arities constrain graph identities across implementations.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.edge_kinds",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "graph_identity_contract",
+      "enforcement_tier": "T0",
+      "justification": "The canonical edge-kind vocabulary is shared by parsers, semantic processing, publication, and query consumers.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.go_source_keys",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "graph_identity_contract",
+      "enforcement_tier": "T0",
+      "justification": "Go source key construction binds parser observations to canonical graph identity.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.keys",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "graph_identity_contract",
+      "enforcement_tier": "T0",
+      "justification": "Versioned canonical graph keys are consumed across language and storage boundaries.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.multi_source",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing language-retention forecast preserved; dependency-coherent implementation admitted under zero-added-debt quality and lineage checks.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.multi_source_capture",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.multi_source_pipeline",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.multi_source_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing language-retention forecast preserved; dependency-coherent implementation admitted under zero-added-debt quality and lineage checks.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.multi_source_routing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.graph.readback under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.awk",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained evidence summaries retain the existing >=80% Python forecast; read-only metadata typing repaired for zero-added-debt admission.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.bash",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained evidence summaries retain the existing >=80% Python forecast; read-only metadata typing repaired for zero-added-debt admission.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.bats",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained evidence summaries retain the existing >=80% Python forecast; read-only metadata typing repaired for zero-added-debt admission.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.entrypoints",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.files",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.host_mutators",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.powershell",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.zsh",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained evidence summaries retain the existing >=80% Python forecast; read-only metadata typing repaired for zero-added-debt admission.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.graph.readback.zunit",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained evidence summaries retain the existing >=80% Python forecast; read-only metadata typing repaired for zero-added-debt admission.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.local_runtime",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.local_runtime under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.observations",
+      "match": "subtree",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "parser_result_boundary",
+      "enforcement_tier": "T0",
+      "justification": "Versioned raw observations and their bounded spool form the parser-result contract consumed by the Python semantic engine.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.ops",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops._refresh_preflight",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops._refresh_preflight under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops._refresh_psql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops._refresh_psql under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops._refresh_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops._refresh_queries under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.baseline_operations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.baseline_operations under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.baselines",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.baselines under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.config under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_binding_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_graphs",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_helpers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_loading",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.config_loading under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_loading_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_sections",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_serialization",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_serialization_types",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE16 dependency-neutral serialization protocols inherit retained config serialization ownership; admitted only with zero added quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_source_bindings",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_sources",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.config_status",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.direct_publication",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.direct_publication under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.generations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.graph_file_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.graph_file_sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.graph_files",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.graph_files under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._api_helpers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._api_helpers under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._api_observations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._api_observations under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._bulk_helpers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._bulk_helpers under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._bulk_manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._bulk_manifest under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._bulk_observations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._bulk_observations under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._github_api_transport",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._github_api_transport under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._source_archive_extraction",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._source_archive_extraction under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._source_archive_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._source_archive_records under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._source_archive_scan",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._source_archive_scan under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._source_warc_extraction",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._source_warc_extraction under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion._source_warc_manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion._source_warc_manifest under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.acquisition_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.api",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion.api under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.api_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.bulk",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion.bulk under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.bulk_config_values",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.bulk_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.github_api",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion.github_api under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.github_api_config",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.github_api_helpers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.github_api_observations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.github_api_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion.source under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source_archive",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.ingestion.source_archive under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source_common",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source_feed",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source_warc",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source_warc_config",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.ingestion.source_warc_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.policy_dogfood",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.policy_dogfood under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.portable_refresh",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.portable_refresh under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.preflight",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.readback",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.readback under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.refresh",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.refresh under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.refresh_graphs",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.refresh_graphs under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.refresh_sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.report_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Quality-report records are durable Python but still import control and storage shapes that require a future contract split.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.report_safety",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Stable negative safety-evidence projections are dependency-light durable Python shared by retained report records and formatters.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.reports",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "python_semantic_engine",
+      "enforcement_tier": "T1-future",
+      "justification": "Quality-report formatting is durable Python but is deferred until its control and storage imports are narrowed.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.resolved_config",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.source_generation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops.source_generation under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops_refresh",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.ops_refresh under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime._backup_lifecycle",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime._backup_lifecycle under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime._backup_manifest_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain the cohesive repomap_kg.runtime._backup_manifest_records implementation owner under zero-new-debt Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime._backup_operations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime._backup_operations under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime._plan_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain the cohesive repomap_kg.runtime._plan_records implementation owner under zero-new-debt Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime._schema_upgrade_ledger",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime._schema_upgrade_ledger under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup_commands under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_formatting",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_inspection",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup_inspection under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_manifests",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup_manifests under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup_records under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_restore_sets",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup_restore_sets under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.backup_streaming",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.backup_streaming under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.commands",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.commands under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.compose",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.compose under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.database_role_contract",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.database_roles",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.database_roles under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.local",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.local under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.maintenance",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.plan",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.plan under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.project_identity",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.provisioning",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.provisioning under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.release",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.release_cluster",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.release_cluster under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.repository_identity_migration",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.repository_identity_migration under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.schema_decommission",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.schema_decommission under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.schema_manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.schema_manifest under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.schema_upgrade",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.runtime.schema_upgrade under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._mcp_core_validation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._mcp_core_validation under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._mcp_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._mcp_dispatch under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._mcp_ops_tools",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._mcp_ops_tools under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._mcp_projects",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._mcp_projects under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._mcp_sources",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._mcp_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._ops_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._ops_records under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._ops_sanitization",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._ops_sanitization under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._ops_search",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._ops_search under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._ops_summaries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._ops_summaries under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._server_memory_parsing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._server_memory_parsing under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server._server_memory_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server._server_memory_records under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.http",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.http under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.mcp",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.mcp under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.mcp_canonical",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.mcp_canonical under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.mcp_core",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.mcp_core under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.mcp_jsonrpc",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.mcp_jsonrpc under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.mcp_schemas",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.mcp_search_sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.mcp_search_sql under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.memory_bridge",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.memory_bridge under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.ops",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.server.ops under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package._artifact_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package._artifact_contracts under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package._artifacts_io",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package._artifacts_io under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package._artifacts_locking",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package._artifacts_locking under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package._operations_execution",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package._operations_execution under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.api",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.api under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.artifacts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.artifacts under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.contract",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.contract under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.environment",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.launchd",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.launchd under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.operations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.operations under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.platforms",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.platforms under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.results",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.service_package.systemd",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_native_service_packaging",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.service_package.systemd under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._external_row_sort_helpers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._external_row_sort_helpers under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._psql_stream",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._publication_fencing_sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._publication_fencing_sql under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._schema_migrations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._schema_migrations under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._sql_summaries_domains",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._sql_summaries_domains under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._sql_summaries_email",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._staged_ingestion_authority",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._staged_ingestion_authority under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._staged_ingestion_stages",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._staged_ingestion_stages under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._staged_row_adapters",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._staged_row_adapters under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._staging_lifecycle_emission",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._staging_lifecycle_emission under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._staging_measurement_records",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._staging_measurement_records under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._summary_rows_api_manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._summary_rows_api_manifest under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage._table_rows_domains",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage._table_rows_domains under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.authority",
+      "match": "exact",
+      "ownership_class": "cross_language_contract",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T0",
+      "justification": "Typed request, operation, job, attempt, stage, generation, and publication authority values cross control and publisher boundaries.",
+      "disposition": "durable_contract"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_connection_telemetry",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_observer",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.backend_observer under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_ownership",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_ownership_registry",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.backend_ownership_registry under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_telemetry",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.backend_telemetry under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_telemetry_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.backend_telemetry_events",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing >=80% Python retention forecast governs present maintenance. Exact dependency-independent module admitted cleanly; future architecture placement and descendant forecasts remain deferred.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.canonical",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.canonical under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.canonical_filters",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.canonical_readback_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.canonical_readback_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.canonical_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.canonical_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.canonical_staging_merge",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.canonical_staging_merge under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.errors",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.external_row_sort",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.external_row_sort under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.file_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.file_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.graph_readback_sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.jsonable_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.jsonable_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.main",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.main under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.portable_ingestion",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.portable_ingestion under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.psql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.publication",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.publication_fencing",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.publication_fencing under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.publication_readback",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.read_pages",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.readback_driver",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.repository_identity",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.row_helpers",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.row_helpers under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.row_spool",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.rowwise_caller_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.run_authority",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.source_readback",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.source_readback under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.source_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.source_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.source_summary_table_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.source_summary_table_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.sql under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_canonical",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.sql_canonical under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_core",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_load",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.sql_load under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_sources",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.sql_sources under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_summaries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.sql_summaries under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_summaries_nix",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sql_summaries_python",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staged_connection_telemetry",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staged_connection_telemetry under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staged_ingestion",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staged_ingestion under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staged_publication",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staged_publication under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staged_row_measurements",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staged_row_measurements under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staged_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staged_rows under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staged_validation",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staged_validation under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing 85% retention forecast preserved; dependency-coherent staging implementation admitted after clean typing and full-F checks without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_checksums",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Staged family checksum computation and validation contracts are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_cleanup",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staging_cleanup under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_copy",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing 85% retention forecast preserved; dependency-coherent staging implementation admitted after clean typing and full-F checks without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_duplicate_guard",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Staging deduplication predicates and guard contracts are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_event_transport",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_family_catalog",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Storage staging family catalog definitions are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_family_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Storage staging family typing contracts and payload records are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_family_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Family row serialization contracts and adapters are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_launch_authority",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_merge",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_merge_operations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Staged merge operation sequencing contracts are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_observability",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staging_observability under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_operation_contracts",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Staged operation metadata and request contract definitions are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_operation_events",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Staging lifecycle operation events and logging models are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_ownership",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_phase_events",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Staging phase progression and transition event schemas are maintained under quality ratchets without premature architecture placement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.staging_resource_observability",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.staging_resource_observability under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.structural_digest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.structural_digest under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.structural_digest_encoding",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summaries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summaries under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summary_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows_core",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows_domains",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summary_rows_domains under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows_languages",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summary_rows_languages under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows_manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summary_rows_manifest under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows_nix",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summary_rows_nix under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.summary_rows_storage",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.summary_rows_storage under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.table_rows",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.storage.table_rows under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    }
+  ]
+}

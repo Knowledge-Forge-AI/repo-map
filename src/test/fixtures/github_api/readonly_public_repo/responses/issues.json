@@ -1,0 +1,9 @@
+[
+  {
+    "author_association": "OWNER",
+    "body": "safe public issue body",
+    "number": 1,
+    "title": "Fixture issue",
+    "token": "fixture-github-token"
+  }
+]

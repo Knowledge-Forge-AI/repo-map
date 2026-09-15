@@ -1,0 +1,296 @@
+"""Policy-gated source ingestion helpers."""
+
+from __future__ import annotations
+
+from collections.abc import Callable
+from datetime import datetime
+from pathlib import Path
+
+from repomap_kg.extractors.documents.feed import extract_feed_file_observations
+from repomap_kg.ops.ingestion._source_warc_extraction import (
+    _annotate_warc_observations,
+    _materialize_warc_payload,
+    _parse_warc_records,
+    _warc_record_metadata,
+    _warc_record_observations,
+    _warc_record_summary,
+)
+from repomap_kg.ops.ingestion._source_warc_manifest import (
+    build_warc_manifest,
+    import_warc_source,
+    warc_observations_from_manifest,
+)
+from repomap_kg.ops.ingestion.acquisition_contracts import non_publication_result
+from repomap_kg.ops.ingestion.source_archive import (
+    ARCHIVE_EXCLUDED_DIR_NAMES,
+    JAVASCRIPT_ARCHIVE_EXTENSIONS,
+    ArchiveImportSummary,
+    ArchiveIncludedFile,
+    ArchiveManifest,
+    ArchiveSkippedFile,
+    ArchiveSourceConfig,
+    _annotate_archive_observations,
+    _archive_extractor_route,
+    _archive_included_file,
+    _archive_media_type,
+    _archive_observation_metadata,
+    _archive_policy_snapshot,
+    _is_hidden_relative_path,
+    _observations_for_archive_file,
+    _resolve_archive_artifact_path,
+    _scan_archive_directory,
+    _scan_archive_file,
+    archive_observations_from_manifest,
+    build_archive_manifest,
+    import_archive_source,
+    load_archive_source_config,
+)
+from repomap_kg.ops.ingestion.source_common import (
+    ALLOWED_POLICY_STATUSES,
+    ARCHIVE_SOURCE_TYPES,
+    BLOCKED_POLICY_STATUSES,
+    DISALLOWED_TRUE_FLAGS,
+    FEED_SOURCE_TYPES,
+    SECRET_MARKERS,
+    SOURCE_ID_RE,
+    WARC_SOURCE_TYPES,
+    SourcePolicyError,
+    _artifact_filename,
+    _content_type,
+    _flatten_mapping,
+    _header_mapping,
+    _mapping,
+    _optional_bool,
+    _optional_text,
+    _positive_int_or_default,
+    _reject_archive_network_fields,
+    _required_bool,
+    _required_positive_int,
+    _required_text,
+    _safe_url_summary,
+    _secret_key_paths,
+    _utc_now,
+    _validate_archive_source_type,
+    _validate_disallowed_flags,
+    _validate_local_artifact_path,
+    _validate_method,
+    _validate_policy_status,
+    _validate_source_id,
+    _validate_source_type,
+    _validate_url,
+    _validate_warc_source_type,
+    json_dumps_stable,
+)
+from repomap_kg.ops.ingestion.source_feed import (
+    FeedArtifact,
+    FeedFetchResponse,
+    FeedIngestionSummary,
+    FeedSourceConfig,
+    FetchFeed,
+    SourceAcquisitionError,
+    _NoRedirectHandler,
+    _annotate_observations,
+    _artifact_file_observation,
+    _artifact_metadata,
+    _validate_fetch_response,
+    _validate_item_limit,
+    fetch_feed_source,
+    load_feed_source_config,
+    retain_feed_artifact,
+)
+from repomap_kg.ops.ingestion.source_warc import (
+    JAVASCRIPT_WARC_MEDIA_TYPES,
+    SAFE_WARC_HEADER_NAMES,
+    SENSITIVE_HEADER_NAMES,
+    _http_content_type,
+    _is_secret_marker,
+    _is_sensitive_header_name,
+    _next_warc_record,
+    _normalise_warc_record_id,
+    _parse_header_lines,
+    _parse_http_message_payload,
+    _redact_header_value,
+    _redact_warc_target_uri,
+    _safe_warc_headers,
+    _warc_payload_extension,
+    _warc_payload_route,
+    _warc_record_identity,
+    _warc_target,
+    _warc_target_key,
+)
+from repomap_kg.ops.ingestion.source_warc_config import (
+    _warc_policy_snapshot,
+    load_warc_source_config,
+)
+from repomap_kg.ops.ingestion.source_warc_records import (
+    WarcImportSummary,
+    WarcManifest,
+    WarcRecordSummary,
+    WarcSourceConfig,
+)
+
+EXTRACTOR = "source-ingestion"
+EXTRACTOR_VERSION = "0.1.0"
+
+Clock = Callable[[], datetime]
+
+
+def ingest_feed_source(
+    config_path: Path | str,
+    *,
+    root_path: Path | str,
+    artifact_dir: Path | str | None = None,
+    fetcher: FetchFeed = fetch_feed_source,
+    clock: Clock | None = None,
+) -> FeedIngestionSummary:
+    config = load_feed_source_config(config_path)
+    response = fetcher(config)
+    _validate_fetch_response(config, response)
+    artifact = retain_feed_artifact(
+        config,
+        response,
+        root_path=Path(root_path),
+        artifact_dir=Path(artifact_dir) if artifact_dir is not None else None,
+        clock=clock or _utc_now,
+    )
+    feed_observations = tuple(
+        extract_feed_file_observations(
+            artifact.relative_path,
+            artifact.path.read_text(encoding="utf-8"),
+        )
+    )
+    if not feed_observations:
+        raise SourceAcquisitionError("acquired artifact is not a recognized feed")
+    _validate_item_limit(config, feed_observations)
+    observations = (
+        _artifact_file_observation(artifact),
+        *_annotate_observations(feed_observations, config, artifact),
+    )
+    return FeedIngestionSummary(
+        source_id=config.source_id,
+        source_type=config.source_type,
+        policy_status=config.policy_status,
+        source_run_id=artifact.source_run_id,
+        artifact_path=artifact.relative_path,
+        artifact_sha256=artifact.sha256,
+        artifact_bytes=artifact.byte_length,
+        observations=len(observations),
+        feed_observations=len(feed_observations),
+        raw_observations=tuple(observations),
+        publication=non_publication_result(),
+    )
+
+
+
+
+
+__all__ = [
+    "ALLOWED_POLICY_STATUSES",
+    "ARCHIVE_EXCLUDED_DIR_NAMES",
+    "ARCHIVE_SOURCE_TYPES",
+    "ArchiveImportSummary",
+    "ArchiveIncludedFile",
+    "ArchiveManifest",
+    "ArchiveSkippedFile",
+    "ArchiveSourceConfig",
+    "BLOCKED_POLICY_STATUSES",
+    "Clock",
+    "DISALLOWED_TRUE_FLAGS",
+    "EXTRACTOR",
+    "EXTRACTOR_VERSION",
+    "FEED_SOURCE_TYPES",
+    "FeedArtifact",
+    "FeedFetchResponse",
+    "FeedIngestionSummary",
+    "FeedSourceConfig",
+    "FetchFeed",
+    "JAVASCRIPT_ARCHIVE_EXTENSIONS",
+    "JAVASCRIPT_WARC_MEDIA_TYPES",
+    "SAFE_WARC_HEADER_NAMES",
+    "SECRET_MARKERS",
+    "SENSITIVE_HEADER_NAMES",
+    "SOURCE_ID_RE",
+    "SourceAcquisitionError",
+    "SourcePolicyError",
+    "WARC_SOURCE_TYPES",
+    "WarcImportSummary",
+    "WarcManifest",
+    "WarcRecordSummary",
+    "WarcSourceConfig",
+    "_NoRedirectHandler",
+    "_annotate_archive_observations",
+    "_annotate_observations",
+    "_annotate_warc_observations",
+    "_archive_extractor_route",
+    "_archive_included_file",
+    "_archive_media_type",
+    "_archive_observation_metadata",
+    "_archive_policy_snapshot",
+    "_artifact_file_observation",
+    "_artifact_filename",
+    "_artifact_metadata",
+    "_content_type",
+    "_flatten_mapping",
+    "_header_mapping",
+    "_http_content_type",
+    "_is_hidden_relative_path",
+    "_is_secret_marker",
+    "_is_sensitive_header_name",
+    "_mapping",
+    "_materialize_warc_payload",
+    "_next_warc_record",
+    "_normalise_warc_record_id",
+    "_observations_for_archive_file",
+    "_optional_bool",
+    "_optional_text",
+    "_parse_header_lines",
+    "_parse_http_message_payload",
+    "_parse_warc_records",
+    "_positive_int_or_default",
+    "_redact_header_value",
+    "_redact_warc_target_uri",
+    "_reject_archive_network_fields",
+    "_required_bool",
+    "_required_positive_int",
+    "_required_text",
+    "_resolve_archive_artifact_path",
+    "_safe_url_summary",
+    "_safe_warc_headers",
+    "_scan_archive_directory",
+    "_scan_archive_file",
+    "_secret_key_paths",
+    "_utc_now",
+    "_validate_archive_source_type",
+    "_validate_disallowed_flags",
+    "_validate_fetch_response",
+    "_validate_item_limit",
+    "_validate_local_artifact_path",
+    "_validate_method",
+    "_validate_policy_status",
+    "_validate_source_id",
+    "_validate_source_type",
+    "_validate_url",
+    "_validate_warc_source_type",
+    "_warc_payload_extension",
+    "_warc_payload_route",
+    "_warc_policy_snapshot",
+    "_warc_record_identity",
+    "_warc_record_metadata",
+    "_warc_record_observations",
+    "_warc_record_summary",
+    "_warc_target",
+    "_warc_target_key",
+    "archive_observations_from_manifest",
+    "build_archive_manifest",
+    "build_warc_manifest",
+    "fetch_feed_source",
+    "import_archive_source",
+    "import_warc_source",
+    "ingest_feed_source",
+    "json_dumps_stable",
+    "load_archive_source_config",
+    "load_feed_source_config",
+    "load_warc_source_config",
+    "retain_feed_artifact",
+    "warc_observations_from_manifest",
+]

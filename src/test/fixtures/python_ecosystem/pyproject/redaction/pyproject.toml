@@ -1,0 +1,9 @@
+[project]
+name = "fixture-redaction"
+version = "0.1.0"
+dependencies = [
+  "secret-package @ https://user:fake-pyproject-secret@packages.example.invalid/secret.tar.gz",
+]
+
+[[tool.uv.index]]
+url = "https://user:fake-pyproject-index-secret@packages.example.invalid/simple"

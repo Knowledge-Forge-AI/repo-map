@@ -1,0 +1,7 @@
+apiVersion: 1
+datasources:
+  - name: main
+    type: postgres
+    url: https://grafana.example.invalid
+    secureJsonData:
+      password: fake-grafana-password

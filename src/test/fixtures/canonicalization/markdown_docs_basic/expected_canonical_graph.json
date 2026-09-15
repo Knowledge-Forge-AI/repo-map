@@ -1,0 +1,489 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:288afb1eb6ad80bcf6fea9b42b849479669529b9cbc9d692798e0ec22edfc5a1",
+      "evidence_key": "evidence:1:README.md:0-0:repo-markdown:README.md#markdown-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:657566b534f35ab2d1f1b11f026c0ed2fa2007a7404b317b78ebf6f4d07f839f",
+      "evidence_key": "evidence:3:README.md:5-5:repo-markdown:README.md#heading:docs-fixture",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:90cd212cbe9747c1b5ecc28a11815e5f2814da095c3791a7e9ab9e3ba67de752",
+      "evidence_key": "evidence:6:docs/adr/0008-markdown-documentation-graph-model.md:0-0:repo-markdown:docs/adr/0008-markdown-documentation-graph-model.md#adr-metadata",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a365461d2268d9f96c5efbf56345af33b307125b6befe1b6e38042ed0e6839b7",
+      "evidence_key": "evidence:4:README.md:8-8:repo-markdown:README.md#link:8:0",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:bc1f83872911e55ef5d6861b76efdad0f7572bb30f39ddf0cd58328cdde63c97",
+      "evidence_key": "evidence:7:docs/skills/example/SKILL.md:0-0:repo-markdown:docs/skills/example/SKILL.md#skill-metadata",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a365461d2268d9f96c5efbf56345af33b307125b6befe1b6e38042ed0e6839b7",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "links_to",
+      "metadata": {
+        "image_link_observed": false,
+        "link_texts": [
+          "ADR 0008"
+        ],
+        "raw_targets": [
+          "docs/adr/0008-markdown-documentation-graph-model.md#decision"
+        ],
+        "resolved_anchors": [
+          "decision"
+        ],
+        "resolved_paths": [
+          "docs/adr/0008-markdown-documentation-graph-model.md"
+        ],
+        "syntaxes": [
+          "inline"
+        ]
+      },
+      "source_key": "doc.section:file%3AREADME.md:docs-fixture",
+      "target_key": "doc.section:file%3Adocs%2Fadr%2F0008-markdown-documentation-graph-model.md:decision"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:288afb1eb6ad80bcf6fea9b42b849479669529b9cbc9d692798e0ec22edfc5a1",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "doc_roles": [
+          "readme"
+        ],
+        "titles": [
+          "Docs Fixture"
+        ]
+      },
+      "source_key": "file:README.md",
+      "target_key": "doc.page:file%3AREADME.md"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:657566b534f35ab2d1f1b11f026c0ed2fa2007a7404b317b78ebf6f4d07f839f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "anchors": [
+          "docs-fixture"
+        ]
+      },
+      "source_key": "file:README.md",
+      "target_key": "doc.section:file%3AREADME.md:docs-fixture"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:90cd212cbe9747c1b5ecc28a11815e5f2814da095c3791a7e9ab9e3ba67de752",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "adr_numbers": [
+          "0008"
+        ],
+        "titles": [
+          "Markdown Documentation Graph Model"
+        ]
+      },
+      "source_key": "file:docs/adr/0008-markdown-documentation-graph-model.md",
+      "target_key": "doc.adr:0008"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:bc1f83872911e55ef5d6861b76efdad0f7572bb30f39ddf0cd58328cdde63c97",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "skill_names": [
+          "example"
+        ]
+      },
+      "source_key": "file:docs/skills/example/SKILL.md",
+      "target_key": "doc.skill:example"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:README.md:0-0:repo-discovery:README.md",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executable": false,
+        "generated": false,
+        "language": "markdown",
+        "role": "documentation"
+      },
+      "path": "README.md",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:1:README.md:0-0:repo-markdown:README.md#markdown-document",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "doc_path": "README.md",
+        "doc_role": "readme",
+        "frontmatter_present": true,
+        "title": "Docs Fixture"
+      },
+      "path": "README.md",
+      "raw_kind": "markdown.document",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md#markdown-document",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:2:README.md:1-4:repo-markdown:README.md#frontmatter",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "keys": [
+          "title"
+        ],
+        "parse_status": "parsed",
+        "redacted_keys": [],
+        "values": {
+          "title": "Docs Fixture"
+        }
+      },
+      "path": "README.md",
+      "raw_kind": "markdown.frontmatter",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md#frontmatter",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:3:README.md:5-5:repo-markdown:README.md#heading:docs-fixture",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "anchor": "docs-fixture",
+        "base_anchor": "docs-fixture",
+        "duplicate_index": 0,
+        "level": 1,
+        "page_key": "doc.page:file%3AREADME.md",
+        "text": "Docs Fixture"
+      },
+      "path": "README.md",
+      "raw_kind": "markdown.heading",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md#heading:docs-fixture",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 8,
+      "evidence_key": "evidence:4:README.md:8-8:repo-markdown:README.md#link:8:0",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "is_image": false,
+        "link_syntax": "inline",
+        "link_text": "ADR 0008",
+        "raw_target": "docs/adr/0008-markdown-documentation-graph-model.md#decision",
+        "resolved_anchor": "decision",
+        "resolved_path": "docs/adr/0008-markdown-documentation-graph-model.md",
+        "resolved_target_kind": "doc.section",
+        "source_anchor": "docs-fixture",
+        "source_key": "doc.section:file%3AREADME.md:docs-fixture"
+      },
+      "path": "README.md",
+      "raw_kind": "markdown.link",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md#link:8:0",
+      "start_line": 8
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 12,
+      "evidence_key": "evidence:5:README.md:10-12:repo-markdown:README.md#code-fence:10:0",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "closed": true,
+        "fence": "```",
+        "fence_length": 3,
+        "info_string": "sh",
+        "language": "sh",
+        "section_anchor": "docs-fixture"
+      },
+      "path": "README.md",
+      "raw_kind": "markdown.code_fence",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md#code-fence:10:0",
+      "start_line": 10
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:docs/adr/0008-markdown-documentation-graph-model.md:0-0:repo-markdown:docs/adr/0008-markdown-documentation-graph-model.md#adr-metadata",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "adr_number": "0008",
+        "date": "2026-06-29",
+        "metadata_source": "heading",
+        "status": "Accepted",
+        "title": "Markdown Documentation Graph Model"
+      },
+      "path": "docs/adr/0008-markdown-documentation-graph-model.md",
+      "raw_kind": "markdown.adr_metadata",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "docs/adr/0008-markdown-documentation-graph-model.md#adr-metadata",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": null,
+      "evidence_key": "evidence:7:docs/skills/example/SKILL.md:0-0:repo-markdown:docs/skills/example/SKILL.md#skill-metadata",
+      "extractor": "repo-markdown",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "description": "Example skill.",
+        "frontmatter_keys": [
+          "description",
+          "name"
+        ],
+        "metadata_source": "frontmatter",
+        "parse_status": "parsed",
+        "skill_name": "example",
+        "skill_path": "docs/skills/example/SKILL.md"
+      },
+      "path": "docs/skills/example/SKILL.md",
+      "raw_kind": "markdown.skill_metadata",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "docs/skills/example/SKILL.md#skill-metadata",
+      "start_line": null
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "doc.adr:0008",
+      "evidence_key": "evidence:6:docs/adr/0008-markdown-documentation-graph-model.md:0-0:repo-markdown:docs/adr/0008-markdown-documentation-graph-model.md#adr-metadata",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "doc.page:file%3AREADME.md",
+      "evidence_key": "evidence:1:README.md:0-0:repo-markdown:README.md#markdown-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "doc.page:file%3AREADME.md",
+      "evidence_key": "evidence:2:README.md:1-4:repo-markdown:README.md#frontmatter",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "doc.page:file%3AREADME.md",
+      "evidence_key": "evidence:5:README.md:10-12:repo-markdown:README.md#code-fence:10:0",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "doc.section:file%3AREADME.md:docs-fixture",
+      "evidence_key": "evidence:3:README.md:5-5:repo-markdown:README.md#heading:docs-fixture",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "doc.section:file%3AREADME.md:docs-fixture",
+      "evidence_key": "evidence:4:README.md:8-8:repo-markdown:README.md#link:8:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "doc.section:file%3Adocs%2Fadr%2F0008-markdown-documentation-graph-model.md:decision",
+      "evidence_key": "evidence:4:README.md:8-8:repo-markdown:README.md#link:8:0",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "doc.skill:example",
+      "evidence_key": "evidence:7:docs/skills/example/SKILL.md:0-0:repo-markdown:docs/skills/example/SKILL.md#skill-metadata",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:README.md",
+      "evidence_key": "evidence:0:README.md:0-0:repo-discovery:README.md",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:README.md",
+      "evidence_key": "evidence:1:README.md:0-0:repo-markdown:README.md#markdown-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:README.md",
+      "evidence_key": "evidence:3:README.md:5-5:repo-markdown:README.md#heading:docs-fixture",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:docs/adr/0008-markdown-documentation-graph-model.md",
+      "evidence_key": "evidence:6:docs/adr/0008-markdown-documentation-graph-model.md:0-0:repo-markdown:docs/adr/0008-markdown-documentation-graph-model.md#adr-metadata",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:docs/skills/example/SKILL.md",
+      "evidence_key": "evidence:7:docs/skills/example/SKILL.md:0-0:repo-markdown:docs/skills/example/SKILL.md#skill-metadata",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "doc.adr:0008",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Markdown Documentation Graph Model",
+      "graph_key_version": 1,
+      "kind": "doc.adr",
+      "metadata": {
+        "adr_number": "0008",
+        "date": "2026-06-29",
+        "metadata_source": "heading",
+        "status": "Accepted",
+        "title": "Markdown Documentation Graph Model"
+      }
+    },
+    {
+      "canonical_key": "doc.page:file%3AREADME.md",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Docs Fixture",
+      "graph_key_version": 1,
+      "kind": "doc.page",
+      "metadata": {
+        "doc_path": "README.md",
+        "doc_role": "readme",
+        "frontmatter_present": true,
+        "title": "Docs Fixture"
+      }
+    },
+    {
+      "canonical_key": "doc.section:file%3AREADME.md:docs-fixture",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Docs Fixture",
+      "graph_key_version": 1,
+      "kind": "doc.section",
+      "metadata": {
+        "anchor": "docs-fixture",
+        "base_anchor": "docs-fixture",
+        "duplicate_index": 0,
+        "level": 1,
+        "page_key": "doc.page:file%3AREADME.md",
+        "text": "Docs Fixture"
+      }
+    },
+    {
+      "canonical_key": "doc.section:file%3Adocs%2Fadr%2F0008-markdown-documentation-graph-model.md:decision",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "decision",
+      "graph_key_version": 1,
+      "kind": "doc.section",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "doc.skill:example",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "example",
+      "graph_key_version": 1,
+      "kind": "doc.skill",
+      "metadata": {
+        "description": "Example skill.",
+        "frontmatter_keys": [
+          "description",
+          "name"
+        ],
+        "metadata_source": "frontmatter",
+        "parse_status": "parsed",
+        "skill_name": "example",
+        "skill_path": "docs/skills/example/SKILL.md"
+      }
+    },
+    {
+      "canonical_key": "file:README.md",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "README.md",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executable": false,
+        "generated": false,
+        "language": "markdown",
+        "role": "documentation"
+      }
+    },
+    {
+      "canonical_key": "file:docs/adr/0008-markdown-documentation-graph-model.md",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "docs/adr/0008-markdown-documentation-graph-model.md",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:docs/skills/example/SKILL.md",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "docs/skills/example/SKILL.md",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 5,
+    "edges": 5,
+    "errors": 0,
+    "evidence": 8,
+    "infos": 0,
+    "node_evidence_links": 13,
+    "nodes": 8,
+    "raw_observations": 8,
+    "warnings": 0
+  }
+}

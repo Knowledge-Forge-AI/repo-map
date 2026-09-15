@@ -1,0 +1,11 @@
+[project]
+name = "repo-map-dogfood-fixture"
+version = "0.1.0"
+dependencies = ["psycopg[binary]>=3"]
+
+[tool.pytest.ini_options]
+testpaths = ["src/test/unit/python"]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"

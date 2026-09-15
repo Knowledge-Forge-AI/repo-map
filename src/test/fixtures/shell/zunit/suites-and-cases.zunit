@@ -1,0 +1,11 @@
+# Static extraction fixture only. Do not execute.
+
+describe "command expectations"
+
+test "captures normal output" {
+  run ./bin/example status --format text
+}
+
+test "checks file-like expectation syntax" {
+  run ./bin/example render ./fixtures/input.txt
+}

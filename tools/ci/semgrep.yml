@@ -1,0 +1,17 @@
+rules:
+  - id: repomap-python-shell-true
+    languages: [python]
+    message: Avoid shell=True; pass an explicit argument vector.
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.run(..., shell=True, ...)
+          - pattern: subprocess.Popen(..., shell=True, ...)
+          - pattern: subprocess.call(..., shell=True, ...)
+          - pattern: subprocess.check_call(..., shell=True, ...)
+          - pattern: subprocess.check_output(..., shell=True, ...)
+  - id: repomap-python-dynamic-exec
+    languages: [python]
+    message: Dynamic exec is outside RepoMap's static-extraction boundary.
+    severity: ERROR
+    pattern: exec(...)
