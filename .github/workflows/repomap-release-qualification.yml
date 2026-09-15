@@ -1,0 +1,332 @@
+name: repomap-release-qualification
+
+# Public release qualification lane for pull requests targeting main.
+#
+# Enforces same-repository staging -> main promotion policy, candidate identity
+# binding, public export policy (no withheld trees, version agreement), static
+# analysis pre-review suite, unit tests, CodeQL scanning, and SBOM generation/vulnerability scan.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, ready_for_review, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repomap-release-qualification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-and-export-policy:
+    name: source-and-export-policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Check staging promotion policy
+        run: python3 tools/ci/promotion_policy.py
+
+      - name: Check public export boundaries and candidate binding
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CANDIDATE_COMMIT: ${{ github.sha }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 tools/ci/public_export_policy.py
+
+  pre-review-static:
+    name: pre-review-static
+    needs: [source-and-export-policy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Set up Go for govulncheck
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: src/main/go/go.mod
+          cache: false
+
+      - name: Set up Node for local instruction scanners
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.0.0
+        with:
+          node-version: "24"
+
+      - name: Set up Java for offline Liquibase validation
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Materialize the pinned pre-review toolchain
+        run: |
+          python3 tools/ci/bootstrap_pre_review.py \
+            --tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"
+
+      - name: Run every pre-review check and aggregate once
+        run: |
+          "${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python" \
+            tools/ci/run_pre_review.py \
+            --evidence-dir "${RUNNER_TEMP}/repomap-pre-review-evidence" \
+            --tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"
+
+      - name: Retain bounded sanitized pre-review evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: repomap-pre-review-evidence
+          path: ${{ runner.temp }}/repomap-pre-review-evidence
+
+  unit-tests:
+    name: unit-tests
+    needs: [source-and-export-policy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Set up Go for the canonical runner
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: src/main/go/go.mod
+          cache: false
+
+      - name: Install the pinned Go linter
+        run: |
+          python3 tools/ci/bootstrap_tool.py \
+            --tool golangci-lint \
+            --bin-dir "${RUNNER_TEMP}/repomap-tools/bin"
+          "${RUNNER_TEMP}/repomap-tools/bin/golangci-lint" version
+
+      - name: Install unit-test dependencies
+        run: python -m pip install --editable ".[test,scale-tools,static-analysis]"
+
+      - name: Record free disk before the canonical unit suite
+        run: df -B1 /
+
+      - name: Run the canonical unit population with 85/85 coverage
+        env:
+          REPOMAP_TEST_HYGIENE_MIN_FREE_DISK_BYTES: "10737418240"
+        run: python3 tools/run_tests.py --suite unit
+
+  staging-integration-gate:
+    name: staging-integration-gate
+    needs: [source-and-export-policy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Record free disk before the staging suite
+        run: df -B1 /
+
+      - name: Run the staging smoke and integration gate
+        id: staging
+        run: |
+          python3 tools/run_tests.py \
+            --suite staging \
+            --hygiene-profile exhaustive \
+            --declared-complete-gates 1 \
+            --operator-attest-exclusive \
+            --operator-attest-pressure-degradation \
+            --pg-container-port 55433 \
+            --sandbox \
+            --report \
+            --report-dir "${GITHUB_WORKSPACE}/ci-staging-report"
+
+      - name: Upload the staging test report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: repomap-staging-gate-report
+          path: ci-staging-report
+          if-no-files-found: warn
+          retention-days: 14
+
+  main-system-gate:
+    name: main-system-gate
+    needs: [staging-integration-gate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Verify merge parents and construct gate request
+        id: bind
+        run: |
+          CANDIDATE_SHA="$(git rev-parse HEAD)"
+          CANDIDATE_TREE="$(git rev-parse 'HEAD^{tree}')"
+          CANDIDATE_BASE_PARENT="$(git rev-parse 'HEAD^1')"
+          CANDIDATE_HEAD_PARENT="$(git rev-parse 'HEAD^2')"
+          echo "CANDIDATE_SHA=${CANDIDATE_SHA}" >> "${GITHUB_ENV}"
+          echo "CANDIDATE_TREE=${CANDIDATE_TREE}" >> "${GITHUB_ENV}"
+          echo "CANDIDATE_BASE_PARENT=${CANDIDATE_BASE_PARENT}" >> "${GITHUB_ENV}"
+          echo "CANDIDATE_HEAD_PARENT=${CANDIDATE_HEAD_PARENT}" >> "${GITHUB_ENV}"
+
+          mkdir -p "${RUNNER_TEMP}/ci"
+          python3 -c "
+          import json, os, sys
+          req = {
+              'schema': 'repomap-ci-gate-request-v1',
+              'gate_kind': 'main-system',
+              'pr_number': int(os.environ['PR_NUMBER']),
+              'base_branch': 'main',
+              'base_sha': os.environ['CANDIDATE_BASE_PARENT'],
+              'head_branch': 'staging',
+              'head_sha': os.environ['CANDIDATE_HEAD_PARENT'],
+              'approval_id': f'pr-{os.environ[\"PR_NUMBER\"]}',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+          }
+          with open('${RUNNER_TEMP}/gate-request.json', 'w', encoding='utf-8') as f:
+              json.dump(req, f, indent=2)
+          "
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Record free disk before the system suite
+        run: df -B1 /
+
+      - name: Run the main system gate
+        id: system
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python3 tools/run_tests.py \
+            --suite system \
+            --system-timeout 3600 \
+            --hygiene-profile exhaustive \
+            --declared-complete-gates 1 \
+            --operator-attest-exclusive \
+            --operator-attest-pressure-degradation \
+            --sandbox \
+            --gate-request-json "${RUNNER_TEMP}/gate-request.json" \
+            --candidate-sha "${CANDIDATE_SHA}" \
+            --candidate-tree "${CANDIDATE_TREE}" \
+            --candidate-base-parent "${CANDIDATE_BASE_PARENT}" \
+            --candidate-head-parent "${CANDIDATE_HEAD_PARENT}" \
+            --approval-id "pr-${PR_NUMBER}" \
+            --pr-number "${PR_NUMBER}" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --report \
+            --report-dir "${GITHUB_WORKSPACE}/ci-system-report"
+
+      - name: Upload the system test report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: repomap-main-system-gate-report
+          path: ci-system-report
+          if-no-files-found: warn
+          retention-days: 14
+
+  codeql:
+    name: codeql-analysis
+    needs: [source-and-export-policy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["python", "go"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@b56ba49b26e50535fa1e7f7db0f4f7b4bf65d80d # v3.28.11
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@b56ba49b26e50535fa1e7f7db0f4f7b4bf65d80d # v3.28.11
+        with:
+          category: "/language:${{matrix.language}}"
+
+  sbom-security:
+    name: sbom-and-vulnerability-scan
+    needs: [source-and-export-policy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Generate SBOM with Syft
+        uses: anchore/sbom-action@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
+        with:
+          path: "."
+          format: "spdx-json"
+          output-file: "sbom.spdx.json"
+
+      - name: Scan SBOM with Grype
+        uses: anchore/scan-action@7c05671ae9be166aeb155bad2d7df9121823df32 # v6.1.0
+        with:
+          sbom: "sbom.spdx.json"
+          fail-build: true
+          severity-cutoff: "high"
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: repomap-sbom
+          path: sbom.spdx.json

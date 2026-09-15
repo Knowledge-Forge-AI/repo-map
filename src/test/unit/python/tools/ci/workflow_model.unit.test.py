@@ -136,6 +136,7 @@ def test_reader_parses_every_real_workflow() -> None:
         "repomap-staging-gate.yml",
         "repomap-main-source-policy.yml",
         "repomap-main-system-gate.yml",
+        "repomap-release-qualification.yml",
     }
     for workflow in workflows:
         assert isinstance(workflow, Workflow)
@@ -144,6 +145,17 @@ def test_reader_parses_every_real_workflow() -> None:
         assert workflow.permissions
         assert workflow.jobs
         assert workflow.steps()
+
+    release_workflow = next(w for w in workflows if w.path.name == "repomap-release-qualification.yml")
+    assert set(release_workflow.jobs) == {
+        "source-and-export-policy",
+        "pre-review-static",
+        "unit-tests",
+        "staging-integration-gate",
+        "main-system-gate",
+        "codeql",
+        "sbom-security",
+    }
 
 
 def test_accessors_expose_commands_and_actions() -> None:

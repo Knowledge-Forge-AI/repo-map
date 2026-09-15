@@ -96,7 +96,7 @@ def generation_changed_terminal(claim: GenerationClaim) -> Mapping[str, object]:
         "canonical_nodes": 0,
         "canonical_edges": 0,
         "warnings": [],
-        "diagnostics": [],
+        "diagnostics": ["generation_changed:identity_mismatch"],
         "publication_state": "not_started",
         "latest_run_identity": None,
         "source_generation": claim.source_generation,
@@ -107,6 +107,7 @@ def generation_changed_terminal(claim: GenerationClaim) -> Mapping[str, object]:
         "error_category": "generation_changed",
         "_termination_proved": True,
         "_error_category": "generation_changed",
+        "_diagnostic_summary": "generation_changed:identity_mismatch",
     }
 
 
@@ -141,4 +142,5 @@ def psql_configuration_terminal(claim: GenerationClaim) -> Mapping[str, object]:
         "error_category": "configuration",
         "_termination_proved": True,
         "_error_category": "configuration",
+        "_diagnostic_summary": "psql_authority_invalid",
     }

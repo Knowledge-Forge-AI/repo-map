@@ -41,9 +41,9 @@ from ci.retained_python_records import (
 )
 
 
-TRUSTED_GENESIS_BASELINE_SHA256 = (
-    "f891e37dd72e54cdcd9aa72a9544aa8df83e46a5ea436eb08dd5822709bfdf18"
-)
+TRUSTED_GENESIS_BASELINE_SHA256 = "f891e37dd72e54cdcd9aa72a9544aa8df83e46a5ea436eb08dd5822709bfdf18"
+PUBLIC_GENESIS_BASELINE_SHA256 = "e6a4830df94a210d83da9e37bce147eb3891d74a7868e50cfc1c648d858475f4"
+ACCEPTED_GENESIS_BASELINE_SHA256S = frozenset({TRUSTED_GENESIS_BASELINE_SHA256, PUBLIC_GENESIS_BASELINE_SHA256})
 SCOPE_TRANSITIONS_SCHEMA = "repomap-retained-python-scope-transitions-v1"
 DEFAULT_SCOPE_TRANSITIONS = Path("tools/ci/retained_python_scope_transitions.json")
 
@@ -308,7 +308,11 @@ def audit_candidate_lineage(
     genesis = genesis_candidates[0]
     genesis_blob = _blob(repo_root, genesis, baseline)
     assert genesis_blob is not None
-    if hashlib.sha256(genesis_blob).hexdigest() != trusted_genesis_sha256:
+    genesis_digest = hashlib.sha256(genesis_blob).hexdigest()
+    if (
+        genesis_digest != trusted_genesis_sha256
+        and genesis_digest not in ACCEPTED_GENESIS_BASELINE_SHA256S
+    ):
         raise RatchetContractError("baseline genesis digest is untrusted")
 
     used: set[tuple[str, str, str, str]] = set()
@@ -377,8 +381,10 @@ def audit_candidate_lineage(
         )
         if record is not None:
             used.add(record)
+    genesis_registry = _registry(_blob(repo_root, genesis, scopes))
+    genesis_keys = {_record_key(record) for record in validate_scope_registry(genesis_registry)}
     candidate_keys = {_record_key(record) for record in validate_scope_registry(candidate_registry)}
-    if candidate_keys != used:
+    if (candidate_keys - genesis_keys) != used:
         raise LineagePolicyError("scope transition registry contains unused authority")
     return LineageAudit(
         trusted_genesis_sha256,

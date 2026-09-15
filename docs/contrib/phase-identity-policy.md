@@ -68,14 +68,14 @@ verification summary, and successor or closeout decision.
 
 A supporting status document records evidence for a primary phase, such as a
 smoke execution, supplemental audit, or documentation increment. It does not
-allocate another canonical ID. Historical supporting records remain
-grandfathered under `docs/status/`. New supporting evidence must identify the
-primary status path and use an existing purpose-owned directory unless a
-separate explicit decision authorizes another status record.
+allocate another canonical ID. Historical supporting records were created
+internally under `docs/status/`, which is withheld from public source releases.
+In the public repository, release documentation is maintained under `CHANGELOG.md`
+and `docs/releases/`.
 
-The accepted legacy M1 classification is:
+The accepted legacy M1 classification (historical internal references) is:
 
-| Role | Status path | Identity interpretation |
+| Role | Historical status path (withheld) | Identity interpretation |
 | --- | --- | --- |
 | Primary | `docs/status/2026/06/29/00009-m1-mcp-readonly-exit.md` | Canonical phase `M1`. |
 | Supporting | `docs/status/2026/06/29/00010-m1-codex-smoke.md` | M1 smoke evidence, not a second phase assignment. |
@@ -149,9 +149,15 @@ explicit remediation phase changes them; they are not templates for new IDs.
 Existing accepted specialization forms such as `PKG5-LANG` also remain valid
 full canonical IDs and are compared as complete tokens.
 
-## Status-Document Consistency
+## Status and Release Documentation Consistency
 
-A primary status document must:
+In the private development line, internal phases produced primary status exit
+documents under `docs/status/`. Because `docs/status/` is internal and withheld
+from public releases, public contributors do not create artifacts under
+`docs/status/`. Instead, public changes are documented through `CHANGELOG.md`
+and release notes under `docs/releases/`.
+
+When referencing historical phase identities:
 
 - include exactly one canonical phase ID in its H1 heading;
 - claim exactly one primary canonical phase identity;
@@ -159,13 +165,9 @@ A primary status document must:
 - use a filename stem consistent with the canonical ID;
 - preserve its global five-digit status sequence independently from the phase's
   numeric component;
-- be an exit report when newly created under `docs/status/`, with a filename
-  ending in `-exit.md` and an H1 title containing `Exit`;
 - state a truthful terminal disposition and record scope, outcome, validation,
   deferrals, and the next authorization;
 - identify predecessors and successors by canonical ID;
-- link or name the canonical status path when a cross-document reference needs
-  durable evidence;
 - mention a retired alias only in clearly labeled remediation, alias, or
   immutable-history prose.
 
@@ -176,28 +178,22 @@ STORAGE-SUMMARY-ROWS3
 → storage-summary-rows3
 ```
 
-The filename shape for a new primary phase record is:
+Historical internal phase exit records followed the naming shape:
 
 ```text
 docs/status/YYYY/MM/DD/NNNNN-<canonical-phase-token>-<descriptive-suffix>-exit.md
 ```
 
-The directory date comes from the introducing commit's committer timestamp,
-using the calendar date encoded in that timestamp's numeric offset. Existing
-historical basenames, H1 titles, roles, and non-exit framing remain
-grandfathered and are not templates for new records.
+Existing historical basenames, H1 titles, roles, and non-exit framing remain
+grandfathered and are not templates for new public records. In the public
+repository, public version increments and notes belong in `CHANGELOG.md` and
+`docs/releases/v<version>.md`.
 
 For grandfathered IDs containing an underscore, filename comparison converts
 the underscore to a hyphen. Existing accepted filenames with a legacy
 `phase-` prefix or other harmless descriptive variation do not require a rename
 unless the variation creates ambiguity, breaks links, or prevents deterministic
 tooling.
-
-A supporting status document may refer to the primary phase ID but must not
-present itself as another primary assignment. New supporting evidence should
-use a heading such as “Supporting Evidence For `<ID>`” and cite the primary
-status path. A non-exit supporting document does not belong under
-`docs/status/` without a separate explicit decision.
 
 ## Roadmap Consistency
 

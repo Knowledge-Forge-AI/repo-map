@@ -71,13 +71,11 @@ projection bodies are never canonical.
 - `docs/ops/` — operator skills and durable operations references.
 - `docs/contrib/` — contribution standards and contributor skills.
 - `docs/adr/YYYY/MM/` — ADRs (independent four-digit sequence).
-- `docs/status/YYYY/MM/DD/` — complete historical status archive; new
-  primary phase records use the next global five-digit number, end in
-  `-exit.md`, and have an H1 title containing `Exit`.
+- `CHANGELOG.md` and `docs/releases/` — public release notes and change history.
 - `.agents/skills` and `.claude/skills` — skill discovery projection
   catalogs for the canonical skill roots under `docs/`.
 
-Do not relocate project roots, package names, CLI names, test roots, status
+Do not relocate project roots, package names, CLI names, test roots, release
 paths, or ADR paths unless an accepted phase explicitly authorizes it.
 
 ## Git, Phases, And Publication

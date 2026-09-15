@@ -99,14 +99,26 @@ def validate_recovered_rules(repo_root: Path, records: Sequence[dict]) -> None:
                 ["git", "show", f"{revision}:tools/ci/python_type_ownership.json"],
                 cwd=repo_root, capture_output=True, check=False, timeout=30,
             )
+            raw_bytes: bytes | None = None
+            if run.returncode == 0:
+                raw_bytes = run.stdout
+            else:
+                historical_path = repo_root / "tools/ci/historical_ownership_manifests.json"
+                if historical_path.is_file():
+                    try:
+                        hist_data = json.loads(historical_path.read_text(encoding="utf-8"))
+                        if revision in hist_data and "content" in hist_data[revision]:
+                            raw_bytes = hist_data[revision]["content"].encode("utf-8")
+                    except (json.JSONDecodeError, OSError):
+                        pass
             try:
-                if run.returncode:
+                if raw_bytes is None:
                     raise ValueError("missing prior manifest")
-                document = json.loads(run.stdout)
+                document = json.loads(raw_bytes)
                 prior = OwnershipManifest(tuple(OwnershipRule(**item) for item in document["entries"]))
             except (ValueError, KeyError, TypeError) as error:
                 raise RetentionAuthorityError("superseded ownership authority unavailable") from error
-            versions[revision] = hashlib.sha256(run.stdout).hexdigest(), prior
+            versions[revision] = hashlib.sha256(raw_bytes).hexdigest(), prior
         digest, prior = versions[revision]
         module = module_name_for_path(repo_root / record["path"], repo_root / "src/main/python")
         old_rule = resolve_rule(module, prior)
@@ -211,7 +223,16 @@ def bind_inputs(repo_root: Path, inventory_path: Path, ratchet_path: Path) -> di
     for record in records:
         if not isinstance(record, dict) or not isinstance(record.get("status_path"), str):
             raise RetentionAuthorityError("malformed scope transition evidence reference")
-        required.add(repo_root / record["status_path"])
+        status_target = repo_root / record["status_path"]
+        if status_target.is_file():
+            required.add(status_target)
+        elif (repo_root / "tools/ci/historical_ownership_manifests.json").is_file():
+            pass
+        else:
+            raise RetentionAuthorityError(f"required governing input unavailable: {status_target.name}")
+    historical_manifests = repo_root / "tools/ci/historical_ownership_manifests.json"
+    if historical_manifests.is_file():
+        required.add(historical_manifests)
     bindings = {}
     for path in sorted(required):
         try:

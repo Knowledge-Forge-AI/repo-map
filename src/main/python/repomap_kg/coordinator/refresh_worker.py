@@ -110,7 +110,17 @@ def main(argv: list[str] | None = None) -> int:
             session.accept_worker(terminal)
             _write(terminal)
         return 0
-    except (OSError, TypeError, ValueError, ProtocolError):
+    except Exception as error:
+        from repomap_kg.ops.reports import _redact_text
+
+        category = "worker-error"
+        if isinstance(error, ProtocolError):
+            category = "protocol-error"
+        elif isinstance(error, (ValueError, OSError)) and "capability" in str(error).lower():
+            category = "capability-error"
+        safe_msg = _redact_text(str(error))[:256]
+        sys.stderr.write(f"refresh-failure:{category}:{safe_msg}\n")
+        sys.stderr.flush()
         return 2
 
 

@@ -80,14 +80,15 @@ RepoMap's authoritative public development record is semantic and
 source-backed. It consists of:
 
 - phase and task IDs;
-- status and exit documents under `docs/status/`;
+- public releases and change history in `CHANGELOG.md` and `docs/releases/`;
 - accepted ADRs under `docs/adr/`;
 - roadmap entries that record planning and phase sequence;
 - contributor standards that define durable development policy;
 - source, tests, and public releases published in the public repository;
 - separately preserved historical repository identities where applicable.
 
-Private development commits and private control-plane reports are supporting
+Private development commits, internal status archives (`docs/status/`, withheld
+from public releases), and private control-plane reports are supporting
 evidence, not public record identifiers.
 
 ## Public Semantic Reference Hierarchy
@@ -109,21 +110,21 @@ Example:
 PSYCOPG7 established the opt-in summary driver boundary.
 ```
 
-### 2. Phase ID Plus Status-Document Path
+### 2. Phase ID Plus Release or Change Record
 
-Use a phase ID plus status path when:
+Use a phase ID plus release/change path when:
 
 - one phase follows, approves, evaluates, or completes another;
 - the reference crosses documents;
-- a reader needs the durable evidence or verification record;
-- the statement is part of an audit, handoff, or closeout.
+- a reader needs durable evidence or release context.
 
 Preferred example:
 
 ```text
-PSYCOPG7, recorded in
-docs/status/2026/07/07/00327-psycopg7-opt-in-summary-driver.md
+V001-FIX12, recorded in CHANGELOG.md and docs/releases/v0.0.1.md
 ```
+
+(Internal status documents under `docs/status/` are withheld from the public repository.)
 
 Do not write:
 

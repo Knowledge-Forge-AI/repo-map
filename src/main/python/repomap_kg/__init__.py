@@ -1,3 +1,2 @@
-"""RepoMap package metadata."""
-
-__version__ = "0.1.0"
+"""RepoMap knowledge graph engine."""
+__version__ = "0.0.1"

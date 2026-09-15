@@ -5043,8 +5043,8 @@ separate future mandates.
 LOCAL0 assessment note: a new local-operations epic begins with six dedicated,
 manual, initially MCP-hidden graph identities and an untracked late-sorting
 operations overlay. The current CLI, lifecycle, baseline/drift, MCP, privacy,
-source-protection, and test surfaces are inventoried in
-`docs/status/2026/07/12/00470-local0-local-operations-assessment.md`. The exact
+source-protection, and test surfaces are inventoried in the historical
+LOCAL0 assessment (withheld from public export). The exact
 remaining legacy-default storage commands are `storage files`,
 `storage entrypoints`, and `storage file-nodes`; each receives a separate
 assessment, implementation, and parity sequence after two clean lifecycle/API
