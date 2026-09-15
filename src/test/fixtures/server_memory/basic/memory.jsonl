@@ -1,0 +1,3 @@
+{"type":"entity","name":"RepoMap Phase Notes","entityType":"project","observations":["Points to docs/status/mcp-ops5-server-memory-bridge-exit.md","AGENTS pointer lives in usr/docs/policies/AGENTS.md"]}
+{"type":"entity","name":"RepoMap MCP Ops","entityType":"component","observations":["Uses local read-only MCP tools","Path pointer ./docs/adr/0031-permanent-local-repomap-mcp-operations.md"]}
+{"type":"relation","source":"RepoMap MCP Ops","target":"RepoMap Phase Notes","relationType":"is documented by"}

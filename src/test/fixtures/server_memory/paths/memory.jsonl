@@ -1,0 +1,2 @@
+{"entities":[{"name":"Path Catalog","entityType":"catalog","observations":["See ./src/main/python/repomap_kg/mcp_server.py and docs/status/mcp-ops4-expanded-readonly-mcp-exit.md"]}]}
+{"relations":[{"source":"Path Catalog","target":"RepoMap","relationType":"points_to"}]}

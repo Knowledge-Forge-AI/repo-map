@@ -1,0 +1,1517 @@
+{
+  "schema": "repomap-pre-review-baseline-v2",
+  "ratchets": {
+    "file-length": {
+      "failures": 1
+    },
+    "hadolint": {
+      "findings": 1
+    },
+    "pip-audit": {
+      "findings": 0
+    },
+    "prompt-defense-audit": {
+      "embedded_payloads": 2,
+      "minimum_score": 41,
+      "missing": 10,
+      "unicode_issues": 2
+    },
+    "scanner-suppressions": {
+      "inventory": [
+        {
+          "fingerprint": "3e2144b72b871e9c5797af1a88f507da78c2e9928d13f5614d46d5c98bcb20ee",
+          "kind": "type-ignore",
+          "line": 14,
+          "path": "src/main/python/repomap_kg/coordinator/_portable_authority.py",
+          "scope": [
+            "assignment"
+          ],
+          "justification": "mypy assignment: the exact fcntl import fallback is intentionally None on non-POSIX hosts so module import remains portable; remove when a typed platform-specific locking adapter replaces the conditional import."
+        },
+        {
+          "fingerprint": "7cc22e068da4121fff9992b87a7a7bd0cc5630cbf9a1f70168e7c9bd8d333b03",
+          "kind": "type-ignore",
+          "line": 144,
+          "path": "src/main/python/repomap_kg/coordinator/client.py",
+          "scope": [
+            "return-value"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "b71e385f6abac08aa482b52d4fbe7ef8f22d496bbc62a76d52dad9f83464023d",
+          "kind": "type-ignore",
+          "line": 239,
+          "path": "src/main/python/repomap_kg/coordinator/desired_state.py",
+          "scope": [
+            "return-value"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "ca5227b402e6610e36363d702c4194c1fa77698730b170b5c47025e218981b31",
+          "kind": "type-ignore",
+          "line": 19,
+          "path": "src/main/python/repomap_kg/coordinator/endpoint.py",
+          "scope": [
+            "assignment"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "424e52fede46fcaf7a143829fbf351c63c2f131eb146777f86ca73950fa4b427",
+          "kind": "type-ignore",
+          "line": 24,
+          "path": "src/main/python/repomap_kg/coordinator/endpoint.py",
+          "scope": [
+            "assignment"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "c83093112248a1b05a2cf614ed3f07100424c68dea6e0155a34520aed62ea83d",
+          "kind": "type-ignore",
+          "line": 61,
+          "path": "src/main/python/repomap_kg/coordinator/job_control.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "c0b536f867871a0f5da1a5d2ed13622c8f08eb07b4f59667ebe5570776a1cec9",
+          "kind": "type-ignore",
+          "line": 73,
+          "path": "src/main/python/repomap_kg/coordinator/job_control.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "589940132beee01b7169810965f44279721f7149bd531685ddb1b48f2fbdf3f3",
+          "kind": "type-ignore",
+          "line": 97,
+          "path": "src/main/python/repomap_kg/coordinator/job_control.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "8005c2dd6f830c935a37f319e1efb43a95d0318deba759df36b65874737dc135",
+          "kind": "type-ignore",
+          "line": 118,
+          "path": "src/main/python/repomap_kg/coordinator/job_control.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "89fca6ff61cef1ad767c72f0f9e1f0165f77f2a171e27e1c083a60d9ba683dd8",
+          "kind": "type-ignore",
+          "line": 136,
+          "path": "src/main/python/repomap_kg/coordinator/job_control.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "f94fa813a2b0ee9fd13f68a008ede81ab124d7a0d5114ba5f35df69fab57a637",
+          "kind": "type-ignore",
+          "line": 348,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "73e4ea1e1a09cb0e5c73702f7bdbe548c95311c45b2f92a6e49503eac3c24d53",
+          "kind": "type-ignore",
+          "line": 351,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "14416a1a19f3d6da576922b0765c40b6d10a1f399247700aca0517b05744355d",
+          "kind": "type-ignore",
+          "line": 372,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "6bbd187ce9d8acd60d4c39ba8961c1c6fb0270c5dbca0c281e9b26aa0c2f3436",
+          "kind": "type-ignore",
+          "line": 373,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "de8aad2e903f7fa2f2b35f600898edc70eb7f48e3d21f0e8e1a805293989b54b",
+          "kind": "type-ignore",
+          "line": 374,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "cbc4c5c7be99c8aae08ca5a639b9a93155115f8c03f80220c42060d44bc4eec7",
+          "kind": "type-ignore",
+          "line": 390,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a68dbe97b688cbf99e41780d07d6edc42a9e4685e89442e314bb12beadccfc24",
+          "kind": "type-ignore",
+          "line": 426,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "cc2b0e2dad8a540c411a83024475028f4f1ecd6fabae17597b82c6c5de57d313",
+          "kind": "type-ignore",
+          "line": 427,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "6e2e0923a9d120a2c631f78b1147367d81a653034e3e1bc273075b5a88f1c678",
+          "kind": "type-ignore",
+          "line": 484,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "dd6e5b26f2059b0e7c6c5eda4277d37cfce3d5af8e3177cf80c390c1d3ea2967",
+          "kind": "type-ignore",
+          "line": 486,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "5a543d18d2536c211e728c93a425b11055bfdb3614db680fd63e8c86de9d07a1",
+          "kind": "type-ignore",
+          "line": 492,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "1ea522bbfd6634a63229df519c4e8aa8cf779cbf0fbf90bd1ac2ff99d1d474a4",
+          "kind": "type-ignore",
+          "line": 499,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "de48b628f5a2287a1a5b98a017fbe0511aeb08da44334997b02a12ed94b6006e",
+          "kind": "type-ignore",
+          "line": 514,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "329ee4f649ce2e819195137fdff13770c3dff852364ee0013aaaf7d2e947db7c",
+          "kind": "type-ignore",
+          "line": 518,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "4d36a70dad811b301eb465e5c2e66eed89773111b3d28658d439fb2c099afee5",
+          "kind": "type-ignore",
+          "line": 529,
+          "path": "src/main/python/repomap_kg/coordinator/local_lifecycle.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "230ba7a9320fa3c76ebed7796c15e5b1e8415c2ae2b440674904746381f5ee1f",
+          "kind": "type-ignore",
+          "line": 227,
+          "path": "src/main/python/repomap_kg/coordinator/local_mode.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "6919834bb553868134fbff57b990c55ef0a9d4c5f25c33004d3edfcf53939e44",
+          "kind": "type-ignore",
+          "line": 229,
+          "path": "src/main/python/repomap_kg/coordinator/local_mode.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "86e226e778745df096717067039ff07170180fc38a15999e88beea477ea3d2f1",
+          "kind": "type-ignore",
+          "line": 234,
+          "path": "src/main/python/repomap_kg/coordinator/local_mode.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "7fa8bee99ee600563269d3040bdf4127cf30f81902c60344be1505524409be29",
+          "kind": "type-ignore",
+          "line": 291,
+          "path": "src/main/python/repomap_kg/coordinator/local_mode.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "54b921dbaa0b7d2e12d4d04b4aeca31caa06196aebcfed711163618b78bc23be",
+          "kind": "type-ignore",
+          "line": 298,
+          "path": "src/main/python/repomap_kg/coordinator/local_mode.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "4c5e25be94ac586a0f6ad1c65185ceae9feffe6d422a18ee113056a26a528d1b",
+          "kind": "type-ignore",
+          "line": 53,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "44e6c09ab42f63d1df1985262808e99813c05cfe470e477c5262b870d3e54947",
+          "kind": "type-ignore",
+          "line": 57,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a53dee3d4790b8b403610c56a763d9f0e7e04165627d1e8b7bf874bac62388b3",
+          "kind": "type-ignore",
+          "line": 61,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "9e3bc2783a9c82d1d8abd826449f482817980f7fc3bf46959e718d612c032344",
+          "kind": "type-ignore",
+          "line": 65,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "e48cad8e3270d9dd49ac9efcd887d5a43ba73dccee70054fad201c0072524317",
+          "kind": "type-ignore",
+          "line": 69,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "4d7ea82e66d29ab05a3a447c132fb640a59fdf5d2c384af32c929837d06f687c",
+          "kind": "type-ignore",
+          "line": 72,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "ec749591795fedef61271648baf64ce925409aa0dd2a83375cfae665659aac99",
+          "kind": "type-ignore",
+          "line": 75,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "0d6bdf008a86f8f8202e4e9b4c35110b2d6abef982c26bd599ca33a0fe56d0e7",
+          "kind": "type-ignore",
+          "line": 251,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "5e4f507626f719930f0058096029fdfb0c1bc9f0cc7f261f850347fcdce29266",
+          "kind": "type-ignore",
+          "line": 286,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "dd75e26148e803e9319b58fd218d0e2a4a220c0037e9197383b95de7181e83bd",
+          "kind": "type-ignore",
+          "line": 328,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "288b9bc9f8ee7c9691bc518af8cfc7bb31839a6905bcbb23c2724dc66e173e32",
+          "kind": "type-ignore",
+          "line": 329,
+          "path": "src/main/python/repomap_kg/coordinator/process_supervision.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "67c4df2b1c2903effab3e003e0678a2368add011e8e8a9d91162b2c7f5864a9f",
+          "kind": "type-ignore",
+          "line": 179,
+          "path": "src/main/python/repomap_kg/coordinator/service.py",
+          "scope": [
+            "union-attr"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "872779e6c1e12cafe2dcd2492d033072aca6bb7c051e90f6dd51938c287ecabb",
+          "kind": "type-ignore",
+          "line": 214,
+          "path": "src/main/python/repomap_kg/coordinator/service.py",
+          "scope": [
+            "union-attr"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "eae41b53c33dc7255927de16568f11d00f2b2237943bb363990230bef9708245",
+          "kind": "type-ignore",
+          "line": 363,
+          "path": "src/main/python/repomap_kg/coordinator/service.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "9d756bcd5c2c15a2c272c086b050965171c3445c675f676ac287216253837d00",
+          "kind": "type-ignore",
+          "line": 441,
+          "path": "src/main/python/repomap_kg/coordinator/transport.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "f8e08f51e3ce24d82348e04e1001bcc4e732adb8c6ac516ad4b51de58ba8cc2b",
+          "kind": "type-ignore",
+          "line": 442,
+          "path": "src/main/python/repomap_kg/coordinator/transport.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "d172e90fe1a00f9f97fba0f443c095b55d7db0165fb1f959ec34bec2e3bf5614",
+          "kind": "type-ignore",
+          "line": 443,
+          "path": "src/main/python/repomap_kg/coordinator/transport.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "97afe5c0079bfb38c4f4b88ed50d0b35786989994b01454a864418c5a437c592",
+          "kind": "type-ignore",
+          "line": 29,
+          "path": "src/main/python/repomap_kg/ops/baselines.py",
+          "scope": [
+            "index"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "588086a83afe7a4b30af9ac1faecde7e9b0288602abc9b8ef848da0d650a1ce2",
+          "kind": "type-ignore",
+          "line": 31,
+          "path": "src/main/python/repomap_kg/ops/baselines.py",
+          "scope": [
+            "index"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "ea75db460c1c59e53033d265d42ac4dc1ea9719de01d84076e599856718c4037",
+          "kind": "type-ignore",
+          "line": 36,
+          "path": "src/main/python/repomap_kg/ops/baselines.py",
+          "scope": [
+            "index"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "0fb04540d97f6e07b0a9f0c6797aeb2952d762a97c1016a4b4e571b441559953",
+          "kind": "ruff-noqa",
+          "line": 7,
+          "path": "src/main/python/repomap_kg/ops/config.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "47f1da6a461b5125c320da11fd783807ef40e01ac0db0c9a19d94fcfbd2355f2",
+          "kind": "ruff-noqa",
+          "line": 625,
+          "path": "src/main/python/repomap_kg/ops/ingestion/github_api.py",
+          "scope": [
+            "ANN001"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "d6e81481ee5c89add2389b2fbac0a5c12051699f2a7bc4b89a06b03c579121ed",
+          "kind": "ruff-noqa",
+          "line": 361,
+          "path": "src/main/python/repomap_kg/ops/ingestion/source_feed.py",
+          "scope": [
+            "ANN001"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a2f2fb6a88eb267f7ee31b832765f25f6aea1bba37aecd49dd926abba1f4986f",
+          "kind": "type-ignore",
+          "line": 154,
+          "path": "src/main/python/repomap_kg/runtime/release_cluster.py",
+          "scope": [
+            "attr-defined"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "f1a5411f1cc023df6ee6bc987f71de541c960164ab06b5e918698445c78dfe50",
+          "kind": "ruff-noqa",
+          "line": 263,
+          "path": "src/main/python/repomap_kg/server/http.py",
+          "scope": [
+            "N802"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "7eb7eedca23b43d90cfdd81e440daba5de4d3ea3c4f5472b2186c92c1995f040",
+          "kind": "type-ignore",
+          "line": 19,
+          "path": "src/main/python/repomap_kg/service_package/artifacts.py",
+          "scope": [
+            "assignment"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "8f10b5998d94c44f6c88f02750c5cfacf7f77186334879969d86ef3919ecef80",
+          "kind": "type-ignore",
+          "line": 24,
+          "path": "src/main/python/repomap_kg/service_package/artifacts.py",
+          "scope": [
+            "assignment"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "baeac5581695c8478564f404160b4824b2c90083437a451580e2dd564271a416",
+          "kind": "ruff-noqa",
+          "line": 17,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "d90c8d6a7f4ee1e94d0dc104e2ca7c02c7e903b5474901c76e4d2ae82c4721fc",
+          "kind": "ruff-noqa",
+          "line": 19,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "671b1bf9be0f6f23ebb58a89f174dcbb868a42e1abeb92e7fec31888859914d8",
+          "kind": "ruff-noqa",
+          "line": 20,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "7cb2627b784013b82f004d76b37e76c3d4f4567a710573699a8ead74aab07c52",
+          "kind": "ruff-noqa",
+          "line": 21,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "d8a2d2851f46cb7723eb6c8958d89726168384f02d08c553cf590a196952bfad",
+          "kind": "ruff-noqa",
+          "line": 22,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "9972362291edfcdad82deb641b6f54df4c38a13aab5357d7398af27715cea556",
+          "kind": "ruff-noqa",
+          "line": 23,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "cff91ad14153f4e75a4bb27c81b4a0de9257dd1da00bf1025fc0143c3a2ba9ad",
+          "kind": "ruff-noqa",
+          "line": 24,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "69e6716819f0c2e8bf6495107e0eaaa220d6126c241b240eb96e3bb0625e4f8c",
+          "kind": "ruff-noqa",
+          "line": 25,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "75c7f1d9382b2ab43b8e034219862d4c215653438bc7abf31ba3732f99792534",
+          "kind": "ruff-noqa",
+          "line": 26,
+          "path": "src/main/python/repomap_kg/storage/main.py",
+          "scope": [
+            "F403"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "f90f040277516f800c403c9fff28fe36a1d704f0e817f20d1bf8640549c93833",
+          "kind": "type-ignore",
+          "line": 291,
+          "path": "src/main/python/repomap_kg/storage/staged_rows.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "5f6799ccc95e8bf962459f574f6c70c198c4bf2d9438260e8018c7e5b9bcba3a",
+          "kind": "ruff-noqa",
+          "line": 42,
+          "path": "src/test/conftest.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "036d3a7d7381574ddccdc27ffb03decfb4eaf0bb08f285eda229588e8758fd05",
+          "kind": "ruff-noqa",
+          "line": 47,
+          "path": "src/test/conftest.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "aeb4a0960c49396016079922b29dc3a1fb49fc70be1dee2418c5178dcb31f99d",
+          "kind": "ruff-noqa",
+          "line": 50,
+          "path": "src/test/conftest.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "3cb1fd286c52108f9fab24cdabc032cb40ac60082ac736891500577c66e85005",
+          "kind": "ruff-noqa",
+          "line": 11,
+          "path": "src/test/fixtures/direct_pytest/collection_error.test.py",
+          "scope": [
+            "F401"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "13f184751c8ad1404f07144c440ab3f4edfde7afbec25efa72905dc386fae584",
+          "kind": "ruff-noqa",
+          "line": 18,
+          "path": "src/test/int/python/conftest.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Ruff E402: this integration-test bootstrap must establish the repository test-support path before importing its lifecycle guard; remove when the cohort imports an installed support package without path bootstrap."
+        },
+        {
+          "fingerprint": "477d94d3b49d65e8affd30ab598bb3c8a038aa904c54fd53279b23ac28498531",
+          "kind": "type-ignore",
+          "line": 130,
+          "path": "src/test/support/python/repomap_test_support/process_boundary.py",
+          "scope": [
+            "union-attr"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "06817692d582dda96293fd3e5dc63159812eedd59efcfac4844d4f780c47ab5d",
+          "kind": "ruff-noqa",
+          "line": 354,
+          "path": "src/test/support/python/repomap_test_support/resource_scratch.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a150198f550bd66d030c04b7020fe84d8612b97275444bfc33cc227a4bde9532",
+          "kind": "type-ignore",
+          "line": 63,
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "be85ab3ab09f34a9678e5b39afdbde9918b1f569dc5a3024ef1bfa9bfb3dd0c0",
+          "kind": "type-ignore",
+          "line": 75,
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "726b144d05af71c66316329b891982e32ef7dd4ab5fbb68bba94b3ee03d33883",
+          "kind": "type-ignore",
+          "line": 152,
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "scope": [
+            "return-value"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "3ac4c55b73022ed48b795562201d88076e525fc6407796888c05d70b43aa47b7",
+          "kind": "type-ignore",
+          "line": 285,
+          "path": "src/test/unit/python/repomap_kg/coordinator/contracts.unit.test.py",
+          "scope": [
+            "index"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "01858cac51b5b598f42d6ca6c0b65cb11166f85eef6a030a4200e4a41c4eedf8",
+          "kind": "type-ignore",
+          "line": 398,
+          "path": "src/test/unit/python/repomap_kg/runtime/arch7g_complete_cluster.unit.test.py",
+          "scope": [
+            "method-assign"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "e18ef56249a4015988f75a241aa87601373653f69201a644abae38c1d946514e",
+          "kind": "type-ignore",
+          "line": 439,
+          "path": "src/test/unit/python/repomap_kg/runtime/arch7g_complete_cluster.unit.test.py",
+          "scope": [
+            "method-assign"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "d0b6aebd41b3393b9db1dca6331f9fa07668b1ac97ae52e32c3f444e7b851b6d",
+          "kind": "type-ignore",
+          "line": 440,
+          "path": "src/test/unit/python/repomap_kg/runtime/arch7g_complete_cluster.unit.test.py",
+          "scope": [
+            "method-assign"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "04e8150029099faf32238d496a0f2b2b615fdf940a875abbc7515bcb37f2b272",
+          "kind": "type-ignore",
+          "line": 465,
+          "path": "src/test/unit/python/repomap_kg/runtime/arch7g_complete_cluster.unit.test.py",
+          "scope": [
+            "method-assign"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "a34ecd02317a463bd3456b05d319023b91310c689b8ff0fc5edd108a3bba36dd",
+          "kind": "ruff-noqa",
+          "line": 320,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/config_api.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a6f29f1e0ace3233dc9c1a82ea8384cb70bcca276a13fcdb83faacf053da2819",
+          "kind": "ruff-noqa",
+          "line": 350,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/config_api.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "94490e2fa4061cb8a6fc3396b404d100f6dc4ccab1cd635feebda88fd6e55ac3",
+          "kind": "ruff-noqa",
+          "line": 482,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/config_api.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "1e354b1e7aa93d5d80eba02d7fd47b5d3ce1218e62dccfc8a4a5af7bd2b81da8",
+          "kind": "ruff-noqa",
+          "line": 511,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/config_api.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "4ab3efb134350f29ed6fa7a1ce6e31a431f66be0a929c01bc70825a1715c819b",
+          "kind": "ruff-noqa",
+          "line": 289,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/core_js_ruby.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "36a3c88d07126a7c0ac940eb56a55f724f44180e63df00a1491d8af70cae92ec",
+          "kind": "ruff-noqa",
+          "line": 311,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/core_js_ruby.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "3d00ebac7c9f79e4d2591be793615786006d6086c9897ace18dbef99e546c5be",
+          "kind": "ruff-noqa",
+          "line": 343,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/core_js_ruby.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "0d029de175115ae6152d1fe21b4f7753062fcc366d13614d0bcb897d8ec12ab8",
+          "kind": "ruff-noqa",
+          "line": 370,
+          "path": "src/test/unit/python/repomap_kg/storage/domain_summaries/core_js_ruby.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "7fce2b3b6ea8a614eded793c8b06d4ef8333cb010991d0d106804b1ece0e1db9",
+          "kind": "type-ignore",
+          "line": 41,
+          "path": "src/test/unit/python/repomap_kg/storage/row_spool.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "e8661041fc455a9af67e8679eb8a73916667225cd07a33f0acf76637f6ce905d",
+          "kind": "type-ignore",
+          "line": 68,
+          "path": "src/test/unit/python/repomap_kg/storage/scale13_event_ack_interruption.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "1e7e107cbcbdae6747d4f1c02fb4d966888c7a7de161c1f003d174d95804c0d9",
+          "kind": "type-ignore",
+          "line": 50,
+          "path": "src/test/unit/python/repomap_kg/storage/scale13_event_transport.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "318768623d8c2ed9daac2eec885f351f0ce8043ab9ab3470442dbde08b7f4201",
+          "kind": "ruff-noqa",
+          "line": 374,
+          "path": "src/test/unit/python/repomap_kg/storage/source_summaries/bulk_api_queries.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "472894975e75fde22baa92b4ae2e42e4c2f31f29e06921aeaf0886c8e1abbe37",
+          "kind": "ruff-noqa",
+          "line": 472,
+          "path": "src/test/unit/python/repomap_kg/storage/source_summaries/bulk_api_queries.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "d783ffcbfe0b1e43edd6dfbd14a225073124fbad1671cb309af30bdeb43aacc1",
+          "kind": "ruff-noqa",
+          "line": 500,
+          "path": "src/test/unit/python/repomap_kg/storage/source_summaries/bulk_api_queries.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "cd11ff45272f4ec6d37e742527ae27a3a57a1e5693bdbc9a8d5799f64707f43c",
+          "kind": "ruff-noqa",
+          "line": 528,
+          "path": "src/test/unit/python/repomap_kg/storage/source_summaries/bulk_api_queries.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "b6b1191f7c7fccc5684ac7826333d09de9a8a25b075b1aa6e645819d01422f71",
+          "kind": "ruff-noqa",
+          "line": 539,
+          "path": "src/test/unit/python/repomap_kg/storage/source_summaries/bulk_api_queries.unit.test.py",
+          "scope": [
+            "E501"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "bc042fad0dcb27c4767f612297b8555833e94d31f814ae60814294a00794d326",
+          "kind": "type-ignore",
+          "line": 179,
+          "path": "src/test/unit/python/repomap_test_support/performance_baseline.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "92ba3a0deb49a2628606839cfa1295a8840903af647b1b7b3e85ea000e55ec4d",
+          "kind": "type-ignore",
+          "line": 279,
+          "path": "src/test/unit/python/repomap_test_support/performance_baseline.unit.test.py",
+          "scope": [
+            "call-arg"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "fb728e5ff95acf1c07f4a0e62e5d6300fa40a86de1af0d9bc7610c32d85f88ff",
+          "kind": "type-ignore",
+          "line": 103,
+          "path": "src/test/unit/python/repomap_test_support/resource_operator_bounded_delete_cotenant.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "0e8427cef6fb10baca43915fa8462ba14fad6a662d946a34cb1c0c2bc467c985",
+          "kind": "type-ignore",
+          "line": 270,
+          "path": "src/test/unit/python/repomap_test_support/resource_report_packet_fix2.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "64f5bdd33d685d3469d7a14f8b0c942f764ed4c4b654abf5e649f102a5b7ba95",
+          "kind": "type-ignore",
+          "line": 165,
+          "path": "src/test/unit/python/repomap_test_support/test_cov5g_fix1_projection.unit.test.py",
+          "scope": [
+            "misc"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "429c890382a2e438c743ce8b4d20db95c646e8c4951f279d7ac57fa833f3493f",
+          "kind": "type-ignore",
+          "line": 167,
+          "path": "src/test/unit/python/repomap_test_support/test_cov5g_fix1_projection.unit.test.py",
+          "scope": [
+            "misc"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "fa5d5b64ab67dc33f208da70880da795e90bb41f5a559067150995e594533178",
+          "kind": "type-ignore",
+          "line": 164,
+          "path": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix1_model.unit.test.py",
+          "scope": [
+            "misc"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "d49bde6d33e4d27f2184dfa43dd4e5e7b53f4a5cd0cdc5672019a75c6c638322",
+          "kind": "ruff-noqa",
+          "line": 18,
+          "path": "src/test/unit/python/tools/ci/gate_contract.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "8bcbd70ae371111e6c3335ec17a07c759ded0f2555c5e0f079cfc518958ffa77",
+          "kind": "ruff-noqa",
+          "line": 22,
+          "path": "src/test/unit/python/tools/ci/pipe0_topology_contract.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "343ff4f88996d889be059f8ea62d14717c467ad5f4349d58db9a99ebd06fc968",
+          "kind": "ruff-noqa",
+          "line": 23,
+          "path": "src/test/unit/python/tools/ci/pipe0_topology_contract.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "cce607850515e817b105d9fb76f0284fb556e3b21ee92b7e0491e532a424a6c5",
+          "kind": "ruff-noqa",
+          "line": 18,
+          "path": "src/test/unit/python/tools/ci/promotion_policy.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "40dc8c5a19ea18e1ce0bdf63b332e90f54709c162ed6f13cb67ae4aaafde2b7f",
+          "kind": "ruff-noqa",
+          "line": 15,
+          "path": "src/test/unit/python/tools/ci/workflow_model.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "8070d2a7499411bc173772551f7d1621f21f10d3bcedcf5f9c4d50026975adfd",
+          "kind": "ruff-noqa",
+          "line": 14,
+          "path": "src/test/unit/python/tools/ci1_static_analysis_contract.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a2a385c7f2104e3d6e622088d3f30639e2765ec0f3cd5b25c060a87112aad5cf",
+          "kind": "ruff-noqa",
+          "line": 15,
+          "path": "src/test/unit/python/tools/ci2a_unit_tests_contract.unit.test.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "7ca09b51bdb97c1f4f273e444ae34dd45af9e0889d26b1d4677a4bf66e0569e9",
+          "kind": "type-ignore",
+          "line": 69,
+          "path": "src/test/unit/python/tools/scale28_r1_psutil_readers.unit.test.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "959c83277e28959e07d58664954a282c98dc3f85b60c166d697afd276b88f7b3",
+          "kind": "ruff-noqa",
+          "line": 22,
+          "path": "tools/build_go_helper.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "7e301e91b6427b06f41d522f4fa8745eb0e871743492c0163c38de96151409b0",
+          "kind": "ruff-noqa",
+          "line": 26,
+          "path": "tools/compare_pg_connectors.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "85f5673b8f60c3fe160e1ef1f3833445f2655c6158c24e04f3bab922e73d57fb",
+          "kind": "ruff-noqa",
+          "line": 27,
+          "path": "tools/compare_pg_connectors.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "57e5508e751c6ab0c8b74304a92c1e3bddf2abdf8e4b02aae2bc78b9df185027",
+          "kind": "ruff-noqa",
+          "line": 30,
+          "path": "tools/compare_pg_connectors.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "5b08ebbb45d716ff173a71fcbf061bb2eb3b92d769833dc0f5e47a4256f3be52",
+          "kind": "ruff-noqa",
+          "line": 38,
+          "path": "tools/compare_pg_connectors.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "96fb187c8e031389e13ef6042e01ddfb0a32de54adb5a67a476c2fd8b8118929",
+          "kind": "ruff-noqa",
+          "line": 42,
+          "path": "tools/compare_pg_connectors.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "a22ce0f2f3005d79db9c9cba9c6ba50401397d205792c6e3c4d7c87a33eccc59",
+          "kind": "ruff-noqa",
+          "line": 36,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "5a6112e7ef37a63de81beecb80fbfc417b142cc294a467553bab8ba369775e91",
+          "kind": "ruff-noqa",
+          "line": 43,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Required for the runner coverage imports that follow the repository-owned tools path setup; reviewed in REPOMAP-PREVIEW-HYGIENE1."
+        },
+        {
+          "fingerprint": "359ba92819a0ca70f603667cee13d7f0e9bf7e401072ddafedfc5c48ab44606e",
+          "kind": "ruff-noqa",
+          "line": 50,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "1e09d2f53e74b469d947310bbd3fc226bb9d1dbfdfbeb8d9b5a92ea9c14284e8",
+          "kind": "ruff-noqa",
+          "line": 51,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "ba9118c7b3be073ddd6ef6e22bfe1130fc601dd7bf59b431ba6e64bed3510b4b",
+          "kind": "ruff-noqa",
+          "line": 60,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "bb8b3076968e9605ad73fe940ea2648bcbc36f4377220d0b65255c1eeed47e06",
+          "kind": "ruff-noqa",
+          "line": 61,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "d68c0716917465106e27189d8a300b53309ddf6309c825805ab285b1da3403db",
+          "kind": "ruff-noqa",
+          "line": 67,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "0cbba9e3ef107d7faa7c2e7b19a251d1cb3a6316b0988db79c3908bda6c2523e",
+          "kind": "ruff-noqa",
+          "line": 68,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "943b73658ec51f89136e6cfbde65cfb844bfa754d1b02ce9b27b3c4d50d399ef",
+          "kind": "ruff-noqa",
+          "line": 72,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "4f664d01726b8ad286afe7412a949c0e7fb9d9196c6850e1a48ff75dff5b904e",
+          "kind": "ruff-noqa",
+          "line": 73,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "a1b0571cee0a74d0c861df51af0891df10df9c0d35b5535cd27d8b719e826f53",
+          "kind": "ruff-noqa",
+          "line": 76,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "1a6d86763adf52be4de089779eeac19758966cdba7c03214675f3fa45a7ac372",
+          "kind": "ruff-noqa",
+          "line": 80,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "d4ce05506629a5495629017b2e2795fa0698787cf98c6ad53a0099f8161e76ad",
+          "kind": "ruff-noqa",
+          "line": 83,
+          "path": "tools/run_tests.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset; only its exact source location changed."
+        },
+        {
+          "fingerprint": "1396687cc86c70eb212338709730e487813cc9b7cd1934f0b34f4b6792b0987c",
+          "kind": "ruff-noqa",
+          "line": 26,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "4978f29ff6c8fc52c3667e5ede69955464f018a1f8c2d965a47015bac89b3f88",
+          "kind": "ruff-noqa",
+          "line": 27,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "3804b6dc6596c40859be20fea031d9bdc9ac221d5ee256efbc683df050303d19",
+          "kind": "ruff-noqa",
+          "line": 31,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "1417a52a13030a66a780b24d511dff2d0f105bbb8bf86dff1636faa2de43b1f4",
+          "kind": "ruff-noqa",
+          "line": 34,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "92b5da97595bcec169da8bc9f621de448c78eac3e8ad9eec4fa6c2af91da92f8",
+          "kind": "ruff-noqa",
+          "line": 37,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "5e86379e950baeb52aaec12f90a83035252156c7006e3c016640c7e2521813d6",
+          "kind": "ruff-noqa",
+          "line": 41,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "15bfc083cebd20e9ecd4ce215cb0c4c465a410aba2de05df1898f3dfe019d38b",
+          "kind": "ruff-noqa",
+          "line": 45,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "c37d4d5a884559449edc319084e64df016691480c74af005e565ef37667bc091",
+          "kind": "ruff-noqa",
+          "line": 46,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "50a39e011cabe4d5626513652622889ce2eae69000c036f06f9779441b48b0bb",
+          "kind": "ruff-noqa",
+          "line": 52,
+          "path": "tools/scale7_measure_ingestion.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "0a8aa21cb0ef0e77b9ef45a42cbef52e7f189bb1453871d2b387b55d913679d0",
+          "kind": "ruff-noqa",
+          "line": 18,
+          "path": "tools/scale7_measure_workload.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "863aa101ed603b64340d29c92fe2848cc2a3aa904b96833a9fc9b45a7e8dc7f3",
+          "kind": "ruff-noqa",
+          "line": 19,
+          "path": "tools/scale7_measure_workload.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "712f32cb4c458348f594680805a2cc986493b462863c3dfeac6572e9264f661b",
+          "kind": "ruff-noqa",
+          "line": 20,
+          "path": "tools/scale7_measure_workload.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "4757c49483b24526975bddf6543b610bb281ca7fe5f4077270ef601dcfa6ae9b",
+          "kind": "ruff-noqa",
+          "line": 21,
+          "path": "tools/scale7_measure_workload.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Reviewed pre-existing directive at the REPOMAP-CI2A-R2 semantic reset."
+        },
+        {
+          "fingerprint": "89ba1f7cebc7db3eda96136e3b923bcf671bc2766e3bd071c34c8275defded0b",
+          "kind": "type-ignore",
+          "line": 118,
+          "path": "tools/system/replacement_readiness.py",
+          "scope": [
+            "arg-type"
+          ],
+          "justification": "Required because the validated owner-identity mapping is narrowed by a runtime predicate that mypy cannot infer; reviewed in REPOMAP-PREVIEW-HYGIENE1."
+        },
+        {
+          "fingerprint": "c8aa6d3b27ca73b12dbed4de127b29adccaeec9e0a88c354e6200ada96e8ff0d",
+          "kind": "ruff-noqa",
+          "line": 17,
+          "path": "tools/test_sandbox_probe.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Ruff E402: this isolated sandbox probe must configure its repository and support roots before importing the three probe collaborators; remove when the probe runs through an installed package or a shared typed bootstrap."
+        },
+        {
+          "fingerprint": "93772cbeb22b7144d541176d87b50083a3017ebd093bce689d4d759b42f37613",
+          "kind": "ruff-noqa",
+          "line": 18,
+          "path": "tools/test_sandbox_probe.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Ruff E402: this isolated sandbox probe must configure its repository and support roots before importing the three probe collaborators; remove when the probe runs through an installed package or a shared typed bootstrap."
+        },
+        {
+          "fingerprint": "54a3835b281ba38e059ca263533fded09adc713d560eaa953e26ce333c73f966",
+          "kind": "ruff-noqa",
+          "line": 19,
+          "path": "tools/test_sandbox_probe.py",
+          "scope": [
+            "E402"
+          ],
+          "justification": "Ruff E402: this isolated sandbox probe must configure its repository and support roots before importing the three probe collaborators; remove when the probe runs through an installed package or a shared typed bootstrap."
+        }
+      ]
+    },
+    "zizmor": {
+      "findings": 0
+    }
+  }
+}

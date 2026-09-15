@@ -1,0 +1,12 @@
+{
+  // Editor settings can carry MCP launch details.
+  "program": "repomap-kg",
+  "args": ["python3", "-m", "repomap_kg.server.mcp",],
+  "env": {
+    "CODEX_HOME": "$CODEX_HOME",
+    "PASSWORD": "cfg3-jsonc-secret-password",
+  },
+  "config_path": "../mcp/repo-map/config.json",
+  "absolute_path": "/opt/codex/config.json",
+  "docs_url": "https://example.com/editor",
+}

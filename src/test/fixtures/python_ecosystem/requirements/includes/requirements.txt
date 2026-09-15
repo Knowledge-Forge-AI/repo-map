@@ -1,0 +1,5 @@
+-r constraints.txt
+-c ../outside.txt
+-e ./localpkg
+local-package @ file:./vendor/local-package
+git+https://packages.example.invalid/example/project.git#egg=fixture_vcs_pkg

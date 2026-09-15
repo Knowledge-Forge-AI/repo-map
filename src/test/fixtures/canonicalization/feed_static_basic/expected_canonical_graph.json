@@ -1,0 +1,2899 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:015d869bdb394527dce4983816c458d91e33b8150cafcafb30384f2692470f1b",
+      "evidence_key": "evidence:32:rss.xml:0-0:repo-feed:rss.xml#feed-item:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:025b8a1b96b28fae47e478b3fb8441385c5476929238d183bedcaa321b74d24e",
+      "evidence_key": "evidence:6:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:author:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:0313c52ab3bb2090fd39c3dbf4110a61aa3defe2c27d050ac612c6581b0b1556",
+      "evidence_key": "evidence:42:rss.xml:0-0:repo-feed:rss.xml#feed-item:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:13e107c99c89f09c0df7d5b00f6392bc20c066dcb83b0df9fb873619eac9d071",
+      "evidence_key": "evidence:30:rss.xml:0-0:repo-feed:rss.xml#feed-channel",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:19049d1fde7453e8b6584a64a503f6a56d44d999cf66ef8012935564a7dd54b2",
+      "evidence_key": "evidence:39:rss.xml:0-0:repo-feed:rss.xml#feed-item:2:link:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1c422cb37832924cff0f3a3382fd0c236742df3ce3ecca30012c6fd9b1170a57",
+      "evidence_key": "evidence:10:atom.xml:0-0:repo-feed:atom.xml#feed-item:2:link:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1e1aa0ef8b9b6d35f12865184b00798f1f12ec6fc829b49d225871bed7261f1a",
+      "evidence_key": "evidence:19:feed.json:0-0:repo-feed:feed.json#feed-item:1:category:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:28d42ac9904e357f1805e4d93beb4e49952df778a7632db168cfc542f7e2e1fd",
+      "evidence_key": "evidence:40:rss.xml:0-0:repo-feed:rss.xml#feed-item:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:2aa0d3d29600e3b6040182eb1a35af16fc51b3d8d3f90fcdf3ca58e060207084",
+      "evidence_key": "evidence:44:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:32ed8714a082b754e50af7cbd3ce1fe92d945ebbf3ca0c4fe3aab4ae2a3d4b6f",
+      "evidence_key": "evidence:13:feed.json:0-0:repo-feed:feed.json#feed-channel",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3c5ba148e68b8dad407bf911be2a62735ecfec4ac1091b9938c748ef5d8a401f",
+      "evidence_key": "evidence:14:feed.json:0-0:repo-feed:feed.json#feed-channel-link:feed_url",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3ce2c2e8eeec1e18d8928ca391962647170bd7a4798028afa3597bd231993357",
+      "evidence_key": "evidence:29:rss.xml:0-0:repo-feed:rss.xml#feed-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3f6d7659bde6575360d9c215f5676cc6e4998d97473bf14b915b42c40caf700a",
+      "evidence_key": "evidence:4:atom.xml:0-0:repo-feed:atom.xml#feed-item:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:4d1457c2008e9760171046371c2308602b12e71f7e41fb9a742e3c091bb9d4fb",
+      "evidence_key": "evidence:35:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:author:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:505dd3ad9ce6ca64e059a060b6b111b30b6c71734721004adb188f18b5c27e2a",
+      "evidence_key": "evidence:7:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:category:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:58b34f1664961b5f2f1bcd14dc0353a02d9902febfbc6b3cba3a46d082a1d544",
+      "evidence_key": "evidence:17:feed.json:0-0:repo-feed:feed.json#feed-item:1:link:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:5e493598b34375f1f857f20b445f115e76c03c46af0143b27257e7b5f9cd507c",
+      "evidence_key": "evidence:33:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:link:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:65bc8899ab7bce6bc75ff7922fa379587894ce20344ea804a51385afdb40ebce",
+      "evidence_key": "evidence:34:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:enclosure:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:709c27461a76fe97772a36b48ffde9e4b043fd49a25565adb3383d34a83eb155",
+      "evidence_key": "evidence:2:atom.xml:0-0:repo-feed:atom.xml#feed-channel",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7e40c36610c933d270a67bc03a3fd19d42c83727f2b6b242a0453d783fa93321",
+      "evidence_key": "evidence:23:feed.json:0-0:repo-feed:feed.json#feed-item:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8334cb67c69d8a6431382c514aaf6b54d53e858bf19de449c85e469c639be1e9",
+      "evidence_key": "evidence:35:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:author:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:89d19a85750d4e9e490756b82cfad97c01dbca5edc47108a7e840732818b54fc",
+      "evidence_key": "evidence:25:feed.json:0-0:repo-feed:feed.json#feed-item:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8e5df293fbf4b9a1facd1ccd1adac65f1462408490a8684c867a1b6210735cfc",
+      "evidence_key": "evidence:22:feed.json:0-0:repo-feed:feed.json#feed-item:2:link:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8f0051da55cce577fa882ef8dfd20e02f16eb415e22c64ae79003141467cef18",
+      "evidence_key": "evidence:15:feed.json:0-0:repo-feed:feed.json#feed-channel-link:home_page_url",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:937d3e02d6192af7f69db38ea9e13ea3cdacd591b1ca9bf7c2f68b9c0f239943",
+      "evidence_key": "evidence:5:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:link:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:982262d25b8e8b5beb1cbe87bb7cb3c136768c31e0316ad297991d1289ec7845",
+      "evidence_key": "evidence:45:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-channel",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:99f541732214a8b7f384f73872394e59672f2907f32045fe87fc576a2c65260e",
+      "evidence_key": "evidence:21:feed.json:0-0:repo-feed:feed.json#feed-item:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:9c75feb3a7ec5d5c32c403d7151678838b6f66b496a1fb7090f74ca71aa6afc5",
+      "evidence_key": "evidence:16:feed.json:0-0:repo-feed:feed.json#feed-item:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a24baa21691b65965cb37c736f78642708028454392ca7db4d9da2eddbc82e59",
+      "evidence_key": "evidence:24:feed.json:0-0:repo-feed:feed.json#feed-item:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a267d341a37666427f61fa9b050bca625e0facfeb5340948d75ec17e2f70c866",
+      "evidence_key": "evidence:41:rss.xml:0-0:repo-feed:rss.xml#feed-item:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a9bd69040d103c4745c8507e12a453d7d7a0c8216715dc9cf4a21dc338f64922",
+      "evidence_key": "evidence:9:atom.xml:0-0:repo-feed:atom.xml#feed-item:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:aeb4084f5fac6bb2bd7b7af119a7038480bce91066de4d8b3403d3334b49efa1",
+      "evidence_key": "evidence:1:atom.xml:0-0:repo-feed:atom.xml#feed-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:af21bf3ce45c5369cb20c37644f1cca1fcb33a366cdcf8c6363f0e22d719d771",
+      "evidence_key": "evidence:36:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:category:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b500d791af40666367f6eb2b38c47ce937c83894c1b84c4bc1352c01e471621a",
+      "evidence_key": "evidence:31:rss.xml:0-0:repo-feed:rss.xml#feed-channel-link",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:bd36347811d723b2f13a9a1e1caa6dd41a4dbd15b8e82480711f4df1f6a6ca2d",
+      "evidence_key": "evidence:19:feed.json:0-0:repo-feed:feed.json#feed-item:1:category:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:c218b01f19736748092cf6fb2b928bc8fe8934fc6a9f045c31f667e09ef8e1ee",
+      "evidence_key": "evidence:46:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-item:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:c410468c9e3b0727d1df7f35e09c3244e60b96a7cc8481e3c2b9ae77fb8b60e0",
+      "evidence_key": "evidence:7:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:category:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cb928a89889b1adb8222cf36e3cfbf444b48b54517e3df030e26206d6eb32d95",
+      "evidence_key": "evidence:6:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:author:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ccd8dc0199cf0ff60a3cbcc3f3faf8bf1d19d0c4b03b4fb27eb653258b9a39a0",
+      "evidence_key": "evidence:36:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:category:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d7d4e8993158f2e599dbfeba94b95eea4270c174f7880bd940373d26a615de9e",
+      "evidence_key": "evidence:18:feed.json:0-0:repo-feed:feed.json#feed-item:1:enclosure:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:db2808dae24188e4e97f256368516424b93529f210a75d7ab2657275fafd36a4",
+      "evidence_key": "evidence:38:rss.xml:0-0:repo-feed:rss.xml#feed-item:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f6ab2f771d0274cf0a796247150f54b4ac187b05de3d9df69d65d39595e1c71e",
+      "evidence_key": "evidence:3:atom.xml:0-0:repo-feed:atom.xml#feed-channel-link:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:fa850e6ec046547c587d86b9bfd4094059f0259956ef6c7e228ecfe548639085",
+      "evidence_key": "evidence:12:feed.json:0-0:repo-feed:feed.json#feed-document",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:025b8a1b96b28fae47e478b3fb8441385c5476929238d183bedcaa321b74d24e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "atom"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "target_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:Atom%20Writer"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:c410468c9e3b0727d1df7f35e09c3244e60b96a7cc8481e3c2b9ae77fb8b60e0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "atom"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "target_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:atom-category"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a9bd69040d103c4745c8507e12a453d7d7a0c8216715dc9cf4a21dc338f64922",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "atom",
+        "identity_source": "alternate-link",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:alternate-link%3Aarticles%2Fatom-link-fallback.html"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3f6d7659bde6575360d9c215f5676cc6e4998d97473bf14b915b42c40caf700a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "atom",
+        "identity_source": "id",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:f6ab2f771d0274cf0a796247150f54b4ac187b05de3d9df69d65d39595e1c71e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "href",
+        "feed_format": "atom",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/atom.xml",
+        "rel": "self",
+        "scope": "channel",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:bd36347811d723b2f13a9a1e1caa6dd41a4dbd15b8e82480711f4df1f6a6ca2d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "json-feed"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:json-category"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a24baa21691b65965cb37c736f78642708028454392ca7db4d9da2eddbc82e59",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-1",
+        "duplicate_identity": true,
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-duplicate%3Aduplicate-1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:89d19a85750d4e9e490756b82cfad97c01dbca5edc47108a7e840732818b54fc",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-2",
+        "duplicate_identity": true,
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-duplicate%3Aduplicate-2"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:9c75feb3a7ec5d5c32c403d7151678838b6f66b496a1fb7090f74ca71aa6afc5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:7e40c36610c933d270a67bc03a3fd19d42c83727f2b6b242a0453d783fa93321",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "title+date",
+        "identity_strength": "weak"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:title%2Bdate%3Ajson-weak-fallback%3A2026-06-30T14%3A45%3A00Z"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:99f541732214a8b7f384f73872394e59672f2907f32045fe87fc576a2c65260e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "url",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:url%3Aarticles%2Fjson-link-fallback.html"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8f0051da55cce577fa882ef8dfd20e02f16eb415e22c64ae79003141467cef18",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "feed_format": "json-feed",
+        "field": "home_page_url",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/",
+        "scope": "channel",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2F"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3c5ba148e68b8dad407bf911be2a62735ecfec4ac1091b9938c748ef5d8a401f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "feed_format": "json-feed",
+        "field": "feed_url",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/feed.json",
+        "scope": "channel",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:4d1457c2008e9760171046371c2308602b12e71f7e41fb9a742e3c091bb9d4fb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:RSS%20Writer"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:af21bf3ce45c5369cb20c37644f1cca1fcb33a366cdcf8c6363f0e22d719d771",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:Release%20Notes"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a267d341a37666427f61fa9b050bca625e0facfeb5340948d75ec17e2f70c866",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-1",
+        "duplicate_identity": true,
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-duplicate%3Aduplicate-1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:0313c52ab3bb2090fd39c3dbf4110a61aa3defe2c27d050ac612c6581b0b1556",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-2",
+        "duplicate_identity": true,
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-duplicate%3Aduplicate-2"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:015d869bdb394527dce4983816c458d91e33b8150cafcafb30384f2692470f1b",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:db2808dae24188e4e97f256368516424b93529f210a75d7ab2657275fafd36a4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "link",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:link%3Aarticles%2Frss-link-fallback.html"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:28d42ac9904e357f1805e4d93beb4e49952df778a7632db168cfc542f7e2e1fd",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "title+pubDate",
+        "identity_strength": "weak"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:title%2BpubDate%3Arss-weak-fallback%3A2026-06-30T14%3A00%3A00Z"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:b500d791af40666367f6eb2b38c47ce937c83894c1b84c4bc1352c01e471621a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "link",
+        "feed_format": "rss",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/",
+        "scope": "channel",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2F"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:c218b01f19736748092cf6fb2b928bc8fe8934fc6a9f045c31f667e09ef8e1ee",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.channel:feed.document%3Afile%253Asecret-feed.xml:title%3Asecret-feed-fixture%3Afeed.document%3Afile%253Asecret-feed.xml",
+      "target_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Asecret-feed.xml%3Atitle%253Asecret-feed-fixture%253Afeed.document%253Afile%25253Asecret-feed.xml:guid%3Asecret-item"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:709c27461a76fe97772a36b48ffde9e4b043fd49a25565adb3383d34a83eb155",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "atom",
+        "identity_source": "self-link",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.document:file%3Aatom.xml",
+      "target_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:32ed8714a082b754e50af7cbd3ce1fe92d945ebbf3ca0c4fe3aab4ae2a3d4b6f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "feed_url",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.document:file%3Afeed.json",
+      "target_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:13e107c99c89f09c0df7d5b00f6392bc20c066dcb83b0df9fb873619eac9d071",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "link",
+        "identity_strength": "strong"
+      },
+      "source_key": "feed.document:file%3Arss.xml",
+      "target_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:982262d25b8e8b5beb1cbe87bb7cb3c136768c31e0316ad297991d1289ec7845",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "title+document",
+        "identity_strength": "weak"
+      },
+      "source_key": "feed.document:file%3Asecret-feed.xml",
+      "target_key": "feed.channel:feed.document%3Afile%253Asecret-feed.xml:title%3Asecret-feed-fixture%3Afeed.document%3Afile%253Asecret-feed.xml"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1c422cb37832924cff0f3a3382fd0c236742df3ce3ecca30012c6fd9b1170a57",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "href",
+        "feed_format": "atom",
+        "not_fetched": true,
+        "raw_target_summary": "articles/atom-link-fallback.html",
+        "rel": "alternate",
+        "scope": "item",
+        "target_kind": "file"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:alternate-link%3Aarticles%2Fatom-link-fallback.html",
+      "target_key": "file:articles/atom-link-fallback.html"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:937d3e02d6192af7f69db38ea9e13ea3cdacd591b1ca9bf7c2f68b9c0f239943",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "href",
+        "feed_format": "atom",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/atom/1",
+        "rel": "alternate",
+        "scope": "item",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fatom%2F1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cb928a89889b1adb8222cf36e3cfbf444b48b54517e3df030e26206d6eb32d95",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "email_redacted": false,
+        "feed_format": "atom"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "target_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:Atom%20Writer"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:505dd3ad9ce6ca64e059a060b6b111b30b6c71734721004adb188f18b5c27e2a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "feed_format": "atom"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "target_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:atom-category"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:58b34f1664961b5f2f1bcd14dc0353a02d9902febfbc6b3cba3a46d082a1d544",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "json-feed",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/json/1",
+        "scope": "item",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fjson%2F1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1e1aa0ef8b9b6d35f12865184b00798f1f12ec6fc829b49d225871bed7261f1a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "feed_format": "json-feed"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "target_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:json-category"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:d7d4e8993158f2e599dbfeba94b95eea4270c174f7880bd940373d26a615de9e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "json-feed",
+        "mime_type": "application/json",
+        "not_fetched": true,
+        "raw_target_summary": "assets/json-item.json",
+        "scope": "item",
+        "target_kind": "file"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "target_key": "file:assets/json-item.json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8e5df293fbf4b9a1facd1ccd1adac65f1462408490a8684c867a1b6210735cfc",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "json-feed",
+        "not_fetched": true,
+        "raw_target_summary": "articles/json-link-fallback.html",
+        "scope": "item",
+        "target_kind": "file"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:url%3Aarticles%2Fjson-link-fallback.html",
+      "target_key": "file:articles/json-link-fallback.html"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:5e493598b34375f1f857f20b445f115e76c03c46af0143b27257e7b5f9cd507c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "link",
+        "feed_format": "rss",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/rss/1",
+        "scope": "item",
+        "target_kind": "external.url"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "target_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Frss%2F1"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8334cb67c69d8a6431382c514aaf6b54d53e858bf19de449c85e469c639be1e9",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "email_redacted": true,
+        "feed_format": "rss"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "target_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:RSS%20Writer"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ccd8dc0199cf0ff60a3cbcc3f3faf8bf1d19d0c4b03b4fb27eb653258b9a39a0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "feed_format": "rss"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "target_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:Release%20Notes"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:65bc8899ab7bce6bc75ff7922fa379587894ce20344ea804a51385afdb40ebce",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "rss",
+        "length": "1234",
+        "mime_type": "audio/mpeg",
+        "not_fetched": true,
+        "raw_target_summary": "media/rss-audio.mp3",
+        "scope": "item",
+        "target_kind": "file"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "target_key": "file:media/rss-audio.mp3"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:19049d1fde7453e8b6584a64a503f6a56d44d999cf66ef8012935564a7dd54b2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attribute": "link",
+        "feed_format": "rss",
+        "not_fetched": true,
+        "raw_target_summary": "articles/rss-link-fallback.html",
+        "scope": "item",
+        "target_kind": "file"
+      },
+      "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:link%3Aarticles%2Frss-link-fallback.html",
+      "target_key": "file:articles/rss-link-fallback.html"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:aeb4084f5fac6bb2bd7b7af119a7038480bce91066de4d8b3403d3334b49efa1",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "atom",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "atom"
+      },
+      "source_key": "file:atom.xml",
+      "target_key": "feed.document:file%3Aatom.xml"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:fa850e6ec046547c587d86b9bfd4094059f0259956ef6c7e228ecfe548639085",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "json-feed",
+        "parser_mode": "stdlib-json-local-feed-shape",
+        "top_level_type": "object"
+      },
+      "source_key": "file:feed.json",
+      "target_key": "feed.document:file%3Afeed.json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3ce2c2e8eeec1e18d8928ca391962647170bd7a4798028afa3597bd231993357",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "rss"
+      },
+      "source_key": "file:rss.xml",
+      "target_key": "feed.document:file%3Arss.xml"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:2aa0d3d29600e3b6040182eb1a35af16fc51b3d8d3f90fcdf3ca58e060207084",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "feed_format": "rss",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "rss"
+      },
+      "source_key": "file:secret-feed.xml",
+      "target_key": "feed.document:file%3Asecret-feed.xml"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:atom.xml:0-0:repo-discovery:atom.xml",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "ff6c20d43de99a671303c871d1cd73ed30b6130d102ff3e430a68c3f58e33c7f",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      },
+      "path": "atom.xml",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:1:atom.xml:0-0:repo-feed:atom.xml#feed-document",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "feed_format": "atom",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "atom"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.document",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:2:atom.xml:0-0:repo-feed:atom.xml#feed-channel",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "feed.document:file%3Aatom.xml",
+        "feed_format": "atom",
+        "identity_source": "self-link",
+        "identity_strength": "strong",
+        "title": "RepoMap Atom Fixture",
+        "updated_at": "2026-06-30T12:00:00Z"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.channel",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-channel",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:3:atom.xml:0-0:repo-feed:atom.xml#feed-channel-link:2",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "href",
+        "feed_format": "atom",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/atom.xml",
+        "rel": "self",
+        "scope": "channel",
+        "source_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+        "target_kind": "external.url"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-channel-link:2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:4:atom.xml:0-0:repo-feed:atom.xml#feed-item:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+        "feed_format": "atom",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "title": "Atom ID Item",
+        "updated_at": "2026-06-30T12:30:00Z"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:5:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:link:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "href",
+        "feed_format": "atom",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/atom/1",
+        "rel": "alternate",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+        "target_kind": "external.url"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:1:link:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:author:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+        "email_redacted": false,
+        "feed_format": "atom",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+        "name": "Atom Writer"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.author",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:1:author:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:7:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:category:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+        "feed_format": "atom",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+        "name": "atom-category"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.category",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:1:category:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:8:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:content",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_kind": "summary",
+        "content_policy": "summarized-not-rendered",
+        "feed_format": "atom",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+        "original_length": 21,
+        "redacted": false,
+        "value_summary": "Atom fixture summary."
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.content",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:1:content",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:9:atom.xml:0-0:repo-feed:atom.xml#feed-item:2",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+        "feed_format": "atom",
+        "identity_source": "alternate-link",
+        "identity_strength": "strong",
+        "title": "Atom Link Fallback",
+        "updated_at": "2026-06-30T13:00:00Z"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:10:atom.xml:0-0:repo-feed:atom.xml#feed-item:2:link:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "href",
+        "feed_format": "atom",
+        "not_fetched": true,
+        "raw_target_summary": "articles/atom-link-fallback.html",
+        "rel": "alternate",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:alternate-link%3Aarticles%2Fatom-link-fallback.html",
+        "target_kind": "file"
+      },
+      "path": "atom.xml",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "atom.xml#feed-item:2:link:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:11:feed.json:0-0:repo-discovery:feed.json",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "bc96614e5bbf8a7cba3b55aac38ae6b46a8b2bf1db991f5bef7318d1dc3f4d47",
+        "executable": false,
+        "generated": false,
+        "language": "json",
+        "role": "unknown"
+      },
+      "path": "feed.json",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:12:feed.json:0-0:repo-feed:feed.json#feed-document",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "feed_format": "json-feed",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-json-local-feed-shape",
+        "top_level_type": "object"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.document",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:13:feed.json:0-0:repo-feed:feed.json#feed-channel",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "feed.document:file%3Afeed.json",
+        "feed_format": "json-feed",
+        "identity_source": "feed_url",
+        "identity_strength": "strong",
+        "title": "RepoMap JSON Feed Fixture"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.channel",
+      "raw_observation_ordinal": 13,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-channel",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:14:feed.json:0-0:repo-feed:feed.json#feed-channel-link:feed_url",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "feed_format": "json-feed",
+        "field": "feed_url",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/feed.json",
+        "scope": "channel",
+        "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "target_kind": "external.url"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 14,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-channel-link:feed_url",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:15:feed.json:0-0:repo-feed:feed.json#feed-channel-link:home_page_url",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "feed_format": "json-feed",
+        "field": "home_page_url",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/",
+        "scope": "channel",
+        "source_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "target_kind": "external.url"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 15,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-channel-link:home_page_url",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:16:feed.json:0-0:repo-feed:feed.json#feed-item:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "published_at": "2026-06-30T12:45:00Z",
+        "title": "JSON ID Item"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 16,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:17:feed.json:0-0:repo-feed:feed.json#feed-item:1:link:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "json-feed",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/json/1",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+        "target_kind": "external.url"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 17,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:1:link:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:18:feed.json:0-0:repo-feed:feed.json#feed-item:1:enclosure:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "json-feed",
+        "mime_type": "application/json",
+        "not_fetched": true,
+        "raw_target_summary": "assets/json-item.json",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+        "target_kind": "file"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.enclosure",
+      "raw_observation_ordinal": 18,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:1:enclosure:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:19:feed.json:0-0:repo-feed:feed.json#feed-item:1:category:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "feed_format": "json-feed",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+        "name": "json-category"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.category",
+      "raw_observation_ordinal": 19,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:1:category:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:20:feed.json:0-0:repo-feed:feed.json#feed-item:1:content",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_kind": "content",
+        "content_policy": "summarized-not-rendered",
+        "feed_format": "json-feed",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+        "original_length": 62,
+        "redacted": false,
+        "value_summary": "JSON fixture content."
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.content",
+      "raw_observation_ordinal": 20,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:1:content",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:21:feed.json:0-0:repo-feed:feed.json#feed-item:2",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "feed_format": "json-feed",
+        "identity_source": "url",
+        "identity_strength": "strong",
+        "title": "JSON Link Fallback",
+        "updated_at": "2026-06-30T13:45:00Z"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 21,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:22:feed.json:0-0:repo-feed:feed.json#feed-item:2:link:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "json-feed",
+        "not_fetched": true,
+        "raw_target_summary": "articles/json-link-fallback.html",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:url%3Aarticles%2Fjson-link-fallback.html",
+        "target_kind": "file"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 22,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:2:link:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:23:feed.json:0-0:repo-feed:feed.json#feed-item:3",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "feed_format": "json-feed",
+        "identity_source": "title+date",
+        "identity_strength": "weak",
+        "published_at": "2026-06-30T14:45:00Z",
+        "title": "JSON Weak Fallback"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 23,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:3",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:24:feed.json:0-0:repo-feed:feed.json#feed-item:4",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "duplicate_disambiguator": "duplicate-1",
+        "duplicate_identity": true,
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "title": "JSON Duplicate A"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 24,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:4",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:25:feed.json:0-0:repo-feed:feed.json#feed-item:5",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+        "duplicate_disambiguator": "duplicate-2",
+        "duplicate_identity": true,
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "title": "JSON Duplicate B"
+      },
+      "path": "feed.json",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 25,
+      "raw_schema_version": 1,
+      "raw_source_id": "feed.json#feed-item:5",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:26:malformed-rss.xml:0-0:repo-discovery:malformed-rss.xml",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "9ab46fc647b16e185d630dffacceac6cd86dc9355c13bc845e2a4a79f68e49d3",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      },
+      "path": "malformed-rss.xml",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 26,
+      "raw_schema_version": 1,
+      "raw_source_id": "malformed-rss.xml",
+      "start_line": null
+    },
+    {
+      "confidence": "unknown",
+      "end_line": null,
+      "evidence_key": "evidence:27:malformed-rss.xml:0-0:repo-feed:malformed-rss.xml#feed-parse-error:xml-parse-error",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "error_kind": "xml-parse-error",
+        "feed_format": "unknown",
+        "message": "no element found: line 4, column 0",
+        "raw_only": true
+      },
+      "path": "malformed-rss.xml",
+      "raw_kind": "feed.parse_error",
+      "raw_observation_ordinal": 27,
+      "raw_schema_version": 1,
+      "raw_source_id": "malformed-rss.xml#feed-parse-error:xml-parse-error",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:28:rss.xml:0-0:repo-discovery:rss.xml",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "266885b625e5f8aaf16dfffeabd6a965beecda9415534792d5381b14b452f271",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      },
+      "path": "rss.xml",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 28,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:29:rss.xml:0-0:repo-feed:rss.xml#feed-document",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "feed_format": "rss",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "rss"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.document",
+      "raw_observation_ordinal": 29,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:30:rss.xml:0-0:repo-feed:rss.xml#feed-channel",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "feed.document:file%3Arss.xml",
+        "feed_format": "rss",
+        "identity_source": "link",
+        "identity_strength": "strong",
+        "title": "RepoMap RSS Fixture"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.channel",
+      "raw_observation_ordinal": 30,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-channel",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:31:rss.xml:0-0:repo-feed:rss.xml#feed-channel-link",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "link",
+        "feed_format": "rss",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/",
+        "scope": "channel",
+        "source_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "target_kind": "external.url"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 31,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-channel-link",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:32:rss.xml:0-0:repo-feed:rss.xml#feed-item:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong",
+        "published_at": "2026-06-30T12:00:00Z",
+        "title": "RSS GUID Item"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 32,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:33:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:link:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "link",
+        "feed_format": "rss",
+        "not_fetched": true,
+        "raw_target_summary": "https://example.com/repomap/rss/1",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+        "target_kind": "external.url"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 33,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:1:link:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:34:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:enclosure:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "url",
+        "feed_format": "rss",
+        "length": "1234",
+        "mime_type": "audio/mpeg",
+        "not_fetched": true,
+        "raw_target_summary": "media/rss-audio.mp3",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+        "target_kind": "file"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.enclosure",
+      "raw_observation_ordinal": 34,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:1:enclosure:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:35:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:author:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "email_redacted": true,
+        "feed_format": "rss",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+        "name": "RSS Writer"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.author",
+      "raw_observation_ordinal": 35,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:1:author:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:36:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:category:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "feed_format": "rss",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+        "name": "Release Notes"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.category",
+      "raw_observation_ordinal": 36,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:1:category:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:37:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:content",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_kind": "description",
+        "content_policy": "summarized-not-rendered",
+        "feed_format": "rss",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+        "original_length": 27,
+        "redacted": false,
+        "value_summary": "RSS fixture summary."
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.content",
+      "raw_observation_ordinal": 37,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:1:content",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:38:rss.xml:0-0:repo-feed:rss.xml#feed-item:2",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "feed_format": "rss",
+        "identity_source": "link",
+        "identity_strength": "strong",
+        "published_at": "2026-06-30T13:00:00Z",
+        "title": "RSS Link Fallback"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 38,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:2",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:39:rss.xml:0-0:repo-feed:rss.xml#feed-item:2:link:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "link",
+        "feed_format": "rss",
+        "not_fetched": true,
+        "raw_target_summary": "articles/rss-link-fallback.html",
+        "scope": "item",
+        "source_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:link%3Aarticles%2Frss-link-fallback.html",
+        "target_kind": "file"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.link",
+      "raw_observation_ordinal": 39,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:2:link:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:40:rss.xml:0-0:repo-feed:rss.xml#feed-item:3",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "feed_format": "rss",
+        "identity_source": "title+pubDate",
+        "identity_strength": "weak",
+        "published_at": "2026-06-30T14:00:00Z",
+        "title": "RSS Weak Fallback"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 40,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:3",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:41:rss.xml:0-0:repo-feed:rss.xml#feed-item:4",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "duplicate_disambiguator": "duplicate-1",
+        "duplicate_identity": true,
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong",
+        "title": "RSS Duplicate A"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 41,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:4",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:42:rss.xml:0-0:repo-feed:rss.xml#feed-item:5",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+        "duplicate_disambiguator": "duplicate-2",
+        "duplicate_identity": true,
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong",
+        "title": "RSS Duplicate B"
+      },
+      "path": "rss.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 42,
+      "raw_schema_version": 1,
+      "raw_source_id": "rss.xml#feed-item:5",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:43:secret-feed.xml:0-0:repo-discovery:secret-feed.xml",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "26eee01fc1f295f80ea55016e29b8e114016753d157619dbda79fefbb777cb26",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      },
+      "path": "secret-feed.xml",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 43,
+      "raw_schema_version": 1,
+      "raw_source_id": "secret-feed.xml",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:44:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-document",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "feed_format": "rss",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "rss"
+      },
+      "path": "secret-feed.xml",
+      "raw_kind": "feed.document",
+      "raw_observation_ordinal": 44,
+      "raw_schema_version": 1,
+      "raw_source_id": "secret-feed.xml#feed-document",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:45:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-channel",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "document_key": "feed.document:file%3Asecret-feed.xml",
+        "feed_format": "rss",
+        "identity_source": "title+document",
+        "identity_strength": "weak"
+      },
+      "path": "secret-feed.xml",
+      "raw_kind": "feed.channel",
+      "raw_observation_ordinal": 45,
+      "raw_schema_version": 1,
+      "raw_source_id": "secret-feed.xml#feed-channel",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:46:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-item:1",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "channel_key": "feed.channel:feed.document%3Afile%253Asecret-feed.xml:title%3Asecret-feed-fixture%3Afeed.document%3Afile%253Asecret-feed.xml",
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong"
+      },
+      "path": "secret-feed.xml",
+      "raw_kind": "feed.item",
+      "raw_observation_ordinal": 46,
+      "raw_schema_version": 1,
+      "raw_source_id": "secret-feed.xml#feed-item:1",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:47:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-item:1:content",
+      "extractor": "repo-feed",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_kind": "description",
+        "content_policy": "summarized-not-rendered",
+        "feed_format": "rss",
+        "item_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Asecret-feed.xml%3Atitle%253Asecret-feed-fixture%253Afeed.document%253Afile%25253Asecret-feed.xml:guid%3Asecret-item",
+        "original_length": 27,
+        "redacted": true,
+        "redaction_reason": "secret-prone-content"
+      },
+      "path": "secret-feed.xml",
+      "raw_kind": "feed.content",
+      "raw_observation_ordinal": 47,
+      "raw_schema_version": 1,
+      "raw_source_id": "secret-feed.xml#feed-item:1:content",
+      "start_line": null
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:15:feed.json:0-0:repo-feed:feed.json#feed-channel-link:home_page_url",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:31:rss.xml:0-0:repo-feed:rss.xml#feed-channel-link",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fatom%2F1",
+      "evidence_key": "evidence:5:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:3:atom.xml:0-0:repo-feed:atom.xml#feed-channel-link:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:14:feed.json:0-0:repo-feed:feed.json#feed-channel-link:feed_url",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fjson%2F1",
+      "evidence_key": "evidence:17:feed.json:0-0:repo-feed:feed.json#feed-item:1:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Frss%2F1",
+      "evidence_key": "evidence:33:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:Atom%20Writer",
+      "evidence_key": "evidence:6:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:author:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:RSS%20Writer",
+      "evidence_key": "evidence:35:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:author:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:atom-category",
+      "evidence_key": "evidence:7:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:category:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:json-category",
+      "evidence_key": "evidence:19:feed.json:0-0:repo-feed:feed.json#feed-item:1:category:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:Release%20Notes",
+      "evidence_key": "evidence:36:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:category:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:2:atom.xml:0-0:repo-feed:atom.xml#feed-channel",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:3:atom.xml:0-0:repo-feed:atom.xml#feed-channel-link:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:4:atom.xml:0-0:repo-feed:atom.xml#feed-item:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:6:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:author:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:7:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:category:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "evidence_key": "evidence:9:atom.xml:0-0:repo-feed:atom.xml#feed-item:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:13:feed.json:0-0:repo-feed:feed.json#feed-channel",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:14:feed.json:0-0:repo-feed:feed.json#feed-channel-link:feed_url",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:15:feed.json:0-0:repo-feed:feed.json#feed-channel-link:home_page_url",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:16:feed.json:0-0:repo-feed:feed.json#feed-item:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:19:feed.json:0-0:repo-feed:feed.json#feed-item:1:category:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:21:feed.json:0-0:repo-feed:feed.json#feed-item:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:23:feed.json:0-0:repo-feed:feed.json#feed-item:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:24:feed.json:0-0:repo-feed:feed.json#feed-item:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "evidence_key": "evidence:25:feed.json:0-0:repo-feed:feed.json#feed-item:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:30:rss.xml:0-0:repo-feed:rss.xml#feed-channel",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:31:rss.xml:0-0:repo-feed:rss.xml#feed-channel-link",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:32:rss.xml:0-0:repo-feed:rss.xml#feed-item:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:35:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:author:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:36:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:category:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:38:rss.xml:0-0:repo-feed:rss.xml#feed-item:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:40:rss.xml:0-0:repo-feed:rss.xml#feed-item:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:41:rss.xml:0-0:repo-feed:rss.xml#feed-item:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "evidence_key": "evidence:42:rss.xml:0-0:repo-feed:rss.xml#feed-item:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Asecret-feed.xml:title%3Asecret-feed-fixture%3Afeed.document%3Afile%253Asecret-feed.xml",
+      "evidence_key": "evidence:45:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-channel",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Asecret-feed.xml:title%3Asecret-feed-fixture%3Afeed.document%3Afile%253Asecret-feed.xml",
+      "evidence_key": "evidence:46:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-item:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.document:file%3Aatom.xml",
+      "evidence_key": "evidence:1:atom.xml:0-0:repo-feed:atom.xml#feed-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.document:file%3Aatom.xml",
+      "evidence_key": "evidence:2:atom.xml:0-0:repo-feed:atom.xml#feed-channel",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.document:file%3Afeed.json",
+      "evidence_key": "evidence:12:feed.json:0-0:repo-feed:feed.json#feed-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.document:file%3Afeed.json",
+      "evidence_key": "evidence:13:feed.json:0-0:repo-feed:feed.json#feed-channel",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.document:file%3Arss.xml",
+      "evidence_key": "evidence:29:rss.xml:0-0:repo-feed:rss.xml#feed-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.document:file%3Arss.xml",
+      "evidence_key": "evidence:30:rss.xml:0-0:repo-feed:rss.xml#feed-channel",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.document:file%3Asecret-feed.xml",
+      "evidence_key": "evidence:44:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.document:file%3Asecret-feed.xml",
+      "evidence_key": "evidence:45:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-channel",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:alternate-link%3Aarticles%2Fatom-link-fallback.html",
+      "evidence_key": "evidence:10:atom.xml:0-0:repo-feed:atom.xml#feed-item:2:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:alternate-link%3Aarticles%2Fatom-link-fallback.html",
+      "evidence_key": "evidence:9:atom.xml:0-0:repo-feed:atom.xml#feed-item:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "evidence_key": "evidence:4:atom.xml:0-0:repo-feed:atom.xml#feed-item:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "evidence_key": "evidence:5:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "evidence_key": "evidence:6:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:author:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "evidence_key": "evidence:7:atom.xml:0-0:repo-feed:atom.xml#feed-item:1:category:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-duplicate%3Aduplicate-1",
+      "evidence_key": "evidence:24:feed.json:0-0:repo-feed:feed.json#feed-item:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-duplicate%3Aduplicate-2",
+      "evidence_key": "evidence:25:feed.json:0-0:repo-feed:feed.json#feed-item:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "evidence_key": "evidence:16:feed.json:0-0:repo-feed:feed.json#feed-item:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "evidence_key": "evidence:17:feed.json:0-0:repo-feed:feed.json#feed-item:1:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "evidence_key": "evidence:18:feed.json:0-0:repo-feed:feed.json#feed-item:1:enclosure:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "evidence_key": "evidence:19:feed.json:0-0:repo-feed:feed.json#feed-item:1:category:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:title%2Bdate%3Ajson-weak-fallback%3A2026-06-30T14%3A45%3A00Z",
+      "evidence_key": "evidence:23:feed.json:0-0:repo-feed:feed.json#feed-item:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:url%3Aarticles%2Fjson-link-fallback.html",
+      "evidence_key": "evidence:21:feed.json:0-0:repo-feed:feed.json#feed-item:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:url%3Aarticles%2Fjson-link-fallback.html",
+      "evidence_key": "evidence:22:feed.json:0-0:repo-feed:feed.json#feed-item:2:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-duplicate%3Aduplicate-1",
+      "evidence_key": "evidence:41:rss.xml:0-0:repo-feed:rss.xml#feed-item:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-duplicate%3Aduplicate-2",
+      "evidence_key": "evidence:42:rss.xml:0-0:repo-feed:rss.xml#feed-item:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "evidence_key": "evidence:32:rss.xml:0-0:repo-feed:rss.xml#feed-item:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "evidence_key": "evidence:33:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "evidence_key": "evidence:34:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:enclosure:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "evidence_key": "evidence:35:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:author:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "evidence_key": "evidence:36:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:category:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:link%3Aarticles%2Frss-link-fallback.html",
+      "evidence_key": "evidence:38:rss.xml:0-0:repo-feed:rss.xml#feed-item:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:link%3Aarticles%2Frss-link-fallback.html",
+      "evidence_key": "evidence:39:rss.xml:0-0:repo-feed:rss.xml#feed-item:2:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:title%2BpubDate%3Arss-weak-fallback%3A2026-06-30T14%3A00%3A00Z",
+      "evidence_key": "evidence:40:rss.xml:0-0:repo-feed:rss.xml#feed-item:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Asecret-feed.xml%3Atitle%253Asecret-feed-fixture%253Afeed.document%253Afile%25253Asecret-feed.xml:guid%3Asecret-item",
+      "evidence_key": "evidence:46:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-item:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:articles/atom-link-fallback.html",
+      "evidence_key": "evidence:10:atom.xml:0-0:repo-feed:atom.xml#feed-item:2:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:articles/json-link-fallback.html",
+      "evidence_key": "evidence:22:feed.json:0-0:repo-feed:feed.json#feed-item:2:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:articles/rss-link-fallback.html",
+      "evidence_key": "evidence:39:rss.xml:0-0:repo-feed:rss.xml#feed-item:2:link:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:assets/json-item.json",
+      "evidence_key": "evidence:18:feed.json:0-0:repo-feed:feed.json#feed-item:1:enclosure:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:atom.xml",
+      "evidence_key": "evidence:0:atom.xml:0-0:repo-discovery:atom.xml",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:atom.xml",
+      "evidence_key": "evidence:1:atom.xml:0-0:repo-feed:atom.xml#feed-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:feed.json",
+      "evidence_key": "evidence:11:feed.json:0-0:repo-discovery:feed.json",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:feed.json",
+      "evidence_key": "evidence:12:feed.json:0-0:repo-feed:feed.json#feed-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:malformed-rss.xml",
+      "evidence_key": "evidence:26:malformed-rss.xml:0-0:repo-discovery:malformed-rss.xml",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:media/rss-audio.mp3",
+      "evidence_key": "evidence:34:rss.xml:0-0:repo-feed:rss.xml#feed-item:1:enclosure:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:rss.xml",
+      "evidence_key": "evidence:28:rss.xml:0-0:repo-discovery:rss.xml",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:rss.xml",
+      "evidence_key": "evidence:29:rss.xml:0-0:repo-feed:rss.xml#feed-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:secret-feed.xml",
+      "evidence_key": "evidence:43:secret-feed.xml:0-0:repo-discovery:secret-feed.xml",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:secret-feed.xml",
+      "evidence_key": "evidence:44:secret-feed.xml:0-0:repo-feed:secret-feed.xml#feed-document",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2F",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Frepomap%2F",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fatom%2F1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Frepomap%2Fatom%2F1",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Fjson%2F1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Frepomap%2Fjson%2F1",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.com%2Frepomap%2Frss%2F1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.com%2Frepomap%2Frss%2F1",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:Atom%20Writer",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Atom Writer",
+      "graph_key_version": 1,
+      "kind": "feed.author",
+      "metadata": {
+        "email_redacted": false,
+        "feed_format": "atom",
+        "name": "Atom Writer"
+      }
+    },
+    {
+      "canonical_key": "feed.author:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:RSS%20Writer",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RSS Writer",
+      "graph_key_version": 1,
+      "kind": "feed.author",
+      "metadata": {
+        "email_redacted": true,
+        "feed_format": "rss",
+        "name": "RSS Writer"
+      }
+    },
+    {
+      "canonical_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:atom-category",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "atom-category",
+      "graph_key_version": 1,
+      "kind": "feed.category",
+      "metadata": {
+        "feed_format": "atom",
+        "name": "atom-category"
+      }
+    },
+    {
+      "canonical_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:json-category",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "json-category",
+      "graph_key_version": 1,
+      "kind": "feed.category",
+      "metadata": {
+        "feed_format": "json-feed",
+        "name": "json-category"
+      }
+    },
+    {
+      "canonical_key": "feed.category:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:Release%20Notes",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Release Notes",
+      "graph_key_version": 1,
+      "kind": "feed.category",
+      "metadata": {
+        "feed_format": "rss",
+        "name": "Release Notes"
+      }
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Aatom.xml:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Fatom.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RepoMap Atom Fixture",
+      "graph_key_version": 1,
+      "kind": "feed.channel",
+      "metadata": {
+        "feed_format": "atom",
+        "identity_source": "self-link",
+        "identity_strength": "strong",
+        "title": "RepoMap Atom Fixture",
+        "updated_at": "2026-06-30T12:00:00Z"
+      }
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Afeed.json:self%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2Ffeed.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RepoMap JSON Feed Fixture",
+      "graph_key_version": 1,
+      "kind": "feed.channel",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "feed_url",
+        "identity_strength": "strong",
+        "title": "RepoMap JSON Feed Fixture"
+      }
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Arss.xml:link%3Ahttps%3A%2F%2Fexample.com%2Frepomap%2F",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RepoMap RSS Fixture",
+      "graph_key_version": 1,
+      "kind": "feed.channel",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "link",
+        "identity_strength": "strong",
+        "title": "RepoMap RSS Fixture"
+      }
+    },
+    {
+      "canonical_key": "feed.channel:feed.document%3Afile%253Asecret-feed.xml:title%3Asecret-feed-fixture%3Afeed.document%3Afile%253Asecret-feed.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Secret Feed Fixture",
+      "graph_key_version": 1,
+      "kind": "feed.channel",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "title+document",
+        "identity_strength": "weak"
+      }
+    },
+    {
+      "canonical_key": "feed.document:file%3Aatom.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "atom.xml",
+      "graph_key_version": 1,
+      "kind": "feed.document",
+      "metadata": {
+        "feed_format": "atom",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "atom"
+      }
+    },
+    {
+      "canonical_key": "feed.document:file%3Afeed.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "feed.json",
+      "graph_key_version": 1,
+      "kind": "feed.document",
+      "metadata": {
+        "feed_format": "json-feed",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-json-local-feed-shape",
+        "top_level_type": "object"
+      }
+    },
+    {
+      "canonical_key": "feed.document:file%3Arss.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "rss.xml",
+      "graph_key_version": 1,
+      "kind": "feed.document",
+      "metadata": {
+        "feed_format": "rss",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "rss"
+      }
+    },
+    {
+      "canonical_key": "feed.document:file%3Asecret-feed.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "secret-feed.xml",
+      "graph_key_version": 1,
+      "kind": "feed.document",
+      "metadata": {
+        "feed_format": "rss",
+        "parser": "repo-feed",
+        "parser_mode": "stdlib-elementtree-prescan-no-external-entities",
+        "top_level_type": "rss"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:alternate-link%3Aarticles%2Fatom-link-fallback.html",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Atom Link Fallback",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "atom",
+        "identity_source": "alternate-link",
+        "identity_strength": "strong",
+        "title": "Atom Link Fallback",
+        "updated_at": "2026-06-30T13:00:00Z"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Aatom.xml%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Fatom.xml:id%3Aurn%3Arepomap%3Aatom%3Aitem%3A1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Atom ID Item",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "atom",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "title": "Atom ID Item",
+        "updated_at": "2026-06-30T12:30:00Z"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-duplicate%3Aduplicate-1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "JSON Duplicate A",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-1",
+        "duplicate_identity": true,
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "title": "JSON Duplicate A"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-duplicate%3Aduplicate-2",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "JSON Duplicate B",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-2",
+        "duplicate_identity": true,
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "title": "JSON Duplicate B"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:id%3Ajson-item-1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "JSON ID Item",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "id",
+        "identity_strength": "strong",
+        "published_at": "2026-06-30T12:45:00Z",
+        "title": "JSON ID Item"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:title%2Bdate%3Ajson-weak-fallback%3A2026-06-30T14%3A45%3A00Z",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "JSON Weak Fallback",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "title+date",
+        "identity_strength": "weak",
+        "published_at": "2026-06-30T14:45:00Z",
+        "title": "JSON Weak Fallback"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Afeed.json%3Aself%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252Ffeed.json:url%3Aarticles%2Fjson-link-fallback.html",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "JSON Link Fallback",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "json-feed",
+        "identity_source": "url",
+        "identity_strength": "strong",
+        "title": "JSON Link Fallback",
+        "updated_at": "2026-06-30T13:45:00Z"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-duplicate%3Aduplicate-1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RSS Duplicate A",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-1",
+        "duplicate_identity": true,
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong",
+        "title": "RSS Duplicate A"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-duplicate%3Aduplicate-2",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RSS Duplicate B",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "duplicate_disambiguator": "duplicate-2",
+        "duplicate_identity": true,
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong",
+        "title": "RSS Duplicate B"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:guid%3Arss-guid-1",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RSS GUID Item",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong",
+        "published_at": "2026-06-30T12:00:00Z",
+        "title": "RSS GUID Item"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:link%3Aarticles%2Frss-link-fallback.html",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RSS Link Fallback",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "link",
+        "identity_strength": "strong",
+        "published_at": "2026-06-30T13:00:00Z",
+        "title": "RSS Link Fallback"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Alink%253Ahttps%253A%252F%252Fexample.com%252Frepomap%252F:title%2BpubDate%3Arss-weak-fallback%3A2026-06-30T14%3A00%3A00Z",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "RSS Weak Fallback",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "title+pubDate",
+        "identity_strength": "weak",
+        "published_at": "2026-06-30T14:00:00Z",
+        "title": "RSS Weak Fallback"
+      }
+    },
+    {
+      "canonical_key": "feed.item:feed.channel%3Afeed.document%253Afile%25253Asecret-feed.xml%3Atitle%253Asecret-feed-fixture%253Afeed.document%253Afile%25253Asecret-feed.xml:guid%3Asecret-item",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "API token item",
+      "graph_key_version": 1,
+      "kind": "feed.item",
+      "metadata": {
+        "feed_format": "rss",
+        "identity_source": "guid",
+        "identity_strength": "strong"
+      }
+    },
+    {
+      "canonical_key": "file:articles/atom-link-fallback.html",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "articles/atom-link-fallback.html",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:articles/json-link-fallback.html",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "articles/json-link-fallback.html",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:articles/rss-link-fallback.html",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "articles/rss-link-fallback.html",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:assets/json-item.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "assets/json-item.json",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:atom.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "atom.xml",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "ff6c20d43de99a671303c871d1cd73ed30b6130d102ff3e430a68c3f58e33c7f",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:feed.json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "feed.json",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "bc96614e5bbf8a7cba3b55aac38ae6b46a8b2bf1db991f5bef7318d1dc3f4d47",
+        "executable": false,
+        "generated": false,
+        "language": "json",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:malformed-rss.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "malformed-rss.xml",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "9ab46fc647b16e185d630dffacceac6cd86dc9355c13bc845e2a4a79f68e49d3",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:media/rss-audio.mp3",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "media/rss-audio.mp3",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:rss.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "rss.xml",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "266885b625e5f8aaf16dfffeabd6a965beecda9415534792d5381b14b452f271",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      }
+    },
+    {
+      "canonical_key": "file:secret-feed.xml",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "secret-feed.xml",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "26eee01fc1f295f80ea55016e29b8e114016753d157619dbda79fefbb777cb26",
+        "executable": false,
+        "generated": false,
+        "language": "xml",
+        "role": "unknown"
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 43,
+    "edges": 43,
+    "errors": 0,
+    "evidence": 48,
+    "infos": 0,
+    "node_evidence_links": 86,
+    "nodes": 42,
+    "raw_observations": 48,
+    "warnings": 0
+  }
+}

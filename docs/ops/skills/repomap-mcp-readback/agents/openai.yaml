@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap MCP Readback"
+  short_description: "Query RepoMap graphs through read-only MCP tools"
+  default_prompt: "Use $repomap-mcp-readback to query a loaded RepoMap graph without mutation."

@@ -1,0 +1,30 @@
+{
+  "default_project": "repo-map",
+  "projects": {
+    "repo-map": {
+      "root_path": "projects/repo-map",
+      "pg_database": "repomap_repo_map"
+    },
+    "codex-vc": {
+      "root_path": "../codex-vc",
+      "pg_database": "repomap_codex_vc"
+    }
+  },
+  "mcp_servers": {
+    "repomap": {
+      "command": "repomap-kg",
+      "args": ["repomap-kg", "mcp", "serve"],
+      "program": "repomap-kg --stdio",
+      "cwd": "src/main/python",
+      "config_path": "codex/config.toml",
+      "absolute_path": "/Users/slair/.codex/codex-vc/mcp/repo-map/config.json",
+      "escape_path": "../../../outside.json",
+      "env": {
+        "REPOMAP_MCP_CONFIG": "$REPOMAP_MCP_CONFIG",
+        "TOKEN": "cfg3-json-secret-token"
+      },
+      "docs_url": "https://example.com/repo-map"
+    }
+  },
+  "api_key": "cfg3-json-secret-api-key"
+}

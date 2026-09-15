@@ -1,0 +1,6 @@
+{
+  "authority_sha256": "8824b4983e87b32897932c276eb48e05a18563657ec9c8b2e0272c9d17725e1b",
+  "default_index": "https://pypi.org/simple",
+  "exclude_newer": "2026-08-26T03:43:32Z",
+  "version": 1
+}

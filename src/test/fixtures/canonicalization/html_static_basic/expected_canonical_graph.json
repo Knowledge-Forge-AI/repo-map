@@ -1,0 +1,1178 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:074ff7e27d11c824c5ae6ae9b93f8f484ad35d7a1ef6ade9ad64c87efcdefa20",
+      "evidence_key": "evidence:0:index.html:0-0:repo-html:index.html#html-document",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1373a00a13e5724d8cb310008da77382e0aa8ed1d0bb67aed2b13c187315e4d6",
+      "evidence_key": "evidence:3:index.html:3-3:repo-html:index.html#html-element:/html/head/title",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:14d40a978fe64707b6f2e4fc442a1a20365babdd061f32d786251a8e669bccc5",
+      "evidence_key": "evidence:1:index.html:2-2:repo-html:index.html#html-element:/html",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:4f8c0c88d3023081a940e067dd4a3d9498ca264606237e1d76249e79743e02ae",
+      "evidence_key": "evidence:12:index.html:7-7:repo-html:index.html#html.asset:/html/body/img:src",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:6af466639b13f58ba41e086edea6a693721d23401f657ca0e8df7d62933d882b",
+      "evidence_key": "evidence:13:index.html:8-8:repo-html:index.html#html.form:/html/body/form:action",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8b36b609b9c186c9dab803f81c37aefe917570ef1936ee2c21cd34a46deea71d",
+      "evidence_key": "evidence:5:index.html:5-5:repo-html:index.html#html-element:/html/body/h1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:9b9f78cb6a142a19457ef42f00aa93c97d45e24d69c8f0d79bf8b33604997592",
+      "evidence_key": "evidence:11:index.html:6-6:repo-html:index.html#html.link:/html/body/a:href",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b02ac00b700295e970f1a362c1c1d92980f239206e8de096aaac407c562c5ff2",
+      "evidence_key": "evidence:10:index.html:5-5:repo-html:index.html#html-heading:/html/body/h1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b1c25cb453d9b2c6bc63d3b130cfa737a837d040413bb36aaa926a53f0485474",
+      "evidence_key": "evidence:8:index.html:8-8:repo-html:index.html#html-element:/html/body/form",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cdd31e31700b548b59a3a3c42391b9616874333c67a063ae4f609ec55b8a669a",
+      "evidence_key": "evidence:4:index.html:4-4:repo-html:index.html#html-element:/html/body",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d8cbd74b35ebebaf986af95bbbead80d8f142d37964870ed5c0c6e4de52925c4",
+      "evidence_key": "evidence:7:index.html:7-7:repo-html:index.html#html-element:/html/body/img",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e6e4ad551105f4ecf8fed4abeaa0329c0b2602b9695def14ec4b90a67a29114f",
+      "evidence_key": "evidence:6:index.html:6-6:repo-html:index.html#html-element:/html/body/a",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ee5466f22c2f956b3425d6519872e2e9ea51ac14a73fc0ca1b2f1f51a5825b95",
+      "evidence_key": "evidence:2:index.html:3-3:repo-html:index.html#html-element:/html/head",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ef726550abc047e79ff7edd188f284c0b13e8767938ceed691db7e78d917140a",
+      "evidence_key": "evidence:9:index.html:8-8:repo-html:index.html#html-element:/html/body/form/input",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:b02ac00b700295e970f1a362c1c1d92980f239206e8de096aaac407c562c5ff2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.anchor:file%3Aindex.html:welcome"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:074ff7e27d11c824c5ae6ae9b93f8f484ad35d7a1ef6ade9ad64c87efcdefa20",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.document:file%3Aindex.html"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:14d40a978fe64707b6f2e4fc442a1a20365babdd061f32d786251a8e669bccc5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "html"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:cdd31e31700b548b59a3a3c42391b9616874333c67a063ae4f609ec55b8a669a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/body"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "body"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:e6e4ad551105f4ecf8fed4abeaa0329c0b2602b9695def14ec4b90a67a29114f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/body/a"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "a"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fa"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:b1c25cb453d9b2c6bc63d3b130cfa737a837d040413bb36aaa926a53f0485474",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/body/form"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "form"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:ef726550abc047e79ff7edd188f284c0b13e8767938ceed691db7e78d917140a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/body/form/input"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "input"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform%2Finput"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:8b36b609b9c186c9dab803f81c37aefe917570ef1936ee2c21cd34a46deea71d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/body/h1"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "h1"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fh1"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:d8cbd74b35ebebaf986af95bbbead80d8f142d37964870ed5c0c6e4de52925c4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/body/img"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "img"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fimg"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:ee5466f22c2f956b3425d6519872e2e9ea51ac14a73fc0ca1b2f1f51a5825b95",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/head"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "head"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fhead"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:1373a00a13e5724d8cb310008da77382e0aa8ed1d0bb67aed2b13c187315e4d6",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "formats": [
+          "html"
+        ],
+        "pointers": [
+          "/html/head/title"
+        ],
+        "structural_identity_modes": [
+          "document-pointer-with-sibling-indexes"
+        ],
+        "tags": [
+          "title"
+        ]
+      },
+      "source_key": "file:index.html",
+      "target_key": "html.element:file%3Aindex.html:%2Fhtml%2Fhead%2Ftitle"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:9b9f78cb6a142a19457ef42f00aa93c97d45e24d69c8f0d79bf8b33604997592",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attributes": [
+          "href"
+        ],
+        "pointers": [
+          "/html/body/a"
+        ],
+        "raw_value_summaries": [
+          "#welcome"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "html.anchor"
+        ],
+        "resolution_reasons": [
+          "same-document-fragment"
+        ],
+        "source_element_pointers": [
+          "/html/body/a"
+        ],
+        "tags": [
+          "a"
+        ]
+      },
+      "source_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fa",
+      "target_key": "html.anchor:file%3Aindex.html:welcome"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:6af466639b13f58ba41e086edea6a693721d23401f657ca0e8df7d62933d882b",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attributes": [
+          "action"
+        ],
+        "field_counts": [
+          1
+        ],
+        "methods": [
+          "get"
+        ],
+        "pointers": [
+          "/html/body/form"
+        ],
+        "raw_value_summaries": [
+          "submit/login"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "relative-file-reference"
+        ],
+        "source_element_pointers": [
+          "/html/body/form"
+        ],
+        "tags": [
+          "form"
+        ]
+      },
+      "source_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform",
+      "target_key": "file:submit/login"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:4f8c0c88d3023081a940e067dd4a3d9498ca264606237e1d76249e79743e02ae",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "attributes": [
+          "src"
+        ],
+        "pointers": [
+          "/html/body/img"
+        ],
+        "raw_value_summaries": [
+          "images/logo.png"
+        ],
+        "redacted_observed": false,
+        "reference_kinds": [
+          "file"
+        ],
+        "resolution_reasons": [
+          "relative-file-reference"
+        ],
+        "source_element_pointers": [
+          "/html/body/img"
+        ],
+        "tags": [
+          "img"
+        ]
+      },
+      "source_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fimg",
+      "target_key": "file:images/logo.png"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": null,
+      "evidence_key": "evidence:0:index.html:0-0:repo-html:index.html#html-document",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "anchor_count": 1,
+        "doctype": "doctype html",
+        "element_count": 9,
+        "format": "html",
+        "language": "en",
+        "parse_warning_count": 0,
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "root_element": "html",
+        "title": "Golden HTML"
+      },
+      "path": "index.html",
+      "raw_kind": "html.document",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-document",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 2,
+      "evidence_key": "evidence:1:index.html:2-2:repo-html:index.html#html-element:/html",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 2,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "html",
+        "text_summary": "Golden HTML Welcome Jump"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html",
+      "start_line": 2
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:2:index.html:3-3:repo-html:index.html#html-element:/html/head",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 0,
+        "child_count": 1,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/head",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "head",
+        "text_summary": "Golden HTML"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/head",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:3:index.html:3-3:repo-html:index.html#html-element:/html/head/title",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 0,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/head/title",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "title",
+        "text_summary": "Golden HTML"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/head/title",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 4,
+      "evidence_key": "evidence:4:index.html:4-4:repo-html:index.html#html-element:/html/body",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 0,
+        "child_count": 4,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "body",
+        "text_summary": "Welcome Jump"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/body",
+      "start_line": 4
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:5:index.html:5-5:repo-html:index.html#html-element:/html/body/h1",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 0,
+        "format": "html",
+        "id": "welcome",
+        "id_is_unique": true,
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/h1",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "h1",
+        "text_summary": "Welcome"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/body/h1",
+      "start_line": 5
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 6,
+      "evidence_key": "evidence:6:index.html:6-6:repo-html:index.html#html-element:/html/body/a",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/a",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "a",
+        "text_summary": "Jump"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/body/a",
+      "start_line": 6
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 7,
+      "evidence_key": "evidence:7:index.html:7-7:repo-html:index.html#html-element:/html/body/img",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/img",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "img"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/body/img",
+      "start_line": 7
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 8,
+      "evidence_key": "evidence:8:index.html:8-8:repo-html:index.html#html-element:/html/body/form",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 1,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/form",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "form"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/body/form",
+      "start_line": 8
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 8,
+      "evidence_key": "evidence:9:index.html:8-8:repo-html:index.html#html-element:/html/body/form/input",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute_count": 2,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/form/input",
+        "redacted": true,
+        "redaction_reason": "secret-prone-html-attribute",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "input"
+      },
+      "path": "index.html",
+      "raw_kind": "html.element",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-element:/html/body/form/input",
+      "start_line": 8
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:10:index.html:5-5:repo-html:index.html#html-heading:/html/body/h1",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "html",
+        "heading_level": 1,
+        "id": "welcome",
+        "id_is_unique": true,
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "source_element_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fh1",
+        "source_element_pointer": "/html/body/h1",
+        "text_summary": "Welcome"
+      },
+      "path": "index.html",
+      "raw_kind": "html.heading",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html-heading:/html/body/h1",
+      "start_line": 5
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 6,
+      "evidence_key": "evidence:11:index.html:6-6:repo-html:index.html#html.link:/html/body/a:href",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "href",
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/a",
+        "raw_value_summary": "#welcome",
+        "redacted": false,
+        "reference_kind": "html.anchor",
+        "resolution_reason": "same-document-fragment",
+        "source_element_pointer": "/html/body/a",
+        "source_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fa",
+        "tag": "a"
+      },
+      "path": "index.html",
+      "raw_kind": "html.link",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html.link:/html/body/a:href",
+      "start_line": 6
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 7,
+      "evidence_key": "evidence:12:index.html:7-7:repo-html:index.html#html.asset:/html/body/img:src",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "src",
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/img",
+        "raw_value_summary": "images/logo.png",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "relative-file-reference",
+        "source_element_pointer": "/html/body/img",
+        "source_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fimg",
+        "tag": "img"
+      },
+      "path": "index.html",
+      "raw_kind": "html.asset",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html.asset:/html/body/img:src",
+      "start_line": 7
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 8,
+      "evidence_key": "evidence:13:index.html:8-8:repo-html:index.html#html.form:/html/body/form:action",
+      "extractor": "repo-html",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attribute": "action",
+        "field_count": 1,
+        "format": "html",
+        "method": "get",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/form",
+        "raw_value_summary": "submit/login",
+        "redacted": false,
+        "reference_kind": "file",
+        "resolution_reason": "relative-file-reference",
+        "source_element_pointer": "/html/body/form",
+        "source_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform",
+        "tag": "form"
+      },
+      "path": "index.html",
+      "raw_kind": "html.form",
+      "raw_observation_ordinal": 13,
+      "raw_schema_version": 1,
+      "raw_source_id": "index.html#html.form:/html/body/form:action",
+      "start_line": 8
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:images/logo.png",
+      "evidence_key": "evidence:12:index.html:7-7:repo-html:index.html#html.asset:/html/body/img:src",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:0:index.html:0-0:repo-html:index.html#html-document",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:10:index.html:5-5:repo-html:index.html#html-heading:/html/body/h1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:1:index.html:2-2:repo-html:index.html#html-element:/html",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:2:index.html:3-3:repo-html:index.html#html-element:/html/head",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:3:index.html:3-3:repo-html:index.html#html-element:/html/head/title",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:4:index.html:4-4:repo-html:index.html#html-element:/html/body",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:5:index.html:5-5:repo-html:index.html#html-element:/html/body/h1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:6:index.html:6-6:repo-html:index.html#html-element:/html/body/a",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:7:index.html:7-7:repo-html:index.html#html-element:/html/body/img",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:8:index.html:8-8:repo-html:index.html#html-element:/html/body/form",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:index.html",
+      "evidence_key": "evidence:9:index.html:8-8:repo-html:index.html#html-element:/html/body/form/input",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:submit/login",
+      "evidence_key": "evidence:13:index.html:8-8:repo-html:index.html#html.form:/html/body/form:action",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "html.anchor:file%3Aindex.html:welcome",
+      "evidence_key": "evidence:10:index.html:5-5:repo-html:index.html#html-heading:/html/body/h1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.anchor:file%3Aindex.html:welcome",
+      "evidence_key": "evidence:11:index.html:6-6:repo-html:index.html#html.link:/html/body/a:href",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "html.document:file%3Aindex.html",
+      "evidence_key": "evidence:0:index.html:0-0:repo-html:index.html#html-document",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml",
+      "evidence_key": "evidence:1:index.html:2-2:repo-html:index.html#html-element:/html",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody",
+      "evidence_key": "evidence:4:index.html:4-4:repo-html:index.html#html-element:/html/body",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fa",
+      "evidence_key": "evidence:11:index.html:6-6:repo-html:index.html#html.link:/html/body/a:href",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fa",
+      "evidence_key": "evidence:6:index.html:6-6:repo-html:index.html#html-element:/html/body/a",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform",
+      "evidence_key": "evidence:13:index.html:8-8:repo-html:index.html#html.form:/html/body/form:action",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform",
+      "evidence_key": "evidence:8:index.html:8-8:repo-html:index.html#html-element:/html/body/form",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform%2Finput",
+      "evidence_key": "evidence:9:index.html:8-8:repo-html:index.html#html-element:/html/body/form/input",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fh1",
+      "evidence_key": "evidence:5:index.html:5-5:repo-html:index.html#html-element:/html/body/h1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fimg",
+      "evidence_key": "evidence:12:index.html:7-7:repo-html:index.html#html.asset:/html/body/img:src",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fimg",
+      "evidence_key": "evidence:7:index.html:7-7:repo-html:index.html#html-element:/html/body/img",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fhead",
+      "evidence_key": "evidence:2:index.html:3-3:repo-html:index.html#html-element:/html/head",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fhead%2Ftitle",
+      "evidence_key": "evidence:3:index.html:3-3:repo-html:index.html#html-element:/html/head/title",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:images/logo.png",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "images/logo.png",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:index.html",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "index.html",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:submit/login",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "submit/login",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "html.anchor:file%3Aindex.html:welcome",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "Welcome",
+      "graph_key_version": 1,
+      "kind": "html.anchor",
+      "metadata": {
+        "format": "html",
+        "heading_level": 1,
+        "id": "welcome",
+        "id_is_unique": true,
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "source_element_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fh1",
+        "source_element_pointer": "/html/body/h1",
+        "text_summary": "Welcome"
+      }
+    },
+    {
+      "canonical_key": "html.document:file%3Aindex.html",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "Golden HTML",
+      "graph_key_version": 1,
+      "kind": "html.document",
+      "metadata": {
+        "anchor_count": 1,
+        "doctype": "doctype html",
+        "element_count": 9,
+        "format": "html",
+        "language": "en",
+        "parse_warning_count": 0,
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "root_element": "html",
+        "title": "Golden HTML"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "html",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 2,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "html",
+        "text_summary": "Golden HTML Welcome Jump"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "body",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 0,
+        "child_count": 4,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "body",
+        "text_summary": "Welcome Jump"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fa",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "a",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/a",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "a",
+        "text_summary": "Jump"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "form",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 1,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/form",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "form"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fform%2Finput",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "input",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 2,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/form/input",
+        "redacted": true,
+        "redaction_reason": "secret-prone-html-attribute",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "input"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fh1",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "h1",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 0,
+        "format": "html",
+        "id": "welcome",
+        "id_is_unique": true,
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/h1",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "h1",
+        "text_summary": "Welcome"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fbody%2Fimg",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "img",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 1,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/body/img",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "img"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fhead",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "head",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 0,
+        "child_count": 1,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/head",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "head",
+        "text_summary": "Golden HTML"
+      }
+    },
+    {
+      "canonical_key": "html.element:file%3Aindex.html:%2Fhtml%2Fhead%2Ftitle",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "title",
+      "graph_key_version": 1,
+      "kind": "html.element",
+      "metadata": {
+        "attribute_count": 0,
+        "child_count": 0,
+        "format": "html",
+        "parser": "stdlib-htmlparser",
+        "parser_mode": "static-recovering-no-render-no-js",
+        "pointer": "/html/head/title",
+        "structural_identity": "document-pointer-with-sibling-indexes",
+        "tag": "title",
+        "text_summary": "Golden HTML"
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 14,
+    "edges": 14,
+    "errors": 0,
+    "evidence": 14,
+    "infos": 0,
+    "node_evidence_links": 28,
+    "nodes": 14,
+    "raw_observations": 14,
+    "warnings": 0
+  }
+}

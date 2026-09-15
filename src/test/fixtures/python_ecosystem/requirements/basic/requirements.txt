@@ -1,0 +1,4 @@
+requests>=2.31,<3
+fastapi[standard]==0.111.0; python_version >= "3.11"
+-r dev-requirements.txt
+-c test-requirements.txt

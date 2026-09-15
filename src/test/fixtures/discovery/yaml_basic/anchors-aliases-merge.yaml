@@ -1,0 +1,5 @@
+defaults: &defaults
+  image: example/base:1.0
+service:
+  <<: *defaults
+  config_path: ./service.yml

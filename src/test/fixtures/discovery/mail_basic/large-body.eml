@@ -1,0 +1,11 @@
+Message-ID: <large-body-message@example.invalid>
+Date: Tue, 30 Jun 2026 16:00:00 +0000
+From: Large Sender <alice@example.invalid>
+To: Large Receiver <bob@example.invalid>
+Subject: Large body fixture
+Content-Type: text/plain; charset=utf-8
+
+Large fixture body line 1 must not appear.
+Large fixture body line 2 must not appear.
+Large fixture body line 3 must not appear.
+Large fixture body line 4 must not appear.

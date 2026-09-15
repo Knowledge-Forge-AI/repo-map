@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap CLI Workflow"
+  short_description: "Maintain RepoMap graphs through the local CLI"
+  default_prompt: "Use $repomap-cli-workflow to plan a safe local RepoMap maintenance operation."

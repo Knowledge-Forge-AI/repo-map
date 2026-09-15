@@ -1,0 +1,28 @@
+openapi: 3.1.0
+info:
+  title: Fixture YAML API
+  version: "2026.07"
+  description: fixture yaml description must not be emitted raw
+servers:
+  - url: https://api.example.invalid/yaml
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+components:
+  schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+        secret:
+          type: string
+          example: fake-openapi-yaml-secret

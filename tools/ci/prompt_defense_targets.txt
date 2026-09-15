@@ -1,0 +1,9 @@
+AGENTS.md
+CLAUDE.md
+docs/contrib/skills/repo-map-development-standards/SKILL.md
+docs/contrib/skills/repo-map-testing-standards/SKILL.md
+docs/contrib/skills/repomap-phase-hygiene/SKILL.md
+docs/ops/skills/repomap-cli-workflow/SKILL.md
+docs/ops/skills/repomap-mcp-configuration/SKILL.md
+docs/ops/skills/repomap-mcp-readback/SKILL.md
+docs/ops/skills/repomap-mcp-smoke-test/SKILL.md

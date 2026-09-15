@@ -1,0 +1,1 @@
+{"confidence":"heuristic","end_line":9,"extractor":"repo-shell","extractor_version":"0.1.0","kind":"shell.env","metadata":{"operation":"write","raw":"FOO=bar","scope":"shell","value":"bar","variable":"FOO"},"name":"FOO","path":"scripts/build.sh","schema_version":1,"source_id":"scripts/build.sh#env-write:9:foo","start_line":9,"target":"env:FOO=value:bar"}

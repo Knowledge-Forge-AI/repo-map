@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Static HTML Fixture</title>
+    <link rel="stylesheet" href="assets/site.css">
+    <script src="assets/app.js">alert("html1-js-should-not-leak")</script>
+    <style>.credential-banner { color: red; }</style>
+  </head>
+  <body>
+    <main id="intro" class="hero">
+      <h1 id="welcome">Welcome Home</h1>
+      <h2>Plain Heading</h2>
+      <a href="#welcome">Jump</a>
+      <a href="https://example.com/docs">Docs</a>
+      <a href="mailto:dev@example.com">Email</a>
+      <a href="javascript:alert('html1-js-should-not-leak')">Bad</a>
+      <img src="images/logo.png" alt="Logo">
+      <video poster="media/poster.png"></video>
+      <form id="login" method="post" action="submit/login">
+        <input name="username" value="alice">
+        <input name="password" type="password" value="html1-sensitive-password">
+      </form>
+    </main>
+    <section><p>first</p><p>second</p></section>
+    <div id="dup"></div><div id="dup"></div>
+  </body>
+</html>

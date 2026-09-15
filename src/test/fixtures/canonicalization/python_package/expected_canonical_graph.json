@@ -1,0 +1,455 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:0f6bc01e4d5b62dea6ce8f8f4bdc80f6f00a9be07ffac385911167b9763e0cc3",
+      "evidence_key": "evidence:1:src/main/python/pkg/app.py:1-1:repo-python:src/main/python/pkg/app.py#import:1:pkg.lib.helper",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:2ac61c179abf90c5eb731f2110b7e8f6c928985b1d5ece145b7440e38ff20649",
+      "evidence_key": "evidence:4:src/main/python/pkg/app.py:5-7:repo-python:src/main/python/pkg/app.py#class:5:Service",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:5c4dda6c7b5b62002ebaa33515e859443090b50105b6c8fe7010a6bf5193d525",
+      "evidence_key": "evidence:5:src/main/python/pkg/app.py:6-7:repo-python:src/main/python/pkg/app.py#method:6:Service.run",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:876c5e5ec08d55041a8102b19f5371e4430c0906fdbbb9e6d5648856b30e47f5",
+      "evidence_key": "evidence:3:src/main/python/pkg/app.py:3-3:repo-python:src/main/python/pkg/app.py#import:3:pkg.lost",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:88fa5dc6d7b2e5a6bcdb8436e5c7118406aed8d72f06af3fcabbf90c009e0701",
+      "evidence_key": "evidence:0:src/main/python/pkg/app.py:1-9:repo-python:src/main/python/pkg/app.py#module:pkg.app",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8f329170fd87c0ee471fdd5520e22ef4e66bc4fa5bfb5467c0a1542dd0e35379",
+      "evidence_key": "evidence:2:src/main/python/pkg/app.py:2-2:repo-python:src/main/python/pkg/app.py#import:2:json",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a80666cf840a1c57810e5015cf62974fcdeeead00eebfa21ff7b0ec72419c11d",
+      "evidence_key": "evidence:6:src/main/python/pkg/app.py:9-9:repo-python:src/main/python/pkg/app.py#function:9:build",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:2ac61c179abf90c5eb731f2110b7e8f6c928985b1d5ece145b7440e38ff20649",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "classes": [
+          "Service"
+        ]
+      },
+      "source_key": "file:src/main/python/pkg/app.py",
+      "target_key": "python.class:pkg.app:Service"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a80666cf840a1c57810e5015cf62974fcdeeead00eebfa21ff7b0ec72419c11d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "functions": [
+          "build"
+        ]
+      },
+      "source_key": "file:src/main/python/pkg/app.py",
+      "target_key": "python.function:pkg.app:build"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:5c4dda6c7b5b62002ebaa33515e859443090b50105b6c8fe7010a6bf5193d525",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "Service.run"
+        ]
+      },
+      "source_key": "file:src/main/python/pkg/app.py",
+      "target_key": "python.method:pkg.app:Service:run"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:88fa5dc6d7b2e5a6bcdb8436e5c7118406aed8d72f06af3fcabbf90c009e0701",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "modules": [
+          "pkg.app"
+        ]
+      },
+      "source_key": "file:src/main/python/pkg/app.py",
+      "target_key": "python.module:pkg.app"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8f329170fd87c0ee471fdd5520e22ef4e66bc4fa5bfb5467c0a1542dd0e35379",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "imports",
+      "metadata": {
+        "imported_modules": [
+          "json"
+        ],
+        "resolutions": [
+          "external"
+        ]
+      },
+      "source_key": "python.module:pkg.app",
+      "target_key": "external:python.module:json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:0f6bc01e4d5b62dea6ce8f8f4bdc80f6f00a9be07ffac385911167b9763e0cc3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "imports",
+      "metadata": {
+        "imported_modules": [
+          "pkg.lib.helper"
+        ],
+        "resolutions": [
+          "local"
+        ]
+      },
+      "source_key": "python.module:pkg.app",
+      "target_key": "python.module:pkg.lib.helper"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:876c5e5ec08d55041a8102b19f5371e4430c0906fdbbb9e6d5648856b30e47f5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "imports",
+      "metadata": {
+        "resolutions": [
+          "unknown"
+        ]
+      },
+      "source_key": "python.module:pkg.app",
+      "target_key": "unknown:python.module:missing-module"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": 9,
+      "evidence_key": "evidence:0:src/main/python/pkg/app.py:1-9:repo-python:src/main/python/pkg/app.py#module:pkg.app",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "module": "pkg.app",
+        "package_root": "src/main/python",
+        "parser": "ast"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.module",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#module:pkg.app",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:1:src/main/python/pkg/app.py:1-1:repo-python:src/main/python/pkg/app.py#import:1:pkg.lib.helper",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "alias": null,
+        "imported_module": "pkg.lib.helper",
+        "imported_names": [
+          "helper"
+        ],
+        "level": 0,
+        "module": "pkg.app",
+        "resolution": "local"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.import",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#import:1:pkg.lib.helper",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:2:src/main/python/pkg/app.py:2-2:repo-python:src/main/python/pkg/app.py#import:2:json",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "alias": null,
+        "imported_module": "json",
+        "imported_names": [
+          "json"
+        ],
+        "level": 0,
+        "module": "pkg.app",
+        "resolution": "external"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.import",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#import:2:json",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:3:src/main/python/pkg/app.py:3-3:repo-python:src/main/python/pkg/app.py#import:3:pkg.lost",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "imported_names": [
+          "lost"
+        ],
+        "level": 1,
+        "module": "pkg.app",
+        "resolution": "unknown"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.import",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#import:3:pkg.lost",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 7,
+      "evidence_key": "evidence:4:src/main/python/pkg/app.py:5-7:repo-python:src/main/python/pkg/app.py#class:5:Service",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "bases": [],
+        "decorators": [],
+        "module": "pkg.app"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.class",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#class:5:Service",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 7,
+      "evidence_key": "evidence:5:src/main/python/pkg/app.py:6-7:repo-python:src/main/python/pkg/app.py#method:6:Service.run",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "async": false,
+        "class": "Service",
+        "decorators": [],
+        "module": "pkg.app"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.method",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#method:6:Service.run",
+      "start_line": 6
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 9,
+      "evidence_key": "evidence:6:src/main/python/pkg/app.py:9-9:repo-python:src/main/python/pkg/app.py#function:9:build",
+      "extractor": "repo-python",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "async": false,
+        "decorators": [],
+        "module": "pkg.app"
+      },
+      "path": "src/main/python/pkg/app.py",
+      "raw_kind": "python.function",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "src/main/python/pkg/app.py#function:9:build",
+      "start_line": 9
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "external:python.module:json",
+      "evidence_key": "evidence:2:src/main/python/pkg/app.py:2-2:repo-python:src/main/python/pkg/app.py#import:2:json",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:src/main/python/pkg/app.py",
+      "evidence_key": "evidence:0:src/main/python/pkg/app.py:1-9:repo-python:src/main/python/pkg/app.py#module:pkg.app",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:src/main/python/pkg/app.py",
+      "evidence_key": "evidence:4:src/main/python/pkg/app.py:5-7:repo-python:src/main/python/pkg/app.py#class:5:Service",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:src/main/python/pkg/app.py",
+      "evidence_key": "evidence:5:src/main/python/pkg/app.py:6-7:repo-python:src/main/python/pkg/app.py#method:6:Service.run",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:src/main/python/pkg/app.py",
+      "evidence_key": "evidence:6:src/main/python/pkg/app.py:9-9:repo-python:src/main/python/pkg/app.py#function:9:build",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "python.class:pkg.app:Service",
+      "evidence_key": "evidence:4:src/main/python/pkg/app.py:5-7:repo-python:src/main/python/pkg/app.py#class:5:Service",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "python.function:pkg.app:build",
+      "evidence_key": "evidence:6:src/main/python/pkg/app.py:9-9:repo-python:src/main/python/pkg/app.py#function:9:build",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "python.method:pkg.app:Service:run",
+      "evidence_key": "evidence:5:src/main/python/pkg/app.py:6-7:repo-python:src/main/python/pkg/app.py#method:6:Service.run",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "python.module:pkg.app",
+      "evidence_key": "evidence:0:src/main/python/pkg/app.py:1-9:repo-python:src/main/python/pkg/app.py#module:pkg.app",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "python.module:pkg.app",
+      "evidence_key": "evidence:1:src/main/python/pkg/app.py:1-1:repo-python:src/main/python/pkg/app.py#import:1:pkg.lib.helper",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "python.module:pkg.app",
+      "evidence_key": "evidence:2:src/main/python/pkg/app.py:2-2:repo-python:src/main/python/pkg/app.py#import:2:json",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "python.module:pkg.app",
+      "evidence_key": "evidence:3:src/main/python/pkg/app.py:3-3:repo-python:src/main/python/pkg/app.py#import:3:pkg.lost",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "python.module:pkg.lib.helper",
+      "evidence_key": "evidence:1:src/main/python/pkg/app.py:1-1:repo-python:src/main/python/pkg/app.py#import:1:pkg.lib.helper",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:python.module:missing-module",
+      "evidence_key": "evidence:3:src/main/python/pkg/app.py:3-3:repo-python:src/main/python/pkg/app.py#import:3:pkg.lost",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "external:python.module:json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "json",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:src/main/python/pkg/app.py",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "src/main/python/pkg/app.py",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "python.class:pkg.app:Service",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Service",
+      "graph_key_version": 1,
+      "kind": "python.class",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "python.function:pkg.app:build",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "build",
+      "graph_key_version": 1,
+      "kind": "python.function",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "python.method:pkg.app:Service:run",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Service.run",
+      "graph_key_version": 1,
+      "kind": "python.method",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "python.module:pkg.app",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "pkg.app",
+      "graph_key_version": 1,
+      "kind": "python.module",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "python.module:pkg.lib.helper",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "pkg.lib.helper",
+      "graph_key_version": 1,
+      "kind": "python.module",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "unknown:python.module:missing-module",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "missing-module",
+      "graph_key_version": 1,
+      "kind": "unknown",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 7,
+    "edges": 7,
+    "errors": 0,
+    "evidence": 7,
+    "infos": 0,
+    "node_evidence_links": 14,
+    "nodes": 8,
+    "raw_observations": 7,
+    "warnings": 0
+  }
+}

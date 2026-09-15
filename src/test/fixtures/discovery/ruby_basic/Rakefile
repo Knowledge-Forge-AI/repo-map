@@ -1,0 +1,9 @@
+desc "Run tests"
+task :test do
+end
+
+namespace :fixtures do
+  desc "Prepare fixtures"
+  task :prepare do
+  end
+end

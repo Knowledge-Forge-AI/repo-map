@@ -1,0 +1,41 @@
+.DS_Store
+.cache/
+.coverage
+.env
+.env.*
+.idea/
+.pytest_cache/
+.ruff_cache/
+.scratch/
+.serena/
+.venv/
+.vscode/
+__pycache__/
+build/
+coverage/
+dist/
+htmlcov/
+node_modules/
+reports/
+ci-system-report/
+.test-reports/
+test-hygiene.local.toml
+*.egg-info/
+*.py[cod]
+src/main/python/repomap_kg/_bin/
+
+# Local database and generated graph artifacts
+data/
+tmp/
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+
+# Claude harness state is local-only; keep the tracked skill projection
+# catalog (.claude/skills) trackable. Do not ignore .agents/skills.
+.claude/*
+!.claude/skills
+
+# Keep explicit examples and templates trackable.
+!.env.example

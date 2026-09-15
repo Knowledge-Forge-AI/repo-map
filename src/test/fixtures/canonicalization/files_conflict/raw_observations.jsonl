@@ -1,0 +1,2 @@
+{"confidence":"heuristic","extractor":"repo-discovery","extractor_version":"0.1.0","kind":"file","metadata":{"content_hash":"sha256:first","executable":false,"generated":false,"language":"python","role":"source"},"path":"src/app.py","schema_version":1,"source_id":"src/app.py:first"}
+{"confidence":"manual","extractor":"repo-discovery","extractor_version":"0.1.0","kind":"file","metadata":{"content_hash":"sha256:second","executable":false,"generated":false,"language":"python","role":"source"},"path":"src/app.py","schema_version":1,"source_id":"src/app.py:second"}

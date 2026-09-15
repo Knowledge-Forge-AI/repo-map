@@ -1,0 +1,3 @@
+--index-url https://user:fake-python-index-secret@packages.example.invalid/simple
+--extra-index-url https://fake-python-token@packages.example.invalid/extra
+secret-package @ https://user:fake-python-direct-secret@packages.example.invalid/secret-package.tar.gz

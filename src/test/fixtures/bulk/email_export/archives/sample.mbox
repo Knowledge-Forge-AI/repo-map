@@ -1,0 +1,31 @@
+From alice@example.invalid Tue Jun 30 12:00:00 2026
+From: Alice Example <alice@example.invalid>
+To: Bob Example <bob@example.invalid>
+Message-ID: <bulk-mbox-1@example.invalid>
+Subject: Fixture mailbox token marker
+Date: Tue, 30 Jun 2026 12:00:00 +0000
+Content-Type: text/plain; charset=utf-8
+
+Mailbox body contains fake-mailbox-secret-value.
+
+From bob@example.invalid Tue Jun 30 12:10:00 2026
+From: Bob Example <bob@example.invalid>
+To: Alice Example <alice@example.invalid>
+Message-ID: <bulk-mbox-2@example.invalid>
+In-Reply-To: <bulk-mbox-1@example.invalid>
+References: <bulk-mbox-1@example.invalid>
+Subject: Re: Fixture mailbox token marker
+Date: Tue, 30 Jun 2026 12:10:00 +0000
+Content-Type: multipart/mixed; boundary="bulk-boundary"
+
+--bulk-boundary
+Content-Type: text/plain; charset=utf-8
+
+Mailbox reply body is private fixture text.
+
+--bulk-boundary
+Content-Type: text/plain; name="fixture-note.txt"
+Content-Disposition: attachment; filename="fixture-note.txt"
+
+Attachment body must remain absent from graph metadata.
+--bulk-boundary--

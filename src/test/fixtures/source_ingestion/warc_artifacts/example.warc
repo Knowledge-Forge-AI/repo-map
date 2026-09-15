@@ -1,0 +1,94 @@
+WARC/1.1
+WARC-Type: warcinfo
+WARC-Record-ID: <urn:uuid:warcinfo>
+WARC-Date: 2026-06-30T12:00:00Z
+Content-Type: application/warc-fields
+Content-Length: 26
+
+software: RepoMap fixture
+
+
+WARC/1.1
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:html-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://user:fixture-secret@example.invalid/page.html?token=fixture-secret&ok=1
+Content-Type: application/http; msgtype=response
+Content-Length: 224
+
+HTTP/1.1 200 OK
+Set-Cookie: session=fixture-secret
+Content-Type: text/html
+Content-Length: 100
+
+<html><head><title>Archived</title><link rel="stylesheet" href="style.css"></head><body><h1 id="top">Archived</h1></body></html>
+
+WARC/1.1
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:css-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://example.invalid/style.css
+Content-Type: text/css
+Content-Length: 27
+
+.archived { color: #fff; }
+
+
+WARC/1.1
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:json-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://example.invalid/config.json
+Content-Type: application/json
+Content-Length: 62
+
+{"command":"python3","credentials":{"token":"fixture-secret"}}
+
+WARC/1.1
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:js-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://example.invalid/assets/app.js
+Content-Type: application/http; msgtype=response
+Content-Length: 188
+
+HTTP/1.1 200 OK
+Content-Type: text/javascript
+Content-Length: 121
+
+export function archivedReport() { return 'ok'; }
+const apiToken = 'fixture-secret';
+//# sourceMappingURL=payload.js.map
+
+WARC/1.1
+WARC-Type: request
+WARC-Record-ID: <urn:uuid:request-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://example.invalid/page.html
+Content-Type: application/http; msgtype=request
+Content-Length: 87
+
+GET /page.html HTTP/1.1
+Authorization: Bearer fixture-secret
+Cookie: a=fixture-secret
+
+
+WARC/1.1
+WARC-Type: revisit
+WARC-Record-ID: <urn:uuid:revisit-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://example.invalid/page.html
+Content-Type: application/warc-fields
+Content-Length: 0
+WARC-Refers-To: <urn:uuid:html-1>
+
+
+WARC/1.1
+WARC-Type: metadata
+WARC-Record-ID: <urn:uuid:html-1>
+WARC-Date: 2026-06-30T12:00:00Z
+WARC-Target-URI: https://example.invalid/page.html
+Content-Type: text/plain
+Content-Length: 22
+
+duplicate id metadata

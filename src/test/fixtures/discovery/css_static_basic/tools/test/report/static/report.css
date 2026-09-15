@@ -1,0 +1,60 @@
+@import url("./reset.css");
+
+:root {
+  color-scheme: dark;
+  --surface: #111a24;
+  --status-pass: #6df0a4;
+  --api-token: "fixture-secret-token";
+}
+
+body {
+  margin: 0;
+  background-image: url("../../assets/panel.svg");
+  color: var(--status-pass);
+}
+
+.report-header,
+.report-badges,
+.tree-grid,
+.test-grid,
+.path-cell,
+.metric-cell,
+.status-cell,
+.row,
+.status-badge[data-status="pass"]:hover::before,
+#summary {
+  overflow-wrap: anywhere;
+  background-image: url(data:image/svg+xml;base64,PHNlY3JldD4=);
+}
+
+main[role="main"] > .tree-grid .row + .row {
+  border-top: 1px solid var(--surface);
+}
+
+@media (max-width: 720px) {
+  .tree-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@supports (overflow-wrap: anywhere) {
+  .path-cell { overflow-wrap: anywhere; }
+}
+
+@font-face {
+  font-family: "Report Mono";
+  src: url("/Library/Fonts/report.woff2") format("woff2");
+}
+
+.external-hero {
+  background-image: url("https://example.com/assets/report.png");
+}
+
+.escaping {
+  background-image: url("../../../../../outside.svg");
+}
+
+.dynamic {
+  background-image: url(var(--asset-url));
+}
+
+.broken {
+  color: red;

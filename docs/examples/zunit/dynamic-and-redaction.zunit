@@ -1,0 +1,20 @@
+# Static extraction example only. Do not execute.
+
+computed_helper="./helpers/${EXAMPLE_HELPER}.zsh"
+source "$computed_helper"
+
+secret_token="FAKE_ZUNIT_TOKEN_VALUE"
+expected_output="FAKE_ZUNIT_OUTPUT_TOKEN"
+
+for case_name in alpha beta; do
+  test "generated ${case_name}" {
+    run "$DYNAMIC_COMMAND" --token "$secret_token"
+    assert_output "$expected_output"
+  }
+done
+
+test "$DYNAMIC_TEST_NAME" {
+  eval "$DYNAMIC_ZUNIT_BODY"
+  run "${COMMAND_ARRAY[@]}"
+  assert_success
+}

@@ -1,0 +1,65 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [],
+  "edges": [],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:README.md:0-0:repo-discovery:README.md",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "sha256:abc123",
+        "executable": false,
+        "generated": false,
+        "language": "markdown",
+        "role": "documentation"
+      },
+      "path": "README.md",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "README.md",
+      "start_line": null
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:README.md",
+      "evidence_key": "evidence:0:README.md:0-0:repo-discovery:README.md",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:README.md",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "README.md",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "sha256:abc123",
+        "executable": false,
+        "generated": false,
+        "language": "markdown",
+        "role": "documentation"
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 0,
+    "edges": 0,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 1,
+    "nodes": 1,
+    "raw_observations": 1,
+    "warnings": 0
+  }
+}

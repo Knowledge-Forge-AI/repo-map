@@ -1,0 +1,24 @@
+.status-badge,
+#welcome,
+#heading,
+a,
+a.external,
+.status-badge.status-passed,
+.report-header .status-badge,
+.path-cell,
+.metric-cell,
+.status-cell,
+.row {
+  color: #f8fafc;
+}
+
+.tree-grid {
+  background-image: url("../assets/panel.svg");
+}
+
+.a > .b,
+.status-badge:hover,
+#dup,
+[data-view="tree"] {
+  color: red;
+}

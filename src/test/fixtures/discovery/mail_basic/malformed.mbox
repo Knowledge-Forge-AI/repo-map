@@ -1,0 +1,7 @@
+Message-ID: <malformed-mbox@example.invalid>
+Date: Tue, 30 Jun 2026 12:00:00 +0000
+From: Example Sender <alice@example.invalid>
+To: Example Receiver <bob@example.invalid>
+Subject: Malformed mailbox
+
+This file is intentionally missing mbox From separators.

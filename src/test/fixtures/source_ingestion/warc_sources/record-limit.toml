@@ -1,0 +1,19 @@
+[source]
+id = "example-record-limited-warc-archive"
+type = "saved_page.archive"
+display_name = "Example Record Limited WARC Archive"
+
+[policy]
+status = "allowed"
+max_artifact_bytes = 1048576
+max_file_count = 10
+max_warc_records = 2
+max_record_bytes = 1048576
+max_total_payload_bytes = 1048576
+retention_policy = "materialize-safe-payloads"
+requires_manual_review = false
+
+[artifact]
+path = "warc_artifacts/example.warc"
+kind = "warc"
+profile = "warc-local-archive"

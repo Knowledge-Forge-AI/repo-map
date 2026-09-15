@@ -1,0 +1,107 @@
+{
+  "diagnostics": [
+    {
+      "category": "repo_escaping_path",
+      "field": "metadata.resolved_path",
+      "message": "file path must not escape the repository",
+      "path": "scripts/build.sh",
+      "placeholder_key": "unknown:file:repo-escaping-source",
+      "raw_observation_ordinal": 0,
+      "raw_source_id": "scripts/build.sh#source:5:escape",
+      "severity": "warning",
+      "value": "../secret.sh"
+    }
+  ],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:ce7efa836bbc811cf92b6bb824b150f380c54a59ca2ba3bfd47af7f26910fa45",
+      "evidence_key": "evidence:0:scripts/build.sh:5-5:repo-shell:scripts/build.sh#source:5:escape",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:ce7efa836bbc811cf92b6bb824b150f380c54a59ca2ba3bfd47af7f26910fa45",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "sources",
+      "metadata": {
+        "resolved_paths": [
+          "../secret.sh"
+        ],
+        "sources": [
+          "../secret.sh"
+        ]
+      },
+      "source_key": "file:scripts/build.sh",
+      "target_key": "unknown:file:repo-escaping-source"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 5,
+      "evidence_key": "evidence:0:scripts/build.sh:5-5:repo-shell:scripts/build.sh#source:5:escape",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "resolved_path": "../secret.sh",
+        "source": "../secret.sh"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.source",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#source:5:escape",
+      "start_line": 5
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:5-5:repo-shell:scripts/build.sh#source:5:escape",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "unknown:file:repo-escaping-source",
+      "evidence_key": "evidence:0:scripts/build.sh:5-5:repo-shell:scripts/build.sh#source:5:escape",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "scripts/build.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "unknown:file:repo-escaping-source",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "repo-escaping-source",
+      "graph_key_version": 1,
+      "kind": "unknown",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 1
+  }
+}

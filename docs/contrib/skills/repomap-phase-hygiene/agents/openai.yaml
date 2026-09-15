@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap Phase Hygiene"
+  short_description: "Plan and close RepoMap phases with audit hygiene"
+  default_prompt: "Use $repomap-phase-hygiene to plan and close a RepoMap phase cleanly."

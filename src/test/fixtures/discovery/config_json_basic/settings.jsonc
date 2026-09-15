@@ -1,0 +1,8 @@
+{
+  // conservative JSONC comments are stripped
+  "program": "repomap-kg",
+  "docs_url": "mailto:dev@example.com",
+  "paths": [
+    "mcp/repo-map/config.json",
+  ],
+}

@@ -1,0 +1,15 @@
+services:
+  app:
+    image: example/app:latest
+    build:
+      context: ./app
+    env_file: .env
+    environment:
+      API_TOKEN: fake-compose-token
+networks:
+  default: {}
+volumes:
+  data: {}
+secrets:
+  app_password:
+    file: ./secrets/app-password.txt

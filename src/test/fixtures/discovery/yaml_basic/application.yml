@@ -1,0 +1,6 @@
+spring:
+  config:
+    import: optional:file:./extra.yml
+  datasource:
+    jdbc_url: jdbc:postgresql://db.example.invalid/app
+    password: fake-spring-password

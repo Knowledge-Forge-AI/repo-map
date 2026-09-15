@@ -1,0 +1,4 @@
+interface:
+  display_name: "RepoMap Testing Standards"
+  short_description: "Choose and run RepoMap verification gates"
+  default_prompt: "Use $repo-map-testing-standards to select the correct RepoMap verification gate."

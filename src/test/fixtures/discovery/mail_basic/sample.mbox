@@ -1,0 +1,31 @@
+From MAILER-DAEMON Tue Jun 30 12:00:00 2026
+Message-ID: <sample-mbox-one@example.invalid>
+Date: Tue, 30 Jun 2026 12:00:00 +0000
+From: Example Sender <alice@example.invalid>
+To: Example Receiver <bob@example.invalid>
+Subject: Sample MBOX private subject
+List-Unsubscribe: <https://example.invalid/unsubscribe?token=fake-mail-token>
+Content-Type: text/plain; charset=utf-8
+
+Sample MBOX body text must not appear in observations.
+From MAILER-DAEMON Tue Jun 30 12:05:00 2026
+Message-ID: <sample-mbox-two@example.invalid>
+Date: Tue, 30 Jun 2026 12:05:00 +0000
+From: Example Receiver <bob@example.invalid>
+To: Example Sender <alice@example.invalid>
+Subject: Re: Sample MBOX private subject
+In-Reply-To: <sample-mbox-one@example.invalid>
+References: <sample-mbox-one@example.invalid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="sample-mbox-boundary"
+
+--sample-mbox-boundary
+Content-Type: text/plain; charset=utf-8
+
+Sample MBOX reply body must not appear in observations.
+--sample-mbox-boundary
+Content-Type: text/plain
+Content-Disposition: attachment; filename="sample-mbox-secret-note.txt"
+
+Sample MBOX attachment body must not appear in observations.
+--sample-mbox-boundary--

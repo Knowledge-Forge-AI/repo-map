@@ -1,0 +1,4 @@
+From: malformed@example.invalid
+Subject: no message identity
+
+Malformed fixture body must not appear.

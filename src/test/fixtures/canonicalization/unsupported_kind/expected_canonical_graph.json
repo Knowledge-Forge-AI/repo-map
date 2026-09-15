@@ -1,0 +1,34 @@
+{
+  "diagnostics": [
+    {
+      "category": "unsupported_raw_observation_kind",
+      "field": "kind",
+      "message": "raw observation kind is not supported: future.language",
+      "path": "src/main/python/repomap_kg/cli.py",
+      "placeholder_key": null,
+      "raw_observation_ordinal": 0,
+      "raw_source_id": "src/main/python/repomap_kg/cli.py#future:1",
+      "severity": "warning",
+      "value": "future.language"
+    }
+  ],
+  "edge_evidence_links": [],
+  "edges": [],
+  "evidence": [],
+  "graph_key_version": 1,
+  "node_evidence_links": [],
+  "nodes": [],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 0,
+    "edges": 0,
+    "errors": 0,
+    "evidence": 0,
+    "infos": 0,
+    "node_evidence_links": 0,
+    "nodes": 0,
+    "raw_observations": 1,
+    "warnings": 1
+  }
+}

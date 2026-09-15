@@ -1,0 +1,5 @@
+image:
+  repository: example/app
+  tag: 1.0
+config:
+  path: ./values-extra.yml

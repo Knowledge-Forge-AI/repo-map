@@ -1,0 +1,17 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      API_TOKEN: fake-actions-token
+    steps:
+      - id: checkout
+        uses: actions/checkout@v4
+      - name: Local action
+        uses: ./.github/actions/local-action
+      - name: Run tests
+        run: python3 tools/run_tests.py --suite unit

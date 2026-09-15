@@ -1,0 +1,93 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:fcbb7e7e54fededa74d127a2bccc0d3a73b6979d6c2ac1ad97079017490dbb81",
+      "evidence_key": "evidence:0:scripts/build.sh:8-8:repo-shell:scripts/build.sh#env-read:8:path",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:fcbb7e7e54fededa74d127a2bccc0d3a73b6979d6c2ac1ad97079017490dbb81",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "reads_env",
+      "metadata": {
+        "operations": [
+          "read"
+        ]
+      },
+      "source_key": "file:scripts/build.sh",
+      "target_key": "env:PATH"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 8,
+      "evidence_key": "evidence:0:scripts/build.sh:8-8:repo-shell:scripts/build.sh#env-read:8:path",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "operation": "read",
+        "raw": "echo \"$PATH\"",
+        "variable": "PATH"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.env",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#env-read:8:path",
+      "start_line": 8
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "env:PATH",
+      "evidence_key": "evidence:0:scripts/build.sh:8-8:repo-shell:scripts/build.sh#env-read:8:path",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:8-8:repo-shell:scripts/build.sh#env-read:8:path",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "env:PATH",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "PATH",
+      "graph_key_version": 1,
+      "kind": "env",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "scripts/build.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 0
+  }
+}

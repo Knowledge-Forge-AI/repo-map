@@ -1,0 +1,10 @@
+pipeline:
+  identifier: build
+  projectIdentifier: demo
+  stages:
+    - stage:
+        identifier: test
+        template:
+          templateRef: account.example_template
+        connectorRef: account.example_connector
+        secretRef: account.example_secret

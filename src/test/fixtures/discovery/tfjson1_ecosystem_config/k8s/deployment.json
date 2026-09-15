@@ -1,0 +1,20 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "app",
+    "namespace": "default"
+  },
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "name": "app",
+            "image": "example/app:1.0"
+          }
+        ]
+      }
+    }
+  }
+}

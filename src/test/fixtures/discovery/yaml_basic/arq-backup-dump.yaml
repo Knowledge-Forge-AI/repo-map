@@ -1,0 +1,5 @@
+arq:
+  destination: example-backup
+  schedule: nightly
+  arq_encryption_key: fake-arq-encryption-key
+  destination_path: ./backups/example

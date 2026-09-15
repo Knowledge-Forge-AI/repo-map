@@ -1,0 +1,40 @@
+[source]
+source_id = "fixture-missing-consent-api"
+source_type = "api.rest"
+api_source_class = "api.custom_documented_api"
+provider_name = "Fixture Provider"
+provider_product = "Fixture API"
+policy_status = "allowed_with_limits"
+read_only = true
+mutation_allowed = false
+
+[credentials]
+credentials_ref = "local_secret_ref:fixture-api-token"
+
+[limits]
+max_requests_per_run = 10
+max_requests_per_minute = 10
+max_concurrent_requests = 1
+max_bytes_per_run = 1048576
+max_items_per_run = 100
+max_retries = 0
+
+[retention]
+policy = "local_user_controlled"
+raw_response_retention = "minimized"
+redacted_response_retention = "retain"
+
+[redaction]
+profile = "strict"
+sensitivity = "private"
+
+[[endpoints]]
+name = "items"
+method = "GET"
+path = "/v1/items"
+purpose = "Export fixture item metadata"
+response_type = "application/json"
+max_page_size = 100
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/items.json"

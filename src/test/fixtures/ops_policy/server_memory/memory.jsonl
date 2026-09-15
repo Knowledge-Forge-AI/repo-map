@@ -1,0 +1,4 @@
+{"type":"entity","name":"Memory Boundary Policy","entityType":"policy","observations":["Durable memory boundary rules belong in AGENTS.md.","Use server-memory as a card catalog for policy pointers."]}
+{"type":"entity","name":"Private Local Preference","entityType":"local-config","observations":["Machine-specific path /path/to/codex-vc stays private.","token=mcp-ops6-fake-token"]}
+{"type":"entity","name":"Ephemeral Task Note","entityType":"task","observations":["Temporary task notes stay in session notes or bounded server-memory cards."]}
+{"source":"Memory Boundary Policy","target":"RepoMap Graph Evidence","relationType":"is informed by"}

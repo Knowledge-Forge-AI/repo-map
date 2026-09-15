@@ -1,0 +1,31 @@
+# Static extraction example only. Do not execute.
+
+# test "commented test" {
+#   run rm -rf ./out
+#   assert_success
+# }
+
+example_string='test "string test" { run curl https://example.invalid }'
+another_string="assert_output FAKE_ZUNIT_OUTPUT_TOKEN"
+
+example_array=(
+  'test "array test" { run ./bin/example }'
+  'mock_command rm -rf ./out'
+  'stub_command curl https://example.invalid'
+)
+
+cat <<'ZUNIT_EXAMPLE'
+test "heredoc test" {
+  run ./bin/example
+  assert_success
+}
+ZUNIT_EXAMPLE
+
+case "$1" in
+  assert_success)
+    print -r -- "case label, not an assertion"
+    ;;
+  mock_command)
+    print -r -- "case label, not a mock declaration"
+    ;;
+esac

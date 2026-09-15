@@ -1,0 +1,4 @@
+#compdef mytool
+# Static extraction fixture only. Do not execute.
+
+_arguments '1:command:->cmds' '*::arg:->args'

@@ -1,0 +1,13 @@
+# Static extraction fixture only. Do not execute.
+
+describe "example tool"
+
+test "reports version" {
+  run ./bin/example --version
+  assert_success
+}
+
+test "handles missing input" {
+  run ./bin/example --input ./fixtures/missing.txt
+  assert_failure
+}

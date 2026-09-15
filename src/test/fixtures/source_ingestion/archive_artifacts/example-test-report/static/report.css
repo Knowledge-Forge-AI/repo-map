@@ -1,0 +1,11 @@
+.report-header {
+  color: #f8fafc;
+}
+
+.status-badge.status-passed {
+  background: #16a34a;
+}
+
+.tree-grid {
+  background-image: url("../assets/logo.svg");
+}

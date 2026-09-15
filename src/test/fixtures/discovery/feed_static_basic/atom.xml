@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>RepoMap Atom Fixture</title>
+  <id>urn:repomap:atom-fixture</id>
+  <updated>2026-06-30T12:00:00Z</updated>
+  <link rel="self" href="https://example.com/repomap/atom.xml" />
+  <entry>
+    <id>urn:repomap:atom:item:1</id>
+    <title>Atom ID Item</title>
+    <updated>2026-06-30T12:30:00Z</updated>
+    <link rel="alternate" href="https://example.com/repomap/atom/1" />
+    <author>
+      <name>Atom Writer</name>
+      <email>atom-writer@example.com</email>
+    </author>
+    <category term="atom-category" />
+    <summary>Atom fixture summary.</summary>
+  </entry>
+  <entry>
+    <title>Atom Link Fallback</title>
+    <updated>2026-06-30T13:00:00Z</updated>
+    <link rel="alternate" href="articles/atom-link-fallback.html" />
+  </entry>
+</feed>

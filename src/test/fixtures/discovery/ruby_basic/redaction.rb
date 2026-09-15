@@ -1,0 +1,4 @@
+module Example
+  API_KEY = ENV.fetch("EXAMPLE_API_KEY")
+  SESSION_SECRET = ENV.fetch("EXAMPLE_SESSION_SECRET")
+end

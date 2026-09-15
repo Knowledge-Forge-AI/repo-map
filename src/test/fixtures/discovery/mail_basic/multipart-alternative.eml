@@ -1,0 +1,17 @@
+Message-ID: <multipart-message@example.invalid>
+Date: Tue, 30 Jun 2026 13:30:00 +0000
+From: Multipart Sender <alice@example.invalid>
+To: Multipart Receiver <bob@example.invalid>
+Subject: Multipart fixture
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="alt-boundary"
+
+--alt-boundary
+Content-Type: text/plain; charset=utf-8
+
+Plain alternative body must not appear.
+--alt-boundary
+Content-Type: text/html; charset=utf-8
+
+<html><body><img src="https://example.invalid/pixel?token=fake-pixel-token">HTML body must not appear.</body></html>
+--alt-boundary--

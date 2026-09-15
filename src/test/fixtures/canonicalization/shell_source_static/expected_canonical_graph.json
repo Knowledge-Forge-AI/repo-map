@@ -1,0 +1,96 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:6d361e5d9c90f298dbafcdbec0df769032790b602330c345c1ac3e9d0dfcd2c0",
+      "evidence_key": "evidence:0:scripts/build.sh:3-3:repo-shell:scripts/build.sh#source:3:lib/common.sh",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:6d361e5d9c90f298dbafcdbec0df769032790b602330c345c1ac3e9d0dfcd2c0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "sources",
+      "metadata": {
+        "resolved_paths": [
+          "lib/common.sh"
+        ],
+        "sources": [
+          "../lib/common.sh"
+        ]
+      },
+      "source_key": "file:scripts/build.sh",
+      "target_key": "file:lib/common.sh"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 3,
+      "evidence_key": "evidence:0:scripts/build.sh:3-3:repo-shell:scripts/build.sh#source:3:lib/common.sh",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "raw": "source ../lib/common.sh",
+        "resolved_path": "lib/common.sh",
+        "source": "../lib/common.sh"
+      },
+      "path": "scripts/build.sh",
+      "raw_kind": "shell.source",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "scripts/build.sh#source:3:lib/common.sh",
+      "start_line": 3
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:lib/common.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:3-3:repo-shell:scripts/build.sh#source:3:lib/common.sh",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "evidence_key": "evidence:0:scripts/build.sh:3-3:repo-shell:scripts/build.sh#source:3:lib/common.sh",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:lib/common.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "lib/common.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:scripts/build.sh",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "scripts/build.sh",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 0
+  }
+}

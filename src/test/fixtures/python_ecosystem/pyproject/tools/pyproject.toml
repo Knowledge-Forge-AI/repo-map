@@ -1,0 +1,19 @@
+[project]
+name = "fixture-tools"
+version = "0.2.0"
+dynamic = ["description"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.ruff]
+line-length = 88
+
+[tool.black]
+line-length = 88
+
+[tool.uv]
+package = false

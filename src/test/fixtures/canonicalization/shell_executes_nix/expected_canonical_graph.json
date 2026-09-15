@@ -1,0 +1,104 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:980cb50113620e41b91ceb9ce210655ac0e2b8710a96491fe176a310dad10f6f",
+      "evidence_key": "evidence:0:bin/tool:12-12:repo-shell:bin/tool#call:12:nix-build",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:980cb50113620e41b91ceb9ce210655ac0e2b8710a96491fe176a310dad10f6f",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "executes",
+      "metadata": {
+        "argv_examples": [
+          [
+            "nix",
+            "build",
+            ".#checks"
+          ]
+        ],
+        "commands": [
+          "nix"
+        ]
+      },
+      "source_key": "file:bin/tool",
+      "target_key": "tool:nix"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "heuristic",
+      "end_line": 12,
+      "evidence_key": "evidence:0:bin/tool:12-12:repo-shell:bin/tool#call:12:nix-build",
+      "extractor": "repo-shell",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "argv": [
+          "nix",
+          "build",
+          ".#checks"
+        ],
+        "command": "nix",
+        "raw": "nix build .#checks"
+      },
+      "path": "bin/tool",
+      "raw_kind": "shell.command",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "bin/tool#call:12:nix-build",
+      "start_line": 12
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:bin/tool",
+      "evidence_key": "evidence:0:bin/tool:12-12:repo-shell:bin/tool#call:12:nix-build",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "tool:nix",
+      "evidence_key": "evidence:0:bin/tool:12-12:repo-shell:bin/tool#call:12:nix-build",
+      "link_kind": "inferred_from_edge"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:bin/tool",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "bin/tool",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "tool:nix",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "nix",
+      "graph_key_version": 1,
+      "kind": "tool",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 1,
+    "edges": 1,
+    "errors": 0,
+    "evidence": 1,
+    "infos": 0,
+    "node_evidence_links": 2,
+    "nodes": 2,
+    "raw_observations": 1,
+    "warnings": 0
+  }
+}

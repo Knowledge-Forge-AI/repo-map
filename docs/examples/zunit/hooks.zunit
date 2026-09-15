@@ -1,0 +1,23 @@
+# Static extraction example only. Do not execute.
+
+setup() {
+  export EXAMPLE_MODE="fixture"
+  mkdir -p "$ZUNIT_TMPDIR/example"
+}
+
+teardown() {
+  rm -rf "$ZUNIT_TMPDIR/example"
+}
+
+before_each() {
+  print -r -- "preparing fixture"
+}
+
+after_each() {
+  print -r -- "cleaning fixture"
+}
+
+test "uses hook-prepared state" {
+  run ./bin/example --state "$ZUNIT_TMPDIR/example/state.json"
+  assert_success
+}

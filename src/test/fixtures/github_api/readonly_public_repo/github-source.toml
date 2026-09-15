@@ -1,0 +1,99 @@
+[source]
+source_id = "github-public-fixture"
+source_type = "api.rest"
+api_source_class = "api.github.repository"
+provider_name = "GitHub"
+provider_product = "GitHub REST API"
+policy_status = "allowed_with_limits"
+owner = "fixture-owner"
+repository = "fixture-repo"
+repository_visibility = "public"
+read_only = true
+mutation_allowed = false
+credential_mode = "none_public_readonly"
+
+[consent]
+consent_ref = "local_consent_ref:github-public-fixture-2026-07"
+authorized_operations = ["read"]
+authorized_data_classes = [
+  "repository_metadata",
+  "issues",
+  "pull_requests",
+  "releases",
+  "actions",
+]
+revoked = false
+mutation_allowed = false
+
+[limits]
+max_requests_per_run = 20
+max_requests_per_minute = 10
+max_pages_per_endpoint = 1
+max_items_per_endpoint = 100
+max_bytes_per_run = 10485760
+max_concurrent_requests = 1
+max_retries = 0
+
+[retention]
+policy = "local_user_controlled"
+raw_response_retention = "minimized"
+redacted_response_retention = "retain"
+
+[redaction]
+profile = "strict"
+sensitivity = "public_metadata"
+
+[[endpoints]]
+name = "repository"
+method = "GET"
+path = "/repos/{owner}/{repo}"
+purpose = "Export repository metadata"
+response_type = "application/json"
+max_page_size = 1
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/repository.json"
+
+[[endpoints]]
+name = "issues"
+method = "GET"
+path = "/repos/{owner}/{repo}/issues"
+purpose = "Export issue metadata"
+response_type = "application/json"
+max_page_size = 100
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/issues.json"
+
+[[endpoints]]
+name = "pulls"
+method = "GET"
+path = "/repos/{owner}/{repo}/pulls"
+purpose = "Export pull request metadata"
+response_type = "application/json"
+max_page_size = 100
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/pulls.json"
+
+[[endpoints]]
+name = "releases"
+method = "GET"
+path = "/repos/{owner}/{repo}/releases"
+purpose = "Export release metadata"
+response_type = "application/json"
+max_page_size = 100
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/releases.json"
+
+[[endpoints]]
+name = "actions_runs"
+method = "GET"
+path = "/repos/{owner}/{repo}/actions/runs"
+purpose = "Export workflow run metadata"
+response_type = "application/json"
+max_page_size = 100
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/actions-runs.json"

@@ -1,0 +1,11 @@
+Message-ID: <single-message@example.invalid>
+Date: Tue, 30 Jun 2026 12:34:56 +0000
+From: Example Sender <alice@example.invalid>
+To: Example Receiver <bob@example.invalid>
+Cc: Example Copy <copy@example.invalid>
+Reply-To: Replies <reply@example.invalid>
+Subject: Quarterly planning code
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+This fixture body must not appear in observations.

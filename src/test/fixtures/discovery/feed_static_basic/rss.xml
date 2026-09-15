@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>RepoMap RSS Fixture</title>
+    <link>https://example.com/repomap/</link>
+    <description>Local RSS fixture for RSS1.</description>
+    <item>
+      <guid isPermaLink="false">rss-guid-1</guid>
+      <title>RSS GUID Item</title>
+      <link>https://example.com/repomap/rss/1</link>
+      <pubDate>Tue, 30 Jun 2026 12:00:00 GMT</pubDate>
+      <author>rss-writer@example.com (RSS Writer)</author>
+      <category>Release Notes</category>
+      <description><![CDATA[<p>RSS fixture summary.</p>]]></description>
+      <enclosure url="media/rss-audio.mp3" type="audio/mpeg" length="1234" />
+    </item>
+    <item>
+      <title>RSS Link Fallback</title>
+      <link>articles/rss-link-fallback.html</link>
+      <pubDate>Tue, 30 Jun 2026 13:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>RSS Weak Fallback</title>
+      <pubDate>Tue, 30 Jun 2026 14:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <guid>rss-duplicate</guid>
+      <title>RSS Duplicate A</title>
+    </item>
+    <item>
+      <guid>rss-duplicate</guid>
+      <title>RSS Duplicate B</title>
+    </item>
+  </channel>
+</rss>

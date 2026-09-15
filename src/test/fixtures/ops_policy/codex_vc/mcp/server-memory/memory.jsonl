@@ -1,0 +1,1 @@
+{"type":"entity","name":"Excluded Runtime JSONL","observations":["This fake JSONL is excluded from folder-tree graph ingestion and handled through the server-memory bridge fixture."]}

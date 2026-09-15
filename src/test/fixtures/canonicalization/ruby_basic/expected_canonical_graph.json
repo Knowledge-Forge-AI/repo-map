@@ -1,0 +1,5057 @@
+{
+  "diagnostics": [],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:047c75310a5c8bfa4525fba706b7f57e7c140b4a4e1e5dd86ff7795a69e9e332",
+      "evidence_key": "evidence:66:redaction.rb:3-3:repo-ruby:redaction.rb#ruby.constant:SESSION_SECRET:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:0da134c1dddb058461714fbad0b349c885534b08f3880b2a35427198cb03dabe",
+      "evidence_key": "evidence:58:lib/example/service.rb:2-2:repo-ruby:lib/example/service.rb#ruby.class:Example::Service:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:0f45783df97d2694bad76b658774d1e88860d9bd01446a03095cd47f2ae18900",
+      "evidence_key": "evidence:77:test/example_test.rb:1-1:repo-ruby:test/example_test.rb#ruby-reference:require_relative:1:11",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1822225108a1d778b0d105c2f60bab01d9eba2d16e5a674dae1412a3a2d764dc",
+      "evidence_key": "evidence:41:example.gemspec:4-4:repo-ruby:example.gemspec#ruby-reference:gem_dependency:4:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:193a8b90432ddfc26e605d796fa7eca7e701ada5c1f8514b9fd601a5bc68c657",
+      "evidence_key": "evidence:60:lib/example/service.rb:5-5:repo-ruby:lib/example/service.rb#ruby.method:call:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1a726dbd4d81e4a56b01862a805d3ab556b9f8489fe59b9c178964357bbac3fe",
+      "evidence_key": "evidence:86:test/test_helper.rb:2-2:repo-ruby:test/test_helper.rb#ruby-reference:require_relative:2:14",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1de5bf21d7f0772dfefcb91964cc1d820d8f3442bfde3305d053250ce240d960",
+      "evidence_key": "evidence:61:redaction.rb:0-0:repo-ruby:redaction.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:1ed0ff74d3255f39936ef41c42b297f8658b3c4631176a3e330da53feef2dba7",
+      "evidence_key": "evidence:33:dynamic.rb:0-0:repo-ruby:dynamic.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:200406bbcf46d3a2e42e2a6c10dee04da54c7694693d87e886d65c1270b1936d",
+      "evidence_key": "evidence:84:test/test_helper.rb:1-1:repo-ruby:test/test_helper.rb#ruby-reference:require:1:16",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:2359578429810006a2e7be8a504a2bb868da89a9ad8c45df8e2822771222a858",
+      "evidence_key": "evidence:64:redaction.rb:2-2:repo-ruby:redaction.rb#ruby.constant:API_KEY:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:29596721bc29c2a0e3e981cd9f9f087c1c90c1d9ca8c8cbcb541bf2b83eb92f8",
+      "evidence_key": "evidence:72:sinatra_app.rb:5-5:repo-ruby:sinatra_app.rb#ruby-reference:template:5:6",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:2ab42f47b705d57453e07f3d8d0064aaa1e580eadb907b0ab13fecb6b0aceedb",
+      "evidence_key": "evidence:79:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.test_case:ExampleTest:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:333950749095fa3dfd48ffcc800eb7c7e244e01fc83bc4c842b37cc34b86d703",
+      "evidence_key": "evidence:59:lib/example/service.rb:3-3:repo-ruby:lib/example/service.rb#ruby.constant:DEFAULT_URL:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:33e3d1adae98acc32631b651a6c7e08e583cbee769e07926a9ba04572ef068e6",
+      "evidence_key": "evidence:3:Gemfile:3-3:repo-ruby:Gemfile#ruby-reference:gem_dependency:3:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3607a9f3febf8b48e7f287668efdcf9e71caa643df845cde4637a5c9d4584fd0",
+      "evidence_key": "evidence:20:app/actions/home/index.rb:2-2:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:3d0e912580f7710cffce61da7350ab7a7eb2bfbcda6d64ade974131078214c5d",
+      "evidence_key": "evidence:71:sinatra_app.rb:4-4:repo-ruby:sinatra_app.rb#ruby.route:get /health:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:4bd675b100ebbfed2baa48c0bc255b55e8cdee29e03fd946a1d0f445dedc1f16",
+      "evidence_key": "evidence:82:test/test_helper.rb:0-0:repo-ruby:test/test_helper.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:4f48366d0bc5e2224c10fdeb8231ab492db95df71dd2af7962600453e6f31a71",
+      "evidence_key": "evidence:12:Vagrantfile:2-2:repo-ruby:Vagrantfile#ruby-reference:vagrant_box:2:14",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:50c346c0896cc3fc26d3abfd5c678022dc5e65cd19883d9402f0d96942e69486",
+      "evidence_key": "evidence:39:example.gemspec:0-0:repo-ruby:example.gemspec#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:534419cc5560473373656402d10f7b2659cfa92cb0b936a9ce0102fd0c50c535",
+      "evidence_key": "evidence:30:config/routes.rb:1-1:repo-ruby:config/routes.rb#ruby.module:Example:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:56f3a4a9ce9e7daa798347ae9558e62628e578796c4336c05b6c0f0b14f89f25",
+      "evidence_key": "evidence:43:example.gemspec:5-5:repo-ruby:example.gemspec#ruby-reference:gem_dependency:5:8",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:5ff55568e9eea3c27c3f81ae24da8fa5a663300f33a9125567cb3a0398b11ba4",
+      "evidence_key": "evidence:81:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.test_method:test_call:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:638b39eb18ed93679889da506be6687a2e1f695e7b516cb7e6204b6eb18c8ab1",
+      "evidence_key": "evidence:18:app/actions/home/index.rb:0-0:repo-ruby:app/actions/home/index.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:69c01b53ed56197dc1ea645726a0e82a87a09f6bcdb4d64fddddb54f8f193bc9",
+      "evidence_key": "evidence:29:config/routes.rb:0-0:repo-ruby:config/routes.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:6c923c514bdb1a3e3434d4b118044cfddfe9dede9297f556a1409ae8f718a21d",
+      "evidence_key": "evidence:16:Vagrantfile:5-5:repo-ruby:Vagrantfile#ruby-reference:vagrant_synced_folder:5:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:75cdd604b6432711290e863c6ff8efae3ee80f9703cd5d378d11641231cee194",
+      "evidence_key": "evidence:74:sinatra_app.rb:9-9:repo-ruby:sinatra_app.rb#ruby-reference:template:9:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7aa9aad1c5f1f40a1f2ca3abea4e695a79f31908d4c471778bca8409b473a7ec",
+      "evidence_key": "evidence:80:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.method:test_call:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:7fe82caa3af206213266daeabe44224eb53a2b294c198458e53e9c3c237e67fa",
+      "evidence_key": "evidence:32:config/routes.rb:3-3:repo-ruby:config/routes.rb#ruby.route:get /home:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:818924f83cd5976af3b423146d216f3f9fb4da536da05cdb7a98cc144a578e64",
+      "evidence_key": "evidence:57:lib/example/service.rb:1-1:repo-ruby:lib/example/service.rb#ruby.module:Example:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:818e717ea228cea6023cb52877192866ad9ace561db6686a0c828b72d5b0e2a3",
+      "evidence_key": "evidence:73:sinatra_app.rb:8-8:repo-ruby:sinatra_app.rb#ruby.route:post /items:8",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:8501431e73c7a361e92e602905487365b8f95645ca644fde09a3cb2c7f57ecc6",
+      "evidence_key": "evidence:31:config/routes.rb:2-2:repo-ruby:config/routes.rb#ruby.class:Example::App:2",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:85d4d711b82c751be3f42d8c65efa150e2284fffbdc13c5b21ce35eb518198ad",
+      "evidence_key": "evidence:26:config/app.rb:1-1:repo-ruby:config/app.rb#ruby-reference:require:1:6",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:91081de404ae5b62d427ebef2d15bfcb2577cc4572fa3a7d6601741c1ad2f5dc",
+      "evidence_key": "evidence:55:lib/example.rb:15-15:repo-ruby:lib/example.rb#ruby.singleton_method:build:15",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:941798155953a67b4d5a178a11b83e423bf8b4335e0a3b8cdcb03400fc743d88",
+      "evidence_key": "evidence:78:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.class:ExampleTest:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:9675f0b86ed80f41228364d3be955d93771323a5439346aa7ac09f0b35961e94",
+      "evidence_key": "evidence:67:sinatra_app.rb:0-0:repo-ruby:sinatra_app.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:96afc1bb40678efad5e4df07cb22d6e266398c0cc7444f74c208eb9c34fde018",
+      "evidence_key": "evidence:62:redaction.rb:1-1:repo-ruby:redaction.rb#ruby.module:Example:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a21e38fe7eea09292570c237e7eb9a373886e55b40e5d73a2615f7c351c191f6",
+      "evidence_key": "evidence:28:config/app.rb:4-4:repo-ruby:config/app.rb#ruby.class:Example::App:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a289d03f7a251e195499bb3fc7147e67104c21d523073a0c3713581d1f54952c",
+      "evidence_key": "evidence:34:dynamic.rb:1-1:repo-ruby:dynamic.rb#ruby.module:Example:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:a4adef5f3ca12ea2061f47c550b1529cd904ecd25e314680c09a2513b49d1b96",
+      "evidence_key": "evidence:23:app/actions/home/index.rb:5-5:repo-ruby:app/actions/home/index.rb#ruby.method:handle:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ad01884e50b4135e9114b8d01bb5ee55ac669937b8d5a56bc0c5bd724200e3ad",
+      "evidence_key": "evidence:24:config/app.rb:0-0:repo-ruby:config/app.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ad80974d450525b4fdbaaae7cce8a1a4516195f4da562b179c432de94fe000d3",
+      "evidence_key": "evidence:69:sinatra_app.rb:1-1:repo-ruby:sinatra_app.rb#ruby-reference:require:1:12",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b301e18517342b7765c7cee849b517953c2c8df9c9eb7f0dde8256f5de3addfb",
+      "evidence_key": "evidence:10:Vagrantfile:0-0:repo-ruby:Vagrantfile#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b545a29b0ae26d3f4115f5825bfa2dec719e1ff6f3bd34239fe9b25903af7f4c",
+      "evidence_key": "evidence:50:lib/example.rb:5-5:repo-ruby:lib/example.rb#ruby.constant:VERSION:5",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ba85e72c2abe2f5f5a1b9b72cf74297f45911595830c5bbea8b95ac0781f37b1",
+      "evidence_key": "evidence:21:app/actions/home/index.rb:3-3:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions::Home:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:bbb95063c38adf202141776efe979ff9fe80ec890c15bf891be1ea6870d6490c",
+      "evidence_key": "evidence:27:config/app.rb:3-3:repo-ruby:config/app.rb#ruby.module:Example:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:bd8476aa4c9bd023cb844462b1d4a8d591e300e9e751983dabbc005a1042c920",
+      "evidence_key": "evidence:0:Gemfile:0-0:repo-ruby:Gemfile#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:cbb4583586403757a234b73211935e52c334ae75d70e5f670114da4a57eeca04",
+      "evidence_key": "evidence:56:lib/example/service.rb:0-0:repo-ruby:lib/example/service.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d34cb700e4caca63e1d56c35f162023a2311f6b04275334776772e99c1278e46",
+      "evidence_key": "evidence:6:Rakefile:0-0:repo-ruby:Rakefile#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:d7aad9581151b8adfa79791562230acbfeb931d83a8c3f4155eaa5e5f4fdf8f2",
+      "evidence_key": "evidence:19:app/actions/home/index.rb:1-1:repo-ruby:app/actions/home/index.rb#ruby.module:Example:1",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:de2ba75c8abd1e5e77fe4749dcce7b1ebb8e5c007096da3291345b31e896839a",
+      "evidence_key": "evidence:22:app/actions/home/index.rb:4-4:repo-ruby:app/actions/home/index.rb#ruby.class:Example::Actions::Home::Index:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:de9e5b468649f4ab1ffd8d2f3804fe74b9f2926f20acd35376eb080e547f8393",
+      "evidence_key": "evidence:51:lib/example.rb:7-7:repo-ruby:lib/example.rb#ruby.class:Example::Runner:7",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:df6fd1c3d34c35b2db65b7065cf4ea4ba5884f6708d39b950d2e0b616dec64b6",
+      "evidence_key": "evidence:44:lib/example.rb:0-0:repo-ruby:lib/example.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e1ed9dbe6dedb30c07fb0a53c2ca76393e23e0b6bddb5169d2e83bea0e69ba64",
+      "evidence_key": "evidence:48:lib/example.rb:2-2:repo-ruby:lib/example.rb#ruby-reference:require:2:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e689c6f73fcae484a5d822a97a8099ecae86cdde919a2afee5c94c525729b280",
+      "evidence_key": "evidence:1:Gemfile:1-1:repo-ruby:Gemfile#ruby-reference:gem_source:1:32",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e7af3cd9ec570790980ea2e539e28c1c44bac522f47667ee85a3ccbbdf17da1e",
+      "evidence_key": "evidence:75:test/example_test.rb:0-0:repo-ruby:test/example_test.rb#ruby-file",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:e82470042e19ce8154f419808305963cb04afcf257987d1d3fc3539a9436a190",
+      "evidence_key": "evidence:70:sinatra_app.rb:3-3:repo-ruby:sinatra_app.rb#ruby.class:App:3",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ed34e42daebf4ec3922a9adf585dda9acc0f9df3025032e2af20a0faa4bb9255",
+      "evidence_key": "evidence:46:lib/example.rb:1-1:repo-ruby:lib/example.rb#ruby-reference:require_relative:1:15",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ef584a01e3d080498613fc3f5e818432dc98c14bb709fb2a656dbeb442214620",
+      "evidence_key": "evidence:5:Gemfile:4-4:repo-ruby:Gemfile#ruby-reference:gem_dependency:4:8",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:f46c9926f93c80a9c190fee2d281274f10f60f4f8a9e0ddb485eba22efad83f4",
+      "evidence_key": "evidence:49:lib/example.rb:4-4:repo-ruby:lib/example.rb#ruby.module:Example:4",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:fc085d5519ad31f95d232966897891d12028bd0c02ae670e79dac2abb8c33efc",
+      "evidence_key": "evidence:54:lib/example.rb:11-11:repo-ruby:lib/example.rb#ruby.method:call:11",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:bd8476aa4c9bd023cb844462b1d4a8d591e300e9e751983dabbc005a1042c920",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "gemfile"
+        ]
+      },
+      "source_key": "file:Gemfile",
+      "target_key": "ruby.file:file%3AGemfile"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:d34cb700e4caca63e1d56c35f162023a2311f6b04275334776772e99c1278e46",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "rake"
+        ]
+      },
+      "source_key": "file:Rakefile",
+      "target_key": "ruby.file:file%3ARakefile"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:b301e18517342b7765c7cee849b517953c2c8df9c9eb7f0dde8256f5de3addfb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "vagrantfile"
+        ]
+      },
+      "source_key": "file:Vagrantfile",
+      "target_key": "ruby.file:file%3AVagrantfile"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:638b39eb18ed93679889da506be6687a2e1f695e7b516cb7e6204b6eb18c8ab1",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "file:app/actions/home/index.rb",
+      "target_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ad01884e50b4135e9114b8d01bb5ee55ac669937b8d5a56bc0c5bd724200e3ad",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ]
+      },
+      "source_key": "file:config/app.rb",
+      "target_key": "ruby.file:file%3Aconfig%2Fapp.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:69c01b53ed56197dc1ea645726a0e82a87a09f6bcdb4d64fddddb54f8f193bc9",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ]
+      },
+      "source_key": "file:config/routes.rb",
+      "target_key": "ruby.file:file%3Aconfig%2Froutes.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1ed0ff74d3255f39936ef41c42b297f8658b3c4631176a3e330da53feef2dba7",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "file:dynamic.rb",
+      "target_key": "ruby.file:file%3Adynamic.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:50c346c0896cc3fc26d3abfd5c678022dc5e65cd19883d9402f0d96942e69486",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "gemspec"
+        ]
+      },
+      "source_key": "file:example.gemspec",
+      "target_key": "ruby.file:file%3Aexample.gemspec"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:df6fd1c3d34c35b2db65b7065cf4ea4ba5884f6708d39b950d2e0b616dec64b6",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "file:lib/example.rb",
+      "target_key": "ruby.file:file%3Alib%2Fexample.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:cbb4583586403757a234b73211935e52c334ae75d70e5f670114da4a57eeca04",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "file:lib/example/service.rb",
+      "target_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1de5bf21d7f0772dfefcb91964cc1d820d8f3442bfde3305d053250ce240d960",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "file:redaction.rb",
+      "target_key": "ruby.file:file%3Aredaction.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:9675f0b86ed80f41228364d3be955d93771323a5439346aa7ac09f0b35961e94",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ]
+      },
+      "source_key": "file:sinatra_app.rb",
+      "target_key": "ruby.file:file%3Asinatra_app.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e7af3cd9ec570790980ea2e539e28c1c44bac522f47667ee85a3ccbbdf17da1e",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ]
+      },
+      "source_key": "file:test/example_test.rb",
+      "target_key": "ruby.file:file%3Atest%2Fexample_test.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:4bd675b100ebbfed2baa48c0bc255b55e8cdee29e03fd946a1d0f445dedc1f16",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ]
+      },
+      "source_key": "file:test/test_helper.rb",
+      "target_key": "ruby.file:file%3Atest%2Ftest_helper.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a4adef5f3ca12ea2061f47c550b1529cd904ecd25e314680c09a2513b49d1b96",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "handle"
+        ],
+        "owners": [
+          "Example::Actions::Home::Index"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Actions::Home::Index.handle"
+        ]
+      },
+      "source_key": "ruby.class:Example%3A%3AActions%3A%3AHome%3A%3AIndex",
+      "target_key": "ruby.method:Example%3A%3AActions%3A%3AHome%3A%3AIndex:handle"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:fc085d5519ad31f95d232966897891d12028bd0c02ae670e79dac2abb8c33efc",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "call"
+        ],
+        "owners": [
+          "Example::Runner"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Runner.call"
+        ]
+      },
+      "source_key": "ruby.class:Example%3A%3ARunner",
+      "target_key": "ruby.method:Example%3A%3ARunner:call"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:91081de404ae5b62d427ebef2d15bfcb2577cc4572fa3a7d6601741c1ad2f5dc",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "build"
+        ],
+        "owners": [
+          "Example::Runner"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Runner.build"
+        ]
+      },
+      "source_key": "ruby.class:Example%3A%3ARunner",
+      "target_key": "ruby.singleton_method:Example%3A%3ARunner:build"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:333950749095fa3dfd48ffcc800eb7c7e244e01fc83bc4c842b37cc34b86d703",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "constants": [
+          "DEFAULT_URL"
+        ],
+        "owners": [
+          "Example::Service"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "ruby.class:Example%3A%3AService",
+      "target_key": "ruby.constant:Example%3A%3AService:DEFAULT_URL"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:193a8b90432ddfc26e605d796fa7eca7e701ada5c1f8514b9fd601a5bc68c657",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "call"
+        ],
+        "owners": [
+          "Example::Service"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Service.call"
+        ]
+      },
+      "source_key": "ruby.class:Example%3A%3AService",
+      "target_key": "ruby.method:Example%3A%3AService:call"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:7aa9aad1c5f1f40a1f2ca3abea4e695a79f31908d4c471778bca8409b473a7ec",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "test_call"
+        ],
+        "owners": [
+          "ExampleTest"
+        ],
+        "profiles": [
+          "minitest"
+        ],
+        "qualified_names": [
+          "ExampleTest.test_call"
+        ]
+      },
+      "source_key": "ruby.class:ExampleTest",
+      "target_key": "ruby.method:ExampleTest:test_call"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e689c6f73fcae484a5d822a97a8099ecae86cdde919a2afee5c94c525729b280",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "gemfile"
+        ],
+        "raw_value_summaries": [
+          "https://example.invalid/rubygems"
+        ],
+        "reference_kinds": [
+          "gem_source"
+        ],
+        "resolution_reasons": [
+          "external-url"
+        ]
+      },
+      "source_key": "ruby.file:file%3AGemfile",
+      "target_key": "external.url:https%3A%2F%2Fexample.invalid%2Frubygems"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ef584a01e3d080498613fc3f5e818432dc98c14bb709fb2a656dbeb442214620",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "gemfile"
+        ],
+        "raw_value_summaries": [
+          "minitest"
+        ],
+        "reference_kinds": [
+          "gem_dependency"
+        ],
+        "resolution_reasons": [
+          "external-ruby-gem"
+        ]
+      },
+      "source_key": "ruby.file:file%3AGemfile",
+      "target_key": "external:ruby-gem:minitest"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:33e3d1adae98acc32631b651a6c7e08e583cbee769e07926a9ba04572ef068e6",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "gemfile"
+        ],
+        "raw_value_summaries": [
+          "rack"
+        ],
+        "reference_kinds": [
+          "gem_dependency"
+        ],
+        "resolution_reasons": [
+          "external-ruby-gem"
+        ]
+      },
+      "source_key": "ruby.file:file%3AGemfile",
+      "target_key": "external:ruby-gem:rack"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:4f48366d0bc5e2224c10fdeb8231ab492db95df71dd2af7962600453e6f31a71",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "vagrantfile"
+        ],
+        "raw_value_summaries": [
+          "example/ubuntu"
+        ],
+        "reference_kinds": [
+          "vagrant_box"
+        ],
+        "resolution_reasons": [
+          "external-vagrant-box"
+        ]
+      },
+      "source_key": "ruby.file:file%3AVagrantfile",
+      "target_key": "external:vagrant-box:example%2Fubuntu"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:6c923c514bdb1a3e3434d4b118044cfddfe9dede9297f556a1409ae8f718a21d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "vagrantfile"
+        ],
+        "raw_value_summaries": [
+          "./lib"
+        ],
+        "reference_kinds": [
+          "vagrant_synced_folder"
+        ],
+        "resolution_reasons": [
+          "repo-local"
+        ]
+      },
+      "source_key": "ruby.file:file%3AVagrantfile",
+      "target_key": "file:lib"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:de2ba75c8abd1e5e77fe4749dcce7b1ebb8e5c007096da3291345b31e896839a",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Actions::Home::Index"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "target_key": "ruby.class:Example%3A%3AActions%3A%3AHome%3A%3AIndex"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:d7aad9581151b8adfa79791562230acbfeb931d83a8c3f4155eaa5e5f4fdf8f2",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3607a9f3febf8b48e7f287668efdcf9e71caa643df845cde4637a5c9d4584fd0",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Actions"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "target_key": "ruby.module:Example%3A%3AActions"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ba85e72c2abe2f5f5a1b9b72cf74297f45911595830c5bbea8b95ac0781f37b1",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Actions::Home"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "target_key": "ruby.module:Example%3A%3AActions%3A%3AHome"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a21e38fe7eea09292570c237e7eb9a373886e55b40e5d73a2615f7c351c191f6",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_names": [
+          "Example::App"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "target_key": "ruby.class:Example%3A%3AApp"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:bbb95063c38adf202141776efe979ff9fe80ec890c15bf891be1ea6870d6490c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:85d4d711b82c751be3f42d8c65efa150e2284fffbdc13c5b21ce35eb518198ad",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ],
+        "raw_value_summaries": [
+          "hanami"
+        ],
+        "reference_kinds": [
+          "require"
+        ],
+        "resolution_reasons": [
+          "external-ruby-require"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "target_key": "external:ruby.require:hanami"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:8501431e73c7a361e92e602905487365b8f95645ca644fde09a3cb2c7f57ecc6",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_names": [
+          "Example::App"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "target_key": "ruby.class:Example%3A%3AApp"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:534419cc5560473373656402d10f7b2659cfa92cb0b936a9ce0102fd0c50c535",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:7fe82caa3af206213266daeabe44224eb53a2b294c198458e53e9c3c237e67fa",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "hanami"
+        ],
+        "route_methods": [
+          "get"
+        ],
+        "route_patterns": [
+          "/home"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "target_key": "ruby.route:file%3Aconfig%2Froutes.rb:%2Froutes%2Fget%3A%2Fhome"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:a289d03f7a251e195499bb3fc7147e67104c21d523073a0c3713581d1f54952c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Adynamic.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:56f3a4a9ce9e7daa798347ae9558e62628e578796c4336c05b6c0f0b14f89f25",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "gemspec"
+        ],
+        "raw_value_summaries": [
+          "minitest"
+        ],
+        "reference_kinds": [
+          "gem_dependency"
+        ],
+        "resolution_reasons": [
+          "external-ruby-gem"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aexample.gemspec",
+      "target_key": "external:ruby-gem:minitest"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1822225108a1d778b0d105c2f60bab01d9eba2d16e5a674dae1412a3a2d764dc",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "gemspec"
+        ],
+        "raw_value_summaries": [
+          "rack"
+        ],
+        "reference_kinds": [
+          "gem_dependency"
+        ],
+        "resolution_reasons": [
+          "external-ruby-gem"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aexample.gemspec",
+      "target_key": "external:ruby-gem:rack"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:0da134c1dddb058461714fbad0b349c885534b08f3880b2a35427198cb03dabe",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Service"
+        ]
+      },
+      "source_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb",
+      "target_key": "ruby.class:Example%3A%3AService"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:818924f83cd5976af3b423146d216f3f9fb4da536da05cdb7a98cc144a578e64",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:de9e5b468649f4ab1ffd8d2f3804fe74b9f2926f20acd35376eb080e547f8393",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example::Runner"
+        ]
+      },
+      "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "target_key": "ruby.class:Example%3A%3ARunner"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:f46c9926f93c80a9c190fee2d281274f10f60f4f8a9e0ddb485eba22efad83f4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e1ed9dbe6dedb30c07fb0a53c2ca76393e23e0b6bddb5169d2e83bea0e69ba64",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "raw_value_summaries": [
+          "json"
+        ],
+        "reference_kinds": [
+          "require"
+        ],
+        "resolution_reasons": [
+          "external-ruby-require"
+        ]
+      },
+      "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "target_key": "external:ruby.require:json"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ed34e42daebf4ec3922a9adf585dda9acc0f9df3025032e2af20a0faa4bb9255",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "raw_value_summaries": [
+          "example/service"
+        ],
+        "reference_kinds": [
+          "require_relative"
+        ],
+        "resolution_reasons": [
+          "repo-local"
+        ]
+      },
+      "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "target_key": "file:lib/example/service.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:96afc1bb40678efad5e4df07cb22d6e266398c0cc7444f74c208eb9c34fde018",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_names": [
+          "Example"
+        ]
+      },
+      "source_key": "ruby.file:file%3Aredaction.rb",
+      "target_key": "ruby.module:Example"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:e82470042e19ce8154f419808305963cb04afcf257987d1d3fc3539a9436a190",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ],
+        "qualified_names": [
+          "App"
+        ]
+      },
+      "source_key": "ruby.file:file%3Asinatra_app.rb",
+      "target_key": "ruby.class:App"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:3d0e912580f7710cffce61da7350ab7a7eb2bfbcda6d64ade974131078214c5d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ],
+        "route_methods": [
+          "get"
+        ],
+        "route_patterns": [
+          "/health"
+        ]
+      },
+      "source_key": "ruby.file:file%3Asinatra_app.rb",
+      "target_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fget%3A%2Fhealth"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:818e717ea228cea6023cb52877192866ad9ace561db6686a0c828b72d5b0e2a3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ],
+        "route_methods": [
+          "post"
+        ],
+        "route_patterns": [
+          "/items"
+        ]
+      },
+      "source_key": "ruby.file:file%3Asinatra_app.rb",
+      "target_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fpost%3A%2Fitems"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:ad80974d450525b4fdbaaae7cce8a1a4516195f4da562b179c432de94fe000d3",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ],
+        "raw_value_summaries": [
+          "sinatra/base"
+        ],
+        "reference_kinds": [
+          "require"
+        ],
+        "resolution_reasons": [
+          "external-ruby-require"
+        ]
+      },
+      "source_key": "ruby.file:file%3Asinatra_app.rb",
+      "target_key": "external:ruby.require:sinatra%2Fbase"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:941798155953a67b4d5a178a11b83e423bf8b4335e0a3b8cdcb03400fc743d88",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ],
+        "qualified_names": [
+          "ExampleTest"
+        ]
+      },
+      "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "target_key": "ruby.class:ExampleTest"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:2ab42f47b705d57453e07f3d8d0064aaa1e580eadb907b0ab13fecb6b0aceedb",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ],
+        "qualified_names": [
+          "ExampleTest"
+        ],
+        "test_frameworks": [
+          "minitest"
+        ]
+      },
+      "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "target_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:0f45783df97d2694bad76b658774d1e88860d9bd01446a03095cd47f2ae18900",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ],
+        "raw_value_summaries": [
+          "test_helper"
+        ],
+        "reference_kinds": [
+          "require_relative"
+        ],
+        "resolution_reasons": [
+          "repo-local"
+        ]
+      },
+      "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "target_key": "file:test/test_helper.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:200406bbcf46d3a2e42e2a6c10dee04da54c7694693d87e886d65c1270b1936d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ],
+        "raw_value_summaries": [
+          "minitest/autorun"
+        ],
+        "reference_kinds": [
+          "require"
+        ],
+        "resolution_reasons": [
+          "external-ruby-require"
+        ]
+      },
+      "source_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+      "target_key": "external:ruby.require:minitest%2Fautorun"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:1a726dbd4d81e4a56b01862a805d3ab556b9f8489fe59b9c178964357bbac3fe",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "minitest"
+        ],
+        "raw_value_summaries": [
+          "../lib/example"
+        ],
+        "reference_kinds": [
+          "require_relative"
+        ],
+        "resolution_reasons": [
+          "repo-local"
+        ]
+      },
+      "source_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+      "target_key": "file:lib/example.rb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:2359578429810006a2e7be8a504a2bb868da89a9ad8c45df8e2822771222a858",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "constants": [
+          "API_KEY"
+        ],
+        "owners": [
+          "Example"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "ruby.module:Example",
+      "target_key": "ruby.constant:Example:API_KEY"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:047c75310a5c8bfa4525fba706b7f57e7c140b4a4e1e5dd86ff7795a69e9e332",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "constants": [
+          "SESSION_SECRET"
+        ],
+        "owners": [
+          "Example"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "ruby.module:Example",
+      "target_key": "ruby.constant:Example:SESSION_SECRET"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:b545a29b0ae26d3f4115f5825bfa2dec719e1ff6f3bd34239fe9b25903af7f4c",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "constants": [
+          "VERSION"
+        ],
+        "owners": [
+          "Example"
+        ],
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "source_key": "ruby.module:Example",
+      "target_key": "ruby.constant:Example:VERSION"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:29596721bc29c2a0e3e981cd9f9f087c1c90c1d9ca8c8cbcb541bf2b83eb92f8",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ],
+        "raw_value_summaries": [
+          "health"
+        ],
+        "reference_kinds": [
+          "template"
+        ],
+        "resolution_reasons": [
+          "repo-local"
+        ]
+      },
+      "source_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fget%3A%2Fhealth",
+      "target_key": "file:views/health.erb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:75cdd604b6432711290e863c6ff8efae3ee80f9703cd5d378d11641231cee194",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "references",
+      "metadata": {
+        "profiles": [
+          "sinatra"
+        ],
+        "raw_value_summaries": [
+          "item"
+        ],
+        "reference_kinds": [
+          "template"
+        ],
+        "resolution_reasons": [
+          "repo-local"
+        ]
+      },
+      "source_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fpost%3A%2Fitems",
+      "target_key": "file:views/item.erb"
+    },
+    {
+      "confidence": "extracted",
+      "conflict": false,
+      "edge_key": "canonical-edge:5ff55568e9eea3c27c3f81ae24da8fa5a663300f33a9125567cb3a0398b11ba4",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "methods": [
+          "test_call"
+        ],
+        "profiles": [
+          "minitest"
+        ],
+        "test_frameworks": [
+          "minitest"
+        ]
+      },
+      "source_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest",
+      "target_key": "ruby.test_method:ruby.test_case%3Afile%253Atest%252Fexample_test.rb%3AExampleTest:test_call"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:Gemfile:0-0:repo-ruby:Gemfile#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 89,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile",
+        "profiles": [
+          "gemfile"
+        ]
+      },
+      "path": "Gemfile",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "Gemfile#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:1:Gemfile:1-1:repo-ruby:Gemfile#ruby-reference:gem_source:1:32",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile",
+        "profiles": [
+          "gemfile"
+        ],
+        "raw_value_summary": "https://example.invalid/rubygems",
+        "reference_kind": "gem_source",
+        "resolution_reason": "external-url",
+        "source_key": "ruby.file:file%3AGemfile",
+        "target_key": "external.url:https%3A%2F%2Fexample.invalid%2Frubygems"
+      },
+      "path": "Gemfile",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "Gemfile#ruby-reference:gem_source:1:32",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:2:Gemfile:3-3:repo-ruby:Gemfile#ruby-gem:rack:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dependency_source": "gemfile",
+        "format": "ruby",
+        "gem_name": "rack",
+        "gem_requirement_summary": "~> 3.0",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile",
+        "source_key": "ruby.file:file%3AGemfile"
+      },
+      "path": "Gemfile",
+      "raw_kind": "ruby.gem_dependency",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "Gemfile#ruby-gem:rack:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:3:Gemfile:3-3:repo-ruby:Gemfile#ruby-reference:gem_dependency:3:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile",
+        "profiles": [
+          "gemfile"
+        ],
+        "raw_value_summary": "rack",
+        "reference_kind": "gem_dependency",
+        "resolution_reason": "external-ruby-gem",
+        "source_key": "ruby.file:file%3AGemfile",
+        "target_key": "external:ruby-gem:rack"
+      },
+      "path": "Gemfile",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "Gemfile#ruby-reference:gem_dependency:3:4",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:4:Gemfile:4-4:repo-ruby:Gemfile#ruby-gem:minitest:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dependency_source": "gemfile",
+        "format": "ruby",
+        "gem_name": "minitest",
+        "gem_requirement_summary": "~> 5.0",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile",
+        "source_key": "ruby.file:file%3AGemfile"
+      },
+      "path": "Gemfile",
+      "raw_kind": "ruby.gem_dependency",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "Gemfile#ruby-gem:minitest:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:5:Gemfile:4-4:repo-ruby:Gemfile#ruby-reference:gem_dependency:4:8",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile",
+        "profiles": [
+          "gemfile"
+        ],
+        "raw_value_summary": "minitest",
+        "reference_kind": "gem_dependency",
+        "resolution_reason": "external-ruby-gem",
+        "source_key": "ruby.file:file%3AGemfile",
+        "target_key": "external:ruby-gem:minitest"
+      },
+      "path": "Gemfile",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "Gemfile#ruby-reference:gem_dependency:4:8",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:6:Rakefile:0-0:repo-ruby:Rakefile#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 114,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "rake",
+        "profiles": [
+          "rake"
+        ]
+      },
+      "path": "Rakefile",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "Rakefile#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:7:Rakefile:2-2:repo-ruby:Rakefile#ruby-task:test:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "description_summary": "Run tests",
+        "dsl_name": "task",
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "rake",
+        "source_key": "ruby.file:file%3ARakefile",
+        "task_name": "test"
+      },
+      "path": "Rakefile",
+      "raw_kind": "ruby.dsl",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "Rakefile#ruby-task:test:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:8:Rakefile:5-5:repo-ruby:Rakefile#ruby-namespace:fixtures:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dsl_name": "namespace",
+        "format": "ruby",
+        "namespace_name": "fixtures",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "rake",
+        "source_key": "ruby.file:file%3ARakefile"
+      },
+      "path": "Rakefile",
+      "raw_kind": "ruby.dsl",
+      "raw_observation_ordinal": 8,
+      "raw_schema_version": 1,
+      "raw_source_id": "Rakefile#ruby-namespace:fixtures:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 7,
+      "evidence_key": "evidence:9:Rakefile:7-7:repo-ruby:Rakefile#ruby-task:prepare:7",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "description_summary": "Prepare fixtures",
+        "dsl_name": "task",
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "rake",
+        "source_key": "ruby.file:file%3ARakefile",
+        "task_name": "prepare"
+      },
+      "path": "Rakefile",
+      "raw_kind": "ruby.dsl",
+      "raw_observation_ordinal": 9,
+      "raw_schema_version": 1,
+      "raw_source_id": "Rakefile#ruby-task:prepare:7",
+      "start_line": 7
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:10:Vagrantfile:0-0:repo-ruby:Vagrantfile#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 266,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "profiles": [
+          "vagrantfile"
+        ]
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 10,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:11:Vagrantfile:2-2:repo-ruby:Vagrantfile#ruby-vagrant:box:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dsl_name": "vagrant",
+        "dynamic": false,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "redacted": false,
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "vagrant_key": "box"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.vagrant_config",
+      "raw_observation_ordinal": 11,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-vagrant:box:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:12:Vagrantfile:2-2:repo-ruby:Vagrantfile#ruby-reference:vagrant_box:2:14",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "profiles": [
+          "vagrantfile"
+        ],
+        "raw_value_summary": "example/ubuntu",
+        "reference_kind": "vagrant_box",
+        "resolution_reason": "external-vagrant-box",
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "target_key": "external:vagrant-box:example%2Fubuntu",
+        "vagrant_key": "box"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 12,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-reference:vagrant_box:2:14",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:13:Vagrantfile:3-3:repo-ruby:Vagrantfile#ruby-vagrant:provider:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dsl_name": "vagrant",
+        "dynamic": false,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "redacted": false,
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "vagrant_key": "provider",
+        "value_summary": "vmware_desktop"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.vagrant_config",
+      "raw_observation_ordinal": 13,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-vagrant:provider:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:14:Vagrantfile:4-4:repo-ruby:Vagrantfile#ruby-vagrant:network:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dsl_name": "vagrant",
+        "dynamic": false,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "redacted": false,
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "vagrant_key": "network",
+        "value_summary": "private_network"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.vagrant_config",
+      "raw_observation_ordinal": 14,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-vagrant:network:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:15:Vagrantfile:5-5:repo-ruby:Vagrantfile#ruby-vagrant:synced_folder:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dsl_name": "vagrant",
+        "dynamic": false,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "redacted": false,
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "vagrant_key": "synced_folder"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.vagrant_config",
+      "raw_observation_ordinal": 15,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-vagrant:synced_folder:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:16:Vagrantfile:5-5:repo-ruby:Vagrantfile#ruby-reference:vagrant_synced_folder:5:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "profiles": [
+          "vagrantfile"
+        ],
+        "raw_value_summary": "./lib",
+        "reference_kind": "vagrant_synced_folder",
+        "resolution_reason": "repo-local",
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "target_key": "file:lib",
+        "vagrant_key": "synced_folder"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 16,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-reference:vagrant_synced_folder:5:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 6,
+      "evidence_key": "evidence:17:Vagrantfile:6-6:repo-ruby:Vagrantfile#ruby-vagrant:provision:6",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dsl_name": "vagrant",
+        "dynamic": true,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile",
+        "redacted": true,
+        "redaction_reason": "provisioner-command-body-omitted",
+        "source_key": "ruby.file:file%3AVagrantfile",
+        "vagrant_key": "provision"
+      },
+      "path": "Vagrantfile",
+      "raw_kind": "ruby.vagrant_config",
+      "raw_observation_ordinal": 17,
+      "raw_schema_version": 1,
+      "raw_source_id": "Vagrantfile#ruby-vagrant:provision:6",
+      "start_line": 6
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:18:app/actions/home/index.rb:0-0:repo-ruby:app/actions/home/index.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 177,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "path": "app/actions/home/index.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 18,
+      "raw_schema_version": 1,
+      "raw_source_id": "app/actions/home/index.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:19:app/actions/home/index.rb:1-1:repo-ruby:app/actions/home/index.rb#ruby.module:Example:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb"
+      },
+      "path": "app/actions/home/index.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 19,
+      "raw_schema_version": 1,
+      "raw_source_id": "app/actions/home/index.rb#ruby.module:Example:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:20:app/actions/home/index.rb:2-2:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Actions",
+        "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb"
+      },
+      "path": "app/actions/home/index.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 20,
+      "raw_schema_version": 1,
+      "raw_source_id": "app/actions/home/index.rb#ruby.module:Example::Actions:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:21:app/actions/home/index.rb:3-3:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions::Home:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Actions::Home",
+        "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb"
+      },
+      "path": "app/actions/home/index.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 21,
+      "raw_schema_version": 1,
+      "raw_source_id": "app/actions/home/index.rb#ruby.module:Example::Actions::Home:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:22:app/actions/home/index.rb:4-4:repo-ruby:app/actions/home/index.rb#ruby.class:Example::Actions::Home::Index:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Actions::Home::Index",
+        "source_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb"
+      },
+      "path": "app/actions/home/index.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 22,
+      "raw_schema_version": 1,
+      "raw_source_id": "app/actions/home/index.rb#ruby.class:Example::Actions::Home::Index:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:23:app/actions/home/index.rb:5-5:repo-ruby:app/actions/home/index.rb#ruby.method:handle:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "handle",
+        "owner": "Example::Actions::Home::Index",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Actions::Home::Index.handle",
+        "source_key": "ruby.class:Example%3A%3AActions%3A%3AHome%3A%3AIndex"
+      },
+      "path": "app/actions/home/index.rb",
+      "raw_kind": "ruby.method",
+      "raw_observation_ordinal": 23,
+      "raw_schema_version": 1,
+      "raw_source_id": "app/actions/home/index.rb#ruby.method:handle:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:24:config/app.rb:0-0:repo-ruby:config/app.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 69,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ]
+      },
+      "path": "config/app.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 24,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/app.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:25:config/app.rb:1-1:repo-ruby:config/app.rb#ruby-require:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "require_form": "require",
+        "require_path": "hanami",
+        "source_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+        "target_key": "external:ruby.require:hanami"
+      },
+      "path": "config/app.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 25,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/app.rb#ruby-require:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:26:config/app.rb:1-1:repo-ruby:config/app.rb#ruby-reference:require:1:6",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ],
+        "raw_value_summary": "hanami",
+        "reference_kind": "require",
+        "resolution_reason": "external-ruby-require",
+        "source_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+        "target_key": "external:ruby.require:hanami"
+      },
+      "path": "config/app.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 26,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/app.rb#ruby-reference:require:1:6",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:27:config/app.rb:3-3:repo-ruby:config/app.rb#ruby.module:Example:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Aconfig%2Fapp.rb"
+      },
+      "path": "config/app.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 27,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/app.rb#ruby.module:Example:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:28:config/app.rb:4-4:repo-ruby:config/app.rb#ruby.class:Example::App:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_name": "Example::App",
+        "source_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+        "superclass": "Hanami::App"
+      },
+      "path": "config/app.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 28,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/app.rb#ruby.class:Example::App:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:29:config/routes.rb:0-0:repo-ruby:config/routes.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 85,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ]
+      },
+      "path": "config/routes.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 29,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/routes.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:30:config/routes.rb:1-1:repo-ruby:config/routes.rb#ruby.module:Example:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Aconfig%2Froutes.rb"
+      },
+      "path": "config/routes.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 30,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/routes.rb#ruby.module:Example:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:31:config/routes.rb:2-2:repo-ruby:config/routes.rb#ruby.class:Example::App:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ],
+        "qualified_name": "Example::App",
+        "source_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+        "superclass": "Hanami::App"
+      },
+      "path": "config/routes.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 31,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/routes.rb#ruby.class:Example::App:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:32:config/routes.rb:3-3:repo-ruby:config/routes.rb#ruby.route:get /home:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "profiles": [
+          "hanami"
+        ],
+        "route_method": "get",
+        "route_pattern": "/home",
+        "route_pointer": "/routes/get:/home",
+        "source_key": "ruby.file:file%3Aconfig%2Froutes.rb"
+      },
+      "path": "config/routes.rb",
+      "raw_kind": "ruby.route",
+      "raw_observation_ordinal": 32,
+      "raw_schema_version": 1,
+      "raw_source_id": "config/routes.rb#ruby.route:get /home:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:33:dynamic.rb:0-0:repo-ruby:dynamic.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 100,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "path": "dynamic.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 33,
+      "raw_schema_version": 1,
+      "raw_source_id": "dynamic.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:34:dynamic.rb:1-1:repo-ruby:dynamic.rb#ruby.module:Example:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Adynamic.rb"
+      },
+      "path": "dynamic.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 34,
+      "raw_schema_version": 1,
+      "raw_source_id": "dynamic.rb#ruby.module:Example:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "unknown",
+      "end_line": 2,
+      "evidence_key": "evidence:35:dynamic.rb:2-2:repo-ruby:dynamic.rb#ruby-parse-error:2:dynamic-interpolation",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dynamic": true,
+        "dynamic_reason": "interpolation",
+        "error_kind": "dynamic-interpolation",
+        "format": "ruby",
+        "message_summary": "dynamic Ruby construct kept as diagnostic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "recovered": true
+      },
+      "path": "dynamic.rb",
+      "raw_kind": "ruby.parse_error",
+      "raw_observation_ordinal": 35,
+      "raw_schema_version": 1,
+      "raw_source_id": "dynamic.rb#ruby-parse-error:2:dynamic-interpolation",
+      "start_line": 2
+    },
+    {
+      "confidence": "unknown",
+      "end_line": 2,
+      "evidence_key": "evidence:36:dynamic.rb:2-2:repo-ruby:dynamic.rb#ruby-parse-error:2:dynamic-define_method",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dynamic": true,
+        "dynamic_reason": "define_method",
+        "error_kind": "dynamic-define_method",
+        "format": "ruby",
+        "message_summary": "dynamic Ruby construct kept as diagnostic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "recovered": true
+      },
+      "path": "dynamic.rb",
+      "raw_kind": "ruby.parse_error",
+      "raw_observation_ordinal": 36,
+      "raw_schema_version": 1,
+      "raw_source_id": "dynamic.rb#ruby-parse-error:2:dynamic-define_method",
+      "start_line": 2
+    },
+    {
+      "confidence": "unknown",
+      "end_line": 2,
+      "evidence_key": "evidence:37:dynamic.rb:2-2:repo-ruby:dynamic.rb#ruby-parse-error:2:dynamic-send",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dynamic": true,
+        "dynamic_reason": "send",
+        "error_kind": "dynamic-send",
+        "format": "ruby",
+        "message_summary": "dynamic Ruby construct kept as diagnostic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "recovered": true
+      },
+      "path": "dynamic.rb",
+      "raw_kind": "ruby.parse_error",
+      "raw_observation_ordinal": 37,
+      "raw_schema_version": 1,
+      "raw_source_id": "dynamic.rb#ruby-parse-error:2:dynamic-send",
+      "start_line": 2
+    },
+    {
+      "confidence": "unknown",
+      "end_line": 3,
+      "evidence_key": "evidence:38:dynamic.rb:3-3:repo-ruby:dynamic.rb#ruby-parse-error:3:dynamic-class_eval",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dynamic": true,
+        "dynamic_reason": "class_eval",
+        "error_kind": "dynamic-class_eval",
+        "format": "ruby",
+        "message_summary": "dynamic Ruby construct kept as diagnostic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "recovered": true
+      },
+      "path": "dynamic.rb",
+      "raw_kind": "ruby.parse_error",
+      "raw_observation_ordinal": 38,
+      "raw_schema_version": 1,
+      "raw_source_id": "dynamic.rb#ruby-parse-error:3:dynamic-class_eval",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:39:example.gemspec:0-0:repo-ruby:example.gemspec#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 188,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec",
+        "profiles": [
+          "gemspec"
+        ]
+      },
+      "path": "example.gemspec",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 39,
+      "raw_schema_version": 1,
+      "raw_source_id": "example.gemspec#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:40:example.gemspec:4-4:repo-ruby:example.gemspec#ruby-gem:rack:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dependency_source": "gemspec",
+        "format": "ruby",
+        "gem_name": "rack",
+        "gem_requirement_summary": "~> 3.0",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec",
+        "source_key": "ruby.file:file%3Aexample.gemspec"
+      },
+      "path": "example.gemspec",
+      "raw_kind": "ruby.gem_dependency",
+      "raw_observation_ordinal": 40,
+      "raw_schema_version": 1,
+      "raw_source_id": "example.gemspec#ruby-gem:rack:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:41:example.gemspec:4-4:repo-ruby:example.gemspec#ruby-reference:gem_dependency:4:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec",
+        "profiles": [
+          "gemspec"
+        ],
+        "raw_value_summary": "rack",
+        "reference_kind": "gem_dependency",
+        "resolution_reason": "external-ruby-gem",
+        "source_key": "ruby.file:file%3Aexample.gemspec",
+        "target_key": "external:ruby-gem:rack"
+      },
+      "path": "example.gemspec",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 41,
+      "raw_schema_version": 1,
+      "raw_source_id": "example.gemspec#ruby-reference:gem_dependency:4:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:42:example.gemspec:5-5:repo-ruby:example.gemspec#ruby-gem:minitest:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "dependency_source": "gemspec",
+        "format": "ruby",
+        "gem_name": "minitest",
+        "gem_requirement_summary": "~> 5.0",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec",
+        "source_key": "ruby.file:file%3Aexample.gemspec"
+      },
+      "path": "example.gemspec",
+      "raw_kind": "ruby.gem_dependency",
+      "raw_observation_ordinal": 42,
+      "raw_schema_version": 1,
+      "raw_source_id": "example.gemspec#ruby-gem:minitest:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:43:example.gemspec:5-5:repo-ruby:example.gemspec#ruby-reference:gem_dependency:5:8",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec",
+        "profiles": [
+          "gemspec"
+        ],
+        "raw_value_summary": "minitest",
+        "reference_kind": "gem_dependency",
+        "resolution_reason": "external-ruby-gem",
+        "source_key": "ruby.file:file%3Aexample.gemspec",
+        "target_key": "external:ruby-gem:minitest"
+      },
+      "path": "example.gemspec",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 43,
+      "raw_schema_version": 1,
+      "raw_source_id": "example.gemspec#ruby-reference:gem_dependency:5:8",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:44:lib/example.rb:0-0:repo-ruby:lib/example.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 250,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 44,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:45:lib/example.rb:1-1:repo-ruby:lib/example.rb#ruby-require:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "require_form": "require_relative",
+        "require_path": "example/service",
+        "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+        "target_key": "file:lib/example/service.rb"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 45,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-require:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:46:lib/example.rb:1-1:repo-ruby:lib/example.rb#ruby-reference:require_relative:1:15",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "raw_value_summary": "example/service",
+        "reference_kind": "require_relative",
+        "resolution_reason": "repo-local",
+        "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+        "target_key": "file:lib/example/service.rb"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 46,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-reference:require_relative:1:15",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:47:lib/example.rb:2-2:repo-ruby:lib/example.rb#ruby-require:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "require_form": "require",
+        "require_path": "json",
+        "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+        "target_key": "external:ruby.require:json"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 47,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-require:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:48:lib/example.rb:2-2:repo-ruby:lib/example.rb#ruby-reference:require:2:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "raw_value_summary": "json",
+        "reference_kind": "require",
+        "resolution_reason": "external-ruby-require",
+        "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+        "target_key": "external:ruby.require:json"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 48,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-reference:require:2:4",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:49:lib/example.rb:4-4:repo-ruby:lib/example.rb#ruby.module:Example:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Alib%2Fexample.rb"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 49,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby.module:Example:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:50:lib/example.rb:5-5:repo-ruby:lib/example.rb#ruby.constant:VERSION:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "constant_name": "VERSION",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "redacted": false,
+        "source_key": "ruby.module:Example",
+        "value_type": "string"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.constant",
+      "raw_observation_ordinal": 50,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby.constant:VERSION:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 7,
+      "evidence_key": "evidence:51:lib/example.rb:7-7:repo-ruby:lib/example.rb#ruby.class:Example::Runner:7",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Runner",
+        "source_key": "ruby.file:file%3Alib%2Fexample.rb",
+        "superclass": "BaseRunner"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 51,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby.class:Example::Runner:7",
+      "start_line": 7
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 8,
+      "evidence_key": "evidence:52:lib/example.rb:8-8:repo-ruby:lib/example.rb#ruby-include:8",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "module_name": "Helpers",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "source_key": "ruby.class:Example%3A%3ARunner"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.include",
+      "raw_observation_ordinal": 52,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-include:8",
+      "start_line": 8
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 9,
+      "evidence_key": "evidence:53:lib/example.rb:9-9:repo-ruby:lib/example.rb#ruby-extend:9",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "module_name": "ClassMethods",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "source_key": "ruby.class:Example%3A%3ARunner"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.extend",
+      "raw_observation_ordinal": 53,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby-extend:9",
+      "start_line": 9
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 11,
+      "evidence_key": "evidence:54:lib/example.rb:11-11:repo-ruby:lib/example.rb#ruby.method:call:11",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "call",
+        "owner": "Example::Runner",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Runner.call",
+        "source_key": "ruby.class:Example%3A%3ARunner"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.method",
+      "raw_observation_ordinal": 54,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby.method:call:11",
+      "start_line": 11
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 15,
+      "evidence_key": "evidence:55:lib/example.rb:15-15:repo-ruby:lib/example.rb#ruby.singleton_method:build:15",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "build",
+        "owner": "Example::Runner",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Runner.build",
+        "source_key": "ruby.class:Example%3A%3ARunner"
+      },
+      "path": "lib/example.rb",
+      "raw_kind": "ruby.singleton_method",
+      "raw_observation_ordinal": 55,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example.rb#ruby.singleton_method:build:15",
+      "start_line": 15
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:56:lib/example/service.rb:0-0:repo-ruby:lib/example/service.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 121,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "path": "lib/example/service.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 56,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example/service.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:57:lib/example/service.rb:1-1:repo-ruby:lib/example/service.rb#ruby.module:Example:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb"
+      },
+      "path": "lib/example/service.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 57,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example/service.rb#ruby.module:Example:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:58:lib/example/service.rb:2-2:repo-ruby:lib/example/service.rb#ruby.class:Example::Service:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Service",
+        "source_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb"
+      },
+      "path": "lib/example/service.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 58,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example/service.rb#ruby.class:Example::Service:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:59:lib/example/service.rb:3-3:repo-ruby:lib/example/service.rb#ruby.constant:DEFAULT_URL:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "constant_name": "DEFAULT_URL",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example::Service",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "redacted": false,
+        "source_key": "ruby.class:Example%3A%3AService",
+        "value_type": "string"
+      },
+      "path": "lib/example/service.rb",
+      "raw_kind": "ruby.constant",
+      "raw_observation_ordinal": 59,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example/service.rb#ruby.constant:DEFAULT_URL:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:60:lib/example/service.rb:5-5:repo-ruby:lib/example/service.rb#ruby.method:call:5",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "call",
+        "owner": "Example::Service",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example::Service.call",
+        "source_key": "ruby.class:Example%3A%3AService"
+      },
+      "path": "lib/example/service.rb",
+      "raw_kind": "ruby.method",
+      "raw_observation_ordinal": 60,
+      "raw_schema_version": 1,
+      "raw_source_id": "lib/example/service.rb#ruby.method:call:5",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:61:redaction.rb:0-0:repo-ruby:redaction.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 115,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ]
+      },
+      "path": "redaction.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 61,
+      "raw_schema_version": 1,
+      "raw_source_id": "redaction.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:62:redaction.rb:1-1:repo-ruby:redaction.rb#ruby.module:Example:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "qualified_name": "Example",
+        "source_key": "ruby.file:file%3Aredaction.rb"
+      },
+      "path": "redaction.rb",
+      "raw_kind": "ruby.module",
+      "raw_observation_ordinal": 62,
+      "raw_schema_version": 1,
+      "raw_source_id": "redaction.rb#ruby.module:Example:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:63:redaction.rb:2-2:repo-ruby:redaction.rb#ruby-env:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "diagnostic_kind": "env-reference",
+        "dynamic": true,
+        "dynamic_reason": "environment",
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "redacted": true,
+        "redaction_reason": "secret-prone-env-name"
+      },
+      "path": "redaction.rb",
+      "raw_kind": "ruby.dsl",
+      "raw_observation_ordinal": 63,
+      "raw_schema_version": 1,
+      "raw_source_id": "redaction.rb#ruby-env:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:64:redaction.rb:2-2:repo-ruby:redaction.rb#ruby.constant:API_KEY:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "constant_name": "API_KEY",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "redacted": true,
+        "redaction_reason": "secret-prone-constant-name",
+        "source_key": "ruby.module:Example",
+        "value_type": "expression"
+      },
+      "path": "redaction.rb",
+      "raw_kind": "ruby.constant",
+      "raw_observation_ordinal": 64,
+      "raw_schema_version": 1,
+      "raw_source_id": "redaction.rb#ruby.constant:API_KEY:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:65:redaction.rb:3-3:repo-ruby:redaction.rb#ruby-env:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "diagnostic_kind": "env-reference",
+        "dynamic": true,
+        "dynamic_reason": "environment",
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "redacted": true,
+        "redaction_reason": "secret-prone-env-name"
+      },
+      "path": "redaction.rb",
+      "raw_kind": "ruby.dsl",
+      "raw_observation_ordinal": 65,
+      "raw_schema_version": 1,
+      "raw_source_id": "redaction.rb#ruby-env:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:66:redaction.rb:3-3:repo-ruby:redaction.rb#ruby.constant:SESSION_SECRET:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "constant_name": "SESSION_SECRET",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "profiles": [
+          "generic_ruby"
+        ],
+        "redacted": true,
+        "redaction_reason": "secret-prone-constant-name",
+        "source_key": "ruby.module:Example",
+        "value_type": "expression"
+      },
+      "path": "redaction.rb",
+      "raw_kind": "ruby.constant",
+      "raw_observation_ordinal": 66,
+      "raw_schema_version": 1,
+      "raw_source_id": "redaction.rb#ruby.constant:SESSION_SECRET:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:67:sinatra_app.rb:0-0:repo-ruby:sinatra_app.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 135,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ]
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 67,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:68:sinatra_app.rb:1-1:repo-ruby:sinatra_app.rb#ruby-require:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "require_form": "require",
+        "require_path": "sinatra/base",
+        "source_key": "ruby.file:file%3Asinatra_app.rb",
+        "target_key": "external:ruby.require:sinatra%2Fbase"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 68,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby-require:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:69:sinatra_app.rb:1-1:repo-ruby:sinatra_app.rb#ruby-reference:require:1:12",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ],
+        "raw_value_summary": "sinatra/base",
+        "reference_kind": "require",
+        "resolution_reason": "external-ruby-require",
+        "source_key": "ruby.file:file%3Asinatra_app.rb",
+        "target_key": "external:ruby.require:sinatra%2Fbase"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 69,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby-reference:require:1:12",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:70:sinatra_app.rb:3-3:repo-ruby:sinatra_app.rb#ruby.class:App:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ],
+        "qualified_name": "App",
+        "source_key": "ruby.file:file%3Asinatra_app.rb",
+        "superclass": "Sinatra::Base"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 70,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby.class:App:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:71:sinatra_app.rb:4-4:repo-ruby:sinatra_app.rb#ruby.route:get /health:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ],
+        "route_method": "get",
+        "route_pattern": "/health",
+        "route_pointer": "/routes/get:/health",
+        "source_key": "ruby.file:file%3Asinatra_app.rb"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.route",
+      "raw_observation_ordinal": 71,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby.route:get /health:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 5,
+      "evidence_key": "evidence:72:sinatra_app.rb:5-5:repo-ruby:sinatra_app.rb#ruby-reference:template:5:6",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ],
+        "raw_value_summary": "health",
+        "reference_kind": "template",
+        "resolution_reason": "repo-local",
+        "source_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fget%3A%2Fhealth",
+        "target_key": "file:views/health.erb"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 72,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby-reference:template:5:6",
+      "start_line": 5
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 8,
+      "evidence_key": "evidence:73:sinatra_app.rb:8-8:repo-ruby:sinatra_app.rb#ruby.route:post /items:8",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ],
+        "route_method": "post",
+        "route_pattern": "/items",
+        "route_pointer": "/routes/post:/items",
+        "source_key": "ruby.file:file%3Asinatra_app.rb"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.route",
+      "raw_observation_ordinal": 73,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby.route:post /items:8",
+      "start_line": 8
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 9,
+      "evidence_key": "evidence:74:sinatra_app.rb:9-9:repo-ruby:sinatra_app.rb#ruby-reference:template:9:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "profiles": [
+          "sinatra"
+        ],
+        "raw_value_summary": "item",
+        "reference_kind": "template",
+        "resolution_reason": "repo-local",
+        "source_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fpost%3A%2Fitems",
+        "target_key": "file:views/item.erb"
+      },
+      "path": "sinatra_app.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 74,
+      "raw_schema_version": 1,
+      "raw_source_id": "sinatra_app.rb#ruby-reference:template:9:4",
+      "start_line": 9
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:75:test/example_test.rb:0-0:repo-ruby:test/example_test.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 141,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ]
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 75,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:76:test/example_test.rb:1-1:repo-ruby:test/example_test.rb#ruby-require:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "require_form": "require_relative",
+        "require_path": "test_helper",
+        "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+        "target_key": "file:test/test_helper.rb"
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 76,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby-require:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:77:test/example_test.rb:1-1:repo-ruby:test/example_test.rb#ruby-reference:require_relative:1:11",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "raw_value_summary": "test_helper",
+        "reference_kind": "require_relative",
+        "resolution_reason": "repo-local",
+        "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+        "target_key": "file:test/test_helper.rb"
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 77,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby-reference:require_relative:1:11",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:78:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.class:ExampleTest:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "qualified_name": "ExampleTest",
+        "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+        "superclass": "Minitest::Test"
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.class",
+      "raw_observation_ordinal": 78,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby.class:ExampleTest:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 3,
+      "evidence_key": "evidence:79:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.test_case:ExampleTest:3",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "qualified_name": "ExampleTest",
+        "source_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+        "test_framework": "minitest"
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.test_case",
+      "raw_observation_ordinal": 79,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby.test_case:ExampleTest:3",
+      "start_line": 3
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:80:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.method:test_call:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "test_call",
+        "owner": "ExampleTest",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "qualified_name": "ExampleTest.test_call",
+        "source_key": "ruby.class:ExampleTest"
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.method",
+      "raw_observation_ordinal": 80,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby.method:test_call:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 4,
+      "evidence_key": "evidence:81:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.test_method:test_call:4",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "test_call",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "source_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest",
+        "test_case_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest",
+        "test_framework": "minitest"
+      },
+      "path": "test/example_test.rb",
+      "raw_kind": "ruby.test_method",
+      "raw_observation_ordinal": 81,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/example_test.rb#ruby.test_method:test_call:4",
+      "start_line": 4
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:82:test/test_helper.rb:0-0:repo-ruby:test/test_helper.rb#ruby-file",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "file_bytes": 61,
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ]
+      },
+      "path": "test/test_helper.rb",
+      "raw_kind": "ruby.file",
+      "raw_observation_ordinal": 82,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/test_helper.rb#ruby-file",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:83:test/test_helper.rb:1-1:repo-ruby:test/test_helper.rb#ruby-require:1",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "require_form": "require",
+        "require_path": "minitest/autorun",
+        "source_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+        "target_key": "external:ruby.require:minitest%2Fautorun"
+      },
+      "path": "test/test_helper.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 83,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/test_helper.rb#ruby-require:1",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 1,
+      "evidence_key": "evidence:84:test/test_helper.rb:1-1:repo-ruby:test/test_helper.rb#ruby-reference:require:1:16",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "raw_value_summary": "minitest/autorun",
+        "reference_kind": "require",
+        "resolution_reason": "external-ruby-require",
+        "source_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+        "target_key": "external:ruby.require:minitest%2Fautorun"
+      },
+      "path": "test/test_helper.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 84,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/test_helper.rb#ruby-reference:require:1:16",
+      "start_line": 1
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:85:test/test_helper.rb:2-2:repo-ruby:test/test_helper.rb#ruby-require:2",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_loaded": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "require_form": "require_relative",
+        "require_path": "../lib/example",
+        "source_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+        "target_key": "file:lib/example.rb"
+      },
+      "path": "test/test_helper.rb",
+      "raw_kind": "ruby.require",
+      "raw_observation_ordinal": 85,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/test_helper.rb#ruby-require:2",
+      "start_line": 2
+    },
+    {
+      "confidence": "extracted",
+      "end_line": 2,
+      "evidence_key": "evidence:86:test/test_helper.rb:2-2:repo-ruby:test/test_helper.rb#ruby-reference:require_relative:2:14",
+      "extractor": "repo-ruby",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "format": "ruby",
+        "not_fetched": true,
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "profiles": [
+          "minitest"
+        ],
+        "raw_value_summary": "../lib/example",
+        "reference_kind": "require_relative",
+        "resolution_reason": "repo-local",
+        "source_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+        "target_key": "file:lib/example.rb"
+      },
+      "path": "test/test_helper.rb",
+      "raw_kind": "ruby.reference",
+      "raw_observation_ordinal": 86,
+      "raw_schema_version": 1,
+      "raw_source_id": "test/test_helper.rb#ruby-reference:require_relative:2:14",
+      "start_line": 2
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.invalid%2Frubygems",
+      "evidence_key": "evidence:1:Gemfile:1-1:repo-ruby:Gemfile#ruby-reference:gem_source:1:32",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby-gem:minitest",
+      "evidence_key": "evidence:43:example.gemspec:5-5:repo-ruby:example.gemspec#ruby-reference:gem_dependency:5:8",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby-gem:minitest",
+      "evidence_key": "evidence:5:Gemfile:4-4:repo-ruby:Gemfile#ruby-reference:gem_dependency:4:8",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby-gem:rack",
+      "evidence_key": "evidence:3:Gemfile:3-3:repo-ruby:Gemfile#ruby-reference:gem_dependency:3:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby-gem:rack",
+      "evidence_key": "evidence:41:example.gemspec:4-4:repo-ruby:example.gemspec#ruby-reference:gem_dependency:4:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby.require:hanami",
+      "evidence_key": "evidence:26:config/app.rb:1-1:repo-ruby:config/app.rb#ruby-reference:require:1:6",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby.require:json",
+      "evidence_key": "evidence:48:lib/example.rb:2-2:repo-ruby:lib/example.rb#ruby-reference:require:2:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby.require:minitest%2Fautorun",
+      "evidence_key": "evidence:84:test/test_helper.rb:1-1:repo-ruby:test/test_helper.rb#ruby-reference:require:1:16",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:ruby.require:sinatra%2Fbase",
+      "evidence_key": "evidence:69:sinatra_app.rb:1-1:repo-ruby:sinatra_app.rb#ruby-reference:require:1:12",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "external:vagrant-box:example%2Fubuntu",
+      "evidence_key": "evidence:12:Vagrantfile:2-2:repo-ruby:Vagrantfile#ruby-reference:vagrant_box:2:14",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:Gemfile",
+      "evidence_key": "evidence:0:Gemfile:0-0:repo-ruby:Gemfile#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:Rakefile",
+      "evidence_key": "evidence:6:Rakefile:0-0:repo-ruby:Rakefile#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:Vagrantfile",
+      "evidence_key": "evidence:10:Vagrantfile:0-0:repo-ruby:Vagrantfile#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:app/actions/home/index.rb",
+      "evidence_key": "evidence:18:app/actions/home/index.rb:0-0:repo-ruby:app/actions/home/index.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:config/app.rb",
+      "evidence_key": "evidence:24:config/app.rb:0-0:repo-ruby:config/app.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:config/routes.rb",
+      "evidence_key": "evidence:29:config/routes.rb:0-0:repo-ruby:config/routes.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:dynamic.rb",
+      "evidence_key": "evidence:33:dynamic.rb:0-0:repo-ruby:dynamic.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:example.gemspec",
+      "evidence_key": "evidence:39:example.gemspec:0-0:repo-ruby:example.gemspec#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:lib",
+      "evidence_key": "evidence:16:Vagrantfile:5-5:repo-ruby:Vagrantfile#ruby-reference:vagrant_synced_folder:5:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:lib/example.rb",
+      "evidence_key": "evidence:44:lib/example.rb:0-0:repo-ruby:lib/example.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:lib/example.rb",
+      "evidence_key": "evidence:86:test/test_helper.rb:2-2:repo-ruby:test/test_helper.rb#ruby-reference:require_relative:2:14",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:lib/example/service.rb",
+      "evidence_key": "evidence:46:lib/example.rb:1-1:repo-ruby:lib/example.rb#ruby-reference:require_relative:1:15",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:lib/example/service.rb",
+      "evidence_key": "evidence:56:lib/example/service.rb:0-0:repo-ruby:lib/example/service.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:redaction.rb",
+      "evidence_key": "evidence:61:redaction.rb:0-0:repo-ruby:redaction.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:sinatra_app.rb",
+      "evidence_key": "evidence:67:sinatra_app.rb:0-0:repo-ruby:sinatra_app.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:test/example_test.rb",
+      "evidence_key": "evidence:75:test/example_test.rb:0-0:repo-ruby:test/example_test.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:test/test_helper.rb",
+      "evidence_key": "evidence:77:test/example_test.rb:1-1:repo-ruby:test/example_test.rb#ruby-reference:require_relative:1:11",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:test/test_helper.rb",
+      "evidence_key": "evidence:82:test/test_helper.rb:0-0:repo-ruby:test/test_helper.rb#ruby-file",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:views/health.erb",
+      "evidence_key": "evidence:72:sinatra_app.rb:5-5:repo-ruby:sinatra_app.rb#ruby-reference:template:5:6",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:views/item.erb",
+      "evidence_key": "evidence:74:sinatra_app.rb:9-9:repo-ruby:sinatra_app.rb#ruby-reference:template:9:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.class:App",
+      "evidence_key": "evidence:70:sinatra_app.rb:3-3:repo-ruby:sinatra_app.rb#ruby.class:App:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AActions%3A%3AHome%3A%3AIndex",
+      "evidence_key": "evidence:22:app/actions/home/index.rb:4-4:repo-ruby:app/actions/home/index.rb#ruby.class:Example::Actions::Home::Index:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AActions%3A%3AHome%3A%3AIndex",
+      "evidence_key": "evidence:23:app/actions/home/index.rb:5-5:repo-ruby:app/actions/home/index.rb#ruby.method:handle:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AApp",
+      "evidence_key": "evidence:28:config/app.rb:4-4:repo-ruby:config/app.rb#ruby.class:Example::App:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AApp",
+      "evidence_key": "evidence:31:config/routes.rb:2-2:repo-ruby:config/routes.rb#ruby.class:Example::App:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3ARunner",
+      "evidence_key": "evidence:51:lib/example.rb:7-7:repo-ruby:lib/example.rb#ruby.class:Example::Runner:7",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3ARunner",
+      "evidence_key": "evidence:54:lib/example.rb:11-11:repo-ruby:lib/example.rb#ruby.method:call:11",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3ARunner",
+      "evidence_key": "evidence:55:lib/example.rb:15-15:repo-ruby:lib/example.rb#ruby.singleton_method:build:15",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AService",
+      "evidence_key": "evidence:58:lib/example/service.rb:2-2:repo-ruby:lib/example/service.rb#ruby.class:Example::Service:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AService",
+      "evidence_key": "evidence:59:lib/example/service.rb:3-3:repo-ruby:lib/example/service.rb#ruby.constant:DEFAULT_URL:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AService",
+      "evidence_key": "evidence:60:lib/example/service.rb:5-5:repo-ruby:lib/example/service.rb#ruby.method:call:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.class:ExampleTest",
+      "evidence_key": "evidence:78:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.class:ExampleTest:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.class:ExampleTest",
+      "evidence_key": "evidence:80:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.method:test_call:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.constant:Example%3A%3AService:DEFAULT_URL",
+      "evidence_key": "evidence:59:lib/example/service.rb:3-3:repo-ruby:lib/example/service.rb#ruby.constant:DEFAULT_URL:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.constant:Example:API_KEY",
+      "evidence_key": "evidence:64:redaction.rb:2-2:repo-ruby:redaction.rb#ruby.constant:API_KEY:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.constant:Example:SESSION_SECRET",
+      "evidence_key": "evidence:66:redaction.rb:3-3:repo-ruby:redaction.rb#ruby.constant:SESSION_SECRET:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.constant:Example:VERSION",
+      "evidence_key": "evidence:50:lib/example.rb:5-5:repo-ruby:lib/example.rb#ruby.constant:VERSION:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AGemfile",
+      "evidence_key": "evidence:0:Gemfile:0-0:repo-ruby:Gemfile#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AGemfile",
+      "evidence_key": "evidence:1:Gemfile:1-1:repo-ruby:Gemfile#ruby-reference:gem_source:1:32",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AGemfile",
+      "evidence_key": "evidence:3:Gemfile:3-3:repo-ruby:Gemfile#ruby-reference:gem_dependency:3:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AGemfile",
+      "evidence_key": "evidence:5:Gemfile:4-4:repo-ruby:Gemfile#ruby-reference:gem_dependency:4:8",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3ARakefile",
+      "evidence_key": "evidence:6:Rakefile:0-0:repo-ruby:Rakefile#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AVagrantfile",
+      "evidence_key": "evidence:10:Vagrantfile:0-0:repo-ruby:Vagrantfile#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AVagrantfile",
+      "evidence_key": "evidence:12:Vagrantfile:2-2:repo-ruby:Vagrantfile#ruby-reference:vagrant_box:2:14",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3AVagrantfile",
+      "evidence_key": "evidence:16:Vagrantfile:5-5:repo-ruby:Vagrantfile#ruby-reference:vagrant_synced_folder:5:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "evidence_key": "evidence:18:app/actions/home/index.rb:0-0:repo-ruby:app/actions/home/index.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "evidence_key": "evidence:19:app/actions/home/index.rb:1-1:repo-ruby:app/actions/home/index.rb#ruby.module:Example:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "evidence_key": "evidence:20:app/actions/home/index.rb:2-2:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "evidence_key": "evidence:21:app/actions/home/index.rb:3-3:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions::Home:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "evidence_key": "evidence:22:app/actions/home/index.rb:4-4:repo-ruby:app/actions/home/index.rb#ruby.class:Example::Actions::Home::Index:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "evidence_key": "evidence:24:config/app.rb:0-0:repo-ruby:config/app.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "evidence_key": "evidence:26:config/app.rb:1-1:repo-ruby:config/app.rb#ruby-reference:require:1:6",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "evidence_key": "evidence:27:config/app.rb:3-3:repo-ruby:config/app.rb#ruby.module:Example:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "evidence_key": "evidence:28:config/app.rb:4-4:repo-ruby:config/app.rb#ruby.class:Example::App:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "evidence_key": "evidence:29:config/routes.rb:0-0:repo-ruby:config/routes.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "evidence_key": "evidence:30:config/routes.rb:1-1:repo-ruby:config/routes.rb#ruby.module:Example:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "evidence_key": "evidence:31:config/routes.rb:2-2:repo-ruby:config/routes.rb#ruby.class:Example::App:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "evidence_key": "evidence:32:config/routes.rb:3-3:repo-ruby:config/routes.rb#ruby.route:get /home:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Adynamic.rb",
+      "evidence_key": "evidence:33:dynamic.rb:0-0:repo-ruby:dynamic.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Adynamic.rb",
+      "evidence_key": "evidence:34:dynamic.rb:1-1:repo-ruby:dynamic.rb#ruby.module:Example:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aexample.gemspec",
+      "evidence_key": "evidence:39:example.gemspec:0-0:repo-ruby:example.gemspec#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aexample.gemspec",
+      "evidence_key": "evidence:41:example.gemspec:4-4:repo-ruby:example.gemspec#ruby-reference:gem_dependency:4:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aexample.gemspec",
+      "evidence_key": "evidence:43:example.gemspec:5-5:repo-ruby:example.gemspec#ruby-reference:gem_dependency:5:8",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb",
+      "evidence_key": "evidence:56:lib/example/service.rb:0-0:repo-ruby:lib/example/service.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb",
+      "evidence_key": "evidence:57:lib/example/service.rb:1-1:repo-ruby:lib/example/service.rb#ruby.module:Example:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb",
+      "evidence_key": "evidence:58:lib/example/service.rb:2-2:repo-ruby:lib/example/service.rb#ruby.class:Example::Service:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "evidence_key": "evidence:44:lib/example.rb:0-0:repo-ruby:lib/example.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "evidence_key": "evidence:46:lib/example.rb:1-1:repo-ruby:lib/example.rb#ruby-reference:require_relative:1:15",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "evidence_key": "evidence:48:lib/example.rb:2-2:repo-ruby:lib/example.rb#ruby-reference:require:2:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "evidence_key": "evidence:49:lib/example.rb:4-4:repo-ruby:lib/example.rb#ruby.module:Example:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "evidence_key": "evidence:51:lib/example.rb:7-7:repo-ruby:lib/example.rb#ruby.class:Example::Runner:7",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aredaction.rb",
+      "evidence_key": "evidence:61:redaction.rb:0-0:repo-ruby:redaction.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aredaction.rb",
+      "evidence_key": "evidence:62:redaction.rb:1-1:repo-ruby:redaction.rb#ruby.module:Example:1",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Asinatra_app.rb",
+      "evidence_key": "evidence:67:sinatra_app.rb:0-0:repo-ruby:sinatra_app.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Asinatra_app.rb",
+      "evidence_key": "evidence:69:sinatra_app.rb:1-1:repo-ruby:sinatra_app.rb#ruby-reference:require:1:12",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Asinatra_app.rb",
+      "evidence_key": "evidence:70:sinatra_app.rb:3-3:repo-ruby:sinatra_app.rb#ruby.class:App:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Asinatra_app.rb",
+      "evidence_key": "evidence:71:sinatra_app.rb:4-4:repo-ruby:sinatra_app.rb#ruby.route:get /health:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Asinatra_app.rb",
+      "evidence_key": "evidence:73:sinatra_app.rb:8-8:repo-ruby:sinatra_app.rb#ruby.route:post /items:8",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "evidence_key": "evidence:75:test/example_test.rb:0-0:repo-ruby:test/example_test.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "evidence_key": "evidence:77:test/example_test.rb:1-1:repo-ruby:test/example_test.rb#ruby-reference:require_relative:1:11",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "evidence_key": "evidence:78:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.class:ExampleTest:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "evidence_key": "evidence:79:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.test_case:ExampleTest:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+      "evidence_key": "evidence:82:test/test_helper.rb:0-0:repo-ruby:test/test_helper.rb#ruby-file",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+      "evidence_key": "evidence:84:test/test_helper.rb:1-1:repo-ruby:test/test_helper.rb#ruby-reference:require:1:16",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+      "evidence_key": "evidence:86:test/test_helper.rb:2-2:repo-ruby:test/test_helper.rb#ruby-reference:require_relative:2:14",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.method:Example%3A%3AActions%3A%3AHome%3A%3AIndex:handle",
+      "evidence_key": "evidence:23:app/actions/home/index.rb:5-5:repo-ruby:app/actions/home/index.rb#ruby.method:handle:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.method:Example%3A%3ARunner:call",
+      "evidence_key": "evidence:54:lib/example.rb:11-11:repo-ruby:lib/example.rb#ruby.method:call:11",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.method:Example%3A%3AService:call",
+      "evidence_key": "evidence:60:lib/example/service.rb:5-5:repo-ruby:lib/example/service.rb#ruby.method:call:5",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.method:ExampleTest:test_call",
+      "evidence_key": "evidence:80:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.method:test_call:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:19:app/actions/home/index.rb:1-1:repo-ruby:app/actions/home/index.rb#ruby.module:Example:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:27:config/app.rb:3-3:repo-ruby:config/app.rb#ruby.module:Example:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:30:config/routes.rb:1-1:repo-ruby:config/routes.rb#ruby.module:Example:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:34:dynamic.rb:1-1:repo-ruby:dynamic.rb#ruby.module:Example:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:49:lib/example.rb:4-4:repo-ruby:lib/example.rb#ruby.module:Example:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:50:lib/example.rb:5-5:repo-ruby:lib/example.rb#ruby.constant:VERSION:5",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:57:lib/example/service.rb:1-1:repo-ruby:lib/example/service.rb#ruby.module:Example:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:62:redaction.rb:1-1:repo-ruby:redaction.rb#ruby.module:Example:1",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:64:redaction.rb:2-2:repo-ruby:redaction.rb#ruby.constant:API_KEY:2",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "evidence_key": "evidence:66:redaction.rb:3-3:repo-ruby:redaction.rb#ruby.constant:SESSION_SECRET:3",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.module:Example%3A%3AActions",
+      "evidence_key": "evidence:20:app/actions/home/index.rb:2-2:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions:2",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.module:Example%3A%3AActions%3A%3AHome",
+      "evidence_key": "evidence:21:app/actions/home/index.rb:3-3:repo-ruby:app/actions/home/index.rb#ruby.module:Example::Actions::Home:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.route:file%3Aconfig%2Froutes.rb:%2Froutes%2Fget%3A%2Fhome",
+      "evidence_key": "evidence:32:config/routes.rb:3-3:repo-ruby:config/routes.rb#ruby.route:get /home:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fget%3A%2Fhealth",
+      "evidence_key": "evidence:71:sinatra_app.rb:4-4:repo-ruby:sinatra_app.rb#ruby.route:get /health:4",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fget%3A%2Fhealth",
+      "evidence_key": "evidence:72:sinatra_app.rb:5-5:repo-ruby:sinatra_app.rb#ruby-reference:template:5:6",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fpost%3A%2Fitems",
+      "evidence_key": "evidence:73:sinatra_app.rb:8-8:repo-ruby:sinatra_app.rb#ruby.route:post /items:8",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fpost%3A%2Fitems",
+      "evidence_key": "evidence:74:sinatra_app.rb:9-9:repo-ruby:sinatra_app.rb#ruby-reference:template:9:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.singleton_method:Example%3A%3ARunner:build",
+      "evidence_key": "evidence:55:lib/example.rb:15-15:repo-ruby:lib/example.rb#ruby.singleton_method:build:15",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest",
+      "evidence_key": "evidence:79:test/example_test.rb:3-3:repo-ruby:test/example_test.rb#ruby.test_case:ExampleTest:3",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest",
+      "evidence_key": "evidence:81:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.test_method:test_call:4",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "ruby.test_method:ruby.test_case%3Afile%253Atest%252Fexample_test.rb%3AExampleTest:test_call",
+      "evidence_key": "evidence:81:test/example_test.rb:4-4:repo-ruby:test/example_test.rb#ruby.test_method:test_call:4",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "external.url:https%3A%2F%2Fexample.invalid%2Frubygems",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "https%3A%2F%2Fexample.invalid%2Frubygems",
+      "graph_key_version": 1,
+      "kind": "external.url",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:ruby-gem:minitest",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "minitest",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:ruby-gem:rack",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "rack",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:ruby.require:hanami",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "hanami",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:ruby.require:json",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "json",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:ruby.require:minitest%2Fautorun",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "minitest%2Fautorun",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:ruby.require:sinatra%2Fbase",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "sinatra%2Fbase",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "external:vagrant-box:example%2Fubuntu",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example%2Fubuntu",
+      "graph_key_version": 1,
+      "kind": "external",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:Gemfile",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Gemfile",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile"
+      }
+    },
+    {
+      "canonical_key": "file:Rakefile",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Rakefile",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "rake"
+      }
+    },
+    {
+      "canonical_key": "file:Vagrantfile",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Vagrantfile",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile"
+      }
+    },
+    {
+      "canonical_key": "file:app/actions/home/index.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "app/actions/home/index.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "file:config/app.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "config/app.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami"
+      }
+    },
+    {
+      "canonical_key": "file:config/routes.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "config/routes.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami"
+      }
+    },
+    {
+      "canonical_key": "file:dynamic.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "dynamic.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "file:example.gemspec",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.gemspec",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec"
+      }
+    },
+    {
+      "canonical_key": "file:lib",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "lib",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:lib/example.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "lib/example.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "file:lib/example/service.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "lib/example/service.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:redaction.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "redaction.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "file:sinatra_app.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "sinatra_app.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra"
+      }
+    },
+    {
+      "canonical_key": "file:test/example_test.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "test/example_test.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest"
+      }
+    },
+    {
+      "canonical_key": "file:test/test_helper.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "test/test_helper.rb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:views/health.erb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "views/health.erb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "file:views/item.erb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "views/item.erb",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "ruby.class:App",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "App",
+      "graph_key_version": 1,
+      "kind": "ruby.class",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "qualified_name": "App",
+        "superclass": "Sinatra::Base"
+      }
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AActions%3A%3AHome%3A%3AIndex",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Actions::Home::Index",
+      "graph_key_version": 1,
+      "kind": "ruby.class",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Actions::Home::Index"
+      }
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AApp",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::App",
+      "graph_key_version": 1,
+      "kind": "ruby.class",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "qualified_name": "Example::App",
+        "superclass": "Hanami::App"
+      }
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3ARunner",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Runner",
+      "graph_key_version": 1,
+      "kind": "ruby.class",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Runner",
+        "superclass": "BaseRunner"
+      }
+    },
+    {
+      "canonical_key": "ruby.class:Example%3A%3AService",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Service",
+      "graph_key_version": 1,
+      "kind": "ruby.class",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Service"
+      }
+    },
+    {
+      "canonical_key": "ruby.class:ExampleTest",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ExampleTest",
+      "graph_key_version": 1,
+      "kind": "ruby.class",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "qualified_name": "ExampleTest",
+        "superclass": "Minitest::Test"
+      }
+    },
+    {
+      "canonical_key": "ruby.constant:Example%3A%3AService:DEFAULT_URL",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "DEFAULT_URL",
+      "graph_key_version": 1,
+      "kind": "ruby.constant",
+      "metadata": {
+        "constant_name": "DEFAULT_URL",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example::Service",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "ruby.constant:Example:API_KEY",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "API_KEY",
+      "graph_key_version": 1,
+      "kind": "ruby.constant",
+      "metadata": {
+        "constant_name": "API_KEY",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "redacted": true,
+        "redaction_reason": "secret-prone-constant-name"
+      }
+    },
+    {
+      "canonical_key": "ruby.constant:Example:SESSION_SECRET",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "SESSION_SECRET",
+      "graph_key_version": 1,
+      "kind": "ruby.constant",
+      "metadata": {
+        "constant_name": "SESSION_SECRET",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "redacted": true,
+        "redaction_reason": "secret-prone-constant-name"
+      }
+    },
+    {
+      "canonical_key": "ruby.constant:Example:VERSION",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "VERSION",
+      "graph_key_version": 1,
+      "kind": "ruby.constant",
+      "metadata": {
+        "constant_name": "VERSION",
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "owner": "Example",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "redacted": false
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3AGemfile",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Gemfile",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemfile"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3ARakefile",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Rakefile",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "rake"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3AVagrantfile",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Vagrantfile",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "vagrantfile"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aapp%2Factions%2Fhome%2Findex.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "app/actions/home/index.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Fapp.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "config/app.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aconfig%2Froutes.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "config/routes.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Adynamic.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "dynamic.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aexample.gemspec",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "example.gemspec",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "gemspec"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample%2Fservice.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "lib/example/service.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Alib%2Fexample.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "lib/example.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Aredaction.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "redaction.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Asinatra_app.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "sinatra_app.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Fexample_test.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "test/example_test.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest"
+      }
+    },
+    {
+      "canonical_key": "ruby.file:file%3Atest%2Ftest_helper.rb",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "test/test_helper.rb",
+      "graph_key_version": 1,
+      "kind": "ruby.file",
+      "metadata": {
+        "format": "ruby",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest"
+      }
+    },
+    {
+      "canonical_key": "ruby.method:Example%3A%3AActions%3A%3AHome%3A%3AIndex:handle",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Actions::Home::Index.handle",
+      "graph_key_version": 1,
+      "kind": "ruby.method",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "handle",
+        "owner": "Example::Actions::Home::Index",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Actions::Home::Index.handle"
+      }
+    },
+    {
+      "canonical_key": "ruby.method:Example%3A%3ARunner:call",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Runner.call",
+      "graph_key_version": 1,
+      "kind": "ruby.method",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "call",
+        "owner": "Example::Runner",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Runner.call"
+      }
+    },
+    {
+      "canonical_key": "ruby.method:Example%3A%3AService:call",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Service.call",
+      "graph_key_version": 1,
+      "kind": "ruby.method",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "call",
+        "owner": "Example::Service",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Service.call"
+      }
+    },
+    {
+      "canonical_key": "ruby.method:ExampleTest:test_call",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ExampleTest.test_call",
+      "graph_key_version": 1,
+      "kind": "ruby.method",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "test_call",
+        "owner": "ExampleTest",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "qualified_name": "ExampleTest.test_call"
+      }
+    },
+    {
+      "canonical_key": "ruby.module:Example",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example",
+      "graph_key_version": 1,
+      "kind": "ruby.module",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example"
+      }
+    },
+    {
+      "canonical_key": "ruby.module:Example%3A%3AActions",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Actions",
+      "graph_key_version": 1,
+      "kind": "ruby.module",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Actions"
+      }
+    },
+    {
+      "canonical_key": "ruby.module:Example%3A%3AActions%3A%3AHome",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Actions::Home",
+      "graph_key_version": 1,
+      "kind": "ruby.module",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Actions::Home"
+      }
+    },
+    {
+      "canonical_key": "ruby.route:file%3Aconfig%2Froutes.rb:%2Froutes%2Fget%3A%2Fhome",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/home",
+      "graph_key_version": 1,
+      "kind": "ruby.route",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "hanami",
+        "route_method": "get",
+        "route_pattern": "/home"
+      }
+    },
+    {
+      "canonical_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fget%3A%2Fhealth",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/health",
+      "graph_key_version": 1,
+      "kind": "ruby.route",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "route_method": "get",
+        "route_pattern": "/health"
+      }
+    },
+    {
+      "canonical_key": "ruby.route:file%3Asinatra_app.rb:%2Froutes%2Fpost%3A%2Fitems",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "/items",
+      "graph_key_version": 1,
+      "kind": "ruby.route",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "sinatra",
+        "route_method": "post",
+        "route_pattern": "/items"
+      }
+    },
+    {
+      "canonical_key": "ruby.singleton_method:Example%3A%3ARunner:build",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "Example::Runner.build",
+      "graph_key_version": 1,
+      "kind": "ruby.singleton_method",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "build",
+        "owner": "Example::Runner",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "generic_ruby",
+        "qualified_name": "Example::Runner.build"
+      }
+    },
+    {
+      "canonical_key": "ruby.test_case:file%3Atest%2Fexample_test.rb:ExampleTest",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "ExampleTest",
+      "graph_key_version": 1,
+      "kind": "ruby.test_case",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "qualified_name": "ExampleTest",
+        "test_framework": "minitest"
+      }
+    },
+    {
+      "canonical_key": "ruby.test_method:ruby.test_case%3Afile%253Atest%252Fexample_test.rb%3AExampleTest:test_call",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "test_call",
+      "graph_key_version": 1,
+      "kind": "ruby.test_method",
+      "metadata": {
+        "format": "ruby",
+        "identity_strength": "symbolic",
+        "method_name": "test_call",
+        "parser": "stdlib-ruby-lexical",
+        "profile": "minitest",
+        "test_framework": "minitest"
+      }
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 0,
+    "edge_evidence_links": 60,
+    "edges": 60,
+    "errors": 0,
+    "evidence": 87,
+    "infos": 0,
+    "node_evidence_links": 120,
+    "nodes": 62,
+    "raw_observations": 87,
+    "warnings": 0
+  }
+}

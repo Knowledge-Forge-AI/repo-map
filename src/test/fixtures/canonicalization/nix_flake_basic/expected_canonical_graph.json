@@ -1,0 +1,539 @@
+{
+  "diagnostics": [
+    {
+      "category": "unsupported_raw_observation_kind",
+      "field": "kind",
+      "message": "raw observation kind is not supported: nix.path_ref",
+      "path": "flake.nix",
+      "placeholder_key": null,
+      "raw_observation_ordinal": 8,
+      "raw_source_id": "flake.nix#nix-path:10:config-settings-json",
+      "severity": "warning",
+      "value": "nix.path_ref"
+    }
+  ],
+  "edge_evidence_links": [
+    {
+      "edge_key": "canonical-edge:03f06aca43092d999ba983ae325e1e13bea7b046a4f6fe28b03deb6b5924853d",
+      "evidence_key": "evidence:7:flake.nix:9-9:repo-nix:flake.nix#nix-check:aarch64-darwin:unit",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:57723d42ee37206c1d6417baa100b115caec9985c7fa94c9d4c234d8020bf4c5",
+      "evidence_key": "evidence:4:flake.nix:3-6:repo-nix:flake.nix#nix-app:aarch64-darwin:tool",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:aa3f6d56f0e9d66236b28759ea30f46ac7c0fc2b3b95f9e9fa7270fa3426a7af",
+      "evidence_key": "evidence:5:flake.nix:7-7:repo-nix:flake.nix#nix-package:aarch64-darwin:default",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:b33d7f2e27d07fd0e5e3ffa3dbb2ea501655d4b7643661f76a40c89f10463010",
+      "evidence_key": "evidence:6:flake.nix:8-8:repo-nix:flake.nix#nix-devShell:aarch64-darwin:default",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ee275163d9db64efe9782448a5c270b6f80301569bcb4e148ee9b98bab3ed64d",
+      "evidence_key": "evidence:3:flake.nix:2-2:repo-nix:flake.nix#nix-import:2:modules-base-nix",
+      "link_kind": "supports"
+    },
+    {
+      "edge_key": "canonical-edge:ef30b9b28a276136cb52498a321fa9858c7b6382270fb96db3b66bddec429327",
+      "evidence_key": "evidence:4:flake.nix:3-6:repo-nix:flake.nix#nix-app:aarch64-darwin:tool",
+      "link_kind": "supports"
+    }
+  ],
+  "edges": [
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:ef30b9b28a276136cb52498a321fa9858c7b6382270fb96db3b66bddec429327",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "apps": [
+          "tool"
+        ],
+        "attr_paths": [
+          "apps.aarch64-darwin.tool"
+        ],
+        "flake_refs": [
+          "repo-map"
+        ],
+        "output_kinds": [
+          "app"
+        ],
+        "systems": [
+          "aarch64-darwin"
+        ]
+      },
+      "source_key": "file:flake.nix",
+      "target_key": "nix.app:repo-map:aarch64-darwin:tool"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:03f06aca43092d999ba983ae325e1e13bea7b046a4f6fe28b03deb6b5924853d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "attr_paths": [
+          "checks.aarch64-darwin.unit"
+        ],
+        "checks": [
+          "unit"
+        ],
+        "flake_refs": [
+          "repo-map"
+        ],
+        "output_kinds": [
+          "check"
+        ],
+        "systems": [
+          "aarch64-darwin"
+        ]
+      },
+      "source_key": "file:flake.nix",
+      "target_key": "nix.check:repo-map:aarch64-darwin:unit"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:b33d7f2e27d07fd0e5e3ffa3dbb2ea501655d4b7643661f76a40c89f10463010",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "attr_paths": [
+          "devShells.aarch64-darwin.default"
+        ],
+        "devShells": [
+          "default"
+        ],
+        "flake_refs": [
+          "repo-map"
+        ],
+        "output_kinds": [
+          "devShell"
+        ],
+        "systems": [
+          "aarch64-darwin"
+        ]
+      },
+      "source_key": "file:flake.nix",
+      "target_key": "nix.devShell:repo-map:aarch64-darwin:default"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:aa3f6d56f0e9d66236b28759ea30f46ac7c0fc2b3b95f9e9fa7270fa3426a7af",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "defines",
+      "metadata": {
+        "attr_paths": [
+          "packages.aarch64-darwin.default"
+        ],
+        "flake_refs": [
+          "repo-map"
+        ],
+        "output_kinds": [
+          "package"
+        ],
+        "packages": [
+          "default"
+        ],
+        "systems": [
+          "aarch64-darwin"
+        ]
+      },
+      "source_key": "file:flake.nix",
+      "target_key": "nix.package:repo-map:aarch64-darwin:default"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:ee275163d9db64efe9782448a5c270b6f80301569bcb4e148ee9b98bab3ed64d",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "sources",
+      "metadata": {
+        "imports": [
+          "./modules/base.nix"
+        ],
+        "resolved_paths": [
+          "modules/base.nix"
+        ],
+        "syntaxes": [
+          "imports-list"
+        ]
+      },
+      "source_key": "file:flake.nix",
+      "target_key": "file:modules/base.nix"
+    },
+    {
+      "confidence": "heuristic",
+      "conflict": false,
+      "edge_key": "canonical-edge:57723d42ee37206c1d6417baa100b115caec9985c7fa94c9d4c234d8020bf4c5",
+      "graph_key_version": 1,
+      "identity_metadata": {},
+      "kind": "exposes_script",
+      "metadata": {
+        "apps": [
+          "tool"
+        ],
+        "flake_refs": [
+          "repo-map"
+        ],
+        "program_paths": [
+          "bin/tool"
+        ],
+        "programs": [
+          "\"${self}/bin/tool\""
+        ],
+        "systems": [
+          "aarch64-darwin"
+        ]
+      },
+      "source_key": "nix.app:repo-map:aarch64-darwin:tool",
+      "target_key": "file:bin/tool"
+    }
+  ],
+  "evidence": [
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:0:flake.nix:0-0:repo-discovery:flake.nix",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "executable": false,
+        "generated": false,
+        "language": "nix",
+        "role": "configuration"
+      },
+      "path": "flake.nix",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 0,
+      "raw_schema_version": 1,
+      "raw_source_id": "flake.nix",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:1:modules/base.nix:0-0:repo-discovery:modules/base.nix",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "executable": false,
+        "generated": false,
+        "language": "nix",
+        "role": "source"
+      },
+      "path": "modules/base.nix",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 1,
+      "raw_schema_version": 1,
+      "raw_source_id": "modules/base.nix",
+      "start_line": null
+    },
+    {
+      "confidence": "extracted",
+      "end_line": null,
+      "evidence_key": "evidence:2:bin/tool:0-0:repo-discovery:bin/tool",
+      "extractor": "repo-discovery",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "content_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+        "executable": true,
+        "generated": false,
+        "language": "shell",
+        "role": "entrypoint"
+      },
+      "path": "bin/tool",
+      "raw_kind": "file",
+      "raw_observation_ordinal": 2,
+      "raw_schema_version": 1,
+      "raw_source_id": "bin/tool",
+      "start_line": null
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 2,
+      "evidence_key": "evidence:3:flake.nix:2-2:repo-nix:flake.nix#nix-import:2:modules-base-nix",
+      "extractor": "repo-nix",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "import_path": "./modules/base.nix",
+        "resolution": "local",
+        "resolved_path": "modules/base.nix",
+        "syntax": "imports-list"
+      },
+      "path": "flake.nix",
+      "raw_kind": "nix.import",
+      "raw_observation_ordinal": 3,
+      "raw_schema_version": 1,
+      "raw_source_id": "flake.nix#nix-import:2:modules-base-nix",
+      "start_line": 2
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 6,
+      "evidence_key": "evidence:4:flake.nix:3-6:repo-nix:flake.nix#nix-app:aarch64-darwin:tool",
+      "extractor": "repo-nix",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "app": "tool",
+        "attr_path": "apps.aarch64-darwin.tool",
+        "flake_ref": "repo-map",
+        "name": "tool",
+        "output_kind": "app",
+        "program": "\"${self}/bin/tool\"",
+        "program_path": "bin/tool",
+        "program_resolution": "local",
+        "system": "aarch64-darwin"
+      },
+      "path": "flake.nix",
+      "raw_kind": "nix.app",
+      "raw_observation_ordinal": 4,
+      "raw_schema_version": 1,
+      "raw_source_id": "flake.nix#nix-app:aarch64-darwin:tool",
+      "start_line": 3
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 7,
+      "evidence_key": "evidence:5:flake.nix:7-7:repo-nix:flake.nix#nix-package:aarch64-darwin:default",
+      "extractor": "repo-nix",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attr_path": "packages.aarch64-darwin.default",
+        "flake_ref": "repo-map",
+        "name": "default",
+        "output_kind": "package",
+        "system": "aarch64-darwin"
+      },
+      "path": "flake.nix",
+      "raw_kind": "nix.package",
+      "raw_observation_ordinal": 5,
+      "raw_schema_version": 1,
+      "raw_source_id": "flake.nix#nix-package:aarch64-darwin:default",
+      "start_line": 7
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 8,
+      "evidence_key": "evidence:6:flake.nix:8-8:repo-nix:flake.nix#nix-devShell:aarch64-darwin:default",
+      "extractor": "repo-nix",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attr_path": "devShells.aarch64-darwin.default",
+        "flake_ref": "repo-map",
+        "name": "default",
+        "output_kind": "devShell",
+        "system": "aarch64-darwin"
+      },
+      "path": "flake.nix",
+      "raw_kind": "nix.devShell",
+      "raw_observation_ordinal": 6,
+      "raw_schema_version": 1,
+      "raw_source_id": "flake.nix#nix-devShell:aarch64-darwin:default",
+      "start_line": 8
+    },
+    {
+      "confidence": "heuristic",
+      "end_line": 9,
+      "evidence_key": "evidence:7:flake.nix:9-9:repo-nix:flake.nix#nix-check:aarch64-darwin:unit",
+      "extractor": "repo-nix",
+      "extractor_version": "0.1.0",
+      "metadata": {
+        "attr_path": "checks.aarch64-darwin.unit",
+        "flake_ref": "repo-map",
+        "name": "unit",
+        "output_kind": "check",
+        "system": "aarch64-darwin"
+      },
+      "path": "flake.nix",
+      "raw_kind": "nix.check",
+      "raw_observation_ordinal": 7,
+      "raw_schema_version": 1,
+      "raw_source_id": "flake.nix#nix-check:aarch64-darwin:unit",
+      "start_line": 9
+    }
+  ],
+  "graph_key_version": 1,
+  "node_evidence_links": [
+    {
+      "canonical_key": "file:bin/tool",
+      "evidence_key": "evidence:2:bin/tool:0-0:repo-discovery:bin/tool",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:bin/tool",
+      "evidence_key": "evidence:4:flake.nix:3-6:repo-nix:flake.nix#nix-app:aarch64-darwin:tool",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "evidence_key": "evidence:0:flake.nix:0-0:repo-discovery:flake.nix",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "evidence_key": "evidence:3:flake.nix:2-2:repo-nix:flake.nix#nix-import:2:modules-base-nix",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "evidence_key": "evidence:4:flake.nix:3-6:repo-nix:flake.nix#nix-app:aarch64-darwin:tool",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "evidence_key": "evidence:5:flake.nix:7-7:repo-nix:flake.nix#nix-package:aarch64-darwin:default",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "evidence_key": "evidence:6:flake.nix:8-8:repo-nix:flake.nix#nix-devShell:aarch64-darwin:default",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "evidence_key": "evidence:7:flake.nix:9-9:repo-nix:flake.nix#nix-check:aarch64-darwin:unit",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "file:modules/base.nix",
+      "evidence_key": "evidence:1:modules/base.nix:0-0:repo-discovery:modules/base.nix",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "file:modules/base.nix",
+      "evidence_key": "evidence:3:flake.nix:2-2:repo-nix:flake.nix#nix-import:2:modules-base-nix",
+      "link_kind": "inferred_from_edge"
+    },
+    {
+      "canonical_key": "nix.app:repo-map:aarch64-darwin:tool",
+      "evidence_key": "evidence:4:flake.nix:3-6:repo-nix:flake.nix#nix-app:aarch64-darwin:tool",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "nix.check:repo-map:aarch64-darwin:unit",
+      "evidence_key": "evidence:7:flake.nix:9-9:repo-nix:flake.nix#nix-check:aarch64-darwin:unit",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "nix.devShell:repo-map:aarch64-darwin:default",
+      "evidence_key": "evidence:6:flake.nix:8-8:repo-nix:flake.nix#nix-devShell:aarch64-darwin:default",
+      "link_kind": "observed"
+    },
+    {
+      "canonical_key": "nix.package:repo-map:aarch64-darwin:default",
+      "evidence_key": "evidence:5:flake.nix:7-7:repo-nix:flake.nix#nix-package:aarch64-darwin:default",
+      "link_kind": "observed"
+    }
+  ],
+  "nodes": [
+    {
+      "canonical_key": "file:bin/tool",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "bin/tool",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+        "executable": true,
+        "generated": false,
+        "language": "shell",
+        "role": "entrypoint"
+      }
+    },
+    {
+      "canonical_key": "file:flake.nix",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "flake.nix",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "executable": false,
+        "generated": false,
+        "language": "nix",
+        "role": "configuration"
+      }
+    },
+    {
+      "canonical_key": "file:modules/base.nix",
+      "confidence": "extracted",
+      "conflict": false,
+      "display_name": "modules/base.nix",
+      "graph_key_version": 1,
+      "kind": "file",
+      "metadata": {
+        "content_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "executable": false,
+        "generated": false,
+        "language": "nix",
+        "role": "source"
+      }
+    },
+    {
+      "canonical_key": "nix.app:repo-map:aarch64-darwin:tool",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "tool",
+      "graph_key_version": 1,
+      "kind": "nix.app",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "nix.check:repo-map:aarch64-darwin:unit",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "unit",
+      "graph_key_version": 1,
+      "kind": "nix.check",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "nix.devShell:repo-map:aarch64-darwin:default",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "default",
+      "graph_key_version": 1,
+      "kind": "nix.devShell",
+      "metadata": {}
+    },
+    {
+      "canonical_key": "nix.package:repo-map:aarch64-darwin:default",
+      "confidence": "heuristic",
+      "conflict": false,
+      "display_name": "default",
+      "graph_key_version": 1,
+      "kind": "nix.package",
+      "metadata": {}
+    }
+  ],
+  "ok": true,
+  "summary": {
+    "diagnostics": 1,
+    "edge_evidence_links": 6,
+    "edges": 6,
+    "errors": 0,
+    "evidence": 8,
+    "infos": 0,
+    "node_evidence_links": 14,
+    "nodes": 7,
+    "raw_observations": 9,
+    "warnings": 1
+  }
+}

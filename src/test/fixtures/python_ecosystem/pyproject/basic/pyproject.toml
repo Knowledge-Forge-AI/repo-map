@@ -1,0 +1,20 @@
+[project]
+name = "fixture-python-app"
+version = "0.1.0"
+dependencies = [
+  "requests>=2.31",
+  "fastapi[standard]>=0.111; python_version >= '3.11'",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "coverage[toml]>=7"]
+
+[project.scripts]
+fixture-tool = "fixture_app.cli:main"
+
+[project.entry-points."fixture.plugins"]
+demo = "fixture_app.plugins:Demo"
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"

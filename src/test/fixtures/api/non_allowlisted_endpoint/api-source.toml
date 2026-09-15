@@ -1,0 +1,47 @@
+[source]
+source_id = "fixture-non-allowlisted-api"
+source_type = "api.rest"
+api_source_class = "api.custom_documented_api"
+provider_name = "Fixture Provider"
+provider_product = "Fixture API"
+policy_status = "allowed_with_limits"
+read_only = true
+mutation_allowed = false
+
+[credentials]
+credentials_ref = "local_secret_ref:fixture-api-token"
+
+[consent]
+consent_ref = "local_consent_ref:fixture-non-allowlisted-api-2026-07"
+authorized_operations = ["read"]
+authorized_data_classes = ["metadata"]
+revoked = false
+mutation_allowed = false
+
+[limits]
+max_requests_per_run = 10
+max_requests_per_minute = 10
+max_concurrent_requests = 1
+max_bytes_per_run = 1048576
+max_items_per_run = 100
+max_retries = 0
+
+[retention]
+policy = "local_user_controlled"
+raw_response_retention = "minimized"
+redacted_response_retention = "retain"
+
+[redaction]
+profile = "strict"
+sensitivity = "private"
+
+[[endpoints]]
+name = "items"
+method = "GET"
+path = "https://example.invalid/v1/items"
+purpose = "Invalid arbitrary URL endpoint"
+response_type = "application/json"
+max_page_size = 100
+pagination = "none"
+downstream_route = "config"
+fixture_response_path = "responses/items.json"
