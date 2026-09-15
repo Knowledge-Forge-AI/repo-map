@@ -57,143 +57,139 @@ skill roots for agent discovery. Projection bodies are never canonical.
 Security vulnerabilities should follow the private reporting process in
 [SECURITY.md](SECURITY.md), not the public issue process.
 
-ADRs are organized under `docs/adr/YYYY/MM/`. The complete historical status
-archive is organized under `docs/status/YYYY/MM/DD/`; new primary phase
-records are exit reports. See
-[docs/status/README.md](docs/status/README.md) for the global sequence and
-forward exit rules.
+ADRs are organized under `docs/adr/YYYY/MM/`. Release notes and change history
+are tracked in [CHANGELOG.md](CHANGELOG.md) and [docs/releases](docs/releases/v0.0.1.md).
 
-## Current Status
+## Capabilities and Overview
 
-RepoMap has a working deterministic raw-observation pipeline, legacy
-observation-derived Postgres readback, and canonical graph storage/readback.
-Discovery emits file, entrypoint, shell command, sourced-file, environment,
-host-mutation, Python AST, and static Nix observations as JSONL. Legacy storage
-commands still read from the observation-derived `files`, `nodes`, `edges`, and
-`evidence` tables for compatibility.
+### 1. What is RepoMap?
 
-Canonicalization now runs as a tested pure layer before storage. Phase C1 added
-raw-observation retention plus `canonical_nodes`, `canonical_edges`,
-`canonical_evidence`, and evidence join tables, with developer-facing
-`storage load-canonical` for loading canonical fixtures. Phase C2 made
-`storage load-files` dual-write both legacy rows and canonical rows in one
-transaction while preserving existing public output and legacy readback
-behavior. Phase D added public canonical readback commands for canonical nodes,
-canonical edges, edge explanations, and depth-1 canonical neighborhoods under
-[ADR 0007](docs/adr/2026/06/0007-canonical-readback-and-explain-query-contracts.md).
-Phase E3 made `storage summary` canonical-aware by default while preserving the
-previous observation-derived summary shape behind `--legacy`. Phase F2 made
-`storage nodes` and `storage edges` canonical by default while keeping their
-old observation-derived output behind `--legacy`. Phase F4 made `storage
-neighborhood` canonical by default; use `--legacy` when `--node` is an older
-observation-derived stable key. Phase F5 made `storage file-neighborhood`
-canonical by default; use `--legacy` for the older observation-derived
-file-neighborhood shape. Phase F7 made `storage host-mutators` canonical by
-default for `mutates_host` and `host_mutation_intent` graph facts; use
-`--legacy` for the older observation-derived host-mutator rows.
-Phase F8 made `storage host-mutators-summary` canonical by default with
-category/edge_kind grouping and named canonical count fields; use `--legacy`
-for the older observation-derived summary rows. Phase F9 accepted `storage
-files`, `storage entrypoints`, and `storage file-nodes` as intentionally
-legacy-default commands and recommended pausing further Phase F default
-migrations before the readability/refactor phaseset.
-LOCAL32 later removed `storage files` and replaced it with bounded,
-graph-scoped `ops graph-files` canonical readback. LOCAL35 removed `storage
-entrypoints`; its stored-data replacement is `ops graph-files --graph
-<graph-id> --role entrypoint --observation-state observed`. LOCAL38 removed
-`storage file-nodes` without an alias or fallback; canonical file inventory is
-available through `ops graph-files`, while canonical neighborhoods and edge
-explanations provide graph context and evidence linkage.
-N1 added a static Nix extractor for imports, obvious flake outputs, app program
-paths, and raw-only path references without evaluating Nix. The initial specs
-live under `docs/specs/`. PWSH1 added basic static PowerShell classification
-and structural raw observations for scripts, modules, manifests, functions,
-params, imports, dot-sourcing, dynamic invocation markers, and secret-like
-redaction without executing PowerShell. PWSH2 adds conservative static
-PowerShell command, argument, alias, external-command, splat, and pipeline raw
-observations. PWSH3 adds conservative static side-effect observations for
-file, environment, registry, network, remoting, process, service,
-scheduled-task, package-management, security-policy, and credential-handling
-patterns without executing PowerShell. PWSH4 adds conservative literal `.psd1`
-manifest extraction for fields, dependencies, file references, exports, private
-data, bounded unknown expressions, and secret-like redaction. PWSH5 adds
-static alias definitions, literal splat summaries and call-site links, richer
-dynamic invocation metadata, and block-comment/here-string false-positive
-suppression. PWSH6 adds selected canonical graph mappings and bounded
-count-only dogfooding summaries for public-safe PowerShell fixtures while
-leaving dynamic and unsupported facts raw-only. SH0 defines the shared
-shell-family extraction design for future Bash, Bats, awk, zsh, and zunit
-phases; it does not change shell extraction behavior. BASH0 defines the
-Bash-specific design and dialect boundaries for the future BASH1-BASH5 sequence
-without implementing Bash extraction. BASH1 adds evidence-based Bash
-classification and conservative static structural raw observations while
-leaving side effects, canonicalization, and readback to later Bash phases.
-BASH2 adds conservative static Bash command, argument, redirect, heredoc,
-pipeline, chain, and process-substitution raw observations without executing
-shell code. BASH3 adds conservative static Bash side-effect and host-mutation
-raw observations for environment, file, network, package-manager, service,
-scheduled-job, container/runtime, infrastructure, security, credential,
-permission, ownership, archive, symlink, shell-profile, and redirect-derived
-patterns while preserving read-only boundaries. BASH4 adds conservative static
-Bash advanced-safety raw observations for aliases, arrays, traps, arithmetic,
-tests, case labels, and dynamic boundaries without executing shell code,
-expanding runtime constructs, canonicalizing Bash facts, or adding readback.
-BASH5 adds selected Bash canonical graph mappings and bounded count-only
-dogfooding summaries for public-safe fixtures while keeping dynamic and
-runtime-sensitive Bash details raw-only.
-BATS0 defines the Bats-specific extraction design and fixture strategy for the
-future BATS1-BATS3 sequence without implementing `.bats` classification or
-extractor behavior. BATS1 adds static `.bats` classification and conservative
-basic Bats test-structure raw observations for files, test cases, hooks, and
-simple helper loads without executing Bats or modeling `run` commands,
-assertions, skips, side effects, canonicalization, or readback. BATS2 adds
-static Bats library-load, run-wrapper, assertion/refutation, skip,
-helper-reference, fixture-reference, output-expectation, and status-expectation
-raw observations while preserving test-intent and non-execution boundaries.
-BATS3 adds selected Bats canonical mappings and bounded count-only summaries for
-public-safe fixtures while keeping dynamic and runtime-sensitive Bats details
-raw-only. AWK0 defines awk extraction design, grammar subset, public-safe
-examples, and safety boundaries for the AWK1-AWK3 sequence. AWK1 adds static
-awk classification and structural raw observations for programs, BEGIN/END
-blocks, pattern/action rules, functions, variables, fields, records, and
-bounded dynamic expressions without executing awk or modeling IO, pipes,
-`system()`, canonicalization, or readback. AWK2 adds static awk builtin and
-user-function calls, file IO intent, command-pipe intent, `system()` intent,
-redirection, gawk include/extension, and awk-owned secret-like raw observations
-while treating all IO, pipes, and system calls as source intent rather than
-runtime execution or host-mutation proof. AWK3 adds selected awk
-canonicalization and bounded count-only dogfooding for public-safe fixtures,
-with IO, pipes, and `system()` remaining source intent and dynamic or
-unsupported awk facts remaining raw-only. ZSH0 defines zsh extraction design,
-dialect boundaries, public-safe examples, startup/profile and plugin/completion
-safety policy, and the ZSH1-ZSH4 roadmap without changing classification or
-extraction behavior. ZSH1 adds static zsh classification and basic structural
-raw observations for scripts, startup files, options, functions, assignments,
-exports, source includes, command-substitution markers, dynamic markers, and
-redaction without executing zsh or modeling commands/plugins/canonical readback.
-ZSH2 adds static zsh command, argument, pipeline, redirect, heredoc,
-autoload/fpath, zstyle, zmodload, bindkey, compinit, completion, plugin,
-theme, and prompt raw observations as source/configuration intent, not runtime
-execution. ZSH3 adds static zsh array, associative-array, parameter-expansion,
-glob, path-reference, dynamic-boundary, and source-intent side-effect raw
-observations while preserving non-execution semantics and leaving
-canonicalization/readback to ZSH4. ZSH4 adds selected zsh canonicalization and
-bounded count-only dogfooding for public-safe fixtures while keeping zsh
-startup, plugin, command, and side-effect evidence as source/configuration
-intent rather than runtime execution or host-mutation proof. ZUNIT0 defines
-zunit extraction design, test-framework semantics, public-safe examples, and
-the ZUNIT1-ZUNIT3 roadmap without changing classification or extraction
-behavior. ZUNIT1 adds static `.zunit` classification and basic zunit
-test-structure raw observations for files, suites, test cases, test names, and
-bounded dynamic tests without executing zunit or zsh, running assertions or
-commands under test, modeling hooks/helpers/fixtures/mocks, canonicalizing, or
-adding readback. ZUNIT2 adds static zunit hook, assertion, expectation,
-command-under-test, helper, fixture, mock, stub, skip, todo,
-parameterized-case, redaction, and dynamic-boundary raw observations while
-keeping every test-framework fact as source/test intent, not runtime execution.
-ZUNIT3 adds selected zunit canonicalization and bounded count-only dogfooding
-for public-safe fixtures while keeping commands under test, helpers, fixtures,
-hooks, assertions, mocks, and stubs as non-executed test intent.
+RepoMap is a deterministic knowledge graph system for polyglot software
+repositories. It constructs a queryable, evidence-backed knowledge graph of
+code structure, configurations, dependencies, entry points, and operational side
+effects across multiple languages.
+
+### 2. What problem does it solve?
+
+Real-world software systems rarely live in a single language or paradigm. Modern
+repositories compose behavior across Python modules, Go microservices, Nix
+derivations, shell glue (Bash, Zsh), awk scripts, PowerShell tasks, Docker
+configurations, and documentation.
+
+Most tools either analyze a single language in isolation or rely on LLMs to
+speculate about connections. RepoMap takes a strictly deterministic approach:
+it parses language ASTs, extracts structural facts, traces environment and host
+mutation intent, and links every graph fact directly to source file coordinates.
+No graph edges are hallucinated.
+
+### 3. What can v0.0.1 actually do today?
+
+In this initial source preview (v0.0.1), RepoMap provides:
+
+- **Deterministic Discovery**: Analyzes checkout trees and produces structured
+  JSONL observations for source files, entrypoints, shell commands, includes,
+  environment variables, host mutations, Python ASTs, and static Nix expressions.
+- **Canonical Graph Storage**: Normalizes raw observations into a relational
+  canonical graph model stored in PostgreSQL (`canonical_nodes`, `canonical_edges`,
+  `canonical_evidence`).
+- **Model Context Protocol (MCP) Server**: Exposes stdio MCP tools (`repomap-kg mcp serve`)
+  enabling AI coding assistants to query canonical nodes, inspect edge explanations,
+  traverse depth-1 neighborhoods, and search graph facts.
+- **Local Container Runtime**: Orchestrates local server and database containers
+  via `repomap-kg local up/down/status` with non-standard ports and host isolation.
+- **Operational CLI**: Provides commands (`repomap-kg ops`) for refreshing
+  graphs, inspecting canonical summaries, and reading graph file inventories.
+
+### 4. What is still experimental or incomplete?
+
+- **Coordinator Interruption Recovery**: Recovery from mid-flight process
+  interruption or container restart during active refresh orchestration is
+  experimental in v0.0.1. A clean restart or re-indexing is recommended if
+  interrupted.
+- **Cloud-First Multi-Source Composition**: As documented in
+  [ADR 0057](docs/adr/2026/08/0057-cloud-first-multi-source-architecture-reconciliation.md),
+  the long-term target is a cloud-first multi-source graph platform. In v0.0.1,
+  RepoMap operates as a single-source, local-checkout engine.
+- **Dynamic Semantics**: Highly dynamic language constructs (dynamic `eval`,
+  complex runtime reflections) are recorded conservatively as raw observation
+  markers rather than guessed canonical edges.
+
+### 5. How to try it from source?
+
+You can explore RepoMap directly from a source checkout without installation:
+
+```sh
+PYTHONPATH=src/main/python python3 -m repomap_kg --help
+PYTHONPATH=src/main/python python3 -m repomap_kg identity --json
+```
+
+Or install in an editable virtual environment:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -e .
+repomap-kg --help
+```
+
+### 6. How to run the local runtime / MCP integration?
+
+RepoMap runs an isolated local container runtime (server + PostgreSQL):
+
+```sh
+# Setup configuration in ~/.repo-map
+repomap-kg local setup --repo-map-home ~/.repo-map
+
+# Start local server and database containers
+repomap-kg local up --repo-map-home ~/.repo-map
+
+# Inspect cluster health and status
+repomap-kg local status --repo-map-home ~/.repo-map --check-containers --json
+
+# Run stdio MCP server for direct AI agent integration
+repomap-kg mcp serve --repo-map-home ~/.repo-map
+```
+
+### 7. Supported languages and source families
+
+- **Python**: AST extraction, module imports, class/function definitions, calls,
+  and packaging metadata (`pyproject.toml`, `setup.py`).
+- **Go**: Package definitions, imports, module relationships (`go.mod`).
+- **Nix**: Static AST-free scanning of Nix expressions, flake outputs, app programs,
+  and file references without evaluation.
+- **Shell & Scripting**: Conservative static analyzers for Bash, Bats, Zsh,
+  Zunit, Awk, and PowerShell (extracting commands, arguments, pipelines,
+  dot-sourcing, environment references, and side-effect intent).
+- **Configuration & Infrastructure**: Dockerfiles, Docker Compose files,
+  and systemd service definitions.
+- **Documentation**: Markdown link graphs, HTML structures, and text-based
+  reference documents.
+
+### 8. How to run tests and contribute?
+
+See [docs/contrib](docs/contrib/README.md) for contribution guidelines, style,
+and review expectations.
+
+Run unit tests locally with:
+
+```sh
+PYTHONPATH=src/main/python:src/test/support/python pytest src/test/unit
+```
+
+### 9. Licensing model
+
+RepoMap is licensed under the GNU Affero General Public License v3.0 or later
+([AGPL-3.0-or-later](LICENSE)). Dual-licensing and commercial licensing options
+are available for proprietary and cloud deployments.
+
+### 10. Meaning of the `< 0.1.0` pre-publication release
+
+Version `0.0.1` represents an initial public source preview. Releases prior to
+`0.1.0` are pre-publication development milestones that are **not** published to
+public package registries (PyPI, npm, crates.io, Go proxy, or public container
+registries). The `main` branch tracks verified source preview tags, while future
+development PRs will target `staging`.
+
 
 ## Requirements
 

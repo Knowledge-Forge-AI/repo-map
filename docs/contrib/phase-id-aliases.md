@@ -30,7 +30,9 @@ below.
 
 ## Scoped Alias Map
 
-| Historical alias | Canonical phase ID | Historical status sequence | Canonical status path |
+*Note: The status paths below are internal historical records withheld from public export.*
+
+| Historical alias | Canonical phase ID | Historical status sequence | Historical status path (withheld) |
 | --- | --- | --- | --- |
 | `STORAGE-ROWS0` | `STORAGE-SUMMARY-ROWS0` | `00295` | `docs/status/2026/07/07/00295-storage-summary-rows0-split-design.md` |
 | `STORAGE-ROWS1` | `STORAGE-SUMMARY-ROWS1` | `00296` | `docs/status/2026/07/07/00296-storage-summary-rows1-core-helpers.md` |

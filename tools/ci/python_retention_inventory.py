@@ -284,10 +284,13 @@ def check_inventory(result: dict[str, Any], repo_root: Path, ratchet_path: Path)
         if not paths:
             checks[root] = {"status": "passed", "paths": [], "reason": "empty applicable set"}
         elif root == "product":
+            env = os.environ.copy()
+            if "MYPYPATH" not in env:
+                env["MYPYPATH"] = str((repo_root / "src/main/python").resolve())
             command = [sys.executable, "tools/ci/retained_python_ratchets.py",
                        "--baseline", str(ratchet_path)]
             run = subprocess.run(command, cwd=repo_root, capture_output=True, text=True,
-                                 check=False, timeout=300)
+                                 check=False, timeout=300, env=env)
             try:
                 document = json.loads(run.stdout)
             except ValueError:
@@ -297,7 +300,7 @@ def check_inventory(result: dict[str, Any], repo_root: Path, ratchet_path: Path)
                       and document.get("classification") == "passed")
             type_run = subprocess.run(
                 [sys.executable, "tools/ci/python_type_check.py"], cwd=repo_root,
-                capture_output=True, text=True, check=False, timeout=300)
+                capture_output=True, text=True, check=False, timeout=300, env=env)
             try:
                 type_result = json.loads(type_run.stdout)
             except ValueError:

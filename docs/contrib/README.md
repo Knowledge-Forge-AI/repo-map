@@ -20,9 +20,7 @@ Start here:
 - [Refactor roadmap](refactor-roadmap.md)
 - [Contributor skills](skills/README.md)
 
-Operational RepoMap skills live under `docs/ops/skills/`. Status documents
-remain in the complete historical archive under `docs/status/YYYY/MM/DD/`.
-New primary phase records are exit reports whose filenames end in `-exit.md`
-and whose H1 titles contain `Exit`; historical framing deviations are
-grandfathered. ADRs use the independent four-digit sequence under
+Operational RepoMap skills live under `docs/ops/skills/`. Public releases
+and change history are tracked in [CHANGELOG.md](../../CHANGELOG.md) and
+`docs/releases/`. ADRs use the independent four-digit sequence under
 `docs/adr/YYYY/MM/`.

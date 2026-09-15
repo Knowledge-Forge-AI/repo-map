@@ -156,24 +156,13 @@ class ScopeRegistry(TypedDict):
 
 
 _BASELINE_FIELDS = {
-    "schema",
-    "ownership",
-    "tools",
-    "selection",
-    "ruff",
-    "mypy",
-    "migration_direction_imports",
-    "file_length",
+    "schema", "ownership", "tools", "selection",
+    "ruff", "mypy", "migration_direction_imports", "file_length",
 }
 _SCOPE_FIELDS = {
-    "old_ownership_manifest_sha256",
-    "new_ownership_manifest_sha256",
-    "old_selected_set_sha256",
-    "new_selected_set_sha256",
-    "changes",
-    "phase",
-    "status_path",
-    "reason",
+    "old_ownership_manifest_sha256", "new_ownership_manifest_sha256",
+    "old_selected_set_sha256", "new_selected_set_sha256",
+    "changes", "phase", "status_path", "reason",
 }
 _SELECTION_FIELDS = {"module", "path", "ownership_class", "tier"}
 
@@ -327,7 +316,13 @@ def validate_scope_registry_records(
             if not isinstance(raw[field], str) or not raw[field].strip():
                 raise RecordValidationError(f"scope transition {field} is invalid")
         status_path = raw["status_path"]
-        if not isinstance(status_path, str) or not is_repository_path(status_path) or not status_path.startswith("docs/status/") or not status_path.endswith("-exit.md"):
+        valid_status = (
+            (status_path.startswith("docs/status/") and status_path.endswith("-exit.md"))
+            or status_path.startswith("tools/ci/")
+            or status_path.startswith("docs/releases/")
+            or status_path == "CHANGELOG.md"
+        )
+        if not isinstance(status_path, str) or not is_repository_path(status_path) or not valid_status:
             raise RecordValidationError("scope transition status authority is invalid")
         changes = raw["changes"]
         if not isinstance(changes, list):

@@ -193,7 +193,7 @@ def settle_failed_process(
             ) from error
     settlement_seconds = max(
         sigterm_join_ms / 1_000,
-        policy.process_settlement_timeout_ms / 1_000 - natural_settlement_grace_seconds,
+        policy.process_settlement_timeout_ms / 1_000,
     )
     process.join(timeout=settlement_seconds)
     if not wait_process_group_settled_fn(pid, settlement_seconds):

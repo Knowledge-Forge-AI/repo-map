@@ -294,7 +294,16 @@ def _extract_diagnostic_summary(result: object) -> str | None:
             r"(?:[a-zA-Z]:\\|[/\\])[a-zA-Z0-9_.\-/\\]+", "[path]", cleanup_error.strip()
         )
         return _redact_text(sanitized)[:256]
-    return None
+    if getattr(result, "process_timed_out", False):
+        return "worker_timed_out"
+    if getattr(result, "heartbeat_timed_out", False):
+        return "heartbeat_timed_out"
+    if getattr(result, "hello_timed_out", False):
+        return "hello_timed_out"
+    returncode = getattr(result, "returncode", None)
+    if isinstance(returncode, int):
+        return f"worker_exit:{returncode}"
+    return "worker_exit:abrupt_termination"
 
 
 def _nonnegative_count(value: object) -> int:

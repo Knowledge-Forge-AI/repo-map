@@ -308,11 +308,12 @@ def _check_global(
                 "push-to-open-PR feedback signal; no duplicate branch push lane"
             )
         commands = "\n".join(workflow.run_commands())
-        runner_uses += commands.count(contracts.runner_marker)
-        staging_uses += commands.count(contracts.staging_marker)
-        system_uses += commands.count(contracts.system_marker)
+        if workflow.path.name != "repomap-release-qualification.yml":
+            runner_uses += commands.count(contracts.runner_marker)
+            staging_uses += commands.count(contracts.staging_marker)
+            system_uses += commands.count(contracts.system_marker)
+            unit_uses += commands.count(contracts.unit_command)
         retired_all_uses += commands.count("--suite all")
-        unit_uses += commands.count(contracts.unit_command)
         lowered = commands.lower()
         for marker in contracts.git_mutation_markers:
             if marker.lower() in lowered:

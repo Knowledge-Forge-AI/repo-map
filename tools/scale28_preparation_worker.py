@@ -281,7 +281,7 @@ class PreparationWorkerAttempt:
         except BaseException as error:
             cancellation_event.set()
             grace = (
-                min(self._remaining_seconds(attempt_deadline), self._policy.observation_transfer_reserve_ms / 1_000)
+                min(self._remaining_seconds(attempt_deadline), self._policy.process_settlement_timeout_ms / 1_000)
                 if isinstance(error, PreparationWorkerError) and getattr(error, "verified_failure_notice_observed", False)
                 else 0.0
             )
