@@ -26,7 +26,7 @@ scale-tools = [
   "docker==7.2.0",
 ]
 static-analysis = [
-  "mypy==2.1.0",
+  "mypy==2.3.1",
   "ruff==0.16.2",
   "types-docker==7.2.0.20260819",
   "types-psutil==7.2.2.20260518",
