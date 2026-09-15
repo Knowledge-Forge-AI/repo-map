@@ -11,7 +11,7 @@ requires-python = ">=3.12"
 license = "AGPL-3.0-or-later"
 authors = [{ name = "RepoMap contributors" }]
 dependencies = [
-  "psycopg[binary]==3.2.12",
+  "psycopg[binary]==3.3.5",
   "typing-extensions==4.16.0",
 ]
 
