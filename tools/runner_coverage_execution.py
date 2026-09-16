@@ -10,7 +10,10 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 import sqlite3
 
-from runner_coverage_receipts import read_registered_children as read_registered_children
+from runner_coverage_receipts import (
+    read_registered_children as read_registered_children,
+    verify_intentional_victim as verify_intentional_victim,
+)
 from runner_coverage_combine import execute_shard_combine as execute_shard_combine
 
 from typing import Any
@@ -183,6 +186,7 @@ def reconcile_child_manifests(
 ) -> tuple[dict[int, str], set[str]]:
     consumed_shards_by_child: dict[int, str] = {}
     consumed_shard_paths: set[str] = set()
+    victim_counts: dict[str, int] = {}
 
     for pid, child_info in sorted(registered_children.items()):
         exited = bool(child_info["exited"])
@@ -212,6 +216,24 @@ def reconcile_child_manifests(
         if child_info.get("terminal_error"):
             raise RuntimeError("child reported coverage save failure")
         if child_info.get("strict") and not exited:
+            if verify_intentional_victim(pid, child_info, victim_counts):
+                snap = _annotate_snapshot(snapshot_fn(
+                    shard_name=f"intentional_victim.pid{pid}",
+                    file_type="intentional_victim",
+                    size_bytes=0,
+                    sha256=None,
+                    reader_status="intentional_victim_receipt_verified",
+                    stage="pre_combine",
+                    cov_mod=cov_mod,
+                    child_probe_id=f"pid={pid}",
+                    termination_outcome="intentional_victim_terminated",
+                    launch_role=child_info.get("role"),
+                    test_owner=child_info.get("owner"),
+                ), child_info)
+                record_fn(snap)
+                child_info["is_intentional_victim"] = True
+                continue
+
             snap = _annotate_snapshot(snapshot_fn(
                 shard_name=f"unsettled.pid{pid}", file_type="incomplete_terminal",
                 size_bytes=0, sha256=None, reader_status="terminal_receipt_incomplete",

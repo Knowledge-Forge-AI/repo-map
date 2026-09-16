@@ -21,7 +21,7 @@ _collector = None
 _terminals = {}
 _bootstrap_error = ''
 _role = os.environ.get('COVERAGE_CHILD_LAUNCH_ROLE', 'inherited-python')
-if _role not in {'portable', 'conformance', 'conformance-abrupt', 'inherited-python'}:
+if _role not in {'portable', 'conformance', 'conformance-abrupt', 'inherited-python', 'intentional-victim'}:
     _role = 'unknown'
 import sys
 _raw_argv = getattr(sys, 'orig_argv', None) or getattr(sys, 'argv', [])

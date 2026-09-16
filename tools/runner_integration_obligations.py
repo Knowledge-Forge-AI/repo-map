@@ -1,7 +1,8 @@
 """Exact maintained abrupt-role declarations; no inferred case membership."""
 
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
+import hashlib
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,3 +55,71 @@ def validate_declarations(declarations: Sequence[AbruptDeclaration]) -> None:
 def find_declaration(nodeid: str | None, declarations=MAINTAINED_ABRUPT_DECLARATIONS):
     return next((declaration for declaration in declarations
                  if declaration.nodeid == nodeid), None)
+
+
+@dataclass(frozen=True, slots=True)
+class IntentionalVictimDeclaration:
+    nodeid: str
+    owner_sha256: str
+    role: str
+    permitted_exitcodes: tuple[int, ...]
+    max_victims: int
+
+
+COV5G_NODE = (
+    "src/test/int/python/repomap_kg/storage/test_cov5g_r1_process_containment.int.test.py"
+    "::test_cov5g_r1_twenty_process_containment_feasibility_cases"
+)
+COV5G_OWNER_SHA256 = (
+    "e0d161f049355f99326012d6730a079fc946ea779313dddcc55c4d7e93a29fa6"
+)
+
+MAINTAINED_INTENTIONAL_VICTIM_DECLARATIONS = (
+    IntentionalVictimDeclaration(
+        nodeid=COV5G_NODE,
+        owner_sha256=COV5G_OWNER_SHA256,
+        role="intentional-victim",
+        permitted_exitcodes=(-15, -9),
+        max_victims=20,
+    ),
+)
+
+
+def validate_intentional_victim_declarations(
+    declarations: Sequence[IntentionalVictimDeclaration],
+) -> None:
+    nodes = [d.nodeid for d in declarations]
+    if len(nodes) != len(set(nodes)):
+        raise ValueError("duplicate intentional victim declaration")
+    for d in declarations:
+        if (
+            not d.nodeid.startswith("src/test/int/python/")
+            or "::" not in d.nodeid
+            or any(char in d.nodeid for char in ("*", "?"))
+            or not d.role
+            or not d.owner_sha256
+            or not d.permitted_exitcodes
+            or any(type(code) is not int or code >= 0 for code in d.permitted_exitcodes)
+            or d.max_victims <= 0
+        ):
+            raise ValueError("invalid exact intentional victim declaration")
+        computed = hashlib.sha256(f"{d.nodeid} (call)".encode()).hexdigest()
+        if computed != d.owner_sha256:
+            raise ValueError(
+                f"intentional victim nodeid does not match owner_sha256: {computed} != {d.owner_sha256}"
+            )
+
+
+validate_intentional_victim_declarations(MAINTAINED_INTENTIONAL_VICTIM_DECLARATIONS)
+
+
+def find_intentional_victim_declaration(
+    owner_sha256: str | None,
+    declarations: Sequence[IntentionalVictimDeclaration] = MAINTAINED_INTENTIONAL_VICTIM_DECLARATIONS,
+) -> IntentionalVictimDeclaration | None:
+    if not owner_sha256:
+        return None
+    return next(
+        (d for d in declarations if d.owner_sha256 == owner_sha256),
+        None,
+    )

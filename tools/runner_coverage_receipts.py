@@ -44,6 +44,9 @@ def read_registered_children(
         if cov_start not in ("0", "1"):
             raise RuntimeError("invalid child bootstrap status")
         is_aux = start.get("role") == "auxiliary-runtime"
+        victim_path = child_manifest_dir / f"{pid}.victim"
+        victim = _parse_marker(victim_path) if victim_path.exists() else {}
+        victim_receipt = victim if victim.get("pid") == str(pid) else None
         registered[pid] = {
             "exited": exited, "cov_start": int(cov_start), "token": start.get("token"),
             "invocation": inv, "suite": suite,
@@ -56,5 +59,49 @@ def read_registered_children(
             "shard": terminal.get("shard"),
             "strict": (expected_invocation is not None) and not is_aux,
             "auxiliary": is_aux,
+            "victim_receipt": victim_receipt,
         }
     return registered
+
+
+def verify_intentional_victim(
+    pid: int,
+    child_info: dict[str, Any],
+    victim_counts: dict[str, int],
+) -> bool:
+    """Validate intentional non-cooperative victim receipt against maintained obligations."""
+    import os
+    from runner_integration_obligations import find_intentional_victim_declaration
+
+    victim = child_info.get("victim_receipt")
+    decl = find_intentional_victim_declaration(child_info.get("owner"))
+    if not (
+        decl is not None
+        and child_info.get("role") == decl.role
+        and victim is not None
+        and victim.get("owner") == decl.owner_sha256
+        and victim.get("owner") == child_info.get("owner")
+        and victim.get("pid") == str(pid)
+        and (not child_info.get("ppid") or victim.get("ppid") == str(child_info.get("ppid")))
+        and (not child_info.get("invocation") or victim.get("invocation") == child_info.get("invocation"))
+        and victim.get("backend_disappeared") == "1"
+        and victim.get("descriptor_closed") == "1"
+        and victim.get("process_cleaned") == "1"
+    ):
+        return False
+    try:
+        exitcode = int(victim.get("exitcode", "0"))
+    except ValueError:
+        exitcode = 0
+    if exitcode not in decl.permitted_exitcodes:
+        return False
+    try:
+        os.kill(pid, 0)
+        return False
+    except OSError:
+        pass
+    cur_count = victim_counts.get(decl.owner_sha256, 0)
+    if cur_count >= decl.max_victims:
+        return False
+    victim_counts[decl.owner_sha256] = cur_count + 1
+    return True

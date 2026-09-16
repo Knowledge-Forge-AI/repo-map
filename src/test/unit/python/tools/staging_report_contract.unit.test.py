@@ -330,3 +330,32 @@ def test_missing_or_duplicate_records_are_rejected() -> None:
     report["legs"]["M"]["records"].append(copy.deepcopy(report["legs"]["M"]["records"][0]))
     with pytest.raises(ValueError, match="records"):
         validate_report(report, declarations=DECLARATIONS)
+
+
+def test_intentional_victim_diagnostic_snapshot_auditable_in_coverage_report() -> None:
+    from test_report_coverage import coverage_diagnostics
+    from runner_coverage_execution import ShardDiagnosticSnapshot
+
+    class DummySession:
+        diagnostic_snapshots = (
+            ShardDiagnosticSnapshot(
+                session_id="dummy-session",
+                shard_name="intentional_victim.pid1234",
+                file_type="intentional_victim",
+                size_bytes=0,
+                sha256=None,
+                reader_status="intentional_victim_receipt_verified",
+                stage="pre_combine",
+                termination_outcome="intentional_victim_terminated",
+                launch_role="intentional-victim",
+                test_owner="e0d161f049355f99326012d6730a079fc946ea779313dddcc55c4d7e93a29fa6",
+            ),
+        )
+
+    diagnostics = coverage_diagnostics(DummySession())
+    assert len(diagnostics) == 1
+    d = diagnostics[0]
+    assert d["file_type"] == "intentional_victim"
+    assert d["reader_status"] == "intentional_victim_receipt_verified"
+    assert d["termination_outcome"] == "intentional_victim_terminated"
+    assert d["launch_role"] == "intentional-victim"
