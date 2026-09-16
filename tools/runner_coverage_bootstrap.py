@@ -70,40 +70,120 @@ if len(_owner) != 64 or any(c not in '0123456789abcdef' for c in _owner):
     _owner = ''
 if not _owner and os.environ.get('PYTEST_CURRENT_TEST'):
     _owner = hashlib.sha256(os.environ['PYTEST_CURRENT_TEST'].encode()).hexdigest()
-if _config:
-    try:
-        import coverage
-        if _token:
-            _collector = coverage.Coverage(config_file=_config,
-                data_file=os.environ['COVERAGE_FILE'], data_suffix=False)
-            _collector.set_option('run:parallel', False)
-            _collector.start()
-        else:
-            _collector = coverage.process_startup()
-        if _collector is None:
-            _collector = coverage.Coverage.current()
-        if _collector is not None and _token:
-            # Initialize only this collector's SQLite schema before the product
-            # installs its audit guard; keep its owned data handle/lifetime.
-            _collector.get_data()
-    except Exception as exc:
-        _bootstrap_error = type(exc).__name__
-        _collector = None
-
 _identity = (f'pid={_pid}\ninvocation={_invocation}\nsuite={_suite}\n'
              f'token={_token}\nrevision={_revision}\nrole={_role}\nowner={_owner}\n'
              f'ppid={_ppid}\nlaunch_shape={_launch_shape}\n')
-if _manifest:
+
+
+def _disarm_coverage():
     try:
-        for _key in ([str(_pid), _token] if _token else [str(_pid)]):
-            with open(os.path.join(_manifest, f'{_key}.start'), 'x', encoding='utf-8') as _start:
-                _start.write(_identity + f'cov_start={int(_collector is not None)}\n'
-                             + f'bootstrap_error={_bootstrap_error}\n')
-            # These exact invocation-owned receipts are opened before guard
-            # installation. Exit uses existing handles, never extra authority.
-            for _suffix in ('exit', 'shard'):
-                _terminals[(_key, _suffix)] = open(
-                    os.path.join(_manifest, f'{_key}.{_suffix}'), 'x', encoding='utf-8')
+        import coverage
+        _cov = getattr(coverage.process_startup, 'coverage', None)
+        if _cov is None and hasattr(coverage, 'Coverage'):
+            _cov = coverage.Coverage.current()
+        if _cov is not None:
+            try:
+                _cov._auto_save = False
+            except Exception:
+                pass
+            try:
+                _cov.stop()
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+def _write_reg_fail(target_dir, stage, fclass, freason, has_manifest):
+    try:
+        fpath = os.path.join(target_dir, f'{_pid}.registration_failure')
+        with open(fpath, 'w', encoding='utf-8') as _df:
+            _df.write(
+                f'pid={_pid}\nppid={_ppid}\ninvocation={_invocation}\n'
+                f'suite={_suite}\nrevision={_revision}\nrole={_role}\n'
+                f'owner={_owner}\nlaunch_shape={_launch_shape}\n'
+                f'has_config={int(bool(_config))}\nhas_manifest={int(has_manifest)}\n'
+                f'has_token={int(bool(_token))}\n'
+                f'token_hash={hashlib.sha256(_token.encode()).hexdigest() if _token else ""}\n'
+                f'bootstrap_stage={stage}\nfailure_class={fclass}\n'
+                f'failure_reason={freason}\n'
+            )
+    except Exception:
+        pass
+
+
+if _config:
+    _manifest_valid = bool(_manifest and os.path.isdir(_manifest))
+    if not _manifest_valid:
+        _disarm_coverage()
+        if _role != 'auxiliary-runtime':
+            _fail_dir = os.path.join(os.path.dirname(_config), 'child_procs')
+            if not os.path.isdir(_fail_dir):
+                _fail_dir = os.path.dirname(_config)
+            _write_reg_fail(_fail_dir, 'manifest_validation', 'missing_manifest_authority', 'manifest_not_found', False)
+        _collector = None
+    else:
+        _keys = [str(_pid), _token] if _token else [str(_pid)]
+        _reg_ok = False
+        try:
+            for _k in _keys:
+                with open(os.path.join(_manifest, f'{_k}.start'), 'x', encoding='utf-8') as _sf:
+                    _sf.write(_identity + 'cov_start=pending\nbootstrap_error=\n')
+                for _suffix in ('exit', 'shard'):
+                    _terminals[(_k, _suffix)] = open(
+                        os.path.join(_manifest, f'{_k}.{_suffix}'), 'x', encoding='utf-8')
+            _reg_ok = True
+        except (FileExistsError, OSError) as _exc:
+            _disarm_coverage()
+            for _h in _terminals.values():
+                try:
+                    _h.close()
+                except Exception:
+                    pass
+            _terminals = {}
+            if _role != 'auxiliary-runtime':
+                _fclass = 'token_reuse' if (_token and _k == _token) else 'marker_collision'
+                _write_reg_fail(_manifest, 'marker_creation', _fclass, type(_exc).__name__, True)
+            _collector = None
+
+        if _reg_ok:
+            try:
+                import coverage
+                if _token:
+                    _collector = coverage.Coverage(config_file=_config,
+                        data_file=os.environ['COVERAGE_FILE'], data_suffix=False)
+                    _collector.set_option('run:parallel', False)
+                    _collector.start()
+                else:
+                    _collector = coverage.process_startup()
+                if _collector is None:
+                    _collector = coverage.Coverage.current()
+                if _collector is not None and _token:
+                    # Initialize only this collector's SQLite schema before the product
+                    # installs its audit guard; keep its owned data handle/lifetime.
+                    _collector.get_data()
+            except Exception as exc:
+                _bootstrap_error = type(exc).__name__
+                _disarm_coverage()
+                _collector = None
+
+            if _token:
+                try:
+                    os.environ.pop('COVERAGE_CHILD_REGISTRATION_TOKEN', None)
+                    os.environ.pop('COVERAGE_FILE', None)
+                    if _role in ('portable', 'conformance', 'conformance-abrupt'):
+                        os.environ.pop('COVERAGE_CHILD_LAUNCH_ROLE', None)
+                except Exception:
+                    pass
+
+            for _k in _keys:
+                try:
+                    with open(os.path.join(_manifest, f'{_k}.start'), 'w', encoding='utf-8') as _sf:
+                        _sf.write(_identity + f'cov_start={int(_collector is not None)}\n'
+                                  + f'bootstrap_error={_bootstrap_error}\n')
+                except Exception:
+                    pass
+
         if _is_tracker:
             _handshake_fifo = os.environ.get('COVERAGE_CHILD_HANDSHAKE_FIFO')
             if _handshake_fifo and os.path.exists(_handshake_fifo):
@@ -120,10 +200,6 @@ if _manifest:
                         _rf.readline()
                 except Exception:
                     pass
-    except Exception:
-        for _handle in _terminals.values():
-            _handle.close()
-        _terminals = {}
 
 
 def _finish(_collector=_collector, _terminals=_terminals, _identity=_identity):

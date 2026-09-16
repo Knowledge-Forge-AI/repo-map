@@ -195,8 +195,12 @@ def validate_shard_directory_integrity(
     snapshot_fn: Callable[..., Any],
     record_fn: Callable[[Any], None],
     cov_mod: Any = None,
+    registered_children: dict[int, dict[str, Any]] | None = None,
+    child_manifest_dir: Path | None = None,
 ) -> None:
     """Validate that shard directory contains no fabricated or unregistered shards."""
+    from runner_coverage_execution import extract_pid_match
+
     for child in sorted(data_dir.iterdir(), key=lambda item: item.name):
         if child.name != ".coverage" and not child.name.startswith(".coverage."):
             continue
@@ -217,6 +221,27 @@ def validate_shard_directory_integrity(
                 raise RuntimeError(
                     f"fabricated .parent coverage shard rejected: {child.name}"
                 )
+            pid = extract_pid_match(child.name)
+            child_info = (registered_children or {}).get(pid) if pid is not None else None
+            manifest_dir = child_manifest_dir or (data_dir.parent / "child_procs")
+            if child_info is None and pid is not None and manifest_dir and manifest_dir.exists():
+                from runner_coverage_capability import _parse_marker
+                for fail_candidate in (
+                    manifest_dir / f"{pid}.registration_failure",
+                    manifest_dir.parent / f"{pid}.registration_failure",
+                ):
+                    if fail_candidate.is_file():
+                        parsed = _parse_marker(fail_candidate)
+                        child_info = {
+                            "role": parsed.get("role"),
+                            "owner": parsed.get("owner"),
+                            "ppid": int(parsed["ppid"]) if parsed.get("ppid", "").isdigit() else None,
+                            "launch_shape": parsed.get("launch_shape"),
+                            "failure_class": parsed.get("failure_class"),
+                            "failure_reason": parsed.get("failure_reason"),
+                        }
+                        break
+
             snap = snapshot_fn(
                 shard_name=child.name,
                 file_type="unregistered",
@@ -225,8 +250,20 @@ def validate_shard_directory_integrity(
                 reader_status="unregistered_shard_rejected",
                 stage="pre_combine",
                 cov_mod=cov_mod,
+                child_probe_id=f"pid={pid}" if pid is not None else None,
                 termination_outcome="unregistered_child",
+                launch_role=child_info.get("role") if child_info else None,
+                test_owner=child_info.get("owner") if child_info else None,
             )
+            if child_info:
+                from dataclasses import replace
+                snap = replace(
+                    snap,
+                    ppid=child_info.get("ppid"),
+                    launch_shape=child_info.get("launch_shape"),
+                    failure_class=child_info.get("failure_class"),
+                    failure_reason=child_info.get("failure_reason"),
+                )
             record_fn(snap)
             raise RuntimeError(
                 f"unregistered coverage shard rejected: {child.name}"

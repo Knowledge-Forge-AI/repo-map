@@ -11254,6 +11254,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_atomicity.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_atomicity.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX2 coverage registration atomicity and diagnostic regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-tools.test_runner_coverage_child.unit.test",
       "members": [
         "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py"
@@ -36140,6 +36150,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_report_runner.unit.test.py",
       "rationale": "REVISE33 responsibility decomposition under original cohort and unchanged profile.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_atomicity.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX2 coverage registration atomicity and diagnostic regression suite.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

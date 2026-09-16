@@ -39,6 +39,15 @@ class ShardDiagnosticSnapshot:
     test_owner: str | None = None
     ppid: int | None = None
     launch_shape: str | None = None
+    invocation_id: str | None = None
+    suite: str | None = None
+    source_revision: str | None = None
+    has_config: bool | None = None
+    has_manifest: bool | None = None
+    has_token: bool | None = None
+    bootstrap_stage: str | None = None
+    failure_class: str | None = None
+    failure_reason: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -58,6 +67,15 @@ class ShardDiagnosticSnapshot:
             "test_owner": self.test_owner,
             "ppid": self.ppid,
             "launch_shape": self.launch_shape,
+            "invocation_id": self.invocation_id,
+            "suite": self.suite,
+            "source_revision": self.source_revision,
+            "has_config": self.has_config,
+            "has_manifest": self.has_manifest,
+            "has_token": self.has_token,
+            "bootstrap_stage": self.bootstrap_stage,
+            "failure_class": self.failure_class,
+            "failure_reason": self.failure_reason,
         }
 
 
@@ -90,6 +108,11 @@ def create_shard_snapshot(
     child_probe_id: str | None = None, termination_outcome: str | None = None,
     launch_role: str | None = None, test_owner: str | None = None,
     ppid: int | None = None, launch_shape: str | None = None,
+    invocation_id: str | None = None, suite: str | None = None,
+    source_revision: str | None = None, has_config: bool | None = None,
+    has_manifest: bool | None = None, has_token: bool | None = None,
+    bootstrap_stage: str | None = None, failure_class: str | None = None,
+    failure_reason: str | None = None,
 ) -> ShardDiagnosticSnapshot:
     run_id = os.environ.get("GITHUB_RUN_ID") or os.environ.get("REPO_MAP_RUN_ID") or session_name
     src_sel = [str(p) for p in source_paths] if source_paths else ([str(source_root)] if source_root else None)
@@ -104,6 +127,11 @@ def create_shard_snapshot(
         termination_outcome=termination_outcome,
         launch_role=launch_role, test_owner=test_owner,
         ppid=ppid, launch_shape=launch_shape,
+        invocation_id=invocation_id, suite=suite,
+        source_revision=source_revision, has_config=has_config,
+        has_manifest=has_manifest, has_token=has_token,
+        bootstrap_stage=bootstrap_stage, failure_class=failure_class,
+        failure_reason=failure_reason,
     )
 
 
@@ -171,7 +199,20 @@ def identify_parent_shard(
 
 
 def _annotate_snapshot(snap: ShardDiagnosticSnapshot, child_info: dict[str, Any]) -> ShardDiagnosticSnapshot:
-    return replace(snap, ppid=child_info.get("ppid"), launch_shape=child_info.get("launch_shape"))
+    return replace(
+        snap,
+        ppid=child_info.get("ppid"),
+        launch_shape=child_info.get("launch_shape"),
+        invocation_id=child_info.get("invocation"),
+        suite=child_info.get("suite"),
+        source_revision=child_info.get("revision"),
+        has_config=child_info.get("has_config"),
+        has_manifest=child_info.get("has_manifest"),
+        has_token=child_info.get("has_token"),
+        bootstrap_stage=child_info.get("bootstrap_stage"),
+        failure_class=child_info.get("failure_class"),
+        failure_reason=child_info.get("failure_reason"),
+    )
 
 
 def reconcile_child_manifests(
@@ -188,7 +229,33 @@ def reconcile_child_manifests(
     consumed_shard_paths: set[str] = set()
     victim_counts: dict[str, int] = {}
 
+    registration_failures: list[tuple[int, dict[str, Any]]] = [
+        (pid, child_info) for pid, child_info in sorted(registered_children.items())
+        if child_info.get("registration_failure")
+    ]
+    if registration_failures:
+        for pid, child_info in registration_failures:
+            fclass = child_info.get("failure_class", "unknown_failure")
+            freason = child_info.get("failure_reason", "unknown")
+            snap = _annotate_snapshot(snapshot_fn(
+                shard_name=f"registration_failure.pid{pid}",
+                file_type="registration_failure",
+                size_bytes=0,
+                sha256=None,
+                reader_status=f"registration_failed:{fclass}:{freason}",
+                stage="pre_combine",
+                cov_mod=cov_mod,
+                child_probe_id=f"pid={pid}",
+                termination_outcome="registration_failed",
+                launch_role=child_info.get("role"),
+                test_owner=child_info.get("owner"),
+            ), child_info)
+            record_fn(snap)
+        first_fclass = registration_failures[0][1].get("failure_class", "unknown_failure")
+        raise RuntimeError(f"child coverage registration failed: {first_fclass}")
+
     for pid, child_info in sorted(registered_children.items()):
+
         exited = bool(child_info["exited"])
         cov_start = int(child_info["cov_start"])
         if cov_start == 0:
@@ -201,6 +268,23 @@ def reconcile_child_manifests(
                     launch_role="auxiliary-runtime", test_owner=child_info.get("owner"),
                 ), child_info)
                 record_fn(snap)
+                continue
+            if child_info.get("strict") and not exited and verify_intentional_victim(pid, child_info, victim_counts):
+                snap = _annotate_snapshot(snapshot_fn(
+                    shard_name=f"intentional_victim.pid{pid}",
+                    file_type="intentional_victim",
+                    size_bytes=0,
+                    sha256=None,
+                    reader_status="intentional_victim_receipt_verified",
+                    stage="pre_combine",
+                    cov_mod=cov_mod,
+                    child_probe_id=f"pid={pid}",
+                    termination_outcome="intentional_victim_terminated",
+                    launch_role=child_info.get("role"),
+                    test_owner=child_info.get("owner"),
+                ), child_info)
+                record_fn(snap)
+                child_info["is_intentional_victim"] = True
                 continue
             snap = _annotate_snapshot(snapshot_fn(
                 shard_name=f"uninstrumented.pid{pid}", file_type="uninstrumented",
