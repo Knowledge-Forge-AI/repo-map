@@ -43,13 +43,13 @@ class TestPublicExportPolicy(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
             pyproject = repo_root / "pyproject.toml"
-            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.1"\n')
+            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.2"\n')
 
             pkg_dir = repo_root / "src/main/python/repomap_kg"
             pkg_dir.mkdir(parents=True)
-            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.1"\n')
+            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.2"\n')
 
-            violations = check_version_consistency(repo_root, "0.0.1")
+            violations = check_version_consistency(repo_root, "0.0.2")
             self.assertEqual(violations, [])
 
     def test_version_consistency_detects_mismatch(self) -> None:
@@ -137,11 +137,11 @@ class TestPublicExportPolicy(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
             pyproject = repo_root / "pyproject.toml"
-            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.1"\n')
+            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.2"\n')
 
             pkg_dir = repo_root / "src/main/python/repomap_kg"
             pkg_dir.mkdir(parents=True)
-            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.1"\n')
+            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.2"\n')
 
             payload = {
                 "pull_request": {
@@ -157,7 +157,7 @@ class TestPublicExportPolicy(unittest.TestCase):
                 repo_root,
                 payload=payload,
                 repository="Knowledge-Forge-AI/repo-map",
-                expected_version="0.0.1",
+                expected_version="0.0.2",
             )
             self.assertEqual(violations, [])
 

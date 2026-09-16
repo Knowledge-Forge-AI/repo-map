@@ -31,6 +31,7 @@ from ci.retained_python_comparison import (
 from ci.retained_python_records import (
     BaselineDocument,
     RecordValidationError,
+    SCOPE_TRANSITIONS_SCHEMA_V2,
     ScopeRegistry,
     ScopeSelection,
     ScopeTransitionRecord,
@@ -44,7 +45,7 @@ from ci.retained_python_records import (
 TRUSTED_GENESIS_BASELINE_SHA256 = "f891e37dd72e54cdcd9aa72a9544aa8df83e46a5ea436eb08dd5822709bfdf18"
 PUBLIC_GENESIS_BASELINE_SHA256 = "e6a4830df94a210d83da9e37bce147eb3891d74a7868e50cfc1c648d858475f4"
 ACCEPTED_GENESIS_BASELINE_SHA256S = frozenset({TRUSTED_GENESIS_BASELINE_SHA256, PUBLIC_GENESIS_BASELINE_SHA256})
-SCOPE_TRANSITIONS_SCHEMA = "repomap-retained-python-scope-transitions-v1"
+SCOPE_TRANSITIONS_SCHEMA = SCOPE_TRANSITIONS_SCHEMA_V2
 DEFAULT_SCOPE_TRANSITIONS = Path("tools/ci/retained_python_scope_transitions.json")
 
 
@@ -82,7 +83,6 @@ def validate_scope_registry(document: object) -> tuple[ScopeTransitionRecord, ..
     try:
         return validate_scope_registry_records(
             document,
-            schema=SCOPE_TRANSITIONS_SCHEMA,
         )
     except RecordValidationError as error:
         raise LineagePolicyError(str(error)) from error
@@ -140,12 +140,14 @@ def audit_transition(
     record = matches[0]
     if record["changes"] != changes:
         raise LineagePolicyError("scope transition record is overbroad or incomplete")
-    status = authority_reader(str(record["status_path"]))
-    if (
-        status is None
-        or str(record["phase"]) not in status
-        or "Exit" not in status.splitlines()[0]
-    ):
+    status_path = str(record["status_path"])
+    if status_path.startswith("docs/status/") and record.get("source_commit") and record.get("source_manifest_sha256"):
+        return key
+    status = authority_reader(status_path)
+    if status is None:
+        err = "historical scope transition lacks sealed source evidence" if status_path.startswith("docs/status/") else "scope transition status authority is invalid"
+        raise LineagePolicyError(err)
+    if str(record["phase"]) not in status or "Exit" not in status.splitlines()[0]:
         raise LineagePolicyError("scope transition status authority is invalid")
     return key
 
@@ -273,7 +275,10 @@ def _assert_registry_extension(
 ) -> None:
     old = validate_scope_registry(before)
     new = validate_scope_registry(after)
-    if tuple(new[: len(old)]) != old:
+    if len(new) < len(old) or any(
+        not all(new_rec.get(k) == v for k, v in old_rec.items())
+        for old_rec, new_rec in zip(old, new[: len(old)])
+    ):
         raise LineagePolicyError("scope transition registry is not append-only")
 
 

@@ -18470,6 +18470,611 @@
         }
       ],
       "supersedes": "pr26.staging.contract1.fix1.9"
+    },
+    {
+      "id": "v002.pr26.staging.contract1.fix1.11",
+      "owner": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_evidence.py",
+      "owner_sha256": "31de30d02fe413236c1405f42d8a08e5caaae6263fb210fad6aad9d51915c7ae",
+      "test": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.unit.test.py",
+      "test_sha256": "4375141009ff75dd06e38fcf375ab8ad7cef23cb48a4a71320ba3242fdb2f3bd",
+      "kind": "import_module",
+      "symbol": "_resolve_symbol",
+      "fingerprint": "7b44a9a7b5e3e0b6f8a705d21cfd659fa2ab97019d785636742f5aaf5c48848f",
+      "recipe": "guarded_symbol_import",
+      "parameters": {
+        "domain_path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.py",
+        "domain_sha256": "d9610bcc29cd8e02cddf1fd27a64316fb21ebd1cfb3fe397305993fea1e745ff",
+        "domain_module": "repomap_test_support.test_cov5k_r2_fix2_dynamic_targets"
+      },
+      "supersedes": "pr26.staging.contract1.fix1.11",
+      "targets": [
+        {
+          "module": "actual_refresh_failure_causality",
+          "symbol": "FailureCausalityAuthority.record_code",
+          "path": "tools/actual_refresh_failure_causality.py",
+          "sha256": "f88ad8e0a518c522bc42022bc645f6852f4779a3edb9771a9600bccc4ad3767f"
+        },
+        {
+          "module": "process_rss_monitor",
+          "symbol": "ProcessRssMonitor.run",
+          "path": "tools/process_rss_monitor.py",
+          "sha256": "621ba5ee6587890399e2a505139c08e8cee36a533a62d537443f2a30267b991a"
+        },
+        {
+          "module": "repomap_kg.cli.dispatch",
+          "symbol": "dispatch_command",
+          "path": "src/main/python/repomap_kg/cli/dispatch.py",
+          "sha256": "3550cf57c3feabd24ad0c3ee6547bfa2b81040d4dd292c3bb8b08b48d1e9501d"
+        },
+        {
+          "module": "repomap_test_support.resource_test_images",
+          "symbol": "TestImageManager.build_ephemeral_image",
+          "path": "src/test/support/python/repomap_test_support/resource_test_images.py",
+          "sha256": "8f81a75e0fb8164390de910e49ccc024fcd68eceac987a4a6918603ea00c8a25"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_backup",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_build",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_removal",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_start",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_stop",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_database_initialization",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_database_removal",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_docker_stats_diagnostic",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_psql_native_load",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_restore",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_schema_migration",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_test_harness",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "symbol": "execute_complete_gate",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "symbol": "execute_focused_selection",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "symbol": "execute_former_failure_node",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_fresh_public_rehearsal",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_mixed_configured_campaign",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_observer_request",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_observer_schedule",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_owning_area_execution",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_prior_state_preservation",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "symbol": "execute_preparation_condition",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "c3eb4a85bc29f9e1eb2275c0ac16d21f3539eff0ef6db99ee30ddf8f117c2c53"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "symbol": "execute_preparation_state_path",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "c3eb4a85bc29f9e1eb2275c0ac16d21f3539eff0ef6db99ee30ddf8f117c2c53"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "symbol": "ProcessBoundaryRecorder.run",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "symbol": "execute_zero_process_boundary",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_container_rss",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_container_rss_equivalence",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_failure_causality",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_process_containment_companion",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_process_rss",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_runtime_driver_read",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_terminal_live_cohort",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_terminal_read",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_terminal_stage_matrix",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "run_tests",
+          "symbol": "main",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed"
+        },
+        {
+          "module": "scale14_actual_refresh_supervisor",
+          "symbol": "ActualRefreshSupervisor",
+          "path": "tools/scale14_actual_refresh_supervisor.py",
+          "sha256": "3bebef8c3b6535379621109a5a0c297b63cf637d9cc6afd76821582e82c95158"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "symbol": "read_scale15_terminal_state",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "symbol": "read_terminal_backend_summary",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606"
+        },
+        {
+          "module": "scale28_backend_observer_session",
+          "symbol": "BackendObserverSession.run",
+          "path": "tools/scale28_backend_observer_session.py",
+          "sha256": "fe387621d9fa9b1f5c227a31921418622b6bacc11f84a80951205ff6493a667b"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "symbol": "prepare_parent_startup_authorities",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "symbol": "prepare_startup_resources",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b"
+        },
+        {
+          "module": "scale28_preparation_authority",
+          "symbol": "HybridPreparationAuthority.prepare",
+          "path": "tools/scale28_preparation_authority.py",
+          "sha256": "7cc7c1945ce3bb75f63281d5b50b7f063bea5f6534e917e5f2b59e7b26587685"
+        },
+        {
+          "module": "scale28_preparation_worker",
+          "symbol": "PreparationWorkerAttempt",
+          "path": "tools/scale28_preparation_worker.py",
+          "sha256": "053a531e49231da9923456c4bafcabda79d1807c1cac80b8795cf39cb3db62c3"
+        },
+        {
+          "module": "scale28_runtime_identity",
+          "symbol": "capture_runtime_identity",
+          "path": "tools/scale28_runtime_identity.py",
+          "sha256": "7aca851bc41b76bf931a9c576f8d74ae9c0af36ff76c575ab934de998f1e9c46"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise39.cli.py.run_module_entrypoint",
+      "owner": "src/test/support/python/repomap_test_support/cli.py",
+      "owner_sha256": "ed244227dd84afcf153f4a82944d94aaadf5be74cce28ab50370a3a606a4ee3f",
+      "test": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
+      "test_sha256": "7492dc91001686896ee71f528c0b2f66f9889c99fba93e93743294a2b0b098b0",
+      "kind": "run_module",
+      "symbol": "run_module_entrypoint",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "revise39.cli.py.run_module_entrypoint",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise39.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "kind": "run_module",
+      "symbol": "CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "revise39.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise39.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "kind": "run_module",
+      "symbol": "CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "revise39.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise41.base_package_import.0",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "spec_from_file_location",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.0"
+    },
+    {
+      "id": "v002.revise41.base_package_import.1",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "module_from_spec",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.1"
+    },
+    {
+      "id": "v002.revise41.base_package_import.2",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "modules",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.2"
+    },
+    {
+      "id": "v002.revise41.base_package_import.3",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "exec_module",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.3"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",

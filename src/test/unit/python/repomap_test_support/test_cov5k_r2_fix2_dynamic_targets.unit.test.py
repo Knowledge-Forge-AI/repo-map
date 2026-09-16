@@ -281,3 +281,4 @@ def test_preserves_independent_re_resolution_and_identities() -> None:
         match="registered owner module path is unsupported",
     ):
         _python_identity("unsupported/path.py", "main")
+# v0.0.2 dynamic target re-attestation.

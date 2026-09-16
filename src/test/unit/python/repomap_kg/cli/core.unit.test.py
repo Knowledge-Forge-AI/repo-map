@@ -332,3 +332,4 @@ def test_integration_cli_subprocess_retains_runner_child_coverage_bootstrap(tmp_
     assert len(started) == 1
     assert started == exited == recorded
     assert list(session.data_dir.glob(".coverage.*"))
+# v0.0.2 dynamic target re-attestation.
