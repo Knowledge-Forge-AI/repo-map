@@ -75,11 +75,12 @@ def _run_portable_worker_command(
             or capability.attempt != identity.get("attempt")
         ):
             raise ProtocolError("identity_mismatch")
-        repo_root = Path(__file__).resolve().parents[5]
-        python_path = repo_root / "src/main/python"
+        parents = Path(__file__).resolve().parents
+        repo_root = parents[5] if len(parents) > 5 else None
+        python_path = (repo_root / "src/main/python") if repo_root else None
         environment = build_portable_worker_environment(
             workspace_root=process_cwd,
-            python_path=python_path if python_path.is_dir() else None,
+            python_path=python_path if python_path is not None and python_path.is_dir() else None,
         )
         if python_paths:
             environment["PYTHONPATH"] = os.pathsep.join(

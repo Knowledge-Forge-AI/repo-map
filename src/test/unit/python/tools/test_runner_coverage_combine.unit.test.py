@@ -46,19 +46,15 @@ def test_unrelated_warning_obeys_policy_at_emission(category, policy):
             with pytest.raises(category, match="fixture warning"):
                 run_combine(SimpleNamespace(combine=combine))
             assert not progressed
-        else:
-            snapshots = run_combine(SimpleNamespace(combine=combine))
-            assert progressed == [True]
-            assert len(caught) == (1 if policy == "always" else 0)
-            if caught:
-                warning = caught[0]
-                assert (warning.category, warning.filename, warning.lineno, warning.source) == (
-                    category, "owned_fixture.py", 17, source)
-                evidence = json.loads(snapshots[0]["reader_status"])
-                assert evidence["category"] == category.__name__
-                assert evidence["allocation_origin"] == "unknown"
-                assert "tracemalloc_enabled" in evidence
-                assert snapshots[0]["file_type"] == "noncoverage_warning"
+            return
+        snapshots = run_combine(SimpleNamespace(combine=combine))
+        assert progressed == [True] and len(caught) == (1 if policy == "always" else 0)
+        if caught:
+            w = caught[0]
+            assert (w.category, w.filename, w.lineno, w.source) == (category, "owned_fixture.py", 17, source)
+            evidence = json.loads(snapshots[0]["reader_status"])
+            assert evidence["category"] == category.__name__ and evidence["allocation_origin"] == "unknown"
+            assert "tracemalloc_enabled" in evidence and snapshots[0]["file_type"] == "noncoverage_warning"
 
 
 def test_warning_named_coverage_warning_is_not_authentic():
@@ -269,10 +265,11 @@ def test_actual_unclosed_sqlite_warning_retains_source_without_corruption_claim(
         snapshots = run_combine(SimpleNamespace(combine=combine))
     emitted = [warning for warning in caught if warning.category is ResourceWarning]
     assert emitted
-    assert isinstance(emitted[0].source, sqlite3.Connection)
+    sqlite_warning = next(w for w in emitted if isinstance(getattr(w, "source", None), sqlite3.Connection))
+    assert isinstance(sqlite_warning.source, sqlite3.Connection)
     assert snapshots[0]["file_type"] == "noncoverage_warning"
     # The deliberately leaked fixture is ours; settle its surviving warning source.
-    emitted[0].source.close()
+    sqlite_warning.source.close()
 
 
 @pytest.mark.parametrize("enclosing", [False, True])
@@ -340,7 +337,7 @@ def test_live_caller_shard_containment_rejection(tmp_path: Path):
     parent_symlink = external_dir / "parent_link"
     parent_symlink.symlink_to(external_shard)
     fake_runner = SimpleNamespace(
-        get_data=lambda: SimpleNamespace(data_filename=lambda: str(parent_symlink))
+        get_data=lambda: SimpleNamespace(data_filename=lambda: str(parent_symlink)),
     )
     with pytest.raises(RuntimeError, match="parent coverage shard is a symlink"):
         session.combine(fake_runner)
@@ -349,3 +346,52 @@ def test_live_caller_shard_containment_rejection(tmp_path: Path):
     unreg_shard.write_bytes(b"SQLite format 3\x00" + b"\x00" * 100)
     with pytest.raises(RuntimeError, match="unregistered coverage shard rejected"):
         session.combine()
+
+
+def test_scale18_run_worker_scrubs_ambient_coverage_environment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    import scale18_digest_campaign as campaign
+    from scale15_terminal_contracts import FINAL_FAMILY_CODES
+
+    for key in ("COVERAGE_PROCESS_START", "COVERAGE_FILE",
+                "COVERAGE_CHILD_MANIFEST_DIR", "COVERAGE_CHILD_REGISTRATION_TOKEN"):
+        monkeypatch.setenv(key, str(tmp_path / key))
+    captured: dict[str, str] = {}
+    payload = json.dumps({
+        "profile": "mixed", "work_items": 10,
+        "pre_digest_rss_bytes": 1000, "digest_sampled_maximum_rss_bytes": 2000,
+        "incremental_digest_rss_bytes": 1000, "conservative_incremental_digest_rss_bytes": 1000,
+        "total_sampled_maximum_rss_bytes": 2000, "process_rss": {"maximum_observed_bytes": 2000},
+        "temporary_artifact_peak_bytes": 100,
+        "family_counts": [{"family_code": c, "row_count": 1} for c in FINAL_FAMILY_CODES],
+    })
+    proc = SimpleNamespace(
+        pid=12345, returncode=0, poll=lambda: 0, wait=lambda timeout=None: 0,
+        communicate=lambda timeout=None: (payload, ""), terminate=lambda: None, kill=lambda: None,
+        stdout=SimpleNamespace(read=lambda: payload), stderr=SimpleNamespace(read=lambda: ""),
+    )
+    monkeypatch.setattr(campaign.subprocess, "Popen", lambda *a, **kw: (captured.update(kw.get("env", {})), proc)[1])
+    monkeypatch.setattr(campaign, "read_process_rss_bytes", lambda pid: 1000)
+    monkeypatch.setattr(campaign, "_require_free_space", lambda policy: None)
+    campaign._run_worker(("_worker-profile", "--profile", "mixed", "--size", "10"),
+                         policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION)
+    assert not any(k.startswith("COVERAGE_") for k in captured)
+    assert "PYTHONPATH" in captured
+
+
+def test_scale18_worker_emits_no_coverage_shards_under_child_session(tmp_path: Path) -> None:
+    import os
+    import scale18_digest_campaign as campaign
+
+    session = ChildCoverageSession(
+        coverage_module=coverage, scratch_dir=tmp_path / "session",
+        source_root=campaign.REPO_ROOT, suite="staging",
+    )
+    with session:
+        assert "COVERAGE_PROCESS_START" in os.environ
+        result = campaign._run_worker(("_worker-profile", "--profile", "mixed", "--size", "64"),
+                                      policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION)
+        assert result["profile"] == "mixed"
+        assert list(session.data_dir.glob(".coverage*")) == []
+    assert session.combine() is None

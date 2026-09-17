@@ -27,7 +27,6 @@ _DENIED_IMPORT_PREFIXES = (
 )
 _DENIED_EVENTS = (
     "socket.",
-    "subprocess.",
     "os.exec",
     "os.posix_spawn",
     "os.spawn",
@@ -73,6 +72,7 @@ def install_portable_authority_guard(
             )
         )
     )
+    resolved_code_roots = tuple(dict.fromkeys(path.resolve() for path in code_roots))
     store_root = store_root.resolve()
     write_roots = (
         store_root / "objects",
@@ -83,10 +83,30 @@ def install_portable_authority_guard(
 
     def guard(event: str, args: tuple[object, ...]) -> None:
         _validate_audit_event(
-            event, args, read_roots, write_roots, exact_mkdir_roots
+            event, args, read_roots, write_roots, exact_mkdir_roots, resolved_code_roots
         )
 
     sys.addaudithook(guard)
+
+
+def _is_approved_go_helper(
+    args: tuple[object, ...], code_roots: tuple[Path, ...]
+) -> bool:
+    if not args:
+        return False
+    raw_exe = args[0]
+    if raw_exe is None and len(args) > 1:
+        argv = args[1]
+        raw_exe = argv[0] if isinstance(argv, (list, tuple)) and argv else None
+    if not isinstance(raw_exe, (str, bytes, os.PathLike)):
+        return False
+    try:
+        candidate = Path(os.fsdecode(raw_exe)).resolve()
+    except (TypeError, ValueError):
+        return False
+    if candidate.name not in {"repomap-go-extract", "repomap-go-extract.exe"}:
+        return False
+    return any(candidate == root or candidate.is_relative_to(root) for root in code_roots)
 
 
 def _validate_audit_event(
@@ -95,11 +115,16 @@ def _validate_audit_event(
     read_roots: tuple[Path, ...],
     write_roots: tuple[Path, ...],
     exact_mkdir_roots: tuple[Path, ...] = (),
+    code_roots: tuple[Path, ...] = (),
 ) -> None:
     if event == "import" and args and isinstance(args[0], str):
         if args[0].startswith(_DENIED_IMPORT_PREFIXES):
             raise PermissionError("portable worker import authority denied")
     if event.startswith(_DENIED_EVENTS):
+        raise PermissionError("portable worker runtime authority denied")
+    if event.startswith("subprocess."):
+        if event == "subprocess.Popen" and _is_approved_go_helper(args, code_roots):
+            return
         raise PermissionError("portable worker runtime authority denied")
     if event == "open":
         _validate_open(args, read_roots, write_roots)

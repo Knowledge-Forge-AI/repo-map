@@ -182,22 +182,21 @@ def prepare_child_coverage_environment(
     return env
 
 
-def launch_observed_process(
+def popen_observed_process(
     args: Sequence[str],
     *,
     family: str,
     cwd: Path | str | None = None,
     env: Mapping[str, str] | None = None,
     extra_env: Mapping[str, str] | None = None,
-    input_text: str | None = None,
     text: bool = True,
     pid_namespace_relation: str | None = None,
     inner_pid: int | None = None,
     observer: Any = None,
     capability: BootstrapCapabilityRecord | None = None,
     **kwargs: Any,
-) -> subprocess.CompletedProcess[str]:
-    """Launch a subprocess under the unified family contract and observe it."""
+) -> subprocess.Popen[str]:
+    """Launch a subprocess under the unified family contract, observe it, and return Popen."""
     if family not in ALL_LAUNCH_FAMILIES:
         raise ValueError(f"unknown coverage launch family: {family}")
 
@@ -254,11 +253,11 @@ def launch_observed_process(
                 f"measured launch family {family!r} requires an explicit observer"
             )
 
-    proc = subprocess.Popen(
+    proc: subprocess.Popen[str] = subprocess.Popen(
         list(args),
         cwd=str(cwd) if cwd is not None else None,
         env=resolved_env,
-        stdin=subprocess.PIPE if input_text is not None else kwargs.get("stdin"),
+        stdin=kwargs.get("stdin"),
         stdout=kwargs.get("stdout", subprocess.PIPE),
         stderr=kwargs.get("stderr", subprocess.PIPE),
         text=text,
@@ -273,8 +272,52 @@ def launch_observed_process(
             executable_family=family,
             capability=cap,
         )
-    stdout, stderr = proc.communicate(input=input_text)
-    if kwargs.get("check") and proc.returncode != 0:
+    return proc
+
+
+def launch_observed_process(
+    args: Sequence[str],
+    *,
+    family: str,
+    cwd: Path | str | None = None,
+    env: Mapping[str, str] | None = None,
+    extra_env: Mapping[str, str] | None = None,
+    input_text: str | None = None,
+    text: bool = True,
+    pid_namespace_relation: str | None = None,
+    inner_pid: int | None = None,
+    observer: Any = None,
+    capability: BootstrapCapabilityRecord | None = None,
+    **kwargs: Any,
+) -> subprocess.CompletedProcess[str]:
+    """Launch a subprocess under the unified family contract and observe it."""
+    stdin = subprocess.PIPE if input_text is not None else kwargs.pop("stdin", None)
+    timeout = kwargs.pop("timeout", None)
+    check = kwargs.pop("check", False)
+    proc = popen_observed_process(
+        args,
+        family=family,
+        cwd=cwd,
+        env=env,
+        extra_env=extra_env,
+        text=text,
+        pid_namespace_relation=pid_namespace_relation,
+        inner_pid=inner_pid,
+        observer=observer,
+        capability=capability,
+        stdin=stdin,
+        **kwargs,
+    )
+    try:
+        if timeout is not None:
+            stdout, stderr = proc.communicate(input=input_text, timeout=timeout)
+        else:
+            stdout, stderr = proc.communicate(input=input_text)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait()
+        raise
+    if check and proc.returncode != 0:
         raise subprocess.CalledProcessError(
             proc.returncode, list(args), output=stdout, stderr=stderr
         )
@@ -337,6 +380,7 @@ __all__ = (
     "launch_observed_container_process",
     "launch_observed_process",
     "launch_unified_coverage_process",
+    "popen_observed_process",
     "prepare_child_coverage_environment",
     "read_registered_children",
     "reconcile_child_manifests",

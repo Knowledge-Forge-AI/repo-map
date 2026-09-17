@@ -130,6 +130,37 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
             pa._validate_audit_event("os.symlink", ("one_arg",), self.read_roots, self.write_roots)
         pa._validate_audit_event("os.symlink", (str(src_ok), str(dst_ok)), self.read_roots, self.write_roots)
 
+    def test_subprocess_popen_allows_approved_go_helper_and_denies_others(self):
+        code_root = self.tmp / "code"
+        code_root.mkdir()
+        helper = code_root / "repomap-go-extract"
+        helper.touch(mode=0o755)
+        outside_helper = self.tmp / "repomap-go-extract"
+        outside_helper.touch(mode=0o755)
+
+        pa._validate_audit_event(
+            "subprocess.Popen", (str(helper),), self.read_roots, self.write_roots,
+            code_roots=(code_root,),
+        )
+        pa._validate_audit_event(
+            "subprocess.Popen", (None, [str(helper), "--root", "foo"]), self.read_roots, self.write_roots,
+            code_roots=(code_root,),
+        )
+
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "subprocess.Popen", (str(outside_helper),), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
+        bad_exe = code_root / "bash"
+        bad_exe.touch(mode=0o755)
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "subprocess.Popen", (str(bad_exe),), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

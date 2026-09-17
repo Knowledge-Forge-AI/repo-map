@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import subprocess
 import sys
 import tempfile
 import unittest
 
+from runner_coverage_observer import launch_observed_process
 from repomap_test_support.cli_in_process import REPO_ROOT, module_process_environment
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
@@ -43,14 +43,13 @@ class McpDomainReadbackIntegrationTests(unittest.TestCase):
     ) -> list[McpResponse]:
         payload = "\n".join(json.dumps(req) for req in requests) + "\n"
         env = module_process_environment(extra_env=extra_env)
-        result = subprocess.run(
+        result = launch_observed_process(
             [sys.executable, "-m", "repomap_kg.server.mcp"],
+            family="cli_module",
             cwd=REPO_ROOT,
             env=env,
-            input=payload,
-            text=True,
-            capture_output=True,
-            check=False,
+            input_text=payload,
+            pid_namespace_relation="shared",
             timeout=30,
         )
         self.assertEqual(result.returncode, 0, result.stderr)

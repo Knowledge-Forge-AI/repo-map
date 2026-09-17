@@ -144,14 +144,20 @@ def refresh_terminal(
             for d in getattr(result, "diagnostics", ())
             if isinstance(d, (dict, str))
         ][:8],
-        "publication_state": "committed" if succeeded else "commit_unknown",
+        "publication_state": getattr(
+            result, "publication_state", "committed" if succeeded else "commit_unknown"
+        ),
         "latest_run_identity": f"run-{run_id}" if succeeded else None,
         "source_generation": capability.source_generation,
         "config_generation": capability.config_generation,
         "extractor_generation": capability.extractor_generation,
         "canonicalizer_generation": capability.canonicalizer_generation,
         "retryable": False,
-        "error_category": None if succeeded else "publication_unknown",
+        "error_category": None if succeeded else (
+            "publication_unknown"
+            if getattr(result, "publication_state", "commit_unknown") == "commit_unknown"
+            else getattr(result, "error_category", None) or "worker_crash"
+        ),
     }
 
 

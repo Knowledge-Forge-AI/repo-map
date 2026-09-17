@@ -341,18 +341,33 @@ def launch_unified_coverage_process(
     """Launch unified coverage process delegating to runner_coverage_execution."""
     from runner_coverage_execution import launch_unified_coverage_process as _impl
     return _impl(
-        args,
-        family=family,
-        cwd=cwd,
-        env=env,
-        base_env=base_env,
-        extra_env=extra_env,
-        input_text=input_text,
-        text=text,
-        pid_namespace_relation=pid_namespace_relation,
-        inner_pid=inner_pid,
-        observer=observer,
-        capability=capability,
+        args, family=family, cwd=cwd, env=env, base_env=base_env,
+        extra_env=extra_env, input_text=input_text, text=text,
+        pid_namespace_relation=pid_namespace_relation, inner_pid=inner_pid,
+        observer=observer, capability=capability, **kwargs,
+    )
+
+
+def popen_observed_process(
+    args: Sequence[str],
+    *,
+    family: str,
+    cwd: Path | str | None = None,
+    env: Mapping[str, str] | None = None,
+    extra_env: Mapping[str, str] | None = None,
+    text: bool = True,
+    pid_namespace_relation: str | None = None,
+    inner_pid: int | None = None,
+    observer: Any = None,
+    capability: BootstrapCapabilityRecord | None = None,
+    **kwargs: Any,
+) -> subprocess.Popen[str]:
+    """Launch an observed process delegating to runner_coverage_execution."""
+    from runner_coverage_execution import popen_observed_process as _impl
+    return _impl(
+        args, family=family, cwd=cwd, env=env, extra_env=extra_env,
+        text=text, pid_namespace_relation=pid_namespace_relation,
+        inner_pid=inner_pid, observer=observer, capability=capability,
         **kwargs,
     )
 
@@ -364,5 +379,6 @@ __all__ = (
     "launch_observed_container_process",
     "launch_observed_process",
     "launch_unified_coverage_process",
+    "popen_observed_process",
     "resolve_pid_namespace_mapping",
 )

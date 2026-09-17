@@ -368,6 +368,29 @@ class TestRunnerCoverageObservation(unittest.TestCase):
         cleaned = scrub_coverage_environment({"PYTHONPATH": f"/usr/lib:{alias_path}:{str(boot)}"}, capability=cap)
         self.assertEqual(cleaned.get("PYTHONPATH"), "/usr/lib")
 
+    def test_staging_suite_unmeasured_and_mcp_clean_combine(self) -> None:
+        """Prove staging suite session properly records cli_module and ignores unmeasured."""
+        import coverage
+        from runner_coverage import ChildCoverageSession
+
+        session = ChildCoverageSession(
+            coverage_module=coverage, scratch_dir=self.obs_dir / "sess",
+            source_root=Path.cwd(), suite="staging",
+        )
+        with session:
+            unmeas = launch_observed_process([sys.executable, "-c", "print('unmeas')"], family="unmeasured")
+            self.assertEqual(unmeas.returncode, 0)
+            self.assertEqual(list(session.data_dir.glob(".coverage*")), [])
+            mcp = launch_observed_process(
+                [sys.executable, "-m", "repomap_kg.server.mcp"], family="cli_module",
+                cwd=Path.cwd(), input_text='{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n',
+                pid_namespace_relation="shared", timeout=30,
+            )
+            self.assertEqual(mcp.returncode, 0)
+            self.assertEqual(len(list(session.data_dir.glob(".coverage*"))), 1)
+        combined = session.combine()
+        self.assertIsNotNone(combined)
+
 
 if __name__ == "__main__":
     unittest.main()

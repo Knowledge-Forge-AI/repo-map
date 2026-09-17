@@ -162,11 +162,16 @@ def _refresh_graph_impl(
         raise OpsRefreshGenerationChangedError("refresh generation changed")
     database = graph_database(config, graph)
     warnings = _graph_refresh_warnings(graph)
+    from repomap_kg.ops.portable_refresh import (
+        PortableRefreshError,
+        execute_portable_refresh,
+    )
+    from repomap_kg.storage.errors import StorageCommitUnknownError
+
     started_at = _utc_now_text()
     try:
         if ingestion_mode != "staged":
             raise ValueError("refresh ingestion mode is invalid")
-        from repomap_kg.ops.portable_refresh import execute_portable_refresh
 
         outcome = execute_portable_refresh(
             config,
@@ -178,11 +183,19 @@ def _refresh_graph_impl(
         )
     except OpsRefreshGenerationChangedError:
         raise
-    except (OSError, StorageSchemaError, ValueError) as error:
+    except (OSError, StorageSchemaError, ValueError, PortableRefreshError) as error:
+        is_commit_unknown = isinstance(error, StorageCommitUnknownError) or (
+            isinstance(error, StorageSchemaError)
+            and getattr(error, "is_commit_unknown", False)
+        )
+        pub_state = "commit_unknown" if is_commit_unknown else "not_started"
+        err_cat = "publication_unknown" if is_commit_unknown else "worker_crash"
         return _result_from_graph(
             graph,
             database=database,
             result="failure",
+            publication_state=pub_state,
+            error_category=err_cat,
             started_at=started_at,
             finished_at=_utc_now_text(),
             warnings=warnings,
@@ -195,6 +208,7 @@ def _refresh_graph_impl(
         graph,
         database=database,
         result="success",
+        publication_state="committed",
         started_at=started_at,
         finished_at=_utc_now_text(),
         repository_id=outcome.summary.repository_id,

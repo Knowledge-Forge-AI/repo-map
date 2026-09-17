@@ -35,7 +35,10 @@ from repomap_kg.storage._staged_ingestion_stages import (
 from repomap_kg.storage.authority import StageId
 from repomap_kg.storage.backend_ownership import ConnectionRole
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.errors import (
+    StorageCommitUnknownError,
+    StorageSchemaError,
+)
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
 from repomap_kg.storage.publication import (
@@ -260,6 +263,7 @@ def _run_staged_full_refresh_admitted(
     repository_id: int | None = None
     run_id: int | None = None
     stage_committed = False
+    transaction_committed = False
     owner: StageOwner | None = None
     try:
         repository_id = _ensure_repository(connection, repository_name, root_path, repository_identity)
@@ -328,6 +332,7 @@ def _run_staged_full_refresh_admitted(
             else:
                 with staging_measurements.operation("transaction.commit"):
                     connection.commit()
+            transaction_committed = True
         except (Exception, KeyboardInterrupt) as error:
             _restore_connection_signal_handlers(signal_handlers)
             signal_handlers = {}
@@ -342,7 +347,7 @@ def _run_staged_full_refresh_admitted(
                     files=prepared.files,
                     publication_receipt=handoff.receipt,
                 )
-            raise StorageSchemaError("staged publication commit is unknown") from error
+            raise StorageCommitUnknownError("staged publication commit is unknown") from error
         if staging_measurements is not None and resources_before is not None:
             emit_staging_resource_measurements(
                 staging_measurements, resources_before, capture_staging_resources(connection)
@@ -354,6 +359,8 @@ def _run_staged_full_refresh_admitted(
             publication_receipt=handoff.receipt,
         )
     except (Exception, KeyboardInterrupt) as error:
+        if transaction_committed:
+            raise StorageCommitUnknownError("post-transaction failure occurred after publication commit") from error
         _handle_refresh_failure(
             connection,
             error,
