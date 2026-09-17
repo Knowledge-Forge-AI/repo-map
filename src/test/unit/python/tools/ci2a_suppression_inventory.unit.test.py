@@ -114,3 +114,187 @@ def test_record_level_baseline_requires_fingerprint_and_justification(
     entry["justification"] = "reviewed pre-existing directive"
     baseline.write_text(json.dumps(document), encoding="utf-8")
     assert load_baseline(baseline) == (record,)
+
+
+def test_relocation_pure_line_shift_is_unchanged(tmp_path: Path) -> None:
+    baseline_directive = Directive.create(
+        "ruff-noqa",
+        "sample.py",
+        2,
+        ("N802",),
+        target="def do_GET(self) -> None:",
+        occurrence=1,
+    )
+    source = tmp_path / "sample.py"
+    source.write_text(
+        "# Header line 1\n"
+        "# Header line 2\n"
+        "# Header line 3\n"
+        "def do_GET(self) -> None:  # noqa: N802\n"
+        "    pass\n",
+        encoding="utf-8",
+    )
+    current = scan_paths((source,), root=tmp_path)
+    assert len(current) == 1
+    assert current[0].line == 4
+    assert current[0].target == "def do_GET(self) -> None:"
+
+    delta = classify(current, (baseline_directive,))
+    assert delta.unchanged == current
+    assert delta.added == ()
+    assert delta.broadened == ()
+    assert delta.removed == ()
+    assert delta.blocking is False
+
+
+def test_changed_suppression_kind_is_added_and_removed(tmp_path: Path) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("x = 1  # type: ignore[assignment]\n", encoding="utf-8")
+    current = scan_paths((source,), root=tmp_path)
+
+    baseline_directive = Directive.create(
+        "ruff-noqa", "sample.py", 1, ("F841",), target="x = 1", occurrence=1
+    )
+    delta = classify(current, (baseline_directive,))
+    assert delta.added == current
+    assert delta.removed == (baseline_directive,)
+    assert delta.unchanged == ()
+    assert delta.blocking is True
+
+
+def test_relocated_broadened_scope_is_broadened_and_blocking(tmp_path: Path) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text(
+        "# Shift\n"
+        "import os  # noqa: F401, F811\n",
+        encoding="utf-8",
+    )
+    current = scan_paths((source,), root=tmp_path)
+    baseline_directive = Directive.create(
+        "ruff-noqa", "sample.py", 1, ("F401",), target="import os", occurrence=1
+    )
+    delta = classify(current, (baseline_directive,))
+    assert delta.broadened == current
+    assert delta.added == ()
+    assert delta.removed == ()
+    assert delta.blocking is True
+
+
+def test_truly_new_suppression_is_added_and_blocking(tmp_path: Path) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text(
+        "import os  # noqa: F401\n"
+        "import sys  # noqa: F401\n",
+        encoding="utf-8",
+    )
+    current = scan_paths((source,), root=tmp_path)
+    baseline_directive = Directive.create(
+        "ruff-noqa", "sample.py", 1, ("F401",), target="import os", occurrence=1
+    )
+    delta = classify(current, (baseline_directive,))
+    assert delta.unchanged == (current[0],)
+    assert delta.added == (current[1],)
+    assert delta.blocking is True
+
+
+def test_suppression_removal_is_visible_and_non_blocking(tmp_path: Path) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("import os\n", encoding="utf-8")
+    current = scan_paths((source,), root=tmp_path)
+    baseline_directive = Directive.create(
+        "ruff-noqa", "sample.py", 1, ("F401",), target="import os", occurrence=1
+    )
+    delta = classify(current, (baseline_directive,))
+    assert delta.removed == (baseline_directive,)
+    assert delta.added == ()
+    assert delta.unchanged == ()
+    assert delta.blocking is False
+
+
+def test_identical_suppressions_in_same_file_do_not_collapse(tmp_path: Path) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text(
+        "x = 1  # noqa: F841\n"
+        "y = 2\n"
+        "x = 1  # noqa: F841\n",
+        encoding="utf-8",
+    )
+    scanned = scan_paths((source,), root=tmp_path)
+    assert len(scanned) == 2
+    assert scanned[0].occurrence == 1
+    assert scanned[1].occurrence == 2
+    assert scanned[0].fingerprint != scanned[1].fingerprint
+
+    # Shift lines by inserting header
+    shifted_source = tmp_path / "sample.py"
+    shifted_source.write_text(
+        "# Header 1\n"
+        "# Header 2\n"
+        "x = 1  # noqa: F841\n"
+        "y = 2\n"
+        "x = 1  # noqa: F841\n",
+        encoding="utf-8",
+    )
+    current = scan_paths((shifted_source,), root=tmp_path)
+    assert current[0].occurrence == 1
+    assert current[1].occurrence == 2
+    delta = classify(current, scanned)
+    assert delta.unchanged == current
+    assert delta.added == ()
+    assert delta.removed == ()
+
+    # If occurrence 2 is deleted:
+    only_first_source = tmp_path / "sample.py"
+    only_first_source.write_text(
+        "x = 1  # noqa: F841\n"
+        "y = 2\n",
+        encoding="utf-8",
+    )
+    cur_first = scan_paths((only_first_source,), root=tmp_path)
+    delta_first = classify(cur_first, scanned)
+    assert delta_first.unchanged == (cur_first[0],)
+    assert delta_first.removed == (scanned[1],)
+
+
+def test_moving_suppression_to_different_semantic_target_is_added_and_removed(
+    tmp_path: Path,
+) -> None:
+    # 1. Relocated line with different semantic target
+    source_relocated = tmp_path / "sample_relocated.py"
+    source_relocated.write_text(
+        "# Some comment\n"
+        "b = 2  # noqa: F841\n",
+        encoding="utf-8",
+    )
+    current_relocated = scan_paths((source_relocated,), root=tmp_path)
+    baseline_relocated = Directive.create(
+        "ruff-noqa", "sample_relocated.py", 1, ("F841",), target="a = 1", occurrence=1
+    )
+    delta_relocated = classify(current_relocated, (baseline_relocated,))
+    assert delta_relocated.added == current_relocated
+    assert delta_relocated.removed == (baseline_relocated,)
+    assert delta_relocated.unchanged == ()
+    assert delta_relocated.blocking is True
+
+    # 2. Same-line with different semantic target (Pass 1 must not match different targets)
+    source_sameline = tmp_path / "sample_sameline.py"
+    source_sameline.write_text(
+        "b = 2  # noqa: F841\n",
+        encoding="utf-8",
+    )
+    current_sameline = scan_paths((source_sameline,), root=tmp_path)
+    baseline_sameline = Directive.create(
+        "ruff-noqa", "sample_sameline.py", 1, ("F841",), target="a = 1", occurrence=1
+    )
+    delta_sameline = classify(current_sameline, (baseline_sameline,))
+    assert delta_sameline.added == current_sameline
+    assert delta_sameline.removed == (baseline_sameline,)
+    assert delta_sameline.unchanged == ()
+    assert delta_sameline.blocking is True
+
+
+def test_classify_rejects_duplicate_baseline_locations() -> None:
+    d1 = Directive.create("ruff-noqa", "a.py", 1, ("F841",), target="x = 1", occurrence=1)
+    d2 = Directive.create("ruff-noqa", "a.py", 1, ("F841",), target="x = 1", occurrence=1)
+    with pytest.raises(ValueError, match="duplicate suppression directive location in baseline"):
+        classify((d1,), (d1, d2))

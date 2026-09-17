@@ -92,7 +92,7 @@ COPY --from=python-runtime /usr/local /usr/local
 COPY --from=python-runtime /usr/lib /usr/lib
 COPY --from=go-helper /out/repomap-go-extract /tmp/repomap-go-extract
 COPY --from=go-helper /usr/local/go/LICENSE /usr/share/doc/repomap-kg/go/LICENSE
-RUN install -d -m 0700 /repo-map-home /repo-map-home/runtime /repo-map-home/coordinator /repo-map-admin \
+RUN install -d -m 0700 /repo-map-home /repo-map-home/runtime /repo-map-home/coordinator /repo-map-admin /repo-map-home/state \
     && install -m 0444 /dev/null /etc/repomap-release-container \
     && chmod 1777 /tmp
 RUN package_root="$(python -c 'import pathlib, repomap_kg; print(pathlib.Path(repomap_kg.__file__).parent)')" \\

@@ -391,3 +391,111 @@ def test_ci_safe_digest_subprocess_doubling_is_bounded_and_cleans(
     assert comparison["accepted"] is True
     assert before == after
 
+
+def test_scale18_run_worker_scrubs_ambient_coverage_environment(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    import json
+
+    monkeypatch.setenv("COVERAGE_PROCESS_START", str(tmp_path / ".coveragerc"))
+    monkeypatch.setenv("COVERAGE_FILE", str(tmp_path / ".coverage"))
+    monkeypatch.setenv("COVERAGE_CHILD_MANIFEST_DIR", str(tmp_path / "manifests"))
+    monkeypatch.setenv("COVERAGE_CHILD_REGISTRATION_TOKEN", "test-token")
+
+    captured_env: dict[str, str] = {}
+
+    def fake_popen(cmd, *args, **kwargs):
+        captured_env.update(kwargs.get("env", {}))
+
+        class FakeProcess:
+            pid = 12345
+            returncode = 0
+            stdout = SimpleNamespace(
+                read=lambda: json.dumps({
+                    "profile": "mixed",
+                    "work_items": 10,
+                    "pre_digest_rss_bytes": 1000,
+                    "digest_sampled_maximum_rss_bytes": 2000,
+                    "incremental_digest_rss_bytes": 1000,
+                    "conservative_incremental_digest_rss_bytes": 1000,
+                    "total_sampled_maximum_rss_bytes": 2000,
+                    "process_rss": {"maximum_observed_bytes": 2000},
+                    "temporary_artifact_peak_bytes": 100,
+                    "family_counts": dict.fromkeys(FINAL_FAMILY_CODES, 1),
+                })
+            )
+            stderr = SimpleNamespace(read=lambda: "")
+
+            def poll(self):
+                return self.returncode
+
+            def wait(self, timeout=None):
+                return 0
+
+            def communicate(self, timeout=None):
+                return (
+                    json.dumps({
+                        "profile": "mixed",
+                        "work_items": 10,
+                        "pre_digest_rss_bytes": 1000,
+                        "digest_sampled_maximum_rss_bytes": 2000,
+                        "incremental_digest_rss_bytes": 1000,
+                        "conservative_incremental_digest_rss_bytes": 1000,
+                        "total_sampled_maximum_rss_bytes": 2000,
+                        "process_rss": {"maximum_observed_bytes": 2000},
+                        "temporary_artifact_peak_bytes": 100,
+                        "family_counts": [
+                            {"family_code": code, "row_count": 1}
+                            for code in FINAL_FAMILY_CODES
+                        ],
+                    }),
+                    "",
+                )
+
+            def terminate(self):
+                pass
+
+            def kill(self):
+                pass
+
+        return FakeProcess()
+
+    monkeypatch.setattr(campaign.subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(campaign, "read_process_rss_bytes", lambda pid: 1000)
+    monkeypatch.setattr(campaign, "_require_free_space", lambda policy: None)
+
+    campaign._run_worker(
+        ("_worker-profile", "--profile", "mixed", "--size", "10"),
+        policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION,
+    )
+
+    for key in captured_env:
+        assert not key.startswith("COVERAGE_"), f"Unexpected coverage key: {key}"
+    assert "PYTHONPATH" in captured_env
+
+
+def test_scale18_worker_emits_no_coverage_shards_under_child_session(
+    tmp_path,
+) -> None:
+    import os
+    import coverage
+    from runner_coverage import ChildCoverageSession
+
+    session = ChildCoverageSession(
+        coverage_module=coverage,
+        scratch_dir=tmp_path / "session",
+        source_root=campaign.REPO_ROOT,
+        suite="int",
+    )
+    with session:
+        assert "COVERAGE_PROCESS_START" in os.environ
+        result = campaign._run_worker(
+            ("_worker-profile", "--profile", "mixed", "--size", "64"),
+            policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION,
+        )
+        assert result["profile"] == "mixed"
+        shards_in_data_dir = list(session.data_dir.glob(".coverage*"))
+        assert shards_in_data_dir == []
+    combine_res = session.combine()
+    assert combine_res is None

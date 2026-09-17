@@ -173,6 +173,7 @@ services:
     volumes:
 {config_mounts}\
       - coordinator-state:/repo-map-home/coordinator
+      - publication-state:/repo-map-home/state
 {execution_mounts}\
     networks:
       - repomap-local
@@ -237,6 +238,9 @@ volumes:
   coordinator-state:
     labels:
 {_labels(plan, "coordinator-state")}
+  publication-state:
+    labels:
+{_labels(plan, "publication-state")}
   admin-state:
     labels:
 {_labels(plan, "admin-state")}

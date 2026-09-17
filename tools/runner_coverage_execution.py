@@ -47,6 +47,9 @@ UNMEASURED_FAMILIES = frozenset({
     "intentional_victim",
     "resource_tracker",
     "container_isolated",
+    # scale18_worker: RSS benchmark campaign whose memory and throughput
+    # measurements are distorted by tracing; scrubbed of coverage capability.
+    "scale18_worker",
     "unmeasured",
 })
 ALL_LAUNCH_FAMILIES = MEASURED_FAMILIES | UNMEASURED_FAMILIES
