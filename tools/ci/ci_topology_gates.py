@@ -173,6 +173,7 @@ def _check_main_system_gate(
         "CANDIDATE_TREE",
         "CANDIDATE_BASE_PARENT",
         "CANDIDATE_HEAD_PARENT",
+        "export CANDIDATE_SHA CANDIDATE_TREE CANDIDATE_BASE_PARENT CANDIDATE_HEAD_PARENT",
         "repomap-ci-gate-request-v1",
         "gate-request.json",
     ):

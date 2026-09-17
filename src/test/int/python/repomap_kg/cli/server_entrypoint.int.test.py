@@ -91,11 +91,12 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
             finally:
                 process.terminate()
                 try:
-                    process.wait(timeout=5)
+                    process.wait(timeout=10)
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait(timeout=5)
 
+        self.assertEqual(process.returncode, 0)
         self.assertEqual(health["service"], "repomap")
         self.assertEqual(live["status"], "live")
         self.assertEqual(health["status"], "healthy")

@@ -25,15 +25,9 @@ from scale12_stderr_drain import Scale12StderrDrainer
 
 def _summary(elapsed: float = 1.0) -> dict[str, object]:
     return {
-        "schema_version": 1,
-        "workload_profile": "mixed",
-        "work_items": 512,
-        "repetition": 1,
-        "elapsed_seconds": elapsed,
-        "receipt_complete": True,
-        "cleanup_complete": True,
-        "structural_digest": "a" * 64,
-        "family_row_counts": {"files": 2},
+        "schema_version": 1, "workload_profile": "mixed", "work_items": 512, "repetition": 1,
+        "elapsed_seconds": elapsed, "receipt_complete": True, "cleanup_complete": True,
+        "structural_digest": "a" * 64, "family_row_counts": {"files": 2},
     }
 
 
@@ -74,13 +68,9 @@ def test_run_supervised_profile_settles_after_live_child_failure(monkeypatch) ->
     child = None
     try:
         code = (
-            f"import os, signal, sys, time; "
-            f"signal.signal(signal.SIGINT, signal.SIG_IGN); "
-            f"os.write({ready_w}, b'1'); os.close({ready_w}); "
-            f"sys.stderr.write('before\\n'); sys.stderr.flush(); "
-            f"time.sleep(0.3); "
-            f"sys.stderr.write('after\\n'); sys.stderr.flush(); "
-            f"sys.exit(0)"
+            f"import os, signal, sys, time; signal.signal(signal.SIGINT, signal.SIG_IGN); "
+            f"os.write({ready_w}, b'1'); os.close({ready_w}); sys.stderr.write('before\\n'); "
+            f"sys.stderr.flush(); time.sleep(0.3); sys.stderr.write('after\\n'); sys.stderr.flush(); sys.exit(0)"
         )
         child = subprocess.Popen(
             [sys.executable, "-c", code],
@@ -153,7 +143,7 @@ def test_child_exit_and_reader_eof_not_confused_with_stream_closure() -> None:
 
 def test_run_supervised_profile_wait_timeout_preserves_primary_and_annotates(monkeypatch) -> None:
     child = subprocess.Popen(
-        [sys.executable, "-c", "import time; time.sleep(10)"],
+        [sys.executable, "-c", "import signal, time; signal.signal(signal.SIGINT, signal.SIG_IGN); time.sleep(10)"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
     )
@@ -219,16 +209,11 @@ def test_run_supervised_profile_wait_timeout_without_primary(monkeypatch) -> Non
 
     class TimeoutProcess:
         def __init__(self, real_proc):
-            self._real = real_proc
-            self.pid = real_proc.pid
-            self.stderr = real_proc.stderr
+            self._real, self.pid, self.stderr = real_proc, real_proc.pid, real_proc.stderr
             self._polls = [None, None, 0]
-        def poll(self) -> int | None:
-            return self._polls.pop(0) if self._polls else 0
-        def send_signal(self, sig: int) -> None:
-            self._real.send_signal(sig)
-        def wait(self, timeout: float | None = None) -> int:
-            raise subprocess.TimeoutExpired(cmd="child", timeout=0.01)
+        def poll(self) -> int | None: return self._polls.pop(0) if self._polls else 0
+        def send_signal(self, sig: int) -> None: self._real.send_signal(sig)
+        def wait(self, timeout: float | None = None) -> int: raise subprocess.TimeoutExpired(cmd="child", timeout=0.01)
 
     timeout_proc = TimeoutProcess(child)
     monkeypatch.setattr("scale12_campaign.start_profile_child", lambda *a, **kw: timeout_proc)
@@ -277,25 +262,17 @@ def test_run_supervised_profile_stream_close_failure_fails_clean_run(monkeypatch
     os.close(w_fd)
 
     class FailingCloseStream:
-        def __init__(self, target):
-            self.target = target
-            self.closed = False
-        def fileno(self) -> int:
-            return self.target.fileno()
-        def close(self) -> None:
-            raise OSError("disk close failure")
+        def __init__(self, target): self.target, self.closed = target, False
+        def fileno(self) -> int: return self.target.fileno()
+        def close(self) -> None: raise OSError("disk close failure")
 
     class MockProcess:
         pid = os.getpid()
         stderr = FailingCloseStream(r_file)
-        def __init__(self):
-            self._polls = [None, None, 0]
-        def poll(self) -> int | None:
-            return self._polls.pop(0) if self._polls else 0
-        def send_signal(self, sig: int) -> None:
-            pass
-        def wait(self, timeout: float | None = None) -> int:
-            return 0
+        def __init__(self): self._polls = [None, None, 0]
+        def poll(self) -> int | None: return self._polls.pop(0) if self._polls else 0
+        def send_signal(self, sig: int) -> None: pass
+        def wait(self, timeout: float | None = None) -> int: return 0
 
     monkeypatch.setattr("scale12_campaign.start_profile_child", lambda *a, **kw: MockProcess())
     frames = [
@@ -309,11 +286,7 @@ def test_run_supervised_profile_stream_close_failure_fails_clean_run(monkeypatch
     try:
         with pytest.raises(Scale12SupervisorError, match="child cleanup failed") as caught:
             run_supervised_profile(
-                _fake_postgres(),
-                profile="mixed",
-                work_items=1,
-                repetition=1,
-                instrumented=False,
+                _fake_postgres(), profile="mixed", work_items=1, repetition=1, instrumented=False,
             )
         assert isinstance(caught.value.__cause__, OSError)
         assert any("cleanup_failures=1" in n for n in caught.value.__notes__)
@@ -331,25 +304,17 @@ def test_run_supervised_profile_stream_close_failure_preserves_primary(monkeypat
     os.close(w_fd)
 
     class FailingCloseStream:
-        def __init__(self, target):
-            self.target = target
-            self.closed = False
-        def fileno(self) -> int:
-            return self.target.fileno()
-        def close(self) -> None:
-            raise OSError("disk close failure")
+        def __init__(self, target): self.target, self.closed = target, False
+        def fileno(self) -> int: return self.target.fileno()
+        def close(self) -> None: raise OSError("disk close failure")
 
     class MockProcess:
         pid = os.getpid()
         stderr = FailingCloseStream(r_file)
-        def __init__(self):
-            self._polls = [None, None, 0]
-        def poll(self) -> int | None:
-            return self._polls.pop(0) if self._polls else 0
-        def send_signal(self, sig: int) -> None:
-            pass
-        def wait(self, timeout: float | None = None) -> int:
-            return 0
+        def __init__(self): self._polls = [None, None, 0]
+        def poll(self) -> int | None: return self._polls.pop(0) if self._polls else 0
+        def send_signal(self, sig: int) -> None: pass
+        def wait(self, timeout: float | None = None) -> int: return 0
 
     monkeypatch.setattr("scale12_campaign.start_profile_child", lambda *a, **kw: MockProcess())
     monkeypatch.setattr(
@@ -395,3 +360,34 @@ def test_supervisor_settle_projects_multiple_cleanup_failure_tokens() -> None:
     assert "cleanup_failures=2" in note
     assert "cleanup_failure=os_error" in note
     assert "cleanup_failure=runtime_error" in note
+
+
+def test_scale12_live_child_timeout_preserves_open_stream_and_defers() -> None:
+    proc = SimpleNamespace(poll=lambda: None)
+    chan = SimpleNamespace(close=lambda: None)
+    sup = scale12_campaign.Scale12ProfileSupervisor(proc, chan, SimpleNamespace(capture=lambda **kw: None))
+    stream = SimpleNamespace(closed=False)
+    stream.close = lambda: setattr(stream, "closed", True)
+    drainer = Scale12StderrDrainer(stream)
+    setattr(sup, "_drainer", drainer)
+    err = Scale12TransportError("primary")
+    sup.settle(primary_exc=err)
+    assert not stream.closed
+    assert "stderr_settlement=deferred_live_child" in "\n".join(err.__notes__)
+
+
+def test_scale12_settled_child_closes_stream_exactly_once() -> None:
+    proc = SimpleNamespace(poll=lambda: 0)
+    chan = SimpleNamespace(close=lambda: None)
+    sup = scale12_campaign.Scale12ProfileSupervisor(proc, chan, SimpleNamespace(capture=lambda **kw: None))
+    close_count = 0
+    stream = SimpleNamespace(closed=False)
+    def do_close():
+        nonlocal close_count; close_count += 1; stream.closed = True
+    stream.close = do_close
+    drainer = Scale12StderrDrainer(stream)
+    setattr(sup, "_drainer", drainer)
+    sup.settle()
+    assert close_count == 1
+    sup.settle()
+    assert close_count == 1
