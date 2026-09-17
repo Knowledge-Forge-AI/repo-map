@@ -10,7 +10,14 @@ from typing import Any
 
 from runner_coverage_bootstrap import (
     BootstrapCapabilityRecord,
+    extend_pythonpath,
     is_runner_bootstrap_path,
+    resolve_bootstrap_capability,
+)
+from runner_coverage_container import (
+    extract_pid_from_container_ps as extract_pid_from_container_ps,
+    extract_pid_from_docker_top as extract_pid_from_docker_top,
+    launch_observed_container_process as launch_observed_container_process,
 )
 from runner_coverage_combine import (
     execute_shard_combine as execute_shard_combine,
@@ -59,6 +66,7 @@ def scrub_coverage_environment(
     session_dir: str | Path | None = None,
     capability: BootstrapCapabilityRecord | None = None,
 ) -> dict[str, str]:
+    cap = capability or resolve_bootstrap_capability(env=env)
     cleaned = dict(os.environ if env is None else env)
     for key in list(cleaned):
         if key.startswith("COVERAGE_"):
@@ -68,7 +76,7 @@ def scrub_coverage_environment(
         s_str = str(session_dir) if session_dir is not None else None
         rem = [
             p for p in pp.split(os.pathsep)
-            if p and (s_str is None or p != s_str) and not is_runner_bootstrap_path(p, capability=capability)
+            if p and (s_str is None or p != s_str) and not is_runner_bootstrap_path(p, capability=cap)
         ]
         if rem:
             cleaned["PYTHONPATH"] = os.pathsep.join(rem)
@@ -100,6 +108,8 @@ def prepare_child_coverage_environment(
                 )
 
     env = dict(os.environ if base_env is None else base_env)
+    cap = capability or resolve_bootstrap_capability(env=env)
+
     if family in UNMEASURED_FAMILIES:
         is_meas = False
     elif measure is not None:
@@ -111,47 +121,42 @@ def prepare_child_coverage_environment(
 
     if not is_meas:
         cleaned = scrub_coverage_environment(
-            env, session_dir=session_dir, capability=capability
+            env, session_dir=session_dir, capability=cap
         )
-        if source_root:
-            curr = cleaned.get("PYTHONPATH")
-            cleaned["PYTHONPATH"] = (
-                f"{source_root}{os.pathsep}{curr}" if curr else str(source_root)
+        prefix_paths = [str(source_root)] if source_root else []
+        extra_pp = extra_env.get("PYTHONPATH") if extra_env else None
+        filtered_extra = (
+            [p for p in extra_pp.split(os.pathsep) if p and not is_runner_bootstrap_path(p, capability=cap)]
+            if extra_pp
+            else []
+        )
+        if filtered_extra or prefix_paths:
+            cleaned["PYTHONPATH"] = extend_pythonpath(
+                cleaned.get("PYTHONPATH"),
+                *prefix_paths,
+                *filtered_extra,
+                capability=cap,
             )
         if extra_env:
             for k, v in extra_env.items():
-                if k.startswith("COVERAGE_"):
-                    continue
-                if k == "PYTHONPATH":
-                    filtered = [
-                        p for p in v.split(os.pathsep)
-                        if p and not is_runner_bootstrap_path(p, capability=capability)
-                    ]
-                    if filtered:
-                        curr_pp = cleaned.get("PYTHONPATH")
-                        cleaned["PYTHONPATH"] = (
-                            f"{curr_pp}{os.pathsep}{os.pathsep.join(filtered)}"
-                            if curr_pp
-                            else os.pathsep.join(filtered)
-                        )
-                else:
+                if not k.startswith("COVERAGE_") and k != "PYTHONPATH":
                     cleaned[k] = v
         return cleaned
 
     bdir: Path | None = Path(bootstrap_dir) if bootstrap_dir else None
     if bdir is None and env.get("COVERAGE_CHILD_MANIFEST_DIR"):
         cand = Path(env["COVERAGE_CHILD_MANIFEST_DIR"]).parent / "bootstrap"
-        if is_runner_bootstrap_path(cand, capability=capability):
+        if is_runner_bootstrap_path(cand, capability=cap):
             bdir = cand
     if bdir is None and env.get("PYTHONPATH"):
         for p in env["PYTHONPATH"].split(os.pathsep):
-            if p and is_runner_bootstrap_path(p, capability=capability):
+            if p and is_runner_bootstrap_path(p, capability=cap):
                 bdir = Path(p)
                 break
 
     if bdir is None:
         cleaned = scrub_coverage_environment(
-            env, session_dir=session_dir, capability=capability
+            env, session_dir=session_dir, capability=cap
         )
         if source_root:
             cleaned["PYTHONPATH"] = str(source_root)
@@ -161,20 +166,12 @@ def prepare_child_coverage_environment(
                     cleaned[k] = v
         return cleaned
 
-    paths = [str(bdir)]
+    prefix_paths = [str(bdir)]
     if source_root:
-        paths.append(str(source_root))
-    for raw_p in (env.get("PYTHONPATH"), extra_env.get("PYTHONPATH") if extra_env else None):
-        if raw_p:
-            for part in raw_p.split(os.pathsep):
-                if (
-                    part
-                    and part not in paths
-                    and not is_runner_bootstrap_path(part, capability=capability)
-                    and Path(part) != bdir
-                ):
-                    paths.append(part)
-    env["PYTHONPATH"] = os.pathsep.join(paths)
+        prefix_paths.append(str(source_root))
+    extra_pp = extra_env.get("PYTHONPATH") if extra_env else None
+    combined_raw = f"{env.get('PYTHONPATH', '')}{os.pathsep}{extra_pp}" if extra_pp else env.get("PYTHONPATH")
+    env["PYTHONPATH"] = extend_pythonpath(combined_raw, *prefix_paths, capability=cap)
     if extra_env:
         for k, v in extra_env.items():
             if k != "PYTHONPATH":
@@ -215,12 +212,13 @@ def launch_observed_process(
         if pid_namespace_relation is None:
             pid_namespace_relation = "unknown"
 
+    cap = capability or resolve_bootstrap_capability(env=env if env is not None else os.environ)
     resolved_env = (
         prepare_child_coverage_environment(
             env if env is not None else os.environ,
             family=family,
             extra_env=extra_env,
-            capability=capability,
+            capability=cap,
         )
         if (env is None or extra_env)
         else dict(env)
@@ -242,7 +240,7 @@ def launch_observed_process(
             obs = ProcessObserver(
                 observation_dir=Path(cand_manifest).parent / "observations",
                 invocation_id=cand_inv,
-                capability=capability,
+                capability=cap,
             )
         elif (
             resolved_env.get("COVERAGE_PROCESS_START")
@@ -269,7 +267,7 @@ def launch_observed_process(
             argv=list(args),
             env=resolved_env,
             executable_family=family,
-            capability=capability,
+            capability=cap,
         )
     stdout, stderr = proc.communicate(input=input_text)
     if kwargs.get("check") and proc.returncode != 0:
@@ -327,9 +325,12 @@ __all__ = (
     "create_shard_snapshot",
     "execute_shard_combine",
     "extract_child_probe_id",
+    "extract_pid_from_container_ps",
+    "extract_pid_from_docker_top",
     "extract_pid_match",
     "identify_parent_shard",
     "is_runner_bootstrap_path",
+    "launch_observed_container_process",
     "launch_observed_process",
     "launch_unified_coverage_process",
     "prepare_child_coverage_environment",

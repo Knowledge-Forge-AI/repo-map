@@ -207,4 +207,4 @@ def test_runner_coverage_reports_direct_invocation(tmp_path: Path, request: pyte
     assert summary.files[0].covered_lines == 2
     assert summary.files[0].executable_lines == 2
     assert summary.files[0].line_percent == 100.0
-# REPOMAP-PUBLIC-V002-FIX8-R1 dynamic boundary re-attestation
+# REPOMAP-PUBLIC-V002-FIX9-R1 dynamic boundary re-attestation

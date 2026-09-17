@@ -40,21 +40,36 @@ from src.test.int.python.repomap_kg.storage.scale13_actual_refresh_path_fixtures
     _actual_refresh_argv,
 )
 
+def _prepare_refresh_env(family: str = "scale13_refresh") -> dict[str, str]:
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
+    from runner_coverage_execution import prepare_child_coverage_environment
+    s_root = Path(__file__).resolve().parents[5]
+    supp = str(s_root / "test" / "support" / "python")
+    base_env = dict(os.environ)
+    pp = base_env.get("PYTHONPATH")
+    base_env["PYTHONPATH"] = f"{supp}{os.pathsep}{pp}" if pp else supp
+    cap = resolve_bootstrap_capability(env=base_env)
+    return prepare_child_coverage_environment(
+        base_env, family=family, source_root=s_root / "main" / "python", capability=cap,
+    )
+
+
 def _run_uninstrumented_refresh(home: Path, postgres) -> int:
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
     from runner_coverage_execution import prepare_child_coverage_environment
     from runner_coverage_observer import launch_observed_process
     source_root = Path(__file__).resolve().parents[5]
-    supp_path = os.pathsep.join(
-        (str(source_root / "main" / "python"), str(source_root / "test" / "support" / "python"))
-    )
+    supp_path = os.pathsep.join((str(source_root / "main" / "python"), str(source_root / "test" / "support" / "python")))
+    cap = resolve_bootstrap_capability(env=os.environ)
     environment = prepare_child_coverage_environment(
-        os.environ, family="scale13_uninstrumented", extra_env={"PYTHONPATH": supp_path},
+        os.environ, family="scale13_uninstrumented", extra_env={"PYTHONPATH": supp_path}, capability=cap,
     )
     completed = launch_observed_process(
         _actual_refresh_argv(home, postgres, None),
         family="scale13_uninstrumented",
         cwd=Path(__file__).resolve().parents[6],
         env=environment,
+        capability=cap,
     )
     return completed.returncode
 
@@ -64,7 +79,11 @@ def _observe_refresh_child(
     environment: dict[str, str],
     observer: Any = None,
 ) -> None:
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
+    from runner_coverage_observer import ProcessObserver
+
     obs = observer
+    cap = resolve_bootstrap_capability(env=environment)
     if obs is None and (
         environment.get("COVERAGE_PROCESS_START")
         or os.environ.get("COVERAGE_PROCESS_START")
@@ -76,11 +95,10 @@ def _observe_refresh_child(
             "COVERAGE_SESSION_INVOCATION_ID"
         )
         if manifest_dir and inv_id:
-            from runner_coverage_observer import ProcessObserver
-
             obs = ProcessObserver(
                 observation_dir=Path(manifest_dir).parent / "observations",
                 invocation_id=inv_id,
+                capability=cap,
             )
         else:
             raise RuntimeError(
@@ -92,6 +110,7 @@ def _observe_refresh_child(
             executable_family="scale13_refresh",
             env=environment,
             pid_namespace_relation="shared",
+            capability=cap,
         )
 
 
@@ -108,35 +127,11 @@ def _run_instrumented_refresh(
     if cancel_code is not None:
         control_supervisor_socket, control_child_socket = socket.socketpair()
     channel = StagingEventChannel(supervisor_socket)
-    from runner_coverage_execution import prepare_child_coverage_environment
-    source_root = Path(__file__).resolve().parents[5]
-    supp_path = str(source_root / "test" / "support" / "python")
-    base_env = dict(os.environ)
-    curr_pp = base_env.get("PYTHONPATH")
-    base_env["PYTHONPATH"] = f"{supp_path}{os.pathsep}{curr_pp}" if curr_pp else supp_path
-    environment = prepare_child_coverage_environment(
-        base_env, family="scale13_refresh", source_root=source_root / "main" / "python",
-    )
+    environment = _prepare_refresh_env("scale13_refresh")
+    ctrl_fd = control_child_socket.fileno() if control_child_socket is not None else None
     process = start_actual_refresh_child(
-        _actual_refresh_argv(
-            home,
-            postgres,
-            child_socket.fileno(),
-            test_control_code=cancel_code,
-            control_ready_fd=(
-                control_child_socket.fileno()
-                if control_child_socket is not None
-                else None
-            ),
-        ),
-        inherited_fds=(
-            child_socket.fileno(),
-            *(
-                (control_child_socket.fileno(),)
-                if control_child_socket is not None
-                else ()
-            ),
-        ),
+        _actual_refresh_argv(home, postgres, child_socket.fileno(), test_control_code=cancel_code, control_ready_fd=ctrl_fd),
+        inherited_fds=(child_socket.fileno(), *((ctrl_fd,) if ctrl_fd is not None else ())),
         cwd=Path(__file__).resolve().parents[6],
         environment=environment,
         stderr=subprocess.PIPE,
@@ -237,15 +232,7 @@ def _run_owned_resource_refresh(
     backend_summaries: list[dict[str, int]] = []
     backend_errors: list[BaseException] = []
     backend_done = Event()
-    from runner_coverage_execution import prepare_child_coverage_environment
-    source_root = Path(__file__).resolve().parents[5]
-    supp_path = str(source_root / "test" / "support" / "python")
-    base_env = dict(os.environ)
-    curr_pp = base_env.get("PYTHONPATH")
-    base_env["PYTHONPATH"] = f"{supp_path}{os.pathsep}{curr_pp}" if curr_pp else supp_path
-    environment = prepare_child_coverage_environment(
-        base_env, family="scale13_refresh", source_root=source_root / "main" / "python",
-    )
+    environment = _prepare_refresh_env("scale13_refresh")
     with psycopg.connect(make_conninfo(**params), autocommit=True) as observer_connection:
         observer = BackendOwnershipObserver()
         observer.register_connection(observer_connection)

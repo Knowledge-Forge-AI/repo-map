@@ -12,6 +12,8 @@ from runner_coverage_bootstrap import (
     BOOTSTRAP_TEMPLATE,
     BootstrapCapabilityRecord,
     derive_container_mount_aliases,
+    get_active_bootstrap_capability,
+    set_active_bootstrap_capability,
 )
 from runner_coverage_combine import close_owned_runners, combine_and_reload
 import runner_coverage_execution as _execution
@@ -97,17 +99,17 @@ class ChildCoverageSession:
         self.bootstrap_dir = self.session_dir / "bootstrap"
         self.invocation_id = self.session_dir.name
         b_ident = hashlib.sha256(BOOTSTRAP_TEMPLATE.encode("utf-8")).hexdigest()
+        c_aliases = (*derive_container_mount_aliases(self.bootstrap_dir), *derive_container_mount_aliases(self.session_dir))
         self.bootstrap_capability = BootstrapCapabilityRecord(
-            identity=b_ident, host_visible_path=self.bootstrap_dir,
-            same_namespace_path=self.bootstrap_dir,
-            container_mount_aliases=derive_container_mount_aliases(self.bootstrap_dir),
+            identity=b_ident, host_visible_path=self.bootstrap_dir, same_namespace_path=self.bootstrap_dir,
+            container_mount_aliases=c_aliases, additional_host_paths=(self.session_dir,),
         )
         self.process_observer = ProcessObserver(
-            observation_dir=self.observation_dir, invocation_id=self.invocation_id,
-            capability=self.bootstrap_capability,
+            observation_dir=self.observation_dir, invocation_id=self.invocation_id, capability=self.bootstrap_capability,
         )
         self._portable_capability: Any = None
         self._adapter_cm: Any = None
+        self._prev_active_cap: BootstrapCapabilityRecord | None = None
 
     def record_measurement_error(self, error: Exception) -> None:
         self.measurement_errors.append(error)
@@ -227,15 +229,12 @@ class ChildCoverageSession:
         self.purge_shards()
         self._write_config()
         self._write_sitecustomize()
-        (self.observation_dir / "invocation_id.txt").write_text(
-            self.invocation_id, encoding="utf-8"
-        )
-        env_vars = (
-            "COVERAGE_PROCESS_START", "PYTHONPATH", "COVERAGE_CHILD_MANIFEST_DIR",
-            "COVERAGE_SESSION_INVOCATION_ID", "COVERAGE_SESSION_SUITE",
-            "COVERAGE_SESSION_REVISION",
-        )
-        for var in env_vars:
+        self.bootstrap_capability.save(self.session_dir / "bootstrap_capability.json")
+        self._prev_active_cap = get_active_bootstrap_capability()
+        set_active_bootstrap_capability(self.bootstrap_capability)
+        (self.observation_dir / "invocation_id.txt").write_text(self.invocation_id, encoding="utf-8")
+        for var in ("COVERAGE_PROCESS_START", "PYTHONPATH", "COVERAGE_CHILD_MANIFEST_DIR",
+                    "COVERAGE_SESSION_INVOCATION_ID", "COVERAGE_SESSION_SUITE", "COVERAGE_SESSION_REVISION"):
             self._prev_env[var] = os.environ.get(var)
         os.environ["COVERAGE_PROCESS_START"] = str(self.config_file)
         os.environ["COVERAGE_CHILD_MANIFEST_DIR"] = str(self.child_manifest_dir)
@@ -246,7 +245,6 @@ class ChildCoverageSession:
         if self.suite in ("int", "staging"):
             try:
                 from runner_portable_coverage import scoped_portable_coverage_adapter
-                # Integration/staging own the closed test conformance matrix.
                 cap = self.issue_portable_capability(allow_test_conformance=True)
                 os.environ["COVERAGE_SESSION_REVISION"] = cap.source_commitment
                 self._adapter_cm = scoped_portable_coverage_adapter(self, cap)
@@ -254,9 +252,9 @@ class ChildCoverageSession:
             except Exception as exc:
                 self._restore_env()
                 snap = self._create_snapshot(
-                    shard_name="session_enter", file_type="adapter_setup_error",
-                    size_bytes=-1, sha256=None, reader_status=f"adapter_setup_failed: {exc}",
-                    stage="session_enter", termination_outcome="adapter_setup_failed",
+                    shard_name="session_enter", file_type="adapter_setup_error", size_bytes=-1,
+                    sha256=None, reader_status=f"adapter_setup_failed: {exc}", stage="session_enter",
+                    termination_outcome="adapter_setup_failed",
                 )
                 self._record_diagnostic(snap)
                 self.record_measurement_error(exc)
@@ -264,13 +262,12 @@ class ChildCoverageSession:
         return self
 
     def __exit__(self, exc_type: object, exc_val: object, exc_tb: object) -> None:
-        # Reporting may outlive this environment scope. Call cleanup after the
-        # last data read, with every session-owned collector already stopped.
         if self._adapter_cm is not None:
             try:
                 self._adapter_cm.__exit__(exc_type, exc_val, exc_tb)
             finally:
                 self._adapter_cm = None
+        set_active_bootstrap_capability(self._prev_active_cap)
         self._restore_env()
 
     def cleanup(self) -> None:

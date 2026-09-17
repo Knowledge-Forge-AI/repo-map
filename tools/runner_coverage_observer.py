@@ -16,6 +16,10 @@ from typing import Any
 from runner_coverage_bootstrap import (
     BootstrapCapabilityRecord,
     is_runner_bootstrap_path,
+    resolve_bootstrap_capability,
+)
+from runner_coverage_container import (
+    launch_observed_container_process as launch_observed_container_process,
 )
 
 PID_NAMESPACE_RELATIONS: frozenset[str] = frozenset({"shared", "translated", "unknown"})
@@ -138,7 +142,7 @@ class ProcessObserver:
         self._invocation_id = str(invocation_id)
         self._source_revision = source_revision
         self._owner = owner
-        self._capability = capability
+        self._capability = capability or resolve_bootstrap_capability()
 
     def observe_launch(
         self,
@@ -176,7 +180,7 @@ class ProcessObserver:
         m_dir = env_map.get("COVERAGE_CHILD_MANIFEST_DIR")
         has_m = bool(m_dir and Path(m_dir).is_dir())
         has_tok = bool(env_map.get("COVERAGE_CHILD_REGISTRATION_TOKEN"))
-        cap = capability or self._capability
+        cap = capability or self._capability or resolve_bootstrap_capability(env=env_map)
         has_boot = any(
             is_runner_bootstrap_path(p, capability=cap)
             for p in env_map.get("PYTHONPATH", "").split(os.pathsep)
@@ -357,6 +361,7 @@ __all__ = (
     "PID_NAMESPACE_RELATIONS",
     "ProcessObservationRecord",
     "ProcessObserver",
+    "launch_observed_container_process",
     "launch_observed_process",
     "launch_unified_coverage_process",
     "resolve_pid_namespace_mapping",

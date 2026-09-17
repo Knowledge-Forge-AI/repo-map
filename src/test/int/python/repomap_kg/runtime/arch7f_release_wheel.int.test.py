@@ -19,12 +19,14 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
 ) -> None:
     if importlib.util.find_spec("setuptools") is None:
         pytest.skip("setuptools build backend is unavailable")
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
     from runner_coverage_execution import prepare_child_coverage_environment
     from runner_coverage_observer import launch_observed_process
 
+    cap = resolve_bootstrap_capability(env=os.environ)
     wheel_directory = tmp_path / "wheel"
     wheel_directory.mkdir()
-    pip_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip")
+    pip_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
     wheel_build = launch_observed_process(
         (
             sys.executable,
@@ -39,6 +41,7 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
         ),
         family="arch7f_pip",
         env=pip_env,
+        capability=cap,
     )
     assert wheel_build.returncode == 0, wheel_build.stderr[-2_000:]
     wheel = next(wheel_directory.glob("repomap_kg-*.whl"))
@@ -66,7 +69,7 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
     assert installed_data == {*graph_resources, *control_resources}
 
     install_root = tmp_path / "installed"
-    pip_install_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip")
+    pip_install_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
     pip_install = launch_observed_process(
         (
             sys.executable,
@@ -80,12 +83,14 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
         ),
         family="arch7f_pip",
         env=pip_install_env,
+        capability=cap,
     )
     assert pip_install.returncode == 0, pip_install.stderr[-2_000:]
     probe_env = prepare_child_coverage_environment(
         os.environ,
         family="arch7f_probe",
         extra_env={"PYTHONPATH": str(install_root)},
+        capability=cap,
     )
     probe = launch_observed_process(
         (
@@ -109,6 +114,7 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
         ),
         family="arch7f_probe",
         env=probe_env,
+        capability=cap,
     )
     assert probe.returncode == 0, probe.stderr[-2_000:]
     installed = json.loads(probe.stdout)
