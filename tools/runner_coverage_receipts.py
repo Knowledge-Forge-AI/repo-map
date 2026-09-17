@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -158,3 +159,218 @@ def verify_intentional_victim(
         return False
     victim_counts[decl.owner_sha256] = cur_count + 1
     return True
+
+
+def _read_candidate_shard(child_manifest_dir: Path, pid: int) -> str | None:
+    for marker in (child_manifest_dir / f"{pid}.shard", child_manifest_dir / f"{pid}.exit"):
+        if marker.is_file() and not marker.is_symlink():
+            try:
+                text = marker.read_text(encoding="utf-8")
+                for line in text.splitlines():
+                    if line.startswith("shard="):
+                        cand = line.split("shard=", 1)[1].strip()
+                        if cand:
+                            return cand
+                stripped = text.strip()
+                if stripped and not stripped.startswith("pid="):
+                    return stripped
+            except OSError:
+                pass
+    return None
+
+
+def reconcile_child_manifests(
+    registered_children: dict[int, dict[str, Any]],
+    shard_paths_set: set[str],
+    child_manifest_dir: Path,
+    parent_data_path: str,
+    parent_pid: int,
+    snapshot_fn: Callable[..., Any],
+    record_fn: Callable[[Any], None],
+    cov_mod: Any = None,
+) -> tuple[dict[int, str], set[str]]:
+    import os
+    from runner_coverage_diagnostics import _annotate_snapshot
+
+    consumed_shards_by_child: dict[int, str] = {}
+    consumed_shard_paths: set[str] = set()
+    victim_counts: dict[str, int] = {}
+
+    registration_failures: list[tuple[int, dict[str, Any]]] = [
+        (pid, child_info) for pid, child_info in sorted(registered_children.items())
+        if child_info.get("registration_failure")
+    ]
+    if registration_failures:
+        for pid, child_info in registration_failures:
+            fclass = child_info.get("failure_class", "unknown_failure")
+            freason = child_info.get("failure_reason", "unknown")
+            snap = _annotate_snapshot(snapshot_fn(
+                shard_name=f"registration_failure.pid{pid}",
+                file_type="registration_failure",
+                size_bytes=0,
+                sha256=None,
+                reader_status=f"registration_failed:{fclass}:{freason}",
+                stage="pre_combine",
+                cov_mod=cov_mod,
+                child_probe_id=f"pid={pid}",
+                termination_outcome="registration_failed",
+                launch_role=child_info.get("role"),
+                test_owner=child_info.get("owner"),
+            ), child_info)
+            record_fn(snap)
+        first_fclass = registration_failures[0][1].get("failure_class", "unknown_failure")
+        raise RuntimeError(f"child coverage registration failed: {first_fclass}")
+
+    for pid, child_info in sorted(registered_children.items()):
+        exited = bool(child_info["exited"])
+        cov_start = int(child_info["cov_start"])
+        if cov_start == 0:
+            if child_info.get("auxiliary") or child_info.get("role") == "auxiliary-runtime":
+                snap = _annotate_snapshot(snapshot_fn(
+                    shard_name=f"auxiliary.pid{pid}", file_type="auxiliary_runtime",
+                    size_bytes=0, sha256=None, reader_status="auxiliary_process_exempted",
+                    stage="pre_combine", cov_mod=cov_mod, child_probe_id=f"pid={pid}",
+                    termination_outcome="auxiliary_runtime_exempt",
+                    launch_role="auxiliary-runtime", test_owner=child_info.get("owner"),
+                ), child_info)
+                record_fn(snap)
+                continue
+            if child_info.get("strict") and not exited and verify_intentional_victim(pid, child_info, victim_counts):
+                snap = _annotate_snapshot(snapshot_fn(
+                    shard_name=f"intentional_victim.pid{pid}",
+                    file_type="intentional_victim",
+                    size_bytes=0,
+                    sha256=None,
+                    reader_status="intentional_victim_receipt_verified",
+                    stage="pre_combine",
+                    cov_mod=cov_mod,
+                    child_probe_id=f"pid={pid}",
+                    termination_outcome="intentional_victim_terminated",
+                    launch_role=child_info.get("role"),
+                    test_owner=child_info.get("owner"),
+                ), child_info)
+                record_fn(snap)
+                child_info["is_intentional_victim"] = True
+                continue
+            snap = _annotate_snapshot(snapshot_fn(
+                shard_name=f"uninstrumented.pid{pid}", file_type="uninstrumented",
+                size_bytes=0, sha256=None,
+                reader_status=f"coverage_not_started:{child_info.get('bootstrap_error', 'unknown')}",
+                stage="pre_combine", cov_mod=cov_mod, child_probe_id=f"pid={pid}",
+                termination_outcome="uninstrumented_child",
+                launch_role=child_info.get("role"), test_owner=child_info.get("owner"),
+            ), child_info)
+            record_fn(snap)
+            raise RuntimeError("child coverage bootstrap failed")
+
+        if child_info.get("terminal_error"):
+            raise RuntimeError("child reported coverage save failure")
+        if child_info.get("strict") and not exited:
+            if verify_intentional_victim(pid, child_info, victim_counts):
+                snap = _annotate_snapshot(snapshot_fn(
+                    shard_name=f"intentional_victim.pid{pid}",
+                    file_type="intentional_victim",
+                    size_bytes=0,
+                    sha256=None,
+                    reader_status="intentional_victim_receipt_verified",
+                    stage="pre_combine",
+                    cov_mod=cov_mod,
+                    child_probe_id=f"pid={pid}",
+                    termination_outcome="intentional_victim_terminated",
+                    launch_role=child_info.get("role"),
+                    test_owner=child_info.get("owner"),
+                ), child_info)
+                record_fn(snap)
+                child_info["is_intentional_victim"] = True
+                continue
+
+            snap = _annotate_snapshot(snapshot_fn(
+                shard_name=f"unsettled.pid{pid}", file_type="incomplete_terminal",
+                size_bytes=0, sha256=None, reader_status="terminal_receipt_incomplete",
+                stage="pre_combine", cov_mod=cov_mod, child_probe_id=f"pid={pid}",
+                termination_outcome=("declared_abrupt_measurement_incomplete"
+                                     if child_info.get("role") == "conformance-abrupt"
+                                     else "unknown_termination_measurement_incomplete"),
+                launch_role=child_info.get("role"), test_owner=child_info.get("owner"),
+            ), child_info)
+            record_fn(snap)
+            raise RuntimeError("child terminal receipt is incomplete")
+
+        cand_shard = (child_info.get("shard") if child_info.get("strict")
+                      else _read_candidate_shard(child_manifest_dir, pid))
+        has_shard = False
+        if cand_shard:
+            candidate_path = Path(cand_shard)
+            if candidate_path.is_symlink():
+                raise RuntimeError("child coverage shard symlink rejected")
+            if candidate_path.parent.resolve() != Path(parent_data_path).parent.resolve():
+                raise RuntimeError("child coverage shard escapes invocation data directory")
+            resolved_cand = str(Path(cand_shard).resolve())
+            cand_name = Path(resolved_cand).name
+            cand_tokens = cand_name.split(".")
+            is_parent = (
+                resolved_cand == parent_data_path
+                or ".parent." in cand_name
+                or str(parent_pid) in cand_tokens
+            )
+            child_token = child_info.get("token")
+            attributable = (
+                str(pid) in cand_tokens
+                or f"pid{pid}" in cand_tokens
+                or (child_token is not None and child_token in cand_tokens)
+            )
+            if (
+                resolved_cand in shard_paths_set
+                and not is_parent
+                and attributable
+                and resolved_cand not in consumed_shard_paths
+            ):
+                has_shard = True
+                consumed_shards_by_child[pid] = resolved_cand
+                consumed_shard_paths.add(resolved_cand)
+
+        if not has_shard:
+            if child_info.get("auxiliary") or child_info.get("role") == "auxiliary-runtime":
+                snap = _annotate_snapshot(snapshot_fn(
+                    shard_name=f"auxiliary.pid{pid}", file_type="auxiliary_runtime",
+                    size_bytes=0, sha256=None, reader_status="auxiliary_shard_exempted",
+                    stage="pre_combine", cov_mod=cov_mod, child_probe_id=f"pid={pid}",
+                    termination_outcome="auxiliary_runtime_exempt",
+                    launch_role="auxiliary-runtime", test_owner=child_info.get("owner"),
+                ), child_info)
+                record_fn(snap)
+                continue
+            is_alive = False
+            if not exited:
+                try:
+                    os.kill(pid, 0)
+                    is_alive = True
+                except OSError:
+                    is_alive = False
+
+            term_outcome: str = (
+                "clean_exit_no_shard"
+                if exited
+                else ("live_child_no_shard" if is_alive else "abrupt_termination_no_shard")
+            )
+            snap = _annotate_snapshot(snapshot_fn(
+                shard_name=f"missing.pid{pid}", file_type="missing", size_bytes=0,
+                sha256=None, reader_status="no_shard_produced", stage="pre_combine",
+                cov_mod=cov_mod, child_probe_id=f"pid={pid}",
+                termination_outcome=term_outcome,
+                launch_role=child_info.get("role"), test_owner=child_info.get("owner"),
+            ), child_info)
+            record_fn(snap)
+            raise RuntimeError(
+                f"coverage shard for child PID {pid} is missing: "
+                f"child process executed without producing coverage data"
+            )
+
+    return consumed_shards_by_child, consumed_shard_paths
+
+
+__all__ = (
+    "read_registered_children",
+    "reconcile_child_manifests",
+    "verify_intentional_victim",
+)

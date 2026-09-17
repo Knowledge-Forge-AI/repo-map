@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+import os
 from pathlib import Path
 
 
@@ -90,8 +92,32 @@ def _disarm_coverage():
                 _cov.stop()
             except Exception:
                 pass
+        if hasattr(coverage.process_startup, 'coverage'):
+            try:
+                delattr(coverage.process_startup, 'coverage')
+            except Exception:
+                pass
     except Exception:
         pass
+    for _v in (
+        'COVERAGE_PROCESS_START', 'COVERAGE_PROCESS_CONFIG', 'COVERAGE_FILE',
+        'COVERAGE_CHILD_MANIFEST_DIR', 'COVERAGE_CHILD_REGISTRATION_TOKEN',
+        'COVERAGE_CHILD_LAUNCH_ROLE', 'COVERAGE_CHILD_TEST_OWNER',
+        'COVERAGE_SESSION_INVOCATION_ID', 'COVERAGE_SESSION_SUITE',
+        'COVERAGE_SESSION_REVISION',
+    ):
+        try:
+            os.environ.pop(_v, None)
+        except Exception:
+            pass
+    if globals().get('_config'):
+        _sess = os.path.dirname(globals()['_config'])
+        import sys
+        if _sess in sys.path:
+            try:
+                sys.path.remove(_sess)
+            except Exception:
+                pass
 
 
 def _write_reg_fail(target_dir, stage, fclass, freason, has_manifest):
@@ -150,6 +176,13 @@ if _config:
             try:
                 import coverage
                 if _token:
+                    _early = getattr(coverage.process_startup, 'coverage', None)
+                    if _early is not None:
+                        try:
+                            _early._auto_save = False
+                            _early.stop()
+                        except Exception:
+                            pass
                     _collector = coverage.Coverage(config_file=_config,
                         data_file=os.environ['COVERAGE_FILE'], data_suffix=False)
                     _collector.set_option('run:parallel', False)
@@ -244,8 +277,84 @@ def install_bootstrap_directory(bootstrap_dir: Path) -> Path:
     return sitecustomize_path
 
 
+RUNNER_BOOTSTRAP_MARKER = "# Runner-owned bootstrap: no product authority hooks are replaced."
+
+
+@dataclass(frozen=True)
+class BootstrapCapabilityRecord:
+    """Namespace-aware authorized bootstrap identity and visible mount aliases."""
+
+    identity: str
+    host_visible_path: Path
+    same_namespace_path: Path
+    container_mount_aliases: tuple[str, ...] = ()
+
+    def is_alias(self, path: Path | str) -> bool:
+        p_str = str(path).rstrip(os.sep)
+        aliases = (
+            str(self.host_visible_path).rstrip(os.sep),
+            str(self.same_namespace_path).rstrip(os.sep),
+            *(str(a).rstrip(os.sep) for a in self.container_mount_aliases),
+        )
+        if p_str in aliases:
+            return True
+        try:
+            p_res = Path(path).resolve()
+            if (
+                p_res == self.host_visible_path.resolve()
+                or p_res == self.same_namespace_path.resolve()
+            ):
+                return True
+        except OSError:
+            pass
+        return False
+
+
+def is_runner_bootstrap_path(
+    path: Path | str,
+    *,
+    capability: BootstrapCapabilityRecord | None = None,
+) -> bool:
+    """Return True if path matches runner bootstrap capability aliases or contains the marker."""
+    if capability is not None and capability.is_alias(path):
+        return True
+    try:
+        p = Path(path)
+        # Avoid probing inaccessible foreign paths that cannot exist locally
+        if not p.is_absolute() or p.exists():
+            sitecust = p / "sitecustomize.py" if p.is_dir() else (p if p.name == "sitecustomize.py" else None)
+            if sitecust and sitecust.is_file():
+                with open(sitecust, "r", encoding="utf-8") as f:
+                    return RUNNER_BOOTSTRAP_MARKER in f.readline()
+    except OSError:
+        pass
+    return False
+
+
+def derive_container_mount_aliases(
+    bootstrap_dir: Path,
+    scratch_root: str | Path | None = None,
+) -> tuple[str, ...]:
+    """Derive container mount aliases mapping host scratch to sandbox scratch."""
+    root = scratch_root or os.environ.get("REPOMAP_TEST_SCRATCH_ROOT")
+    if not root:
+        return ()
+    for bp in (bootstrap_dir, bootstrap_dir.resolve()):
+        for sr in (Path(root), Path(root).resolve()):
+            try:
+                rel = bp.relative_to(sr)
+                return (str(Path("/sandbox-scratch/test-scratch") / rel),)
+            except ValueError:
+                pass
+    return ()
+
+
 __all__ = (
     "BOOTSTRAP_TEMPLATE",
+    "BootstrapCapabilityRecord",
+    "RUNNER_BOOTSTRAP_MARKER",
+    "derive_container_mount_aliases",
     "generate_bootstrap_source",
     "install_bootstrap_directory",
+    "is_runner_bootstrap_path",
 )

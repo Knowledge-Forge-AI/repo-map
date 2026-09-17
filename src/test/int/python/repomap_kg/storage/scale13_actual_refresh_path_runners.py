@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 import os
 from pathlib import Path
 import socket
@@ -40,22 +41,58 @@ from src.test.int.python.repomap_kg.storage.scale13_actual_refresh_path_fixtures
 )
 
 def _run_uninstrumented_refresh(home: Path, postgres) -> int:
-    environment = dict(os.environ)
+    from runner_coverage_execution import prepare_child_coverage_environment
+    from runner_coverage_observer import launch_observed_process
     source_root = Path(__file__).resolve().parents[5]
-    environment["PYTHONPATH"] = os.pathsep.join(
+    supp_path = os.pathsep.join(
         (str(source_root / "main" / "python"), str(source_root / "test" / "support" / "python"))
     )
-    completed = subprocess.run(
+    environment = prepare_child_coverage_environment(
+        os.environ, family="scale13_uninstrumented", extra_env={"PYTHONPATH": supp_path},
+    )
+    completed = launch_observed_process(
         _actual_refresh_argv(home, postgres, None),
+        family="scale13_uninstrumented",
         cwd=Path(__file__).resolve().parents[6],
         env=environment,
-        check=False,
-        shell=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        timeout=30.0,
     )
     return completed.returncode
+
+
+def _observe_refresh_child(
+    process: Any,
+    environment: dict[str, str],
+    observer: Any = None,
+) -> None:
+    obs = observer
+    if obs is None and (
+        environment.get("COVERAGE_PROCESS_START")
+        or os.environ.get("COVERAGE_PROCESS_START")
+    ):
+        manifest_dir = environment.get("COVERAGE_CHILD_MANIFEST_DIR") or os.environ.get(
+            "COVERAGE_CHILD_MANIFEST_DIR"
+        )
+        inv_id = environment.get("COVERAGE_SESSION_INVOCATION_ID") or os.environ.get(
+            "COVERAGE_SESSION_INVOCATION_ID"
+        )
+        if manifest_dir and inv_id:
+            from runner_coverage_observer import ProcessObserver
+
+            obs = ProcessObserver(
+                observation_dir=Path(manifest_dir).parent / "observations",
+                invocation_id=inv_id,
+            )
+        else:
+            raise RuntimeError(
+                "scale13_refresh measured launch under coverage requires active observer authority"
+            )
+    if obs is not None:
+        obs.observe_launch(
+            host_pid=process.pid,
+            executable_family="scale13_refresh",
+            env=environment,
+            pid_namespace_relation="shared",
+        )
 
 
 def _run_instrumented_refresh(
@@ -63,6 +100,7 @@ def _run_instrumented_refresh(
     postgres,
     *,
     cancel_code: str | None = None,
+    observer: Any = None,
 ):
     supervisor_socket, child_socket = socket.socketpair()
     control_supervisor_socket = None
@@ -70,10 +108,14 @@ def _run_instrumented_refresh(
     if cancel_code is not None:
         control_supervisor_socket, control_child_socket = socket.socketpair()
     channel = StagingEventChannel(supervisor_socket)
-    environment = dict(os.environ)
+    from runner_coverage_execution import prepare_child_coverage_environment
     source_root = Path(__file__).resolve().parents[5]
-    environment["PYTHONPATH"] = os.pathsep.join(
-        (str(source_root / "main" / "python"), str(source_root / "test" / "support" / "python"))
+    supp_path = str(source_root / "test" / "support" / "python")
+    base_env = dict(os.environ)
+    curr_pp = base_env.get("PYTHONPATH")
+    base_env["PYTHONPATH"] = f"{supp_path}{os.pathsep}{curr_pp}" if curr_pp else supp_path
+    environment = prepare_child_coverage_environment(
+        base_env, family="scale13_refresh", source_root=source_root / "main" / "python",
     )
     process = start_actual_refresh_child(
         _actual_refresh_argv(
@@ -99,6 +141,7 @@ def _run_instrumented_refresh(
         environment=environment,
         stderr=subprocess.PIPE,
     )
+    _observe_refresh_child(process, environment, observer)
     child_socket.close()
     if control_child_socket is not None:
         control_child_socket.close()
@@ -183,11 +226,7 @@ def _run_instrumented_refresh(
 
 
 def _run_owned_resource_refresh(
-    home: Path,
-    postgres,
-    *,
-    runtime: str,
-    container_name: str,
+    home: Path, postgres, *, runtime: str, container_name: str, coverage_observer: Any = None,
 ):
     supervisor_socket, child_socket = socket.socketpair()
     backend_read_fd, backend_write_fd = os.pipe()
@@ -198,10 +237,14 @@ def _run_owned_resource_refresh(
     backend_summaries: list[dict[str, int]] = []
     backend_errors: list[BaseException] = []
     backend_done = Event()
-    environment = dict(os.environ)
+    from runner_coverage_execution import prepare_child_coverage_environment
     source_root = Path(__file__).resolve().parents[5]
-    environment["PYTHONPATH"] = os.pathsep.join(
-        (str(source_root / "main" / "python"), str(source_root / "test" / "support" / "python"))
+    supp_path = str(source_root / "test" / "support" / "python")
+    base_env = dict(os.environ)
+    curr_pp = base_env.get("PYTHONPATH")
+    base_env["PYTHONPATH"] = f"{supp_path}{os.pathsep}{curr_pp}" if curr_pp else supp_path
+    environment = prepare_child_coverage_environment(
+        base_env, family="scale13_refresh", source_root=source_root / "main" / "python",
     )
     with psycopg.connect(make_conninfo(**params), autocommit=True) as observer_connection:
         observer = BackendOwnershipObserver()
@@ -246,6 +289,7 @@ def _run_owned_resource_refresh(
             environment=environment,
             stderr=subprocess.PIPE,
         )
+        _observe_refresh_child(process, environment, coverage_observer)
         child_socket.close()
         os.close(backend_write_fd)
         os.close(ack_read_fd)

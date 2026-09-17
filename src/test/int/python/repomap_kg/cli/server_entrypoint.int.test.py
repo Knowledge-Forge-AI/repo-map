@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_test_support.cli_in_process import REPO_ROOT, module_environment
+from repomap_test_support.cli_in_process import REPO_ROOT, module_process_environment
 from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
     OPS_CONFIG_TEMPLATE,
@@ -36,7 +36,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
         result = subprocess.run(
             [sys.executable, "-m", "repomap_kg.server.mcp"],
             cwd=REPO_ROOT,
-            env=module_environment(),
+            env=module_process_environment(),
             input=f"{request}\n",
             text=True,
             capture_output=True,
@@ -70,7 +70,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
                     str(port),
                 ],
                 cwd=REPO_ROOT,
-                env=module_environment(),
+                env=module_process_environment(),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,

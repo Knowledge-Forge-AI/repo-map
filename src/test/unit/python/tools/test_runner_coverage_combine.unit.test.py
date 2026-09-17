@@ -316,3 +316,36 @@ def test_real_nested_session_tracks_and_closes_owned_connections(tmp_path, monke
             outer.get_data().close(force=True)
     assert coverage.Coverage.current() is before
     assert_closed(connections)
+
+
+def test_live_caller_shard_containment_rejection(tmp_path: Path):
+    """Exercise live caller shape (ChildCoverageSession.combine) for shard containment."""
+    external_dir = tmp_path / "external"
+    external_dir.mkdir()
+    external_shard = external_dir / ".coverage.external_shard"
+    external_shard.write_bytes(b"SQLite format 3\x00" + b"\x00" * 100)
+
+    session_dir = tmp_path / "session"
+    session = ChildCoverageSession(scratch_dir=session_dir, coverage_module=coverage)
+    session.data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Shard symlink pointing to external directory is rejected by live combine()
+    link_shard = session.data_dir / ".coverage.symlink_shard"
+    link_shard.symlink_to(external_shard)
+
+    with pytest.raises(RuntimeError, match="coverage shard symlink rejected"):
+        session.combine()
+
+    link_shard.unlink()
+    parent_symlink = external_dir / "parent_link"
+    parent_symlink.symlink_to(external_shard)
+    fake_runner = SimpleNamespace(
+        get_data=lambda: SimpleNamespace(data_filename=lambda: str(parent_symlink))
+    )
+    with pytest.raises(RuntimeError, match="parent coverage shard is a symlink"):
+        session.combine(fake_runner)
+
+    unreg_shard = session.data_dir / ".coverage.unreg_child_123"
+    unreg_shard.write_bytes(b"SQLite format 3\x00" + b"\x00" * 100)
+    with pytest.raises(RuntimeError, match="unregistered coverage shard rejected"):
+        session.combine()

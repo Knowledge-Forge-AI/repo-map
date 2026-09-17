@@ -8,14 +8,14 @@ from collections.abc import Sequence
 from pathlib import Path
 import tempfile
 from typing import Any
-
-from test_report import (
-    CoverageFileRecord,
-    CoverageSummary,
+from runner_coverage_bootstrap import (
+    BOOTSTRAP_TEMPLATE,
+    BootstrapCapabilityRecord,
+    derive_container_mount_aliases,
 )
-
 from runner_coverage_combine import close_owned_runners, combine_and_reload
 import runner_coverage_execution as _execution
+from runner_coverage_observer import ProcessObserver
 import runner_coverage_reports as _reports
 
 # Re-export reporting constants and policy
@@ -42,32 +42,12 @@ report_coverage = _reports.report_coverage
 ShardDiagnosticSnapshot = _execution.ShardDiagnosticSnapshot
 
 
-def coverage_records_from_json(
-    coverage_runner: Any,
-    source_files: list[Path],
-    *,
-    json_report_path: Path | None = None,
-    source_root: Path | None = None,
-    repo_root: Path | None = None,
-) -> list[CoverageFileRecord]:
-    return _reports.coverage_records_from_json(
-        coverage_runner, source_files, json_report_path=json_report_path,
-        source_root=source_root or SOURCE_ROOT, repo_root=repo_root or REPO_ROOT,
-    )
+coverage_records_from_json = _reports.coverage_records_from_json
 
 
-def collect_coverage_summary(
-    coverage_runner: Any,
-    suite_name: str,
-    policy: CoveragePolicy,
-    *,
-    json_report_path: Path | None = None,
-    source_root: Path | None = None,
-) -> CoverageSummary:
-    return _reports.collect_coverage_summary(
-        coverage_runner, suite_name, policy, json_report_path=json_report_path,
-        source_root=source_root or SOURCE_ROOT, records_fn=coverage_records_from_json,
-    )
+def collect_coverage_summary(*args: Any, **kwargs: Any) -> Any:
+    kwargs.setdefault("source_root", SOURCE_ROOT)
+    return _reports.collect_coverage_summary(*args, **kwargs)
 
 
 class ChildCoverageSession:
@@ -112,7 +92,20 @@ class ChildCoverageSession:
         self.diagnostic_snapshots: list[ShardDiagnosticSnapshot] = []
         self.child_manifest_dir = self.session_dir / "child_procs"
         self.child_manifest_dir.mkdir(parents=True, exist_ok=True)
+        self.observation_dir = self.session_dir / "observations"
+        self.observation_dir.mkdir(parents=True, exist_ok=True)
         self.bootstrap_dir = self.session_dir / "bootstrap"
+        self.invocation_id = self.session_dir.name
+        b_ident = hashlib.sha256(BOOTSTRAP_TEMPLATE.encode("utf-8")).hexdigest()
+        self.bootstrap_capability = BootstrapCapabilityRecord(
+            identity=b_ident, host_visible_path=self.bootstrap_dir,
+            same_namespace_path=self.bootstrap_dir,
+            container_mount_aliases=derive_container_mount_aliases(self.bootstrap_dir),
+        )
+        self.process_observer = ProcessObserver(
+            observation_dir=self.observation_dir, invocation_id=self.invocation_id,
+            capability=self.bootstrap_capability,
+        )
         self._portable_capability: Any = None
         self._adapter_cm: Any = None
 
@@ -234,6 +227,9 @@ class ChildCoverageSession:
         self.purge_shards()
         self._write_config()
         self._write_sitecustomize()
+        (self.observation_dir / "invocation_id.txt").write_text(
+            self.invocation_id, encoding="utf-8"
+        )
         env_vars = (
             "COVERAGE_PROCESS_START", "PYTHONPATH", "COVERAGE_CHILD_MANIFEST_DIR",
             "COVERAGE_SESSION_INVOCATION_ID", "COVERAGE_SESSION_SUITE",
@@ -243,7 +239,7 @@ class ChildCoverageSession:
             self._prev_env[var] = os.environ.get(var)
         os.environ["COVERAGE_PROCESS_START"] = str(self.config_file)
         os.environ["COVERAGE_CHILD_MANIFEST_DIR"] = str(self.child_manifest_dir)
-        os.environ["COVERAGE_SESSION_INVOCATION_ID"] = self.session_dir.name
+        os.environ["COVERAGE_SESSION_INVOCATION_ID"] = self.invocation_id
         os.environ["COVERAGE_SESSION_SUITE"] = self.suite
         orig_pp = os.environ.get("PYTHONPATH", "")
         os.environ["PYTHONPATH"] = f"{self.session_dir}:{orig_pp}" if orig_pp else str(self.session_dir)
@@ -362,6 +358,8 @@ class ChildCoverageSession:
         validate_shard_directory_integrity(
             data_dir=self.data_dir, allowed_shards=allowed_shards, parent_shard=parent_shard,
             snapshot_fn=self._create_snapshot, record_fn=self._record_diagnostic, cov_mod=cov_mod,
+            source_root=self.source_root, checkout_root=REPO_ROOT,
+            invocation_id=self.invocation_id, observer=self.process_observer,
         )
 
         shards_to_combine = sorted(consumed_shards)

@@ -1289,6 +1289,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-runtime.container_pid_namespace_correlation.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-runtime.scale14_postgres_storage.int.test",
       "members": [
         "src/test/int/python/repomap_kg/runtime/scale14_postgres_storage.int.test.py"
@@ -11274,6 +11284,36 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_diagnostics.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_diagnostics.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 coverage diagnostic and forensic regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_forensics.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_forensics.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 coverage shard forensic and streaming digest regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_observation.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_observation.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and PID lifecycle regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-tools.test_runner_safety1.unit.test",
       "members": [
         "src/test/unit/python/tools/test_runner_safety1.unit.test.py"
@@ -11468,6 +11508,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
+      "id": "tools-ci.generate_coverage_7154_evidence",
+      "members": [
+        "tools/ci/generate_coverage_7154_evidence.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization and causal evidence generator.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
       "id": "tools-ci.liquibase_check",
       "members": [
         "tools/ci/liquibase_check.py"
@@ -11630,6 +11680,16 @@
         "tools/ci/update_generated_locks.py"
       ],
       "rationale": "update_generated_locks responsibility in tools/ci; includes the declared module family independent of current quality findings.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools-ci.verify_coverage_7154_evidence",
+      "members": [
+        "tools/ci/verify_coverage_7154_evidence.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization verifier.",
       "root": "tools"
     },
     {
@@ -11950,6 +12010,36 @@
         "tools/runner_coverage_reports.py"
       ],
       "rationale": "runner_coverage responsibility in tools; includes the declared module family independent of current quality findings.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_diagnostics",
+      "members": [
+        "tools/runner_coverage_diagnostics.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 coverage diagnostic snapshotting and forensics extraction.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_forensics",
+      "members": [
+        "tools/runner_coverage_forensics.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 bounded SQLite anomalous shard forensics reader.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_observer",
+      "members": [
+        "tools/runner_coverage_observer.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and invocation registry tracking.",
       "root": "tools"
     },
     {
@@ -14018,6 +14108,24 @@
       "rationale": "REVISE39 moves a semantic subset of tests to an immediately governed successor in the original cohort; predecessor remains maintained.",
       "to": [
         "src/test/unit/python/repomap_test_support/test_cov5k_r2_groupa_tail_restoration.unit.test.py"
+      ]
+    },
+    {
+      "from": "tools/runner_coverage_execution.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 and FIX6-R1 cohesive diagnostic snapshotting, forensics extraction, child process observation, and invocation identity tracking; compatibility facade and all executable implementation paths remain in governed source scope.",
+      "to": [
+        "tools/runner_coverage_diagnostics.py",
+        "tools/runner_coverage_forensics.py",
+        "tools/runner_coverage_observer.py"
+      ]
+    },
+    {
+      "from": "src/test/unit/python/tools/test_runner_coverage_atomicity.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 and FIX6-R1 separates registration atomicity from diagnostic, forensic, and observation suites while preserving all regression tests.",
+      "to": [
+        "src/test/unit/python/tools/test_runner_coverage_diagnostics.unit.test.py",
+        "src/test/unit/python/tools/test_runner_coverage_forensics.unit.test.py",
+        "src/test/unit/python/tools/test_runner_coverage_observation.unit.test.py"
       ]
     }
   ],
@@ -19085,6 +19193,510 @@
         }
       ],
       "supersedes": "revise41.base_package_import.3"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.1",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "owner_sha256": "8f5b4d7328bbec1d98c6f584261457682b18f48d8b1d6868dd8cb6614bb3ccb6",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "test_sha256": "8f5b4d7328bbec1d98c6f584261457682b18f48d8b1d6868dd8cb6614bb3ccb6",
+      "kind": "import_module",
+      "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+      "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "caller_mod",
+        "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+        "filename": "caller_mod.py",
+        "source_utf8": "def hello(): return 'world'\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "run_tests",
+          "symbol": "",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed"
+        },
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.1.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.2",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "owner_sha256": "1851390602bc8cab842f32d234070521dbc851266926cb26945e0e93c9196006",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "test_sha256": "1851390602bc8cab842f32d234070521dbc851266926cb26945e0e93c9196006",
+      "kind": "import_module",
+      "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+      "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "decision_mod",
+        "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+        "filename": "decision_mod.py",
+        "source_utf8": "def branch_fn(val):\n    if val > 0:\n        return 1\n    return 0\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.2.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.3",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix1.3.closeout",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "compile",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.4",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix1.4.closeout",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "exec",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.5",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "compile",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.5.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.6",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "exec",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.6.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.7",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "compile",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.7.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.8",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "exec",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.8.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.9",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "compile",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.9.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.10",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "exec",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.10.closeout"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",
@@ -24909,6 +25521,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/arch7f_release_wheel.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -36211,6 +36832,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_diagnostics.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 coverage diagnostic and forensic regression suite.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_forensics.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 coverage shard forensic and streaming digest regression suite.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_observation.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and PID lifecycle regression suite.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_runner_coverage_receipts.unit.test.py",
       "rationale": "PR26-STAGING-QUAL6-FIX1 measured-execution repair; immediate existing quality governance, no waiver.",
       "root": "test_owners",
@@ -36564,6 +37212,15 @@
       "maintained_executable": true,
       "path": "tools/ci/gate_contract_runtime.py",
       "rationale": "REVISE33 gate copy-set responsibility and contract tests; clean under unchanged profile.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/generate_coverage_7154_evidence.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization and causal evidence generator.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -37129,6 +37786,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/ci/verify_coverage_7154_evidence.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization verifier.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/ci/workflow_model.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -37309,8 +37975,35 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/runner_coverage_diagnostics.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 cohesive diagnostic snapshotting and forensics extraction.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/runner_coverage_execution.py",
       "rationale": "REVISE13 cohesive extraction from tools/runner_coverage.py; inherited language-confidence and complete profile obligations preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_coverage_forensics.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 bounded SQLite anomalous shard forensics reader.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_coverage_observer.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and invocation registry tracking.",
       "root": "tools",
       "status": "active_tool"
     },

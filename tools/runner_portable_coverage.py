@@ -73,9 +73,8 @@ def make_portable_worker_spec_adapter(
         token = capability.register_prelaunch_child()
         capability.launched_commands[token] = cmd_slice
 
-        # 6. Reconstruct minimal approved env from spec closure + bounded bootstrap
-        clean_pypath = os.pathsep.join(approved_paths)
-        env = {
+        from runner_coverage_execution import prepare_child_coverage_environment
+        base_child_env = {
             "LANG": "C",
             "LC_ALL": "C",
             "PATH": "",
@@ -90,19 +89,28 @@ def make_portable_worker_spec_adapter(
             "COVERAGE_SESSION_SUITE": capability.suite,
             "COVERAGE_SESSION_REVISION": capability.source_commitment,
             "COVERAGE_CHILD_LAUNCH_ROLE": (
-                "conformance-abrupt" if cmd_slice == CONFORMANCE_COMMAND
-                and spec.argv[4].startswith("crash:") else
-                "conformance" if cmd_slice == CONFORMANCE_COMMAND else "portable"
+                "conformance-abrupt"
+                if cmd_slice == CONFORMANCE_COMMAND
+                and spec.argv[4].startswith("crash:")
+                else (
+                    "conformance"
+                    if cmd_slice == CONFORMANCE_COMMAND
+                    else "portable"
+                )
             ),
             "COVERAGE_CHILD_TEST_OWNER": hashlib.sha256(
                 os.environ.get("PYTEST_CURRENT_TEST", "").encode()
             ).hexdigest(),
-            "PYTHONPATH": (
-                f"{capability.bootstrap_dir}{os.pathsep}{clean_pypath}"
-                if clean_pypath
-                else str(capability.bootstrap_dir)
-            ),
         }
+        clean_pypath = os.pathsep.join(approved_paths)
+        env = prepare_child_coverage_environment(
+            base_child_env,
+            family="portable_worker",
+            measure=True,
+            bootstrap_dir=capability.bootstrap_dir,
+            capability=session.bootstrap_capability,
+            extra_env={"PYTHONPATH": clean_pypath} if clean_pypath else None,
+        )
         augmented_spec = replace(spec, environment=env)
 
         # 7. Synchronous launch and reap under original run_worker_spec
@@ -114,6 +122,39 @@ def make_portable_worker_spec_adapter(
         def registered_launch(*args: Any, **kwargs: Any) -> Any:
             process = launcher(*args, **kwargs)
             capability.launched_pids[token] = process.pid
+            observer = session.process_observer
+            if observer is None:
+                raise RuntimeError("scoped_portable_coverage_adapter requires active session.process_observer")
+            launch_argv = args[0] if args else kwargs.get("argv")
+            launch_env = kwargs.get("environment") or env
+            inner_pid = kwargs.get("inner_pid")
+            if kwargs.get("is_container_namespace", False):
+                pid_relation = "translated"
+            elif "pid_namespace_relation" in kwargs:
+                pid_relation = kwargs["pid_namespace_relation"]
+            else:
+                pid_relation = "shared"
+            inv_id = (
+                job_context.get("invocation_id")
+                if isinstance(job_context, dict)
+                else env.get("COVERAGE_SESSION_INVOCATION_ID")
+            )
+            owner_val = (
+                getattr(identity, "worker_id", None)
+                or env.get("COVERAGE_CHILD_TEST_OWNER")
+            )
+            observer.observe_launch(
+                host_pid=process.pid,
+                inner_pid=inner_pid,
+                pid_namespace_relation=pid_relation,
+                invocation_id=inv_id,
+                argv=launch_argv,
+                env=launch_env,
+                ppid=os.getpid(),
+                executable_family="portable_worker",
+                test_owner=owner_val,
+                capability=session.bootstrap_capability,
+            )
             return process
 
         try:
@@ -197,6 +238,10 @@ def validate_shard_directory_integrity(
     cov_mod: Any = None,
     registered_children: dict[int, dict[str, Any]] | None = None,
     child_manifest_dir: Path | None = None,
+    source_root: Path | None = None,
+    checkout_root: Path | None = None,
+    invocation_id: str | None = None,
+    observer: Any = None,
 ) -> None:
     """Validate that shard directory contains no fabricated or unregistered shards."""
     from runner_coverage_execution import extract_pid_match
@@ -241,12 +286,67 @@ def validate_shard_directory_integrity(
                             "failure_reason": parsed.get("failure_reason"),
                         }
                         break
+            obs: Any = None
+            if child_info is None and pid is not None:
+                inv_id: str | None = invocation_id
+                if inv_id is None and manifest_dir:
+                    candidates = (manifest_dir / "invocation_id.txt", manifest_dir.parent / "observations" / "invocation_id.txt")
+                    for inv_candidate in candidates:
+                        if inv_candidate.is_file():
+                            try:
+                                inv_id = inv_candidate.read_text(encoding="utf-8").strip()
+                                break
+                            except OSError:
+                                pass
+                obs_found = None
+                if observer is not None and inv_id is not None:
+                    obs_found = observer.find_observation_by_inner_pid(pid, inv_id)
+                if obs_found is not None:
+                    obs = obs_found
+                    child_info = {
+                        "role": "observed_unregistered",
+                        "owner": obs.test_owner_hash,
+                        "ppid": obs.ppid,
+                        "launch_shape": obs.launch_shape_hash,
+                        "has_config": obs.has_coverage_capability,
+                        "has_manifest": obs.has_manifest_authority,
+                        "has_token": obs.has_token,
+                        "bootstrap_stage": "parent_observed_no_bootstrap_marker",
+                        "failure_class": "unregistered_child_process",
+                        "failure_reason": "child_never_registered_bootstrap",
+                    }
+
+            sha256_val, size_val, sqlite_valid = None, -1, False
+            measured_files_count, measured_classification = None, None
+            forensic_failure_verdict: str | None = None
+            if child.is_file():
+                from runner_coverage_diagnostics import compute_streaming_sha256
+                try:
+                    sha256_val, size_val, header = compute_streaming_sha256(child)
+                except OSError:
+                    header = b""
+                if header.startswith(b"SQLite format 3\x00"):
+                    from runner_coverage_forensics import read_anomalous_shard_forensics
+                    (
+                        sqlite_valid,
+                        measured_files_count,
+                        forensics_data,
+                        forensic_failure_verdict,
+                    ) = read_anomalous_shard_forensics(
+                        child,
+                        data_dir,
+                        source_root=source_root,
+                        checkout_root=checkout_root or Path.cwd(),
+                        max_paths=100,
+                    )
+                    if forensics_data is not None:
+                        measured_classification = forensics_data.get("classification")
 
             snap = snapshot_fn(
                 shard_name=child.name,
                 file_type="unregistered",
-                size_bytes=child.stat().st_size if child.is_file() else -1,
-                sha256=None,
+                size_bytes=size_val,
+                sha256=sha256_val,
                 reader_status="unregistered_shard_rejected",
                 stage="pre_combine",
                 cov_mod=cov_mod,
@@ -255,15 +355,13 @@ def validate_shard_directory_integrity(
                 launch_role=child_info.get("role") if child_info else None,
                 test_owner=child_info.get("owner") if child_info else None,
             )
-            if child_info:
-                from dataclasses import replace
-                snap = replace(
-                    snap,
-                    ppid=child_info.get("ppid"),
-                    launch_shape=child_info.get("launch_shape"),
-                    failure_class=child_info.get("failure_class"),
-                    failure_reason=child_info.get("failure_reason"),
-                )
+            from runner_coverage_diagnostics import merge_diagnostic_snapshot
+            snap = merge_diagnostic_snapshot(
+                snap, child_info=child_info, obs=obs,
+                forensics={"observed_total": measured_files_count, "classification": measured_classification},
+                sqlite_valid=sqlite_valid,
+                forensic_verdict=forensic_failure_verdict,
+            )
             record_fn(snap)
             raise RuntimeError(
                 f"unregistered coverage shard rejected: {child.name}"

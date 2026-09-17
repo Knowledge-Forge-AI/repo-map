@@ -368,3 +368,4 @@ if __name__ == "__main__":
         "ChildCoverageCapabilityUnitTests."
         "test_fixture_cleanup_stops_collector_and_preserves_primary_error_on_injected_failure"
     ))
+# REPOMAP-PUBLIC-V002-FIX8-R1 dynamic boundary re-attestation

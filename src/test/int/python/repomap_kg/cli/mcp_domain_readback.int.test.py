@@ -9,7 +9,7 @@ import sys
 import tempfile
 import unittest
 
-from repomap_test_support.cli_in_process import REPO_ROOT, module_environment
+from repomap_test_support.cli_in_process import REPO_ROOT, module_process_environment
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
@@ -42,9 +42,7 @@ class McpDomainReadbackIntegrationTests(unittest.TestCase):
         extra_env: dict[str, str] | None = None,
     ) -> list[McpResponse]:
         payload = "\n".join(json.dumps(req) for req in requests) + "\n"
-        env = module_environment()
-        if extra_env:
-            env.update(extra_env)
+        env = module_process_environment(extra_env=extra_env)
         result = subprocess.run(
             [sys.executable, "-m", "repomap_kg.server.mcp"],
             cwd=REPO_ROOT,

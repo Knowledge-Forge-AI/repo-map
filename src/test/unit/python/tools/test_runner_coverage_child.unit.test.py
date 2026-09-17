@@ -372,3 +372,4 @@ class ChildCoverageSessionUnitTests(ChildCoverageTestCase):
                 finally:
                     session.cleanup()
                     self.assertIsNone(session._temp_dir)
+# REPOMAP-PUBLIC-V002-FIX8-R1 dynamic boundary re-attestation
