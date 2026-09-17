@@ -98,6 +98,23 @@ persistent accepted state, reported separately from unattributed images and
 current-run ephemeral residue. Deployment `repomap-runtime:*` and legacy
 `repomap-runtime-<hash>:latest` images are never test-GC targets.
 
+The authoritative runtime image identity is exported via
+`REPOMAP_TEST_RUNTIME_IMAGE` by the test runner (`tools/runner_unit_execution.py`)
+when ensuring the canonical runtime image during smoke or integration suite runs.
+Container-based integration tests consume `REPOMAP_TEST_RUNTIME_IMAGE` rather
+than hardcoding outer sandbox images (e.g., `repomap-test-sandbox`), because the
+DinD inner daemon contains only pre-pulled dependencies and the managed runtime
+cache image. Inside the authenticated container sandbox (`active_sandbox()`),
+tests fail closed if `REPOMAP_TEST_RUNTIME_IMAGE` is absent. Outside the sandbox,
+when live Docker is unavailable or the runtime image identity is not configured,
+tests skip per capability policy.
+
+Child coverage sessions (`ChildCoverageSession`) install the canonical runner bootstrap
+into `bootstrap_dir` while retaining a copy in `session_dir` for backward-compatible
+visibility. The child execution path injects `bootstrap_dir` onto `PYTHONPATH`.
+`BOOTSTRAP_TEMPLATE._disarm_coverage` pops `COVERAGE_PROCESS_START` to disarm any
+subsequent or nested executions, and strips `session_dir` from `sys.path`.
+
 Runtime cache materialization uses one label-free, exactly ledgered temporary
 container, a collision-resistant run-bound name, a checkout-stable private
 recovery manifest, and one final `container.commit`. The persistent image must contain

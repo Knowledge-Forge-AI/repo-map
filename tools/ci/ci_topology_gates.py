@@ -154,6 +154,12 @@ def _check_main_system_gate(
         violations.append(f"{workflow.path.name}: main system gate job is missing")
         return violations
 
+    needs = job.get("needs")
+    if needs != ["source-and-export-policy"] and needs != "source-and-export-policy":
+        violations.append(
+            f"{workflow.path.name}: main system gate must depend on source-and-export-policy"
+        )
+
     steps = [s for s in job.get("steps", []) if isinstance(s, dict)]
     commands = [str(step["run"]) for step in steps if "run" in step]
     command_text = "\n".join(commands)

@@ -192,6 +192,12 @@ def test_release_qualification_holds_read_only_contents_permission() -> None:
             "            --suite system \\\n            --suite int \\\n",
             "system gate must not contain '--suite int'",
         ),
+        (
+            "repomap-release-qualification.yml",
+            "  main-system-gate:\n    name: main-system-gate\n    needs: [source-and-export-policy]\n",
+            "  main-system-gate:\n    name: main-system-gate\n    needs: [staging-integration-gate]\n",
+            "main system gate must depend on source-and-export-policy",
+        ),
     ],
 )
 def test_gate_contracts_detect_their_own_violation(
@@ -199,3 +205,36 @@ def test_gate_contracts_detect_their_own_violation(
 ) -> None:
     violations = violations_after(tmp_path, lambda root: edit(root, name, old, new))
     assert any(expected in violation for violation in violations), violations
+
+
+def test_main_system_gate_needs_source_and_export_policy_and_not_staging() -> None:
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    system_job = workflow.jobs["main-system-gate"]
+    needs = system_job.get("needs")
+    if isinstance(needs, str):
+        needs = [needs]
+    assert needs == ["source-and-export-policy"]
+    assert "staging-integration-gate" not in needs
+
+    visited: set[str] = set()
+    queue = list(needs)
+    while queue:
+        curr = queue.pop(0)
+        if curr in visited:
+            continue
+        visited.add(curr)
+        assert curr != "staging-integration-gate"
+        parent_job = workflow.jobs.get(curr, {})
+        parent_needs = parent_job.get("needs", [])
+        if isinstance(parent_needs, str):
+            parent_needs = [parent_needs]
+        queue.extend(parent_needs)
+
+
+def _add_unexpected(root: Path) -> None:
+    (root / ".github/workflows" / "unexpected.yml").write_text("name: unexpected\n", encoding="utf-8")
+
+
+def test_topology_rejects_unexpected_workflow(tmp_path: Path) -> None:
+    violations = violations_after(tmp_path, _add_unexpected)
+    assert any("unexpected workflow file" in v for v in violations), violations

@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+from typing import cast
 import unittest
 
 from runner_coverage_bootstrap import (
@@ -147,7 +148,7 @@ class TestRunnerCoverageObservation(unittest.TestCase):
         with self.assertRaises(ValueError):
             ProcessObserver(observation_dir=self.obs_dir, invocation_id="   ")
         with self.assertRaises(ValueError):
-            ProcessObserver(observation_dir=None, invocation_id="valid-id")  # type: ignore[arg-type]
+            ProcessObserver(observation_dir=cast(Path, None), invocation_id="valid-id")
 
     def test_stale_parent_obs_files_ignored_during_load(self) -> None:
         """Observation records from previous/stale invocations are skipped on disk read."""

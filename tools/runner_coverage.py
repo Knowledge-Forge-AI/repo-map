@@ -189,8 +189,9 @@ class ChildCoverageSession:
         self.config_file.write_text(self._derive_expected_config(), encoding="utf-8")
 
     def _write_sitecustomize(self) -> None:
-        from runner_coverage_bootstrap import generate_bootstrap_source
+        from runner_coverage_bootstrap import generate_bootstrap_source, install_bootstrap_directory
         (self.session_dir / "sitecustomize.py").write_text(generate_bootstrap_source(), encoding="utf-8")
+        install_bootstrap_directory(self.bootstrap_dir)
 
     def issue_portable_capability(
         self,
@@ -241,7 +242,7 @@ class ChildCoverageSession:
         os.environ["COVERAGE_SESSION_INVOCATION_ID"] = self.invocation_id
         os.environ["COVERAGE_SESSION_SUITE"] = self.suite
         orig_pp = os.environ.get("PYTHONPATH", "")
-        os.environ["PYTHONPATH"] = f"{self.session_dir}:{orig_pp}" if orig_pp else str(self.session_dir)
+        os.environ["PYTHONPATH"] = f"{self.bootstrap_dir}:{orig_pp}" if orig_pp else str(self.bootstrap_dir)
         if self.suite in ("int", "staging"):
             try:
                 from runner_portable_coverage import scoped_portable_coverage_adapter

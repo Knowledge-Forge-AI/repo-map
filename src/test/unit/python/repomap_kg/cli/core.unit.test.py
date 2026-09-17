@@ -5,6 +5,7 @@ import runpy
 import sys
 import tempfile
 import unittest
+import pytest
 from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
@@ -278,36 +279,91 @@ class CliCoreUnitTests(unittest.TestCase):
                 self.assertEqual(len(list(from_stdin)), 1)
 
 
-def test_integration_cli_module_boundary_preserves_child_inputs_and_patch_seams() -> None:
+def test_integration_cli_module_boundary_preserves_child_inputs_and_patch_seams(tmp_path: Path) -> None:
     import subprocess
+    from unittest.mock import MagicMock
     from repomap_test_support import cli_integration
+    from runner_coverage_bootstrap import install_bootstrap_directory
 
-    completed = subprocess.CompletedProcess(["module"], 17, "output\n", "error\n")
+    mock_proc = MagicMock()
+    mock_proc.communicate.return_value = ("output\n", "error\n")
+    mock_proc.returncode = 17
+    mock_proc.pid = 4242
+    session_dir = tmp_path / "session"
+    session_dir.mkdir(parents=True, exist_ok=True)
+    manifest_dir = session_dir / "child_procs"
+    manifest_dir.mkdir(parents=True, exist_ok=True)
+    bdir = session_dir / "bootstrap"
+    install_bootstrap_directory(bdir)
+    config_file = session_dir / "coverage.rc"
+    config_file.write_text("[run]\n", encoding="utf-8")
     inherited = {
-        "PYTHONPATH": "owned-bootstrap",
-        "COVERAGE_PROCESS_START": "owned-coverage.rc",
-        "COVERAGE_CHILD_MANIFEST_DIR": "owned-manifests",
+        "PYTHONPATH": str(bdir),
+        "COVERAGE_PROCESS_START": str(config_file),
+        "COVERAGE_CHILD_MANIFEST_DIR": str(manifest_dir),
+        "COVERAGE_SESSION_INVOCATION_ID": "inv-test-cli-seam",
         "_REPOMAP_TEST_SANDBOX_ACTIVE": "1",
     }
-    with patch.dict(os.environ, inherited), patch.object(
-        cli_integration.subprocess, "run", return_value=completed,
-    ) as run:
-        assert cli_integration.run_cli_module("identity", input_text="payload") is completed
-    args, kwargs = run.call_args
+    with patch.dict(os.environ, inherited), patch("subprocess.Popen", return_value=mock_proc) as popen_mock:
+        completed = cli_integration.run_cli_module("identity", input_text="payload")
+        assert completed.returncode == 17
+        assert completed.stdout == "output\n"
+        assert completed.stderr == "error\n"
+    args, kwargs = popen_mock.call_args
     assert args == ([sys.executable, "-m", "repomap_kg", "identity"],)
-    assert kwargs["cwd"] == cli_integration.REPO_ROOT
-    assert kwargs["input"] == "payload"
-    assert kwargs["stdout"] == subprocess.PIPE
-    assert kwargs["stderr"] == subprocess.PIPE
-    assert kwargs["text"] is True and kwargs["check"] is False
+    assert kwargs["cwd"] == str(cli_integration.REPO_ROOT) and kwargs["text"] is True
+    assert (kwargs["stdin"], kwargs["stdout"], kwargs["stderr"]) == (subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+    mock_proc.communicate.assert_called_once_with(input="payload")
     assert all(kwargs["env"][key] == value for key, value in inherited.items() if key != "PYTHONPATH")
-    assert kwargs["env"]["PYTHONPATH"].endswith(os.pathsep + "owned-bootstrap")
-    with patch.object(cli_integration, "run_cli_module", return_value=completed) as entry:
+    assert str(bdir) in kwargs["env"]["PYTHONPATH"]
+
+    completed_dummy = subprocess.CompletedProcess(["module"], 17, "output\n", "error\n")
+    with patch.object(cli_integration, "run_cli_module", return_value=completed_dummy) as entry:
         assert cli_integration.run_module_entrypoint("identity") == (17, "output\n", "error\n")
     entry.assert_called_once_with("identity")
-    with patch.object(cli_integration.subprocess, "run", side_effect=OSError("launch refused")):
-        with unittest.TestCase().assertRaisesRegex(OSError, "launch refused"):
-            cli_integration.run_cli_module("identity")
+    with patch("subprocess.Popen", side_effect=OSError("launch refused")):
+        with patch.dict(os.environ, inherited):
+            with unittest.TestCase().assertRaisesRegex(OSError, "launch refused"):
+                cli_integration.run_cli_module("identity")
+
+
+def test_measured_launch_without_observer_authority_fails_closed() -> None:
+    from runner_coverage_execution import launch_observed_process
+
+    incomplete = {"COVERAGE_PROCESS_START": "dummy.rc", "COVERAGE_CHILD_MANIFEST_DIR": "dummy-manifests"}
+    with patch.dict(os.environ, incomplete, clear=True):
+        with pytest.raises(RuntimeError, match="requires an explicit observer"):
+            launch_observed_process([sys.executable, "-c", "pass"], family="cli_module", pid_namespace_relation="shared")
+
+
+def test_measured_launch_prepares_explicit_env_without_bypass(tmp_path: Path) -> None:
+    from unittest.mock import MagicMock
+    from runner_coverage_bootstrap import install_bootstrap_directory
+    from runner_coverage_execution import launch_observed_process
+
+    mock_proc = MagicMock(communicate=MagicMock(return_value=("", "")), returncode=0, pid=1234)
+    session_dir = tmp_path / "session"
+    session_dir.mkdir()
+    bdir = session_dir / "bootstrap"
+    install_bootstrap_directory(bdir)
+    manifest_dir = session_dir / "manifests"
+    manifest_dir.mkdir()
+    config_file = session_dir / "coverage.rc"
+    config_file.write_text("[run]\n", encoding="utf-8")
+    explicit_env = {
+        "PATH": "/bin", "CUSTOM_VAR": "custom",
+        "COVERAGE_PROCESS_START": str(config_file),
+        "COVERAGE_CHILD_MANIFEST_DIR": str(manifest_dir),
+        "COVERAGE_SESSION_INVOCATION_ID": "inv-test-bypass",
+    }
+    with patch.dict(os.environ, {}, clear=True), patch("subprocess.Popen", return_value=mock_proc) as popen_mock:
+        launch_observed_process(
+            [sys.executable, "-c", "pass"], family="cli_module", env=explicit_env,
+            pid_namespace_relation="shared",
+        )
+    passed_env = popen_mock.call_args[1]["env"]
+    assert passed_env["CUSTOM_VAR"] == "custom"
+    assert str(bdir) in passed_env["PYTHONPATH"]
 
 
 def test_integration_cli_module_boundary_executes_real_module_version() -> None:
@@ -332,4 +388,4 @@ def test_integration_cli_subprocess_retains_runner_child_coverage_bootstrap(tmp_
     assert len(started) == 1
     assert started == exited == recorded
     assert list(session.data_dir.glob(".coverage.*"))
-# v0.0.2 dynamic target re-attestation.
+# REPOMAP-PUBLIC-V002-FIX10-R1 dynamic boundary re-attestation.

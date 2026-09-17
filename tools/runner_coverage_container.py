@@ -141,6 +141,33 @@ def extract_pid_from_container_ps(ps_output: str, match_token: str) -> int:
     return matching_pids[0]
 
 
+def _query_container_processes(container_id: str) -> str:
+    """Query container process table, falling back to python /proc reader if ps is absent."""
+    res = subprocess.run(
+        ["docker", "exec", container_id, "ps", "-eo", "pid,args"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if res.returncode == 0 and res.stdout.strip():
+        return res.stdout
+    cmd = (
+        "from pathlib import Path; print('PID ARGS'); "
+        "[print(p.name, (p/'cmdline').read_bytes().replace(b'\\x00', b' ').decode(errors='ignore')) "
+        "for p in sorted(Path('/proc').glob('[0-9]*'), key=lambda x: int(x.name))]"
+    )
+    for py_bin in ("python3", "python"):
+        proc_res = subprocess.run(
+            ["docker", "exec", container_id, py_bin, "-c", cmd],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc_res.returncode == 0 and proc_res.stdout.strip():
+            return proc_res.stdout
+    raise RuntimeError(f"failed to query process table in container {container_id[:12]}")
+
+
 def launch_observed_container_process(
     container_id: str,
     args: Sequence[str],
@@ -237,13 +264,8 @@ def launch_observed_container_process(
                 last_err = exc
         if inner_pid is None:
             try:
-                ps_res = subprocess.run(
-                    ["docker", "exec", container_id, "ps", "-eo", "pid,args"],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                inner_pid = extract_pid_from_container_ps(ps_res.stdout, token)
+                ps_res = _query_container_processes(container_id)
+                inner_pid = extract_pid_from_container_ps(ps_res, token)
             except Exception as exc:
                 last_err = exc
         if host_pid is not None and inner_pid is not None:

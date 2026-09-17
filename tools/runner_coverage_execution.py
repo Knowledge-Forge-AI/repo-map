@@ -212,16 +212,13 @@ def launch_observed_process(
         if pid_namespace_relation is None:
             pid_namespace_relation = "unknown"
 
-    cap = capability or resolve_bootstrap_capability(env=env if env is not None else os.environ)
-    resolved_env = (
-        prepare_child_coverage_environment(
-            env if env is not None else os.environ,
-            family=family,
-            extra_env=extra_env,
-            capability=cap,
-        )
-        if (env is None or extra_env)
-        else dict(env)
+    base_env = env if env is not None else os.environ
+    cap = capability or resolve_bootstrap_capability(env=base_env)
+    resolved_env = prepare_child_coverage_environment(
+        base_env,
+        family=family,
+        extra_env=extra_env,
+        capability=cap,
     )
 
     obs = observer
@@ -244,7 +241,11 @@ def launch_observed_process(
             )
         elif (
             resolved_env.get("COVERAGE_PROCESS_START")
+            or resolved_env.get("COVERAGE_PROCESS_CONFIG")
+            or base_env.get("COVERAGE_PROCESS_START")
+            or base_env.get("COVERAGE_PROCESS_CONFIG")
             or os.environ.get("COVERAGE_PROCESS_START")
+            or os.environ.get("COVERAGE_PROCESS_CONFIG")
         ):
             raise RuntimeError(
                 f"measured launch family {family!r} requires an explicit observer"

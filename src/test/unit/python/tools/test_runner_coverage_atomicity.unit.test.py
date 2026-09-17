@@ -349,24 +349,24 @@ def test_module_process_environment_avoids_duplicate_entries(tmp_path):
 
 
 def test_disarm_coverage_prevents_shard_on_failure(tmp_path):
+    from runner_coverage_bootstrap import BOOTSTRAP_TEMPLATE
+
     shard_file = tmp_path / "test.shard"
-    script = f"""
-import coverage, os
-cov = coverage.Coverage(data_file={repr(str(shard_file))})
-cov.start()
-cov._auto_save = True
-setattr(coverage.process_startup, 'coverage', cov)
-os.environ['COVERAGE_PROCESS_START'] = '/dummy'
-_config = '/dummy'
-from runner_coverage_bootstrap import BOOTSTRAP_TEMPLATE
-disarm_src = BOOTSTRAP_TEMPLATE.split('def _disarm_coverage():')[1].split('def _write_reg_fail')[0]
-exec('def _disarm_coverage():' + disarm_src, globals())
-_disarm_coverage()
-assert cov._auto_save is False
-assert not hasattr(coverage.process_startup, 'coverage')
-assert 'COVERAGE_PROCESS_START' not in os.environ
-"""
-    res = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
+    disarm_body = "def _disarm_coverage():" + BOOTSTRAP_TEMPLATE.split("def _disarm_coverage():")[1].split("def _write_reg_fail")[0]
+    script = (
+        "import coverage, os\n"
+        f"cov = coverage.Coverage(data_file={str(shard_file)!r})\n"
+        "cov.start()\ncov._auto_save = True\n"
+        "setattr(coverage.process_startup, 'coverage', cov)\n"
+        "os.environ['COVERAGE_PROCESS_START'] = _config = '/dummy'\n"
+        f"{disarm_body}\n_disarm_coverage()\n"
+        "assert cov._auto_save is False\n"
+        "assert not hasattr(coverage.process_startup, 'coverage')\n"
+        "assert 'COVERAGE_PROCESS_START' not in os.environ\n"
+    )
+    env = {k: os.environ[k] for k in ("PATH", "HOME", "TMPDIR") if k in os.environ}
+    env.update({"PYTHONNOUSERSITE": "1", "PYTHONPATH": ""})
+    res = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, env=env)
     assert res.returncode == 0, res.stderr
     assert not shard_file.exists()
 

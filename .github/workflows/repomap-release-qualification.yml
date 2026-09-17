@@ -186,7 +186,7 @@ jobs:
 
   main-system-gate:
     name: main-system-gate
-    needs: [staging-integration-gate]
+    needs: [source-and-export-policy]
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:

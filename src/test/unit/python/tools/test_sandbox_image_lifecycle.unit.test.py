@@ -1,21 +1,19 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+from unittest.mock import MagicMock, patch
+
+import pytest
 import test_sandbox as sandbox_owner
 
-
-import hashlib
-
-import json
-
-
-from pathlib import Path
-
-
-
+from src.test.unit.python.tools.sandbox_test_fixtures import _capacity_boundary as _capacity_boundary, completed
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-
-from src.test.unit.python.tools.sandbox_test_fixtures import _capacity_boundary as _capacity_boundary, completed
 
 
 def test_managed_image_build_context_contains_only_sandbox_recipe(tmp_path):
@@ -278,3 +276,93 @@ def test_workspace_mountpoint_preparation_orders_overlay_before_bind_targets():
     assert post_mkdir_idx < bind_egg_idx
     assert overlay_idx < git_safe_idx
 
+
+def test_query_container_processes_uses_ps_when_available() -> None:
+    from runner_coverage_container import _query_container_processes
+
+    expected = "  PID ARGS\n    1 /bin/sh\n   10 python3 worker.py\n"
+    fake = subprocess.CompletedProcess(
+        args=["docker", "exec", "c1", "ps", "-eo", "pid,args"],
+        returncode=0, stdout=expected, stderr="",
+    )
+    with patch("subprocess.run", return_value=fake) as mock_run:
+        assert _query_container_processes("c1") == expected
+        assert mock_run.call_args[0][0] == ["docker", "exec", "c1", "ps", "-eo", "pid,args"]
+
+
+def test_query_container_processes_falls_back_to_python_proc_reader() -> None:
+    from runner_coverage_container import _query_container_processes
+
+    ps_failed = subprocess.CompletedProcess(args=[], returncode=127, stdout="", stderr="")
+    proc_out = "PID ARGS\n1 /bin/sleep 60\n15 python3 -c import time; # tok-xyz\n"
+    py_ok = subprocess.CompletedProcess(args=[], returncode=0, stdout=proc_out, stderr="")
+
+    def fake_run(cmd, **kwargs):
+        return ps_failed if "ps" in cmd else py_ok if "python3" in cmd else None
+
+    with patch("subprocess.run", side_effect=fake_run):
+        assert _query_container_processes("c2") == proc_out
+
+
+def test_query_container_processes_fails_closed_when_all_fail() -> None:
+    from runner_coverage_container import _query_container_processes
+
+    failed = subprocess.CompletedProcess(args=[], returncode=1, stdout="", stderr="")
+    with patch("subprocess.run", return_value=failed):
+        with pytest.raises(RuntimeError, match="failed to query process table in container c3"):
+            _query_container_processes("c3")
+
+
+def test_extract_pid_from_container_ps_with_proc_output() -> None:
+    from runner_coverage_container import extract_pid_from_container_ps
+
+    proc_out = "PID ARGS\n1 /bin/sleep 60\n42 python3 -c import time; # tok-match-123\n"
+    assert extract_pid_from_container_ps(proc_out, "tok-match-123") == 42
+
+
+def test_run_smoke_suite_exports_runtime_image() -> None:
+    from runner_unit_execution import run_smoke_suite
+
+    real_source_root = REPO_ROOT / "src" / "main" / "python"
+    args = MagicMock(smoke_image_reference="sha256:" + "a" * 64, smoke_timeout=10, pg_container_port=55433)
+    orig_sys_path = sys.path[:]
+    try:
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("REPOMAP_TEST_RUNTIME_IMAGE", None)
+            with patch("smoke.container_smoke.run_container_smoke", return_value=0):
+                code = run_smoke_suite(args, resource_run=None, docker_boundary=None, repo_root=REPO_ROOT, source_root=real_source_root)
+                assert code == 0
+                assert os.environ.get("REPOMAP_TEST_RUNTIME_IMAGE") == "sha256:" + "a" * 64
+    finally:
+        sys.path[:] = orig_sys_path
+
+
+def test_run_selected_suites_exports_runtime_image_for_int() -> None:
+    from runner_unit_execution import run_selected_suites
+
+    args = MagicMock(suite="int", smoke_image_reference="sha256:" + "b" * 64)
+    with patch.dict(os.environ, {}, clear=False):
+        os.environ.pop("REPOMAP_TEST_RUNTIME_IMAGE", None)
+        code = run_selected_suites(
+            args, [], resource_run=None, docker_boundary=None,
+            require_integration_sandbox_fn=lambda s: None, validate_runner_options_fn=lambda a, s: None,
+            run_system_suite_fn=None, run_smoke_suite_fn=lambda *a, **kw: 0,
+            prepare_go_test_environment_fn=lambda s: None, run_pytest_suites_fn=lambda *a, **kw: 0,
+            report_docker_projection_fn=lambda *a, **kw: None,
+        )
+        assert code == 0
+        assert os.environ.get("REPOMAP_TEST_RUNTIME_IMAGE") == "sha256:" + "b" * 64
+
+
+def test_staging_runtime_image_absent_fails_closed_in_sandbox() -> None:
+    with patch.dict(os.environ, {}, clear=False):
+        os.environ.pop("REPOMAP_TEST_RUNTIME_IMAGE", None)
+        with patch("test_sandbox.active_sandbox", return_value=True):
+            image = os.environ.get("REPOMAP_TEST_RUNTIME_IMAGE")
+            assert not image
+            with pytest.raises(pytest.fail.Exception, match="authoritative runtime image identity"):
+                if not image:
+                    pytest.fail(
+                        "required staging execution failed: authoritative runtime image identity "
+                        "(REPOMAP_TEST_RUNTIME_IMAGE) is absent"
+                    )

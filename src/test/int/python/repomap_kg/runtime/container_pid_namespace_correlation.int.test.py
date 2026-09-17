@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -12,6 +13,7 @@ import uuid
 
 import pytest
 
+from repomap_test_support.unit_purity import unit_purity_guard_active
 from runner_coverage_bootstrap import (
     BOOTSTRAP_TEMPLATE,
     BootstrapCapabilityRecord,
@@ -21,6 +23,7 @@ from runner_coverage_container import launch_observed_container_process
 from runner_coverage_diagnostics import create_shard_snapshot
 from runner_coverage_observer import ProcessObserver
 from runner_portable_coverage import validate_shard_directory_integrity
+from test_sandbox import active_sandbox
 from test_sandbox_contract import INNER_TEST_SCRATCH_ROOT
 
 
@@ -43,10 +46,22 @@ def _docker_is_available() -> bool:
 def test_container_pid_namespace_correlation_translated(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    if unit_purity_guard_active():
+        pytest.skip("unit purity guard is active")
     if not _docker_is_available():
         pytest.skip("Docker is not available or daemon is not reachable")
 
-    image = "repomap-test-sandbox:py313-go125-docker294-v1"
+    image = os.environ.get("REPOMAP_TEST_RUNTIME_IMAGE")
+    if active_sandbox():
+        if not image:
+            pytest.fail(
+                "required staging execution failed: authoritative runtime image identity "
+                "(REPOMAP_TEST_RUNTIME_IMAGE) is absent"
+            )
+    else:
+        if not image:
+            pytest.skip("authoritative runtime image identity (REPOMAP_TEST_RUNTIME_IMAGE) is not set")
+
     container_id: str | None = None
     scratch_dir = tmp_path / "scratch"
     scratch_dir.mkdir(parents=True, exist_ok=True)
@@ -57,6 +72,7 @@ def test_container_pid_namespace_correlation_translated(
         run_res = subprocess.run(
             [
                 "docker", "run", "-d", "--rm",
+                "--entrypoint", "",
                 "-v", f"{scratch_dir}:{INNER_TEST_SCRATCH_ROOT}",
                 image, "sleep", "60",
             ],
@@ -228,7 +244,7 @@ def test_container_pid_namespace_correlation_translated(
     finally:
         if container_id:
             subprocess.run(
-                ["docker", "kill", container_id],
+                ["docker", "rm", "-f", "-v", container_id],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 check=False,
