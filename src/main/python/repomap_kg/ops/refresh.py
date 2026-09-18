@@ -104,27 +104,52 @@ def refresh_graph(
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
 ) -> OpsRefreshGraphResult:
-    if staging_measurements is None:
-        return _refresh_graph_impl(
-            config,
-            graph_id,
-            psql_command=psql_command,
-            publication_receipt=publication_receipt,
-            ingestion_mode=ingestion_mode,
-            staged_authority=staged_authority,
-            backend_telemetry=backend_telemetry,
-            staging_measurements=None,
-        )
-    with staging_measurements.phase("refresh.total"):
-        return _refresh_graph_impl(
-            config,
-            graph_id,
-            psql_command=psql_command,
-            publication_receipt=publication_receipt,
-            ingestion_mode=ingestion_mode,
-            staged_authority=staged_authority,
-            backend_telemetry=backend_telemetry,
-            staging_measurements=staging_measurements,
+    started_at = _utc_now_text()
+    try:
+        if staging_measurements is None:
+            return _refresh_graph_impl(
+                config,
+                graph_id,
+                psql_command=psql_command,
+                publication_receipt=publication_receipt,
+                ingestion_mode=ingestion_mode,
+                staged_authority=staged_authority,
+                backend_telemetry=backend_telemetry,
+                staging_measurements=None,
+            )
+        with staging_measurements.phase("refresh.total"):
+            return _refresh_graph_impl(
+                config,
+                graph_id,
+                psql_command=psql_command,
+                publication_receipt=publication_receipt,
+                ingestion_mode=ingestion_mode,
+                staged_authority=staged_authority,
+                backend_telemetry=backend_telemetry,
+                staging_measurements=staging_measurements,
+            )
+    except KeyboardInterrupt:
+        graph = _find_graph(config, graph_id)
+        database = graph_database(config, graph)
+        warnings = _graph_refresh_warnings(graph)
+        return _result_from_graph(
+            graph,
+            database=database,
+            result="failure",
+            publication_state="rolled_back",
+            error_category="cancelled",
+            started_at=started_at,
+            finished_at=_utc_now_text(),
+            warnings=warnings,
+            diagnostics=(
+                _diagnostic(
+                    "error",
+                    "refresh-failed",
+                    f"graphs.{graph.id}",
+                    "refresh cancelled",
+                ),
+            ),
+            error="refresh cancelled",
         )
 
 
@@ -230,14 +255,15 @@ def refresh_enabled_graphs(
         if not graph.enabled:
             continue
         try:
-            results.append(
-                refresh_graph(
-                    config,
-                    graph.id,
-                    psql_command=psql_command,
-                    ingestion_mode=ingestion_mode,
-                )
+            graph_result = refresh_graph(
+                config,
+                graph.id,
+                psql_command=psql_command,
+                ingestion_mode=ingestion_mode,
             )
+            results.append(graph_result)
+            if graph_result.error_category == "cancelled":
+                break
         except OpsRefreshError as error:
             results.append(
                 _result_from_graph(

@@ -21,6 +21,7 @@ from repomap_test_support.test_cov5g_r1_containment import (
 from repomap_test_support.test_cov5k_r2_observer_protocol import (
     ADR_0046_EXPECTATIONS,
 )
+from runner_coverage_execution import prepare_child_coverage_environment
 from scale28_backend_observer_session import (
     BackendObserverSession,
     ObserverFailureBoundary,
@@ -227,7 +228,6 @@ def run_process_case(
 
     action = configuration.case.parent_action
     is_victim = action is not ParentAction.COOPERATIVE_STOP
-    prev_role = os.environ.get("COVERAGE_CHILD_LAUNCH_ROLE")
     context = multiprocessing.get_context("spawn")
     parent_channel, child_channel = context.Pipe(duplex=True)
     stop = context.Event()
@@ -236,17 +236,32 @@ def run_process_case(
         args=(configuration, child_channel, stop),
         name="cov5g-r1-contained-observer",
     )
-    try:
-        if is_victim:
+    if is_victim:
+        prev_role = os.environ.get("COVERAGE_CHILD_LAUNCH_ROLE")
+        try:
             os.environ["COVERAGE_CHILD_LAUNCH_ROLE"] = "intentional-victim"
-        else:
-            os.environ.pop("COVERAGE_CHILD_LAUNCH_ROLE", None)
-        process.start()
-    finally:
-        if prev_role is not None:
-            os.environ["COVERAGE_CHILD_LAUNCH_ROLE"] = prev_role
-        else:
-            os.environ.pop("COVERAGE_CHILD_LAUNCH_ROLE", None)
+            process.start()
+        finally:
+            if prev_role is not None:
+                os.environ["COVERAGE_CHILD_LAUNCH_ROLE"] = prev_role
+            else:
+                os.environ.pop("COVERAGE_CHILD_LAUNCH_ROLE", None)
+    else:
+        cleaned = prepare_child_coverage_environment(family="unmeasured")
+        saved = {
+            k: os.environ[k]
+            for k in list(os.environ)
+            if k not in cleaned or os.environ[k] != cleaned[k]
+        }
+        try:
+            for k in list(os.environ):
+                if k not in cleaned:
+                    del os.environ[k]
+                elif os.environ[k] != cleaned[k]:
+                    os.environ[k] = cleaned[k]
+            process.start()
+        finally:
+            os.environ.update(saved)
     child_channel.close()
     ready = False
     request_started = False

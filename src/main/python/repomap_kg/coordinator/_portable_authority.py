@@ -106,7 +106,15 @@ def _is_approved_go_helper(
         return False
     if candidate.name not in {"repomap-go-extract", "repomap-go-extract.exe"}:
         return False
-    return any(candidate == root or candidate.is_relative_to(root) for root in code_roots)
+    if any(candidate == root or candidate.is_relative_to(root) for root in code_roots):
+        return True
+    helper_env = os.environ.get("REPOMAP_GO_HELPER")
+    if helper_env:
+        try:
+            return candidate == Path(helper_env).resolve()
+        except (TypeError, ValueError):
+            pass
+    return False
 
 
 def _validate_audit_event(
@@ -120,11 +128,14 @@ def _validate_audit_event(
     if event == "import" and args and isinstance(args[0], str):
         if args[0].startswith(_DENIED_IMPORT_PREFIXES):
             raise PermissionError("portable worker import authority denied")
+    if (
+        event in {"os.posix_spawn", "os.posix_spawnp", "subprocess.Popen"}
+        and _is_approved_go_helper(args, code_roots)
+    ):
+        return
     if event.startswith(_DENIED_EVENTS):
         raise PermissionError("portable worker runtime authority denied")
     if event.startswith("subprocess."):
-        if event == "subprocess.Popen" and _is_approved_go_helper(args, code_roots):
-            return
         raise PermissionError("portable worker runtime authority denied")
     if event == "open":
         _validate_open(args, read_roots, write_roots)

@@ -103,6 +103,7 @@ _KNOWN_ARRAY_CATEGORIES = frozenset(
         "cancellation_not_applied",
         "multi-source-refresh-unsupported",
         "psql_authority_invalid",
+        "refresh-failed",
         "source-binding-refresh-unsupported",
         "synthetic_warning",
         "synthetic_diagnostic",

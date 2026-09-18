@@ -11,6 +11,7 @@ from typing import Callable, Mapping
 from repomap_kg.coordinator._protocol_core import (
     ProtocolError,
     SyntheticWorkerResult,
+    _KNOWN_ARRAY_CATEGORIES,
     _run_protocol_worker,
 )
 from repomap_kg.coordinator._refresh_capability import (
@@ -140,9 +141,13 @@ def refresh_terminal(
         "canonical_edges": 0,
         "warnings": [],
         "diagnostics": [
-            str(d["code"]) if isinstance(d, dict) and "code" in d else str(d)
-            for d in getattr(result, "diagnostics", ())
-            if isinstance(d, (dict, str))
+            code
+            for code in (
+                str(d["code"]) if isinstance(d, dict) and "code" in d else str(d)
+                for d in getattr(result, "diagnostics", ())
+                if isinstance(d, (dict, str))
+            )
+            if code in _KNOWN_ARRAY_CATEGORIES
         ][:8],
         "publication_state": getattr(
             result, "publication_state", "committed" if succeeded else "commit_unknown"
