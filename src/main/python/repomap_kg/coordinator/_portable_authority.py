@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import stat
 import sys
 import sysconfig
 from typing import Iterable
@@ -202,11 +203,23 @@ def _validate_open(
 ) -> None:
     if not args:
         raise PermissionError("portable worker filesystem authority denied")
-    path = (
-        _descriptor_path(args[0])
-        if isinstance(args[0], int) and not isinstance(args[0], bool)
-        else _normalized_path(args[0], None)
-    )
+    target = args[0]
+    if isinstance(target, int) and not isinstance(target, bool):
+        if target < 0:
+            raise PermissionError("portable worker filesystem authority denied")
+        try:
+            st = os.fstat(target)
+        except OSError:
+            raise PermissionError("portable worker filesystem authority denied") from None
+        if stat.S_ISFIFO(st.st_mode):
+            try:
+                path = _descriptor_path(target)
+            except PermissionError:
+                return
+        else:
+            path = _descriptor_path(target)
+    else:
+        path = _normalized_path(target, None)
     mode = args[1] if len(args) > 1 else "r"
     flags = args[2] if len(args) > 2 else 0
     writing = (

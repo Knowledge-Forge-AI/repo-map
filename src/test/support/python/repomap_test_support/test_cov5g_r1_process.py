@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 import hashlib
 import multiprocessing
@@ -220,6 +222,27 @@ def wait_for_backend_count(
     return False
 
 
+@contextmanager
+def _scoped_environment(target_env: Mapping[str, str]) -> Iterator[None]:
+    saved = dict(os.environ)
+    try:
+        os.environ.clear()
+        os.environ.update(target_env)
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(saved)
+
+
+def _cooperative_worker_target(
+    channel: Connection,
+    stop: multiprocessing.synchronize.Event,
+) -> None:
+    """Cooperative child process target for isolation testing."""
+    channel.send("ready")
+    channel.close()
+
+
 def run_process_case(
     configuration: ChildConfiguration,
     admin: psycopg.Connection,
@@ -228,15 +251,20 @@ def run_process_case(
 
     action = configuration.case.parent_action
     is_victim = action is not ParentAction.COOPERATIVE_STOP
+
+    # Ensure multiprocessing resource tracker is running under ambient parent
+    # coverage environment before any scoped environment or role marker is set.
     context = multiprocessing.get_context("spawn")
-    parent_channel, child_channel = context.Pipe(duplex=True)
-    stop = context.Event()
-    process = context.Process(
-        target=process_child_main,
-        args=(configuration, child_channel, stop),
-        name="cov5g-r1-contained-observer",
-    )
+    context.Event()
+
     if is_victim:
+        parent_channel, child_channel = context.Pipe(duplex=True)
+        stop = context.Event()
+        process = context.Process(
+            target=process_child_main,
+            args=(configuration, child_channel, stop),
+            name="cov5g-r1-contained-observer",
+        )
         prev_role = os.environ.get("COVERAGE_CHILD_LAUNCH_ROLE")
         try:
             os.environ["COVERAGE_CHILD_LAUNCH_ROLE"] = "intentional-victim"
@@ -247,21 +275,16 @@ def run_process_case(
             else:
                 os.environ.pop("COVERAGE_CHILD_LAUNCH_ROLE", None)
     else:
-        cleaned = prepare_child_coverage_environment(family="unmeasured")
-        saved = {
-            k: os.environ[k]
-            for k in list(os.environ)
-            if k not in cleaned or os.environ[k] != cleaned[k]
-        }
-        try:
-            for k in list(os.environ):
-                if k not in cleaned:
-                    del os.environ[k]
-                elif os.environ[k] != cleaned[k]:
-                    os.environ[k] = cleaned[k]
+        target_env = prepare_child_coverage_environment(family="unmeasured")
+        with _scoped_environment(target_env):
+            parent_channel, child_channel = context.Pipe(duplex=True)
+            stop = context.Event()
+            process = context.Process(
+                target=process_child_main,
+                args=(configuration, child_channel, stop),
+                name="cov5g-r1-contained-observer",
+            )
             process.start()
-        finally:
-            os.environ.update(saved)
     child_channel.close()
     ready = False
     request_started = False
