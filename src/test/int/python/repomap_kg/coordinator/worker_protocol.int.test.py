@@ -157,6 +157,7 @@ def test_popen_boundary_receives_exact_argv_and_no_shell(monkeypatch):
     assert isinstance(environment, dict)
     assert set(environment) == {"LANG", "PYTHONPATH"}
     assert environment["PYTHONPATH"] == (
+        f"{repo_root / 'tools'}{os.pathsep}"
         f"{repo_root / 'src/main/python'}{os.pathsep}"
         f"{repo_root / 'src/test/support/python'}"
     )

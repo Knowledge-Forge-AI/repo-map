@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 import os
@@ -14,6 +15,34 @@ import test_sandbox as sandbox_owner
 from src.test.unit.python.tools.sandbox_test_fixtures import _capacity_boundary as _capacity_boundary, completed
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
+
+
+@pytest.mark.parametrize("inherited", [None, "", "/bootstrap:/other path/$(false);`false`"])
+def test_cli_wrapper_preserves_bootstrap_and_arguments(tmp_path, inherited):
+    calls = []
+    def fake_runner(command, **kwargs):
+        calls.append(command)
+        return completed(command)
+    sandbox_owner._prepare_workspace_and_identity(fake_runner, "8" * 64)
+    probe = next(c[-1] for c in calls if "/sandbox-scratch/bin/repomap-kg" in c[-1])
+    write = next(n for n in ast.walk(ast.parse(probe)) if isinstance(n, ast.Call)
+                 and isinstance(n.func, ast.Attribute) and n.func.attr == "write_text")
+    wrapper = tmp_path / "repomap-kg"
+    wrapper.write_text(ast.literal_eval(write.args[0]), encoding="utf-8")
+    python = tmp_path / "python3"
+    python.write_text('#!/bin/sh\nprintf \'%s\\n\' "$PYTHONPATH" "$@"\n', encoding="utf-8")
+    python.chmod(0o755)
+    environment = {"PATH": str(tmp_path)}
+    if inherited is not None:
+        environment["PYTHONPATH"] = inherited
+    result = subprocess.run(["/bin/sh", str(wrapper), "argument with spaces", "$(false);*", ""],
+                            env=environment, capture_output=True, text=True, check=True)
+    roots = "/workspace/tools:/workspace/src/main/python:/workspace/src/test/support/python"
+    assert result.stdout.splitlines() == [
+        (inherited + ":" if inherited else "") + roots,
+        "-c", "from repomap_kg.cli import main; raise SystemExit(main())",
+        "argument with spaces", "$(false);*", "",
+    ]
 
 
 def test_managed_image_build_context_contains_only_sandbox_recipe(tmp_path):

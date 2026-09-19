@@ -217,7 +217,9 @@ def test_all_ten_identity_aware_surfaces_readback_and_precedence() -> None:
         nh = execute_json_readback(nh_sql, psql_args=database.psql_args, psql_command=database.psql_command, label="nh", expected_shape="object")
         assert isinstance(nh, dict)
         assert nh["center"]["canonical_key"] == "node:curr_center"
-        assert any(e["target_canonical_key"] == "node:curr_neighbor" for e in nh.get("edges", []))
+        assert ("node:curr_center", "references", "node:curr_neighbor") in {
+            (e["source_key"], e["edge_kind"], e["target_key"]) for e in nh["edges"]
+        }
 
         # 6-10. Five language summaries
         for builder, count_key in LANGUAGE_SUMMARIES:

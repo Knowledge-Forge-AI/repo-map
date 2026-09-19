@@ -224,9 +224,12 @@ def test_container_pid_namespace_correlation_translated(
 
         assert len(recorded_snapshots) == 1
         snap: Any = recorded_snapshots[0]
-        assert snap.launch_role == "observed_unregistered"
-        assert snap.failure_class == "unregistered_child_process"
-        assert snap.failure_reason.startswith("child_never_registered_bootstrap")
+        assert snap.file_type == "unregistered"
+        assert snap.reader_status == "unregistered_shard_rejected"
+        assert snap.termination_outcome == "unregistered_child"
+        assert snap.launch_role == "inherited-python"
+        assert snap.failure_class == "unregistered_start_marker"
+        assert snap.failure_reason.startswith("unregistered_with_start_marker")
 
         # 8. Ambiguity rejection: second observation with conflicting host PID for same inner PID
         observer.observe_launch(

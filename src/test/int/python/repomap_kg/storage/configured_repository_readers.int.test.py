@@ -66,7 +66,8 @@ INSERT INTO canonical_nodes
 VALUES
     ({n}, {repository_id}, 1, '{ITEM}', 'feed.item', '{marker}', {node_metadata}::jsonb, 'extracted'),
     ({n+1}, {repository_id}, 1, 'feed.author:shared', 'feed.author', '{marker}', '{{}}', 'extracted'),
-    ({n+2}, {repository_id}, 1, 'feed.category:shared', 'feed.category', '{marker}', '{{}}', 'extracted');
+    ({n+2}, {repository_id}, 1, 'feed.category:shared', 'feed.category', '{marker}', '{{}}', 'extracted'),
+    ({n+3}, {repository_id}, 1, 'external.url:{marker}', 'external.url', '{marker}', '{{}}', 'extracted');
 INSERT INTO canonical_edges
     (id, repository_id, graph_key_version, source_canonical_key, edge_kind,
      target_canonical_key, identity_metadata_hash, metadata_json, confidence)
@@ -121,7 +122,7 @@ def _assert_selected(database, root, marker, excluded):
         encoded = json.dumps(result)
         assert marker in encoded, (name, result)
         assert excluded not in encoded, (name, result)
-    assert len(results["nodes"]) == 3
+    assert len(results["nodes"]) == 4
     assert len(results["edges"]) == 3
     assert len(results["edge_explanation"]["evidence"]) == 1
     assert len(results["items"]) == 1

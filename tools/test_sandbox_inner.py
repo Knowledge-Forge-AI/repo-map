@@ -149,8 +149,9 @@ def prepare_workspace_and_identity(
     )
     cli_wrapper = (
         "#!/bin/sh\n"
-        "PYTHONPATH=/workspace/src/main/python:/workspace/src/test/support/python:"
-        "/workspace/tools exec python3 -c 'from repomap_kg.cli import main; "
+        'PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}/workspace/tools:'
+        '/workspace/src/main/python:/workspace/src/test/support/python" '
+        "exec python3 -c 'from repomap_kg.cli import main; "
         "raise SystemExit(main())' \"$@\"\n"
     )
     wrapper_probe = (
