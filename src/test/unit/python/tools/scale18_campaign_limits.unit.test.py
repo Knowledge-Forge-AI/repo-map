@@ -390,4 +390,3 @@ def test_ci_safe_digest_subprocess_doubling_is_bounded_and_cleans(
         )
     assert comparison["accepted"] is True
     assert before == after
-

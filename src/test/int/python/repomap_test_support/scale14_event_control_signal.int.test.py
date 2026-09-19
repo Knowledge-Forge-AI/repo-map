@@ -25,8 +25,12 @@ except KeyboardInterrupt:
 
 
 def test_event_wait_direct_sigint_runs_python_unwind() -> None:
+    import os
+    from runner_coverage_execution import prepare_child_coverage_environment
+
     process = subprocess.Popen(
         (sys.executable, "-c", _BLOCKER_PROGRAM),
+        env=prepare_child_coverage_environment(base_env=os.environ, family="unmeasured"),
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,

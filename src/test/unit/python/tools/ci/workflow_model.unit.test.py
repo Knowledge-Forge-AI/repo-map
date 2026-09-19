@@ -131,11 +131,6 @@ def test_reader_parses_every_real_workflow() -> None:
     workflows = load_workflows(WORKFLOW_DIR)
 
     assert {workflow.path.name for workflow in workflows} == {
-        "repomap-static-analysis.yml",
-        "repomap-unit-tests.yml",
-        "repomap-staging-gate.yml",
-        "repomap-main-source-policy.yml",
-        "repomap-main-system-gate.yml",
         "repomap-release-qualification.yml",
     }
     for workflow in workflows:
@@ -159,7 +154,7 @@ def test_reader_parses_every_real_workflow() -> None:
 
 
 def test_accessors_expose_commands_and_actions() -> None:
-    workflow = load_workflow(WORKFLOW_DIR / "repomap-staging-gate.yml")
+    workflow = load_workflow(WORKFLOW_DIR / "repomap-release-qualification.yml")
 
     commands = workflow.run_commands()
     assert any("python3 tools/run_tests.py" in command for command in commands)

@@ -192,6 +192,7 @@ def main(argv: list[str] | None = None) -> int:
                     started_at,
                 )
             else:
+                _emit_failure_stderr(error)
                 terminal = _failure_terminal(
                     identity,
                     capability,
@@ -199,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
                     error.category,
                 )
         except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError) as error:
+            _emit_failure_stderr(error)
             terminal = _failure_terminal(
                 identity,
                 capability,
@@ -210,7 +212,8 @@ def main(argv: list[str] | None = None) -> int:
             heartbeat.join(timeout=1.0)
         emit(terminal)
         return 0
-    except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError):
+    except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError) as error:
+        _emit_failure_stderr(error)
         return 2
 
 
@@ -250,24 +253,29 @@ def _read_cancellation(session, identity, lock, stop, cancel_event) -> None:
         cancel_event.set()
 
 
-def _cancellation_terminal(
+def _terminal_payload(
     identity: dict[str, object],
     capability: PortableExecutionCapability,
     started_at: str,
+    status: str,
+    outcome: str,
+    error_category: str | None,
+    message_type: str,
     receipt_ref: ArtifactReference | FailureReceiptWrite | None = None,
+    cancellation_requested: bool = False,
 ) -> dict[str, object]:
     if receipt_ref is None:
         receipt_ref = create_failure_receipt(
-            capability, "cancelled", cancellation_requested=True
+            capability, outcome, cancellation_requested=cancellation_requested
         )
     receipt_write = _receipt_write(receipt_ref)
     return {
         "schema_version": 1,
-        "message_type": "result",
+        "message_type": message_type,
         **identity,
         "job_kind": "refresh_graph",
         "graph_id": capability.graph_id,
-        "status": "cancelled",
+        "status": status,
         "started_at": started_at,
         "finished_at": _utc_now(),
         "phase": "complete",
@@ -284,10 +292,10 @@ def _cancellation_terminal(
         "extractor_generation": capability.extractor_generation,
         "canonicalizer_generation": capability.canonicalizer_generation,
         "retryable": False,
-        "error_category": None,
+        "error_category": error_category,
         "portable_snapshot": {
             "contract_version": "1.0",
-            "outcome": "cancelled",
+            "outcome": outcome,
             "receipt": (
                 receipt_write.reference.to_mapping()
                 if receipt_write.reference is not None
@@ -298,6 +306,17 @@ def _cancellation_terminal(
             "bundle": None,
         },
     }
+
+
+def _cancellation_terminal(
+    identity: dict[str, object],
+    capability: PortableExecutionCapability,
+    started_at: str,
+    receipt_ref: ArtifactReference | FailureReceiptWrite | None = None,
+) -> dict[str, object]:
+    return _terminal_payload(
+        identity, capability, started_at, "cancelled", "cancelled", None, "result", receipt_ref, True
+    )
 
 
 def _failure_terminal(
@@ -307,53 +326,12 @@ def _failure_terminal(
     category: str,
     receipt_ref: ArtifactReference | FailureReceiptWrite | None = None,
 ) -> dict[str, object]:
-    if receipt_ref is None:
-        receipt_ref = create_failure_receipt(
-            capability, category, cancellation_requested=False
-        )
-    receipt_write = _receipt_write(receipt_ref)
-    return {
-        "schema_version": 1,
-        "message_type": "error",
-        **identity,
-        "job_kind": "refresh_graph",
-        "graph_id": capability.graph_id,
-        "status": "failed",
-        "started_at": started_at,
-        "finished_at": _utc_now(),
-        "phase": "complete",
-        "files": 0,
-        "observations": 0,
-        "canonical_nodes": 0,
-        "canonical_edges": 0,
-        "warnings": [],
-        "diagnostics": [],
-        "publication_state": "not_started",
-        "latest_run_identity": None,
-        "source_generation": capability.source_generation,
-        "config_generation": capability.config_generation,
-        "extractor_generation": capability.extractor_generation,
-        "canonicalizer_generation": capability.canonicalizer_generation,
-        "retryable": False,
-        "error_category": category,
-        "portable_snapshot": {
-            "contract_version": "1.0",
-            "outcome": category,
-            "receipt": (
-                receipt_write.reference.to_mapping()
-                if receipt_write.reference is not None
-                else None
-            ),
-            "receipt_status": receipt_write.status,
-            "receipt_diagnostic": receipt_write.diagnostic,
-            "bundle": None,
-        },
-    }
+    return _terminal_payload(
+        identity, capability, started_at, "failed", category, category, "error", receipt_ref, False
+    )
 
 
-def _receipt_write(
-    value: ArtifactReference | FailureReceiptWrite,
-) -> FailureReceiptWrite:
+def _receipt_write(value: ArtifactReference | FailureReceiptWrite) -> FailureReceiptWrite:
     if isinstance(value, ArtifactReference):
         return FailureReceiptWrite(value, "stored", None)
     return value
@@ -366,9 +344,45 @@ def _execution_error_category(error: BaseException) -> str:
         return "malformed_protocol"
     if isinstance(error, (KeyError, TypeError, ValueError)):
         return "contract_validation"
-    if isinstance(error, OSError):
+    return "source_capture" if isinstance(error, OSError) else "semantic_workload"
+
+
+def _classify_worker_cause(error: BaseException) -> str:
+    curr: BaseException | None = error
+    depth, seen = 0, set()
+    while curr is not None and depth < 16 and id(curr) not in seen:
+        seen.add(id(curr))
+        depth += 1
+        tname, msg = type(curr).__name__.lower(), str(curr).lower()
+        if "gohelperunavailable" in tname or "helper is unavailable" in msg:
+            return "helper_unavailable"
+        if "goprotocolerror" in tname or "helper protocol" in msg:
+            return "helper_protocol_violation"
+        if "runtime authority denied" in msg or "exec authority denied" in msg:
+            return "helper_launch_denied"
+        if "filesystem authority denied" in msg or (
+            isinstance(curr, PermissionError) and not any(k in msg for k in ("launch", "exec", "runtime"))
+        ):
+            return "filesystem_capture_denied"
+        if "source mutation" in msg or "source stability" in msg or "file changed" in msg:
+            return "source_mutation_failure"
+        if isinstance(curr, PermissionError) or "authority denied" in msg:
+            return "helper_launch_denied"
+        curr = curr.__cause__ or curr.__context__
+    allowed_sub = {"source_unavailable", "source_corrupt", "source_timeout", "source_mutation"}
+    for cand in (error, getattr(error, "__cause__", None)):
+        sub = getattr(cand, "category", None)
+        if sub in allowed_sub:
+            return f"source_capture_{sub}"
+    if isinstance(error, (PortableExecutionError, OSError)):
         return "source_capture"
-    return "semantic_workload"
+    return _execution_error_category(error)
+
+
+def _emit_failure_stderr(error: BaseException) -> None:
+    cause = _classify_worker_cause(error)
+    sys.stderr.write(f"refresh-failure:portable-worker:{cause}\n")
+    sys.stderr.flush()
 
 
 def _write(message: dict[str, object]) -> None:
@@ -377,9 +391,7 @@ def _write(message: dict[str, object]) -> None:
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace(
-        "+00:00", "Z"
-    )
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
 if __name__ == "__main__":  # pragma: no cover - subprocess entrypoint

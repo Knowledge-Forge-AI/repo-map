@@ -2,15 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-import hashlib
-import json
-import os
-from pathlib import Path
-import secrets
-import stat
-import time
 from collections.abc import Mapping
+from dataclasses import dataclass
+import hashlib, json, os, re, secrets, stat, time
+from pathlib import Path
 
 from repomap_kg.artifacts import (
     ArtifactReference,
@@ -37,7 +32,7 @@ from repomap_kg.ops.generations import canonicalizer_generation, extractor_gener
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.authority import AttemptNumber, OperationId
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.errors import StorageCommitUnknownError, StorageSchemaError
 from repomap_kg.storage.publication import PortablePublicationBinding
 from repomap_kg.ops.resolved_config import configured_repository_identity
 from repomap_kg.storage.staging_observability import StagingMeasurements
@@ -227,8 +222,8 @@ def execute_portable_refresh(
             bundle.family_counts["files"],
             bundle.family_counts["raw_observations"],
         )
-    except StorageSchemaError as error:
-        if "staged publication commit is unknown" in str(error):
+    except (StorageCommitUnknownError, StorageSchemaError) as error:
+        if isinstance(error, StorageCommitUnknownError) or getattr(error, "is_commit_unknown", False):
             raise
         _mark_retained_terminal(result_path, "terminal-failed")
         raise
@@ -266,7 +261,9 @@ def _private_directory(path):
 def _worker_references(terminal):
     extension = terminal.get("portable_snapshot")
     if terminal.get("status") != "succeeded" or not isinstance(extension, dict):
-        raise PortableRefreshError("portable worker did not complete")
+        raw = terminal.get("error_category") or terminal.get("reason")
+        clean = re.sub(r"/(?:[a-zA-Z0-9_.-]+/)*[a-zA-Z0-9_.-]+", "[path]", str(raw).strip())[:256] if raw else ""
+        raise PortableRefreshError(f"portable worker did not complete ({clean})" if clean else "portable worker did not complete")
     try:
         return (
             ArtifactReference.from_mapping(extension["receipt"]),

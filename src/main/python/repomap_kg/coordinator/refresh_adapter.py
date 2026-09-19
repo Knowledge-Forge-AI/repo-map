@@ -11,6 +11,7 @@ from typing import Callable, Mapping
 from repomap_kg.coordinator._protocol_core import (
     ProtocolError,
     SyntheticWorkerResult,
+    _KNOWN_ARRAY_CATEGORIES,
     _run_protocol_worker,
 )
 from repomap_kg.coordinator._refresh_capability import (
@@ -140,18 +141,28 @@ def refresh_terminal(
         "canonical_edges": 0,
         "warnings": [],
         "diagnostics": [
-            str(d["code"]) if isinstance(d, dict) and "code" in d else str(d)
-            for d in getattr(result, "diagnostics", ())
-            if isinstance(d, (dict, str))
+            code
+            for code in (
+                str(d["code"]) if isinstance(d, dict) and "code" in d else str(d)
+                for d in getattr(result, "diagnostics", ())
+                if isinstance(d, (dict, str))
+            )
+            if code in _KNOWN_ARRAY_CATEGORIES
         ][:8],
-        "publication_state": "committed" if succeeded else "commit_unknown",
+        "publication_state": getattr(
+            result, "publication_state", "committed" if succeeded else "commit_unknown"
+        ),
         "latest_run_identity": f"run-{run_id}" if succeeded else None,
         "source_generation": capability.source_generation,
         "config_generation": capability.config_generation,
         "extractor_generation": capability.extractor_generation,
         "canonicalizer_generation": capability.canonicalizer_generation,
         "retryable": False,
-        "error_category": None if succeeded else "publication_unknown",
+        "error_category": None if succeeded else (
+            "publication_unknown"
+            if getattr(result, "publication_state", "commit_unknown") == "commit_unknown"
+            else getattr(result, "error_category", None) or "worker_crash"
+        ),
     }
 
 
@@ -249,9 +260,28 @@ def build_refresh_worker_runner(
     return run
 
 
+_GENERIC_FAILURE_DIAGNOSTICS = frozenset({"refresh-failed"})
+
+
+def _truncate_bytes(text: str, max_bytes: int = 256) -> str:
+    encoded = text.encode("utf-8")
+    if len(encoded) <= max_bytes:
+        return text
+    return encoded[:max_bytes].decode("utf-8", errors="ignore")
+
+
 def _extract_diagnostic_summary(result: object) -> str | None:
     import re
     from repomap_kg.ops.reports import _redact_text
+
+    stderr = getattr(result, "stderr", None)
+    refresh_failure_line: str | None = None
+    if isinstance(stderr, str) and stderr:
+        for line in stderr.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("refresh-failure:"):
+                refresh_failure_line = stripped
+                break
 
     terminal = getattr(result, "terminal", None)
     if isinstance(terminal, dict):
@@ -259,41 +289,37 @@ def _extract_diagnostic_summary(result: object) -> str | None:
         if isinstance(term_diags, list) and term_diags:
             codes = [str(d) for d in term_diags if isinstance(d, (str, int))]
             if codes:
-                return ";".join(codes[:8])[:256]
+                is_generic = all(c in _GENERIC_FAILURE_DIAGNOSTICS for c in codes)
+                if not (is_generic and refresh_failure_line is not None):
+                    return _truncate_bytes(";".join(codes[:8]), 256)
 
-    stderr = getattr(result, "stderr", None)
-    if isinstance(stderr, str) and stderr:
+    if isinstance(stderr, str) and stderr.strip():
         truncated = getattr(result, "stderr_truncated", False)
-        for line in stderr.splitlines():
-            stripped = line.strip()
-            if stripped.startswith("refresh-failure:"):
-                sanitized = re.sub(
-                    r"(?:[a-zA-Z]:\\|[/\\])[a-zA-Z0-9_.\-/\\]+", "[path]", stripped
-                )
-                redacted = _redact_text(sanitized)[:256]
-                if truncated and len(redacted) >= 253:
-                    redacted = redacted[:253] + "..."
-                return redacted
-        first_line = stderr.strip().splitlines()[0].strip()
-        sanitized = re.sub(
-            r"(?:[a-zA-Z]:\\|[/\\])[a-zA-Z0-9_.\-/\\]+", "[path]", first_line
-        )
-        redacted = _redact_text(sanitized)[:256]
-        if truncated and len(redacted) >= 253:
-            redacted = redacted[:253] + "..."
-        return redacted
+        lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+        target_line = refresh_failure_line or (lines[0] if lines else "")
+        if target_line:
+            sanitized = re.sub(
+                r"(?:[a-zA-Z]:\\|[/\\])[a-zA-Z0-9_.\-/\\]+", "[path]", target_line
+            )
+            redacted = _redact_text(sanitized)
+            if truncated and len(redacted.encode("utf-8")) >= 253:
+                return _truncate_bytes(redacted, 253) + "..."
+            return _truncate_bytes(redacted, 256)
+
     protocol_error = getattr(result, "protocol_error", None)
     if isinstance(protocol_error, str) and protocol_error:
         sanitized = re.sub(
             r"(?:[a-zA-Z]:\\|[/\\])[a-zA-Z0-9_.\-/\\]+", "[path]", protocol_error.strip()
         )
-        return _redact_text(sanitized)[:256]
+        return _truncate_bytes(_redact_text(sanitized), 256)
+
     cleanup_error = getattr(result, "cleanup_error", None)
     if isinstance(cleanup_error, str) and cleanup_error:
         sanitized = re.sub(
             r"(?:[a-zA-Z]:\\|[/\\])[a-zA-Z0-9_.\-/\\]+", "[path]", cleanup_error.strip()
         )
-        return _redact_text(sanitized)[:256]
+        return _truncate_bytes(_redact_text(sanitized), 256)
+
     if getattr(result, "process_timed_out", False):
         return "worker_timed_out"
     if getattr(result, "heartbeat_timed_out", False):

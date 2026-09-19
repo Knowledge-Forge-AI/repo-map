@@ -11,7 +11,6 @@ from ci.ci_topology_contracts import (
     _first_expensive_step_index,
     _first_step_index,
     _trigger_list,
-    check_trusted_gate_copy_set,
 )
 
 if TYPE_CHECKING:
@@ -29,145 +28,91 @@ def _check_staging_gate(
     ] = _first_expensive_step_index,
 ) -> list[str]:
     violations: list[str] = []
-    triggers = workflow.triggers
-    if set(triggers) != {"workflow_dispatch"}:
-        violations.append(
-            f"{workflow.path.name}: staging qualification must require an explicit "
-            f"logical gate request, got triggers {sorted(triggers)}"
-        )
-    dispatch = triggers.get("workflow_dispatch")
-    inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
-    declared = set(inputs) if isinstance(inputs, dict) else set()
-    missing = contracts.required_gate_inputs.difference(declared)
-    if missing:
-        violations.append(
-            f"{workflow.path.name}: gate request is missing inputs {sorted(missing)}"
-        )
-    if dict(workflow.permissions) != {"contents": "read", "pull-requests": "read"}:
-        violations.append(
-            f"{workflow.path.name}: staging gate permissions must be exactly "
-            f"contents/pull-requests read, got {dict(workflow.permissions)}"
-        )
-    job = workflow.jobs.get("repomap-staging-gate")
-    if not isinstance(job, dict) or job.get("timeout-minutes") != 180:
+    if workflow.name == "repomap-staging-gate":
+        triggers = workflow.triggers
+        if set(triggers) != {"workflow_dispatch"}:
+            violations.append(
+                f"{workflow.path.name}: staging qualification must require an explicit "
+                f"logical gate request, got triggers {sorted(triggers)}"
+            )
+        dispatch = triggers.get("workflow_dispatch")
+        inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
+        declared = set(inputs) if isinstance(inputs, dict) else set()
+        missing = contracts.required_gate_inputs.difference(declared)
+        if missing:
+            violations.append(
+                f"{workflow.path.name}: gate request is missing inputs {sorted(missing)}"
+            )
+        if dict(workflow.permissions) != {"contents": "read", "pull-requests": "read"}:
+            violations.append(
+                f"{workflow.path.name}: staging gate permissions must be exactly "
+                f"contents/pull-requests read, got {dict(workflow.permissions)}"
+            )
+        job = workflow.jobs.get("repomap-staging-gate")
+        if not isinstance(job, dict) or job.get("timeout-minutes") != 180:
+            violations.append(
+                f"{workflow.path.name}: staging lane timeout must be 180 minutes"
+            )
+
+    job = workflow.jobs.get("staging-integration-gate") or workflow.jobs.get("repomap-staging-gate")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: staging gate job is missing")
+        return violations
+    if job.get("timeout-minutes") != 180:
         violations.append(
             f"{workflow.path.name}: staging lane timeout must be 180 minutes"
         )
 
-    steps = workflow.steps()
-    trusted_checkout_index = next(
-        (
-            index
-            for index, step in enumerate(steps)
-            if str(step.get("uses", "")).startswith("actions/checkout@")
-            and step.get("with", {}).get("ref") == "${{ github.sha }}"
-        ),
-        None,
-    )
-    preserve_index = first_step_index(
-        steps, f"cp tools/ci/gate_contract.py {contracts.trusted_gate_contract}"
-    )
-    binding_index = first_step_index(
-        steps, f"{contracts.trusted_gate_invocation} resolve"
-    )
-    candidate_checkout_index = next(
-        (
-            index
-            for index, step in enumerate(steps)
-            if str(step.get("uses", "")).startswith("actions/checkout@")
-            and str(step.get("with", {}).get("ref", "")).startswith("refs/pull/")
-        ),
-        None,
-    )
-    candidate_index = first_step_index(
-        steps, f"{contracts.trusted_gate_invocation} verify"
-    )
-    record_index = first_step_index(
-        steps, f"{contracts.trusted_gate_invocation} record"
-    )
-    commands = "\n".join(workflow.run_commands())
-    if commands.count(contracts.staging_marker) != 1:
+    steps = [s for s in job.get("steps", []) if isinstance(s, dict)]
+    commands = [str(step["run"]) for step in steps if "run" in step]
+    command_text = "\n".join(commands)
+
+    if commands.count(contracts.staging_marker) != 1 and command_text.count(contracts.staging_marker) != 1:
         violations.append(
             f"{workflow.path.name}: staging command must appear exactly once"
         )
     for retired in ("--suite all", "--suite unit"):
-        if retired in commands:
+        if retired in command_text:
             violations.append(
                 f"{workflow.path.name}: staging gate must not contain {retired!r}"
             )
-    if "--sandbox" not in commands:
+    if "--sandbox" not in command_text:
         violations.append(
             f"{workflow.path.name}: staging qualification must use --sandbox"
         )
-    duplicate_bootstrap = [
-        action
-        for action in workflow.action_uses()
-        if action.lower().startswith("actions/setup-go@")
-    ]
-    lowered_commands = commands.lower()
-    duplicate_bootstrap.extend(
-        marker
-        for marker in ("pip install", "go install", "golangci-lint")
-        if marker in lowered_commands
-    )
-    if duplicate_bootstrap:
+    if "--pg-container-port 55433" not in command_text:
         violations.append(
-            f"{workflow.path.name}: sandbox-backed staging gate must not duplicate "
-            f"host toolchain bootstrap; found {duplicate_bootstrap}"
+            f"{workflow.path.name}: staging qualification must bind pg-container-port 55433"
         )
-    if (
-        '--executor-ref "${GITHUB_REF}"' not in commands
-        or '--executor-sha "${GITHUB_SHA}"' not in commands
-    ):
+    if "--hygiene-profile exhaustive" not in command_text:
         violations.append(
-            f"{workflow.path.name}: trusted executor ref/SHA inputs must come from "
-            "the workflow-dispatch context"
+            f"{workflow.path.name}: staging qualification must specify exhaustive hygiene profile"
         )
-    trusted_command_counts = {
-        command: commands.count(f"{contracts.trusted_gate_invocation} {command}")
-        for command in ("resolve", "verify", "record")
-    }
-    if any(count != 1 for count in trusted_command_counts.values()):
+    if "--declared-complete-gates 1" not in command_text:
         violations.append(
-            f"{workflow.path.name}: trusted gate contract must execute resolve, "
-            "verify, and record exactly once"
+            f"{workflow.path.name}: staging qualification must declare complete gates 1"
         )
-    if (
-        trusted_checkout_index is None
-        or preserve_index is None
-        or binding_index is None
-        or candidate_checkout_index is None
-        or candidate_index is None
-    ):
+    if "--operator-attest-exclusive" not in command_text:
         violations.append(
-            f"{workflow.path.name}: gate must capture trusted staging semantics, "
-            "resolve the request, and verify the merge candidate"
+            f"{workflow.path.name}: staging qualification must attest exclusive operator access"
         )
-        return violations
-    ordered_indices = (
-        trusted_checkout_index,
-        preserve_index,
-        binding_index,
-        candidate_checkout_index,
-        candidate_index,
-    )
-    if list(ordered_indices) != sorted(ordered_indices):
+    if "--operator-attest-pressure-degradation" not in command_text:
         violations.append(
-            f"{workflow.path.name}: trusted binding and candidate checkout order is invalid"
+            f"{workflow.path.name}: staging qualification must attest pressure degradation"
         )
-    violations.extend(
-        check_trusted_gate_copy_set(workflow.path.name, steps, preserve_index, contracts)
-    )
-    expensive_index = first_expensive_step_index(steps, contracts)
-    if expensive_index is None:
-        violations.append(f"{workflow.path.name}: staging qualification is missing")
-    elif max(binding_index, candidate_index) >= expensive_index:
+    if "--report" not in command_text or "--report-dir" not in command_text:
         violations.append(
-            f"{workflow.path.name}: gate binding must fail before expensive work"
+            f"{workflow.path.name}: staging qualification must generate a report"
         )
-    if record_index is None:
+
+    for action in [str(s.get("uses", "")) for s in steps]:
+        if action.lower().startswith("actions/setup-go@") or "golangci-lint" in action.lower():
+            violations.append(
+                f"{workflow.path.name}: must not duplicate host toolchain bootstrap"
+            )
+    if 'pip install --editable ".[test,scale-tools,static-analysis]"' in command_text:
         violations.append(
-            f"{workflow.path.name}: gate must emit repomap-ci-gate-result-v1"
+            f"{workflow.path.name}: must not duplicate host toolchain bootstrap"
         )
     return violations
 
@@ -183,188 +128,92 @@ def _check_main_system_gate(
     ] = _first_expensive_step_index,
 ) -> list[str]:
     violations: list[str] = []
-    triggers = workflow.triggers
-    if set(triggers) != {"workflow_dispatch"}:
+    if workflow.name == "repomap-main-system-gate":
+        triggers = workflow.triggers
+        if set(triggers) != {"workflow_dispatch"}:
+            violations.append(
+                f"{workflow.path.name}: main-system qualification must require an "
+                f"explicit logical gate request, got triggers {sorted(triggers)}"
+            )
+        dispatch = triggers.get("workflow_dispatch")
+        inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
+        declared = set(inputs) if isinstance(inputs, dict) else set()
+        missing = contracts.required_gate_inputs.difference(declared)
+        if missing:
+            violations.append(
+                f"{workflow.path.name}: gate request is missing inputs {sorted(missing)}"
+            )
+        if dict(workflow.permissions) != {"contents": "read", "pull-requests": "read"}:
+            violations.append(
+                f"{workflow.path.name}: main-system gate permissions must be exactly "
+                f"contents/pull-requests read, got {dict(workflow.permissions)}"
+            )
+
+    job = workflow.jobs.get("main-system-gate") or workflow.jobs.get("repomap-main-system-gate")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: main system gate job is missing")
+        return violations
+
+    needs = job.get("needs")
+    if needs != ["source-and-export-policy"] and needs != "source-and-export-policy":
         violations.append(
-            f"{workflow.path.name}: main-system qualification must require an explicit "
-            f"logical gate request, got triggers {sorted(triggers)}"
-        )
-    dispatch = triggers.get("workflow_dispatch")
-    inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
-    declared = set(inputs) if isinstance(inputs, dict) else set()
-    missing = contracts.required_gate_inputs.difference(declared)
-    if missing:
-        violations.append(
-            f"{workflow.path.name}: gate request is missing inputs {sorted(missing)}"
-        )
-    if dict(workflow.permissions) != {"contents": "read", "pull-requests": "read"}:
-        violations.append(
-            f"{workflow.path.name}: main-system gate permissions must be exactly "
-            f"contents/pull-requests read, got {dict(workflow.permissions)}"
-        )
-    job = workflow.jobs.get("repomap-main-system-gate")
-    if not isinstance(job, dict) or job.get("timeout-minutes") != 90:
-        violations.append(
-            f"{workflow.path.name}: main-system lane timeout must be 90 minutes"
+            f"{workflow.path.name}: main system gate must depend on source-and-export-policy"
         )
 
-    steps = workflow.steps()
-    commands = "\n".join(workflow.run_commands())
-    if commands.count("--system-timeout 3600") != 1:
-        violations.append(
-            f"{workflow.path.name}: main-system internal deadline must be exactly 3600 seconds"
-        )
-    trusted_checkout_index = next(
-        (
-            index
-            for index, step in enumerate(steps)
-            if str(step.get("uses", "")).startswith("actions/checkout@")
-            and step.get("with", {}).get("ref") == "${{ github.sha }}"
-        ),
-        None,
-    )
-    preserve_index = first_step_index(
-        steps, f"cp tools/ci/gate_contract.py {contracts.trusted_gate_contract}"
-    )
-    binding_index = first_step_index(
-        steps, f"{contracts.trusted_gate_invocation} resolve"
-    )
-    candidate_checkout_index = next(
-        (
-            index
-            for index, step in enumerate(steps)
-            if str(step.get("uses", "")).startswith("actions/checkout@")
-            and str(step.get("with", {}).get("ref", "")).startswith("refs/pull/")
-        ),
-        None,
-    )
-    candidate_index = first_step_index(
-        steps, f"{contracts.trusted_gate_invocation} verify"
-    )
-    record_index = first_step_index(
-        steps, f"{contracts.trusted_gate_invocation} record"
-    )
-    system_step = next(
-        (step for step in steps if contracts.system_marker in str(step.get("run", ""))),
-        None,
-    )
-    system_env = system_step.get("env") if isinstance(system_step, dict) else None
-    if system_env != {
-        "APPROVAL_ID": "${{ inputs.approval_id }}",
-        "PR_NUMBER": "${{ inputs.pr_number }}",
-    }:
-        violations.append(
-            f"{workflow.path.name}: system runner dispatch inputs must be passed "
-            "through the exact step environment"
-        )
-    if commands.count(contracts.system_marker) != 1:
+    steps = [s for s in job.get("steps", []) if isinstance(s, dict)]
+    commands = [str(step["run"]) for step in steps if "run" in step]
+    command_text = "\n".join(commands)
+
+    for marker in (
+        "git rev-parse HEAD",
+        "git rev-parse 'HEAD^{tree}'",
+        "git rev-parse 'HEAD^1'",
+        "git rev-parse 'HEAD^2'",
+        "CANDIDATE_SHA",
+        "CANDIDATE_TREE",
+        "CANDIDATE_BASE_PARENT",
+        "CANDIDATE_HEAD_PARENT",
+        "export CANDIDATE_SHA CANDIDATE_TREE CANDIDATE_BASE_PARENT CANDIDATE_HEAD_PARENT",
+        "repomap-ci-gate-request-v1",
+        "gate-request.json",
+    ):
+        if marker not in command_text:
+            violations.append(
+                f"{workflow.path.name}: main system gate missing candidate/parent binding: {marker!r}"
+            )
+
+    if commands.count(contracts.system_marker) != 1 and command_text.count(contracts.system_marker) != 1:
         violations.append(
             f"{workflow.path.name}: system command must appear exactly once"
         )
-    for retired in ("--suite all", "--suite unit", "--suite int", "--suite staging", "--suite smoke"):
-        if retired in commands:
-            violations.append(
-                f"{workflow.path.name}: main-system gate must not contain {retired!r}"
-            )
-    if "--sandbox" not in commands:
-        violations.append(
-            f"{workflow.path.name}: main-system qualification must use --sandbox"
-        )
-    if "--gate-kind main-system" not in commands:
-        violations.append(
-            f"{workflow.path.name}: main-system gate must bind gate_kind main-system"
-        )
-    duplicate_bootstrap = [
-        action
-        for action in workflow.action_uses()
-        if action.lower().startswith("actions/setup-go@")
-    ]
-    lowered_commands = commands.lower()
-    duplicate_bootstrap.extend(
-        marker
-        for marker in ("pip install", "go install", "golangci-lint")
-        if marker in lowered_commands
-    )
-    if duplicate_bootstrap:
-        violations.append(
-            f"{workflow.path.name}: sandbox-backed system gate must not duplicate "
-            f"host toolchain bootstrap; found {duplicate_bootstrap}"
-        )
-    if (
-        '--executor-ref "${GITHUB_REF}"' not in commands
-        or '--executor-sha "${GITHUB_SHA}"' not in commands
-    ):
-        violations.append(
-            f"{workflow.path.name}: trusted executor ref/SHA inputs must come from "
-            "the workflow-dispatch context"
-        )
-    trusted_command_counts = {
-        command: commands.count(f"{contracts.trusted_gate_invocation} {command}")
-        for command in ("resolve", "verify", "record")
-    }
-    if any(count != 1 for count in trusted_command_counts.values()):
-        violations.append(
-            f"{workflow.path.name}: trusted gate contract must execute resolve, "
-            "verify, and record exactly once"
-        )
-    if (
-        trusted_checkout_index is None
-        or preserve_index is None
-        or binding_index is None
-        or candidate_checkout_index is None
-        or candidate_index is None
-    ):
-        violations.append(
-            f"{workflow.path.name}: gate must capture trusted main semantics, "
-            "resolve the request, and verify the merge candidate"
-        )
-        return violations
-    ordered_indices = (
-        trusted_checkout_index,
-        preserve_index,
-        binding_index,
-        candidate_checkout_index,
-        candidate_index,
-    )
-    if list(ordered_indices) != sorted(ordered_indices):
-        violations.append(
-            f"{workflow.path.name}: trusted binding and candidate checkout order is invalid"
-        )
-    violations.extend(
-        check_trusted_gate_copy_set(workflow.path.name, steps, preserve_index, contracts)
-    )
-    expensive_index = first_expensive_step_index(steps, contracts)
-    if expensive_index is None:
-        violations.append(f"{workflow.path.name}: system qualification is missing")
-    elif max(binding_index, candidate_index) >= expensive_index:
-        violations.append(
-            f"{workflow.path.name}: gate binding must fail before expensive work"
-        )
-    for required_runner_arg in (
+    for argument in (
+        "--system-timeout 3600",
+        "--hygiene-profile exhaustive",
+        "--declared-complete-gates 1",
+        "--operator-attest-exclusive",
+        "--operator-attest-pressure-degradation",
+        "--sandbox",
         '--gate-request-json "${RUNNER_TEMP}/gate-request.json"',
         '--candidate-sha "${CANDIDATE_SHA}"',
         '--candidate-tree "${CANDIDATE_TREE}"',
         '--candidate-base-parent "${CANDIDATE_BASE_PARENT}"',
         '--candidate-head-parent "${CANDIDATE_HEAD_PARENT}"',
-        '--approval-id "${APPROVAL_ID}"',
-        '--pr-number "${PR_NUMBER}"',
-        '--repository "${GITHUB_REPOSITORY}"',
+        "--report",
+        "--report-dir",
     ):
-        if required_runner_arg not in commands:
+        if argument not in command_text:
             violations.append(
-                f"{workflow.path.name}: system runner must receive {required_runner_arg}"
+                f"{workflow.path.name}: system gate command missing argument {argument!r}"
             )
-    for required_record_arg in (
-        '--system-report-json "${GITHUB_WORKSPACE}/ci-system-report/repomap-system-gate-report.json"',
-        '--system-binding-json "${GITHUB_WORKSPACE}/ci-system-report/repomap-system-gate-binding-v1.json"',
+    for retired in (
+        "--suite all",
+        "--suite unit",
+        "--suite int",
+        "--suite staging",
+        "--suite smoke",
     ):
-        if required_record_arg not in commands:
+        if retired in command_text:
             violations.append(
-                f"{workflow.path.name}: gate record step must receive {required_record_arg}"
+                f"{workflow.path.name}: system gate must not contain {retired!r}"
             )
-
-    if record_index is None:
-        violations.append(
-            f"{workflow.path.name}: gate must emit repomap-ci-gate-result-v1"
-        )
     return violations

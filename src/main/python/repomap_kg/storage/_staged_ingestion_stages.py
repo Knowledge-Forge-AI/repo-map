@@ -15,7 +15,10 @@ from psycopg.types.json import Jsonb
 from repomap_kg.observations.raw import RawObservation
 from repomap_kg.storage.authority import GraphRunId, StageId
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.errors import (
+    StorageCommitUnknownError,
+    StorageSchemaError,
+)
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.publication import RunPublicationReceipt
 from repomap_kg.storage.publication_fencing import PublicationHandoff
@@ -344,7 +347,7 @@ def _handle_existing_stage_state(
                 files=prepared_files,
                 publication_receipt=receipt,
             )
-        raise StorageSchemaError("staged publication commit is unknown")
+        raise StorageCommitUnknownError("staged publication commit is unknown")
     if existing_state in {
         "loading",
         "prepared",

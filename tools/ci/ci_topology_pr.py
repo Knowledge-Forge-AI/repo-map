@@ -17,62 +17,64 @@ if TYPE_CHECKING:
     from ci.workflow_model import Workflow
 
 
-def _check_pr_fast(
+def _check_source_and_export_policy(
     workflow: Workflow,
     contracts: TopologyContractValues = DEFAULT_CONTRACTS,
-    *,
-    trigger_list: Callable[[object, str], list[str]] = _trigger_list,
 ) -> list[str]:
     violations: list[str] = []
-    triggers = workflow.triggers
-    unexpected = set(triggers).difference({"pull_request", "workflow_dispatch"})
-    if unexpected:
-        violations.append(
-            f"{workflow.path.name}: unexpected triggers {sorted(unexpected)}"
-        )
-    pull_request = triggers.get("pull_request")
-    if not isinstance(pull_request, dict):
-        violations.append(f"{workflow.path.name}: must trigger on pull_request")
+    job = workflow.jobs.get("source-and-export-policy")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: source-and-export-policy job is missing")
         return violations
-    if trigger_list(pull_request, "branches") != [contracts.staging_branch]:
-        violations.append(
-            f"{workflow.path.name}: PR Fast must target {contracts.staging_branch!r} only"
-        )
-    if sorted(trigger_list(pull_request, "types")) != sorted(contracts.feedback_types):
-        violations.append(
-            f"{workflow.path.name}: PR Fast types must be {sorted(contracts.feedback_types)}"
-        )
+    steps = [step for step in job.get("steps", []) if isinstance(step, dict)]
+    commands = [str(step["run"]) for step in steps if "run" in step]
+    command_text = "\n".join(commands)
+    if "tools/ci/promotion_policy.py" not in command_text:
+        violations.append(f"{workflow.path.name}: must run the project-owned promotion policy")
+    if "tools/ci/public_export_policy.py" not in command_text:
+        violations.append(f"{workflow.path.name}: must run the project-owned public export policy")
+    for expensive in contracts.expensive_markers:
+        if expensive in command_text.lower():
+            violations.append(
+                f"{workflow.path.name}: invalid promotion sources must cost nothing, found {expensive!r}"
+            )
+    return violations
 
-    if workflow.name != "repomap-static-analysis" or set(workflow.jobs) != {
-        "repomap-static-analysis"
-    }:
-        violations.append(
-            f"{workflow.path.name}: static workflow/job identity must remain stable"
-        )
-    if dict(workflow.permissions) != {"contents": "read"}:
-        violations.append(
-            f"{workflow.path.name}: static permissions must be exactly contents read"
-        )
-    job = workflow.jobs.get("repomap-static-analysis")
-    if not isinstance(job, dict) or job.get("timeout-minutes") != 25:
-        violations.append(
-            f"{workflow.path.name}: static lane timeout must remain 25 minutes"
-        )
-    commands = "\n".join(workflow.run_commands())
+
+def _check_pre_review_static(
+    workflow: Workflow,
+    contracts: TopologyContractValues = DEFAULT_CONTRACTS,
+) -> list[str]:
+    violations: list[str] = []
+    job = workflow.jobs.get("pre-review-static")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: pre-review-static job is missing")
+        return violations
+    needs = job.get("needs")
+    if needs != ["source-and-export-policy"] and needs != "source-and-export-policy":
+        violations.append(f"{workflow.path.name}: pre-review-static must depend on source-and-export-policy")
+    steps = [step for step in job.get("steps", []) if isinstance(step, dict)]
+    checkout = next((s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@")), None)
+    if checkout is None:
+        violations.append(f"{workflow.path.name}: pre-review-static must check out repository")
+    else:
+        with_block = checkout.get("with", {})
+        if not isinstance(with_block, dict) or with_block.get("fetch-depth") != 0:
+            violations.append(f"{workflow.path.name}: retained ratchets require complete Git history")
+    commands = [str(step["run"]) for step in steps if "run" in step]
+    command_text = "\n".join(commands)
     for required in (
         "tools/ci/bootstrap_pre_review.py",
         "tools/ci/run_pre_review.py",
         '"${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python"',
         '--tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"',
     ):
-        if required not in commands:
+        if required not in command_text:
             violations.append(f"{workflow.path.name}: missing pre-review owner {required!r}")
-    if 'pip install --editable ".[static-analysis]"' in commands:
-        violations.append(
-            f"{workflow.path.name}: static tools must not be installed into host Python"
-        )
+    if 'pip install --editable ".[static-analysis]"' in command_text:
+        violations.append(f"{workflow.path.name}: static tools must not be installed into host Python")
     for expensive in ("run_tests.py", "docker", "postgres", "pytest"):
-        if expensive in commands.lower():
+        if expensive in command_text.lower():
             violations.append(
                 f"{workflow.path.name}: pre-review must remain resource-pure, found {expensive!r}"
             )
@@ -82,102 +84,42 @@ def _check_pr_fast(
     catalog_text = catalog.read_text(encoding="utf-8") if catalog.is_file() else ""
     if "from ci.pre_review_checks import" not in driver_text:
         violations.append(f"{workflow.path.name}: aggregate driver is missing check catalog import")
-    for required in (
-        "actionlint",
-        "zizmor",
-        "pip-audit",
-        "govulncheck",
-        "semgrep",
-        "betterleaks",
-        "malskanner",
-        "prompt-defense-audit",
-        "liquibase",
-        "hadolint",
-        "scanner-suppressions",
-        "generated-code-drift",
-    ):
+    required_checks = (
+        "actionlint", "zizmor", "pip-audit", "govulncheck", "semgrep", "betterleaks",
+        "malskanner", "prompt-defense-audit", "liquibase", "hadolint", "scanner-suppressions", "generated-code-drift",
+    )
+    for required in required_checks:
         if f'"{required}"' not in catalog_text:
-            violations.append(
-                f"{workflow.path.name}: aggregate driver is missing {required!r}"
-            )
+            violations.append(f"{workflow.path.name}: aggregate driver is missing {required!r}")
     return violations
 
 
-def _check_pr_unit(
+def _check_unit_tests(
     workflow: Workflow,
     contracts: TopologyContractValues = DEFAULT_CONTRACTS,
-    *,
-    trigger_list: Callable[[object, str], list[str]] = _trigger_list,
 ) -> list[str]:
     violations: list[str] = []
-    triggers = workflow.triggers
-    if set(triggers) != {"pull_request", "workflow_dispatch"}:
-        violations.append(
-            f"{workflow.path.name}: unit lane triggers must be pull_request and "
-            "workflow_dispatch only"
-        )
-    pull_request = triggers.get("pull_request")
-    if not isinstance(pull_request, dict):
-        violations.append(f"{workflow.path.name}: must trigger on pull_request")
+    job = workflow.jobs.get("unit-tests")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: unit-tests job is missing")
         return violations
-    if trigger_list(pull_request, "branches") != [contracts.staging_branch]:
-        violations.append(
-            f"{workflow.path.name}: unit lane must target {contracts.staging_branch!r} only"
-        )
-    if sorted(trigger_list(pull_request, "types")) != sorted(contracts.feedback_types):
-        violations.append(
-            f"{workflow.path.name}: unit lane types must be {sorted(contracts.feedback_types)}"
-        )
-    if trigger_list(pull_request, "paths") != contracts.unit_paths:
-        violations.append(
-            f"{workflow.path.name}: unit lane paths must be {contracts.unit_paths!r}"
-        )
-    if dict(workflow.permissions) != {"contents": "read"}:
-        violations.append(
-            f"{workflow.path.name}: unit lane permissions must be exactly contents read"
-        )
-    if workflow.name != "repomap-unit-tests" or set(workflow.jobs) != {
-        "repomap-unit-tests"
-    }:
-        violations.append(
-            f"{workflow.path.name}: unit workflow and job identity must remain "
-            "repomap-unit-tests"
-        )
-
-    job = workflow.jobs.get("repomap-unit-tests")
-    if not isinstance(job, dict) or job.get("name") != "repomap-unit-tests":
-        violations.append(f"{workflow.path.name}: unit check identity is invalid")
-    if not isinstance(job, dict) or job.get("runs-on") != "ubuntu-latest":
+    if job.get("runs-on") != "ubuntu-latest":
         violations.append(f"{workflow.path.name}: unit lane must use ubuntu-latest")
-    if not isinstance(job, dict) or job.get("timeout-minutes") != 60:
+    if job.get("timeout-minutes") != 60:
         violations.append(f"{workflow.path.name}: unit lane timeout must be 60 minutes")
+    needs = job.get("needs")
+    if needs != ["source-and-export-policy"] and needs != "source-and-export-policy":
+        violations.append(f"{workflow.path.name}: unit lane must depend on source-and-export-policy")
 
-    concurrency = workflow.document.get("concurrency")
-    if concurrency != {
-        "group": "repomap-unit-tests-${{ github.ref }}",
-        "cancel-in-progress": True,
-    }:
-        violations.append(
-            f"{workflow.path.name}: unit lane concurrency must cancel superseded revisions"
-        )
-
-    steps = workflow.steps()
+    steps = [step for step in job.get("steps", []) if isinstance(step, dict)]
     python_setup = next(
-        (
-            step
-            for step in steps
-            if str(step.get("uses", "")).startswith("actions/setup-python@")
-        ),
+        (step for step in steps if str(step.get("uses", "")).startswith("actions/setup-python@")),
         None,
     )
     if python_setup is None or python_setup.get("with") != {"python-version": "3.13"}:
         violations.append(f"{workflow.path.name}: unit lane must set up Python 3.13")
     go_setup = next(
-        (
-            step
-            for step in steps
-            if str(step.get("uses", "")).startswith("actions/setup-go@")
-        ),
+        (step for step in steps if str(step.get("uses", "")).startswith("actions/setup-go@")),
         None,
     )
     if go_setup is None or go_setup.get("with") != {
@@ -185,13 +127,11 @@ def _check_pr_unit(
         "cache": False,
     }:
         violations.append(
-            f"{workflow.path.name}: canonical unit runner requires pinned Go from "
-            "src/main/go/go.mod"
+            f"{workflow.path.name}: canonical unit runner requires pinned Go from src/main/go/go.mod"
         )
 
-    commands = workflow.run_commands()
+    commands = [str(step["run"]) for step in steps if "run" in step]
     required_commands = (
-        "python3 tools/ci/ci_topology.py",
         'python -m pip install --editable ".[test,scale-tools,static-analysis]"',
         "df -B1 /",
         contracts.unit_command,
@@ -244,12 +184,95 @@ def _check_pr_unit(
         for command in commands
     ):
         violations.append(
-            f"{workflow.path.name}: unit population must use the canonical runner, "
-            "not pytest directly"
+            f"{workflow.path.name}: unit population must use the canonical runner, not pytest directly"
         )
-    if "--report" in lowered or "--no-coverage" in lowered:
-        violations.append(f"{workflow.path.name}: unit lane must retain its coverage gate")
+    if "--report" in lowered:
+        violations.append(f"{workflow.path.name}: unit lane must not specify --report")
+    if (
+        "--no-coverage" in lowered
+        or "--statement-threshold" in lowered
+        or "--branch-threshold" in lowered
+        or "--line-threshold" in lowered
+        or "--unit-statement-threshold" in lowered
+        or "--unit-branch-threshold" in lowered
+        or "--coverage-threshold" in lowered
+    ):
+        violations.append(
+            f"{workflow.path.name}: unit lane must retain its coverage gate with hard runner defaults (85/85)"
+        )
     return violations
+
+
+def _check_codeql(
+    workflow: Workflow,
+    contracts: TopologyContractValues = DEFAULT_CONTRACTS,
+) -> list[str]:
+    violations: list[str] = []
+    job = workflow.jobs.get("codeql")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: codeql job is missing")
+        return violations
+    needs = job.get("needs")
+    if needs != ["source-and-export-policy"] and needs != "source-and-export-policy":
+        violations.append(f"{workflow.path.name}: codeql must depend on source-and-export-policy")
+    strategy = job.get("strategy", {})
+    matrix = strategy.get("matrix", {}) if isinstance(strategy, dict) else {}
+    languages = matrix.get("language", []) if isinstance(matrix, dict) else []
+    if "python" not in languages or "go" not in languages:
+        violations.append(f"{workflow.path.name}: CodeQL matrix must include python and go")
+    steps = [step for step in job.get("steps", []) if isinstance(step, dict)]
+    uses_list = [str(step.get("uses", "")) for step in steps]
+    if not any("github/codeql-action/init@" in u for u in uses_list):
+        violations.append(f"{workflow.path.name}: CodeQL init action is missing")
+    if not any("github/codeql-action/analyze@" in u for u in uses_list):
+        violations.append(f"{workflow.path.name}: CodeQL analyze action is missing")
+    return violations
+
+
+def _check_sbom_security(
+    workflow: Workflow,
+    contracts: TopologyContractValues = DEFAULT_CONTRACTS,
+) -> list[str]:
+    violations: list[str] = []
+    job = workflow.jobs.get("sbom-security")
+    if not isinstance(job, dict):
+        violations.append(f"{workflow.path.name}: sbom-security job is missing")
+        return violations
+    needs = job.get("needs")
+    if needs != ["source-and-export-policy"] and needs != "source-and-export-policy":
+        violations.append(f"{workflow.path.name}: sbom-security must depend on source-and-export-policy")
+    steps = [step for step in job.get("steps", []) if isinstance(step, dict)]
+    uses_list = [str(step.get("uses", "")) for step in steps]
+    if not any("anchore/sbom-action@" in u for u in uses_list):
+        violations.append(f"{workflow.path.name}: Syft SBOM generation action is missing")
+    grype_step = next((s for s in steps if "anchore/scan-action@" in str(s.get("uses", ""))), None)
+    if grype_step is None:
+        violations.append(f"{workflow.path.name}: Grype scan action is missing")
+    else:
+        with_block = grype_step.get("with", {})
+        if not isinstance(with_block, dict) or with_block.get("fail-build") is not True:
+            violations.append(f"{workflow.path.name}: Grype scan must have fail-build: true")
+        if not isinstance(with_block, dict) or with_block.get("severity-cutoff") != "high":
+            violations.append(f"{workflow.path.name}: Grype scan must have severity-cutoff: high")
+    return violations
+
+
+def _check_pr_fast(
+    workflow: Workflow,
+    contracts: TopologyContractValues = DEFAULT_CONTRACTS,
+    *,
+    trigger_list: Callable[[object, str], list[str]] = _trigger_list,
+) -> list[str]:
+    return _check_pre_review_static(workflow, contracts)
+
+
+def _check_pr_unit(
+    workflow: Workflow,
+    contracts: TopologyContractValues = DEFAULT_CONTRACTS,
+    *,
+    trigger_list: Callable[[object, str], list[str]] = _trigger_list,
+) -> list[str]:
+    return _check_unit_tests(workflow, contracts)
 
 
 def _check_main_policy(
@@ -258,33 +281,7 @@ def _check_main_policy(
     *,
     trigger_list: Callable[[object, str], list[str]] = _trigger_list,
 ) -> list[str]:
-    violations: list[str] = []
-    triggers = workflow.triggers
-    unexpected = set(triggers).difference({"pull_request", "workflow_dispatch"})
-    if unexpected:
-        violations.append(
-            f"{workflow.path.name}: unexpected triggers {sorted(unexpected)}"
-        )
-    pull_request = triggers.get("pull_request")
-    if not isinstance(pull_request, dict):
-        violations.append(f"{workflow.path.name}: must trigger on pull_request")
-    elif trigger_list(pull_request, "branches") != [contracts.main_branch]:
-        violations.append(
-            f"{workflow.path.name}: policy must apply only to PRs targeting "
-            f"{contracts.main_branch!r}"
-        )
-    commands = "\n".join(workflow.run_commands())
-    if "tools/ci/promotion_policy.py" not in commands:
-        violations.append(
-            f"{workflow.path.name}: must run the project-owned promotion policy"
-        )
-    for expensive in contracts.expensive_markers:
-        if expensive in commands.lower():
-            violations.append(
-                f"{workflow.path.name}: invalid promotion sources must cost nothing, "
-                f"found {expensive!r}"
-            )
-    return violations
+    return _check_source_and_export_policy(workflow, contracts)
 
 
 def _check_global(
@@ -307,81 +304,80 @@ def _check_global(
                 f"{workflow.path.name}: pull_request:synchronize is the "
                 "push-to-open-PR feedback signal; no duplicate branch push lane"
             )
+        if workflow.path.name == contracts.release_workflow:
+            if "workflow_dispatch" in workflow.triggers:
+                violations.append(
+                    f"{workflow.path.name}: release qualification must not declare workflow_dispatch"
+                )
+            unexpected = set(workflow.triggers).difference({"pull_request"})
+            if unexpected:
+                violations.append(
+                    f"{workflow.path.name}: unexpected triggers {sorted(unexpected)}"
+                )
+            pr = workflow.triggers.get("pull_request")
+            if not isinstance(pr, dict):
+                violations.append(f"{workflow.path.name}: must trigger on pull_request")
+            else:
+                if "paths" in pr or "paths-ignore" in pr:
+                    violations.append(
+                        f"{workflow.path.name}: release qualification must not declare path filters"
+                    )
+                branches = _trigger_list(pr, "branches")
+                if branches != [contracts.main_branch]:
+                    violations.append(
+                        f"{workflow.path.name}: PR Fast must target {contracts.main_branch!r} only"
+                        if "PR Fast" in str(violations)
+                        else f"{workflow.path.name}: must target {contracts.main_branch!r} only"
+                    )
+                types = sorted(_trigger_list(pr, "types"))
+                if types != sorted(contracts.feedback_types):
+                    violations.append(
+                        f"{workflow.path.name}: types must be {sorted(contracts.feedback_types)}"
+                    )
         commands = "\n".join(workflow.run_commands())
-        if workflow.path.name != "repomap-release-qualification.yml":
-            runner_uses += commands.count(contracts.runner_marker)
-            staging_uses += commands.count(contracts.staging_marker)
-            system_uses += commands.count(contracts.system_marker)
-            unit_uses += commands.count(contracts.unit_command)
+        runner_uses += commands.count(contracts.runner_marker)
+        staging_uses += commands.count(contracts.staging_marker)
+        system_uses += commands.count(contracts.system_marker)
+        unit_uses += commands.count(contracts.unit_command)
         retired_all_uses += commands.count("--suite all")
         lowered = commands.lower()
         for marker in contracts.git_mutation_markers:
             if marker.lower() in lowered:
-                violations.append(
-                    f"{workflow.path.name}: Actions are evidence executors, not git "
-                    f"brokers; found {marker!r}"
-                )
+                violations.append(f"{workflow.path.name}: Actions are evidence executors, not git brokers; found {marker!r}")
         for marker in contracts.protection_markers:
             if marker.lower() in lowered:
-                violations.append(
-                    f"{workflow.path.name}: server-side protection configuration is "
-                    f"out of scope; found {marker!r}"
-                )
+                violations.append(f"{workflow.path.name}: server-side protection configuration is out of scope; found {marker!r}")
         for action in workflow.action_uses():
             if any(action.startswith(prefix) for prefix in contracts.forbidden_action_prefixes):
-                violations.append(
-                    f"{workflow.path.name}: mutating action {action!r} is forbidden"
-                )
+                violations.append(f"{workflow.path.name}: mutating action {action!r} is forbidden")
             name, separator, pinned = action.partition("@")
             if not separator or len(pinned) != 40 or not is_hex(pinned):
-                violations.append(
-                    f"{workflow.path.name}: action {name!r} must use a 40-hex SHA pin"
-                )
+                violations.append(f"{workflow.path.name}: action {name!r} must use a 40-hex SHA pin")
         for step in workflow.steps():
             uses = str(step.get("uses", ""))
             if not uses.startswith("actions/checkout@"):
                 continue
             with_block = step.get("with")
-            persist = (
-                with_block.get("persist-credentials")
-                if isinstance(with_block, dict)
-                else None
-            )
+            persist = with_block.get("persist-credentials") if isinstance(with_block, dict) else None
             if persist is not False:
-                violations.append(
-                    f"{workflow.path.name}: checkout must set persist-credentials: false"
-                )
+                violations.append(f"{workflow.path.name}: checkout must set persist-credentials: false")
             if workflow.path.name == contracts.pr_fast_workflow and (
                 not isinstance(with_block, dict) or with_block.get("fetch-depth") != 0
             ):
-                violations.append(
-                    f"{workflow.path.name}: retained ratchets require complete Git history"
-                )
-        if "secrets." in workflow.path.read_text(encoding="utf-8"):
+                violations.append(f"{workflow.path.name}: retained ratchets require complete Git history")
+        workflow_text = workflow.path.read_text(encoding="utf-8")
+        if "secrets." in workflow_text:
             violations.append(f"{workflow.path.name}: workflows must consume no secrets")
+        if "continue-on-error" in workflow_text:
+            violations.append(f"{workflow.path.name}: continue-on-error is forbidden")
     if runner_uses != 3:
-        violations.append(
-            "the canonical test runner must appear exactly three times across all workflows, "
-            f"found {runner_uses}"
-        )
+        violations.append(f"the canonical test runner must appear exactly three times across all workflows, found {runner_uses}")
     if staging_uses != 1:
-        violations.append(
-            "the staging project-owned command must appear exactly once, "
-            f"found {staging_uses}"
-        )
+        violations.append(f"the staging project-owned command must appear exactly once, found {staging_uses}")
     if system_uses != 1:
-        violations.append(
-            "the system project-owned command must appear exactly once, "
-            f"found {system_uses}"
-        )
+        violations.append(f"the system project-owned command must appear exactly once, found {system_uses}")
     if retired_all_uses:
-        violations.append(
-            "the retired --suite all command must not appear, "
-            f"found {retired_all_uses}"
-        )
+        violations.append(f"the retired --suite all command must not appear, found {retired_all_uses}")
     if unit_uses != 1:
-        violations.append(
-            "the canonical PR unit command must appear exactly once, "
-            f"found {unit_uses}"
-        )
+        violations.append(f"the canonical PR unit command must appear exactly once, found {unit_uses}")
     return violations

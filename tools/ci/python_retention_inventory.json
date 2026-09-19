@@ -1289,6 +1289,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-runtime.container_pid_namespace_correlation.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-runtime.scale14_postgres_storage.int.test",
       "members": [
         "src/test/int/python/repomap_kg/runtime/scale14_postgres_storage.int.test.py"
@@ -11254,11 +11264,51 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_atomicity.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_atomicity.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX2 coverage registration atomicity and diagnostic regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-tools.test_runner_coverage_child.unit.test",
       "members": [
         "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py"
       ],
       "rationale": "Contract owner test_runner_coverage_child.unit.test in src/test/unit/python/tools; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_diagnostics.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_diagnostics.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 coverage diagnostic and forensic regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_forensics.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_forensics.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 coverage shard forensic and streaming digest regression suite.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-tools.test_runner_coverage_observation.unit.test",
+      "members": [
+        "src/test/unit/python/tools/test_runner_coverage_observation.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and PID lifecycle regression suite.",
       "root": "test_owners"
     },
     {
@@ -11458,6 +11508,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
+      "id": "tools-ci.generate_coverage_7154_evidence",
+      "members": [
+        "tools/ci/generate_coverage_7154_evidence.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization and causal evidence generator.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
       "id": "tools-ci.liquibase_check",
       "members": [
         "tools/ci/liquibase_check.py"
@@ -11620,6 +11680,16 @@
         "tools/ci/update_generated_locks.py"
       ],
       "rationale": "update_generated_locks responsibility in tools/ci; includes the declared module family independent of current quality findings.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools-ci.verify_coverage_7154_evidence",
+      "members": [
+        "tools/ci/verify_coverage_7154_evidence.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization verifier.",
       "root": "tools"
     },
     {
@@ -11940,6 +12010,56 @@
         "tools/runner_coverage_reports.py"
       ],
       "rationale": "runner_coverage responsibility in tools; includes the declared module family independent of current quality findings.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_container",
+      "members": [
+        "tools/runner_coverage_container.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX9-R1 container PID observation seam and header parsing.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_diagnostics",
+      "members": [
+        "tools/runner_coverage_diagnostics.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 coverage diagnostic snapshotting and forensics extraction.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_forensics",
+      "members": [
+        "tools/runner_coverage_forensics.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 bounded SQLite anomalous shard forensics reader.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_observer",
+      "members": [
+        "tools/runner_coverage_observer.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and invocation registry tracking.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.runner_coverage_template",
+      "members": [
+        "tools/runner_coverage_template.py"
+      ],
+      "rationale": "REPOMAP-PUBLIC-V002-FIX9-R1 runner coverage bootstrap template generation.",
       "root": "tools"
     },
     {
@@ -14008,6 +14128,24 @@
       "rationale": "REVISE39 moves a semantic subset of tests to an immediately governed successor in the original cohort; predecessor remains maintained.",
       "to": [
         "src/test/unit/python/repomap_test_support/test_cov5k_r2_groupa_tail_restoration.unit.test.py"
+      ]
+    },
+    {
+      "from": "tools/runner_coverage_execution.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 and FIX6-R1 cohesive diagnostic snapshotting, forensics extraction, child process observation, and invocation identity tracking; compatibility facade and all executable implementation paths remain in governed source scope.",
+      "to": [
+        "tools/runner_coverage_diagnostics.py",
+        "tools/runner_coverage_forensics.py",
+        "tools/runner_coverage_observer.py"
+      ]
+    },
+    {
+      "from": "src/test/unit/python/tools/test_runner_coverage_atomicity.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 and FIX6-R1 separates registration atomicity from diagnostic, forensic, and observation suites while preserving all regression tests.",
+      "to": [
+        "src/test/unit/python/tools/test_runner_coverage_diagnostics.unit.test.py",
+        "src/test/unit/python/tools/test_runner_coverage_forensics.unit.test.py",
+        "src/test/unit/python/tools/test_runner_coverage_observation.unit.test.py"
       ]
     }
   ],
@@ -18470,6 +18608,2183 @@
         }
       ],
       "supersedes": "pr26.staging.contract1.fix1.9"
+    },
+    {
+      "id": "v002.pr26.staging.contract1.fix1.11",
+      "owner": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_evidence.py",
+      "owner_sha256": "31de30d02fe413236c1405f42d8a08e5caaae6263fb210fad6aad9d51915c7ae",
+      "test": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.unit.test.py",
+      "test_sha256": "4375141009ff75dd06e38fcf375ab8ad7cef23cb48a4a71320ba3242fdb2f3bd",
+      "kind": "import_module",
+      "symbol": "_resolve_symbol",
+      "fingerprint": "7b44a9a7b5e3e0b6f8a705d21cfd659fa2ab97019d785636742f5aaf5c48848f",
+      "recipe": "guarded_symbol_import",
+      "parameters": {
+        "domain_path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.py",
+        "domain_sha256": "d9610bcc29cd8e02cddf1fd27a64316fb21ebd1cfb3fe397305993fea1e745ff",
+        "domain_module": "repomap_test_support.test_cov5k_r2_fix2_dynamic_targets"
+      },
+      "supersedes": "pr26.staging.contract1.fix1.11",
+      "targets": [
+        {
+          "module": "actual_refresh_failure_causality",
+          "symbol": "FailureCausalityAuthority.record_code",
+          "path": "tools/actual_refresh_failure_causality.py",
+          "sha256": "f88ad8e0a518c522bc42022bc645f6852f4779a3edb9771a9600bccc4ad3767f"
+        },
+        {
+          "module": "process_rss_monitor",
+          "symbol": "ProcessRssMonitor.run",
+          "path": "tools/process_rss_monitor.py",
+          "sha256": "621ba5ee6587890399e2a505139c08e8cee36a533a62d537443f2a30267b991a"
+        },
+        {
+          "module": "repomap_kg.cli.dispatch",
+          "symbol": "dispatch_command",
+          "path": "src/main/python/repomap_kg/cli/dispatch.py",
+          "sha256": "3550cf57c3feabd24ad0c3ee6547bfa2b81040d4dd292c3bb8b08b48d1e9501d"
+        },
+        {
+          "module": "repomap_test_support.resource_test_images",
+          "symbol": "TestImageManager.build_ephemeral_image",
+          "path": "src/test/support/python/repomap_test_support/resource_test_images.py",
+          "sha256": "8f81a75e0fb8164390de910e49ccc024fcd68eceac987a4a6918603ea00c8a25"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_backup",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_build",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_removal",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_start",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_container_stop",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_database_initialization",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_database_removal",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_docker_stats_diagnostic",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_psql_native_load",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_restore",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_schema_migration",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "symbol": "execute_test_harness",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "symbol": "execute_complete_gate",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "symbol": "execute_focused_selection",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "symbol": "execute_former_failure_node",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_fresh_public_rehearsal",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_mixed_configured_campaign",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_observer_request",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_observer_schedule",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_owning_area_execution",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "symbol": "execute_prior_state_preservation",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "symbol": "execute_preparation_condition",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "c3eb4a85bc29f9e1eb2275c0ac16d21f3539eff0ef6db99ee30ddf8f117c2c53"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "symbol": "execute_preparation_state_path",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "c3eb4a85bc29f9e1eb2275c0ac16d21f3539eff0ef6db99ee30ddf8f117c2c53"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "symbol": "ProcessBoundaryRecorder.run",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "symbol": "execute_zero_process_boundary",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_container_rss",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_container_rss_equivalence",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_failure_causality",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_process_containment_companion",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_process_rss",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_runtime_driver_read",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_terminal_live_cohort",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_terminal_read",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "symbol": "execute_terminal_stage_matrix",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e"
+        },
+        {
+          "module": "run_tests",
+          "symbol": "main",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed"
+        },
+        {
+          "module": "scale14_actual_refresh_supervisor",
+          "symbol": "ActualRefreshSupervisor",
+          "path": "tools/scale14_actual_refresh_supervisor.py",
+          "sha256": "3bebef8c3b6535379621109a5a0c297b63cf637d9cc6afd76821582e82c95158"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "symbol": "read_scale15_terminal_state",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "symbol": "read_terminal_backend_summary",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606"
+        },
+        {
+          "module": "scale28_backend_observer_session",
+          "symbol": "BackendObserverSession.run",
+          "path": "tools/scale28_backend_observer_session.py",
+          "sha256": "fe387621d9fa9b1f5c227a31921418622b6bacc11f84a80951205ff6493a667b"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "symbol": "prepare_parent_startup_authorities",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "symbol": "prepare_startup_resources",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b"
+        },
+        {
+          "module": "scale28_preparation_authority",
+          "symbol": "HybridPreparationAuthority.prepare",
+          "path": "tools/scale28_preparation_authority.py",
+          "sha256": "7cc7c1945ce3bb75f63281d5b50b7f063bea5f6534e917e5f2b59e7b26587685"
+        },
+        {
+          "module": "scale28_preparation_worker",
+          "symbol": "PreparationWorkerAttempt",
+          "path": "tools/scale28_preparation_worker.py",
+          "sha256": "053a531e49231da9923456c4bafcabda79d1807c1cac80b8795cf39cb3db62c3"
+        },
+        {
+          "module": "scale28_runtime_identity",
+          "symbol": "capture_runtime_identity",
+          "path": "tools/scale28_runtime_identity.py",
+          "sha256": "7aca851bc41b76bf931a9c576f8d74ae9c0af36ff76c575ab934de998f1e9c46"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise39.cli.py.run_module_entrypoint",
+      "owner": "src/test/support/python/repomap_test_support/cli.py",
+      "owner_sha256": "ed244227dd84afcf153f4a82944d94aaadf5be74cce28ab50370a3a606a4ee3f",
+      "test": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
+      "test_sha256": "7492dc91001686896ee71f528c0b2f66f9889c99fba93e93743294a2b0b098b0",
+      "kind": "run_module",
+      "symbol": "run_module_entrypoint",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "revise39.cli.py.run_module_entrypoint",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise39.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "kind": "run_module",
+      "symbol": "CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "revise39.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise39.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "b4a5dc593a54a8508e23b97b56a6dd40603ec08e512125240cc3a726e523704d",
+      "kind": "run_module",
+      "symbol": "CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "revise39.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.revise41.base_package_import.0",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "spec_from_file_location",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.0"
+    },
+    {
+      "id": "v002.revise41.base_package_import.1",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "module_from_spec",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.1"
+    },
+    {
+      "id": "v002.revise41.base_package_import.2",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "modules",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.2"
+    },
+    {
+      "id": "v002.revise41.base_package_import.3",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "982e33b23bc5f9fd4dc163605ecc7d74ec3d9dee43b2dc83c777d379ef8f5673",
+      "kind": "exec_module",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+      "recipe": "optional_import_substitution",
+      "parameters": {
+        "schema": "optional-import-substitution-v1",
+        "case": "base_package_import",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "chain": [
+          {
+            "kind": "spec_from_file_location",
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9"
+          },
+          {
+            "kind": "module_from_spec",
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6"
+          },
+          {
+            "kind": "modules",
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1"
+          },
+          {
+            "kind": "exec_module",
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        }
+      ],
+      "supersedes": "revise41.base_package_import.3"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.1",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "owner_sha256": "8f5b4d7328bbec1d98c6f584261457682b18f48d8b1d6868dd8cb6614bb3ccb6",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "test_sha256": "8f5b4d7328bbec1d98c6f584261457682b18f48d8b1d6868dd8cb6614bb3ccb6",
+      "kind": "import_module",
+      "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+      "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "caller_mod",
+        "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+        "filename": "caller_mod.py",
+        "source_utf8": "def hello(): return 'world'\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "run_tests",
+          "symbol": "",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed"
+        },
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.1.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.2",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "owner_sha256": "1851390602bc8cab842f32d234070521dbc851266926cb26945e0e93c9196006",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "test_sha256": "1851390602bc8cab842f32d234070521dbc851266926cb26945e0e93c9196006",
+      "kind": "import_module",
+      "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+      "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "decision_mod",
+        "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+        "filename": "decision_mod.py",
+        "source_utf8": "def branch_fn(val):\n    if val > 0:\n        return 1\n    return 0\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.2.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.3",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix1.3.closeout",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "compile",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.4",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "afa2f1d754d1958ea71f8a584dd5c2cd2a06bcb83a339601b459ca460e13625c",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix1.4.closeout",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "exec",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.5",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "compile",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.5.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.6",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "exec",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.6.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.7",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "compile",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.7.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.8",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "exec",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.8.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.9",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "compile",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.9.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix8.10",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "6e9b6889b355da86fb7ca2a1236fdb4b1c8269318bb4e7192258056805a604a2",
+      "kind": "exec",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "650d0f0a9eec7481b073dd25e78ce66f11dcfeb83877b0365ff3a969ae223019"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix1.10.closeout"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.1",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "owner_sha256": "516981e01e0cfec3cbf342cdfb1862eaff95628f2acbbc1f937ccceddfc1b847",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "test_sha256": "516981e01e0cfec3cbf342cdfb1862eaff95628f2acbbc1f937ccceddfc1b847",
+      "kind": "import_module",
+      "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+      "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "caller_mod",
+        "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+        "filename": "caller_mod.py",
+        "source_utf8": "def hello(): return 'world'\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "run_tests",
+          "symbol": "",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed"
+        },
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.1"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.2",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "owner_sha256": "81e41dfa7ae33fa137526ecf377b914d39cfd8dc67a784bc96d765ea5178d143",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "test_sha256": "81e41dfa7ae33fa137526ecf377b914d39cfd8dc67a784bc96d765ea5178d143",
+      "kind": "import_module",
+      "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+      "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "decision_mod",
+        "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+        "filename": "decision_mod.py",
+        "source_utf8": "def branch_fn(val):\n    if val > 0:\n        return 1\n    return 0\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.2"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.3",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "a56d4051943eacadebed0f1781b5e60e33ecae894ba2f8c4a4a53b3e94da424b",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "a56d4051943eacadebed0f1781b5e60e33ecae894ba2f8c4a4a53b3e94da424b",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix8.3",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "compile",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.4",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "a56d4051943eacadebed0f1781b5e60e33ecae894ba2f8c4a4a53b3e94da424b",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "a56d4051943eacadebed0f1781b5e60e33ecae894ba2f8c4a4a53b3e94da424b",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix8.4",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "exec",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.5",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "kind": "compile",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.5"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.6",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "kind": "exec",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.6"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.7",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "kind": "compile",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.7"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.8",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "kind": "exec",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.8"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.9",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "kind": "compile",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.9"
+    },
+    {
+      "id": "pr26.staging.contract1.fix9.10",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "b614a0d068d03b0271bb8d1b39701a4617281fd972178fca393478614c41025b",
+      "kind": "exec",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "109e6c0ae86189ad0da2d5da82386136f3bbde2aa3a2af8e0acaf85756a77412"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix8.10"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.1",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "owner_sha256": "7883b3ecaa82bfc25af2953274e4eb57d1b037870a1103c0b7999b7e1b9222cc",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child.unit.test.py",
+      "test_sha256": "7883b3ecaa82bfc25af2953274e4eb57d1b037870a1103c0b7999b7e1b9222cc",
+      "kind": "import_module",
+      "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+      "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "caller_mod",
+        "symbol": "ChildCoverageSessionUnitTests.test_run_pytest_with_coverage_default_caller_path_and_reporting.fake_run_pytest",
+        "filename": "caller_mod.py",
+        "source_utf8": "def hello(): return 'world'\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "b5c77262ecad33e02c3dc81331e9dcfb88ffa3dc73739543f8e7f23b7f4e46ae"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "run_tests",
+          "symbol": "",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed"
+        },
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.1"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.2",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "owner_sha256": "c1df6c4b2f0762ca42442489e23a84946e8982017c49a47fce29fd942bc10efd",
+      "test": "src/test/unit/python/tools/test_runner_coverage_child_export.unit.test.py",
+      "test_sha256": "c1df6c4b2f0762ca42442489e23a84946e8982017c49a47fce29fd942bc10efd",
+      "kind": "import_module",
+      "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+      "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "decision_mod",
+        "symbol": "WorkDRegressionUnitTests.test_regr1_nested_coverage_preserves_branch_arcs",
+        "filename": "decision_mod.py",
+        "source_utf8": "def branch_fn(val):\n    if val > 0:\n        return 1\n    return 0\n",
+        "chain": [
+          {
+            "kind": "import_module",
+            "fingerprint": "ab8937d009a4ada3add574668aae14020da1105fa1483448a6253019648e8038"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.2"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.3",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "f5975dd2f892300460e03aff601f218f7c769df5a062d66258088a67abb05b0a",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "f5975dd2f892300460e03aff601f218f7c769df5a062d66258088a67abb05b0a",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix9.3",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "compile",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.4",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "f5975dd2f892300460e03aff601f218f7c769df5a062d66258088a67abb05b0a",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "f5975dd2f892300460e03aff601f218f7c769df5a062d66258088a67abb05b0a",
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "pr26.staging.contract1.fix9.4",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "780aa541420a95000ffc9c4c9924f7e3c54d2168b6faf18588c0eecfcb7c820a"
+        }
+      ],
+      "kind": "exec",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.5",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "kind": "compile",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.5"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.6",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "kind": "exec",
+      "symbol": "test_runner_coverage_reports_direct_invocation",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "direct_report",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_runner_coverage_reports_direct_invocation",
+        "filename": "mod.py",
+        "source_utf8": "a = 1\nb = 2\n",
+        "suffix": "",
+        "branch": false,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.6"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.7",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "kind": "compile",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.7"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.8",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "kind": "exec",
+      "symbol": "test_export_write_failure_is_not_silently_discarded",
+      "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "export_refusal",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_export_write_failure_is_not_silently_discarded",
+        "filename": "sample.py",
+        "source_utf8": "value = 1\n",
+        "suffix": "",
+        "branch": null,
+        "namespace": "{}",
+        "executed_lines": [],
+        "missing_lines": [],
+        "executed_branches": [],
+        "missing_branches": [],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3b76848fb5fa45b27cc964bb01d2b0f1f2afe112e23a44005e642552d6f57f99"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "5aad920dfbc3ed2970c1704c2c88b9c262a01b215547092ee08794139925a039"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.8"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.9",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "kind": "compile",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.9"
+    },
+    {
+      "id": "pr26.staging.contract1.fix10.10",
+      "owner": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "owner_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "test": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
+      "test_sha256": "c7115258207b72c434d7ea0c731fcf0f5ff5d0106822d7e4098dbb2da9fbbc3e",
+      "kind": "exec",
+      "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+      "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "uncovered_branch",
+        "temporary_root": "pytest.tmp_path",
+        "symbol": "test_raw_coverage_export_preserves_uncovered_branch",
+        "filename": "sample.py",
+        "source_utf8": "def choose(flag):\n    if flag:\n        return 1\n    return 2\n",
+        "suffix": "choose(True)\n",
+        "branch": true,
+        "namespace": "namespace",
+        "executed_lines": [
+          3
+        ],
+        "missing_lines": [
+          4
+        ],
+        "executed_branches": [
+          [
+            2,
+            3
+          ]
+        ],
+        "missing_branches": [
+          [
+            2,
+            4
+          ]
+        ],
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "786098855eaafc0f013b2fe7be53195682f3b511262177db4a52ed116142668a"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "6d7b85cc0d025499ff984c522badab3c216f26ee688c75936ce147519180806d"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_reports",
+          "symbol": "",
+          "path": "tools/runner_coverage_reports.py",
+          "sha256": "24b52a67f1c53600bbde3ef8eb4a533eb4bcb7bdd465a49f5147db2f4cac5c91"
+        },
+        {
+          "module": "test_report",
+          "symbol": "write_html_report",
+          "path": "tools/test_report.py",
+          "sha256": "d5d6b71b00d28fc6dedb0f07d85691aea414a4b5d9946f4f5d3af91d44987f8f"
+        }
+      ],
+      "supersedes": "pr26.staging.contract1.fix9.10"
+    },
+    {
+      "id": "v002.fix10.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "982d3b9e53a9ce6ef34eae9ec4d94b566368d72babe377ad83726e2921549d03",
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "982d3b9e53a9ce6ef34eae9ec4d94b566368d72babe377ad83726e2921549d03",
+      "kind": "run_module",
+      "symbol": "CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "v002.revise39.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
+    },
+    {
+      "id": "v002.fix10.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "982d3b9e53a9ce6ef34eae9ec4d94b566368d72babe377ad83726e2921549d03",
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "982d3b9e53a9ce6ef34eae9ec4d94b566368d72babe377ad83726e2921549d03",
+      "kind": "run_module",
+      "symbol": "CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "recipe": "literal_module_entry",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "supersedes": "v002.revise39.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "symbol": "",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759"
+        }
+      ]
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",
@@ -24294,6 +26609,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/arch7f_release_wheel.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -35542,6 +37866,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_atomicity.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX2 coverage registration atomicity and diagnostic regression suite.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
       "rationale": "REVISE41 closed retention or runner measurement contract; immediate governance.",
       "root": "test_owners",
@@ -35580,6 +37913,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_runner_coverage_conformance.unit.test.py",
       "rationale": "PR26-STAGING-QUAL6-FIX1 measured-execution repair; immediate existing quality governance, no waiver.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_diagnostics.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 coverage diagnostic and forensic regression suite.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_forensics.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 coverage shard forensic and streaming digest regression suite.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_runner_coverage_observation.unit.test.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and PID lifecycle regression suite.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -35940,6 +38300,15 @@
       "maintained_executable": true,
       "path": "tools/ci/gate_contract_runtime.py",
       "rationale": "REVISE33 gate copy-set responsibility and contract tests; clean under unchanged profile.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/generate_coverage_7154_evidence.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization and causal evidence generator.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -36505,6 +38874,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/ci/verify_coverage_7154_evidence.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 deterministic 7.15.4 runtime characterization verifier.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/ci/workflow_model.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -36685,8 +39063,44 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/runner_coverage_container.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX9-R1 container PID observation seam and header parsing.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_coverage_diagnostics.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX3 cohesive diagnostic snapshotting and forensics extraction.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/runner_coverage_execution.py",
       "rationale": "REVISE13 cohesive extraction from tools/runner_coverage.py; inherited language-confidence and complete profile obligations preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_coverage_forensics.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX7 bounded SQLite anomalous shard forensics reader.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_coverage_observer.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX6-R1 child process observation and invocation registry tracking.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -36705,6 +39119,15 @@
       "maintained_executable": true,
       "path": "tools/runner_coverage_reports.py",
       "rationale": "REVISE13 cohesive extraction from tools/runner_coverage.py; inherited language-confidence and complete profile obligations preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_coverage_template.py",
+      "rationale": "REPOMAP-PUBLIC-V002-FIX9-R1 runner coverage bootstrap template generation.",
       "root": "tools",
       "status": "active_tool"
     },

@@ -339,3 +339,4 @@ def verify_executor_evidence(entry, evidence: ExecutorEvidence) -> None:
     )
     if evidence.result_digest != expected_result_digest:
         raise ExecutorEvidenceError("result digest differs from bound evidence")
+# v0.0.2 dynamic target re-attestation.

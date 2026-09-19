@@ -14,8 +14,13 @@ if str(TOOLS_CI) not in sys.path:
 from ci.workflow_model import load_workflow  # noqa: E402
 
 
-STATIC_WORKFLOW = ROOT / ".github/workflows/repomap-static-analysis.yml"
+RELEASE_WORKFLOW = ROOT / ".github/workflows/repomap-release-qualification.yml"
 RETIRED_WORKFLOWS = (
+    ROOT / ".github/workflows/repomap-static-analysis.yml",
+    ROOT / ".github/workflows/repomap-unit-tests.yml",
+    ROOT / ".github/workflows/repomap-staging-gate.yml",
+    ROOT / ".github/workflows/repomap-main-system-gate.yml",
+    ROOT / ".github/workflows/repomap-main-source-policy.yml",
     ROOT / ".github/workflows/async14-windows-runtime.yml",
     ROOT / ".github/workflows/async15-windows-startup.yml",
     ROOT / ".github/workflows/async16-desired-state.yml",
@@ -31,20 +36,19 @@ PRESERVED_WINDOWS_ARTIFACTS = (
 
 
 def test_repomap_static_analysis_workflow_contracts() -> None:
-    workflow = load_workflow(STATIC_WORKFLOW)
-    assert workflow.name == "repomap-static-analysis"
-    assert set(workflow.jobs) == {"repomap-static-analysis"}
-    job = workflow.jobs["repomap-static-analysis"]
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    assert workflow.name == "repomap-release-qualification"
+    assert "pre-review-static" in workflow.jobs
+    job = workflow.jobs["pre-review-static"]
     assert job["runs-on"] == "ubuntu-latest"
-    assert job["timeout-minutes"] == 25
-    assert set(workflow.triggers) == {"pull_request", "workflow_dispatch"}
+    assert job["timeout-minutes"] == 40
+    assert job["needs"] == ["source-and-export-policy"]
     pull_request = workflow.triggers["pull_request"]
-    assert pull_request["branches"] == ["staging"]
+    assert pull_request["branches"] == ["main"]
     assert sorted(pull_request["types"]) == [
         "opened", "ready_for_review", "reopened", "synchronize"
     ]
-    assert "src/main/go/**" in pull_request["paths"]
-    assert "docs/**" in pull_request["paths"]
+    assert "paths" not in pull_request
     assert workflow.permissions == {"contents": "read"}
     assert workflow.document["concurrency"]["cancel-in-progress"] is True
 
@@ -52,19 +56,19 @@ def test_repomap_static_analysis_workflow_contracts() -> None:
         name, separator, sha = action.partition("@")
         assert separator and re.fullmatch(r"[0-9a-f]{40}", sha), name
     checkout = next(
-        step for step in workflow.steps()
+        step for step in job["steps"]
         if str(step.get("uses", "")).startswith("actions/checkout@")
     )
     assert checkout["with"]["fetch-depth"] == 0
     assert checkout["with"]["persist-credentials"] is False
 
-    commands = "\n".join(workflow.run_commands())
+    commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s)
     assert commands.count("tools/ci/bootstrap_pre_review.py") == 1
     assert commands.count("tools/ci/run_pre_review.py") == 1
     assert 'pip install --editable ".[static-analysis]"' not in commands
     assert '"${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python"' in commands
     assert '--tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"' in commands
-    assert "continue-on-error" not in STATIC_WORKFLOW.read_text(encoding="utf-8")
+    assert "continue-on-error" not in RELEASE_WORKFLOW.read_text(encoding="utf-8")
     for forbidden in ("docker", "postgres", "pytest", "run_tests.py", "--suite"):
         assert forbidden not in commands.lower()
 

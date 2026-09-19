@@ -23,9 +23,7 @@ def recorded_run_consistency_payload(
     latest_run_status: str | None,
     latest_run_finished_at: str | None,
 ) -> dict[str, Any]:
-    complete_without_finished_at = (
-        latest_run_status == "complete" and latest_run_finished_at is None
-    )
+    complete_without_finished_at = latest_run_status == "complete" and latest_run_finished_at is None
     if complete_without_finished_at:
         return {
             "complete_without_finished_at": True,
@@ -50,9 +48,7 @@ class OpsPsqlExecution:
     strategy: str = "host"
 
     def full_command(
-        self,
-        psql_args: Sequence[str],
-        tail_args: Sequence[str],
+        self, psql_args: Sequence[str], tail_args: Sequence[str],
     ) -> list[str]:
         return [self.command, *self.args_prefix, *psql_args, *tail_args]
 
@@ -81,6 +77,8 @@ class OpsRefreshGraphResult:
     warnings: tuple[Mapping[str, Any], ...] = ()
     diagnostics: tuple[Mapping[str, Any], ...] = ()
     error: str | None = None
+    publication_state: str = "not_started"
+    error_category: str | None = None
 
     def to_jsonable(self) -> dict[str, Any]:
         return {
@@ -93,6 +91,8 @@ class OpsRefreshGraphResult:
             "root_path_display": self.root_path_display,
             "root_path_expanded": self.root_path_expanded,
             "result": self.result,
+            "publication_state": self.publication_state,
+            "error_category": self.error_category,
             "started_at": self.started_at,
             "finished_at": self.finished_at,
             "repository_id": self.repository_id,

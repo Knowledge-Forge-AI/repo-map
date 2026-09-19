@@ -81,7 +81,9 @@
       ],
       "phase": "PR26-FAST-FIX1",
       "status_path": "docs/status/2026/09/02/00834-pr26-fast-fix1-repair-initial-pr-fast-qualification-and-hosted-budgets-exit.md",
-      "reason": "Classify the complete portable-artifact package and admit only clean durable contract and extracted helper modules into retained scope while preserving transitional publisher and planned control ownership."
+      "reason": "Classify the complete portable-artifact package and admit only clean durable contract and extracted helper modules into retained scope while preserving transitional publisher and planned control ownership.",
+      "source_commit": "268872c59e30a0923cdd24320eef3dbda89d04cf",
+      "source_manifest_sha256": "ded13c132763d45b9f50b708fdd6d8c8ddfb3b994d7cd48ef1d2732720f57358"
     },
     {
       "old_ownership_manifest_sha256": "295963de3ea58cc6d7eaf14683e27197854b8280cf917ae17fe7ebef6cc05e5d",
@@ -110,7 +112,9 @@
       ],
       "phase": "PR26-FAST-FIX2",
       "status_path": "docs/status/2026/09/02/00835-pr26-fast-fix2-disposition-canonicalization-facade-inventory-drift-exit.md",
-      "reason": "Keep the Nix multi-source helper package-private and restore the characterized package-root public inventory."
+      "reason": "Keep the Nix multi-source helper package-private and restore the characterized package-root public inventory.",
+      "source_commit": "9e528c8f27e6fde5f5f75748932f9b6216af82b5",
+      "source_manifest_sha256": "295963de3ea58cc6d7eaf14683e27197854b8280cf917ae17fe7ebef6cc05e5d"
     },
     {
       "old_ownership_manifest_sha256": "295963de3ea58cc6d7eaf14683e27197854b8280cf917ae17fe7ebef6cc05e5d",
@@ -229,7 +233,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE7",
       "status_path": "docs/status/2026/09/06/00850-pr26-staging-fix5-revise7-expand-python-ratchets-and-ci-qualification-exit.md",
-      "reason": "Admit clean maintained portable artifact and storage staging contract modules into retained Python scope under existing non-regression ratchets."
+      "reason": "Admit clean maintained portable artifact and storage staging contract modules into retained Python scope under existing non-regression ratchets.",
+      "source_commit": "9e528c8f27e6fde5f5f75748932f9b6216af82b5",
+      "source_manifest_sha256": "295963de3ea58cc6d7eaf14683e27197854b8280cf917ae17fe7ebef6cc05e5d"
     },
     {
       "old_ownership_manifest_sha256": "882a79e554b91b44455021638a093abf13f946edd6b17a9873cfb4315e900253",
@@ -798,7 +804,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE9",
       "status_path": "docs/status/2026/09/07/00852-pr26-staging-fix5-revise9-broad-independent-coverage-and-python-ratchet-expansion-exit.md",
-      "reason": "Enroll 62 clean, high-confidence maintained product modules across storage, ops, coordinator, CLI, server schemas, extractors, and graph readback into retained Python ratchets under non-regression lineage rules."
+      "reason": "Enroll 62 clean, high-confidence maintained product modules across storage, ops, coordinator, CLI, server schemas, extractors, and graph readback into retained Python ratchets under non-regression lineage rules.",
+      "source_commit": "c3058ec3d8eaa341d18204d7a8d7cf16087a7a89",
+      "source_manifest_sha256": "882a79e554b91b44455021638a093abf13f946edd6b17a9873cfb4315e900253"
     },
     {
       "old_ownership_manifest_sha256": "4555ae63468ccfb52c199489331d2703c630850e464fde5b09184be055e2ab9d",
@@ -1250,7 +1258,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE15",
       "status_path": "docs/status/2026/09/08/00858-pr26-staging-fix5-revise15-maintenance-candidate-exit.md",
-      "reason": "Cumulative preserved REVISE12 through REVISE15 clean admissions; amends only the uncommitted transition. Four committed transitions remain unchanged. No added quality debt or removed retained protection."
+      "reason": "Cumulative preserved REVISE12 through REVISE15 clean admissions; amends only the uncommitted transition. Four committed transitions remain unchanged. No added quality debt or removed retained protection.",
+      "source_commit": "0ef3206476d32d083bbf6e491ada8496b192a04f",
+      "source_manifest_sha256": "4555ae63468ccfb52c199489331d2703c630850e464fde5b09184be055e2ab9d"
     },
     {
       "old_ownership_manifest_sha256": "167c9342cb3a66e8677068a149c5a1789f4e647792efe81894a8ef0ae4f53634",
@@ -1270,7 +1280,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE16",
       "status_path": "docs/status/2026/09/08/00859-pr26-staging-fix5-revise16-maintenance-candidate-exit.md",
-      "reason": "Dependency-neutral configuration serialization protocols preserve retained ownership with zero added debt and no existing allowance increases."
+      "reason": "Dependency-neutral configuration serialization protocols preserve retained ownership with zero added debt and no existing allowance increases.",
+      "source_commit": "f6978cb58fdbc94d79608def86ff491caab3bd25",
+      "source_manifest_sha256": "167c9342cb3a66e8677068a149c5a1789f4e647792efe81894a8ef0ae4f53634"
     },
     {
       "old_ownership_manifest_sha256": "e83ecdce41e825cd55c1007facb8c6a346ca16c2dab04d6198e7e0323359a2aa",
@@ -1317,7 +1329,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE17",
       "status_path": "docs/status/2026/09/08/00860-pr26-staging-fix5-revise17-maintenance-candidate-exit.md",
-      "reason": "Dependency-independent clean admissions reconcile existing retained-Python forecasts without new debt or loss of prior protection."
+      "reason": "Dependency-independent clean admissions reconcile existing retained-Python forecasts without new debt or loss of prior protection.",
+      "source_commit": "81a66a9eff012bb1ce2098ef2f95498ebfa9ddb0",
+      "source_manifest_sha256": "e83ecdce41e825cd55c1007facb8c6a346ca16c2dab04d6198e7e0323359a2aa"
     },
     {
       "old_ownership_manifest_sha256": "47d95919d3e3e7a507ffd635343b515192b4f352dff7f49919e867fbc608a452",
@@ -1742,7 +1756,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE19",
       "status_path": "docs/status/2026/09/08/00861-pr26-staging-fix5-revise19-maintenance-candidate-exit.md",
-      "reason": "Zero-new-debt clean product admissions preserve specific predecessor rationale and pending maintenance obligations"
+      "reason": "Zero-new-debt clean product admissions preserve specific predecessor rationale and pending maintenance obligations",
+      "source_commit": "efcd90ebaadd1a259993f7b5d54b379ef0fd93b4",
+      "source_manifest_sha256": "47d95919d3e3e7a507ffd635343b515192b4f352dff7f49919e867fbc608a452"
     },
     {
       "old_ownership_manifest_sha256": "cd0666bb26164d4b87b37cd70a80b1284d56f8820178b5f62e0557b31dbf46f2",
@@ -2284,7 +2300,9 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE20",
       "status_path": "docs/status/2026/09/08/00862-pr26-staging-fix5-revise20-maintenance-candidate-exit.md",
-      "reason": "Admit only clean product owners after cohesive decomposition and precise typing; preserve pending forecasts and all historical ratchet reductions."
+      "reason": "Admit only clean product owners after cohesive decomposition and precise typing; preserve pending forecasts and all historical ratchet reductions.",
+      "source_commit": "38ac9f6694b7de92045baf8694e3605a87eb85dd",
+      "source_manifest_sha256": "cd0666bb26164d4b87b37cd70a80b1284d56f8820178b5f62e0557b31dbf46f2"
     },
     {
       "old_ownership_manifest_sha256": "8d2f4b077210c2c69f515687a8f0625b7554b9b420ff90330f4e34264f54802f",
@@ -3249,8 +3267,10 @@
       ],
       "phase": "PR26-STAGING-FIX5-REVISE21",
       "reason": "Admit maintained product modules only after zero-added-debt cleanup; preserve all prior protection and append-only forecast evidence.",
-      "status_path": "docs/status/2026/09/09/00863-pr26-staging-fix5-revise21-maintenance-candidate-exit.md"
+      "status_path": "docs/status/2026/09/09/00863-pr26-staging-fix5-revise21-maintenance-candidate-exit.md",
+      "source_commit": "9d00313373f260b7b02af2622e468e0e6ad677db",
+      "source_manifest_sha256": "8d2f4b077210c2c69f515687a8f0625b7554b9b420ff90330f4e34264f54802f"
     }
   ],
-  "schema": "repomap-retained-python-scope-transitions-v1"
+  "schema": "repomap-retained-python-scope-transitions-v2"
 }

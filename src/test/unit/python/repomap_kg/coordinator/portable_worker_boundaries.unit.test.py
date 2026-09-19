@@ -245,6 +245,42 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
         self.assertEqual(pw._execution_error_category(FileNotFoundError("no file")), "source_capture")
         self.assertEqual(pw._execution_error_category(RuntimeError("semantic")), "semantic_workload")
 
+    def test_classify_worker_cause_and_emit_stderr(self):
+        from repomap_kg.coordinator._portable_semantic_adapter import PortableExecutionError
+        from repomap_kg.extractors.languages.go_helper import GoHelperUnavailableError
+        from repomap_kg.extractors.languages.go_protocol import GoProtocolError
+        from repomap_kg.graph.multi_source_capture import MultiSourceCaptureError
+
+        err1 = PortableExecutionError("source_capture")
+        err1.__cause__ = MultiSourceCaptureError("helper missing")
+        err1.__cause__.__cause__ = GoHelperUnavailableError("Go parser helper is unavailable")
+        self.assertEqual(pw._classify_worker_cause(err1), "helper_unavailable")
+
+        err2 = PortableExecutionError("source_capture")
+        err2.__cause__ = GoProtocolError("helper protocol error")
+        self.assertEqual(pw._classify_worker_cause(err2), "helper_protocol_violation")
+
+        err3 = PortableExecutionError("source_capture")
+        err3.__cause__ = PermissionError("portable worker runtime authority denied")
+        self.assertEqual(pw._classify_worker_cause(err3), "helper_launch_denied")
+
+        err_fs = PortableExecutionError("source_capture")
+        err_fs.__cause__ = PermissionError("portable worker filesystem authority denied")
+        self.assertEqual(pw._classify_worker_cause(err_fs), "filesystem_capture_denied")
+
+        err_mut = PortableExecutionError("source_capture")
+        err_mut.__cause__ = OSError("file changed during capture")
+        self.assertEqual(pw._classify_worker_cause(err_mut), "source_mutation_failure")
+
+        err4 = PortableExecutionError("source_unavailable")
+        err4.__cause__ = MultiSourceCaptureError("source missing", category="source_unavailable")
+        self.assertEqual(pw._classify_worker_cause(err4), "source_capture_source_unavailable")
+
+        stderr_buf = io.StringIO()
+        with patch.object(pw.sys, "stderr", stderr_buf):
+            pw._emit_failure_stderr(err3)
+        self.assertEqual(stderr_buf.getvalue(), "refresh-failure:portable-worker:helper_launch_denied\n")
+
 
 if __name__ == "__main__":
     unittest.main()

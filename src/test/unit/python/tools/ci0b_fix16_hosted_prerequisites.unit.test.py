@@ -7,7 +7,7 @@ import re
 import pytest
 
 ROOT = Path(__file__).resolve().parents[5]
-WORKFLOW = ROOT / ".github/workflows/repomap-staging-gate.yml"
+WORKFLOW = ROOT / ".github/workflows/repomap-release-qualification.yml"
 SANDBOX = ROOT / "tools/test_sandbox.py"
 CONTAINER_PAIR_TEST = (
     ROOT
@@ -98,10 +98,10 @@ def _assert_image_contract(tree: ast.Module) -> None:
 
 def test_hosted_gate_routes_container_pair_images_to_sandbox_inner_daemon() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    runner_offset = workflow.index("python3 tools/run_tests.py")
-    runner_command = workflow[runner_offset : workflow.index("# merge_authorized")]
+    staging_offset = workflow.index("--suite staging")
+    staging_command = workflow[staging_offset : workflow.index("ci-staging-report")]
 
-    assert "--sandbox" in runner_command
+    assert "--sandbox" in staging_command
     assert re.search(r"\bdocker\s+pull\b", workflow) is None
     _assert_image_contract(ast.parse(SANDBOX.read_text(encoding="utf-8")))
 

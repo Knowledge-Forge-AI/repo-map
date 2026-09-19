@@ -31,8 +31,7 @@ def capability(root: Path, config_path: Path) -> RefreshCapability:
         postgres_password="test-only", executable_search_path=search_path_for(psql_path),
         source_generation="sg1:source", config_generation="cg1:config",
         extractor_generation="eg1:extractor", canonicalizer_generation="kg1:canonicalizer",
-        coordinator_instance_id="instance-refresh-1", singleton_fencing_epoch=7,
-        graph_lease_fencing_epoch=7,
+        coordinator_instance_id="instance-refresh-1", singleton_fencing_epoch=7, graph_lease_fencing_epoch=7,
     )
 
 
@@ -191,10 +190,8 @@ def test_successful_refresh_maps_to_committed_protocol_result(tmp_path: Path) ->
         files=3, observations=5, run_id=7,
     )
     terminal = refresh_terminal(target, result)
-    assert (
-        terminal["message_type"], terminal["status"], terminal["publication_state"],
-        terminal["latest_run_identity"], terminal["files"], terminal["observations"],
-    ) == ("result", "succeeded", "committed", "run-7", 3, 5)
+    assert (terminal["message_type"], terminal["status"], terminal["publication_state"],
+            terminal["latest_run_identity"], terminal["files"], terminal["observations"]) == ("result", "succeeded", "committed", "run-7", 3, 5)
 
 
 def test_failed_refresh_never_infers_rollback_or_success(tmp_path: Path) -> None:
@@ -207,6 +204,10 @@ def test_failed_refresh_never_infers_rollback_or_success(tmp_path: Path) -> None
     assert (terminal["message_type"], terminal["status"], terminal["publication_state"], terminal["latest_run_identity"]) == (
         "error", "failed", "commit_unknown", None,
     )
+    unstarted = SimpleNamespace(result="failure", started_at="2026-07-13T12:00:00Z",
+                                finished_at="2026-07-13T12:00:01Z", publication_state="not_started", error_category="worker_crash")
+    term = refresh_terminal(target, unstarted)
+    assert (term["publication_state"], term["error_category"]) == ("not_started", "worker_crash")
 
 
 def test_execute_refresh_delegates_once_to_existing_forced_full_operation(tmp_path: Path) -> None:
@@ -367,14 +368,13 @@ def test_runner_preserves_typed_source_failure_before_worker_launch(tmp_path: Pa
 
 
 def test_runner_reports_psql_authority_failure_before_worker_launch(tmp_path: Path) -> None:
-    psql_path = tmp_path / "psql"
-    psql_path.write_text("not executable", encoding="utf-8")
-    psql_path.chmod(0o644)
-    authority = _authority(tmp_path, _cfg(tmp_path), psql_path=psql_path)
-    claim = _claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=7)
+    psql = tmp_path / "psql"
+    psql.write_text("not executable", encoding="utf-8")
+    psql.chmod(0o644)
+    authority = _authority(tmp_path, _cfg(tmp_path), psql_path=psql)
     runner = build_refresh_worker_runner(lambda _graph_id: authority, tmp_path, {})
     with patch("repomap_kg.coordinator.refresh_adapter.run_refresh_worker") as launch:
-        terminal = runner(claim, threading.Event())
+        terminal = runner(_claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=7), threading.Event())
     launch.assert_not_called()
     assert (
         terminal["publication_state"], terminal["error_category"],
@@ -385,7 +385,6 @@ def test_runner_reports_psql_authority_failure_before_worker_launch(tmp_path: Pa
 
 def test_runner_preserves_distinct_graph_claim_epoch(tmp_path: Path) -> None:
     authority = _authority(tmp_path, _cfg(tmp_path))
-    claim = _claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=101)
     worker_result = SimpleNamespace(
         terminal={"status": "succeeded"}, protocol_error=None, process_timed_out=False,
         heartbeat_timed_out=False, synthesized_terminal=False, waited=True, process_group_cleaned=True,
@@ -395,6 +394,6 @@ def test_runner_preserves_distinct_graph_claim_epoch(tmp_path: Path) -> None:
         patch("repomap_kg.coordinator.refresh_adapter.create_refresh_capability", return_value=tmp_path / "capability.json") as create,
         patch("repomap_kg.coordinator.refresh_adapter.run_refresh_worker", return_value=worker_result),
     ):
-        runner(claim, threading.Event())
+        runner(_claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=101), threading.Event())
     created = create.call_args.args[1]
     assert (created.singleton_fencing_epoch, created.graph_lease_fencing_epoch) == (7, 101)

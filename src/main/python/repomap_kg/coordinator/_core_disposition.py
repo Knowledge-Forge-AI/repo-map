@@ -246,10 +246,14 @@ class CoreDispositionMixin:
                 self._release_terminal_lease(claim)
                 return "cancelled"
             return "ownership_lost"
+        effective_diagnostic = diagnostic_summary
+        if supervised_category == "worker_crash" and effective_diagnostic is None:
+            effective_diagnostic = "worker_crash:unproved_termination"
         if not self._store.mark_reconciliation_required(
             claim,
             expected_state=expected,
             category=str(supervised_category),
+            diagnostic_summary=effective_diagnostic,
         ):
             return "ownership_lost"
         if termination_proved and not self._store.mark_attempt_terminated(
@@ -257,6 +261,7 @@ class CoreDispositionMixin:
             process_cleanup_proved=True,
             reconciler_instance_id=self._instance_id,
             reconciler_epoch=self._require_started(),
+            diagnostic_summary=effective_diagnostic,
         ):
             return "ownership_lost"
         return self._reconcile_current(claim)

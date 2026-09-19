@@ -379,8 +379,9 @@ flowchart TB
 `src/main/python/repomap_kg/runtime/commands.py::render_compose_yaml` creates
 the current two-service topology. Its RepoMap service runs `server serve`, and
 `src/main/python/repomap_kg/server/http.py::RepoMapLocalRequestHandler`
-implements `GET /livez`, `GET /healthz`, `GET /readyz`, and `GET /status`. It
-has no MCP request method.
+implements `GET /livez`, `GET /healthz`, `GET /readyz`, and `GET /status`. On the
+main thread, `serve_local_http` handles `SIGTERM` gracefully by closing the server
+and exiting 0. It has no MCP request method.
 `src/main/python/repomap_kg/server/mcp.py::serve_stdio` is the implemented MCP
 transport.
 
