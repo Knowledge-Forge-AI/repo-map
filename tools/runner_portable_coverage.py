@@ -318,6 +318,7 @@ def validate_shard_directory_integrity(
 
             sha256_val, size_val, sqlite_valid = None, -1, False
             measured_files_count, measured_classification = None, None
+            forensics_data: dict[str, Any] | None = None
             forensic_failure_verdict: str | None = None
             if child.is_file():
                 from runner_coverage_diagnostics import compute_streaming_sha256
@@ -341,6 +342,11 @@ def validate_shard_directory_integrity(
                     )
                     if forensics_data is not None:
                         measured_classification = forensics_data.get("classification")
+                        if child_info is None and forensics_data.get("launch_shape"):
+                            child_info = {
+                                "launch_shape": forensics_data["launch_shape"],
+                                "role": "unregistered",
+                            }
 
             snap = snapshot_fn(
                 shard_name=child.name,
@@ -356,9 +362,13 @@ def validate_shard_directory_integrity(
                 test_owner=child_info.get("owner") if child_info else None,
             )
             from runner_coverage_diagnostics import merge_diagnostic_snapshot
+            f_dict = forensics_data or {
+                "observed_total": measured_files_count,
+                "classification": measured_classification,
+            }
             snap = merge_diagnostic_snapshot(
                 snap, child_info=child_info, obs=obs,
-                forensics={"observed_total": measured_files_count, "classification": measured_classification},
+                forensics=f_dict,
                 sqlite_valid=sqlite_valid,
                 forensic_verdict=forensic_failure_verdict,
             )

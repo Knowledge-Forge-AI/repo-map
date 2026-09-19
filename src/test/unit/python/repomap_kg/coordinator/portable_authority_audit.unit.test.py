@@ -239,28 +239,15 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
         )
         term = refresh_terminal(cast(Any, cap), result)
         session = ProtocolSession({"job_id": "job-refresh-1", "attempt": 2})
-        session.accept_worker(
-            {
-                "schema_version": 1,
-                "message_type": "worker_hello",
-                "protocol_versions": [1],
-                "worker_generation": "worker-v1",
-                "capabilities": ["refresh_graph"],
-                "process_nonce": "nonce-test",
-            }
-        )
-        session.accept_coordinator(
-            {
-                "schema_version": 1,
-                "message_type": "job_start",
-                "job_id": "job-refresh-1",
-                "attempt": 2,
-                "job_kind": "refresh_graph",
-                "graph_id": "synthetic-graph",
-                "source_generation": "sg1:test",
-                "config_generation": "cg1:test",
-            }
-        )
+        session.accept_worker({
+            "schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1],
+            "worker_generation": "worker-v1", "capabilities": ["refresh_graph"], "process_nonce": "nonce-test",
+        })
+        session.accept_coordinator({
+            "schema_version": 1, "message_type": "job_start", "job_id": "job-refresh-1",
+            "attempt": 2, "job_kind": "refresh_graph", "graph_id": "synthetic-graph",
+            "source_generation": "sg1:test", "config_generation": "cg1:test",
+        })
         accepted = session.accept_worker(term)
         self.assertEqual(accepted["status"], "failed")
         self.assertEqual(accepted["publication_state"], "not_started")
@@ -299,34 +286,24 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
         fd_denied = os.open(str(denied_fifo), os.O_RDWR | os.O_NONBLOCK)
         try:
             with self.assertRaisesRegex(PermissionError, "filesystem authority denied"):
-                pa._validate_audit_event(
-                    "open", (fd_denied, "wb", -1), self.read_roots, self.write_roots
-                )
+                pa._validate_audit_event("open", (fd_denied, "wb", -1), self.read_roots, self.write_roots)
         finally:
             os.close(fd_denied)
 
     def test_open_event_denies_invalid_or_negative_descriptor(self):
         with self.assertRaisesRegex(PermissionError, "filesystem authority denied"):
-            pa._validate_audit_event(
-                "open", (-1, "rb", -1), self.read_roots, self.write_roots
-            )
+            pa._validate_audit_event("open", (-1, "rb", -1), self.read_roots, self.write_roots)
         with self.assertRaisesRegex(PermissionError, "filesystem authority denied"):
-            pa._validate_audit_event(
-                "open", (99999, "rb", -1), self.read_roots, self.write_roots
-            )
+            pa._validate_audit_event("open", (99999, "rb", -1), self.read_roots, self.write_roots)
 
     def test_open_event_validates_regular_file_descriptor(self):
         read_file = self.read_root / "sample.txt"
         read_file.write_text("hello", encoding="utf-8")
         fd = os.open(str(read_file), os.O_RDONLY)
         try:
-            pa._validate_audit_event(
-                "open", (fd, "r"), self.read_roots, self.write_roots
-            )
+            pa._validate_audit_event("open", (fd, "r"), self.read_roots, self.write_roots)
             with self.assertRaises(PermissionError):
-                pa._validate_audit_event(
-                    "open", (fd, "w"), self.read_roots, self.write_roots
-                )
+                pa._validate_audit_event("open", (fd, "w"), self.read_roots, self.write_roots)
         finally:
             os.close(fd)
 
@@ -352,39 +329,60 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
         helper.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
         helper.chmod(0o755)
 
-        resolved = resolve_go_helper_command(package_root=pkg_root)
+        resolved = resolve_go_helper_command(environment={}, package_root=pkg_root)
         self.assertEqual(resolved, (str(helper.resolve()),))
 
         script = (
-            "import os, sys, subprocess, stat\n"
+            "import os, sys, subprocess\n"
             "from pathlib import Path\n"
             "from repomap_kg.coordinator._portable_authority import install_portable_authority_guard\n"
-            f"install_portable_authority_guard(\n"
-            f"    store_root=Path({str(self.write_root)!r}),\n"
-            f"    workspace_root=Path({str(self.read_root)!r}),\n"
-            f"    code_roots=[Path({str(pkg_root)!r})],\n"
-            f")\n"
-            f"proc = subprocess.Popen([\n"
-            f"    {str(helper.resolve())!r},\n"
-            f"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n"
-            f"proc.communicate()\n"
-            f"assert proc.returncode == 0\n"
-            f"try:\n"
-            f"    subprocess.Popen([sys.executable, '-c', 'pass'], stdin=subprocess.PIPE)\n"
-            f"except PermissionError:\n"
-            f"    pass\n"
-            f"else:\n"
-            f"    raise AssertionError('unauthorized executable was not denied')\n"
+            "from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command\n"
+            f"pkg = Path({str(pkg_root)!r})\n"
+            f"install_portable_authority_guard(store_root=Path({str(self.write_root)!r}), "
+            f"workspace_root=Path({str(self.read_root)!r}), code_roots=[pkg])\n"
+            "cmd = resolve_go_helper_command(environment={}, package_root=pkg)\n"
+            "proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n"
+            "proc.communicate()\n"
+            "assert proc.returncode == 0\n"
+            "try:\n"
+            "    subprocess.Popen([sys.executable, '-c', 'pass'], stdin=subprocess.PIPE)\n"
+            "except PermissionError:\n"
+            "    pass\n"
+            "else:\n"
+            "    raise AssertionError('unauthorized executable was not denied')\n"
         )
-        env = prepare_child_coverage_environment(family="unmeasured")
-        env["PYTHONPATH"] = os.pathsep.join(sys.path)
+        clean_paths = [p for p in sys.path if "coverage" not in Path(p).name]
+        env = prepare_child_coverage_environment(family="unmeasured", extra_env={"PYTHONPATH": os.pathsep.join(clean_paths)})
+        env.pop("REPOMAP_GO_HELPER", None)
         result = subprocess.run(
-            [sys.executable, "-c", script],
-            capture_output=True,
-            text=True,
-            env=env,
+            [sys.executable, "-c", script], capture_output=True, text=True, env=env,
         )
         self.assertEqual(result.returncode, 0, msg=f"Subprocess failed:\n{result.stderr}")
+
+    def test_go_helper_environment_override_precedence(self):
+        from repomap_kg.extractors.languages.go_helper import (
+            HELPER_NAME,
+            platform_tag,
+            resolve_go_helper_command,
+        )
+
+        pkg_root = self.tmp / "pkg_override"
+        bin_dir = pkg_root / "_bin" / platform_tag()
+        bin_dir.mkdir(parents=True)
+        (bin_dir / HELPER_NAME).write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        (bin_dir / HELPER_NAME).chmod(0o755)
+
+        override_dir = self.tmp / "custom_bin"
+        override_dir.mkdir(parents=True)
+        custom_helper = override_dir / "custom-helper"
+        custom_helper.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        custom_helper.chmod(0o755)
+
+        resolved = resolve_go_helper_command(
+            environment={"REPOMAP_GO_HELPER": str(custom_helper.resolve())},
+            package_root=pkg_root,
+        )
+        self.assertEqual(resolved, (str(custom_helper.resolve()),))
 
 
 if __name__ == "__main__":

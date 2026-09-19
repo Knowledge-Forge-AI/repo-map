@@ -174,7 +174,8 @@ class TestRunnerCoverageForensics(unittest.TestCase):
         self.assertEqual(second_merge.failure_reason, "explicit_zero_hits")
 
     def _create_sample_shard(
-        self, path: Path, *, schema_version: int = 7, file_count: int = 1
+        self, path: Path, *, schema_version: int = 7, file_count: int = 1,
+        meta: dict[str, str] | None = None,
     ) -> None:
         conn = sqlite3.connect(path)
         try:
@@ -186,6 +187,10 @@ class TestRunnerCoverageForensics(unittest.TestCase):
                     "INSERT INTO file VALUES (?, ?)",
                     (i, str(self.source_root / f"app_{i}.py")),
                 )
+            if meta:
+                conn.execute("CREATE TABLE meta (key text, value text)")
+                for k, v in meta.items():
+                    conn.execute("INSERT INTO meta VALUES (?, ?)", (k, v))
             conn.commit()
         finally:
             conn.close()
@@ -356,6 +361,31 @@ class TestRunnerCoverageForensics(unittest.TestCase):
             self.assertTrue(valid)
             self.assertEqual(count, 1)
             self.assertIsNone(verdict)
+
+    def test_read_anomalous_shard_forensics_extracts_sys_argv_and_launch_shape(self) -> None:
+        shard_path = self.root / ".coverage.test_meta"
+        raw_argv = "['/opt/bin/python3', '-m', 'pytest', 'tests/foo.py']"
+        self._create_sample_shard(shard_path, meta={"sys_argv": raw_argv})
+        valid, count, info, verdict = read_anomalous_shard_forensics(shard_path, self.root)
+        self.assertTrue(valid)
+        self.assertEqual(count, 1)
+        self.assertIsNone(verdict)
+        assert info is not None
+        self.assertEqual(info.get("sys_argv"), "['[path]', '-m', 'pytest', '[path]']")
+        self.assertEqual(info.get("launch_shape"), "-m:pytest")
+
+        rt_shard = self.root / ".coverage.test_rt"
+        rt_argv = "['/opt/bin/python3', '-c', 'from multiprocessing.resource_tracker import main;main(42)']"
+        self._create_sample_shard(rt_shard, meta={"sys_argv": rt_argv})
+        _, _, rt_info, _ = read_anomalous_shard_forensics(rt_shard, self.root)
+        assert rt_info is not None
+        self.assertEqual(rt_info.get("launch_shape"), "cpython:resource_tracker")
+
+        bad_shard = self.root / ".coverage.test_bad"
+        self._create_sample_shard(bad_shard, meta={"sys_argv": "not a valid python literal {{["})
+        _, _, bad_info, _ = read_anomalous_shard_forensics(bad_shard, self.root)
+        assert bad_info is not None
+        self.assertEqual(bad_info.get("launch_shape"), "unparseable_argv")
 
 
 if __name__ == "__main__":

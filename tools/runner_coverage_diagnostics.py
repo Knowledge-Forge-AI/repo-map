@@ -244,7 +244,10 @@ def merge_diagnostic_snapshot(
         ),
         ppid=_first_not_none(c.get("ppid"), obs.ppid if obs else None, snap.ppid),
         launch_shape=_first_not_none(
-            c.get("launch_shape"), obs.launch_shape_hash if obs else None, snap.launch_shape,
+            c.get("launch_shape"),
+            forensics.get("launch_shape") if forensics else None,
+            obs.launch_shape_hash if obs else None,
+            snap.launch_shape,
         ),
         test_owner=_first_not_none(
             c.get("owner"), obs.test_owner_hash if obs else None, snap.test_owner,

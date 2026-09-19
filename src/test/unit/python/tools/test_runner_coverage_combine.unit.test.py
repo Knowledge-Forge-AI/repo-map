@@ -25,8 +25,7 @@ from runner_coverage_execution import execute_shard_combine, validate_shard_file
 
 def run_combine(accumulator, paths=()):
     snapshots: list[dict[str, Any]] = []
-    execute_shard_combine(accumulator, list(paths), coverage,
-                          lambda **fields: fields, snapshots.append)
+    execute_shard_combine(accumulator, list(paths), coverage, lambda **f: f, snapshots.append)
     return snapshots
 
 
@@ -61,21 +60,15 @@ def test_warning_named_coverage_warning_is_not_authentic():
     class CoverageWarning(UserWarning):
         pass
 
-    def combine(**kwargs):
-        warnings.warn("unrelated same name", CoverageWarning)
-
     with pytest.warns(CoverageWarning, match="unrelated same name"):
-        assert run_combine(SimpleNamespace(combine=combine))[0]["file_type"] == "noncoverage_warning"
+        assert run_combine(SimpleNamespace(combine=lambda **kw: warnings.warn("unrelated same name", CoverageWarning)))[0]["file_type"] == "noncoverage_warning"
 
 
 def test_coverage_warning_is_fatal_even_under_ignore_policy():
-    def combine(**kwargs):
-        warnings.warn("corrupt coverage", CoverageWarning)
-
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         with pytest.raises(RuntimeError, match="combine rejected: corrupt coverage"):
-            run_combine(SimpleNamespace(combine=combine))
+            run_combine(SimpleNamespace(combine=lambda **kw: warnings.warn("corrupt coverage", CoverageWarning)))
 
 
 def test_combine_exception_preserves_prior_warning_and_primary_cause():
@@ -88,8 +81,7 @@ def test_combine_exception_preserves_prior_warning_and_primary_cause():
 
     with pytest.warns(ResourceWarning, match="earlier lifecycle"):
         with pytest.raises(RuntimeError, match="combine failed: invalid shard") as raised:
-            execute_shard_combine(SimpleNamespace(combine=combine), [], coverage,
-                                  lambda **fields: fields, snapshots.append)
+            execute_shard_combine(SimpleNamespace(combine=combine), [], coverage, lambda **f: f, snapshots.append)
     assert raised.value.__cause__ is failure
     assert [s["file_type"] for s in snapshots] == ["noncoverage_warning", "combine_error"]
 
@@ -103,16 +95,14 @@ def test_combine_exception_preserves_authentic_warning_evidence():
         raise failure
 
     with pytest.raises(RuntimeError, match="combine failed: invalid shard") as raised:
-        execute_shard_combine(SimpleNamespace(combine=combine), [], coverage,
-                              lambda **fields: fields, snapshots.append)
+        execute_shard_combine(SimpleNamespace(combine=combine), [], coverage, lambda **f: f, snapshots.append)
     assert raised.value.__cause__ is failure
     assert [s["file_type"] for s in snapshots] == ["combine_warning", "combine_error"]
     assert json.loads(snapshots[0]["reader_status"])["lineno"] == 19
 
 
 def test_cleanup_error_preserves_original_combine_failure():
-    original = RuntimeError("combine failure")
-    cleanup = RuntimeError("cleanup failure")
+    original, cleanup = RuntimeError("combine failure"), RuntimeError("cleanup failure")
 
     def combine():
         raise original
@@ -123,8 +113,7 @@ def test_cleanup_error_preserves_original_combine_failure():
     runner = SimpleNamespace(get_data=lambda: SimpleNamespace(close=close))
     with pytest.raises(RuntimeError, match="combine failure") as raised:
         combine_and_reload(runner, combine)
-    assert raised.value is original
-    assert raised.value.__cause__ is cleanup
+    assert raised.value is original and raised.value.__cause__ is cleanup
     assert "cleanup failed" in raised.value.__notes__[0]
 
 
@@ -170,10 +159,8 @@ def test_session_cleanup_settles_remaining_data_and_scratch_after_close_error(tm
     def fail_close(**kwargs):
         raise failure
 
-    session._created_collector = SimpleNamespace(
-        get_data=lambda: SimpleNamespace(close=fail_close))
-    session._combined_runner = SimpleNamespace(
-        get_data=lambda: SimpleNamespace(close=lambda **kwargs: connection.close()))
+    session._created_collector = SimpleNamespace(get_data=lambda: SimpleNamespace(close=fail_close))
+    session._combined_runner = SimpleNamespace(get_data=lambda: SimpleNamespace(close=lambda **kwargs: connection.close()))
     try:
         with pytest.raises(RuntimeError, match="owned close failure") as raised:
             session.cleanup()
@@ -316,34 +303,23 @@ def test_real_nested_session_tracks_and_closes_owned_connections(tmp_path, monke
 
 
 def test_live_caller_shard_containment_rejection(tmp_path: Path):
-    """Exercise live caller shape (ChildCoverageSession.combine) for shard containment."""
     external_dir = tmp_path / "external"
     external_dir.mkdir()
     external_shard = external_dir / ".coverage.external_shard"
     external_shard.write_bytes(b"SQLite format 3\x00" + b"\x00" * 100)
-
-    session_dir = tmp_path / "session"
-    session = ChildCoverageSession(scratch_dir=session_dir, coverage_module=coverage)
+    session = ChildCoverageSession(scratch_dir=tmp_path / "session", coverage_module=coverage)
     session.data_dir.mkdir(parents=True, exist_ok=True)
-
-    # Shard symlink pointing to external directory is rejected by live combine()
     link_shard = session.data_dir / ".coverage.symlink_shard"
     link_shard.symlink_to(external_shard)
-
     with pytest.raises(RuntimeError, match="coverage shard symlink rejected"):
         session.combine()
-
     link_shard.unlink()
     parent_symlink = external_dir / "parent_link"
     parent_symlink.symlink_to(external_shard)
-    fake_runner = SimpleNamespace(
-        get_data=lambda: SimpleNamespace(data_filename=lambda: str(parent_symlink)),
-    )
+    fake_runner = SimpleNamespace(get_data=lambda: SimpleNamespace(data_filename=lambda: str(parent_symlink)))
     with pytest.raises(RuntimeError, match="parent coverage shard is a symlink"):
         session.combine(fake_runner)
-
-    unreg_shard = session.data_dir / ".coverage.unreg_child_123"
-    unreg_shard.write_bytes(b"SQLite format 3\x00" + b"\x00" * 100)
+    (session.data_dir / ".coverage.unreg_child_123").write_bytes(b"SQLite format 3\x00" + b"\x00" * 100)
     with pytest.raises(RuntimeError, match="unregistered coverage shard rejected"):
         session.combine()
 
@@ -354,8 +330,7 @@ def test_scale18_run_worker_scrubs_ambient_coverage_environment(
     import scale18_digest_campaign as campaign
     from scale15_terminal_contracts import FINAL_FAMILY_CODES
 
-    for key in ("COVERAGE_PROCESS_START", "COVERAGE_FILE",
-                "COVERAGE_CHILD_MANIFEST_DIR", "COVERAGE_CHILD_REGISTRATION_TOKEN"):
+    for key in ("COVERAGE_PROCESS_START", "COVERAGE_FILE", "COVERAGE_CHILD_MANIFEST_DIR", "COVERAGE_CHILD_REGISTRATION_TOKEN"):
         monkeypatch.setenv(key, str(tmp_path / key))
     captured: dict[str, str] = {}
     payload = json.dumps({
@@ -376,8 +351,7 @@ def test_scale18_run_worker_scrubs_ambient_coverage_environment(
     monkeypatch.setattr(campaign, "_require_free_space", lambda policy: None)
     campaign._run_worker(("_worker-profile", "--profile", "mixed", "--size", "10"),
                          policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION)
-    assert not any(k.startswith("COVERAGE_") for k in captured)
-    assert "PYTHONPATH" in captured
+    assert not any(k.startswith("COVERAGE_") for k in captured) and "PYTHONPATH" in captured
 
 
 def test_scale18_worker_emits_no_coverage_shards_under_child_session(tmp_path: Path) -> None:
@@ -392,6 +366,32 @@ def test_scale18_worker_emits_no_coverage_shards_under_child_session(tmp_path: P
         assert "COVERAGE_PROCESS_START" in os.environ
         result = campaign._run_worker(("_worker-profile", "--profile", "mixed", "--size", "64"),
                                       policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION)
-        assert result["profile"] == "mixed"
-        assert list(session.data_dir.glob(".coverage*")) == []
+        assert result["profile"] == "mixed" and not list(session.data_dir.glob(".coverage*"))
+    assert session.combine() is None
+
+
+def test_scale20_disk_space_wrapper_under_child_coverage_session(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import os, scale18_digest_campaign as campaign
+    from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command
+
+    free = 15 * 1024**3
+    wrapper = tmp_path / "scale20_worker.py"
+    wrapper.write_text(
+        f"from types import SimpleNamespace\nimport scale18_digest_campaign as c\n"
+        f"c.shutil.disk_usage = lambda _p: SimpleNamespace(free={free})\nraise SystemExit(c.main())\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("TMPDIR", str(tmp_path))
+    monkeypatch.setenv("REPOMAP_GO_HELPER", os.environ.get("REPOMAP_GO_HELPER") or str(resolve_go_helper_command()[0]))
+    monkeypatch.setattr(campaign, "__file__", str(wrapper))
+    monkeypatch.setattr(campaign.shutil, "disk_usage", lambda _p: SimpleNamespace(free=free))
+    session = ChildCoverageSession(coverage_module=coverage, scratch_dir=tmp_path / "session", source_root=campaign.REPO_ROOT, suite="staging")
+    fixture = campaign.REPO_ROOT / "src/test/fixtures/go/module_basic"
+    args = ("_worker-repository", "--root", str(fixture), "--label", "explicit_public_repository")
+    with session:
+        for _ in range(2):
+            res = campaign._run_worker(args, policy=campaign._WorkerResourcePolicy.CI_SAFE_QUALIFICATION)
+            assert isinstance(res.get("family_counts"), dict) and not list(session.data_dir.glob(".coverage*"))
     assert session.combine() is None

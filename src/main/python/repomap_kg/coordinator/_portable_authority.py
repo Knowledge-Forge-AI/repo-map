@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import os
 from pathlib import Path
 import stat
@@ -196,6 +197,36 @@ def _validate_audit_event(
         _require_allowed(destination, write_roots)
 
 
+def _is_anonymous_pipe(fd: int) -> bool:
+    if not isinstance(fd, int) or isinstance(fd, bool) or fd < 0:
+        return False
+    try:
+        st = os.fstat(fd)
+    except OSError:
+        return False
+    if not stat.S_ISFIFO(st.st_mode):
+        return False
+    proc_fd = Path(f"/proc/self/fd/{fd}")
+    try:
+        target = os.readlink(proc_fd)
+        return target.startswith("pipe:[") and target.endswith("]")
+    except (OSError, ValueError):
+        pass
+    if fcntl is not None and hasattr(fcntl, "F_GETPATH"):
+        try:
+            # Darwin kernel invariant: F_GETPATH on anonymous pipes raises EBADF
+            # and st_nlink == 0; named filesystem FIFOs resolve to a path and have st_nlink >= 1.
+            encoded = fcntl.fcntl(fd, fcntl.F_GETPATH, b"\0" * 1024)
+            decoded = os.fsdecode(encoded.split(b"\0", 1)[0])
+            if decoded:
+                return False
+        except OSError as exc:
+            if exc.errno == errno.EBADF and st.st_nlink == 0:
+                return True
+        return False
+    return False
+
+
 def _validate_open(
     args: tuple[object, ...],
     read_roots: tuple[Path, ...],
@@ -207,17 +238,11 @@ def _validate_open(
     if isinstance(target, int) and not isinstance(target, bool):
         if target < 0:
             raise PermissionError("portable worker filesystem authority denied")
-        try:
-            st = os.fstat(target)
-        except OSError:
-            raise PermissionError("portable worker filesystem authority denied") from None
-        if stat.S_ISFIFO(st.st_mode):
-            try:
-                path = _descriptor_path(target)
-            except PermissionError:
-                return
-        else:
-            path = _descriptor_path(target)
+        # Anonymous pipe descriptors (e.g. from approved subprocess pipes) have no filesystem
+        # backing path and cannot access files outside roots; named FIFOs remain bounded by roots.
+        if _is_anonymous_pipe(target):
+            return
+        path = _descriptor_path(target)
     else:
         path = _normalized_path(target, None)
     mode = args[1] if len(args) > 1 else "r"
@@ -273,6 +298,20 @@ def _descriptor_path(raw: object) -> Path:
             pass
     for prefix in ("/proc/self/fd", "/dev/fd"):
         candidate = Path(prefix) / str(raw)
+        try:
+            target = os.readlink(candidate)
+        except OSError:
+            try:
+                resolved = Path(os.path.realpath(candidate))
+            except OSError:
+                continue
+            if resolved != candidate and resolved.is_absolute():
+                return resolved
+            continue
+        if target.startswith(("pipe:[", "socket:[")):
+            continue
+        if os.path.isabs(target):
+            return Path(target)
         try:
             resolved = Path(os.path.realpath(candidate))
         except OSError:
