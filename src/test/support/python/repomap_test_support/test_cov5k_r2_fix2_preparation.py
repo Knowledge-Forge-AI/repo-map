@@ -13,9 +13,8 @@ from repomap_test_support.test_cov5k_r2_fix2_evidence import (
     ExecutorEvidence,
     bind_executor_evidence,
 )
-from repomap_test_support.test_cov5k_r2_fix2_preparation_conditions import (
-    _condition_activity,
-)
+from repomap_test_support.test_cov5k_r2_fix2_preparation_conditions import _condition_activity
+from runner_coverage_execution import prepare_child_coverage_environment
 from repomap_test_support.test_cov5k_r2_fix2_preparation_execution import (
     _GROUP_A_ATTEMPT_TIMEOUT_MS,
     _GROUP_A_ORDINARY_TOTAL_TIMEOUT_MS,
@@ -297,6 +296,7 @@ def _forced_tail_for_observations(
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,
+        env=prepare_child_coverage_environment(family="unmeasured"),
     )
     signal_name: str | None = None
     returncode: int | None = None

@@ -90,22 +90,31 @@ class StorageConnection:
         args.extend(["-d", self.pg_database])
         return args
 
+    @property
+    def repository_identity(self) -> str | None:
+        if self.ops_context is not None:
+            return self.ops_context.repository_identity
+        return None
+
     def query_storage(
         self,
         storage_query: Callable[..., _StorageReadbackT],
         **query_kwargs: Any,
     ) -> _StorageReadbackT:
         if self.ops_context is not None:
+            kwargs = dict(query_kwargs)
+            kwargs["repository_identity"] = self.ops_context.repository_identity
             return query_configured_storage(
                 self.ops_context,
                 storage_query,
-                **query_kwargs,
+                **kwargs,
             )
         return storage_query(
             self.psql_args(),
             psql_command=self.psql_command,
             **query_kwargs,
         )
+
 
 
 @dataclass(frozen=True)

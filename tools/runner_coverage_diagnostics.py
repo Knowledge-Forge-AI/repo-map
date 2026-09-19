@@ -99,6 +99,8 @@ class ShardDiagnosticSnapshot:
     forensic_verdict: str | None = None
     measured_files_count: int | None = None
     measured_classification: dict[str, Any] | None = None
+    sys_argv: str | None = None
+    sys_argv_digest: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -224,6 +226,10 @@ def merge_diagnostic_snapshot(
         else:
             fb_reason = f"sqlite_valid={sqlite_valid}:measured_files={m_count}"
     f_cls = forensics.get("classification") if forensics else None
+    f_ppid = forensics.get("ppid") if forensics else None
+    f_owner = forensics.get("test_owner") if forensics else None
+    f_argv = forensics.get("sys_argv") if forensics else None
+    f_argv_dig = forensics.get("sys_argv_digest") if forensics else None
 
     primary_reason = _first_not_none(c.get("failure_reason"), snap.failure_reason)
     if primary_reason is not None and f_verdict is not None and f"forensic_verdict={f_verdict}" not in primary_reason:
@@ -242,7 +248,7 @@ def merge_diagnostic_snapshot(
         measured_classification=_first_not_none(
             c.get("measured_classification"), f_cls, snap.measured_classification,
         ),
-        ppid=_first_not_none(c.get("ppid"), obs.ppid if obs else None, snap.ppid),
+        ppid=_first_not_none(c.get("ppid"), obs.ppid if obs else None, f_ppid, snap.ppid),
         launch_shape=_first_not_none(
             c.get("launch_shape"),
             forensics.get("launch_shape") if forensics else None,
@@ -250,7 +256,7 @@ def merge_diagnostic_snapshot(
             snap.launch_shape,
         ),
         test_owner=_first_not_none(
-            c.get("owner"), obs.test_owner_hash if obs else None, snap.test_owner,
+            c.get("owner"), obs.test_owner_hash if obs else None, f_owner, snap.test_owner,
         ),
         has_config=_first_not_none(
             c.get("has_config"), obs.has_coverage_capability if obs else None, snap.has_config,
@@ -263,6 +269,8 @@ def merge_diagnostic_snapshot(
         ),
         bootstrap_stage=_first_not_none(c.get("bootstrap_stage"), snap.bootstrap_stage),
         launch_role=_first_not_none(c.get("role"), snap.launch_role),
+        sys_argv=_first_not_none(c.get("sys_argv"), f_argv, snap.sys_argv),
+        sys_argv_digest=_first_not_none(c.get("sys_argv_digest"), f_argv_dig, snap.sys_argv_digest),
     )
 
 

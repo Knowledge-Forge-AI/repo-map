@@ -58,6 +58,7 @@ def project_summary_payload(
         context,
         dependencies.query_canonical_storage_summary,
         root_path=context.root_path,
+        repository_identity=context.repository_identity,
     )
     return {
         "server": "repomap-kg",
@@ -96,6 +97,7 @@ def summary_payload(
                 context,
                 dependencies.query_python_summary,
                 root_path=context.root_path,
+                repository_identity=context.repository_identity,
             )
         )
     elif summary_kind == "terraform":
@@ -104,6 +106,7 @@ def summary_payload(
                 context,
                 dependencies.query_terraform_summary,
                 root_path=context.root_path,
+                repository_identity=context.repository_identity,
             )
         )
     elif summary_kind == "openapi":
@@ -112,6 +115,7 @@ def summary_payload(
                 context,
                 dependencies.query_openapi_summary,
                 root_path=context.root_path,
+                repository_identity=context.repository_identity,
             )
         )
     elif summary_kind == "js_framework":
@@ -120,6 +124,7 @@ def summary_payload(
                 context,
                 dependencies.query_js_framework_summary,
                 root_path=context.root_path,
+                repository_identity=context.repository_identity,
             )
         )
     elif summary_kind == "nix":
@@ -128,6 +133,7 @@ def summary_payload(
                 context,
                 dependencies.query_nix_summary,
                 root_path=context.root_path,
+                repository_identity=context.repository_identity,
             )
         )
     else:
@@ -163,6 +169,7 @@ def neighborhood_payload(
         direction=direction,
         depth=depth,
         graph_key_version=GRAPH_KEY_VERSION,
+        repository_identity=context.repository_identity,
     )
     return {
         "server": "repomap-kg",

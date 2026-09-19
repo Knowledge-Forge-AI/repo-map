@@ -228,17 +228,59 @@ def read_anomalous_shard_forensics(
                         )
                         if cursor.fetchone() is not None:
                             cursor.execute(
-                                "SELECT value FROM meta WHERE key='sys_argv' LIMIT 1"
+                                "SELECT substr(value, 1, 4096) FROM meta "
+                                "WHERE key='sys_argv' LIMIT 1"
                             )
                             meta_row = cursor.fetchone()
                             if meta_row and meta_row[0]:
                                 raw_str = str(meta_row[0])[:4096]
                                 sys_argv_val = _sanitize_argv(raw_str)
                                 launch_shape_val = _derive_launch_shape(raw_str)
+                                sys_argv_digest_val = hashlib.sha256(
+                                    raw_str.encode("utf-8", errors="replace")
+                                ).hexdigest()[:16]
                             else:
                                 launch_shape_val = "meta_sys_argv_absent"
+                                sys_argv_digest_val = None
                         else:
                             launch_shape_val = "meta_table_absent"
+                            sys_argv_digest_val = None
+
+                        ppid_val: int | None = None
+                        test_owner_val: str | None = None
+                        from runner_coverage_diagnostics import extract_pid_match
+
+                        pid_match = extract_pid_match(p_res.name)
+                        if pid_match is not None:
+                            for mdir in (d_res / "child_procs", d_res.parent / "child_procs", d_res, d_res.parent):
+                                for candidate in (
+                                    mdir / f"{pid_match}.start",
+                                    mdir / f"{pid_match}.registration_failure",
+                                    mdir / f"{pid_match}.exit",
+                                ):
+                                    if candidate.is_file() and not candidate.is_symlink():
+                                        try:
+                                            with candidate.open("rb") as marker:
+                                                marker_bytes = marker.read(4097)
+                                            # Only complete records from the bounded prefix count.
+                                            marker_text = marker_bytes[:4096].decode("utf-8", errors="replace")
+                                            if len(marker_bytes) > 4096:
+                                                marker_text = marker_text.rpartition("\n")[0]
+                                            for line in marker_text.splitlines():
+                                                if line.startswith("ppid=") and ppid_val is None:
+                                                    val = line.split("=", 1)[1].strip()
+                                                    if val.isdigit():
+                                                        ppid_val = int(val)
+                                                elif line.startswith("owner=") and test_owner_val is None:
+                                                    val = line.split("=", 1)[1].strip()
+                                                    if val:
+                                                        test_owner_val = _sanitize_argv(val, max_bytes=128)
+                                        except OSError:
+                                            pass
+                                        if ppid_val is not None and test_owner_val is not None:
+                                            break
+                                if ppid_val is not None or test_owner_val is not None:
+                                    break
 
                         if observed_total == 0:
                             zero_classification = {
@@ -250,6 +292,8 @@ def read_anomalous_shard_forensics(
                                     "inside_checkout_outside_selected_source": 0,
                                     "outside_checkout": 0,
                                     "unreadable_or_invalid": 0,
+                                    "inside_source_root": 0,
+                                    "inside_checkout_outside_root": 0,
                                 },
                                 "retained_samples": [],
                                 "inside_selected_source": 0,
@@ -263,6 +307,12 @@ def read_anomalous_shard_forensics(
                                 zero_classification["sys_argv"] = sys_argv_val
                             if launch_shape_val is not None:
                                 zero_classification["launch_shape"] = launch_shape_val
+                            if sys_argv_digest_val is not None:
+                                zero_classification["sys_argv_digest"] = sys_argv_digest_val
+                            if ppid_val is not None:
+                                zero_classification["ppid"] = ppid_val
+                            if test_owner_val is not None:
+                                zero_classification["test_owner"] = test_owner_val
                             ret = (True, 0, zero_classification, None)
                         else:
                             # 6. Bounded path query with LIMIT max_paths + 1
@@ -285,6 +335,12 @@ def read_anomalous_shard_forensics(
                                 forensic_result["sys_argv"] = sys_argv_val
                             if launch_shape_val is not None:
                                 forensic_result["launch_shape"] = launch_shape_val
+                            if sys_argv_digest_val is not None:
+                                forensic_result["sys_argv_digest"] = sys_argv_digest_val
+                            if ppid_val is not None:
+                                forensic_result["ppid"] = ppid_val
+                            if test_owner_val is not None:
+                                forensic_result["test_owner"] = test_owner_val
 
                             ret = (True, observed_total, forensic_result, None)
 

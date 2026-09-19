@@ -43,6 +43,11 @@ class McpOpsGraphContext:
         return self.graph.root_path_expanded or self.graph.root_path
 
     @property
+    def repository_identity(self) -> str:
+        from repomap_kg.ops.resolved_config import configured_repository_identity
+        return str(configured_repository_identity(self.graph.id))
+
+    @property
     def psql_args(self) -> list[str]:
         return self.config.postgres.psql_args_for_database(self.database)
 

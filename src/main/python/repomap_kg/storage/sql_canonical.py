@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.graph_readback_sql import build_repository_filter_sql
 from repomap_kg.storage.sql_core import (
     canonical_file_path_prefix,
     positive_limit,
@@ -56,18 +57,15 @@ def build_canonical_node_query_sql(
     graph_key_version: int = 1,
     limit: int | None = None,
     offset: int = 0,
+    repository_identity: str | None = None,
 ) -> str:
     require_supported_graph_key_version(graph_key_version)
-    filters = [
-        f"repositories.root_path = {sql_literal(root_path)}",
-        f"canonical_nodes.graph_key_version = {graph_key_version}",
-    ]
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
+    filters = [repo_filter, f"canonical_nodes.graph_key_version = {graph_key_version}"]
     if kind is not None:
         filters.append(f"canonical_nodes.kind = {sql_literal(kind)}")
     if canonical_key is not None:
-        filters.append(
-            f"canonical_nodes.canonical_key = {sql_literal(canonical_key)}"
-        )
+        filters.append(f"canonical_nodes.canonical_key = {sql_literal(canonical_key)}")
     if path_prefix is not None:
         filters.append(
             "canonical_nodes.canonical_key LIKE "
@@ -103,24 +101,17 @@ def build_canonical_edge_query_sql(
     graph_key_version: int = 1,
     limit: int | None = None,
     offset: int = 0,
+    repository_identity: str | None = None,
 ) -> str:
     require_supported_graph_key_version(graph_key_version)
-    filters = [
-        f"repositories.root_path = {sql_literal(root_path)}",
-        f"canonical_edges.graph_key_version = {graph_key_version}",
-    ]
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
+    filters = [repo_filter, f"canonical_edges.graph_key_version = {graph_key_version}"]
     if kind is not None:
         filters.append(f"canonical_edges.edge_kind = {sql_literal(kind)}")
     if source_key is not None:
-        filters.append(
-            "canonical_edges.source_canonical_key = "
-            f"{sql_literal(source_key)}"
-        )
+        filters.append(f"canonical_edges.source_canonical_key = {sql_literal(source_key)}")
     if target_key is not None:
-        filters.append(
-            "canonical_edges.target_canonical_key = "
-            f"{sql_literal(target_key)}"
-        )
+        filters.append(f"canonical_edges.target_canonical_key = {sql_literal(target_key)}")
     where_sql = " AND ".join(filters)
     pagination_sql = _canonical_pagination_sql(limit=limit, offset=offset)
     if pagination_sql:
@@ -168,13 +159,11 @@ def build_canonical_neighborhood_query_sql(
     node_offset: int = 0,
     edge_limit: int | None = None,
     edge_offset: int = 0,
+    repository_identity: str | None = None,
 ) -> str:
     require_supported_graph_key_version(graph_key_version)
     if direction not in {"both", "in", "out"}:
-        raise StorageSchemaError(
-            "neighborhood direction must be one of both, in, out"
-        )
-    quoted_root = sql_literal(root_path)
+        raise StorageSchemaError("neighborhood direction must be one of both, in, out")
     quoted_node = sql_literal(node)
     edge_filters = []
     if direction in {"both", "out"}:
@@ -182,19 +171,11 @@ def build_canonical_neighborhood_query_sql(
     if direction in {"both", "in"}:
         edge_filters.append(f"canonical_edges.target_canonical_key = {quoted_node}")
     edge_filter_sql = " OR ".join(edge_filters)
-    node_pagination_sql = _canonical_pagination_sql(
-        limit=node_limit,
-        offset=node_offset,
-    )
-    edge_pagination_sql = _canonical_pagination_sql(
-        limit=edge_limit,
-        offset=edge_offset,
-    )
+    node_pagination_sql = _canonical_pagination_sql(limit=node_limit, offset=node_offset)
+    edge_pagination_sql = _canonical_pagination_sql(limit=edge_limit, offset=edge_offset)
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
     return (
-        "WITH repo AS ("
-        "SELECT id FROM repositories "
-        f"WHERE repositories.root_path = {quoted_root}"
-        "), "
+        f"WITH repo AS (SELECT id FROM repositories WHERE {repo_filter} ORDER BY id DESC LIMIT 1), "
         "center AS ("
         "SELECT canonical_nodes.* FROM canonical_nodes "
         "JOIN repo ON repo.id = canonical_nodes.repository_id "
@@ -291,18 +272,17 @@ def build_explain_canonical_edge_query_sql(
     graph_key_version: int = 1,
     evidence_limit: int | None = None,
     evidence_offset: int = 0,
+    repository_identity: str | None = None,
 ) -> str:
     require_supported_graph_key_version(graph_key_version)
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
     filters = [
-        f"repositories.root_path = {sql_literal(root_path)}",
+        repo_filter,
         f"canonical_edges.graph_key_version = {graph_key_version}",
-        "canonical_edges.source_canonical_key = "
-        f"{sql_literal(source_key)}",
+        f"canonical_edges.source_canonical_key = {sql_literal(source_key)}",
         f"canonical_edges.edge_kind = {sql_literal(kind)}",
-        "canonical_edges.target_canonical_key = "
-        f"{sql_literal(target_key)}",
-        "canonical_edges.identity_metadata_hash = "
-        f"{sql_literal(identity_metadata_hash)}",
+        f"canonical_edges.target_canonical_key = {sql_literal(target_key)}",
+        f"canonical_edges.identity_metadata_hash = {sql_literal(identity_metadata_hash)}",
     ]
     where_sql = " AND ".join(filters)
     evidence_pagination_sql = _canonical_pagination_sql(
@@ -337,6 +317,7 @@ def build_explain_canonical_edge_query_sql(
         "SELECT canonical_edge_evidence.* FROM matching_edge "
         "JOIN canonical_edge_evidence ON canonical_edge_evidence.canonical_edge_id = matching_edge.id "
         "JOIN canonical_evidence ON canonical_evidence.id = canonical_edge_evidence.canonical_evidence_id "
+        "AND canonical_evidence.repository_id = matching_edge.repository_id "
         "ORDER BY canonical_evidence.run_id, canonical_evidence.raw_observation_ordinal, "
         "canonical_evidence.evidence_key, canonical_edge_evidence.link_kind"
         f"{evidence_pagination_sql}), "
@@ -363,17 +344,21 @@ def build_explain_canonical_edge_query_sql(
         "FROM matching_edge "
         "JOIN evidence_links ON evidence_links.canonical_edge_id = matching_edge.id "
         "JOIN canonical_evidence ON canonical_evidence.id = evidence_links.canonical_evidence_id "
-        "LEFT JOIN raw_observations ON raw_observations.id = canonical_evidence.raw_observation_id) "
+        "AND canonical_evidence.repository_id = matching_edge.repository_id "
+        "LEFT JOIN raw_observations ON raw_observations.id = canonical_evidence.raw_observation_id "
+        "AND raw_observations.repository_id = matching_edge.repository_id) "
         "SELECT json_build_object('edge', (SELECT edge FROM edge_payload), "
         "'evidence', (SELECT evidence FROM evidence_payload))::text;"
     )
 
 
-def build_canonical_storage_summary_query_sql(root_path: str) -> str:
+def build_canonical_storage_summary_query_sql(
+    root_path: str, repository_identity: str | None = None,
+) -> str:
     quoted_root = sql_literal(root_path)
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
     return (
-        "WITH repo AS ("
-        f"SELECT id, name, root_path FROM repositories WHERE repositories.root_path = {quoted_root}), "
+        f"WITH repo AS (SELECT id, name, root_path FROM repositories WHERE {repo_filter} ORDER BY id DESC LIMIT 1), "
         "latest_recorded_run AS ("
         "SELECT runs.* FROM runs JOIN repo ON repo.id = runs.repository_id "
         "ORDER BY runs.id DESC LIMIT 1) "

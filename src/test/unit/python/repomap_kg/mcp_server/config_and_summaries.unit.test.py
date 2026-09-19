@@ -277,7 +277,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
                     dogfooding={},
                     safety={"no_execution": True},
                 ),
-            ):
+            ) as query_py:
                 python_payload = repomap_python_summary(graph_id="repo-map")
             with patch(
                 "repomap_kg.server.ops.query_terraform_summary",
@@ -295,7 +295,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
                     generic_config={},
                     safety={"no_execution": True},
                 ),
-            ):
+            ) as query_tf:
                 terraform_payload = repomap_terraform_summary(graph_id="repo-map")
             with patch(
                 "repomap_kg.server.ops.query_openapi_summary",
@@ -313,7 +313,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
                     generic_config={},
                     safety={"no_fetch": True},
                 ),
-            ):
+            ) as query_oa:
                 openapi_payload = repomap_openapi_summary(graph_id="repo-map")
             with patch(
                 "repomap_kg.server.ops.query_js_framework_summary",
@@ -332,7 +332,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
                     diagnostics={},
                     safety={"no_execution": True},
                 ),
-            ):
+            ) as query_js:
                 js_payload = repomap_js_framework_summary(graph_id="repo-map")
 
         self.assertEqual(python_payload["summary"]["python_observations"], 3)
@@ -340,3 +340,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         self.assertEqual(openapi_payload["summary"]["openapi_observations"], 5)
         self.assertEqual(js_payload["summary"]["framework_observations"], 6)
         self.assertEqual(js_payload["graph"]["privacy"], "public-dev")
+        self.assertEqual(query_py.call_args.kwargs.get("repository_identity"), "repo1:repo-map")
+        self.assertEqual(query_tf.call_args.kwargs.get("repository_identity"), "repo1:repo-map")
+        self.assertEqual(query_oa.call_args.kwargs.get("repository_identity"), "repo1:repo-map")
+        self.assertEqual(query_js.call_args.kwargs.get("repository_identity"), "repo1:repo-map")

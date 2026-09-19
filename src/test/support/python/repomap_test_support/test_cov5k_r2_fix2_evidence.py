@@ -123,6 +123,10 @@ def _python_identity(source_path: str, symbol: str) -> tuple[str, str, str, str]
         raise ExecutorEvidenceError("registered callable has no Python code object")
     if _digest_bytes(path.read_bytes()) != source_digest:
         raise ExecutorEvidenceError("registered source changed during identity resolution")
+    if Path(code.co_filename).resolve() != path.resolve():
+        raise ExecutorEvidenceError(
+            "registered callable code origin differs from registered path"
+        )
     return (
         module_name,
         f"{module_name}.{symbol}",
@@ -339,4 +343,3 @@ def verify_executor_evidence(entry, evidence: ExecutorEvidence) -> None:
     )
     if evidence.result_digest != expected_result_digest:
         raise ExecutorEvidenceError("result digest differs from bound evidence")
-# v0.0.2 dynamic target re-attestation.

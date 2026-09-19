@@ -65,7 +65,7 @@ CREATE TEMP TABLE repomap_identity_survivor ON COMMIT DROP AS
 SELECT id
 FROM repositories
 ORDER BY
-    (repository_identity = {identity}) DESC,
+    (repository_identity = {identity}) DESC NULLS LAST,
     (root_path = {root}) DESC,
     id
 LIMIT 1;

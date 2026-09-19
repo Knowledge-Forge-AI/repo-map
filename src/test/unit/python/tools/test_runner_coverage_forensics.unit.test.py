@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -17,6 +18,23 @@ from runner_coverage_diagnostics import (
     merge_diagnostic_snapshot,
 )
 from runner_coverage_forensics import read_anomalous_shard_forensics
+
+
+class _ConnProxy:
+    def __init__(
+        self, target: sqlite3.Connection, *, on_close: list[bool] | None = None, raise_on_close: bool = False
+    ) -> None:
+        self._target, self._on_close, self._raise_on_close = target, on_close, raise_on_close
+
+    def close(self) -> None:
+        if self._on_close is not None:
+            self._on_close.append(True)
+        self._target.close()
+        if self._raise_on_close:
+            raise sqlite3.OperationalError("simulated close error")
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._target, name)
 
 
 class TestRunnerCoverageForensics(unittest.TestCase):
@@ -179,14 +197,13 @@ class TestRunnerCoverageForensics(unittest.TestCase):
     ) -> None:
         conn = sqlite3.connect(path)
         try:
-            conn.execute("CREATE TABLE coverage_schema (version INTEGER)")
-            conn.execute("INSERT INTO coverage_schema VALUES (?)", (schema_version,))
-            conn.execute("CREATE TABLE file (id INTEGER PRIMARY KEY, path TEXT)")
+            conn.executescript(
+                f"CREATE TABLE coverage_schema (version INTEGER); "
+                f"INSERT INTO coverage_schema VALUES ({schema_version}); "
+                "CREATE TABLE file (id INTEGER PRIMARY KEY, path TEXT);"
+            )
             for i in range(file_count):
-                conn.execute(
-                    "INSERT INTO file VALUES (?, ?)",
-                    (i, str(self.source_root / f"app_{i}.py")),
-                )
+                conn.execute("INSERT INTO file VALUES (?, ?)", (i, str(self.source_root / f"app_{i}.py")))
             if meta:
                 conn.execute("CREATE TABLE meta (key text, value text)")
                 for k, v in meta.items():
@@ -195,28 +212,17 @@ class TestRunnerCoverageForensics(unittest.TestCase):
         finally:
             conn.close()
 
+
     def test_read_anomalous_shard_forensics_closes_sqlite_connection(self) -> None:
         shard_path = self.root / ".coverage.test_close"
         self._create_sample_shard(shard_path)
-
         real_connect = sqlite3.connect
         closed_flags: list[bool] = []
 
-        class ConnProxy:
-            def __init__(self, target: sqlite3.Connection) -> None:
-                self._target = target
-
-            def close(self) -> None:
-                closed_flags.append(True)
-                self._target.close()
-
-            def __getattr__(self, name: str) -> Any:
-                return getattr(self._target, name)
-
-        def spy_connect(*args: Any, **kwargs: Any) -> Any:
-            return ConnProxy(real_connect(*args, **kwargs))
-
-        with mock.patch("sqlite3.connect", side_effect=spy_connect):
+        with mock.patch(
+            "sqlite3.connect",
+            side_effect=lambda *a, **kw: _ConnProxy(real_connect(*a, **kw), on_close=closed_flags),
+        ):
             valid, count, _, verdict = read_anomalous_shard_forensics(
                 shard_path, self.root
             )
@@ -288,9 +294,8 @@ class TestRunnerCoverageForensics(unittest.TestCase):
 
     def test_read_anomalous_shard_forensics_missing_tables_fails_closed(self) -> None:
         shard_path1 = self.root / ".coverage.test_no_schema_tbl"
-        conn = sqlite3.connect(shard_path1)
-        conn.execute("CREATE TABLE other (id INT)")
-        conn.close()
+        with sqlite3.connect(shard_path1) as conn:
+            conn.execute("CREATE TABLE other (id INT)")
 
         valid, count, info, verdict = read_anomalous_shard_forensics(
             shard_path1, self.root
@@ -299,11 +304,9 @@ class TestRunnerCoverageForensics(unittest.TestCase):
         self.assertEqual(verdict, "missing_coverage_schema_table")
 
         shard_path2 = self.root / ".coverage.test_no_file_tbl"
-        conn2 = sqlite3.connect(shard_path2)
-        conn2.execute("CREATE TABLE coverage_schema (version INTEGER)")
-        conn2.execute("INSERT INTO coverage_schema VALUES (7)")
-        conn2.commit()
-        conn2.close()
+        with sqlite3.connect(shard_path2) as conn2:
+            conn2.execute("CREATE TABLE coverage_schema (version INTEGER);")
+            conn2.execute("INSERT INTO coverage_schema VALUES (7)")
 
         valid2, count2, info2, verdict2 = read_anomalous_shard_forensics(
             shard_path2, self.root
@@ -340,21 +343,12 @@ class TestRunnerCoverageForensics(unittest.TestCase):
     def test_close_sqlite_error_does_not_mask_verdict(self) -> None:
         shard_path = self.root / ".coverage.test_close_err"
         self._create_sample_shard(shard_path)
-
         real_connect = sqlite3.connect
 
-        class ConnProxy:
-            def __init__(self, target: sqlite3.Connection) -> None:
-                self._target = target
-
-            def close(self) -> None:
-                self._target.close()
-                raise sqlite3.OperationalError("simulated close error")
-
-            def __getattr__(self, name: str) -> Any:
-                return getattr(self._target, name)
-
-        with mock.patch("sqlite3.connect", side_effect=lambda *a, **kw: ConnProxy(real_connect(*a, **kw))):
+        with mock.patch(
+            "sqlite3.connect",
+            side_effect=lambda *a, **kw: _ConnProxy(real_connect(*a, **kw), raise_on_close=True),
+        ):
             valid, count, info, verdict = read_anomalous_shard_forensics(
                 shard_path, self.root
             )
@@ -373,6 +367,10 @@ class TestRunnerCoverageForensics(unittest.TestCase):
         assert info is not None
         self.assertEqual(info.get("sys_argv"), "['[path]', '-m', 'pytest', '[path]']")
         self.assertEqual(info.get("launch_shape"), "-m:pytest")
+        self.assertEqual(
+            info.get("sys_argv_digest"),
+            hashlib.sha256(raw_argv.encode("utf-8")).hexdigest()[:16],
+        )
 
         rt_shard = self.root / ".coverage.test_rt"
         rt_argv = "['/opt/bin/python3', '-c', 'from multiprocessing.resource_tracker import main;main(42)']"
@@ -386,6 +384,16 @@ class TestRunnerCoverageForensics(unittest.TestCase):
         _, _, bad_info, _ = read_anomalous_shard_forensics(bad_shard, self.root)
         assert bad_info is not None
         self.assertEqual(bad_info.get("launch_shape"), "unparseable_argv")
+
+        marker_shard = self.root / ".coverage.host.pid12345.xyz"
+        self._create_sample_shard(marker_shard)
+        marker = self.root / "child_procs" / "12345.start"
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text("ppid=8888\nowner=suite_owner_hash\n", encoding="utf-8")
+        _, _, marker_info, _ = read_anomalous_shard_forensics(marker_shard, self.root)
+        assert marker_info is not None
+        self.assertEqual(marker_info.get("ppid"), 8888)
+        self.assertEqual(marker_info.get("test_owner"), "suite_owner_hash")
 
 
 if __name__ == "__main__":

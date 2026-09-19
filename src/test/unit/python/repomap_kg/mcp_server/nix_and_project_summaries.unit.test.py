@@ -47,6 +47,7 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
         self.assertEqual(run_storage.call_count, 1)
         self.assertEqual(query.call_args.kwargs["root_path"], "/tmp/fixture")
+        self.assertEqual(query.call_args.kwargs.get("repository_identity"), "repo1:repo-map")
         summary = payload["summary"]
         self.assertEqual(
             {

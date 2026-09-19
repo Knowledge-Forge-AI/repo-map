@@ -13,6 +13,7 @@ from threading import Event, Thread
 from repomap_test_support.test_cov5k_r2_fix2_preparation_execution import (
     _policy,
 )
+from runner_coverage_execution import prepare_child_coverage_environment
 
 
 @contextmanager
@@ -28,6 +29,7 @@ def _condition_activity(condition: str, temp_root: Path, identity: str):
             shell=False,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
+            env=prepare_child_coverage_environment(family="unmeasured"),
         )
         try:
             yield ("contention_pid", process.pid)

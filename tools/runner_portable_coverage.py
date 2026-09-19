@@ -274,6 +274,8 @@ def validate_shard_directory_integrity(
                 for fail_candidate in (
                     manifest_dir / f"{pid}.registration_failure",
                     manifest_dir.parent / f"{pid}.registration_failure",
+                    manifest_dir / f"{pid}.start",
+                    manifest_dir.parent / f"{pid}.start",
                 ):
                     if fail_candidate.is_file():
                         parsed = _parse_marker(fail_candidate)
@@ -282,8 +284,8 @@ def validate_shard_directory_integrity(
                             "owner": parsed.get("owner"),
                             "ppid": int(parsed["ppid"]) if parsed.get("ppid", "").isdigit() else None,
                             "launch_shape": parsed.get("launch_shape"),
-                            "failure_class": parsed.get("failure_class"),
-                            "failure_reason": parsed.get("failure_reason"),
+                            "failure_class": parsed.get("failure_class", "unregistered_start_marker" if fail_candidate.name.endswith(".start") else None),
+                            "failure_reason": parsed.get("failure_reason", "unregistered_with_start_marker" if fail_candidate.name.endswith(".start") else None),
                         }
                         break
             obs: Any = None
@@ -342,11 +344,16 @@ def validate_shard_directory_integrity(
                     )
                     if forensics_data is not None:
                         measured_classification = forensics_data.get("classification")
-                        if child_info is None and forensics_data.get("launch_shape"):
-                            child_info = {
-                                "launch_shape": forensics_data["launch_shape"],
-                                "role": "unregistered",
-                            }
+                        if child_info is None:
+                            child_info = {}
+                        if forensics_data.get("launch_shape") and not child_info.get("launch_shape"):
+                            child_info["launch_shape"] = forensics_data["launch_shape"]
+                        if not child_info.get("role"):
+                            child_info["role"] = "unregistered"
+                        if forensics_data.get("ppid") is not None and not child_info.get("ppid"):
+                            child_info["ppid"] = forensics_data["ppid"]
+                        if forensics_data.get("test_owner") and not child_info.get("owner"):
+                            child_info["owner"] = forensics_data["test_owner"]
 
             snap = snapshot_fn(
                 shard_name=child.name,

@@ -9,6 +9,7 @@ from repomap_kg.storage._sql_summaries_domains import (
     build_terraform_summary_query_sql,
 )
 from repomap_kg.storage._sql_summaries_email import build_email_summary_query_sql
+from repomap_kg.storage.graph_readback_sql import build_repository_filter_sql
 from repomap_kg.storage.sql_core import sql_literal
 from repomap_kg.storage.sql_summaries_nix import build_nix_summary_query_sql
 from repomap_kg.storage.sql_summaries_python import build_python_summary_query_sql
@@ -212,7 +213,10 @@ def build_js_summary_query_sql(root_path: str) -> str:
     )
 
 
-def build_js_framework_summary_query_sql(root_path: str) -> str:
+def build_js_framework_summary_query_sql(
+    root_path: str,
+    repository_identity: str | None = None,
+) -> str:
     quoted_root = sql_literal(root_path)
     framework_kinds = (
         "node.entrypoint",
@@ -258,10 +262,11 @@ def build_js_framework_summary_query_sql(root_path: str) -> str:
         "js.client_entrypoint",
     )
     framework_kind_sql = ", ".join(sql_literal(kind) for kind in framework_kinds)
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
     return (
         "WITH repo AS ("
         "SELECT id, name, root_path FROM repositories "
-        f"WHERE repositories.root_path = {quoted_root}"
+        f"WHERE {repo_filter}"
         "), "
         "raw AS ("
         "SELECT raw_observations.* FROM raw_observations "

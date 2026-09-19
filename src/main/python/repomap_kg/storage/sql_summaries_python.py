@@ -2,17 +2,22 @@
 
 from __future__ import annotations
 
+from repomap_kg.storage.graph_readback_sql import build_repository_filter_sql
 from repomap_kg.storage.sql_core import sql_literal
 
 __all__ = ("build_python_summary_query_sql",)
 
 
-def build_python_summary_query_sql(root_path: str) -> str:
+def build_python_summary_query_sql(
+    root_path: str,
+    repository_identity: str | None = None,
+) -> str:
     quoted_root = sql_literal(root_path)
+    repo_filter = build_repository_filter_sql(root_path, repository_identity)
     return (
         "WITH repo AS ("
         "SELECT id, name, root_path FROM repositories "
-        f"WHERE repositories.root_path = {quoted_root}"
+        f"WHERE {repo_filter}"
         "), "
         "raw AS ("
         "SELECT raw_observations.* FROM raw_observations "
