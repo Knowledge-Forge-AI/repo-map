@@ -5,7 +5,7 @@ import tempfile
 import pytest
 
 from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import load_ops_config
+from repomap_kg.ops.config import OpsConfigError, load_ops_config
 from repomap_kg.ops.graph_file_sql import GraphFileFilters
 from repomap_kg.ops.graph_files import query_graph_files
 from repomap_kg.ops.ingestion.github_api import (
@@ -26,13 +26,17 @@ from repomap_test_support.source_ingestion_integration import (
 )
 
 
-def _binding(alias: str, root: Path, *, privacy: str = "public-dev") -> str:
+def _binding(
+    alias: str, root: Path, *, privacy: str = "public-dev",
+    binding_id: str | None = None, binding_alias: str | None = None,
+    input_name: str | None = None,
+) -> str:
     return f"""
 [[graphs.source_bindings]]
 schema_version = 1
-binding_id = "{graph_source_binding_id('fixture-graph', alias)}"
+binding_id = "{binding_id or graph_source_binding_id('fixture-graph', alias)}"
 source_definition_id = "src1:{alias}"
-alias = "{alias}"
+alias = "{binding_alias or alias}"
 revision = 1
 kind = "folder"
 root_path = "{root}"
@@ -43,7 +47,7 @@ evidence_retention = "metadata-only"
 extractor_profile = "default"
 resolution_policy = "allow-declared"
 role = "entry"
-input_name = "{alias}"
+input_name = "{input_name or alias}"
 exclude_paths = ["result-*"]
 """
 
@@ -253,14 +257,19 @@ def test_multi_source_routing_and_config_refusals_prevent_storage_mutation(tmp_p
         )
         baseline = _counts(postgres)
 
-        # 1. Duplicate binding alias
-        dup_alias_toml = _config(postgres, _binding("alias1", root), _binding("alias1", root))
-        p1 = tmp_path / "dup_alias.toml"
-        p1.write_text(dup_alias_toml, encoding="utf-8")
-        cfg1 = load_ops_config(p1)
-        assert any(d.code == "duplicate-source-binding-alias" for d in cfg1.diagnostics)
-        assert _refresh(p1, postgres.psql_command)[0] == 1
-        assert _counts(postgres) == baseline
+        # 1. Each duplicate dimension reaches its own refusal independently.
+        for overrides, code in (
+            ({"binding_alias": "first"}, "duplicate-source-binding-alias"),
+            ({"binding_id": graph_source_binding_id("fixture-graph", "first")}, "duplicate-source-binding-id"),
+            ({"input_name": "first"}, "duplicate-source-binding-input-name"),
+        ):
+            p1 = tmp_path / f"{code}.toml"
+            p1.write_text(_config(postgres, _binding("first", root), _binding("second", root, **overrides)))
+            with pytest.raises(OpsConfigError) as exc1:
+                load_ops_config(p1)
+            assert {d.code for d in exc1.value.diagnostics if d.severity == "error"} == {code}
+            assert _refresh(p1, postgres.psql_command)[0] == 1
+            assert _counts(postgres) == baseline
 
         # 2. Conflicting source kinds for same source_definition_id
         b1 = _binding("s1", root).replace(
@@ -273,23 +282,42 @@ def test_multi_source_routing_and_config_refusals_prevent_storage_mutation(tmp_p
         )
         p2 = tmp_path / "kind_conflict.toml"
         p2.write_text(_config(postgres, b1, b2), encoding="utf-8")
-        cfg2 = load_ops_config(p2)
-        assert any(d.code == "source-definition-collision" for d in cfg2.diagnostics)
+        with pytest.raises(OpsConfigError) as exc2:
+            load_ops_config(p2)
+        assert any(d.code == "source-definition-collision" for d in exc2.value.diagnostics)
         assert _refresh(p2, postgres.psql_command)[0] == 1
         assert _counts(postgres) == baseline
 
-        # 3. Invalid exclude path (with ..) and unsupported privacy
-        bad_b = _binding("s3", root, privacy="unsupported-privacy").replace(
+        # 3. Invalid exclude path (with ..)
+        bad_exclude = _binding("s3", root).replace(
             'exclude_paths = ["result-*"]', 'exclude_paths = ["../escape"]'
         )
-        p3 = tmp_path / "bad_policy.toml"
-        p3.write_text(_config(postgres, bad_b), encoding="utf-8")
-        cfg3 = load_ops_config(p3)
-        codes = {d.code for d in cfg3.diagnostics}
-        assert "invalid-source-binding-exclude-path" in codes
-        assert "unsupported-source-binding-privacy" in codes
+        p3 = tmp_path / "bad_exclude.toml"
+        p3.write_text(_config(postgres, bad_exclude), encoding="utf-8")
+        with pytest.raises(OpsConfigError) as exc3:
+            load_ops_config(p3)
+        assert any(d.code == "invalid-source-binding-exclude-path" for d in exc3.value.diagnostics)
         assert _refresh(p3, postgres.psql_command)[0] == 1
         assert _counts(postgres) == baseline
+
+        # 4. Unsupported source binding privacy
+        bad_privacy = _binding("s4", root, privacy="unsupported-privacy")
+        p4 = tmp_path / "bad_privacy.toml"
+        p4.write_text(_config(postgres, bad_privacy), encoding="utf-8")
+        with pytest.raises(OpsConfigError) as exc4:
+            load_ops_config(p4)
+        assert any(d.code == "unsupported-source-binding-privacy" for d in exc4.value.diagnostics)
+        assert _refresh(p4, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+        # 5. Coherent recovery: valid configuration loads cleanly and publishes to storage
+        recovered_toml = _config(postgres, _binding("recovered", root))
+        p5 = tmp_path / "recovered.toml"
+        p5.write_text(recovered_toml, encoding="utf-8")
+        cfg5 = load_ops_config(p5)
+        assert not any(d.severity == "error" for d in cfg5.diagnostics)
+        assert _refresh(p5, postgres.psql_command)[0] == 0
+        assert _counts(postgres)[0] == baseline[0] + 1
 
 
 def test_offline_github_api_acquisition_refusals_leave_no_artifacts():

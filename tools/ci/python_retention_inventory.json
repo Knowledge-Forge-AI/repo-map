@@ -3,6 +3,146 @@
   "cohorts": [
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.int.run25_acquisition_wave",
+      "members": [
+        "src/test/int/python/repomap_kg/source_ingestion/run25_acquisition_wave.int.test.py"
+      ],
+      "rationale": "Run 25 source acquisition and GitHub API ingestion wave integration test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.int.run25_config_shell_wave",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/run25_config_shell_wave.int.test.py"
+      ],
+      "rationale": "Run 25 config and shell extractor wave integration test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.int.run25_language_document_wave",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/run25_language_document_wave.int.test.py"
+      ],
+      "rationale": "Run 25 languages and documents extractor wave integration test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.int.run25_manifest_recovery",
+      "members": [
+        "src/test/int/python/repomap_kg/artifacts/run25_manifest_recovery.int.test.py"
+      ],
+      "rationale": "Run 25 artifact manifest corruption and recovery integration test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.int.run25_portable_workflows",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/run25_portable_workflows.int.test.py"
+      ],
+      "rationale": "Run 25 portable coordinator workflow execution integration test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.int.run25_publication_wave",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/run25_publication_wave.int.test.py"
+      ],
+      "rationale": "Run 25 publication storage and staging event wave integration test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "fix21.support.run25_acquisition_fixtures",
+      "members": [
+        "src/test/support/python/repomap_test_support/run25_acquisition_fixtures.py"
+      ],
+      "rationale": "Run 25 acquisition fixtures support for GitHub and multi-source ingestion coverage wave.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "fix21.support.run25_durable_families",
+      "members": [
+        "src/test/support/python/repomap_test_support/run25_durable_families.py"
+      ],
+      "rationale": "Run 25 durable publication verification across seven staging families.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "fix21.support.run25_portable_workflows",
+      "members": [
+        "src/test/support/python/repomap_test_support/run25_portable_workflows.py"
+      ],
+      "rationale": "Run 25 portable workflow test support and hermetic subprocess launch spec helpers.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "fix21.support.run25_wave2_corpus",
+      "members": [
+        "src/test/support/python/repomap_test_support/run25_wave2_corpus.py"
+      ],
+      "rationale": "Run 25 wave 2 synthetic canonicalization corpus fixtures and verification tables.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.unit.portable_bootstrap_causality",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/portable_bootstrap_causality.unit.test.py"
+      ],
+      "rationale": "Run 25 portable bootstrap causality and supervision reaping unit test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.unit.run25_acquisition_fixtures",
+      "members": [
+        "src/test/unit/python/repomap_kg/github_api_ingestion/run25_acquisition_fixtures.unit.test.py"
+      ],
+      "rationale": "Run 25 acquisition fixture generators unit test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.unit.run25_durable_families",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/run25_durable_families.unit.test.py"
+      ],
+      "rationale": "Run 25 durable staging families verification logic unit test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "fix21.unit.run25_wave2_corpus",
+      "members": [
+        "src/test/unit/python/repomap_kg/canonicalization/run25_wave2_corpus.unit.test.py"
+      ],
+      "rationale": "Run 25 wave 2 canonicalization corpus unit test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
       "members": [
@@ -26408,6 +26548,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/run25_manifest_recovery.int.test.py",
+      "rationale": "First-party integration test owner for Run 25 manifest recovery.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/artifacts/seam_pipeline.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -26527,6 +26676,24 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/canonical_contract/ruby_javascript.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/run25_config_shell_wave.int.test.py",
+      "rationale": "First-party integration test owner for Run 25 config and shell extractor wave.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/run25_language_document_wave.int.test.py",
+      "rationale": "First-party integration test owner for Run 25 languages and documents extractor wave.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -26795,6 +26962,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/run25_portable_workflows.int.test.py",
+      "rationale": "First-party integration test owner for Run 25 portable coordinator workflow execution.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/service_client.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -27049,6 +27225,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/source_ingestion/feed_fetch.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/source_ingestion/run25_acquisition_wave.int.test.py",
+      "rationale": "First-party integration test owner for Run 25 source acquisition and GitHub API ingestion wave.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -27697,6 +27882,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/ruby_summary_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/run25_publication_wave.int.test.py",
+      "rationale": "First-party integration test owner for Run 25 publication storage and staging event wave.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -29936,6 +30130,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/run25_acquisition_fixtures.py",
+      "rationale": "Run 25 acquisition fixtures support for GitHub and multi-source ingestion coverage wave.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/run25_durable_families.py",
+      "rationale": "Run 25 durable publication verification across seven staging families.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/run25_portable_workflows.py",
+      "rationale": "Run 25 portable workflow test support and hermetic subprocess launch spec helpers.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/run25_wave2_corpus.py",
+      "rationale": "Run 25 wave 2 synthetic canonicalization corpus fixtures and verification tables.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/scale12_supervision_policy.py",
       "rationale": "Shared test harness and test execution support library.",
       "root": "test_support",
@@ -31403,6 +31633,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/canonicalization/run25_wave2_corpus.unit.test.py",
+      "rationale": "First-party unit test owner for Run 25 wave 2 canonicalization corpus.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/canonicalization/shell_boundaries.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -32258,6 +32497,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/portable_bootstrap_causality.unit.test.py",
+      "rationale": "First-party unit test owner for Run 25 portable bootstrap causality and supervision reaping.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/portable_capability.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -32386,6 +32634,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/refresh_worker_diagnostics.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/run25_durable_families.unit.test.py",
+      "rationale": "First-party unit test owner for Run 25 durable staging families verification logic.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -32998,6 +33255,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/github_api_ingestion/helper_branches.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/github_api_ingestion/run25_acquisition_fixtures.unit.test.py",
+      "rationale": "First-party unit test owner for Run 25 acquisition fixture generators.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

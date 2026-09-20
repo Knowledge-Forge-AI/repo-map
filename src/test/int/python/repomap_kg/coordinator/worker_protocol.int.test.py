@@ -175,22 +175,18 @@ def test_popen_boundary_receives_exact_argv_and_no_shell(monkeypatch):
 
 
 def test_fixture_mode_allowlist_remains_exact():
-    assert ALLOWED_SYNTHETIC_WORKER_MODES == frozenset(
-        {"success", "delay", "transient_failure", "permanent_failure",
-         "cooperative_cancellation", "non_cooperative_cancellation",
-         "pre_publication_crash", "transaction_crash", "transaction_rollback",
-         "transaction_commit", "before_commit_connection_loss",
-         "after_commit_connection_loss", "conflicting_marker", "malformed_hello",
-         "malformed_json", "oversized_line", "out_of_order_message",
-         "duplicate_terminal", "heartbeat_loss", "stderr_flood"}
-    )
+    assert ALLOWED_SYNTHETIC_WORKER_MODES == frozenset({
+        "success", "delay", "transient_failure", "permanent_failure", "cooperative_cancellation",
+        "non_cooperative_cancellation", "pre_publication_crash", "transaction_crash", "transaction_rollback",
+        "transaction_commit", "before_commit_connection_loss", "after_commit_connection_loss",
+        "conflicting_marker", "malformed_hello", "malformed_json", "oversized_line", "out_of_order_message",
+        "duplicate_terminal", "heartbeat_loss", "stderr_flood",
+    })
 
 
 @pytest.mark.parametrize(("fault", "expected"), [
-    ("foreign-job", "identity_mismatch"),
-    ("reversed-time", "invalid_value"),
-    ("uncommitted-success", "invalid_value"),
-    ("unsupported-version", "negotiation_failed"),
+    ("foreign-job", "identity_mismatch"), ("reversed-time", "invalid_value"),
+    ("uncommitted-success", "invalid_value"), ("unsupported-version", "negotiation_failed"),
     ("unsupported-capability", "negotiation_failed"),
 ])
 def test_wire_refusal_waits_for_child_and_never_accepts_false_publication(fault, expected):
@@ -366,12 +362,14 @@ while time.monotonic() < deadline: time.sleep(0.02)
     assert not any(m.get("publication_state") == "committed" for m in result.messages), evidence
 
 
-def test_portable_worker_authority_containment_refusal_and_supervised_reaping(tmp_path: Path) -> None:
+@pytest.mark.parametrize("target", ["psycopg", "sqlite3"])
+def test_portable_worker_authority_containment_refusal_and_supervised_reaping(tmp_path: Path, target: str) -> None:
     store, workspace = tmp_path / "store", tmp_path / "workspace"
     store.mkdir()
     workspace.mkdir()
     repo_root = Path(__file__).resolve().parents[6]
-    script = """
+    python_path = os.pathsep.join((str(repo_root / "src/main/python"), str(repo_root / "tools"), os.environ.get("PYTHONPATH", "")))
+    script = f"""
 import sys, json
 from pathlib import Path
 from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
@@ -379,7 +377,7 @@ install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Pa
 print(json.dumps(dict(schema_version=1, message_type="worker_hello", protocol_versions=[1], capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="nonce")), flush=True)
 start = json.loads(sys.stdin.readline())
 try:
-    import psycopg
+    __import__({target!r})
 except PermissionError:
     terminal = dict(start, message_type="error", status="failed", error_category="authorization",
         publication_state="not_started", retryable=False, latest_run_identity=None, phase="complete",
@@ -390,7 +388,7 @@ except PermissionError:
 """
     spec = WorkerLaunchSpec(
         argv=(sys.executable, "-c", script, str(store), str(workspace), str(repo_root)),
-        environment={"LANG": "C.UTF-8", "PYTHONPATH": os.environ.get("PYTHONPATH", "")}, cwd=repo_root,
+        environment={"LANG": "C.UTF-8", "PYTHONPATH": python_path}, cwd=repo_root,
     )
     result = run_worker_spec(spec, IDENTITY, LIMITS)
     evidence = repr(result).replace(str(tmp_path), "<test-root>").replace(str(repo_root), "<code-root>")[:4000]

@@ -2,7 +2,9 @@ import json
 import shutil
 import tempfile
 import unittest
+import urllib.error
 import urllib.request
+from dataclasses import replace
 from pathlib import Path
 
 from repomap_test_support.source_ingestion_integration import (
@@ -56,42 +58,47 @@ class ApiGithubBulkSourceIngestionIntegrationTests(unittest.TestCase):
         self.assertIn('"no_mutation": true', payload)
         self.assertNotIn("fixture-api-token", payload)
         self.assertNotIn(str(api_fixture_root()), payload)
-        for fixture_name in (
-            "blocked_policy",
-            "missing_consent",
-            "mutation_attempt",
-            "missing_credentials",
-            "non_allowlisted_endpoint",
-        ):
+        for fixture_name in ("blocked_policy", "missing_consent", "mutation_attempt", "missing_credentials", "non_allowlisted_endpoint"):
             with self.subTest(fixture_name=fixture_name):
                 with self.assertRaises(ApiPolicyError):
-                    load_api_source_config(
-                        api_fixture_root() / fixture_name / "api-source.toml"
-                    )
+                    load_api_source_config(api_fixture_root() / fixture_name / "api-source.toml")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            api_cfg = Path(tmpdir) / "api-source.toml"
+            base_text = (api_fixture_root() / "readonly_fixture_api" / "api-source.toml").read_text(encoding="utf-8")
+            for old, new, err in (
+                ('pagination = "none"', 'pagination = "page"', "API1 only supports pagination = none"),
+                ('downstream_route = "config"', 'downstream_route = "raw"', "API1 only supports downstream_route = config"),
+                ('credentials_ref = "local_secret_ref:fixture-api-token"', 'credentials_ref = "bad:token"', "credentials_ref must use an allowed opaque reference shape"),
+                ('credentials_ref = "local_secret_ref:fixture-api-token"', 'credentials_ref = "local_secret_ref:"', "credentials_ref must include a non-empty opaque name"),
+                ('fixture_response_path = "responses/items.json"', 'fixture_response_path = "/tmp/bad.json"', "fixture_response_path must be a local relative path"),
+                ('fixture_response_path = "responses/items.json"', 'fixture_response_path = "../bad.json"', "fixture_response_path must not escape the config root"),
+            ):
+                api_cfg.write_text(base_text.replace(old, new), encoding="utf-8")
+                with self.subTest(setting=old):
+                    with self.assertRaises(ApiPolicyError) as raised:
+                        load_api_source_config(api_cfg)
+                    self.assertIn(err, str(raised.exception))
 
     def test_api_acquire_uses_fixture_transport_owned_artifacts_and_provenance(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            shutil.copytree(
-                api_fixture_root() / "readonly_fixture_api",
-                root / "readonly_fixture_api",
-            )
+            shutil.copytree(api_fixture_root() / "readonly_fixture_api", root / "readonly_fixture_api")
             config_path = root / "readonly_fixture_api" / "api-source.toml"
-            source_text = (
-                root / "readonly_fixture_api" / "responses" / "items.json"
-            ).read_text(encoding="utf-8")
-            summary = acquire_api_source(
-                config_path,
-                root_path=root,
-                transport=FixtureApiTransport(),
+            typed_secrets = {"secret_null": None, "secret_bool": True, "secret_number": 10,
+                             "secret_array": ["private-item"], "secret_object": {"private": "value"}}
+            (root / "readonly_fixture_api" / "responses" / "items.json").write_text(
+                json.dumps({"items": [{"id": "item-1", "secret": "fixture-secret-value", **typed_secrets}]}),
+                encoding="utf-8",
             )
+            source_text = (root / "readonly_fixture_api" / "responses" / "items.json").read_text(encoding="utf-8")
+            summary = acquire_api_source(config_path, root_path=root, transport=FixtureApiTransport())
             manifest_exists = (summary.output_path / "manifest.json").is_file()
-            response_records_exist = (
-                summary.output_path / "redacted-responses.jsonl"
-            ).is_file()
-            artifact_exists = (
-                summary.output_path / "artifacts" / "items.json"
-            ).is_file()
+            response_records_exist = (summary.output_path / "redacted-responses.jsonl").is_file()
+            artifact_exists = (summary.output_path / "artifacts" / "items.json").is_file()
+            redacted = json.loads((summary.output_path / "artifacts" / "items.json").read_text())["items"][0]
+            self.assertEqual({k: redacted[k]["literal_type"] for k in typed_secrets},
+                             dict(zip(typed_secrets, ("null", "boolean", "number", "array", "object"))))
+            self.assertTrue(all(redacted[k]["redacted"] for k in typed_secrets))
 
         self.assertEqual(summary.source_id, "fixture-readonly-api")
         self.assertEqual(summary.requests, 1)
@@ -149,42 +156,22 @@ class ApiGithubBulkSourceIngestionIntegrationTests(unittest.TestCase):
         self.assertIn('"no_mutation": true', payload)
         self.assertNotIn("fixture-github-token", payload)
         self.assertNotIn(str(github_api_fixture_root()), payload)
-        for fixture_name in (
-            "blocked_policy",
-            "private_missing_consent",
-            "private_missing_credentials",
-            "mutation_attempt",
-            "non_allowlisted_endpoint",
-            "bad_provider",
-        ):
+        for fixture_name in ("blocked_policy", "private_missing_consent", "private_missing_credentials", "mutation_attempt", "non_allowlisted_endpoint", "bad_provider"):
             with self.subTest(fixture_name=fixture_name):
                 with self.assertRaises(GitHubApiPolicyError):
-                    load_github_api_source_config(
-                        github_api_fixture_root()
-                        / fixture_name
-                        / "github-source.toml"
-                    )
+                    load_github_api_source_config(github_api_fixture_root() / fixture_name / "github-source.toml")
 
     def test_github_api_redaction_fixture_masks_sensitive_fields(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            summary = acquire_github_api_source(
-                github_api_fixture_root() / "redaction" / "github-source.toml",
-                root_path=root,
-                transport=FixtureGitHubApiTransport(),
-            )
-            artifact_text = (
-                summary.output_path / "artifacts" / "repository.json"
-            ).read_text(encoding="utf-8")
+            summary = acquire_github_api_source(github_api_fixture_root() / "redaction" / "github-source.toml", root_path=root, transport=FixtureGitHubApiTransport())
+            artifact_text = (summary.output_path / "artifacts" / "repository.json").read_text(encoding="utf-8")
 
         self.assertEqual(summary.source_id, "github-redaction-fixture")
         self.assertEqual(summary.requests, 1)
         self.assertEqual(summary.responses, 1)
         self.assertEqual(summary.publication.publication_state, "not_published")
-        payload = json.dumps(
-            [observation.to_dict() for observation in summary.raw_observations],
-            sort_keys=True,
-        )
+        payload = json.dumps([observation.to_dict() for observation in summary.raw_observations], sort_keys=True)
         self.assertIn("github.repository", payload)
         self.assertIn("config.document", payload)
         self.assertNotIn("fixture-secret-value", payload)
@@ -196,30 +183,16 @@ class ApiGithubBulkSourceIngestionIntegrationTests(unittest.TestCase):
         self.assertNotIn("fixture-private-key", artifact_text)
 
     def test_github_api_public_rest_transport_uses_fixed_api_base_and_safe_headers(self):
-        config_path = (
-            github_api_fixture_root()
-            / "public_real_transport_config"
-            / "github-source.toml"
-        )
+        config_path = github_api_fixture_root() / "public_real_transport_config" / "github-source.toml"
         config = load_github_api_source_config(config_path)
         manifest = build_github_api_plan_from_config(config_path)
         opener = IntFakeGitHubOpener(
             status=200,
-            headers={
-                "content-type": "application/json; charset=utf-8",
-                "x-ratelimit-limit": "60",
-                "x-ratelimit-remaining": "59",
-                "x-ratelimit-used": "1",
-                "x-ratelimit-reset": "1782921600",
-            },
+            headers={"content-type": "application/json; charset=utf-8", "x-ratelimit-limit": "60", "x-ratelimit-remaining": "59", "x-ratelimit-used": "1", "x-ratelimit-reset": "1782921600"},
             body=b'{"full_name":"fixture-owner/fixture-repo"}',
         )
 
-        response = PublicGitHubRestTransport(opener=opener).fetch(
-            config,
-            manifest.requests[0],
-        )
-
+        response = PublicGitHubRestTransport(opener=opener).fetch(config, manifest.requests[0])
         self.assertEqual(config.acquisition_transport, "github_public_rest")
         self.assertEqual(manifest.transport, "github_public_rest")
         self.assertTrue(manifest.network_capable)
@@ -229,17 +202,34 @@ class ApiGithubBulkSourceIngestionIntegrationTests(unittest.TestCase):
         self.assertEqual(response.rate_limit["x-ratelimit-remaining"], "59")
         request = opener.requests[0]
         assert isinstance(request, urllib.request.Request)
-        self.assertEqual(
-            request.full_url,
-            "https://api.github.com/repos/fixture-owner/fixture-repo",
-        )
-        headers = {
-            key.lower(): value
-            for key, value in request.header_items()
-        }
+        self.assertEqual(request.full_url, "https://api.github.com/repos/fixture-owner/fixture-repo")
+        headers = {key.lower(): value for key, value in request.header_items()}
         self.assertIn("user-agent", headers)
         self.assertNotIn("authorization", headers)
         self.assertNotIn("cookie", headers)
+
+        class HttpErrorOpener:
+            def open(self, req, timeout):
+                import io
+                from email.message import Message
+                headers = Message()
+                headers["content-type"], headers["x-ratelimit-remaining"] = "application/json", "50"
+                raise urllib.error.HTTPError(req.full_url, 404, "Not Found", headers, io.BytesIO(b'{"message":"Not Found"}'))
+
+        class UrlErrorOpener:
+            def open(self, req, timeout):
+                raise urllib.error.URLError("connection refused")
+
+        err_response = PublicGitHubRestTransport(opener=HttpErrorOpener()).fetch(config, manifest.requests[0])
+        self.assertEqual(err_response.status_code, 404)
+        self.assertEqual(err_response.rate_limit["x-ratelimit-remaining"], "50")
+        with self.assertRaises(GitHubApiPolicyError):
+            PublicGitHubRestTransport(opener=UrlErrorOpener()).fetch(config, manifest.requests[0])
+        fixture_cfg = load_github_api_source_config(github_api_fixture_root() / "readonly_public_repo" / "github-source.toml")
+        with self.assertRaises(GitHubApiPolicyError):
+            PublicGitHubRestTransport().fetch(fixture_cfg, manifest.requests[0])
+        with self.assertRaises(GitHubApiPolicyError):
+            PublicGitHubRestTransport().fetch(config, replace(manifest.requests[0], method="POST"))
 
     def test_bulk_fixture_policy_plan_and_observations(self):
         config = load_bulk_source_config(
@@ -359,22 +349,34 @@ class ApiGithubBulkSourceIngestionIntegrationTests(unittest.TestCase):
         fixture = github_api_fixture_root() / "readonly_public_repo"
         changes = (
             ('revoked = false', 'revoked = true', 'consent is revoked'),
-            ('authorized_operations = ["read"]', 'authorized_operations = ["write"]',
-             'consent authorized_operations must be read-only'),
-            ('max_pages_per_endpoint = 1', 'max_pages_per_endpoint = 2',
-             'max_pages_per_endpoint must be 1 in GITHUB_API1'),
-            ('max_concurrent_requests = 1', 'max_concurrent_requests = 2',
-             'max_concurrent_requests must be 1 in GITHUB_API1'),
+            ('authorized_operations = ["read"]', 'authorized_operations = ["write"]', 'consent authorized_operations must be read-only'),
+            ('max_pages_per_endpoint = 1', 'max_pages_per_endpoint = 2', 'max_pages_per_endpoint must be 1 in GITHUB_API1'),
+            ('max_concurrent_requests = 1', 'max_concurrent_requests = 2', 'max_concurrent_requests must be 1 in GITHUB_API1'),
             ('max_retries = 0', 'max_retries = 1', 'max_retries must be 0 in GITHUB_API1'),
-            ('raw_response_retention = "minimized"', 'raw_response_retention = "retain"',
-             'retention.raw_response_retention must be minimized'),
+            ('raw_response_retention = "minimized"', 'raw_response_retention = "retain"', 'retention.raw_response_retention must be minimized'),
             ('profile = "strict"', 'profile = "lenient"', 'redaction.profile must be strict'),
             ('method = "GET"', 'method = "POST"', 'GITHUB_API1 only allows GET endpoints'),
-            ('pagination = "none"', 'pagination = "page"',
-             'GitHub API acquisition only supports pagination = none in this phase'),
-            ('fixture_response_path = "responses/repository.json"',
-             'fixture_response_path = "../escape.json"',
-             'fixture_response_path must be a contained relative path'),
+            ('pagination = "none"', 'pagination = "page"', 'GitHub API acquisition only supports pagination = none in this phase'),
+            ('fixture_response_path = "responses/repository.json"', 'fixture_response_path = "../escape.json"', 'fixture_response_path must be a contained relative path'),
+            ('source_type = "api.rest"', 'source_type = "invalid"', 'unsupported source_type: invalid'),
+            ('api_source_class = "api.github.repository"', 'api_source_class = "bad"', 'unsupported api_source_class: bad'),
+            ('provider_product = "GitHub REST API"', 'provider_product = "GraphQL"', 'source.provider_product must be GitHub REST API'),
+            ('owner = "fixture-owner"', 'owner = "bad/owner"', 'source.owner must be a safe GitHub owner'),
+            ('repository = "fixture-repo"', 'repository = "bad/repo"', 'source.repository must be a safe GitHub repository'),
+            ('repository_visibility = "public"', 'repository_visibility = "invalid"', 'source.repository_visibility must be public, private, or internal'),
+            ('read_only = true', 'read_only = false', 'source.read_only must be true'),
+            ('credential_mode = "none_public_readonly"', 'credential_mode = "token"', 'unsupported credential_mode: token'),
+            ('mutation_allowed = false', 'mutation_allowed = true', 'source.mutation_allowed must be false'),
+            ('max_requests_per_run = 20', 'max_requests_per_run = 1', 'max_requests_per_run is below endpoint count'),
+            ('policy = "local_user_controlled"', 'policy = "remote"', 'retention.policy must be local_user_controlled'),
+            ('redacted_response_retention = "retain"', 'redacted_response_retention = "drop"', 'retention.redacted_response_retention must be retain'),
+            ('path = "/repos/{owner}/{repo}"', 'path = "https://api.github.com/repos/{owner}/{repo}"', 'endpoint path must be a relative API path'),
+            ('path = "/repos/{owner}/{repo}/issues"', 'path = "/repos/{owner}/{repo}/contents/bad"', 'endpoint path is not allowlisted'),
+            ('path = "/repos/{owner}/{repo}/releases"', 'path = "/repos/{owner}/{repo}/commits"', 'endpoint path must remain under owner/repository'),
+            ('downstream_route = "config"', 'downstream_route = "code"', 'GitHub API acquisition only supports downstream_route = config'),
+            ('response_type = "application/json"', 'response_type = "text/plain"', 'GitHub API acquisition only supports JSON responses'),
+            ('"issues",\n', '', 'endpoint data class is not authorized: issues'),
+            ('fixture_response_path = "responses/actions-runs.json"', 'fixture_response_path = "responses/missing.json"', 'fixture response does not exist: responses/missing.json'),
         )
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

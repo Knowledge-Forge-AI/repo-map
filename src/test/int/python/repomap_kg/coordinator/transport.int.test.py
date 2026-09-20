@@ -283,7 +283,7 @@ def test_loopback_tcp_service_saturation_and_superseded_descriptor_preservation(
                 schema_version=1,
                 host=descriptor.host,
                 port=descriptor.port,
-                auth_token="newer-token",
+                auth_token="newer-synthetic-token",
                 instance_id="instance-2",
                 fencing_epoch=8,
             )
@@ -294,6 +294,11 @@ def test_loopback_tcp_service_saturation_and_superseded_descriptor_preservation(
         assert current.instance_id == "instance-2"
         assert current.fencing_epoch == 8
 
+        with pytest.raises(EndpointDescriptorError, match="endpoint descriptor is invalid"):
+            LoopbackEndpointDescriptor(
+                schema_version=1, host="127.0.0.1", port=9000,
+                auth_token="short-token", instance_id="instance-invalid", fencing_epoch=1,
+            ).validate()
         with pytest.raises(EndpointDescriptorError, match="endpoint descriptor is stale"):
             load_endpoint_descriptor(endpoint_path, expected_instance_id="wrong-instance")
         with pytest.raises(EndpointDescriptorError, match="endpoint descriptor is stale"):
@@ -324,7 +329,8 @@ def test_authenticated_transport_paginates_and_cancels_durable_queued_jobs():
             return status(payload)
 
         def page(payload):
-            return asdict(store.list_recent_jobs(**payload))
+            p = store.list_recent_jobs(**payload)
+            return {"jobs": [asdict(job) for job in p.jobs], "next_cursor": p.next_cursor}
 
         dispatcher = LocalRequestDispatcher("wire-token", {
             "health": lambda _: {"status": "ready"}, "submit": submit,
@@ -353,6 +359,8 @@ def test_authenticated_transport_paginates_and_cancels_durable_queued_jobs():
             assert isinstance(jobs, list) and isinstance(rest, list)
             assert len(jobs) == 2 and len(rest) == 1 and second["next_cursor"] is None
             assert {job["job_id"] for job in (*jobs, *rest)} == {item["job_id"] for item in submitted}
+            empty = client.list_jobs(limit=2, graph_id="absent-graph")
+            assert empty == {"jobs": [], "next_cursor": None}
             job_id = str(submitted[0]["job_id"])
             factory = lambda _sock, _token: client
             cancelled = cancel_coordinator_job(root, job_id, client_factory=factory)

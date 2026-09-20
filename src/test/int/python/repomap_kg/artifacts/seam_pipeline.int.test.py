@@ -326,7 +326,7 @@ def test_sealed_inventory_relocates_between_stores_without_changing_identity(tmp
 @pytest.mark.parametrize(("mutation", "message"), (
     ("duplicate", "duplicate artifact path"),
     ("case-alias", "case-ambiguous artifact path"),
-    ("escape", "artifact path is not portable"),
+    ("escape", "manifest entry is invalid"),
     ("summary", "snapshot manifest summary is inconsistent"),
 ))
 def test_store_integrity_does_not_authorize_invalid_manifest_inventory(tmp_path, mutation, message) -> None:
@@ -351,8 +351,11 @@ def test_store_integrity_does_not_authorize_invalid_manifest_inventory(tmp_path,
     tampered = (json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n").encode("ascii")
     invalid = store.put(tampered, privacy=reference.privacy)
     assert store.verify(invalid)
-    with store.open_stream(invalid) as stream, pytest.raises(ValueError, match=message):
+    with store.open_stream(invalid) as stream, pytest.raises(ValueError, match=message) as refused:
         PortableSnapshotManifest.from_bytes(stream.read())
+    if mutation == "escape":
+        # Decoder normalization retains the path validator as the refusal cause.
+        assert str(refused.value.__cause__) == "artifact path is not portable"
     assert store.read(reference) == original
     assert PortableSnapshotManifest.from_bytes(original).manifest_id == manifest.manifest_id
     assert store.delete(invalid) is True

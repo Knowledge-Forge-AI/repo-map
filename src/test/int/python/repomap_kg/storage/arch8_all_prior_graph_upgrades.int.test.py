@@ -346,7 +346,9 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                         "CREATE TABLE divergent_table (id integer);\n"
                     ),
                 )
-                with pytest.raises(LocalDbBackupError, match="unsupported-preledger-schema"):
+                with pytest.raises(
+                    LocalDbBackupError, match="target is not a supported pre-ledger graph schema"
+                ) as refused:
                     upgrade_graph_schema(
                         home, timestamp="20260101T000003Z",
                         database="repomap_wave1_upgrade",
@@ -354,6 +356,9 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                         confirmed=True,
                         command_runner=db_runner,
                     )
+                assert [item.code for item in refused.value.diagnostics] == [
+                    "unsupported-preledger-schema"
+                ]
 
                 # Both successful adoption and divergent-schema refusal own a
                 # disposable reference database; each must clean its exact target.

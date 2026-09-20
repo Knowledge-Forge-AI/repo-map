@@ -11,6 +11,7 @@ from repomap_kg.graph.keys import nix_app_key, nix_package_key
 from repomap_kg.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
+    source_definition_id,
     source_selection_policy_id,
 )
 from repomap_kg.graph.multi_source_pipeline import (
@@ -187,7 +188,7 @@ class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
             helper_binding = OpsGraphSourceBindingConfig(
                 schema_version=1,
                 binding_id=graph_source_binding_id(graph.id, "helper"),
-                source_definition_id=f"src2:{graph.id}-helper",
+                source_definition_id=source_definition_id(f"{graph.id}-helper"),
                 alias="helper",
                 revision=1,
                 source_kind=SourceKind.FOLDER,
@@ -289,11 +290,11 @@ class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
             escaping_flake = (
                 "{\n"
                 "  outputs = { self, nixpkgs }: {\n"
-                "    formatter.x86_64-linux = ./formatter.nix;\n"
-                "    overlays.default = ./overlay.nix;\n"
+                "    formatter.x86_64-linux = import ./formatter.nix;\n"
+                "    overlays.default = import ./overlay.nix;\n"
                 "    nixosModules = {\n"
-                "      default = ./modules/clean.nix;\n"
-                "      escaping = ../escaping.nix;\n"
+                "      default = import ./modules/clean.nix;\n"
+                "      escaping = import ../escaping.nix;\n"
                 "    };\n"
                 "  };\n"
                 "}\n"
@@ -316,9 +317,9 @@ class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
             clean_flake = (
                 "{\n"
                 "  outputs = { self, nixpkgs }: {\n"
-                "    formatter.x86_64-linux = ./formatter.nix;\n"
-                "    overlays.default = ./overlay.nix;\n"
-                "    nixosModules.default = ./modules/clean.nix;\n"
+                "    formatter.x86_64-linux = import ./formatter.nix;\n"
+                "    overlays.default = import ./overlay.nix;\n"
+                "    nixosModules.default = import ./modules/clean.nix;\n"
                 "  };\n"
                 "}\n"
             )
@@ -326,12 +327,13 @@ class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
             repaired = capture_multi_source_candidate(graph)
             self.assertNotEqual(repaired.source_generation, escaping_bundle.source_generation)
             repaired_canonical = canonicalize_observations(repaired.observations)
+            self.assertTrue(repaired_canonical.ok, repaired_canonical.diagnostics)
             self.assertNotIn("repo_escaping_path", {d.category for d in repaired_canonical.diagnostics})
             self.assertFalse(any(
                 e.target_key == "unknown:file:repo-escaping-nix-import"
                 for e in repaired_canonical.graph.edges
             ))
             self.assertIn(
-                ("file:primary/flake.nix", "imports", "file:primary/modules/clean.nix"),
+                ("file:primary/flake.nix", "sources", "file:primary/modules/clean.nix"),
                 {(e.source_key, e.kind, e.target_key) for e in repaired_canonical.graph.edges},
             )

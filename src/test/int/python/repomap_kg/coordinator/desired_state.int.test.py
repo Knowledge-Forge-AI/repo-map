@@ -7,6 +7,7 @@ from threading import Event
 from types import SimpleNamespace
 import time
 from typing import Sequence
+import uuid
 
 import psycopg
 
@@ -314,23 +315,19 @@ class TestDesiredStateControlIntegration:
             ).fetchall()
         assert rows == [("alpha", "queued"), ("delta", "queued"), ("gamma", "queued")]
 
-    def test_configured_refresh_resolver_reconciliation_and_stale_generation(
-        self, monkeypatch
-    ):
+    def test_configured_refresh_resolver_reconciliation_and_stale_generation(self, monkeypatch):
         with tempfile.TemporaryDirectory(prefix="repomap-poll-cfg-") as temporary:
-            root = Path(temporary)
-            repo = root / "repo"
+            root, repo = Path(temporary), Path(temporary) / "repo"
             repo.mkdir()
             (repo / "entry.py").write_text("print('v1')\n", encoding="utf-8")
             monkeypatch.setenv("REPOMAP_POLLING_TEST_PASSWORD", self.postgres.password)
-            apply_migrations(
-                default_rdbms_root(),
-                self.postgres.psql_args,
-                psql_command=self.postgres.psql_command,
-            )
-            config_path = root / "configured.rp.toml"
-            config_path.write_text(
-                f'''schema_version = 1
+            graph_pg = self.postgres.create_database(f"repomap_poll_{uuid.uuid4().hex[:8]}")
+            graph_db = graph_pg.database
+            try:
+                apply_migrations(default_rdbms_root(), graph_pg.psql_args,
+                                 psql_command=graph_pg.psql_command)
+                config_path = root / "configured.rp.toml"
+                config_path.write_text(f'''schema_version = 1
 [service]
 mode = "local"
 mcp_transport = "stdio"
@@ -338,7 +335,7 @@ log_level = "info"
 [postgres]
 host = "{self.postgres.host}"
 port = {self.postgres.port}
-database = "{self.postgres.database}"
+database = "{graph_pg.database}"
 user = "{self.postgres.user}"
 password_env = "REPOMAP_POLLING_TEST_PASSWORD"
 [[graphs]]
@@ -355,43 +352,48 @@ refresh_policy = "polling"
 enabled = false
 path = "disabled"
 mode = "read_only"
-''',
-                encoding="utf-8",
-            )
-            resolver = ConfiguredRefreshResolver(
-                config_path, Path(self.postgres.psql_command)
-            )
-            reconciler = DesiredStateReconciler(resolver, self.store)
-            first = reconciler.reconcile_graph("cfg-poll")
-            assert first.category == "refresh_requested" and first.refresh_requested
-            replay = reconciler.reconcile_graph("cfg-poll")
-            assert replay.category == "refresh_coalesced" and not replay.refresh_requested
-            with self._connect() as connection:
-                snap = resolver.polling_snapshot("cfg-poll")
-                source_generation = snap.source.generation
-                assert source_generation is not None
-                repository = connection.execute(
-                    "INSERT INTO repositories(name, root_path) VALUES (%s, %s) "
-                    "RETURNING id",
-                    ("cfg-poll", str(repo)),
-                ).fetchone()
-                assert repository is not None
-                connection.execute(
-                    "INSERT INTO runs (repository_id, status, finished_at, "
-                    "publication_job_id, publication_attempt, "
-                    "source_generation, config_generation, extractor_generation, canonicalizer_generation) "
-                    "VALUES (%s, 'complete', now(), 'job-prev', 1, %s, %s, %s, %s)",
-                    (
-                        repository[0],
-                        source_generation,
-                        snap.config_generation,
-                        snap.extractor_generation,
-                        snap.canonicalizer_generation,
-                    ),
+''', encoding="utf-8")
+                resolver = ConfiguredRefreshResolver(config_path, Path(self.postgres.psql_command))
+                reconciler = DesiredStateReconciler(resolver, self.store)
+                first = reconciler.reconcile_graph("cfg-poll")
+                assert first.category == "refresh_requested" and first.refresh_requested
+                replay = reconciler.reconcile_graph("cfg-poll")
+                assert replay.category == "refresh_coalesced" and not replay.refresh_requested
+                with psycopg.connect(
+                    host=graph_pg.host, port=graph_pg.port, user=graph_pg.user,
+                    dbname=graph_pg.database, password=graph_pg.password,
+                ) as connection:
+                    snap = resolver.polling_snapshot("cfg-poll")
+                    source_generation = snap.source.generation
+                    assert source_generation is not None
+                    repository = connection.execute(
+                        "INSERT INTO repositories(name, root_path) VALUES (%s, %s) RETURNING id",
+                        ("cfg-poll", str(repo)),
+                    ).fetchone()
+                    assert repository is not None
+                    connection.execute(
+                        "INSERT INTO runs (repository_id, status, finished_at, "
+                        "publication_job_id, publication_attempt, "
+                        "source_generation, config_generation, extractor_generation, canonicalizer_generation) "
+                        "VALUES (%s, 'complete', now(), 'job-prev', 1, %s, %s, %s, %s)",
+                        (repository[0], source_generation, snap.config_generation,
+                         snap.extractor_generation, snap.canonicalizer_generation),
+                    )
+                assert reconciler.reconcile_graph("cfg-poll").category == "current"
+                (repo / "entry.py").write_text("print('v2')\n", encoding="utf-8")
+                drifted = reconciler.reconcile_graph("cfg-poll")
+                assert drifted.category == "refresh_requested" and drifted.refresh_requested
+                assert reconciler.reconcile_graph("missing-graph").category == "configuration_invalid"
+            finally:
+                self.postgres.psql_scalar(
+                    f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+                    f"WHERE datname = '{graph_db}' AND pid <> pg_backend_pid();"
                 )
-            assert reconciler.reconcile_graph("cfg-poll").category == "current"
-            (repo / "entry.py").write_text("print('v2')\n", encoding="utf-8")
-            drifted = reconciler.reconcile_graph("cfg-poll")
-            assert drifted.category == "refresh_requested" and drifted.refresh_requested
-            invalid = reconciler.reconcile_graph("missing-graph")
-            assert invalid.category == "configuration_invalid"
+                self.postgres.psql_scalar(f'DROP DATABASE IF EXISTS "{graph_db}";')
+                assert self.postgres.psql_scalar(
+                    f"SELECT count(*) FROM pg_database WHERE datname = '{graph_db}';"
+                ) == "0"
+            with self._connect() as control_connection:
+                assert control_connection.execute(
+                    "SELECT to_regclass('public.repositories')"
+                ).fetchone() == (None,)

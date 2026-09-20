@@ -22,7 +22,7 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from repomap_kg.artifacts.bundle import PublicationBundle
 from repomap_kg.artifacts.receipt import ExtractionReceipt
 from repomap_kg.artifacts.references import ArtifactReference
 from repomap_kg.artifacts.source_sealer import seal_configured_sources
@@ -35,6 +35,7 @@ from repomap_kg.coordinator._portable_capability import (
 from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
 from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
 from repomap_kg.storage.errors import StorageSchemaError
+from repomap_test_support.run25_durable_families import assert_durable_families
 from repomap_kg.storage.main import apply_migrations, default_rdbms_root
 from repomap_kg.storage.publication import PortablePublicationBinding, RunPublicationReceipt
 from repomap_kg.storage.publication_fencing import MergeContext, PublicationHandoff
@@ -59,10 +60,13 @@ from repomap_test_support.portable_worker_scenarios import (
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
 
+
+
 @pytest.mark.parametrize("corpus,curated_fixture_paths,expected_kinds", PORTABLE_SUCCESS_CORPORA,
                          ids=[case[0] for case in PORTABLE_SUCCESS_CORPORA])
 def test_worker_produced_portable_bundle_durable_publication_readback_and_reconciliation(
     corpus: str, curated_fixture_paths: tuple[str, ...], expected_kinds: tuple[str, ...],
+    record_property,
 ) -> None:
     require_postgres_binaries()
     with tempfile.TemporaryDirectory(prefix="repomap-durable-worker-") as temporary:
@@ -296,35 +300,10 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
                     (stage_id_for_authority(authority),),
                 ) == ("published", "committed", "reconciled", "eligible")
 
-                for family in PUBLICATION_FAMILIES:
-                    if family in ("canonical_evidence", "raw_observations"):
-                        query = f"SELECT count(*) FROM {family} WHERE run_id = %s"
-                    elif family in ("canonical_node_evidence", "canonical_edge_evidence"):
-                        query = f"SELECT count(*) FROM {family} l JOIN canonical_evidence e ON e.id = l.canonical_evidence_id WHERE e.run_id = %s"
-                    else:
-                        query = f"SELECT count(*) FROM {family} WHERE last_seen_run_id = %s"
-                    assert _row(connection, query, (summary.run_id,))[0] == bundle.family_counts[family]
-
-                actual_nodes = connection.execute(
-                    "SELECT canonical_key, kind FROM canonical_nodes "
-                    "WHERE last_seen_run_id = %s ORDER BY canonical_key",
-                    (summary.run_id,),
-                ).fetchall()
-                expected_nodes = sorted(
-                    (r["canonical_key"], r["kind"]) for r in bundle.families["canonical_nodes"]
+                initial_counts = assert_durable_families(
+                    connection, bundle, summary.repository_id, summary.run_id,
+                    record_property=record_property,
                 )
-                assert actual_nodes == expected_nodes
-
-                actual_edges = connection.execute(
-                    "SELECT source_canonical_key, edge_kind, target_canonical_key FROM canonical_edges "
-                    "WHERE last_seen_run_id = %s ORDER BY source_canonical_key, edge_kind, target_canonical_key",
-                    (summary.run_id,),
-                ).fetchall()
-                expected_edges = sorted(
-                    (r["source_canonical_key"], r["edge_kind"], r["target_canonical_key"])
-                    for r in bundle.families["canonical_edges"]
-                )
-                assert actual_edges == expected_edges
 
             # 8. Idempotent replay preserves run identity
             replay_summary = run_staged_portable_refresh(
@@ -332,6 +311,12 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
                 root_path=f"graph:{config.id}", authority=authority, portable_binding=binding,
             )
             assert replay_summary.run_id == summary.run_id and replay_summary.repository_id == summary.repository_id
+            with psycopg.connect(make_conninfo(**params)) as connection:
+                replay_counts = assert_durable_families(
+                    connection, bundle, summary.repository_id, summary.run_id,
+                    record_property=record_property,
+                )
+                assert replay_counts == initial_counts
 
             # 9. Authority/binding fencing epoch mismatch refusal
             mismatched_authority = replace(authority, singleton_fencing_epoch=999)

@@ -192,9 +192,17 @@ class ShellPipelineBoundariesIntegrationTests(unittest.TestCase):
             canonicalizer_generation=manifest.canonicalizer_generation,
             max_artifact_bytes=10 * 1024 * 1024, max_bundle_bytes=10 * 1024 * 1024,
         )
+        # Retain malformed generation syntax validation coverage.
+        for malformed in ("src1:stale", "invalid", "", "sg1:"):
+            with self.assertRaises(ValueError):
+                replace(capability, source_generation=malformed).validate()
+        with self.assertRaises(ValueError):
+            create_portable_capability(private, replace(capability, source_generation="src1:stale"))
+
         cases = (
             ("success", None, capability),
-            ("contract_validation", "contract_validation", replace(capability, source_generation="src1:stale")),
+            ("contract_validation", "contract_validation", replace(capability, source_generation="sg1:stale")),
+            ("config_mismatch", "contract_validation", replace(capability, config_generation="cg1:stale")),
             ("graph_mismatch", "contract_validation", replace(capability, graph_id="portable-mismatch")),
         )
         for name, failure_category, supplied in cases:

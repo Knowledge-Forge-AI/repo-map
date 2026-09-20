@@ -251,12 +251,8 @@ password_env = "ARCH5B_REFRESH_PASSWORD"
 [[graphs]]
 id = "configured-refresh"
 name = "Configured Refresh"
-root_path = "{repository}"
-repository_name = "configured-refresh"
-privacy = "public-dev"
 enabled = true
 mcp_visible = false
-extractor_profile = "default"
 refresh_policy = "manual"
 
 [[graphs.source_bindings]]
