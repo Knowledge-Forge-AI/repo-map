@@ -15,6 +15,7 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 import tempfile
+import shutil
 
 import psycopg
 from psycopg.conninfo import make_conninfo
@@ -67,6 +68,27 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
             "        return f'processed:{item}'\n",
             encoding="utf-8",
         )
+
+        fixtures = Path(__file__).parents[4] / "fixtures"
+        shutil.copytree(fixtures / "shell", src_dir / "shell")
+        shutil.copytree(fixtures / "powershell", src_dir / "powershell")
+        selected_fixture_paths = tuple(
+            sorted(
+                path.relative_to(fixtures).as_posix()
+                for folder in ("shell", "powershell")
+                for path in (fixtures / folder).rglob("*")
+                if path.is_file()
+            )
+        )
+        expected_source_paths = tuple(sorted(("service.py", *selected_fixture_paths)))
+        actual_source_paths = tuple(
+            sorted(
+                path.relative_to(src_dir).as_posix()
+                for path in src_dir.rglob("*")
+                if path.is_file()
+            )
+        )
+        assert actual_source_paths == expected_source_paths
 
         store_root = root / "artifact_store"
         store_root.mkdir(mode=0o700)
@@ -135,7 +157,34 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
         assert receipt.bundle_id == bundle.bundle_id
         assert receipt.snapshot_manifest_id == manifest.manifest_id
         assert bundle.candidate_id == candidate_id
-        assert bundle.family_counts["files"] == 1 and bundle.family_counts["canonical_nodes"] > 0
+        source_alias = config.effective_source_bindings[0].alias
+        expected_published_file_paths = tuple(
+            f"{source_alias}/{relative_path}" for relative_path in expected_source_paths
+        )
+        published_file_paths = tuple(
+            sorted(str(row["path"]) for row in bundle.families["files"])
+        )
+        assert published_file_paths == expected_published_file_paths
+        assert bundle.family_counts["files"] == len(expected_published_file_paths)
+        assert bundle.family_counts["canonical_nodes"] > 0
+
+        representative_node_kinds = {
+            f"{source_alias}/shell/bash/basic.bash": "bash.script",
+            f"{source_alias}/shell/zsh/basic.zsh": "zsh.script",
+            f"{source_alias}/shell/awk/basic.awk": "awk.program",
+            f"{source_alias}/powershell/Advanced.Module.psd1": "powershell.manifest",
+            f"{source_alias}/shell/bats/basic.bats": "bats.file",
+            f"{source_alias}/shell/zunit/basic.zunit": "zunit.file",
+        }
+        for fixture_path, expected_kind in representative_node_kinds.items():
+            matching_nodes = [
+                row
+                for row in bundle.families["canonical_nodes"]
+                if row["display_name"] == fixture_path and row["kind"] == expected_kind
+            ]
+            assert len(matching_nodes) == 1, (fixture_path, expected_kind)
+        assert list(ws.iterdir()) == []
+        assert list(priv_dir.iterdir()) == []
 
         # 4. Bound authority and portable binding matching worker outputs
         authority = IngestionAuthority(

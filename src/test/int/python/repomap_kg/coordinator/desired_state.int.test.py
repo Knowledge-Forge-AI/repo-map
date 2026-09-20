@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+from pathlib import Path
+import tempfile
 from threading import Event
 from types import SimpleNamespace
 import time
@@ -12,7 +14,9 @@ from repomap_kg.coordinator.contracts import normalize_request
 from repomap_kg.coordinator.desired_state import DesiredStateReconciler
 from repomap_kg.coordinator.polling import PollingScheduler
 from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.ops.source_generation import SourceGenerationResult
+from repomap_kg.ops.source_generation import (
+    SourceGenerationLimits, SourceGenerationResult, scan_source_generation,
+)
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
@@ -76,6 +80,24 @@ class _MultiGraphPollingResolver:
         return None
 
 
+class _FilesystemPollingResolver(_PollingResolver):
+    """Exercise real bounded inventory with the durable reconciliation store."""
+
+    def __init__(self, root: Path) -> None:
+        super().__init__()
+        self.root = root
+        self.limits = SourceGenerationLimits(chunk_bytes=3)
+
+    def polling_snapshot(
+        self, graph_id: str, *, cancel_event: Event | None = None
+    ) -> SimpleNamespace:
+        self.source = scan_source_generation(
+            self.root, exclude_paths=("generated/*", "*.cache", "vendor"),
+            limits=self.limits, cancel_event=cancel_event,
+        )
+        return super().polling_snapshot(graph_id, cancel_event=cancel_event)
+
+
 def _request(source: str, *, graph_id: str = "polling-graph"):
     return normalize_request(
         {
@@ -96,6 +118,71 @@ def _request(source: str, *, graph_id: str = "polling-graph"):
 
 
 class TestDesiredStateControlIntegration:
+    def test_filesystem_polling_preserves_identity_and_refuses_unsafe_inventory(self):
+        with tempfile.TemporaryDirectory(prefix="repomap-poll-inventory-") as temporary:
+            root = Path(temporary) / "source"
+            root.mkdir()
+            (root / "lib").mkdir()
+            source = root / "lib" / "deploy.sh"
+            source.write_text("echo first\n", encoding="utf-8")
+            for directory in ("generated", "vendor", ".git"):
+                (root / directory).mkdir()
+                (root / directory / "ignored.sh").write_text("ignored", encoding="utf-8")
+            (root / "build.cache").write_text("ignored", encoding="utf-8")
+            resolver = _FilesystemPollingResolver(root)
+            reconciler = DesiredStateReconciler(resolver, self.store)
+            first = reconciler.reconcile_graph("filesystem-graph")
+            assert first.to_public() == {
+                "category": "refresh_requested", "refresh_requested": True,
+                "file_count": 1, "total_bytes": len(b"echo first\n"),
+            }
+            initial_generation = resolver.source.generation
+            (root / "generated" / "ignored.sh").write_text("changed", encoding="utf-8")
+            assert reconciler.reconcile_graph("filesystem-graph").category == "refresh_coalesced"
+            assert resolver.source.generation == initial_generation
+            source.write_text("echo second\n", encoding="utf-8")
+            assert reconciler.reconcile_graph("filesystem-graph").category == "refresh_requested"
+            assert resolver.source.generation != initial_generation
+            with self._connect() as connection:
+                assert connection.execute(
+                    "SELECT state FROM jobs WHERE graph_id = %s ORDER BY submitted_at, job_id",
+                    ("filesystem-graph",),
+                ).fetchall() == [("superseded",), ("queued",)]
+            resolver.publication = {
+                "source_generation": resolver.source.generation,
+                "config_generation": _generation("cg1:", "config"),
+                "extractor_generation": _generation("eg1:", "extractor"),
+                "canonicalizer_generation": _generation("kg1:", "canonicalizer"),
+            }
+            assert reconciler.reconcile_graph("filesystem-graph").category == "current"
+            unsafe = root / "linked.sh"
+            unsafe.symlink_to(source)
+            assert reconciler.reconcile_graph("filesystem-graph").category == "source_invalid"
+            unsafe.unlink()
+            for limits in (
+                SourceGenerationLimits(max_file_bytes=3),
+                SourceGenerationLimits(max_total_bytes=3),
+            ):
+                resolver.limits = limits
+                outcome = reconciler.reconcile_graph("filesystem-graph")
+                assert outcome.category == "source_limit_exceeded"
+                assert not outcome.refresh_requested
+                assert resolver.source.generation is None
+            resolver.limits = SourceGenerationLimits(chunk_bytes=3)
+            assert reconciler.reconcile_graph("filesystem-graph").category == "current"
+            resolver.publication = {"source_generation": initial_generation}
+            assert reconciler.reconcile_graph("filesystem-graph").category == "publication_unavailable"
+            reconciler.cancel()
+            assert reconciler.reconcile_graph("filesystem-graph").category == "cancelled"
+            with self._connect() as connection:
+                assert connection.execute(
+                    "SELECT count(*) FROM jobs WHERE graph_id = %s", ("filesystem-graph",),
+                ).fetchone() == (2,)
+                assert connection.execute(
+                    "SELECT reason_categories FROM coalescing_state WHERE graph_id = %s",
+                    ("filesystem-graph",),
+                ).fetchone() == (["publication_unavailable"],)
+
     def setup_method(self):
         require_postgres_binaries()
         self.postgres_context = temporary_postgres()

@@ -328,3 +328,56 @@ VALUES (
         assert latest.receipt == summary.publication_receipt
         with _connect(postgres) as connection:
             assert connection.execute("SELECT path FROM files").fetchall() == [("src/current.py",)]
+
+
+def test_existing_stage_state_published_replay_and_active_conflict() -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        _migrate(postgres)
+        auth = _authority("replay-op")
+        stage_id = "stage-replay"
+        first_summary = _refresh(postgres, auth, stage_id, path="src/replay.py")
+        assert first_summary.files == 1
+
+        replayed = _refresh(postgres, auth, stage_id, path="src/replay.py")
+        assert replayed == first_summary
+
+        auth = _authority("active-op")
+        active_stage = "stage-active"
+        with _connect(postgres) as connection:
+            repo_row = connection.execute("SELECT id FROM repositories LIMIT 1").fetchone()
+            assert repo_row is not None and isinstance(repo_row[0], int)
+            repo_id = repo_row[0]
+            owner = auth.owner(repo_id)
+            connection.execute(
+                """
+INSERT INTO ingestion_stages(
+    stage_id, repository_id, operation_id, job_id, attempt, execution_mode,
+    coordinator_instance_id, singleton_fencing_epoch, graph_lease_fencing_epoch,
+    source_generation, config_generation, extractor_generation,
+    canonicalizer_generation, state, created_at, updated_at, expires_at,
+    validation_status, merge_status, publication_reconciliation_state,
+    cleanup_eligibility
+) VALUES (
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'validating',
+    now(), now(), now() + interval '1 day', 'running', 'idle', 'unreconciled', 'ineligible'
+)""",
+                (
+                    active_stage, repo_id, str(owner.operation_id),
+                    str(owner.job_id) if owner.job_id else None,
+                    int(owner.attempt), owner.execution_mode,
+                    owner.coordinator_instance_id,
+                    owner.singleton_fencing_epoch, owner.graph_lease_fencing_epoch,
+                    owner.source_generation, owner.config_generation,
+                    owner.extractor_generation, owner.canonicalizer_generation,
+                ),
+            )
+            connection.commit()
+
+        with pytest.raises(StorageSchemaError, match="staged operation is already active"):
+            _refresh(postgres, auth, active_stage, path="src/replay.py")
+
+
+        with _connect(postgres) as connection:
+            assert connection.execute("SELECT path FROM files").fetchall() == [("src/replay.py",)]
+            assert connection.execute("SELECT count(*) FROM runs").fetchone() == (1,)

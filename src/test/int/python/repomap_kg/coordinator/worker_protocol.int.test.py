@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import json
 import sys
 import time
 from pathlib import Path
@@ -8,7 +9,12 @@ import os
 
 import pytest
 
-from repomap_kg.coordinator.protocol import ProtocolError
+from repomap_kg.coordinator.protocol import (
+    ProtocolError,
+    WorkerLaunchError,
+    WorkerLaunchSpec,
+    run_worker_spec,
+)
 from repomap_test_support.synthetic_worker_adapter import (
     ALLOWED_SYNTHETIC_WORKER_MODES,
     run_synthetic_worker,
@@ -175,3 +181,60 @@ def test_fixture_mode_allowlist_remains_exact():
          "malformed_json", "oversized_line", "out_of_order_message",
          "duplicate_terminal", "heartbeat_loss", "stderr_flood"}
     )
+
+
+@pytest.mark.parametrize(("fault", "expected"), [
+    ("foreign-job", "identity_mismatch"),
+    ("reversed-time", "invalid_value"),
+    ("uncommitted-success", "invalid_value"),
+    ("unsupported-version", "negotiation_failed"),
+    ("unsupported-capability", "negotiation_failed"),
+])
+def test_wire_refusal_waits_for_child_and_never_accepts_false_publication(fault, expected):
+    # A real child negotiates, receives the actual start, then violates its contract.
+    # Only the wire peer is synthetic; codec, session, supervision and cleanup are real.
+    script = """
+import json, sys, time
+fault = sys.argv[1]
+hello = dict(schema_version=1, message_type="worker_hello", protocol_versions=[1],
+             capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="fixture")
+if fault == "unsupported-version": hello["protocol_versions"] = [99]
+if fault == "unsupported-capability": hello["capabilities"] = ["unsupported"]
+print(json.dumps(hello), flush=True)
+start = json.loads(sys.stdin.readline())
+terminal = dict(start, message_type="result", phase="complete",
+    started_at="2026-09-20T12:00:00.000000Z", finished_at="2026-09-20T12:01:00.000000Z",
+    extractor_generation="eg1:fixture", canonicalizer_generation="kg1:fixture",
+    files=1, observations=1, canonical_nodes=1, canonical_edges=0, warnings=[], diagnostics=[],
+    status="succeeded", publication_state="committed", retryable=False,
+    latest_run_identity="run-fixture", error_category=None)
+if fault == "foreign-job": terminal["job_id"] = "foreign-job"
+if fault == "reversed-time": terminal["started_at"] = "2026-09-20T12:02:00.000000Z"
+if fault == "uncommitted-success": terminal.update(publication_state="not_started", latest_run_identity=None)
+print(json.dumps(terminal), flush=True)
+time.sleep(10)
+"""
+    spec = WorkerLaunchSpec(
+        argv=(sys.executable, "-c", script, fault),
+        environment={"LANG": "C.UTF-8"}, cwd=Path(__file__).resolve().parents[6],
+    )
+    result = run_worker_spec(spec, IDENTITY, {
+        **LIMITS, "hello_deadline_seconds": 2.0, "heartbeat_seconds": 2.0,
+        "process_deadline_seconds": 5.0,
+    })
+    assert result.protocol_error == expected
+    assert result.terminal["message_type"] == "worker_exit"
+    assert result.terminal["reason"] == "protocol"
+    assert result.synthesized_terminal and result.waited and result.process_group_cleaned
+    assert result.cleanup_error is None
+    assert not any(message.get("publication_state") == "committed" for message in result.messages)
+    assert len(json.dumps(result.terminal)) < 4096
+
+
+def test_protocol_launch_refusal_does_not_create_a_worker(tmp_path):
+    spec = WorkerLaunchSpec(
+        argv=(str(tmp_path / "absent-worker"),), environment={"LANG": "C.UTF-8"}, cwd=tmp_path,
+    )
+    with pytest.raises(WorkerLaunchError, match="worker_launch_failed"):
+        run_worker_spec(spec, IDENTITY, LIMITS)
+    assert list(tmp_path.iterdir()) == []

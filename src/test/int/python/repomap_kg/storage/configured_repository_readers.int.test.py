@@ -8,6 +8,17 @@ from typing import Literal
 import pytest
 
 from repomap_kg.storage import StorageSchemaError, apply_migrations, default_rdbms_root, run_psql
+from repomap_kg.storage.canonical_readback_rows import (
+    canonical_edge_evidence_record_from_storage_payload,
+    canonical_edge_explanation_from_storage_payload,
+    canonical_edge_record_from_storage_payload,
+    canonical_neighborhood_from_storage_payload,
+    canonical_node_record_from_storage_payload,
+)
+from repomap_kg.storage.publication_readback import (
+    read_latest_receipt_bearing_publication,
+    read_run_publication,
+)
 from repomap_kg.storage.readback_driver import execute_json_readback
 from repomap_kg.storage.sql_canonical import (
     build_canonical_edge_query_sql,
@@ -116,21 +127,44 @@ def _read_all(database, root, marker):
     }
 
 
-def _assert_selected(database, root, marker, excluded):
+def _assert_selected(database, root, marker, excluded, expected_run_id):
     results = _read_all(database, root, marker)
     for name, result in results.items():
         encoded = json.dumps(result)
         assert marker in encoded, (name, result)
         assert excluded not in encoded, (name, result)
-    assert len(results["nodes"]) == 4
-    assert len(results["edges"]) == 3
+    assert results["status"]["root_path"] == root
+    assert results["status"]["repository_name"] == marker
+    assert results["status"]["latest_run_id"] == expected_run_id
+    assert (results["status"]["runs"], results["status"]["files"], results["status"]["raw_observations"], results["status"]["canonical_nodes"], results["status"]["canonical_edges"], results["status"]["canonical_evidence"]) == (1, 0, 1, 4, 3, 1)
+    expected_nodes = [
+        ("external.url:" + marker, "external.url", marker, {}),
+        ("feed.author:shared", "feed.author", marker, {}),
+        ("feed.category:shared", "feed.category", marker, {}),
+        (ITEM, "feed.item", marker, {"title": marker, "marker": marker}),
+    ]
+    assert [(row["canonical_key"], row["kind"], row["display_name"], row["metadata"]) for row in results["nodes"]] == expected_nodes
+    expected_edges = [
+        (ITEM, "references", "external.url:" + marker, HASH, {"scope": "link", "marker": marker}),
+        (ITEM, "references", "feed.author:shared", HASH, {}),
+        (ITEM, "references", "feed.category:shared", HASH, {}),
+    ]
+    assert [(row["source_key"], row["edge_kind"], row["target_key"], row["identity_metadata_hash"], row["metadata"]) for row in results["edges"]] == expected_edges
+    edge = results["edge_explanation"]["edge"]
+    assert (edge["source_key"], edge["edge_kind"], edge["target_key"], edge["identity_metadata_hash"], edge["metadata"]) == expected_edges[0]
     assert len(results["edge_explanation"]["evidence"]) == 1
-    assert len(results["items"]) == 1
-    assert results["items"][0]["authors"] == [marker]
-    assert results["items"][0]["categories"] == [marker]
-    assert results["items"][0]["link_targets"] == ["external.url:" + marker]
-    assert len(results["item_explanation"]["references"]) == 3
-    assert len(results["references"]) == 3
+    evidence = results["edge_explanation"]["evidence"][0]
+    assert (evidence["evidence_key"], evidence["link_kind"], evidence["path"], evidence["extractor"], evidence["extractor_version"], evidence["confidence"]) == ("evidence:shared", "extracted", "feed.xml", "fixture", "1", "extracted")
+    assert evidence["metadata"] == {"title": marker, "marker": marker}
+    assert evidence["raw_observation"] == {"run_id": expected_run_id, "ordinal": 0, "payload_hash": HASH, "kind": "feed.item", "source_id": "fixture-feed"}
+    neighborhood = results["neighborhood"]
+    center = neighborhood["center"]
+    assert (center["canonical_key"], center["kind"], center["display_name"], center["metadata"]) == expected_nodes[-1]
+    assert [(row["canonical_key"], row["kind"], row["display_name"], row["metadata"]) for row in neighborhood["nodes"]] == expected_nodes[:3]
+    assert [(row["source_key"], row["edge_kind"], row["target_key"], row["identity_metadata_hash"], row["metadata"]) for row in neighborhood["edges"]] == expected_edges
+    item = results["items"][0]
+    assert (item["item_key"], item["title"], item["link_targets"], item["authors"], item["categories"], item["source_run_id"], item["artifact_id"], item["artifact_path"]) == (ITEM, marker, ["external.url:" + marker], [marker], [marker], marker, marker, marker + ".xml")
+    assert [(row["source_item_key"], row["relation"], row["target_key"], row["source_run_id"], row["artifact_id"], row["artifact_path"]) for row in results["references"]] == [(ITEM, "references", target, marker, marker, marker + ".xml") for target in ("external.url:" + marker, "feed.author:shared", "feed.category:shared")]
 
 
 def _assert_empty(database, root):
@@ -150,7 +184,7 @@ def test_all_configured_readers_keep_identity_across_portable_and_relocated_root
     with temporary_postgres() as database:
         apply_migrations(default_rdbms_root(), database.psql_args, psql_command=database.psql_command)
         _insert_repository(database, 20, "current", "graph:fixture", IDENTITY)
-        _assert_selected(database, ROOT, "current", "legacy")
+        _assert_selected(database, ROOT, "current", "legacy", expected_run_id=20)
         with pytest.raises(StorageSchemaError, match="duplicate key"):
             _execute(database, """
 INSERT INTO repositories(name, root_path, repository_identity)
@@ -159,10 +193,10 @@ VALUES ('collision', '/workspace/collision', 'repo1:fixture');
 
         # Lower-ID legacy content with colliding keys cannot leak into current data.
         _insert_repository(database, 10, "legacy", ROOT, None)
-        _assert_selected(database, ROOT, "current", "legacy")
-        _assert_selected(database, "/workspace/relocated-config", "current", "legacy")
+        _assert_selected(database, ROOT, "current", "legacy", expected_run_id=20)
+        _assert_selected(database, "/workspace/relocated-config", "current", "legacy", expected_run_id=20)
         _execute(database, "UPDATE repositories SET root_path = '/workspace/stored-b' WHERE id = 20;")
-        _assert_selected(database, ROOT, "current", "legacy")
+        _assert_selected(database, ROOT, "current", "legacy", expected_run_id=20)
 
         # Content filtering must not cause selection to fall back to the legacy row.
         _execute(database, """
@@ -173,8 +207,101 @@ DELETE FROM raw_observations WHERE repository_id = 20;
 """)
         _assert_empty(database, ROOT)
         _execute(database, "DELETE FROM repositories WHERE id = 20;")
-        _assert_selected(database, ROOT, "legacy", "current")
+        _assert_selected(database, ROOT, "legacy", "current", expected_run_id=10)
 
         # An unrelated identity at the physical root is ineligible as fallback.
         _execute(database, "UPDATE repositories SET repository_identity = 'repo1:unrelated' WHERE id = 10;")
         _assert_empty(database, ROOT)
+
+
+def test_canonical_reader_pagination_and_neighborhood_directions() -> None:
+    with temporary_postgres() as database:
+        apply_migrations(default_rdbms_root(), database.psql_args, psql_command=database.psql_command)
+        _insert_repository(database, 20, "current", ROOT, IDENTITY)
+
+        with pytest.raises(StorageSchemaError, match="neighborhood direction must be one of both, in, out"):
+            build_canonical_neighborhood_query_sql(ROOT, node=ITEM, direction="unsupported")
+        expected_center = (ITEM, "feed.item", "current")
+        expected_neighbors = [
+            ("external.url:current", "external.url", "current"),
+            ("feed.author:shared", "feed.author", "current"),
+            ("feed.category:shared", "feed.category", "current"),
+        ]
+        expected_edges = [
+            (ITEM, "references", "external.url:current", HASH),
+            (ITEM, "references", "feed.author:shared", HASH),
+            (ITEM, "references", "feed.category:shared", HASH),
+        ]
+
+        def assert_neighborhood(payload, nodes, edges):
+            center = payload["center"]
+            assert (center["canonical_key"], center["kind"], center["display_name"]) == expected_center
+            assert [(row["canonical_key"], row["kind"], row["display_name"]) for row in payload["nodes"]] == nodes
+            assert [(row["source_key"], row["edge_kind"], row["target_key"], row["identity_metadata_hash"]) for row in payload["edges"]] == edges
+
+        sql_both = build_canonical_neighborhood_query_sql(ROOT, node=ITEM, direction="both", repository_identity=IDENTITY)
+        both_res = execute_json_readback(sql_both, psql_args=database.psql_args, psql_command=database.psql_command, label="both", expected_shape="object")
+        assert_neighborhood(both_res, expected_neighbors, expected_edges)
+
+        sql_out = build_canonical_neighborhood_query_sql(ROOT, node=ITEM, direction="out", repository_identity=IDENTITY)
+        out_res = execute_json_readback(sql_out, psql_args=database.psql_args, psql_command=database.psql_command, label="out", expected_shape="object")
+        assert_neighborhood(out_res, expected_neighbors, expected_edges)
+
+        sql_in = build_canonical_neighborhood_query_sql(ROOT, node=ITEM, direction="in", repository_identity=IDENTITY)
+        in_res = execute_json_readback(sql_in, psql_args=database.psql_args, psql_command=database.psql_command, label="in", expected_shape="object")
+        assert_neighborhood(in_res, [], [])
+
+        sql_paginated = build_canonical_neighborhood_query_sql(
+            ROOT, node=ITEM, direction="both", node_limit=2, node_offset=0, edge_limit=1, edge_offset=0, repository_identity=IDENTITY,
+        )
+        pag_res = execute_json_readback(sql_paginated, psql_args=database.psql_args, psql_command=database.psql_command, label="pag", expected_shape="object")
+        assert_neighborhood(pag_res, expected_neighbors[:2], expected_edges[:1])
+
+
+def test_canonical_readback_row_parsers_and_publication_contracts() -> None:
+    with temporary_postgres() as database:
+        apply_migrations(default_rdbms_root(), database.psql_args, psql_command=database.psql_command)
+        _insert_repository(database, 20, "current", ROOT, IDENTITY)
+        results = _read_all(database, ROOT, "current")
+
+        node_rec = canonical_node_record_from_storage_payload(
+            {row["canonical_key"]: row for row in results["nodes"]}[ITEM]
+        )
+        assert node_rec.canonical_key == ITEM
+        assert node_rec.kind == "feed.item"
+        assert node_rec.display_name == "current"
+        assert node_rec.metadata == {"title": "current", "marker": "current"}
+
+        edge_rec = canonical_edge_record_from_storage_payload(results["edges"][0])
+        assert edge_rec.source_key == ITEM
+        assert edge_rec.edge_kind == "references"
+        assert edge_rec.target_key == "external.url:current"
+        assert edge_rec.identity_metadata_hash == HASH
+        assert edge_rec.metadata == {"scope": "link", "marker": "current"}
+
+        edge_exp = canonical_edge_explanation_from_storage_payload(results["edge_explanation"])
+        edge_payload = edge_exp.to_dict()["edge"]
+        assert (edge_payload["source_key"], edge_payload["edge_kind"], edge_payload["target_key"], edge_payload["identity_metadata_hash"]) == (ITEM, "references", "external.url:current", HASH)
+        assert len(edge_exp.evidence) == 1
+        assert edge_exp.evidence[0].evidence_key == "evidence:shared"
+        assert edge_exp.evidence[0].path == "feed.xml"
+        assert edge_exp.evidence[0].extractor == "fixture"
+
+        neigh = canonical_neighborhood_from_storage_payload(results["neighborhood"])
+        neigh_payload = neigh.to_dict()
+        assert (neigh_payload["center"]["canonical_key"], neigh_payload["center"]["kind"], neigh_payload["center"]["display_name"]) == (ITEM, "feed.item", "current")
+        assert [(row["canonical_key"], row["kind"], row["display_name"]) for row in neigh_payload["nodes"]] == [("external.url:current", "external.url", "current"), ("feed.author:shared", "feed.author", "current"), ("feed.category:shared", "feed.category", "current")]
+        assert [(row["source_key"], row["edge_kind"], row["target_key"], row["identity_metadata_hash"]) for row in neigh_payload["edges"]] == [(ITEM, "references", "external.url:current", HASH), (ITEM, "references", "feed.author:shared", HASH), (ITEM, "references", "feed.category:shared", HASH)]
+        assert len(neigh.edges) == 3
+
+        ev_rec = canonical_edge_evidence_record_from_storage_payload(results["edge_explanation"]["evidence"][0])
+        assert ev_rec.evidence_key == "evidence:shared"
+        assert ev_rec.link_kind == "extracted"
+        assert ev_rec.path == "feed.xml"
+
+        assert read_latest_receipt_bearing_publication(
+            database.psql_args, psql_command=database.psql_command,
+        ) is None
+        assert read_run_publication(
+            database.psql_args, job_id="missing-op", attempt=1, psql_command=database.psql_command,
+        ) is None

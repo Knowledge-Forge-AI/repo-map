@@ -354,3 +354,43 @@ class ApiGithubBulkSourceIngestionIntegrationTests(unittest.TestCase):
         self.assertIn('"no_source_mutation": true', payload)
         self.assertIn('"no_external_fetch": true', payload)
         self.assertNotIn(str(root), payload)
+
+    def test_github_config_refusal_precedes_artifact_acquisition(self):
+        fixture = github_api_fixture_root() / "readonly_public_repo"
+        changes = (
+            ('revoked = false', 'revoked = true', 'consent is revoked'),
+            ('authorized_operations = ["read"]', 'authorized_operations = ["write"]',
+             'consent authorized_operations must be read-only'),
+            ('max_pages_per_endpoint = 1', 'max_pages_per_endpoint = 2',
+             'max_pages_per_endpoint must be 1 in GITHUB_API1'),
+            ('max_concurrent_requests = 1', 'max_concurrent_requests = 2',
+             'max_concurrent_requests must be 1 in GITHUB_API1'),
+            ('max_retries = 0', 'max_retries = 1', 'max_retries must be 0 in GITHUB_API1'),
+            ('raw_response_retention = "minimized"', 'raw_response_retention = "retain"',
+             'retention.raw_response_retention must be minimized'),
+            ('profile = "strict"', 'profile = "lenient"', 'redaction.profile must be strict'),
+            ('method = "GET"', 'method = "POST"', 'GITHUB_API1 only allows GET endpoints'),
+            ('pagination = "none"', 'pagination = "page"',
+             'GitHub API acquisition only supports pagination = none in this phase'),
+            ('fixture_response_path = "responses/repository.json"',
+             'fixture_response_path = "../escape.json"',
+             'fixture_response_path must be a contained relative path'),
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config_path = root / "github-source.toml"
+            shutil.copytree(fixture / "responses", root / "responses")
+            original = (fixture / "github-source.toml").read_text(encoding="utf-8")
+            config_path.write_text(original, encoding="utf-8")
+            output = root / "output"
+            first = acquire_github_api_source(config_path, root_path=output, transport=FixtureGitHubApiTransport())
+            self.assertEqual(first.responses, 5)
+            before = {p.relative_to(output): p.read_bytes() for p in output.rglob("*") if p.is_file()}
+            for old, new, diagnostic in changes:
+                with self.subTest(setting=old):
+                    self.assertIn(old, original)
+                    config_path.write_text(original.replace(old, new), encoding="utf-8")
+                    with self.assertRaises(GitHubApiPolicyError) as refusal:
+                        acquire_github_api_source(config_path, root_path=output, transport=FixtureGitHubApiTransport())
+                    self.assertEqual(str(refusal.exception), diagnostic)
+                    self.assertEqual(before, {p.relative_to(output): p.read_bytes() for p in output.rglob("*") if p.is_file()})

@@ -1,12 +1,16 @@
 """Real configuration extraction refuses ambiguous keys and recovers after repair."""
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 import tempfile
 import unittest
 
 from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
+from repomap_kg.graph.multi_source import source_selection_policy_id
+from repomap_kg.graph.multi_source_pipeline import (
+    MultiSourceCaptureError, capture_multi_source_candidate, scan_multi_source_generations,
+)
 from repomap_test_support.composition_extraction_fixtures import (
     create_composition_graph_config,
     populate_shell_project,
@@ -14,6 +18,50 @@ from repomap_test_support.composition_extraction_fixtures import (
 
 
 class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
+    def test_excluded_configuration_cannot_change_candidate_and_repair_restores_identity(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="repomap-selection-recovery-") as temporary:
+            root = Path(temporary) / "project"
+            populate_shell_project(root)
+            generated = root / "generated"
+            generated.mkdir()
+            excluded = generated / "settings.yaml"
+            excluded.write_text("mode: first\nmode: conflicting\n", encoding="utf-8")
+            graph = create_composition_graph_config(root)
+            excludes = ("generated/*",)
+            binding = replace(
+                graph.source_bindings[0], exclude_paths=excludes,
+                selection_policy_id=source_selection_policy_id((), excludes),
+            )
+            graph = replace(graph, source_bindings=(binding,))
+            original = capture_multi_source_candidate(graph)
+            scanned = scan_multi_source_generations(graph)
+            self.assertEqual(scanned.source_generation, original.source_generation)
+            self.assertEqual(scanned.config_generation, original.config_generation)
+            self.assertFalse(any("generated" in item.path for item in original.observations))
+            excluded.write_text("mode: ignored-change\n", encoding="utf-8")
+            replay = capture_multi_source_candidate(graph)
+            self.assertEqual(replay.candidate, original.candidate)
+            self.assertEqual(replay.observations, original.observations)
+            visible = root / "settings.yaml"
+            visible.write_text("mode: live\n", encoding="utf-8")
+            changed = capture_multi_source_candidate(graph)
+            self.assertNotEqual(changed.source_generation, original.source_generation)
+            self.assertEqual(changed.config_generation, original.config_generation)
+            canonical = canonicalize_observations(changed.observations)
+            self.assertTrue(canonical.ok, canonical.diagnostics)
+            self.assertIn("file:primary/settings.yaml", {
+                node.canonical_key for node in canonical.graph.nodes
+            })
+            disabled = replace(graph, source_bindings=(replace(binding, enabled=False),))
+            with self.assertRaises(MultiSourceCaptureError) as refusal:
+                capture_multi_source_candidate(disabled)
+            self.assertEqual(refusal.exception.category, "source_invalid")
+            self.assertNotIn(str(root), str(refusal.exception))
+            visible.unlink()
+            restored = capture_multi_source_candidate(graph)
+            self.assertEqual(restored.source_generation, original.source_generation)
+            self.assertEqual(restored.candidate, original.candidate)
+
     def test_duplicate_yaml_key_is_attributed_and_repair_changes_source_identity(self) -> None:
         with tempfile.TemporaryDirectory(prefix="repomap-config-recovery-") as temporary:
             root = Path(temporary) / "project"

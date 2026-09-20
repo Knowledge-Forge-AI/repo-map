@@ -7,14 +7,19 @@ import pytest
 from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.test_scratch import short_test_directory
 from repomap_kg.coordinator.job_control import (
-    coordinator_job_status,
     coordinator_health,
+    coordinator_job_status,
+    format_coordinator_health_table,
+    format_coordinator_job_table,
+    format_coordinator_jobs_table,
     list_coordinator_jobs,
     wait_for_coordinator_job,
 )
 from repomap_kg.coordinator.local_mode import (
     CoordinatorModeError,
+    format_coordinator_refresh_table,
     run_coordinator_refresh,
+    serve_configured_coordinator,
     start_configured_coordinator,
 )
 from repomap_kg.coordinator.local_lifecycle import initialize_coordinator_control
@@ -145,6 +150,106 @@ def test_explicit_local_mode_launches_and_replays_configured_refresh(
                 assert row is not None
                 count = row[0]
             assert count == 1
+
+            # Rich semantic validations of table formatters
+            refresh_table = format_coordinator_refresh_table(first)
+            assert "RepoMap coordinator refresh result" in refresh_table
+            assert "result | success" in refresh_table
+            assert f"job_id | {first_job_id}" in refresh_table
+            assert "graph_id | configured-refresh" in refresh_table
+
+            health_table = format_coordinator_health_table(health)
+            assert "RepoMap coordinator health" in health_table
+            assert "health_schema_version | 1" in health_table
+            assert "status | ready" in health_table
+            assert "polling | running" in health_table
+
+            job_table = format_coordinator_job_table(resumed_status)
+            assert "RepoMap coordinator job" in job_table
+            assert f"job_id | {first_job_id}" in job_table
+            assert "state | succeeded" in job_table
+
+            jobs_table = format_coordinator_jobs_table(recent)
+            assert "RepoMap coordinator jobs" in jobs_table
+            assert first_job_id in jobs_table
+
+
+def test_local_mode_boundary_refusals_and_orderly_serve_lifecycle(
+    monkeypatch, tmp_path
+):
+    import threading
+
+    require_postgres_binaries()
+    with short_test_directory("async9-serve-", "coordinator/coordinator.sock") as directory:
+        home = Path(directory)
+        repository = home / "repository"
+        repository.mkdir()
+        (repository / "README.md").write_text("# Configured\n", encoding="utf-8")
+        authority = controlled_psql_copy(tmp_path).parent
+        monkeypatch.setenv("PATH", f"{authority}{os.pathsep}{os.environ['PATH']}")
+
+        with temporary_postgres() as postgres:
+            apply_migrations(
+                default_rdbms_root(),
+                postgres.psql_args,
+                psql_command=postgres.psql_command,
+            )
+            (home / "configured.rp.toml").write_text(
+                _configured_ops_text(postgres, repository), encoding="utf-8"
+            )
+            monkeypatch.setenv("ASYNC9_TEST_PASSWORD", postgres.password)
+            initialize_coordinator_control(home)
+            role_sql = render_database_role_sql(
+                database=postgres.database,
+                owner_role=postgres.user,
+                database_kind="graph",
+                secrets=read_role_secrets(home / "runtime" / ".env"),
+            )
+            with psycopg.connect(
+                host=postgres.host,
+                port=postgres.port,
+                user=postgres.user,
+                dbname=postgres.database,
+                password=postgres.password,
+            ) as connection:
+                connection.execute(role_sql)
+
+            # Parameter validation refusals
+            with pytest.raises(CoordinatorModeError, match="coordinator_wait_invalid"):
+                run_coordinator_refresh(
+                    home, "configured-refresh", "key-1", wait_timeout_seconds=0
+                )
+            with pytest.raises(CoordinatorModeError, match="coordinator_wait_invalid"):
+                run_coordinator_refresh(
+                    home, "configured-refresh", "key-1", wait_timeout_seconds=86_401
+                )
+            with pytest.raises(CoordinatorModeError, match="coordinator_wait_invalid"):
+                wait_for_coordinator_job(home, "job-any", wait_timeout_seconds=0)
+
+            # Serve startup wait validation refusals
+            with pytest.raises(CoordinatorModeError, match="coordinator_start_wait_invalid"):
+                serve_configured_coordinator(
+                    home, lambda _: None, startup_wait_seconds=-1
+                )
+            with pytest.raises(CoordinatorModeError, match="coordinator_start_wait_invalid"):
+                serve_configured_coordinator(
+                    home, lambda _: None, startup_wait_seconds=301
+                )
+
+            # Orderly serve_configured_coordinator lifecycle with stop_event
+            stop_event = threading.Event()
+            stop_event.set()
+            ready_payloads: list[dict[str, object]] = []
+            serve_configured_coordinator(
+                home,
+                ready_callback=lambda p: ready_payloads.append(dict(p)),
+                stop_event=stop_event,
+                startup_wait_seconds=5,
+            )
+            assert len(ready_payloads) == 1
+            assert ready_payloads[0]["result"] == "ready"
+            assert not (home / "coordinator" / "coordinator.sock").exists()
+
 
 
 def _configured_ops_text(postgres, repository: Path) -> str:
