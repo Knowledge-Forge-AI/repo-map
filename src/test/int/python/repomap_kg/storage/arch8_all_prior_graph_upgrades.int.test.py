@@ -186,8 +186,7 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                     encoding="utf-8",
                 )
 
-                with closing(psycopg.connect(**connection_args)) as admin:
-                    admin.execute(psycopg.sql.SQL("CREATE DATABASE repomap_wave1_upgrade OWNER {}").format(psycopg.sql.Identifier(postgres.user)))
+                upgrade_db = postgres.create_database("repomap_wave1_upgrade")
 
                 executed_commands: list[list[str]] = []
 
@@ -245,7 +244,7 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
 
                 migrations = discover_migrations(default_rdbms_root())
                 run_psql(
-                    [postgres.psql_command, *postgres.psql_args, "-d", "repomap_wave1_upgrade", "-X", "-v", "ON_ERROR_STOP=1"],
+                    [upgrade_db.psql_command, *upgrade_db.psql_args, "-X", "-v", "ON_ERROR_STOP=1"],
                     input_text=_migration_script(migrations[:1], initialize_ledger=True),
                 )
 
@@ -270,14 +269,10 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                 plan = build_local_runtime_plan(home)
                 expected_ledger = tuple((m.ordinal, m.changeset_id, m.relative_path, m.checksum) for m in migrations)
                 assert query_schema_ledger(plan, "repomap_wave1_upgrade", db_runner) == expected_ledger
-                psql_args_repomap = [
-                    arg for idx, arg in enumerate(postgres.psql_args)
-                    if arg != "-d" and (idx == 0 or postgres.psql_args[idx - 1] != "-d")
-                ] + ["-d", "repomap_wave1_upgrade"]
                 current = graph_schema_readiness(
                     default_rdbms_root(),
-                    psql_args_repomap,
-                    psql_command=postgres.psql_command,
+                    upgrade_db.psql_args,
+                    psql_command=upgrade_db.psql_command,
                 )
                 assert current.status is GraphSchemaStatus.CURRENT and current.ready is True
                 assert current.applied_count == len(migrations)
@@ -301,9 +296,18 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                         command_runner=db_runner,
                     )
 
+                preledger_ddl = "\n".join(
+                    m.path.read_text(encoding="utf-8").rstrip() for m in migrations
+                )
                 run_psql(
-                    [postgres.psql_command, *postgres.psql_args, "-d", "repomap_wave1_upgrade", "-X", "-v", "ON_ERROR_STOP=1"],
-                    input_text=f"DROP SCHEMA public CASCADE;\nCREATE SCHEMA public AUTHORIZATION {postgres.user};\n" + _migration_script(migrations, initialize_ledger=False),
+                    [upgrade_db.psql_command, *upgrade_db.psql_args, "-X", "-v", "ON_ERROR_STOP=1"],
+                    input_text=(
+                        f"DROP SCHEMA public CASCADE;\n"
+                        f"CREATE SCHEMA public AUTHORIZATION {postgres.user};\n"
+                        "BEGIN;\n"
+                        f"{preledger_ddl}\n"
+                        "COMMIT;\n"
+                    ),
                 )
 
                 pre_result = upgrade_graph_schema(
@@ -327,16 +331,20 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                 assert query_schema_ledger(plan, "repomap_wave1_upgrade", db_runner) == expected_ledger
                 current2 = graph_schema_readiness(
                     default_rdbms_root(),
-                    psql_args_repomap,
-                    psql_command=postgres.psql_command,
+                    upgrade_db.psql_args,
+                    psql_command=upgrade_db.psql_command,
                 )
                 assert current2.status is GraphSchemaStatus.CURRENT and current2.ready is True
                 assert current2.applied_count == len(migrations)
                 assert current2.expected_count == len(migrations)
 
                 run_psql(
-                    [postgres.psql_command, *postgres.psql_args, "-d", "repomap_wave1_upgrade", "-X", "-v", "ON_ERROR_STOP=1"],
-                    input_text=f"DROP SCHEMA public CASCADE;\nCREATE SCHEMA public AUTHORIZATION {postgres.user};\nCREATE TABLE divergent_table (id integer);\n",
+                    [upgrade_db.psql_command, *upgrade_db.psql_args, "-X", "-v", "ON_ERROR_STOP=1"],
+                    input_text=(
+                        f"DROP SCHEMA public CASCADE;\n"
+                        f"CREATE SCHEMA public AUTHORIZATION {postgres.user};\n"
+                        "CREATE TABLE divergent_table (id integer);\n"
+                    ),
                 )
                 with pytest.raises(LocalDbBackupError, match="unsupported-preledger-schema"):
                     upgrade_graph_schema(

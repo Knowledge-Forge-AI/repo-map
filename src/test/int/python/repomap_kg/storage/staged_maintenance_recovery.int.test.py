@@ -360,7 +360,7 @@ INSERT INTO ingestion_stages(
     cleanup_eligibility
 ) VALUES (
     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'validating',
-    now(), now(), now() + interval '1 day', 'running', 'idle', 'unreconciled', 'ineligible'
+    now(), now(), now() + interval '1 day', 'running', 'not_started', 'not_started', 'blocked'
 )""",
                 (
                     active_stage, repo_id, str(owner.operation_id),

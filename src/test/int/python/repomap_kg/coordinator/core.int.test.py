@@ -3,7 +3,9 @@ from __future__ import annotations
 import hashlib
 import threading
 import time
+from typing import Any
 import unittest
+import unittest.mock
 from datetime import timedelta
 
 import psycopg
@@ -19,6 +21,15 @@ from repomap_test_support.postgres_harness import (
 from repomap_test_support.synthetic_worker_adapter import (
     build_synthetic_coordinator,
 )
+
+
+class _StubSystemRandom:
+    def uniform(self, _a: float, _b: float) -> float:
+        return 0.0
+
+
+class _StubRandom:
+    SystemRandom = _StubSystemRandom
 
 
 class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
@@ -41,33 +52,27 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
             password=self.postgres.password,
         )
 
-    def _assert_attempt(
-        self,
-        job_id: str,
-        attempt: int,
-        *,
-        is_current: bool,
-        result_category: str | None,
-        publication_state: str,
-        diagnostic: str | None = None,
-        finished: bool = True,
-    ) -> None:
+    def _query_row(self, query: str, parameters: tuple[object, ...] = ()) -> Any:
         with self._connect() as connection, connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT is_current, result_category, publication_state, diagnostic_summary, "
-                "finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s AND attempt = %s",
-                (job_id, attempt),
-            )
-            self.assertEqual(
-                cursor.fetchone(),
-                (is_current, result_category, publication_state, diagnostic, finished),
-            )
+            cursor.execute(query, parameters)
+            return cursor.fetchone()
+
+    def _assert_attempt(
+        self, job_id: str, attempt: int, *, is_current: bool,
+        result_category: str | None, publication_state: str,
+        diagnostic: str | None = None, finished: bool = True,
+    ) -> None:
+        row = self._query_row(
+            "SELECT is_current, result_category, publication_state, diagnostic_summary, "
+            "finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s AND attempt = %s",
+            (job_id, attempt),
+        )
+        self.assertEqual(row, (is_current, result_category, publication_state, diagnostic, finished))
 
     def _assert_no_leases(self, job_id: str | None = None) -> None:
-        with self._connect() as connection, connection.cursor() as cursor:
-            query = "SELECT count(*) FROM graph_leases" if job_id is None else "SELECT count(*) FROM graph_leases WHERE job_id = %s"
-            cursor.execute(query, () if job_id is None else (job_id,))
-            self.assertEqual(cursor.fetchone()[0], 0)
+        query = "SELECT count(*) FROM graph_leases" if job_id is None else "SELECT count(*) FROM graph_leases WHERE job_id = %s"
+        row = self._query_row(query, () if job_id is None else (job_id,))
+        self.assertEqual(row[0], 0)
 
     def _success_terminal(self, request, run_identity: str = "run-public-1") -> dict[str, object]:
         return {
@@ -75,6 +80,13 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
             "latest_run_identity": run_identity, "source_generation": request.source_generation,
             "config_generation": request.config_generation, "extractor_generation": "eg1:synthetic",
             "canonicalizer_generation": "kg1:synthetic", "_termination_proved": True,
+        }
+
+    def _failed_terminal(self, category: str, diagnostic: str) -> dict[str, object]:
+        return {
+            "status": "failed", "publication_state": "not_started",
+            "error_category": category, "_diagnostic_summary": diagnostic,
+            "_termination_proved": True,
         }
 
     def test_real_store_claim_publication_terminal_and_lease_release(self):
@@ -142,14 +154,10 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
             )
             return self._success_terminal(request)
 
-        coordinator = SyntheticCoordinator(
-            self.store, "coordinator-conflict", worker
-        )
+        coordinator = SyntheticCoordinator(self.store, "coordinator-conflict", worker)
         coordinator.startup(lambda: None)
         self.assertEqual(coordinator.run_once(), "quarantined")
-        self.assertEqual(
-            self.store.status(submitted.job_id).state, "quarantined"
-        )
+        self.assertEqual(self.store.status(submitted.job_id).state, "quarantined")
         with self.assertRaisesRegex(ValueError, "graph intent is paused"):
             self.store.coalesce_automatic(
                 self._request(
@@ -180,46 +188,34 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
         coordinator = SyntheticCoordinator(self.store, "coord-heartbeat", lambda _c, _k: {})
         epoch = coordinator.startup(lambda: None)
         self.assertGreaterEqual(epoch, 1)
-        with self._connect() as connection, connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT instance_id, fencing_epoch, status, expires_at FROM coordinator_instances "
-                "WHERE singleton_scope = 'control'"
-            )
-            before = cursor.fetchone()
-            assert before is not None
-            self.assertEqual(before[:3], ("coord-heartbeat", epoch, "active"))
+        query = (
+            "SELECT instance_id, fencing_epoch, status, expires_at "
+            "FROM coordinator_instances WHERE singleton_scope = 'control'"
+        )
+        before = self._query_row(query)
+        assert before is not None
+        self.assertEqual(before[:3], ("coord-heartbeat", epoch, "active"))
         with self.assertRaises(SingletonActiveError):
             self.store.acquire_singleton("coord-heartbeat-conflict", timedelta(seconds=30))
         self.assertTrue(coordinator.heartbeat())
-        with self._connect() as connection, connection.cursor() as cursor:
-            cursor.execute("SELECT instance_id, fencing_epoch, status, expires_at "
-                           "FROM coordinator_instances WHERE singleton_scope = 'control'")
-            after = cursor.fetchone()
-            assert after is not None
-            self.assertEqual(after[:3], before[:3])
-            self.assertGreater(after[3], before[3])
+        after = self._query_row(query)
+        assert after is not None
+        self.assertEqual(after[:3], before[:3])
+        self.assertGreater(after[3], before[3])
         self.assertEqual(coordinator.run_once(), "idle")
         coordinator.shutdown()
-        with self._connect() as connection, connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT status FROM coordinator_instances WHERE singleton_scope = 'control'"
-            )
-            self.assertEqual(cursor.fetchone(), ("stopped",))
+        status_row = self._query_row(
+            "SELECT status FROM coordinator_instances WHERE singleton_scope = 'control'"
+        )
+        self.assertEqual(status_row, ("stopped",))
         next_epoch = self.store.acquire_singleton("coord-heartbeat-next", timedelta(seconds=30))
         self.assertEqual(next_epoch, epoch + 1)
         self.assertTrue(self.store.stop_singleton("coord-heartbeat-next", next_epoch))
 
     def test_transient_failure_schedules_retry(self):
         submitted = self.store.submit(self._request())
-
-        def transient_worker(_claim, _cancel):
-            return {
-                "status": "failed", "publication_state": "not_started",
-                "error_category": "transient", "_diagnostic_summary": "transient:connection_reset",
-                "_termination_proved": True,
-            }
-
-        coordinator = SyntheticCoordinator(self.store, "coord-retry", transient_worker)
+        worker = lambda _claim, _cancel: self._failed_terminal("transient", "transient:connection_reset")
+        coordinator = SyntheticCoordinator(self.store, "coord-retry", worker)
         coordinator.startup(lambda: None)
         self.assertEqual(coordinator.run_once(), "queued")
         status = self.store.status(submitted.job_id)
@@ -236,15 +232,8 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
 
     def test_permanent_failure_transitions_to_failed_and_releases_lease(self):
         submitted = self.store.submit(self._request())
-
-        def permanent_worker(_claim, _cancel):
-            return {
-                "status": "failed", "publication_state": "not_started",
-                "error_category": "permanent", "_diagnostic_summary": "permanent:schema_mismatch",
-                "_termination_proved": True,
-            }
-
-        coordinator = SyntheticCoordinator(self.store, "coord-perm", permanent_worker)
+        worker = lambda _claim, _cancel: self._failed_terminal("permanent", "permanent:schema_mismatch")
+        coordinator = SyntheticCoordinator(self.store, "coord-perm", worker)
         coordinator.startup(lambda: None)
         self.assertEqual(coordinator.run_once(), "failed")
         status = self.store.status(submitted.job_id)
@@ -273,13 +262,12 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
             (status.state, status.attempt, status.publication_state, status.error_category),
             ("reconciliation_required", 1, "commit_unknown", "worker_crash"),
         )
-        with self._connect() as connection, connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT graph_id, job_id, attempt, coordinator_instance_id, fencing_epoch "
-                "FROM graph_leases WHERE job_id = %s",
-                (submitted.job_id,),
-            )
-            self.assertEqual(cursor.fetchone(), ("synthetic-core", submitted.job_id, 1, "coord-crash", epoch))
+        lease_row = self._query_row(
+            "SELECT graph_id, job_id, attempt, coordinator_instance_id, fencing_epoch "
+            "FROM graph_leases WHERE job_id = %s",
+            (submitted.job_id,),
+        )
+        self.assertEqual(lease_row, ("synthetic-core", submitted.job_id, 1, "coord-crash", epoch))
         self._assert_attempt(
             submitted.job_id, 1, is_current=True, result_category="worker_crash",
             publication_state="commit_unknown", diagnostic="worker_crash:unhandled_exception",
@@ -305,13 +293,12 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
             ),
             "reconciliation_required",
         )
-        with self._connect() as connection, connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT graph_id, job_id, attempt, coordinator_instance_id, fencing_epoch "
-                "FROM graph_leases WHERE job_id = %s",
-                (submitted.job_id,),
-            )
-            self.assertEqual(cursor.fetchone(), ("synthetic-core", submitted.job_id, 1, "coord-crash", epoch))
+        lease_row_again = self._query_row(
+            "SELECT graph_id, job_id, attempt, coordinator_instance_id, fencing_epoch "
+            "FROM graph_leases WHERE job_id = %s",
+            (submitted.job_id,),
+        )
+        self.assertEqual(lease_row_again, ("synthetic-core", submitted.job_id, 1, "coord-crash", epoch))
         status = self.store.status(submitted.job_id)
         self.assertEqual((status.state, status.publication_state),
                          ("reconciliation_required", "commit_unknown"))
@@ -319,28 +306,40 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
 
     def test_worker_launch_error_disposes_as_failed(self):
         submitted = self.store.submit(self._request())
+        launch_count = 0
 
         def failing_launch_worker(_claim, _cancel):
+            nonlocal launch_count
+            launch_count += 1
             raise WorkerLaunchError("failed to spawn worker")
 
         coordinator = SyntheticCoordinator(self.store, "coord-launch-err", failing_launch_worker)
-        coordinator.startup(lambda: None)
-        self.assertEqual(coordinator.run_once(), "failed")
-        status = self.store.status(submitted.job_id)
-        self.assertEqual(
-            (status.state, status.attempt, status.publication_state, status.error_category),
-            ("failed", 1, "not_started", "worker_launch"),
-        )
-        self._assert_no_leases(submitted.job_id)
-        self._assert_attempt(
-            submitted.job_id, 1, is_current=False, result_category="worker_launch", publication_state="not_started"
-        )
-        coordinator.shutdown()
+        try:
+            coordinator.startup(lambda: None)
+            with unittest.mock.patch("repomap_kg.coordinator._core_disposition.random", _StubRandom):
+                self.assertEqual(coordinator.run_once(), "queued")
+                self.assertEqual(coordinator.run_once(), "queued")
+                self.assertEqual(coordinator.run_once(), "failed")
+                self.assertEqual(coordinator.run_once(), "idle")
+
+            self.assertEqual(launch_count, 3)
+            status = self.store.status(submitted.job_id)
+            self.assertEqual(
+                (status.state, status.attempt, status.publication_state, status.error_category),
+                ("failed", 3, "not_started", "worker_launch"),
+            )
+            self._assert_no_leases(submitted.job_id)
+            for a in (1, 2, 3):
+                self._assert_attempt(
+                    submitted.job_id, a, is_current=False,
+                    result_category="worker_launch", publication_state="not_started",
+                )
+        finally:
+            coordinator.shutdown()
 
     def test_prestart_cancellation_disposes_before_worker_run(self):
         submitted = self.store.submit(self._request())
-        self.assertEqual(self.store.request_cancellation(submitted.job_id), "cancel_requested")
-
+        self.assertEqual(self.store.request_cancellation(submitted.job_id), "cancelled")
         called = []
 
         def worker(_claim, _cancel):
@@ -349,17 +348,19 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
 
         coordinator = SyntheticCoordinator(self.store, "coord-prestart", worker)
         coordinator.startup(lambda: None)
-        self.assertEqual(coordinator.run_once(), "cancelled")
+        self.assertEqual(coordinator.run_once(), "idle")
         self.assertFalse(called)
         status = self.store.status(submitted.job_id)
         self.assertEqual(
             (status.state, status.attempt, status.publication_state, status.error_category),
-            ("cancelled", 1, "not_started", "cancelled"),
+            ("cancelled", 0, "not_started", None),
         )
         self._assert_no_leases(submitted.job_id)
-        self._assert_attempt(
-            submitted.job_id, 1, is_current=False, result_category="cancelled", publication_state="not_started"
+        attempts_row = self._query_row(
+            "SELECT count(*) FROM job_attempts WHERE job_id = %s", (submitted.job_id,)
         )
+        assert attempts_row is not None
+        self.assertEqual(attempts_row[0], 0)
         coordinator.shutdown()
 
     def _request(

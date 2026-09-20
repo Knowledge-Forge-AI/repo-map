@@ -1,15 +1,28 @@
 import json
 from pathlib import Path
+import tempfile
+
+import pytest
 
 from repomap_kg.graph.multi_source import graph_source_binding_id
 from repomap_kg.ops.config import load_ops_config
 from repomap_kg.ops.graph_file_sql import GraphFileFilters
 from repomap_kg.ops.graph_files import query_graph_files
+from repomap_kg.ops.ingestion.github_api import (
+    GitHubApiPolicyError,
+    PublicGitHubRestTransport,
+    acquire_github_api_source,
+    load_github_api_source_config,
+)
 from repomap_kg.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
+)
+from repomap_test_support.source_ingestion_integration import (
+    IntFakeGitHubOpener,
+    github_api_fixture_root,
 )
 
 
@@ -226,3 +239,111 @@ def test_legacy_one_source_publication_and_readback_qualifies_keys_with_source_r
     assert graph_row["privacy"] == "public-dev"
     assert graph_row["root_path_display"] == str(root)
     assert graph_row["root_path_expanded"] == str(root)
+
+
+def test_multi_source_routing_and_config_refusals_prevent_storage_mutation(tmp_path):
+    require_postgres_binaries()
+    root = tmp_path / "valid_src"
+    root.mkdir()
+    (root / "sample.py").write_text("print('hello')\n", encoding="utf-8")
+
+    with temporary_postgres() as postgres:
+        apply_migrations(
+            default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command
+        )
+        baseline = _counts(postgres)
+
+        # 1. Duplicate binding alias
+        dup_alias_toml = _config(postgres, _binding("alias1", root), _binding("alias1", root))
+        p1 = tmp_path / "dup_alias.toml"
+        p1.write_text(dup_alias_toml, encoding="utf-8")
+        cfg1 = load_ops_config(p1)
+        assert any(d.code == "duplicate-source-binding-alias" for d in cfg1.diagnostics)
+        assert _refresh(p1, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+        # 2. Conflicting source kinds for same source_definition_id
+        b1 = _binding("s1", root).replace(
+            'source_definition_id = "src1:s1"', 'source_definition_id = "src1:shared"'
+        )
+        b2 = (
+            _binding("s2", root)
+            .replace('source_definition_id = "src1:s2"', 'source_definition_id = "src1:shared"')
+            .replace('kind = "folder"', 'kind = "archive"')
+        )
+        p2 = tmp_path / "kind_conflict.toml"
+        p2.write_text(_config(postgres, b1, b2), encoding="utf-8")
+        cfg2 = load_ops_config(p2)
+        assert any(d.code == "source-definition-collision" for d in cfg2.diagnostics)
+        assert _refresh(p2, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+        # 3. Invalid exclude path (with ..) and unsupported privacy
+        bad_b = _binding("s3", root, privacy="unsupported-privacy").replace(
+            'exclude_paths = ["result-*"]', 'exclude_paths = ["../escape"]'
+        )
+        p3 = tmp_path / "bad_policy.toml"
+        p3.write_text(_config(postgres, bad_b), encoding="utf-8")
+        cfg3 = load_ops_config(p3)
+        codes = {d.code for d in cfg3.diagnostics}
+        assert "invalid-source-binding-exclude-path" in codes
+        assert "unsupported-source-binding-privacy" in codes
+        assert _refresh(p3, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+
+def test_offline_github_api_acquisition_refusals_leave_no_artifacts():
+    fixture_dir = github_api_fixture_root() / "public_real_transport_config"
+    config_path = fixture_dir / "github-source.toml"
+    load_github_api_source_config(config_path)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out = Path(tmpdir) / "output"
+
+        # 1. HTTP 404 error from fake opener
+        transport_404 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=404, headers={"content-type": "application/json"}, body=b'{"message": "Not Found"}'
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="returned HTTP status 404"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_404)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # 2. Redirect (302) from fake opener
+        transport_302 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=302,
+            headers={"content-type": "application/json", "location": "https://api.github.com/other"},
+            body=b'{}',
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="redirects are not followed"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_302)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # 3. Rate limit exhausted (x-ratelimit-remaining: 0)
+        transport_ratelimit = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200, headers={"content-type": "application/json", "x-ratelimit-remaining": "0"}, body=b'{}'
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="hit GitHub API rate limit"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_ratelimit)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # 4. Non-JSON response
+        transport_html = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200, headers={"content-type": "text/html"}, body=b'<html>Not JSON</html>'
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="did not return a JSON response"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_html)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # A successful acquisition writes artifacts but never publishes a graph.
+        transport_ok = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200,
+            headers={"content-type": "application/json; charset=utf-8", "x-ratelimit-remaining": "50"},
+            body=b'{"full_name": "fixture-owner/fixture-repo"}',
+        ))
+        summary = acquire_github_api_source(config_path, root_path=out, transport=transport_ok)
+        assert summary.publication.publication_state == "not_published"
+        assert summary.requests == summary.responses == 2
+        assert {record.endpoint_name for record in summary.response_records} == {"repository", "issues"}
+        manifest = json.loads((summary.output_path / "manifest.json").read_text())
+        assert manifest["api_run_id"] == summary.api_run_id
+        assert {observation.kind for observation in summary.raw_observations} >= {"github.repository", "config.document"}

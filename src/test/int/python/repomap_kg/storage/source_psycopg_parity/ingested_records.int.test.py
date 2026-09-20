@@ -282,3 +282,100 @@ class StorageIngestedSourceRecordsPsycopgParityIntegrationTests(unittest.TestCas
         self.assertNotIn("fixture-secret", serialized)
         self.assertNotIn("fixture-feed-secret", serialized)
         self.assertNotIn("<rss", serialized.lower())
+
+    def test_ingested_source_records_unicode_feed_publication_and_replay(self):
+        require_postgres_binaries()
+        config_path = source_fixture("allowed-rss.toml")
+        unicode_xml = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<rss version="2.0">\n'
+            '  <channel>\n'
+            '    <title>Repomap 🚀 日本語 &amp; Français Feed</title>\n'
+            '    <link>https://example.invalid/unicode_rss</link>\n'
+            '    <description>Updates with \'quotes\' &amp; 🚀 emojis</description>\n'
+            '    <item>\n'
+            '      <title>Article 1: Python 🐍 &amp; Rust 🦀 統合</title>\n'
+            '      <link>https://example.invalid/posts/1</link>\n'
+            '      <description>Détails sur l\'intégration</description>\n'
+            '      <guid>https://example.invalid/posts/1</guid>\n'
+            '      <pubDate>Tue, 30 Jun 2026 12:00:00 GMT</pubDate>\n'
+            '    </item>\n'
+            '  </channel>\n'
+            '</rss>'
+        ).encode("utf-8")
+
+        def fetcher(_cfg):
+            return FeedFetchResponse(
+                status=200,
+                headers={"content-type": "application/rss+xml"},
+                body=unicode_xml,
+            )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root_path = Path(tmpdir) / "fixture-unicode"
+            root_path.mkdir()
+            with temporary_postgres() as postgres:
+                apply_migrations(
+                    default_rdbms_root(),
+                    postgres.psql_args,
+                    psql_command=postgres.psql_command,
+                )
+                summary = ingest_feed_source(
+                    config_path,
+                    root_path=root_path,
+                    fetcher=fetcher,
+                    clock=fixed_source_clock,
+                )
+                # 1. Pre-publication query returns zero records
+                pre_publish = query_ingested_source_records(
+                    postgres.psql_args,
+                    root_path=str(root_path),
+                    psql_command=postgres.psql_command,
+                )
+                self.assertEqual(pre_publish, ())
+
+                # 2. Transactional publication
+                publish_acquisition_summary(
+                    postgres,
+                    summary,
+                    repository_name="fixture-unicode",
+                    root_path=root_path,
+                )
+
+                # 3. Readback verifies ingested record
+                psql_records = query_ingested_source_records(
+                    postgres.psql_args,
+                    root_path=str(root_path),
+                    psql_command=postgres.psql_command,
+                )
+                self.assertEqual(len(psql_records), 1)
+                record = psql_records[0]
+                self.assertEqual(record.source_id, "example-rss-feed")
+                self.assertEqual(record.source_type, "feed.rss")
+                self.assertGreaterEqual(record.feed_observation_count, 1)
+                names = json.loads(postgres.psql_scalar(
+                    "SELECT jsonb_agg(DISTINCT payload_json->>'name')::text "
+                    "FROM raw_observations WHERE kind = 'feed.item';"
+                ))
+                self.assertEqual(names, ["Article 1: Python 🐍 & Rust 🦀 統合"])
+
+                # Replay idempotency: re-publishing same summary maintains consistency
+                publish_acquisition_summary(
+                    postgres,
+                    summary,
+                    repository_name="fixture-unicode",
+                    root_path=root_path,
+                )
+                replayed_records = query_ingested_source_records(
+                    postgres.psql_args,
+                    root_path=str(root_path),
+                    psql_command=postgres.psql_command,
+                )
+                self.assertEqual(len(replayed_records), 1)
+                self.assertEqual(replayed_records[0].source_id, record.source_id)
+                self.assertEqual(postgres.psql_scalar("SELECT count(*) FROM runs WHERE status = 'complete';"), "2")
+                replay_names = json.loads(postgres.psql_scalar(
+                    "SELECT jsonb_agg(DISTINCT payload_json->>'name')::text "
+                    "FROM raw_observations WHERE kind = 'feed.item';"
+                ))
+                self.assertEqual(replay_names, names)

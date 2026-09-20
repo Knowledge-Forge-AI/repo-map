@@ -1,12 +1,23 @@
 """Shell extraction/canonicalization path and decoder boundary matrix."""
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 import shutil
+import re
 import tempfile
 import unittest
 
+from repomap_kg.artifacts.bundle import PublicationBundle
+from repomap_kg.artifacts.receipt import ExtractionReceipt
+from repomap_kg.artifacts.references import ArtifactReference
+from repomap_kg.artifacts.source_sealer import seal_configured_sources
+from repomap_kg.artifacts.store import FileSystemArtifactStore
 from repomap_kg.canonicalization.main import canonicalize_observations
+from repomap_kg.coordinator._portable_capability import (
+    PortableExecutionCapability, create_portable_capability,
+)
+from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
 from repomap_kg.graph.discovery_extractors import (
     extract_awk_file_observations_from_file,
     extract_bash_file_observations_from_file,
@@ -18,6 +29,9 @@ from repomap_kg.graph.discovery_extractors import (
 )
 from repomap_kg.graph.keys import bash_script_key
 from repomap_kg.graph.readback.bash import summarize_bash_evidence
+from repomap_kg.observations.raw import RawObservation
+from repomap_test_support.portable_publication_fixtures import create_single_source_graph_config
+from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
 from repomap_test_support.test_scratch import select_scratch_root
 
 
@@ -93,16 +107,40 @@ class ShellPipelineBoundariesIntegrationTests(unittest.TestCase):
                 relative = f"pkg/scripts/entry.{extension}"
                 entry = self.tmpdir / relative
                 entry.parent.mkdir(parents=True, exist_ok=True)
+                target = "../shared/helper.sh"
+                expected_target = "file:pkg/shared/helper.sh"
+                if family == "awk":
+                    target = "shared/helper.awk"
+                    expected_target = "file:pkg/scripts/shared/helper.awk"
+                    awk_helper = entry.parent / target
+                    awk_helper.parent.mkdir(parents=True, exist_ok=True)
+                    awk_helper.write_text("# Static AWK include\n", encoding="utf-8")
                 entry.write_text(
-                    f'{command} "../shared/helper.sh"\n{command} "../../../outside.sh"\n',
+                    f'{command} "{target}"\n{command} "../../../outside.sh"\n'
+                    + ('@include "../shared/helper.sh"\n' if family == "awk" else ""),
                     encoding="utf-8",
                 )
                 observations = extractor(self.tmpdir, relative)
                 result = canonicalize_observations(observations)
-                self.assertTrue(result.ok, result.diagnostics)
+                if family == "powershell":
+                    self.assertFalse(result.ok, f"expected refusal for {family}: {result.diagnostics}")
+                    self.assertEqual(
+                        [item.category for item in result.diagnostics], ["repo_escaping_path"],
+                        f"diagnostic category mismatch for {family}: {result.diagnostics}",
+                    )
+                else:
+                    self.assertTrue(result.ok, f"unexpected refusal for {family}: {result.diagnostics}")
                 matching = [e for e in result.graph.edges if e.kind == relationship
-                            and e.target_key == "file:pkg/shared/helper.sh"]
+                            and e.target_key == expected_target]
                 self.assertEqual(len(matching), 1)
+                if family == "awk":
+                    self.assertEqual(
+                        [e.target_key for e in result.graph.edges if e.kind == "includes"],
+                        [expected_target],
+                    )
+                    self.assertTrue({2, 3}.issubset(
+                        {item.start_line for item in result.graph.evidence}
+                    ))
                 self.assertFalse(any(e.target_key.startswith("file:") and "outside" in e.target_key
                                      for e in result.graph.edges))
                 evidence = {item.evidence_key: item for item in result.graph.evidence}
@@ -113,7 +151,118 @@ class ShellPipelineBoundariesIntegrationTests(unittest.TestCase):
                 self.assertTrue(all(evidence[link.evidence_key].start_line == 1 for link in links))
                 # Decoder refusal must not invent a dependency from invalid source bytes.
                 entry.write_bytes(b"\xff\xfe")
-                self.assertEqual(extractor(self.tmpdir, relative), ())
+                self.assertEqual(
+                    extractor(self.tmpdir, relative), (),
+                    f"decoder refusal produced non-empty observations for {family}",
+                )
+
+    def test_portable_dynamic_corpus_preserves_unknowns_without_false_publication(self) -> None:
+        fixtures = Path(__file__).parents[4] / "fixtures"
+        selected = (
+            "shell/bash/dynamic.bash", "shell/zsh/dynamic.zsh",
+            "shell/awk/dynamic.awk", "shell/bats/dynamic.bats",
+            "shell/zunit/dynamic.zunit", "powershell/aliases-splats-dynamic.ps1",
+            "shell/zsh/advanced-dynamic.zsh", "powershell/dynamic-and-secrets.ps1",
+        )
+        source = self.tmpdir / "source"
+        for relative in selected:
+            target = source / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(fixtures / relative, target)
+        (source / "boundary.bash").write_text(
+            'source "../outside.sh"\nsource "$DYNAMIC_SOURCE"\n', encoding="utf-8",
+        )
+        self.assertEqual(
+            sorted(p.relative_to(source).as_posix() for p in source.rglob("*") if p.is_file()),
+            sorted((*selected, "boundary.bash")),
+        )
+        store_root, workspace, private = (self.tmpdir / name for name in ("store", "workspace", "private"))
+        for directory in (store_root, workspace, private):
+            directory.mkdir(mode=0o700)
+        store = FileSystemArtifactStore(store_root)
+        config = create_single_source_graph_config(source, graph_id="portable-diagnostics")
+        manifest, reference, _ = seal_configured_sources(
+            config, store, extractor_generation="eg1:diagnostics", canonicalizer_generation="kg1:diagnostics",
+        )
+        capability = PortableExecutionCapability(
+            schema_version=1, job_id="job-diagnostics", attempt=1, graph_id=config.id,
+            store_root=store_root, workspace_root=workspace, manifest_reference=reference,
+            source_generation=manifest.source_generation, config_generation=manifest.config_generation,
+            extractor_generation=manifest.extractor_generation,
+            canonicalizer_generation=manifest.canonicalizer_generation,
+            max_artifact_bytes=10 * 1024 * 1024, max_bundle_bytes=10 * 1024 * 1024,
+        )
+        cases = (
+            ("success", None, capability),
+            ("contract_validation", "contract_validation", replace(capability, source_generation="src1:stale")),
+            ("graph_mismatch", "contract_validation", replace(capability, graph_id="portable-mismatch")),
+        )
+        for name, failure_category, supplied in cases:
+            with self.subTest(case=name):
+                path = create_portable_capability(private, supplied)
+                result = run_portable_worker(
+                    path, {"job_id": supplied.job_id, "attempt": supplied.attempt}, coordinator_test_limits(),
+                )
+                # Bound and sanitize causal evidence before the first terminal assertion.
+                evidence = repr({
+                    "case": name,
+                    "protocol_error": result.protocol_error, "terminal": result.terminal,
+                    "returncode": result.returncode, "cleanup_error": result.cleanup_error,
+                    "stderr": result.stderr,
+                    "timeouts": (result.process_timed_out, result.heartbeat_timed_out, result.hello_timed_out),
+                }).replace(str(self.tmpdir), "<test-root>")
+                evidence = re.sub(r"FAKE_[A-Z0-9_]+", "<redacted-sentinel>", evidence)[:4000]
+                self.assertEqual(result.terminal["status"], "failed" if failure_category else "succeeded", evidence)
+                self.assertEqual(result.terminal["error_category"], failure_category, evidence)
+                self.assertIsNone(result.protocol_error, evidence)
+                self.assertEqual(result.returncode, 0, evidence)
+                self.assertIsNone(result.cleanup_error, evidence)
+                self.assertFalse(path.exists(), evidence)
+                self.assertEqual(list(workspace.iterdir()), [], evidence)
+                self.assertEqual(list(private.iterdir()), [], evidence)
+                self.assertEqual(result.terminal["publication_state"], "not_started", evidence)
+                self.assertIsNone(result.terminal["latest_run_identity"], evidence)
+                snapshot = result.terminal["portable_snapshot"]
+                assert isinstance(snapshot, dict), evidence
+                receipt_ref = ArtifactReference.from_mapping(snapshot["receipt"])
+                receipt = ExtractionReceipt.from_bytes(store.read(receipt_ref))
+                if failure_category is not None:
+                    self.assertEqual(snapshot["outcome"], failure_category, evidence)
+                    self.assertIsNone(snapshot["bundle"], evidence)
+                    self.assertEqual(receipt.diagnostic_category, failure_category, evidence)
+                    self.assertIsNone(receipt.bundle_reference, evidence)
+                    self.assertEqual(receipt.family_counts, {}, evidence)
+                    continue
+                self.assertEqual(snapshot["outcome"], "completed", evidence)
+                bundle_ref = ArtifactReference.from_mapping(snapshot["bundle"])
+                bundle = PublicationBundle.from_bytes(store.read(bundle_ref))
+                self.assertEqual(receipt.bundle_id, bundle.bundle_id, evidence)
+                alias = config.effective_source_bindings[0].alias
+                self.assertEqual(
+                    sorted(row["path"] for row in bundle.families["files"]),
+                    sorted(f"{alias}/{item}" for item in (*selected, "boundary.bash")),
+                )
+                for relative in selected:
+                    sentinels = re.findall(r"FAKE_[A-Z0-9_]+", (fixtures / relative).read_text())
+                    self.assertTrue(all(value not in repr(bundle.families) for value in sentinels), evidence)
+                # Extractor uncertainty lives in raw JSONL, not terminal diagnostics.
+                observations = []
+                for row in bundle.families["raw_observations"]:
+                    payload = row["payload_json"]
+                    assert isinstance(payload, dict)
+                    observations.append(RawObservation.from_dict(payload))
+                boundary = sorted(
+                    (row for row in observations if row.kind == "shell.source"
+                     and row.path.endswith("/boundary.bash")), key=lambda row: row.start_line or 0,
+                )
+                self.assertEqual(len(boundary), 2)
+                self.assertEqual(boundary[0].metadata["unknown_reason"], "repo-escaping-source")
+                self.assertEqual(boundary[1].metadata["dynamic_reason"], "computed-source")
+                self.assertTrue(all(row.target is None for row in boundary))
+                dynamic_paths = {row.path for row in observations if row.metadata.get("dynamic_reason")}
+                self.assertTrue({f"{alias}/{item}" for item in (*selected, "boundary.bash")} <= dynamic_paths)
+                self.assertFalse(any("outside.sh" in str(row["target_canonical_key"])
+                                     for row in bundle.families["canonical_edges"]))
 
 
 if __name__ == "__main__":

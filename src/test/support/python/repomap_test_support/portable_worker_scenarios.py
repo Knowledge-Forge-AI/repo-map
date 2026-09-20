@@ -241,3 +241,82 @@ __all__ = [
     "create_test_sealed_capability",
     "make_missing_manifest_reference",
 ]
+
+
+# Explicit thematic corpora bound family-frame size without changing product limits.
+# Dependencies are generated only inside the disposable scenario source workspace.
+PORTABLE_SUCCESS_CORPORA = (
+    ("core", (
+        "powershell/Advanced.Module.psd1", "powershell/Example.Module.psd1",
+        "powershell/Example.Module.psm1", "powershell/basic-script.ps1",
+        "shell/awk/basic.awk", "shell/awk/includes-and-extensions.awk",
+        "shell/bash/basic.bash", "shell/bats/basic.bats", "shell/zsh/basic.zsh",
+        "shell/zunit/basic.zunit", "shell/zsh/autoload-and-fpath.zsh",
+        "shell/zsh/zstyle-and-completion.zsh",
+    ), ("zsh.autoload", "zsh.zstyle", "awk.include", "powershell.function")),
+    ("bash-effects", ("shell/bash/side-effects.bash",), ("shell.host_mutation", "shell.network_call")),
+    ("powershell-effects", ("powershell/side-effects.ps1",), ("powershell.host_mutation", "powershell.network_call")),
+    ("bash-structure", (
+        "shell/bash/functions-and-source.bash", "shell/bash/advanced-safety.bash",
+        "shell/bash/commands-pipelines-redirects.bash", "shell/bash/heredocs.bash",
+    ), ("shell.function", "shell.source", "shell.pipeline", "shell.redirect", "shell.heredoc")),
+    ("false-positives", (
+        "shell/bash/false-positives.bash", "shell/zsh/false-positives.zsh",
+        "shell/awk/false-positives.awk", "shell/bats/false-positives.bats",
+        "shell/zunit/false-positives.zunit",
+    ), ("shell.script", "zsh.script", "awk.program", "bats.file", "zunit.file")),
+    ("awk-structure", (
+        "shell/awk/calls.awk", "shell/awk/functions.awk", "shell/awk/patterns-and-actions.awk",
+        "shell/awk/gawk-extensions.awk",
+    ), ("awk.function", "awk.builtin_call", "awk.include")),
+    ("awk-io", ("shell/awk/io-and-pipes.awk", "shell/awk/redaction.awk"),
+     ("awk.file_read", "awk.file_write", "awk.pipe_read", "awk.pipe_write", "awk.system_call")),
+    ("bats-helpers", (
+        "shell/bats/helpers-and-libraries.bats", "shell/bats/helpers-and-loads.bats",
+        "shell/bats/hooks.bats",
+    ), ("bats.load", "bats.setup", "bats.teardown", "bats.test_case")),
+    ("bats-assertions", (
+        "shell/bats/run-and-assertions.bats", "shell/bats/skip-and-fixtures.bats", "shell/bats/redaction.bats",
+    ), ("bats.run", "bats.assertion", "bats.skip")),
+    ("zunit-structure", (
+        "shell/zunit/suites-and-cases.zunit", "shell/zunit/hooks.zunit", "shell/zunit/helpers-fixtures-mocks.zunit",
+    ), ("zunit.suite", "zunit.test_case", "zunit.setup", "zunit.teardown", "zunit.mock", "zunit.fixture_reference")),
+    ("zunit-assertions", (
+        "shell/zunit/assertions-and-commands.zunit", "shell/zunit/skips-and-todos.zunit", "shell/zunit/redaction.zunit",
+    ), ("zunit.assertion", "zunit.command_under_test", "zunit.skip", "zunit.todo")),
+    ("zsh-values", (
+        "shell/zsh/arrays.zsh", "shell/zsh/associative-arrays.zsh", "shell/zsh/globs-and-expansions.zsh",
+        "shell/zsh/functions.zsh",
+    ), ("zsh.array_assignment", "zsh.associative_array_assignment", "shell.function", "zsh.parameter_expansion")),
+    ("zsh-commands", (
+        "shell/zsh/commands.zsh", "shell/zsh/heredocs.zsh", "shell/zsh/pipelines-and-redirects.zsh",
+    ), ("shell.command", "shell.heredoc", "shell.pipeline", "shell.redirect")),
+    ("zsh-startup", (
+        "shell/zsh/startup/.zprofile", "shell/zsh/startup/.zshenv", "shell/zsh/startup/.zshrc",
+        "shell/zsh/completion/_mytool", "shell/zsh/plugins-and-themes.zsh",
+    ), ("zsh.startup_file", "zsh.completion_function", "zsh.plugin", "zsh.theme")),
+    ("zsh-effects", ("shell/zsh/side-effects.zsh", "shell/zsh/redaction.zsh"),
+     ("shell.host_mutation", "shell.network_call")),
+    ("powershell-commands", ("powershell/commands-and-pipelines.ps1",),
+     ("powershell.command", "powershell.pipeline", "powershell.command_argument")),
+)
+
+
+def portable_corpus_dependencies(corpus: str) -> dict[str, str]:
+    """Materialize only static local helpers; no interpreter or external library is loaded."""
+    by_corpus = {
+        "core": {
+            "shell/awk/lib/common.awk": "function common_lib() { return 1 }\n",
+            "shell/zsh/lib/example.zsh": "# Static source dependency\n",
+            "powershell/Example.Shared.psm1": "function Get-Shared { 'shared' }\nExport-ModuleMember -Function Get-Shared\n",
+            "powershell/helpers/Example.Shared.ps1": "function Get-Helper { 'helper' }\n",
+        },
+        "bash-structure": dict.fromkeys(("shell/bash/lib/common.bash", "shell/bash/lib/logging.sh"), "# Static helper\n"),
+        "awk-structure": {"shell/awk/lib.awk": "function shared() { return 1 }\n"},
+        "bats-helpers": dict.fromkeys(("shell/bats/test_helper", "shell/bats/helpers/common", "shell/support/helpers"), "# Static helper\n"),
+        "zunit-structure": dict.fromkeys((
+            "shell/zunit/helpers/common.zsh", "shell/zunit/helpers/assertions.zsh", "shell/zunit/helpers/extra.zsh",
+            "shell/zunit/fixtures/public-input.txt", "shell/zunit/fixtures/extra-input.txt", "shell/zunit/fixtures/curl-response.txt",
+        ), "# Static fixture\n"),
+    }
+    return by_corpus.get(corpus, {})

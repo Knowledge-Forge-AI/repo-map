@@ -16,6 +16,7 @@ from dataclasses import replace
 from pathlib import Path
 import tempfile
 import shutil
+import re
 
 import psycopg
 from psycopg.conninfo import make_conninfo
@@ -52,11 +53,17 @@ from repomap_test_support.portable_publication_fixtures import (
     create_single_source_graph_config,
     row as _row,
 )
-from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
+from repomap_test_support.portable_worker_scenarios import (
+    PORTABLE_SUCCESS_CORPORA, coordinator_test_limits, portable_corpus_dependencies,
+)
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
 
-def test_worker_produced_portable_bundle_durable_publication_readback_and_reconciliation() -> None:
+@pytest.mark.parametrize("corpus,curated_fixture_paths,expected_kinds", PORTABLE_SUCCESS_CORPORA,
+                         ids=[case[0] for case in PORTABLE_SUCCESS_CORPORA])
+def test_worker_produced_portable_bundle_durable_publication_readback_and_reconciliation(
+    corpus: str, curated_fixture_paths: tuple[str, ...], expected_kinds: tuple[str, ...],
+) -> None:
     require_postgres_binaries()
     with tempfile.TemporaryDirectory(prefix="repomap-durable-worker-") as temporary:
         root = Path(temporary).resolve()
@@ -70,23 +77,21 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
         )
 
         fixtures = Path(__file__).parents[4] / "fixtures"
-        shutil.copytree(fixtures / "shell", src_dir / "shell")
-        shutil.copytree(fixtures / "powershell", src_dir / "powershell")
-        selected_fixture_paths = tuple(
-            sorted(
-                path.relative_to(fixtures).as_posix()
-                for folder in ("shell", "powershell")
-                for path in (fixtures / folder).rglob("*")
-                if path.is_file()
-            )
-        )
-        expected_source_paths = tuple(sorted(("service.py", *selected_fixture_paths)))
+        for relative_path in curated_fixture_paths:
+            destination = src_dir / relative_path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(fixtures / relative_path, destination)
+
+        # Resolve valid local dependencies explicitly for AWK and PowerShell fixtures
+        local_deps = portable_corpus_dependencies(corpus)
+        for rel_dep, content in local_deps.items():
+            dep_path = src_dir / rel_dep
+            dep_path.parent.mkdir(parents=True, exist_ok=True)
+            dep_path.write_text(content, encoding="utf-8")
+
+        expected_source_paths = tuple(sorted(("service.py", *curated_fixture_paths, *local_deps)))
         actual_source_paths = tuple(
-            sorted(
-                path.relative_to(src_dir).as_posix()
-                for path in src_dir.rglob("*")
-                if path.is_file()
-            )
+            sorted(path.relative_to(src_dir).as_posix() for path in src_dir.rglob("*") if path.is_file())
         )
         assert actual_source_paths == expected_source_paths
 
@@ -94,7 +99,6 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
         store_root.mkdir(mode=0o700)
         store = FileSystemArtifactStore(store_root)
 
-        # 1. Authoritative source sealing
         config = create_single_source_graph_config(
             src_dir, graph_id="portable-durable", repository_name="repo-portable-durable",
         )
@@ -103,7 +107,6 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
         )
         assert store.verify(manifest_ref)
 
-        # 2. Supervised portable worker launch producing candidate bundle
         ws = root / "worker_ws"
         ws.mkdir(mode=0o700, exist_ok=True)
         job_id, attempt = "job-portable-durable-1", 1
@@ -121,18 +124,30 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
         worker_result = run_portable_worker(
             cap_path, {"job_id": job_id, "attempt": attempt}, coordinator_test_limits(),
         )
-        assert worker_result.terminal.get("status") == "succeeded"
-        assert worker_result.cleanup_error is None
-        assert not cap_path.exists()
+        evidence = repr({
+            "corpus": corpus, "terminal": worker_result.terminal,
+            "protocol_error": worker_result.protocol_error, "stderr": worker_result.stderr,
+            "returncode": worker_result.returncode, "cleanup": worker_result.cleanup_error,
+            "timeouts": (worker_result.process_timed_out, worker_result.heartbeat_timed_out,
+                         worker_result.hello_timed_out),
+        }).replace(str(root), "<test-root>")
+        evidence = re.sub(r"FAKE_[A-Z0-9_]+", "<redacted-sentinel>", evidence)[:4000]
+        assert worker_result.terminal.get("status") == "succeeded", evidence
+        assert worker_result.terminal.get("error_category") is None, evidence
+        assert worker_result.terminal.get("publication_state") == "not_started", evidence
+        assert worker_result.terminal.get("latest_run_identity") is None, evidence
+        assert worker_result.protocol_error is None, evidence
+        assert worker_result.returncode == 0, evidence
+        assert worker_result.cleanup_error is None, evidence
+        assert not cap_path.exists(), evidence
 
         snapshot = worker_result.terminal.get("portable_snapshot")
-        assert isinstance(snapshot, dict) and snapshot.get("outcome") == "completed"
+        assert isinstance(snapshot, dict) and snapshot.get("outcome") == "completed", evidence
 
         bundle_ref = ArtifactReference.from_mapping(snapshot["bundle"])
         receipt_ref = ArtifactReference.from_mapping(snapshot["receipt"])
-        assert store.verify(bundle_ref) and store.verify(receipt_ref)
+        assert store.verify(bundle_ref) and store.verify(receipt_ref), evidence
 
-        # 3. PublisherBundleValidator validation
         validator = PublisherBundleValidator()
         expectation = PublicationExpectation(
             request_id=job_id, job_id=job_id, attempt=attempt, graph_id=config.id,
@@ -154,37 +169,57 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
 
         bundle = PublicationBundle.from_bytes(store.read(bundle_ref))
         receipt = ExtractionReceipt.from_bytes(store.read(receipt_ref))
-        assert receipt.bundle_id == bundle.bundle_id
-        assert receipt.snapshot_manifest_id == manifest.manifest_id
+        assert receipt.bundle_id == bundle.bundle_id and receipt.snapshot_manifest_id == manifest.manifest_id
         assert bundle.candidate_id == candidate_id
         source_alias = config.effective_source_bindings[0].alias
         expected_published_file_paths = tuple(
             f"{source_alias}/{relative_path}" for relative_path in expected_source_paths
         )
-        published_file_paths = tuple(
-            sorted(str(row["path"]) for row in bundle.families["files"])
-        )
+        published_file_paths = tuple(sorted(str(row["path"]) for row in bundle.families["files"]))
         assert published_file_paths == expected_published_file_paths
         assert bundle.family_counts["files"] == len(expected_published_file_paths)
         assert bundle.family_counts["canonical_nodes"] > 0
+        observation_kinds = {row["kind"] for row in bundle.families["raw_observations"]}
+        assert set(expected_kinds) <= observation_kinds, (corpus, observation_kinds)
 
+        serialized = repr(bundle.families)
+        for relative in curated_fixture_paths:
+            if "redaction" in relative or "commands-and-pipelines" in relative:
+                sentinels = re.findall(r"FAKE_[A-Z0-9_]+", (fixtures / relative).read_text())
+                assert sentinels and all(value not in serialized for value in sentinels), corpus
+        if corpus == "false-positives":
+            forbidden = {"awk.system_call", "awk.file_write", "awk.pipe_write", "zunit.test_case",
+                         "zunit.mock", "bats.test_case", "shell.host_mutation"}
+            assert not forbidden.intersection(observation_kinds), observation_kinds
+
+        family_nodes = {"bash": "bash.script", "zsh": "zsh.script", "awk": "awk.program",
+                        "bats": "bats.file", "zunit": "zunit.file"}
+        powershell_nodes = {".ps1": "powershell.script", ".psm1": "powershell.module", ".psd1": "powershell.manifest"}
         representative_node_kinds = {
-            f"{source_alias}/shell/bash/basic.bash": "bash.script",
-            f"{source_alias}/shell/zsh/basic.zsh": "zsh.script",
-            f"{source_alias}/shell/awk/basic.awk": "awk.program",
-            f"{source_alias}/powershell/Advanced.Module.psd1": "powershell.manifest",
-            f"{source_alias}/shell/bats/basic.bats": "bats.file",
-            f"{source_alias}/shell/zunit/basic.zunit": "zunit.file",
+            f"{source_alias}/{path}": (powershell_nodes[Path(path).suffix] if path.startswith("powershell/")
+                                     else family_nodes[path.split("/")[1]])
+            for path in curated_fixture_paths
         }
         for fixture_path, expected_kind in representative_node_kinds.items():
             matching_nodes = [
-                row
-                for row in bundle.families["canonical_nodes"]
+                row for row in bundle.families["canonical_nodes"]
                 if row["display_name"] == fixture_path and row["kind"] == expected_kind
             ]
             assert len(matching_nodes) == 1, (fixture_path, expected_kind)
-        assert list(ws.iterdir()) == []
-        assert list(priv_dir.iterdir()) == []
+
+        representative_edges = {
+            (f"awk.program:file%3A{source_alias}%2Fshell%2Fawk%2Fincludes-and-extensions.awk", "includes", f"file:{source_alias}/shell/awk/lib/common.awk"),
+            (f"awk.program:file%3A{source_alias}%2Fshell%2Fawk%2Fincludes-and-extensions.awk", "depends_on", "external:awk.extension:ordchr"),
+            (f"powershell.manifest:file%3A{source_alias}%2Fpowershell%2FExample.Module.psd1", "references", f"file:{source_alias}/powershell/Example.Module.psm1"),
+            (f"powershell.module:file%3A{source_alias}%2Fpowershell%2FExample.Module.psm1", "imports", f"file:{source_alias}/powershell/Example.Shared.psm1"),
+            (f"powershell.script:file%3A{source_alias}%2Fpowershell%2Fbasic-script.ps1", "imports", f"file:{source_alias}/powershell/Example.Module.psm1"),
+            (f"powershell.script:file%3A{source_alias}%2Fpowershell%2Fbasic-script.ps1", "sources", f"file:{source_alias}/powershell/helpers/Example.Shared.ps1"),
+        }
+        published_edges = {(r["source_canonical_key"], r["edge_kind"], r["target_canonical_key"]) for r in bundle.families["canonical_edges"]}
+        if corpus == "core":
+            assert representative_edges.issubset(published_edges)
+        assert list(ws.iterdir()) == [], evidence
+        assert list(priv_dir.iterdir()) == [], evidence
 
         # 4. Bound authority and portable binding matching worker outputs
         authority = IngestionAuthority(
@@ -226,11 +261,10 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
                 postgres.psql_args, job_id=job_id, attempt=attempt, psql_command=postgres.psql_command,
             )
             assert published is not None and published.run_id == summary.run_id
-            assert published.receipt.portable is not None
-            assert published.receipt.portable.publication_bundle_id == bundle.bundle_id
-            assert published.receipt.portable.extraction_receipt_id == receipt.receipt_id
-            assert published.receipt.portable.candidate_id == bundle.candidate_id
-            assert published.receipt.portable.snapshot_manifest_id == bundle.snapshot_manifest_id
+            p_rec = published.receipt.portable
+            assert p_rec is not None and p_rec.publication_bundle_id == bundle.bundle_id
+            assert p_rec.extraction_receipt_id == receipt.receipt_id and p_rec.candidate_id == bundle.candidate_id
+            assert p_rec.snapshot_manifest_id == bundle.snapshot_manifest_id
 
             latest = read_latest_receipt_bearing_publication(postgres.psql_args, psql_command=postgres.psql_command)
             assert latest is not None and latest.run_id == summary.run_id
@@ -249,34 +283,27 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
                     "complete", "portable-worker-v1", bundle.snapshot_manifest_id,
                     receipt.receipt_id, bundle.bundle_id, bundle.candidate_id, stage_id_for_authority(authority),
                 )
-                auth_row = _row(
+                assert _row(
                     connection,
                     "SELECT job_id, attempt, last_run_id, singleton_fencing_epoch, graph_lease_fencing_epoch "
                     "FROM graph_publication_authority WHERE repository_id = %s",
                     (summary.repository_id,),
-                )
-                assert auth_row == (job_id, attempt, summary.run_id, 1, 1)
-
-                stage_row = _row(
+                ) == (job_id, attempt, summary.run_id, 1, 1)
+                assert _row(
                     connection,
                     "SELECT state, merge_status, publication_reconciliation_state, cleanup_eligibility "
                     "FROM ingestion_stages WHERE stage_id = %s",
                     (stage_id_for_authority(authority),),
-                )
-                assert stage_row == ("published", "committed", "reconciled", "eligible")
+                ) == ("published", "committed", "reconciled", "eligible")
 
                 for family in PUBLICATION_FAMILIES:
-                    expected_count = bundle.family_counts[family]
                     if family in ("canonical_evidence", "raw_observations"):
                         query = f"SELECT count(*) FROM {family} WHERE run_id = %s"
                     elif family in ("canonical_node_evidence", "canonical_edge_evidence"):
-                        query = (
-                            f"SELECT count(*) FROM {family} l "
-                            "JOIN canonical_evidence e ON e.id = l.canonical_evidence_id WHERE e.run_id = %s"
-                        )
+                        query = f"SELECT count(*) FROM {family} l JOIN canonical_evidence e ON e.id = l.canonical_evidence_id WHERE e.run_id = %s"
                     else:
                         query = f"SELECT count(*) FROM {family} WHERE last_seen_run_id = %s"
-                    assert _row(connection, query, (summary.run_id,))[0] == expected_count
+                    assert _row(connection, query, (summary.run_id,))[0] == bundle.family_counts[family]
 
                 actual_nodes = connection.execute(
                     "SELECT canonical_key, kind FROM canonical_nodes "
@@ -314,7 +341,7 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
                     root_path=f"graph:{config.id}", authority=mismatched_authority, portable_binding=binding,
                 )
 
-            # 10. Commit-unknown reconciliation: matching receipt transitions to published/eligible
+            # 10. Commit-unknown reconciliation: matching transitions to published, conflict to quarantined
             stage_id = stage_id_for_authority(authority)
             owner = authority.owner(summary.repository_id)
             handoff_receipt = RunPublicationReceipt(authority.receipt().attempt, authority.receipt().generations, binding)
@@ -322,26 +349,26 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
             def _set_stage_commit_unknown() -> None:
                 with psycopg.connect(make_conninfo(**params)) as conn:
                     conn.execute(
-                        "UPDATE ingestion_stages SET state = 'commit_unknown', "
-                        "merge_status = 'unknown', "
-                        "publication_reconciliation_state = 'required', "
-                        "cleanup_eligibility = 'blocked' WHERE stage_id = %s",
+                        "UPDATE ingestion_stages SET state = 'commit_unknown', merge_status = 'unknown', "
+                        "publication_reconciliation_state = 'required', cleanup_eligibility = 'blocked' "
+                        "WHERE stage_id = %s",
                         (stage_id,),
                     )
                     conn.commit()
 
-            _set_stage_commit_unknown()
-            matching_handoff = PublicationHandoff(MergeContext(stage_id, owner, summary.run_id), handoff_receipt).validate()
-            assert reconcile_commit_unknown(psycopg.connect, params, matching_handoff, summary.repository_id) is True
-
-            with psycopg.connect(make_conninfo(**params)) as connection:
-                reconciled_row = _row(
-                    connection,
-                    "SELECT state, publication_reconciliation_state, cleanup_eligibility "
+            def _stage_state(conn: psycopg.Connection) -> tuple[object, ...]:
+                return _row(
+                    conn,
+                    "SELECT state, merge_status, publication_reconciliation_state, cleanup_eligibility "
                     "FROM ingestion_stages WHERE stage_id = %s",
                     (stage_id,),
                 )
-                assert reconciled_row == ("published", "reconciled", "eligible")
+
+            _set_stage_commit_unknown()
+            matching_handoff = PublicationHandoff(MergeContext(stage_id, owner, summary.run_id), handoff_receipt).validate()
+            assert reconcile_commit_unknown(psycopg.connect, params, matching_handoff, summary.repository_id) is True
+            with psycopg.connect(make_conninfo(**params)) as conn:
+                assert _stage_state(conn) == ("published", "committed", "reconciled", "eligible")
 
             # 11. Commit-unknown reconciliation: conflicting candidate receipt quarantines stage
             _set_stage_commit_unknown()
@@ -354,15 +381,8 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
             ).validate()
             with pytest.raises(StorageSchemaError, match="staged publication receipt conflicts"):
                 reconcile_commit_unknown(psycopg.connect, params, conflicting_handoff, summary.repository_id)
-
-            with psycopg.connect(make_conninfo(**params)) as connection:
-                quarantined_row = _row(
-                    connection,
-                    "SELECT state, merge_status, publication_reconciliation_state, cleanup_eligibility "
-                    "FROM ingestion_stages WHERE stage_id = %s",
-                    (stage_id,),
-                )
-                assert quarantined_row == ("quarantined", "unknown", "conflicting", "quarantined")
+            with psycopg.connect(make_conninfo(**params)) as conn:
+                assert _stage_state(conn) == ("quarantined", "unknown", "conflicting", "quarantined")
 
 
 if __name__ == "__main__":
