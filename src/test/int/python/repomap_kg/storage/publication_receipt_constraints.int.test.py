@@ -16,6 +16,21 @@ from repomap_kg.storage._psql_stream import (
     run_psql_stream,
 )
 from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.backend_ownership import ConnectionRole
+from repomap_kg.storage.backend_telemetry_contracts import (
+    ConnectionTelemetryError,
+    ConnectionTelemetryEvent,
+    TelemetryEventKind,
+)
+from repomap_kg.storage.backend_telemetry_events import (
+    frame_telemetry_event,
+    parse_telemetry_frame,
+    read_telemetry_event,
+)
+from repomap_kg.storage.readback_driver import (
+    DiagnosticOptions,
+    _resolve_diagnostic_options,
+)
 from repomap_kg.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
@@ -166,3 +181,87 @@ def test_psql_stream_streaming_and_error_handling():
 
     with pytest.raises(StorageSchemaError):
         run_psql_stream(["/path/does/not/exist/psql"], ["x\n"])
+
+
+def test_storage_readback_diagnostic_options_and_telemetry_framing() -> None:
+    opt_none = _resolve_diagnostic_options(None, 500)
+    assert opt_none == DiagnosticOptions("-c default_transaction_read_only=on -c statement_timeout=500", 500)
+    assert _resolve_diagnostic_options('has"quote', 500) is None
+    assert _resolve_diagnostic_options("-c invalid_no_equal", 500) is None
+    assert _resolve_diagnostic_options("-c 123badkey=1", 500) is None
+    assert _resolve_diagnostic_options("-c k=1 -c k=2", 500) is None
+    assert _resolve_diagnostic_options("-c default_transaction_read_only=badval", 500) is None
+    assert _resolve_diagnostic_options("-c statement_timeout=badval", 500) is None
+    opt_valid = _resolve_diagnostic_options("-c statement_timeout=2s -c default_transaction_read_only=off", 5000)
+    assert opt_valid is not None
+    assert opt_valid.effective_timeout_ms == 2000
+
+    evt = ConnectionTelemetryEvent(
+        schema_version=1,
+        connection_sequence=1,
+        connection_generation=1,
+        connection_role=ConnectionRole.DIRECT_MAINTENANCE_ADMISSION,
+        backend_pid=1234,
+        event=TelemetryEventKind.CONNECTION_OPENED,
+        monotonic_ns=100000,
+    )
+    wire = frame_telemetry_event(evt)
+    parsed = parse_telemetry_frame(wire)
+    assert parsed.schema_version == evt.schema_version
+    assert parsed.backend_pid == evt.backend_pid
+
+    with pytest.raises(ConnectionTelemetryError):
+        parse_telemetry_frame(b"tiny")
+    with pytest.raises(ConnectionTelemetryError):
+        parse_telemetry_frame(b"\x00\x00\x00\x10bad_payload")
+
+    stream = io.BytesIO(wire)
+    read_back = read_telemetry_event(stream)
+    assert read_back is not None
+    assert read_back.backend_pid == 1234
+
+    empty_stream = io.BytesIO(b"")
+    assert read_telemetry_event(empty_stream) is None
+
+
+def test_staging_event_transport_extended_receive_and_readiness() -> None:
+    server, client = socket.socketpair()
+    try:
+        chan_s = StagingEventChannel(server, acknowledgement_timeout_seconds=2.0)
+        chan_c = StagingEventChannel(client, acknowledgement_timeout_seconds=2.0)
+
+        with pytest.raises(ValueError):
+            chan_c.receive(timeout_seconds=-1.0)
+
+        ready_called: list[bool] = []
+
+        def on_ready() -> None:
+            ready_called.append(True)
+
+        received = []
+        receiver_exc: list[BaseException] = []
+
+        def receiver() -> None:
+            try:
+                frame = chan_c.receive(timeout_seconds=2.0, readiness=on_ready)
+                received.append(frame)
+            except BaseException as exc:
+                receiver_exc.append(exc)
+
+        thread = threading.Thread(target=receiver)
+        thread.start()
+        chan_s.send("measurement", {"count": 42})
+        thread.join(timeout=5.0)
+        assert not thread.is_alive()
+        if receiver_exc:
+            raise receiver_exc[0]
+        assert len(received) == 1
+        assert ready_called == [True]
+        assert received[0].category == "measurement"
+        assert received[0].payload == {"count": 42}
+
+        chan_s.close()
+        chan_c.close()
+    finally:
+        server.close()
+        client.close()

@@ -8,12 +8,19 @@ import re
 import tempfile
 import unittest
 
+import ast
+
 from repomap_kg.artifacts.bundle import PublicationBundle
 from repomap_kg.artifacts.receipt import ExtractionReceipt
 from repomap_kg.artifacts.references import ArtifactReference
 from repomap_kg.artifacts.source_sealer import seal_configured_sources
 from repomap_kg.artifacts.store import FileSystemArtifactStore
 from repomap_kg.canonicalization.main import canonicalize_observations
+from repomap_kg.extractors.documents.css_support import _parse_declarations
+from repomap_kg.extractors.languages.python_web_helpers import (
+    _fastapi_dependencies,
+    _python_web_import_aliases,
+)
 from repomap_kg.coordinator._portable_capability import (
     PortableExecutionCapability, create_portable_capability,
 )
@@ -271,6 +278,35 @@ class ShellPipelineBoundariesIntegrationTests(unittest.TestCase):
                 self.assertTrue({f"{alias}/{item}" for item in (*selected, "boundary.bash")} <= dynamic_paths)
                 self.assertFalse(any("outside.sh" in str(row["target_canonical_key"])
                                      for row in bundle.families["canonical_edges"]))
+
+    def test_extractor_css_and_python_web_helper_branches(self) -> None:
+        code = (
+            "import fastapi as fa\n"
+            "from fastapi import Depends\n"
+            "\n"
+            "@fa.get('/items')\n"
+            "def get_items(dep1 = Depends(service), dep2 = fa.Depends(other)):\n"
+            "    pass\n"
+        )
+        tree = ast.parse(code)
+        aliases = _python_web_import_aliases(tree)
+        self.assertEqual(aliases.get("fa"), "fastapi")
+        self.assertEqual(aliases.get("Depends"), "fastapi.Depends")
+
+        fn = [n for n in tree.body if isinstance(n, ast.FunctionDef)][0]
+        deps = _fastapi_dependencies(fn, aliases)
+        self.assertGreaterEqual(len(deps), 2)
+
+        css_block = 'color: red !important; background: url("image.png"); empty: ; no_colon'
+        decls = _parse_declarations(css_block, css_block, 0)
+        self.assertEqual(len(decls), 3)
+        self.assertEqual(decls[0].property_name, "color")
+        self.assertTrue(decls[0].important)
+        self.assertEqual(decls[1].property_name, "background")
+        self.assertFalse(decls[1].important)
+        self.assertEqual(decls[2].property_name, "empty")
+        self.assertEqual(decls[2].value, "")
+
 
 
 if __name__ == "__main__":

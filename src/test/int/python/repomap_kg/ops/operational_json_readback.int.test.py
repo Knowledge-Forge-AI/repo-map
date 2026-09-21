@@ -27,6 +27,16 @@ from repomap_kg.ops.baselines import (
     _normalize_preflight_baseline_payload,
 )
 from repomap_kg.ops.config import load_ops_config
+from repomap_kg.ops.ingestion.github_api_config import validate_source_identity
+from repomap_kg.ops.ingestion.github_api_helpers import GitHubApiPolicyError
+from repomap_kg.ops.ingestion.source_common import (
+    SourcePolicyError,
+    _mapping,
+    _optional_bool,
+    _required_positive_int,
+    _required_text,
+    _validate_source_id,
+)
 from repomap_kg.ops.readback import execute_ops_json_readback
 from repomap_kg.ops.refresh import query_refresh_status, refresh_status_to_jsonable
 from repomap_kg.ops.reports import OpsGraphSummary, OpsRefreshError
@@ -306,3 +316,35 @@ def test_ops_baselines_normalization_and_drift_calculation() -> None:
         _atomic_write_text(file_p, "content", replace_existing=True)
         assert file_p.read_text(encoding="utf-8") == "content"
         _ensure_path_under_baseline_root(file_p, root)
+
+
+def test_ops_ingestion_source_common_and_github_api_config_branches() -> None:
+    with pytest.raises(SourcePolicyError):
+        _mapping({"key": "not_map"}, "key")
+    with pytest.raises(SourcePolicyError):
+        _required_text({"t": "  "}, "t", "title")
+    with pytest.raises(SourcePolicyError):
+        _required_positive_int({"n": -1}, "n", "count")
+    with pytest.raises(SourcePolicyError):
+        _required_positive_int({"n": True}, "n", "count")
+    with pytest.raises(SourcePolicyError):
+        _optional_bool("not_bool", "flag", default=False)
+    with pytest.raises(SourcePolicyError):
+        _validate_source_id("https://bad.source")
+
+    _validate_source_id("valid-source_1")
+
+    with pytest.raises(GitHubApiPolicyError):
+        validate_source_identity(
+            source_type="invalid_type",
+            api_source_class="public_anonymous_read_only",
+            provider_name="GitHub",
+            provider_product="GitHub REST API",
+            policy_status="allowed",
+            owner="octocat",
+            repository="Hello-World",
+            repository_visibility="public",
+            read_only=True,
+            mutation_allowed=False,
+            credential_mode="anonymous",
+        )

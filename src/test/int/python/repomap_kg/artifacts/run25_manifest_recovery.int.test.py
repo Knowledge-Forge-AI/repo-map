@@ -19,8 +19,24 @@ from repomap_kg.artifacts.references import (
 )
 from repomap_kg.artifacts.source_sealer import seal_configured_sources
 from repomap_kg.artifacts.store import FileSystemArtifactStore
+from repomap_kg.graph.keys import (
+    GraphKeyError,
+    js_test_case_key,
+    parse_key,
+    validate_key,
+)
 from repomap_kg.graph.multi_source import (
-    SourceKind, graph_source_binding_id, source_selection_policy_id,
+    SourceKind,
+    graph_source_binding_id,
+    source_selection_policy_id,
+)
+from repomap_kg.graph.multi_source_records import (
+    MultiSourceIdentityError,
+    SourceDefinition,
+    _graph_id,
+    _logical_root,
+    source_binding_input_name,
+    source_binding_role,
 )
 from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
 from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
@@ -334,3 +350,42 @@ def test_artifact_locator_and_receipt_validation_branches() -> None:
     data = receipt.canonical_bytes()
     loaded = ExtractionReceipt.from_bytes(data)
     assert loaded.job_id == "j"
+
+
+def test_graph_keys_and_multi_source_record_validation_branches() -> None:
+    with pytest.raises(GraphKeyError):
+        parse_key("")
+    with pytest.raises(GraphKeyError):
+        parse_key("no_separator")
+    with pytest.raises(GraphKeyError):
+        parse_key("bogus_ns:foo")
+
+    assert validate_key("").valid is False
+    assert validate_key("file:a/b.py").valid is True
+
+    with pytest.raises(GraphKeyError):
+        js_test_case_key("python.function:mod:fn", "test1")
+
+    with pytest.raises(MultiSourceIdentityError):
+        _graph_id("")
+    with pytest.raises(MultiSourceIdentityError):
+        _graph_id("invalid id with spaces")
+    assert _graph_id("graph-1") == "graph-1"
+
+    with pytest.raises(MultiSourceIdentityError):
+        _logical_root("/abs/path")
+    with pytest.raises(MultiSourceIdentityError):
+        _logical_root("a/../b")
+    assert _logical_root("src/lib") == "src/lib"
+
+    with pytest.raises(MultiSourceIdentityError):
+        source_binding_role("invalid role!")
+    assert source_binding_role("source") == "source"
+
+    with pytest.raises(MultiSourceIdentityError):
+        source_binding_input_name("invalid/input")
+    assert source_binding_input_name("valid_input") == "valid_input"
+
+    invalid_kind: Any = "not_a_source_kind"
+    with pytest.raises(MultiSourceIdentityError):
+        SourceDefinition("src1:test", invalid_kind)

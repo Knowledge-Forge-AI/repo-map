@@ -2,7 +2,21 @@ import unittest
 
 
 from repomap_kg.canonicalization.main import canonicalize_observations
+from repomap_kg.canonicalization._shell_powershell_metadata import (
+    _powershell_command_name,
+    _powershell_container_key,
+    _powershell_file_node_metadata,
+)
+from repomap_kg.canonicalization.document_css_family import (
+    _css_reference_source_key,
+    _css_selector_source_key,
+)
+from repomap_kg.canonicalization.language_javascript_family import (
+    _js_definition_source_key,
+    _js_definition_target_key,
+)
 from repomap_kg.graph.keys import (
+    GraphKeyError,
     external_url_key,
     warc_document_key,
     warc_record_key,
@@ -265,3 +279,88 @@ class CanonicalMarkdownWarcIntegrationTests(unittest.TestCase):
                 (record_key, "references", target_key),
             },
         )
+
+    def test_canonicalization_powershell_css_and_javascript_branches(self) -> None:
+        self.assertIn("powershell.module", _powershell_container_key("Module.psm1"))
+        self.assertIn("powershell.manifest", _powershell_container_key("Manifest.psd1"))
+        self.assertIn("powershell.script", _powershell_container_key("Script.ps1"))
+
+        obs_name = RawObservation(
+            kind="powershell.command", source_id="s:1", path="s.ps1",
+            confidence="extracted", extractor="pwsh", extractor_version="1.0",
+            name="Get-Item", metadata={},
+        )
+        self.assertEqual(_powershell_command_name(obs_name), "Get-Item")
+
+        obs_target = RawObservation(
+            kind="powershell.command", source_id="s:2", path="s.ps1",
+            confidence="extracted", extractor="pwsh", extractor_version="1.0",
+            name="", target="tool:pwsh.cmd", metadata={},
+        )
+        self.assertEqual(_powershell_command_name(obs_target), "pwsh.cmd")
+
+        meta_file = _powershell_file_node_metadata(RawObservation(
+            kind="powershell.file", source_id="s:3", path="s.ps1",
+            confidence="extracted", extractor="pwsh", extractor_version="1.0",
+            name="s.ps1", metadata={"file_type": "script"},
+        ))
+        self.assertEqual(meta_file.get("file_type"), "script")
+
+        obs_css_bad = RawObservation(
+            kind="css.selector", source_id="c:1", path="style.css",
+            confidence="extracted", extractor="css", extractor_version="1.0",
+            name="sel", metadata={"source_rule_key": "file:style.css"},
+        )
+        with self.assertRaises(GraphKeyError):
+            _css_selector_source_key(obs_css_bad)
+
+        obs_css_ptr = RawObservation(
+            kind="css.selector", source_id="c:2", path="style.css",
+            confidence="extracted", extractor="css", extractor_version="1.0",
+            name="sel", metadata={"rule_pointer": "/rules/0"},
+        )
+        self.assertIn("css.rule", _css_selector_source_key(obs_css_ptr))
+
+        obs_css_ref_bad = RawObservation(
+            kind="css.reference", source_id="c:3", path="style.css",
+            confidence="extracted", extractor="css", extractor_version="1.0",
+            name="ref", metadata={"source_key": "file:style.css"},
+        )
+        with self.assertRaises(GraphKeyError):
+            _css_reference_source_key(obs_css_ref_bad)
+
+        obs_method_cls = RawObservation(
+            kind="js.method", source_id="j:1", path="app.js",
+            confidence="extracted", extractor="js", extractor_version="1.0",
+            name="render", metadata={"class_name": "App"},
+        )
+        self.assertIn("js.class", _js_definition_source_key(obs_method_cls))
+
+        obs_test_suite = RawObservation(
+            kind="js.test_case", source_id="j:2", path="test.js",
+            confidence="extracted", extractor="js", extractor_version="1.0",
+            name="test1", metadata={"test_suite_key": "js.test_suite:file%3Atest.js:suite1"},
+        )
+        self.assertIn("js.test_suite", _js_definition_source_key(obs_test_suite))
+
+        obs_test_no_suite = RawObservation(
+            kind="js.test_case", source_id="j:3", path="test.js",
+            confidence="extracted", extractor="js", extractor_version="1.0",
+            name="test2", metadata={},
+        )
+        self.assertIn("js.file", _js_definition_source_key(obs_test_no_suite))
+
+        obs_js_target = RawObservation(
+            kind="js.function", source_id="j:4", path="fn.js",
+            confidence="extracted", extractor="js", extractor_version="1.0",
+            name="", target="file:fn.js", metadata={},
+        )
+        self.assertEqual(_js_definition_target_key(obs_js_target), "file:fn.js")
+
+        obs_js_noname = RawObservation(
+            kind="js.function", source_id="j:5", path="fn.js",
+            confidence="extracted", extractor="js", extractor_version="1.0",
+            name="", metadata={},
+        )
+        with self.assertRaises(GraphKeyError):
+            _js_definition_target_key(obs_js_noname)

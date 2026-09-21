@@ -23,10 +23,17 @@ from repomap_kg.extractors.config.nix_resolver import (
 )
 from repomap_kg.extractors.config.openapi_helpers import (
     _is_url,
+    _openapi_components,
+    _openapi_media_types,
+    _openapi_operation_count,
+    _openapi_parameters,
     _openapi_reference_scope,
 )
 from repomap_kg.extractors.config.terraform_hcl_helpers import (
     _terraform_hcl_brace_delta,
+    _terraform_hcl_collection_body,
+    _terraform_hcl_nested_block_body,
+    _terraform_hcl_nested_block_count,
     _terraform_hcl_strip_comment,
 )
 from repomap_kg.extractors.shell.powershell_manifest import (
@@ -289,6 +296,37 @@ class Run25ConfigShellWaveIntegrationTests(unittest.TestCase):
         self.assertEqual(_openapi_reference_scope("#/components/schemas/Item"), "internal")
         self.assertEqual(_openapi_reference_scope("https://example.com/schema.json"), "remote")
         self.assertEqual(_openapi_reference_scope("rel/path.json"), "local_file")
+
+        hcl = 'resource "aws_s3_bucket" "b" {\n  bucket = "mybucket"\n  // comment\n  versioning {\n    enabled = true\n  }\n}\n'
+        self.assertEqual(_terraform_hcl_nested_block_count(hcl, "versioning"), 1)
+        body = _terraform_hcl_nested_block_body(hcl, "versioning")
+        self.assertIsNotNone(body)
+        assert body is not None
+        self.assertIn("enabled = true", body)
+        self.assertEqual(_terraform_hcl_collection_body("{ a = 1 }"), " a = 1 ")
+        self.assertIsNone(_terraform_hcl_collection_body("not_coll"))
+        self.assertEqual(_terraform_hcl_brace_delta('"{ not }"'), 0)
+
+        swag = {
+            "definitions": {"Pet": {"type": "object"}},
+            "securityDefinitions": {"ApiKey": {"type": "apiKey"}},
+        }
+        comp = _openapi_components(swag, "swagger2")
+        self.assertIn("definitions", comp)
+        self.assertIn("securityDefinitions", comp)
+
+        params = _openapi_parameters({"parameters": [{"name": "q"}]}, [{"name": "id"}])
+        self.assertEqual(len(params), 2)
+
+        media = _openapi_media_types({"content": {"application/json": {}, "text/plain": {}, "invalid": {}}})
+        self.assertEqual(media, ["application/json", "text/plain"])
+
+        paths = {
+            "/users": {"get": {}, "post": {}},
+            "/users/{id}": {"get": {}, "delete": {}},
+            "/ignored": "not_dict",
+        }
+        self.assertEqual(_openapi_operation_count(paths), 4)
 
 
 if __name__ == "__main__":
