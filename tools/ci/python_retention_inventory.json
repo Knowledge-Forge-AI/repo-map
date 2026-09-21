@@ -979,6 +979,56 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-canonical_contract.slice6_language_pipeline.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice6_language_pipeline.int.test.py"
+      ],
+      "rationale": "Contract owner slice6_language_pipeline.int.test in src/test/int/python/repomap_kg/canonical_contract; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-canonical_contract.slice6_nix_pipeline.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice6_nix_pipeline.int.test.py"
+      ],
+      "rationale": "Contract owner slice6_nix_pipeline.int.test in src/test/int/python/repomap_kg/canonical_contract; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-canonical_contract.slice7_config_pipeline.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice7_config_pipeline.int.test.py"
+      ],
+      "rationale": "Integration owner slice7_config_pipeline.int.test in src/test/int/python/repomap_kg/canonical_contract; Slice 7 Group S7-B configured source routing and configuration pipelines.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-canonical_contract.slice7_language_pipeline.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice7_language_pipeline.int.test.py"
+      ],
+      "rationale": "Integration owner slice7_language_pipeline.int.test in src/test/int/python/repomap_kg/canonical_contract; Slice 7 Group S7-A real language source to canonical graph and typed rows.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-canonical_contract.slice8_document_html_css.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice8_document_html_css.int.test.py"
+      ],
+      "rationale": "Integration owner slice8_document_html_css.int.test in src/test/int/python/repomap_kg/canonical_contract; Slice 8 Group S8-C HTML/CSS documents to canonical graph and typed rows.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-canonical_contract.xml_config.int.test",
       "members": [
         "src/test/int/python/repomap_kg/canonical_contract/xml_config.int.test.py"
@@ -1229,6 +1279,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.refresh_control_workflows.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/refresh_control_workflows.int.test.py"
+      ],
+      "rationale": "Contract owner refresh_control_workflows.int.test in src/test/int/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-coordinator.refresh_worker.int.test",
       "members": [
         "src/test/int/python/repomap_kg/coordinator/refresh_worker.int.test.py"
@@ -1244,6 +1304,36 @@
         "src/test/int/python/repomap_kg/coordinator/service_client.int.test.py"
       ],
       "rationale": "Contract owner service_client.int.test in src/test/int/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.slice6_control_readback.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice6_control_readback.int.test.py"
+      ],
+      "rationale": "Contract owner slice6_control_readback.int.test in src/test/int/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.slice7_control_readback.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice7_control_readback.int.test.py"
+      ],
+      "rationale": "Integration owner slice7_control_readback.int.test in src/test/int/python/repomap_kg/coordinator; Slice 7 Group S7-C scheduling, transport, and readback workflows.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.slice8_protocol_transport.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice8_protocol_transport.int.test.py"
+      ],
+      "rationale": "Integration owner slice8_protocol_transport.int.test in src/test/int/python/repomap_kg/coordinator; Slice 8 Group S8-A transport and protocol refusal and recovery.",
       "root": "test_owners"
     },
     {
@@ -1374,6 +1464,16 @@
         "src/test/int/python/repomap_kg/ops/postgres_readiness_readback.int.test.py"
       ],
       "rationale": "Contract owner postgres_readiness_readback.int.test in src/test/int/python/repomap_kg/ops; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-ops.slice8_readback_topology.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/ops/slice8_readback_topology.int.test.py"
+      ],
+      "rationale": "Integration owner slice8_readback_topology.int.test in src/test/int/python/repomap_kg/ops; Slice 8 Group S8-B readback connector and topology decisions.",
       "root": "test_owners"
     },
     {
@@ -4085,6 +4185,16 @@
         "src/test/support/python/repomap_test_support/source_ingestion_integration.py"
       ],
       "rationale": "source_ingestion_integration responsibility in src/test/support/python/repomap_test_support; includes the declared module family independent of current quality findings.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.staging_transport_test_harness",
+      "members": [
+        "src/test/support/python/repomap_test_support/staging_transport_test_harness.py"
+      ],
+      "rationale": "staging_transport_test_harness responsibility in src/test/support/python/repomap_test_support; includes the declared module family independent of current quality findings.",
       "root": "test_support"
     },
     {
@@ -9670,6 +9780,16 @@
         "src/test/unit/python/repomap_test_support/scale28_fix9_failure_inventory.unit.test.py"
       ],
       "rationale": "Contract owner scale28_fix9_failure_inventory.unit.test in src/test/unit/python/repomap_test_support; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_test_support.staging_transport_test_harness.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_test_support/staging_transport_test_harness.unit.test.py"
+      ],
+      "rationale": "Unit owner staging_transport_test_harness.unit.test in src/test/unit/python/repomap_test_support; harness mechanics for staging transport tests.",
       "root": "test_owners"
     },
     {
@@ -26805,6 +26925,51 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice6_language_pipeline.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice6_nix_pipeline.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice7_config_pipeline.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice7_language_pipeline.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice8_document_html_css.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/canonical_contract/xml_config.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -27039,6 +27204,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/refresh_control_workflows.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/refresh_worker.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -27059,6 +27233,33 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/service_client.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/slice6_control_readback.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/slice7_control_readback.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/slice8_protocol_transport.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -27203,6 +27404,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/ops/postgres_readiness_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/slice8_readback_topology.int.test.py",
+      "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -30569,6 +30779,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/staging_abrupt_launch.py",
       "rationale": "PR26-STAGING-CONTRACT1 exact staging population, observed abrupt lifecycle and report validation; immediate full retention enforcement.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/staging_transport_test_harness.py",
+      "rationale": "Shared test harness and test execution support library.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -36607,6 +36826,15 @@
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/scale28_fix9_failure_inventory.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/staging_transport_test_harness.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
       "status": "active_unit_test"

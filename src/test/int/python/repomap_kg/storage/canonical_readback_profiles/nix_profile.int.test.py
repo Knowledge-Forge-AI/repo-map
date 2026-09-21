@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 
+import repomap_kg.extractors.config.nix as nix
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
@@ -213,3 +214,84 @@ class StorageNixProfileReadbackIntegrationTests(unittest.TestCase):
             "nix.app",
         )
         self.assertEqual(raw_path_refs, "2")
+
+    def test_nix_extractor_to_canonical_graph_pipeline(self) -> None:
+        from repomap_kg.canonicalization import canonicalize_observations
+
+        content = """{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  };
+  outputs = { self, nixpkgs }: {
+    packages.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.hello;
+    apps.x86_64-linux.default = {
+      type = "app";
+      program = "${self}/bin/hello";
+    };
+    devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {};
+    inherit (nixpkgs) legacyPackages;
+  };
+}"""
+        obs = list(nix.extract_nix_file_observations("flake.nix", content, flake_ref="flake:default"))
+        self.assertTrue(obs)
+        self.assertEqual(nix.resolve_repo_path("flake.nix", "${self}/bin/hello"), "bin/hello")
+        self.assertEqual(nix.resolve_repo_path("flake.nix", "./bin/hello"), "bin/hello")
+        self.assertIsNone(nix.resolve_repo_path("flake.nix", "../outside"))
+
+        canon_result = canonicalize_observations(obs)
+        self.assertTrue(canon_result.ok)
+        payload = canon_result.to_dict()
+
+        import repomap_kg.graph.keys as graph_keys
+
+        flake_file_key = graph_keys.file_key("flake.nix")
+        package_key = graph_keys.nix_package_key(
+            "flake:default", "x86_64-linux", "default"
+        )
+        app_key = graph_keys.nix_app_key(
+            "flake:default", "x86_64-linux", "default"
+        )
+        dev_shell_key = graph_keys.nix_dev_shell_key(
+            "flake:default", "x86_64-linux", "default"
+        )
+        script_key = graph_keys.file_key("bin/hello")
+
+        nodes_by_key = {
+            node["canonical_key"]: node["kind"] for node in payload["nodes"]
+        }
+        self.assertEqual(nodes_by_key.get(flake_file_key), "file")
+        self.assertEqual(nodes_by_key.get(package_key), "nix.package")
+        self.assertEqual(nodes_by_key.get(app_key), "nix.app")
+        self.assertEqual(nodes_by_key.get(dev_shell_key), "nix.devShell")
+        self.assertEqual(nodes_by_key.get(script_key), "file")
+
+        edge_triples = {
+            (edge["source_key"], edge["kind"], edge["target_key"])
+            for edge in payload["edges"]
+        }
+        self.assertIn((flake_file_key, "defines", package_key), edge_triples)
+        self.assertIn((flake_file_key, "defines", app_key), edge_triples)
+        self.assertIn((flake_file_key, "defines", dev_shell_key), edge_triples)
+        self.assertIn((app_key, "exposes_script", script_key), edge_triples)
+
+        node_evidence_links = {
+            (link["canonical_key"], link["link_kind"])
+            for link in payload.get("node_evidence_links", [])
+        }
+        self.assertIn((flake_file_key, "inferred_from_edge"), node_evidence_links)
+        self.assertIn((package_key, "observed"), node_evidence_links)
+        self.assertIn((app_key, "observed"), node_evidence_links)
+        self.assertIn((dev_shell_key, "observed"), node_evidence_links)
+        self.assertIn((script_key, "inferred_from_edge"), node_evidence_links)
+
+        edge_evidence_links = {
+            link["link_kind"] for link in payload.get("edge_evidence_links", [])
+        }
+        self.assertIn("supports", edge_evidence_links)
+
+        warning_categories = {
+            diagnostic["category"]
+            for diagnostic in payload.get("diagnostics", [])
+            if diagnostic.get("severity") == "warning"
+        }
+        self.assertIn("unsupported_raw_observation_kind", warning_categories)

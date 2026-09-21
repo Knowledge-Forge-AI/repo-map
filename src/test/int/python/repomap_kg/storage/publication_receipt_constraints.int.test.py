@@ -265,3 +265,68 @@ def test_staging_event_transport_extended_receive_and_readiness() -> None:
     finally:
         server.close()
         client.close()
+
+
+def test_readback_driver_and_transport_error_branches() -> None:
+    from unittest import mock
+    from repomap_kg.storage.readback_driver import diagnose_psycopg_database_presence
+    from repomap_kg.storage.staging_event_transport import (
+        staging_event_channel_from_inherited_fd,
+        StagingEventTransportError,
+    )
+
+    assert (
+        diagnose_psycopg_database_presence(
+            psql_args=("-h", "localhost"),
+            target_database="db",
+            timeout_seconds=1.0,
+        )
+        == "unavailable"
+    )
+
+    with mock.patch("repomap_kg.storage.readback_driver._import_psycopg") as mock_import:
+        err = Exception("auth failure")
+        setattr(err, "sqlstate", "28000")
+        mock_psycopg = mock.MagicMock()
+        mock_psycopg.connect.side_effect = err
+        mock_import.return_value = mock_psycopg
+        assert (
+            diagnose_psycopg_database_presence(
+                psql_args=("-h", "localhost"),
+                target_database="db",
+                timeout_seconds=5.0,
+            )
+            == "denied"
+        )
+
+        mock_conn = mock.MagicMock()
+        mock_cursor = mock.MagicMock()
+        mock_cursor.fetchone.return_value = (True,)
+        mock_conn.__enter__.return_value = mock_conn
+        mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+        mock_psycopg.connect.side_effect = None
+        mock_psycopg.connect.return_value = mock_conn
+        assert (
+            diagnose_psycopg_database_presence(
+                psql_args=("-h", "localhost"),
+                target_database="db",
+                timeout_seconds=5.0,
+            )
+            == "present"
+        )
+
+        mock_cursor.fetchone.return_value = (False,)
+        assert (
+            diagnose_psycopg_database_presence(
+                psql_args=("-h", "localhost"),
+                target_database="db",
+                timeout_seconds=5.0,
+            )
+            == "absent"
+        )
+
+    with pytest.raises(StagingEventTransportError):
+        staging_event_channel_from_inherited_fd(-1)
+    bad_fd: Any = True
+    with pytest.raises(StagingEventTransportError):
+        staging_event_channel_from_inherited_fd(bad_fd)
