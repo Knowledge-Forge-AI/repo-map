@@ -10,6 +10,13 @@ import pytest
 
 from repomap_kg.artifacts import ArtifactLimits, PortableSnapshotManifest
 from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from repomap_kg.artifacts.receipt import ExtractionReceipt
+from repomap_kg.artifacts.references import (
+    ArtifactLocator,
+    _privacy,
+    _require_text,
+    _validate_locator_value,
+)
 from repomap_kg.artifacts.source_sealer import seal_configured_sources
 from repomap_kg.artifacts.store import FileSystemArtifactStore
 from repomap_kg.graph.multi_source import (
@@ -19,6 +26,7 @@ from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidat
 from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
 from repomap_kg.ops.config_records import OpsGraphConfig
 from repomap_kg.storage.staged_rows import build_staged_rows
+from repomap_kg.storage.staging_family_contracts import PrivacyClassification
 
 
 def _sealed(tmp_path: Path):
@@ -267,3 +275,62 @@ def test_capture_to_bundle_corruption_refuses_and_original_replays(
     assert recovered.families == bundle.families
     assert store.delete(invalid)
     assert store.read(reference) == original
+
+
+def test_artifact_locator_and_receipt_validation_branches() -> None:
+    assert _require_text("valid", "field", 10) == "valid"
+    for bad in ("", "a" * 20, "bad\x00ctrl"):
+        with pytest.raises(ValueError):
+            _require_text(bad, "f", 10)
+
+    assert _validate_locator_value("filesystem", "valid/path/file.txt") == "valid/path/file.txt"
+    for bad in ("/abs", "traversal/../bad", "http://url", "has:colons", "bucket/key", "with space"):
+        with pytest.raises(ValueError):
+            _validate_locator_value("object", bad)
+
+    loc = ArtifactLocator("filesystem", "rel/path.txt", "1.0")
+    assert loc.path == "rel/path.txt"
+    assert loc.store_generation == "1.0"
+    mapping = loc.to_mapping()
+    assert ArtifactLocator.from_mapping(mapping) == loc
+
+    assert _privacy(PrivacyClassification.PUBLIC) == PrivacyClassification.PUBLIC
+    assert _privacy("public") == PrivacyClassification.PUBLIC
+    with pytest.raises(ValueError):
+        _privacy("invalid-privacy")
+    with pytest.raises(ValueError):
+        _privacy(12345)
+
+    receipt = ExtractionReceipt.create(
+        request_id="r",
+        job_id="j",
+        attempt=1,
+        graph_id="g",
+        worker_capability_identity="w",
+        contract_version="1",
+        source_generation="sg1:s",
+        config_generation="cg1:c",
+        extractor_generation="eg1:e",
+        canonicalizer_generation="kg1:k",
+        snapshot_manifest_id="snapmanifest1:m",
+        snapshot_vector=(("b", 1, "s"),),
+        resolver_identity="res",
+        extractor_capability_identity="ec",
+        canonicalizer_identity="ci",
+        semantic_contract_identity="sc",
+        quality_rule_identity="qr",
+        outcome="cancelled",
+        cancellation="clean",
+        bundle_reference=None,
+        bundle_id=None,
+        family_counts={},
+        diagnostic_category="cancelled",
+        diagnostic_summary=("cancelled by test",),
+        producer_identity="prod",
+        attestation_class="att",
+    )
+    assert receipt.outcome == "cancelled"
+    assert receipt.diagnostic_category == "cancelled"
+    data = receipt.canonical_bytes()
+    loaded = ExtractionReceipt.from_bytes(data)
+    assert loaded.job_id == "j"

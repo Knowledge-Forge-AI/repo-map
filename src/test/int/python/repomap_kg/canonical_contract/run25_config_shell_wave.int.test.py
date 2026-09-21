@@ -17,6 +17,23 @@ import tempfile
 import unittest
 
 from repomap_kg.canonicalization.main import canonicalize_observations
+from repomap_kg.extractors.config.nix_resolver import (
+    NixBindingView,
+    _source_relative_path,
+)
+from repomap_kg.extractors.config.openapi_helpers import (
+    _is_url,
+    _openapi_reference_scope,
+)
+from repomap_kg.extractors.config.terraform_hcl_helpers import (
+    _terraform_hcl_brace_delta,
+    _terraform_hcl_strip_comment,
+)
+from repomap_kg.extractors.shell.powershell_manifest import (
+    _collect_manifest_array,
+    _extract_manifest_fields,
+    _resolve_manifest_reference,
+)
 from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
 from repomap_test_support.run25_wave2_corpus import (
     create_run25_wave2_graph_config,
@@ -217,6 +234,61 @@ class Run25ConfigShellWaveIntegrationTests(unittest.TestCase):
         self.assertEqual(candidate1.source_generation, candidate2.source_generation)
         self.assertEqual(candidate1.candidate.candidate_id, candidate2.candidate.candidate_id)
         self.assertEqual(candidate1.observations, candidate2.observations)
+
+    def test_powershell_manifest_ast_and_legacy_extraction_coverage(self) -> None:
+        ast_content = (
+            "@{\n"
+            "ModuleVersion = '1.0.0'\n"
+            "Author = 'Test Author'\n"
+            "NestedModules = @('submod.psm1')\n"
+            "RequiredModules = @('PSReadLine')\n"
+            "CmdletsToExport = @('Get-Wave')\n"
+            "}\n"
+        )
+        ast_obs = _extract_manifest_fields("primary/manifest.psd1", ast_content)
+        self.assertGreaterEqual(len(ast_obs), 5)
+
+        legacy_content = (
+            "ModuleVersion = '2.0.0'\n"
+            "Author = 'Legacy Author'\n"
+            "NestedModules = @('legacy.psm1')\n"
+        )
+        legacy_obs = _extract_manifest_fields("primary/legacy.psd1", legacy_content)
+        self.assertGreaterEqual(len(legacy_obs), 2)
+
+        self.assertEqual(
+            _resolve_manifest_reference("dir/manifest.psd1", "sub/mod.psm1"),
+            "dir/sub/mod.psm1",
+        )
+        self.assertIsNone(_resolve_manifest_reference("dir/manifest.psd1", "../../out.psm1"))
+
+        arr, _ = _collect_manifest_array(["'item1'", "'item2')"], 0)
+        self.assertEqual(len(arr), 2)
+
+    def test_config_nix_terraform_and_openapi_branch_helpers(self) -> None:
+        view = NixBindingView(
+            alias="primary",
+            input_name="nixpkgs",
+            files=frozenset({"flake.nix"}),
+            module_exports={"default": "flake.nix"},
+        )
+        self.assertEqual(view.alias, "primary")
+        with self.assertRaises(ValueError):
+            NixBindingView(alias="", input_name=None, files=frozenset())
+
+        self.assertEqual(_source_relative_path("src/flake.nix"), "src/flake.nix")
+        self.assertIsNone(_source_relative_path("/abs/path"))
+        self.assertIsNone(_source_relative_path("path/../traversal"))
+
+        stripped = _terraform_hcl_strip_comment('variable "test" { # inline').strip()
+        self.assertEqual(stripped, 'variable "test" {')
+        self.assertEqual(_terraform_hcl_brace_delta("{"), 1)
+        self.assertEqual(_terraform_hcl_brace_delta("}"), -1)
+
+        self.assertTrue(_is_url("https://example.com/schema.json"))
+        self.assertEqual(_openapi_reference_scope("#/components/schemas/Item"), "internal")
+        self.assertEqual(_openapi_reference_scope("https://example.com/schema.json"), "remote")
+        self.assertEqual(_openapi_reference_scope("rel/path.json"), "local_file")
 
 
 if __name__ == "__main__":

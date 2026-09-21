@@ -17,8 +17,14 @@ import tempfile
 import unittest
 
 from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.keys import ruby_class_key, ruby_method_key, ruby_singleton_method_key
+from repomap_kg.graph.keys import (
+    js_function_key,
+    ruby_class_key,
+    ruby_method_key,
+    ruby_singleton_method_key,
+)
 from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
+from repomap_kg.observations.raw import RawObservation
 from repomap_test_support.run25_wave2_corpus import (
     create_run25_wave2_graph_config,
     inject_malformed_plist,
@@ -242,6 +248,115 @@ class Run25LanguageDocumentWaveIntegrationTests(unittest.TestCase):
         self.assertEqual(candidate1.source_generation, candidate2.source_generation)
         self.assertEqual(candidate1.candidate.candidate_id, candidate2.candidate.candidate_id)
         self.assertEqual(candidate1.observations, candidate2.observations)
+
+    def test_canonicalization_polyglot_language_family_edges(self) -> None:
+        obs_valid = [
+            RawObservation(
+                kind="python.function",
+                source_id="src1:test#py1",
+                path="app/helper.py",
+                confidence="extracted",
+                extractor="python",
+                extractor_version="1.0",
+                name="compute",
+                metadata={"module": "app.helper"},
+            ),
+            RawObservation(
+                kind="ruby.class",
+                source_id="src1:test#rb1",
+                path="lib/worker.rb",
+                confidence="extracted",
+                extractor="ruby",
+                extractor_version="1.0",
+                name="App::Worker",
+                metadata={},
+            ),
+            RawObservation(
+                kind="js.function",
+                source_id="src1:test#js1",
+                path="src/index.js",
+                confidence="extracted",
+                extractor="javascript",
+                extractor_version="1.0",
+                name="render",
+                metadata={},
+            ),
+            RawObservation(
+                kind="css.custom_property",
+                source_id="src1:test#css1",
+                path="styles/theme.css",
+                confidence="extracted",
+                extractor="css",
+                extractor_version="1.0",
+                name="--main-color",
+                metadata={"property_name": "--main-color"},
+            ),
+        ]
+        res_valid = canonicalize_observations(obs_valid)
+        self.assertTrue(res_valid.ok)
+        node_keys = {n.canonical_key for n in res_valid.graph.nodes}
+        self.assertIn("python.function:app.helper:compute", node_keys)
+        self.assertIn(ruby_class_key("App::Worker"), node_keys)
+        self.assertIn(js_function_key("src/index.js", "render"), node_keys)
+
+        obs_diag = [
+            RawObservation(
+                kind="ruby.route",
+                source_id="src1:test#rb_bad",
+                path="config/routes.rb",
+                confidence="extracted",
+                extractor="ruby",
+                extractor_version="1.0",
+                name="bad_route",
+                metadata={},
+            ),
+        ]
+        res_diag = canonicalize_observations(obs_diag)
+        self.assertFalse(res_diag.ok)
+        self.assertTrue(any(d.severity == "error" for d in res_diag.diagnostics))
+
+    def test_canonicalization_go_context_relationships(self) -> None:
+        obs_list = [
+            RawObservation(
+                kind="go.module",
+                source_id="src1:test#go_mod",
+                path="go.mod",
+                confidence="extracted",
+                extractor="go",
+                extractor_version="1.0",
+                name="example.com/mod",
+                metadata={"module_path": "example.com/mod"},
+            ),
+            RawObservation(
+                kind="go.module_require",
+                source_id="src1:test#go_req",
+                path="go.mod",
+                confidence="extracted",
+                extractor="go",
+                extractor_version="1.0",
+                name="github.com/pkg/errors",
+                metadata={"owner_module_path": "example.com/mod", "version": "v0.9.1", "indirect": False},
+            ),
+            RawObservation(
+                kind="go.module_replace",
+                source_id="src1:test#go_repl",
+                path="go.mod",
+                confidence="extracted",
+                extractor="go",
+                extractor_version="1.0",
+                name="github.com/pkg/errors",
+                metadata={
+                    "owner_module_path": "example.com/mod",
+                    "replacement_kind": "module",
+                    "replacement": "github.com/fork/errors",
+                },
+            ),
+        ]
+        res = canonicalize_observations(obs_list, repository_scope="repomap-go")
+        self.assertTrue(res.ok)
+        edge_kinds = {e.kind for e in res.graph.edges}
+        self.assertIn("requires_module", edge_kinds)
+        self.assertIn("replaces_module", edge_kinds)
 
 
 if __name__ == "__main__":

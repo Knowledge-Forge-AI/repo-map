@@ -6,16 +6,32 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
 )
 
+from repomap_kg.ops.baselines import (
+    _atomic_write_text,
+    _baseline_kinds,
+    _baseline_path_segment,
+    _bool_or_false,
+    _build_drift_payload,
+    _drift_payload_detected,
+    _ensure_path_under_baseline_root,
+    _int_or_zero,
+    _normalize_baseline_payload,
+    _normalize_preflight_baseline_payload,
+)
 from repomap_kg.ops.config import load_ops_config
 from repomap_kg.ops.readback import execute_ops_json_readback
 from repomap_kg.ops.refresh import query_refresh_status, refresh_status_to_jsonable
+from repomap_kg.ops.reports import OpsGraphSummary, OpsRefreshError
 from repomap_kg.storage import apply_migrations, default_rdbms_root
+from repomap_kg.storage.authority import RefreshResult
 from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 from repomap_kg.storage.sql_core import sql_literal
 
@@ -234,3 +250,59 @@ def _run_cli(config_path: Path, psql_command: str) -> tuple[dict[str, object], s
             os.environ["REPOMAP_PSQL_COMMAND"] = command_env
     assert exit_code == 0, stderr
     return json.loads(stdout), stdout
+
+
+def test_ops_baselines_normalization_and_drift_calculation() -> None:
+    assert _normalize_baseline_payload({"baseline": {"files": 5}}) == {"files": 5}
+    assert _normalize_baseline_payload({"graph": {"files": 8}}) == {"files": 8}
+    assert _normalize_baseline_payload({"files": 10}) == {"files": 10}
+
+    pre1 = _normalize_preflight_baseline_payload({"graph": {"files": 1}, "safety": {"strict": True}})
+    assert pre1["safety"] == {"strict": True}
+    pre2 = _normalize_preflight_baseline_payload({"graph": {"files": 1, "safety": {"strict": False}}})
+    assert pre2["safety"] == {"strict": False}
+    pre3 = _normalize_preflight_baseline_payload({"graph": {"files": 1}})
+    assert pre3["safety"] == {}
+
+    assert _int_or_zero(10) == 10
+    assert _int_or_zero(True) == 1
+    assert _int_or_zero(None) == 0
+    assert _int_or_zero("42") == 42
+    assert _int_or_zero("invalid") == 0
+
+    assert _bool_or_false(True) is True
+    assert _bool_or_false(False) is False
+    assert _bool_or_false("true") is False
+
+    summary = OpsGraphSummary(
+        graph_id="g1",
+        repository_name="repo1",
+        database="db1",
+        privacy="public-dev",
+        enabled=True,
+        mcp_visible=False,
+        root_path_display=".",
+        root_path_expanded=".",
+        result=RefreshResult.SUCCESS,
+        files=10,
+        canonical_nodes=25,
+        canonical_edges=20,
+    )
+    drift = _build_drift_payload(summary, {"files": 8, "canonical_nodes": 20})
+    assert drift["files"]["current"] == 10
+    assert drift["files"]["baseline"] == 8
+    assert _drift_payload_detected(drift) is True
+
+    assert _baseline_path_segment("valid_id", "id") == "valid_id"
+    assert _baseline_kinds("stored") == ("stored",)
+    assert _baseline_kinds("preflight") == ("preflight",)
+    assert _baseline_kinds("both") == ("stored", "preflight")
+    with pytest.raises(OpsRefreshError):
+        _baseline_kinds("unsupported")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        file_p = root / "sample.txt"
+        _atomic_write_text(file_p, "content", replace_existing=True)
+        assert file_p.read_text(encoding="utf-8") == "content"
+        _ensure_path_under_baseline_root(file_p, root)
