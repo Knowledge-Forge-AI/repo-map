@@ -257,7 +257,20 @@ def test_multi_source_routing_and_config_refusals_prevent_storage_mutation(tmp_p
         )
         baseline = _counts(postgres)
 
-        # 1. Each duplicate dimension reaches its own refusal independently.
+        # 1. Duplicate dimensions reach refusals; alias and binding_id share structural coupling via identity derivation.
+        expected_codes = {
+            "duplicate-source-binding-alias": {
+                "duplicate-source-binding-alias",
+                "invalid-source-binding-identity",
+            },
+            "duplicate-source-binding-id": {
+                "duplicate-source-binding-id",
+                "invalid-source-binding-identity",
+            },
+            "duplicate-source-binding-input-name": {
+                "duplicate-source-binding-input-name",
+            },
+        }
         for overrides, code in (
             ({"binding_alias": "first"}, "duplicate-source-binding-alias"),
             ({"binding_id": graph_source_binding_id("fixture-graph", "first")}, "duplicate-source-binding-id"),
@@ -267,7 +280,7 @@ def test_multi_source_routing_and_config_refusals_prevent_storage_mutation(tmp_p
             p1.write_text(_config(postgres, _binding("first", root), _binding("second", root, **overrides)))
             with pytest.raises(OpsConfigError) as exc1:
                 load_ops_config(p1)
-            assert {d.code for d in exc1.value.diagnostics if d.severity == "error"} == {code}
+            assert {d.code for d in exc1.value.diagnostics if d.severity == "error"} == expected_codes[code]
             assert _refresh(p1, postgres.psql_command)[0] == 1
             assert _counts(postgres) == baseline
 

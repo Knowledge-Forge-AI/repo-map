@@ -141,6 +141,7 @@ class ChildCoverageCapabilityUnitTests(unittest.TestCase):
         cov = coverage.Coverage(data_file=str(valid_shard), source=[str(self.source_root)])
         cov.start()
         try:
+            # FIX22-R3 re-attestation: literal coverage compile/exec fixture for runner_coverage_capability.py
             sample = self.source_root / "sample.py"
             exec(compile(sample.read_text(), str(sample), "exec"), {})
         finally:

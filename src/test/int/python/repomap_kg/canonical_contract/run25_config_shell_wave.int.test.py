@@ -220,4 +220,8 @@ class Run25ConfigShellWaveIntegrationTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    raise SystemExit("Integration execution requires canonical sandbox admission")
+    import sys
+
+    sys.exit(
+        "Direct execution unsupported: RepoMap integration tests require container sandbox admission via pytest"
+    )

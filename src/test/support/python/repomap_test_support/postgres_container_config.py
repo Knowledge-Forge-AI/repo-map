@@ -175,7 +175,23 @@ def build_psql_wrapper_script(
     password: str,
     runtime: str,
     container_name: str,
+    docker_host: str | None = None,
+    docker_config: str | None = None,
+    docker_context: str | None = None,
 ) -> str:
+    effective_docker_host = docker_host or os.environ.get("DOCKER_HOST")
+    effective_docker_config = docker_config or os.environ.get("DOCKER_CONFIG")
+    effective_docker_context = docker_context or os.environ.get("DOCKER_CONTEXT")
+
+    env_lines = []
+    if effective_docker_host:
+        env_lines.append(f'env.setdefault("DOCKER_HOST", {effective_docker_host!r})')
+    if effective_docker_config:
+        env_lines.append(f'env.setdefault("DOCKER_CONFIG", {effective_docker_config!r})')
+    if effective_docker_context:
+        env_lines.append(f'env.setdefault("DOCKER_CONTEXT", {effective_docker_context!r})')
+    docker_env_snippet = ("\n".join(env_lines) + "\n") if env_lines else ""
+
     return f"""\
 #!/usr/bin/env python3
 import os
@@ -209,7 +225,7 @@ while i < len(args):
 
 env = os.environ.copy()
 env["PGPASSWORD"] = {password!r}
-command = [
+{docker_env_snippet}command = [
     {runtime!r},
     "exec",
     "-i",

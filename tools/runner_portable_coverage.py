@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import sys
 import threading
+import time
 from typing import Any, Callable, Iterator, Mapping
 
 from runner_coverage_capability import (
@@ -16,6 +17,56 @@ from runner_coverage_capability import (
     CapabilityValidationError,
     ChildCoverageCapability,
 )
+
+
+RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS: float = 0.5
+
+
+class _CoveredManagedProcess:
+    """Runner-owned process wrapper providing bounded receipt headroom before signal delegation."""
+
+    def __init__(
+        self, inner: Any, token: str, manifest_dir: Path,
+        exit_timeout: float | None = None,
+    ) -> None:
+        self._inner, self._token, self._manifest_dir = inner, token, manifest_dir
+        self._exit_timeout = RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS if exit_timeout is None else exit_timeout
+        self._deadline: float | None = None
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._inner, name)
+
+    def _wait_for_exit_receipt(self) -> bool:
+        if self._deadline is None:
+            self._deadline = time.monotonic() + self._exit_timeout
+        exit_p = self._manifest_dir / f"{self._token}.exit"
+        while time.monotonic() < self._deadline:
+            if exit_p.is_file():
+                try:
+                    if "complete=1" in exit_p.read_text(encoding="utf-8"):
+                        while time.monotonic() < self._deadline and self._inner.poll() is None:
+                            time.sleep(0.005)
+                        return True
+                except OSError:
+                    pass
+            if self._inner.poll() is not None:
+                return True
+            time.sleep(0.005)
+        return False
+
+    def terminate_gracefully(self) -> None:
+        self._wait_for_exit_receipt()
+        if self._inner.poll() is None:
+            self._inner.terminate_gracefully()
+
+    def kill_tree(self) -> None:
+        self._wait_for_exit_receipt()
+        if self._inner.poll() is None:
+            self._inner.kill_tree()
+
+    def cleanup(self, term_timeout: float, kill_timeout: float) -> bool:
+        self._wait_for_exit_receipt()
+        return self._inner.cleanup(term_timeout, kill_timeout)
 
 
 def make_portable_worker_spec_adapter(
@@ -75,13 +126,9 @@ def make_portable_worker_spec_adapter(
 
         from runner_coverage_execution import prepare_child_coverage_environment
         base_child_env = {
-            "LANG": "C",
-            "LC_ALL": "C",
-            "PATH": "",
-            "HOME": str(spec.environment.get("HOME", "")),
-            "TMPDIR": str(spec.environment.get("TMPDIR", "")),
-            "PYTHONNOUSERSITE": "1",
-            "COVERAGE_PROCESS_START": str(capability.config_file),
+            "LANG": "C", "LC_ALL": "C", "PATH": "",
+            "HOME": str(spec.environment.get("HOME", "")), "TMPDIR": str(spec.environment.get("TMPDIR", "")),
+            "PYTHONNOUSERSITE": "1", "COVERAGE_PROCESS_START": str(capability.config_file),
             "COVERAGE_FILE": str(capability.data_dir / f".coverage.{token}"),
             "COVERAGE_CHILD_MANIFEST_DIR": str(capability.child_manifest_dir),
             "COVERAGE_CHILD_REGISTRATION_TOKEN": token,
@@ -89,14 +136,8 @@ def make_portable_worker_spec_adapter(
             "COVERAGE_SESSION_SUITE": capability.suite,
             "COVERAGE_SESSION_REVISION": capability.source_commitment,
             "COVERAGE_CHILD_LAUNCH_ROLE": (
-                "conformance-abrupt"
-                if cmd_slice == CONFORMANCE_COMMAND
-                and spec.argv[4].startswith("crash:")
-                else (
-                    "conformance"
-                    if cmd_slice == CONFORMANCE_COMMAND
-                    else "portable"
-                )
+                "conformance-abrupt" if cmd_slice == CONFORMANCE_COMMAND and spec.argv[4].startswith("crash:")
+                else ("conformance" if cmd_slice == CONFORMANCE_COMMAND else "portable")
             ),
             "COVERAGE_CHILD_TEST_OWNER": hashlib.sha256(
                 os.environ.get("PYTEST_CURRENT_TEST", "").encode()
@@ -128,34 +169,15 @@ def make_portable_worker_spec_adapter(
             launch_argv = args[0] if args else kwargs.get("argv")
             launch_env = kwargs.get("environment") or env
             inner_pid = kwargs.get("inner_pid")
-            if kwargs.get("is_container_namespace", False):
-                pid_relation = "translated"
-            elif "pid_namespace_relation" in kwargs:
-                pid_relation = kwargs["pid_namespace_relation"]
-            else:
-                pid_relation = "shared"
-            inv_id = (
-                job_context.get("invocation_id")
-                if isinstance(job_context, dict)
-                else env.get("COVERAGE_SESSION_INVOCATION_ID")
-            )
-            owner_val = (
-                getattr(identity, "worker_id", None)
-                or env.get("COVERAGE_CHILD_TEST_OWNER")
-            )
+            pid_relation = "translated" if kwargs.get("is_container_namespace", False) else kwargs.get("pid_namespace_relation", "shared")
+            inv_id = job_context.get("invocation_id") if isinstance(job_context, dict) else env.get("COVERAGE_SESSION_INVOCATION_ID")
+            owner_val = getattr(identity, "worker_id", None) or env.get("COVERAGE_CHILD_TEST_OWNER")
             observer.observe_launch(
-                host_pid=process.pid,
-                inner_pid=inner_pid,
-                pid_namespace_relation=pid_relation,
-                invocation_id=inv_id,
-                argv=launch_argv,
-                env=launch_env,
-                ppid=os.getpid(),
-                executable_family="portable_worker",
-                test_owner=owner_val,
-                capability=session.bootstrap_capability,
+                host_pid=process.pid, inner_pid=inner_pid, pid_namespace_relation=pid_relation,
+                invocation_id=inv_id, argv=launch_argv, env=launch_env, ppid=os.getpid(),
+                executable_family="portable_worker", test_owner=owner_val, capability=session.bootstrap_capability,
             )
-            return process
+            return _CoveredManagedProcess(process, token, capability.child_manifest_dir)
 
         try:
             result = original_run_worker_spec(
@@ -181,13 +203,9 @@ def make_portable_worker_spec_adapter(
             accept_exc = exc
             if hasattr(session, "_create_snapshot") and hasattr(session, "_record_diagnostic"):
                 snap = session._create_snapshot(
-                    shard_name=f"portable_child.{token}",
-                    file_type="missing_or_corrupt",
-                    size_bytes=-1,
-                    sha256=None,
-                    reader_status=f"acceptance_failure: {exc}",
-                    stage="post_worker_reap",
-                    child_probe_id=f"token={token}",
+                    shard_name=f"portable_child.{token}", file_type="missing_or_corrupt",
+                    size_bytes=-1, sha256=None, reader_status=f"acceptance_failure: {exc}",
+                    stage="post_worker_reap", child_probe_id=f"token={token}",
                     termination_outcome=(
                         "declared_abrupt_measurement_incomplete"
                         if env["COVERAGE_CHILD_LAUNCH_ROLE"] == "conformance-abrupt"
@@ -230,17 +248,11 @@ def scoped_portable_coverage_adapter(
 
 
 def validate_shard_directory_integrity(
-    data_dir: Path,
-    allowed_shards: set[str],
-    parent_shard: str | None,
-    snapshot_fn: Callable[..., Any],
-    record_fn: Callable[[Any], None],
-    cov_mod: Any = None,
-    registered_children: dict[int, dict[str, Any]] | None = None,
-    child_manifest_dir: Path | None = None,
-    source_root: Path | None = None,
-    checkout_root: Path | None = None,
-    invocation_id: str | None = None,
+    data_dir: Path, allowed_shards: set[str], parent_shard: str | None,
+    snapshot_fn: Callable[..., Any], record_fn: Callable[[Any], None],
+    cov_mod: Any = None, registered_children: dict[int, dict[str, Any]] | None = None,
+    child_manifest_dir: Path | None = None, source_root: Path | None = None,
+    checkout_root: Path | None = None, invocation_id: str | None = None,
     observer: Any = None,
 ) -> None:
     """Validate that shard directory contains no fabricated or unregistered shards."""
@@ -263,9 +275,7 @@ def validate_shard_directory_integrity(
                     termination_outcome="unauthorized_parent_shard",
                 )
                 record_fn(snap)
-                raise RuntimeError(
-                    f"fabricated .parent coverage shard rejected: {child.name}"
-                )
+                raise RuntimeError(f"fabricated .parent coverage shard rejected: {child.name}")
             pid = extract_pid_match(child.name)
             child_info = (registered_children or {}).get(pid) if pid is not None else None
             manifest_dir = child_manifest_dir or (data_dir.parent / "child_procs")
@@ -280,8 +290,7 @@ def validate_shard_directory_integrity(
                     if fail_candidate.is_file():
                         parsed = _parse_marker(fail_candidate)
                         child_info = {
-                            "role": parsed.get("role"),
-                            "owner": parsed.get("owner"),
+                            "role": parsed.get("role"), "owner": parsed.get("owner"),
                             "ppid": int(parsed["ppid"]) if parsed.get("ppid", "").isdigit() else None,
                             "launch_shape": parsed.get("launch_shape"),
                             "failure_class": parsed.get("failure_class", "unregistered_start_marker" if fail_candidate.name.endswith(".start") else None),
@@ -306,13 +315,10 @@ def validate_shard_directory_integrity(
                 if obs_found is not None:
                     obs = obs_found
                     child_info = {
-                        "role": "observed_unregistered",
-                        "owner": obs.test_owner_hash,
-                        "ppid": obs.ppid,
-                        "launch_shape": obs.launch_shape_hash,
+                        "role": "observed_unregistered", "owner": obs.test_owner_hash,
+                        "ppid": obs.ppid, "launch_shape": obs.launch_shape_hash,
                         "has_config": obs.has_coverage_capability,
-                        "has_manifest": obs.has_manifest_authority,
-                        "has_token": obs.has_token,
+                        "has_manifest": obs.has_manifest_authority, "has_token": obs.has_token,
                         "bootstrap_stage": "parent_observed_no_bootstrap_marker",
                         "failure_class": "unregistered_child_process",
                         "failure_reason": "child_never_registered_bootstrap",
@@ -320,8 +326,7 @@ def validate_shard_directory_integrity(
 
             sha256_val, size_val, sqlite_valid = None, -1, False
             measured_files_count, measured_classification = None, None
-            forensics_data: dict[str, Any] | None = None
-            forensic_failure_verdict: str | None = None
+            forensics_data, forensic_failure_verdict = None, None
             if child.is_file():
                 from runner_coverage_diagnostics import compute_streaming_sha256
                 try:
@@ -380,12 +385,11 @@ def validate_shard_directory_integrity(
                 forensic_verdict=forensic_failure_verdict,
             )
             record_fn(snap)
-            raise RuntimeError(
-                f"unregistered coverage shard rejected: {child.name}"
-            )
+            raise RuntimeError(f"unregistered coverage shard rejected: {child.name}")
 
 
 __all__ = (
+    "RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS",
     "make_portable_worker_spec_adapter",
     "scoped_portable_coverage_adapter",
     "validate_shard_directory_integrity",

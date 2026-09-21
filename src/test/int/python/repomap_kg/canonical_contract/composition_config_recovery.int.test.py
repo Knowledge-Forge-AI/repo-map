@@ -308,9 +308,10 @@ class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
             self.assertTrue({"formatter", "overlays", "nixosModules"}.issubset(sections))
 
             escaping_canonical = canonicalize_observations(escaping_bundle.observations)
-            self.assertIn("repo_escaping_path", {d.category for d in escaping_canonical.diagnostics})
+            diag_categories = {d.category for d in escaping_canonical.diagnostics}
+            self.assertIn("opaque_unknown_target", diag_categories)
             self.assertTrue(any(
-                e.target_key == "unknown:file:repo-escaping-nix-import"
+                e.target_key.startswith("unknown:file:nix-cross-source-unsupported#")
                 for e in escaping_canonical.graph.edges
             ))
 
@@ -328,9 +329,9 @@ class CompositionConfigurationRecoveryIntegrationTests(unittest.TestCase):
             self.assertNotEqual(repaired.source_generation, escaping_bundle.source_generation)
             repaired_canonical = canonicalize_observations(repaired.observations)
             self.assertTrue(repaired_canonical.ok, repaired_canonical.diagnostics)
-            self.assertNotIn("repo_escaping_path", {d.category for d in repaired_canonical.diagnostics})
+            self.assertNotIn("opaque_unknown_target", {d.category for d in repaired_canonical.diagnostics})
             self.assertFalse(any(
-                e.target_key == "unknown:file:repo-escaping-nix-import"
+                e.target_key.startswith("unknown:file:nix-cross-source-unsupported#")
                 for e in repaired_canonical.graph.edges
             ))
             self.assertIn(

@@ -356,7 +356,7 @@ mode = "read_only"
                 resolver = ConfiguredRefreshResolver(config_path, Path(self.postgres.psql_command))
                 reconciler = DesiredStateReconciler(resolver, self.store)
                 first = reconciler.reconcile_graph("cfg-poll")
-                assert first.category == "refresh_requested" and first.refresh_requested
+                assert first.category == "refresh_requested" and first.refresh_requested, f"Expected refresh_requested, got {first.category!r} (refresh_requested={first.refresh_requested})"
                 replay = reconciler.reconcile_graph("cfg-poll")
                 assert replay.category == "refresh_coalesced" and not replay.refresh_requested
                 with psycopg.connect(

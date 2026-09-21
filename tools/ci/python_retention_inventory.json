@@ -21302,6 +21302,92 @@
           "sha256": "7aca851bc41b76bf931a9c576f8d74ae9c0af36ff76c575ab934de998f1e9c46"
         }
       ]
+    },
+    {
+      "id": "fix22.r3.public.capability.compile",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "0e4f4fb2f003cb74940eb6b9f8c4af1543ec946522f0212cc8ab3698a0d89a07",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "0e4f4fb2f003cb74940eb6b9f8c4af1543ec946522f0212cc8ab3698a0d89a07",
+      "kind": "compile",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "supersedes": "pr26.staging.contract1.fix10.3",
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "02db054c9c804a582c379f1683ddb894fe2dbeeb4bbcfc310653da36a5af44e8"
+        }
+      ]
+    },
+    {
+      "id": "fix22.r3.public.capability.exec",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "0e4f4fb2f003cb74940eb6b9f8c4af1543ec946522f0212cc8ab3698a0d89a07",
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "0e4f4fb2f003cb74940eb6b9f8c4af1543ec946522f0212cc8ab3698a0d89a07",
+      "kind": "exec",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014",
+      "recipe": "literal_coverage_fixture",
+      "parameters": {
+        "schema": "literal-coverage-fixture-v1",
+        "case": "capability_mod",
+        "filename": "sample.py",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+        "chain": [
+          {
+            "kind": "compile",
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15"
+          },
+          {
+            "kind": "exec",
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014"
+          }
+        ]
+      },
+      "supersedes": "pr26.staging.contract1.fix10.4",
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "symbol": "",
+          "path": "tools/runner_coverage.py",
+          "sha256": "2edffb48728ef98671b85185df2b1c11be8d16e4e3af55acf86ac28c78ef4615"
+        },
+        {
+          "module": "runner_coverage_capability",
+          "symbol": "",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "02db054c9c804a582c379f1683ddb894fe2dbeeb4bbcfc310653da36a5af44e8"
+        }
+      ]
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",

@@ -246,6 +246,30 @@ it an admissible candidate direction where the evaluating modes are not. It is a
 candidate subject to the ADR 0050 adoption gate, not a selection, and it is not
 the only conceivable static-parse direction for Nix.
 
+### Flake Input URL Classification Precedence
+
+Static flake input classification inspects input attributes (`inputs.<name>.url`
+and nested attrset forms) to determine the input source category without
+evaluating expressions or initiating network access.
+
+URL expressions are classified according to the following strict precedence:
+
+1. **GitHub sources**: Prefixed with `github:` or containing `github.com`.
+2. **Git sources**: Prefixed with `git+` or `git:`.
+3. **Path sources**: Prefixed with `path:`, `./`, or `../`.
+4. **Dynamic sources**: Expressions containing `${...}` string interpolation.
+5. **Tarball sources**: Suffix matching standard archive extensions (`.tar.gz`,
+   `.tgz`, `.tar.xz`, `.zip`).
+6. **Unknown sources**: Any expression not matching the above categories.
+
+Under this precedence rule (Option A), dynamic interpolation (`${...}`) strictly
+takes precedence over archive suffixes. If an input URL contains string
+interpolation even while ending with an archive extension (such as
+`https://example.com/archive/${version}.tar.gz`), it is deterministically
+classified as `dynamic` rather than `tarball`. This classification directly
+determines downstream storage summary accounting, contributing to
+`source_types.dynamic` rather than `source_types.tarball`.
+
 ## Python Extractor
 
 The Python extractor uses the standard-library `ast` module. Its accepted

@@ -60,7 +60,9 @@ class Run25LanguageDocumentWaveIntegrationTests(unittest.TestCase):
         )
         graph = create_run25_wave2_graph_config(dirs["primary"], dirs["secondary"])
         captured = capture_multi_source_candidate(graph)
-        canonical = canonicalize_observations(captured.observations)
+        canonical = canonicalize_observations(
+            captured.observations, repository_scope="repomap-wave2"
+        )
         self.assertTrue(canonical.ok)
         kinds = {observation.kind for observation in captured.observations}
         self.assertTrue({"ruby.class", "ruby.method", "ruby.singleton_method", "python.class", "python.method"} <= kinds)
@@ -173,7 +175,7 @@ class Run25LanguageDocumentWaveIntegrationTests(unittest.TestCase):
             obs for obs in candidate.observations if obs.kind == "xml.element"
         ]
         self.assertGreater(len(xml_elements), 4)
-        xml_names = {obs.name for obs in xml_elements}
+        xml_names = {obs.metadata.get("local_name") for obs in xml_elements}
         self.assertTrue({"project", "dependencies", "beans", "bean"} <= xml_names)
 
     def test_language_document_malformed_input_recovery(self) -> None:
@@ -243,4 +245,8 @@ class Run25LanguageDocumentWaveIntegrationTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    raise SystemExit("Integration execution requires canonical sandbox admission")
+    import sys
+
+    sys.exit(
+        "Direct execution unsupported: RepoMap integration tests require container sandbox admission via pytest"
+    )
