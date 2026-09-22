@@ -1339,6 +1339,26 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.slice9_coordinator_client_service.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice9_coordinator_client_service.int.test.py"
+      ],
+      "rationale": "Integration owner slice9_coordinator_client_service.int.test in src/test/int/python/repomap_kg/coordinator; Slice 9 Group S9-A coordinator client, transport, and job control.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.slice9_coordinator_disposition.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice9_coordinator_disposition.int.test.py"
+      ],
+      "rationale": "Integration owner slice9_coordinator_disposition.int.test in src/test/int/python/repomap_kg/coordinator; Slice 9 Group S9-A coordinator disposition and lifecycle state machine.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-coordinator.startup_recovery.int.test",
       "members": [
         "src/test/int/python/repomap_kg/coordinator/startup_recovery.int.test.py"
@@ -1559,6 +1579,26 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-runtime.slice9_coordinated_backup_restore.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/slice9_coordinated_backup_restore.int.test.py"
+      ],
+      "rationale": "Integration owner slice9_coordinated_backup_restore.int.test in src/test/int/python/repomap_kg/runtime; Slice 9 Group S9-C complete coordinated backup and restore sets.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-service_package.slice9_service_operations.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/service_package/slice9_service_operations.int.test.py"
+      ],
+      "rationale": "Integration owner slice9_service_operations.int.test in src/test/int/python/repomap_kg/service_package; Slice 9 Group S9-C native service lifecycle mutations and safety boundaries.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-service_package.windows_startup.int.test",
       "members": [
         "src/test/int/python/repomap_kg/service_package/windows_startup.int.test.py"
@@ -1594,6 +1634,26 @@
         "src/test/int/python/repomap_kg/source_ingestion/feed_fetch.int.test.py"
       ],
       "rationale": "Contract owner feed_fetch.int.test in src/test/int/python/repomap_kg/source_ingestion; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-source_ingestion.slice9_api_acquisition.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/source_ingestion/slice9_api_acquisition.int.test.py"
+      ],
+      "rationale": "Integration owner slice9_api_acquisition.int.test in src/test/int/python/repomap_kg/source_ingestion; Slice 9 Group S9-B API acquisition and GitHub API policies.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-source_ingestion.slice9_bulk_and_feed_sources.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/source_ingestion/slice9_bulk_and_feed_sources.int.test.py"
+      ],
+      "rationale": "Integration owner slice9_bulk_and_feed_sources.int.test in src/test/int/python/repomap_kg/source_ingestion; Slice 9 Group S9-B bulk traversal, feed sources, and WARC parsing.",
       "root": "test_owners"
     },
     {
@@ -26754,6 +26814,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/slice9_coordinator_client_service.int.test.py",
+      "rationale": "First-party integration test owner for Slice 9 coordinator client, transport, and job control.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/slice9_coordinator_disposition.int.test.py",
+      "rationale": "First-party integration test owner for Slice 9 coordinator disposition and lifecycle state machine.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/artifacts/run25_manifest_recovery.int.test.py",
       "rationale": "First-party integration test owner for Run 25 manifest recovery.",
       "root": "test_owners",
@@ -26763,8 +26841,44 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/slice9_coordinated_backup_restore.int.test.py",
+      "rationale": "First-party integration test owner for Slice 9 complete coordinated backup and restore sets.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/service_package/slice9_service_operations.int.test.py",
+      "rationale": "First-party integration test owner for Slice 9 native service lifecycle mutations and safety boundaries.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/artifacts/seam_pipeline.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/source_ingestion/slice9_api_acquisition.int.test.py",
+      "rationale": "First-party integration test owner for Slice 9 API acquisition and GitHub API policies.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/source_ingestion/slice9_bulk_and_feed_sources.int.test.py",
+      "rationale": "First-party integration test owner for Slice 9 bulk traversal, feed sources, and WARC parsing.",
       "root": "test_owners",
       "status": "active_int_test"
     },
