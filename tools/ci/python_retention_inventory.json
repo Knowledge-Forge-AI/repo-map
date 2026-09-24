@@ -372,6 +372,76 @@
       "root": "test_owners"
     },
     {
+      "id": "fix42.observer_schedule.py",
+      "root": "test_support",
+      "governing_profile": "clean_test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/observer_schedule.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
+      "id": "fix42.slice18_foreground_cleanup.int.test.py",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice18_foreground_cleanup.int.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
+      "id": "fix42.slice18_refresh_wire.int.test.py",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/slice18_refresh_wire.int.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
+      "id": "fix42.slice19_api_row_recovery.int.test.py",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/source_ingestion/slice19_api_row_recovery.int.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
+      "id": "fix42.slice19_copy_recovery.int.test.py",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/slice19_copy_recovery.int.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
+      "id": "fix42.slice20_escaped_hcl_pipeline.int.test.py",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice20_escaped_hcl_pipeline.int.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
+      "id": "fix42.slice20_static_contrasts.int.test.py",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/slice20_static_contrasts.int.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "FIX42 bounded owner under unchanged clean profile."
+    },
+    {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
@@ -27521,6 +27591,24 @@
       "status": "active_int_test"
     },
     {
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice20_escaped_hcl_pipeline.int.test.py",
+      "root": "test_owners",
+      "status": "active_int_test",
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+    },
+    {
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice20_static_contrasts.int.test.py",
+      "root": "test_owners",
+      "status": "active_int_test",
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -27897,6 +27985,24 @@
       "rationale": "FIX40 bounded cancellation and publication repair; unchanged clean enforcement.",
       "root": "test_owners",
       "status": "active_int_test"
+    },
+    {
+      "path": "src/test/int/python/repomap_kg/coordinator/slice18_foreground_cleanup.int.test.py",
+      "root": "test_owners",
+      "status": "active_int_test",
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+    },
+    {
+      "path": "src/test/int/python/repomap_kg/coordinator/slice18_refresh_wire.int.test.py",
+      "root": "test_owners",
+      "status": "active_int_test",
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
     },
     {
       "confidence": 0.95,
@@ -28356,6 +28462,15 @@
       "rationale": "FIX38 bounded completion diagnostics or caller composition; unchanged clean enforcement required.",
       "root": "test_owners",
       "status": "active_int_test"
+    },
+    {
+      "path": "src/test/int/python/repomap_kg/source_ingestion/slice19_api_row_recovery.int.test.py",
+      "root": "test_owners",
+      "status": "active_int_test",
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
     },
     {
       "confidence": 0.95,
@@ -29348,6 +29463,15 @@
       "status": "active_int_test"
     },
     {
+      "path": "src/test/int/python/repomap_kg/storage/slice19_copy_recovery.int.test.py",
+      "root": "test_owners",
+      "status": "active_int_test",
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -30021,6 +30145,15 @@
       "rationale": "Shared test harness and test execution support library.",
       "root": "test_support",
       "status": "active_test_support"
+    },
+    {
+      "path": "src/test/support/python/repomap_test_support/observer_schedule.py",
+      "root": "test_support",
+      "status": "active_test_support",
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "confidence": 1.0,
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
     },
     {
       "confidence": 0.95,
