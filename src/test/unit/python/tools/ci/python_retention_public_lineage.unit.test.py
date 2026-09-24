@@ -36,6 +36,8 @@ class TestPythonRetentionPublicLineage(unittest.TestCase):
                 "new_ownership_manifest_sha256": "1" * 64,
                 "old_selected_set_sha256": "2" * 64,
                 "new_selected_set_sha256": "3" * 64,
+                "source_commit": "0" * 40,
+                "source_manifest_sha256": "0" * 64,
                 "phase": "V001",
                 "reason": "initial release",
                 "status_path": "CHANGELOG.md",
@@ -46,6 +48,8 @@ class TestPythonRetentionPublicLineage(unittest.TestCase):
                 "new_ownership_manifest_sha256": "5" * 64,
                 "old_selected_set_sha256": "6" * 64,
                 "new_selected_set_sha256": "7" * 64,
+                "source_commit": "1" * 40,
+                "source_manifest_sha256": "1" * 64,
                 "phase": "V001",
                 "reason": "release notes",
                 "status_path": "docs/releases/v0.0.1.md",
@@ -56,6 +60,8 @@ class TestPythonRetentionPublicLineage(unittest.TestCase):
                 "new_ownership_manifest_sha256": "9" * 64,
                 "old_selected_set_sha256": "a" * 64,
                 "new_selected_set_sha256": "b" * 64,
+                "source_commit": "2" * 40,
+                "source_manifest_sha256": "2" * 64,
                 "phase": "V001",
                 "reason": "ci evidence",
                 "status_path": "tools/ci/public_export_policy.py",
@@ -98,6 +104,19 @@ class TestPythonRetentionPublicLineage(unittest.TestCase):
         self.assertIn("tools/ci/historical_ownership_manifests.json", bindings)
         for key in bindings:
             self.assertFalse(key.startswith("docs/status/"), f"docs/status should not be bound: {key}")
+
+    def test_v2_scope_registry_validates_against_v1_d1671f8_registry(self) -> None:
+        import subprocess
+        from ci.retained_python_ratchet_lineage import _assert_registry_extension
+        repo_root = Path(__file__).resolve().parents[6]
+        current_path = repo_root / "tools/ci/retained_python_scope_transitions.json"
+        current_reg = json.loads(current_path.read_text(encoding="utf-8"))
+        v1_bytes = subprocess.check_output(
+            ["git", "show", "d1671f8088531c4be11de65908f762c61f986844:tools/ci/retained_python_scope_transitions.json"],
+            cwd=repo_root,
+        )
+        v1_reg = json.loads(v1_bytes)
+        _assert_registry_extension(v1_reg, current_reg)
 
 
 if __name__ == "__main__":

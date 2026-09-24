@@ -15,6 +15,10 @@ from typing import Never
 from repomap_test_support.scale28_preparation_worker_fixtures import (
     prepare_synthetic_resources,
 )
+from runner_coverage_execution import (
+    prepare_child_coverage_environment,
+    scrub_coverage_environment,
+)
 from repomap_test_support.test_cov5k_r2_fix2_preparation_observations import (
     AttemptObservation,
     _observation,
@@ -306,8 +310,13 @@ def _warm_preparation_worker_imports() -> None:
         str(repository_root / "src/test/support/python"),
     )
     existing = environment.get("PYTHONPATH")
-    environment["PYTHONPATH"] = os.pathsep.join(
+    extra_pp = os.pathsep.join(
         (*python_paths, *(() if existing is None else (existing,)))
+    )
+    clean_env = prepare_child_coverage_environment(
+        base_env=environment,
+        family="unmeasured",
+        extra_env={"PYTHONPATH": extra_pp},
     )
     completed = subprocess.run(
         [
@@ -319,7 +328,7 @@ def _warm_preparation_worker_imports() -> None:
         shell=False,
         check=False,
         timeout=10,
-        env=environment,
+        env=clean_env,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
@@ -331,20 +340,16 @@ def _warm_preparation_worker_imports() -> None:
 def _without_subprocess_coverage_injection():
     """Keep deterministic worker timing independent of harness instrumentation."""
 
-    names = (
-        "COVERAGE_PROCESS_START",
-        "COVERAGE_FILE",
-        "COV_CORE_SOURCE",
-        "COV_CORE_CONFIG",
-        "COV_CORE_DATAFILE",
-        "COVERAGE_CHILD_MANIFEST_DIR",
-        "REPOMAP_TEST_RUN_ROOT",
-        "PYTEST_CURRENT_TEST",
-    )
-    preserved = {name: os.environ[name] for name in names if name in os.environ}
-    for name in names:
-        os.environ.pop(name, None)
+    preserved = dict(os.environ)
+    scrubbed = scrub_coverage_environment(os.environ)
+    scrubbed.pop("REPOMAP_TEST_RUN_ROOT", None)
+    scrubbed.pop("PYTEST_CURRENT_TEST", None)
+    for key in ("COV_CORE_SOURCE", "COV_CORE_CONFIG", "COV_CORE_DATAFILE"):
+        scrubbed.pop(key, None)
+    os.environ.clear()
+    os.environ.update(scrubbed)
     try:
         yield
     finally:
+        os.environ.clear()
         os.environ.update(preserved)

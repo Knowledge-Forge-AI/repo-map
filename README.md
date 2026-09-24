@@ -23,9 +23,10 @@ model is planned rather than current as-built behavior.
 - Python distribution: `repomap-kg`
 - Python import package: `repomap_kg`
 - CLI: `repomap-kg`
+- Version: `0.0.2` (staging / in development; latest release `0.0.1` on `main`)
 - License: AGPL-3.0-or-later plus commercial licensing
-- Canonical database: PostgreSQL; the current reference deployment uses a
-  local container
+- Canonical database: PostgreSQL; the current reference deployment uses a local container
+- CI Workflow: `.github/workflows/repomap-release-qualification.yml`
 - Product direction:
   [cloud-first with additive multi-source composition](docs/adr/2026/08/0057-cloud-first-multi-source-architecture-reconciliation.md)
 
@@ -60,31 +61,11 @@ Security vulnerabilities should follow the private reporting process in
 ADRs are organized under `docs/adr/YYYY/MM/`. Release notes and change history
 are tracked in [CHANGELOG.md](CHANGELOG.md) and [docs/releases](docs/releases/v0.0.1.md).
 
-## Capabilities and Overview
+## Capabilities
 
-### 1. What is RepoMap?
-
-RepoMap is a deterministic knowledge graph system for polyglot software
-repositories. It constructs a queryable, evidence-backed knowledge graph of
-code structure, configurations, dependencies, entry points, and operational side
-effects across multiple languages.
-
-### 2. What problem does it solve?
-
-Real-world software systems rarely live in a single language or paradigm. Modern
-repositories compose behavior across Python modules, Go microservices, Nix
-derivations, shell glue (Bash, Zsh), awk scripts, PowerShell tasks, Docker
-configurations, and documentation.
-
-Most tools either analyze a single language in isolation or rely on LLMs to
-speculate about connections. RepoMap takes a strictly deterministic approach:
-it parses language ASTs, extracts structural facts, traces environment and host
-mutation intent, and links every graph fact directly to source file coordinates.
-No graph edges are hallucinated.
-
-### 3. What can v0.0.1 actually do today?
-
-In this initial source preview (v0.0.1), RepoMap provides:
+RepoMap constructs a queryable, evidence-backed knowledge graph of code structure,
+configurations, dependencies, entry points, and operational side effects across
+multiple languages:
 
 - **Deterministic Discovery**: Analyzes checkout trees and produces structured
   JSONL observations for source files, entrypoints, shell commands, includes,
@@ -100,57 +81,7 @@ In this initial source preview (v0.0.1), RepoMap provides:
 - **Operational CLI**: Provides commands (`repomap-kg ops`) for refreshing
   graphs, inspecting canonical summaries, and reading graph file inventories.
 
-### 4. What is still experimental or incomplete?
-
-- **Coordinator Interruption Recovery**: Recovery from mid-flight process
-  interruption or container restart during active refresh orchestration is
-  experimental in v0.0.1. A clean restart or re-indexing is recommended if
-  interrupted.
-- **Cloud-First Multi-Source Composition**: As documented in
-  [ADR 0057](docs/adr/2026/08/0057-cloud-first-multi-source-architecture-reconciliation.md),
-  the long-term target is a cloud-first multi-source graph platform. In v0.0.1,
-  RepoMap operates as a single-source, local-checkout engine.
-- **Dynamic Semantics**: Highly dynamic language constructs (dynamic `eval`,
-  complex runtime reflections) are recorded conservatively as raw observation
-  markers rather than guessed canonical edges.
-
-### 5. How to try it from source?
-
-You can explore RepoMap directly from a source checkout without installation:
-
-```sh
-PYTHONPATH=src/main/python python3 -m repomap_kg --help
-PYTHONPATH=src/main/python python3 -m repomap_kg identity --json
-```
-
-Or install in an editable virtual environment:
-
-```sh
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -e .
-repomap-kg --help
-```
-
-### 6. How to run the local runtime / MCP integration?
-
-RepoMap runs an isolated local container runtime (server + PostgreSQL):
-
-```sh
-# Setup configuration in ~/.repo-map
-repomap-kg local setup --repo-map-home ~/.repo-map
-
-# Start local server and database containers
-repomap-kg local up --repo-map-home ~/.repo-map
-
-# Inspect cluster health and status
-repomap-kg local status --repo-map-home ~/.repo-map --check-containers --json
-
-# Run stdio MCP server for direct AI agent integration
-repomap-kg mcp serve --repo-map-home ~/.repo-map
-```
-
-### 7. Supported languages and source families
+## Supported Extractor Families
 
 - **Python**: AST extraction, module imports, class/function definitions, calls,
   and packaging metadata (`pyproject.toml`, `setup.py`).
@@ -165,30 +96,25 @@ repomap-kg mcp serve --repo-map-home ~/.repo-map
 - **Documentation**: Markdown link graphs, HTML structures, and text-based
   reference documents.
 
-### 8. How to run tests and contribute?
+## Maturity & Known Limitations
 
-See [docs/contrib](docs/contrib/README.md) for contribution guidelines, style,
-and review expectations.
-
-Run unit tests locally with:
-
-```sh
-PYTHONPATH=src/main/python:src/test/support/python pytest src/test/unit
-```
-
-### 9. Licensing model
-
-RepoMap is licensed under the GNU Affero General Public License v3.0 or later
-([AGPL-3.0-or-later](LICENSE)). Dual-licensing and commercial licensing options
-are available for proprietary and cloud deployments.
-
-### 10. Meaning of the `< 0.1.0` pre-publication release
-
-Version `0.0.1` represents an initial public source preview. Releases prior to
-`0.1.0` are pre-publication development milestones that are **not** published to
-public package registries (PyPI, npm, crates.io, Go proxy, or public container
-registries). The `main` branch tracks verified source preview tags, while future
-development PRs will target `staging`.
+- **Coordinator Interruption Recovery**: Recovery from mid-flight process
+  interruption or container restart during active refresh orchestration is
+  experimental in v0.0.1. A clean restart or re-indexing is recommended if
+  interrupted.
+- **Single-Source Local Engine**: While the target architecture is a cloud-first
+  multi-source graph platform
+  ([ADR 0057](docs/adr/2026/08/0057-cloud-first-multi-source-architecture-reconciliation.md)),
+  the current release operates as a single-source, local-checkout engine.
+- **Dynamic Semantics**: Highly dynamic language constructs (dynamic `eval`,
+  complex runtime reflections) are recorded conservatively as raw observation
+  markers rather than guessed canonical edges.
+- **Pre-Publication Versioning (`< 0.1.0`)**: Releases prior to `0.1.0` are
+  pre-publication development milestones that are **not** published to public
+  package registries (PyPI, npm, crates.io, Go proxy, or public container
+  registries). The `main` branch tracks verified source preview releases
+  (currently `v0.0.1`), while active development PRs target `staging`
+  (currently `v0.0.2`).
 
 
 ## Requirements
@@ -696,7 +622,8 @@ The testing policy and staged pytest migration plan are documented in
 [RepoMap Testing Standards](docs/contrib/testing-standards.md). Development
 tasks run proportional local verification (affected unit/integration tests,
 compile/static checks, and diff checks). Routine exhaustive correctness
-verification is owned by hosted CI (`repomap-staging-gate`), while the local
+verification is owned by hosted CI (the `staging-integration-gate` job in
+`repomap-release-qualification`), while the local
 staging composition remains supported for explicit operator diagnostics and
 qualification campaigns:
 

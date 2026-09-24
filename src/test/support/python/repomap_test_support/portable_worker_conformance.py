@@ -235,8 +235,41 @@ def main(argv: list[str] | None = None) -> int:
     known, worker_argv = parser.parse_known_args(argv)
 
     case_kind, _, value = known.case.partition(":")
+    if case_kind == "cancel" and value == "drain-at-completion":
+        case_kind = "cancel-drain"
+    if case_kind == "cancel" and value == "wire-during-semantic":
+        case_kind = "cancel-work"
+    if case_kind == "terminal-validation" and value.startswith("completion-"):
+        case_kind, value = "completion", value.removeprefix("completion-")
+    if case_kind == "heartbeat-failure" and value == "late-completion":
+        case_kind = "heartbeat-late"
     original_execute = portable_worker.execute_portable_extraction
     original_failure_terminal = portable_worker._failure_terminal
+    if case_kind == "cancel-drain":
+        original_reader = portable_worker._read_cancellation
+
+        def read_at_completion(session, identity, lock, stop, cancel_event, lifecycle_failed):
+            assert stop.wait(5.0), "workload did not reach completion"
+            original_reader(session, identity, lock, stop, cancel_event, lifecycle_failed)
+
+        portable_worker._read_cancellation = read_at_completion
+    if case_kind == "completion":
+        original_write = portable_worker._write
+
+        def write_after_settlement(message):
+            if message.get("message_type") == "result":
+                assert not any(t is not threading.current_thread() and t.is_alive()
+                               for t in threading.enumerate())
+            original_write(message)
+            if message.get("status") == "succeeded" and value == "duplicate":
+                original_write(message)
+
+        portable_worker._write = write_after_settlement
+    if case_kind == "heartbeat-late":
+        def late_heartbeat(session, identity, lock, stop, lifecycle_failed) -> None:
+            threading.Event().wait(1.2)
+
+        portable_worker._heartbeat_loop = late_heartbeat
 
     if case_kind == "heartbeat-failure":
         portable_worker._heartbeat_loop = lambda *args, **kwargs: None
@@ -249,6 +282,17 @@ def main(argv: list[str] | None = None) -> int:
         portable_worker._failure_terminal = invalid_terminal
 
     def execute(*args, **kwargs):
+        if case_kind == "cancel-drain":
+            raise PortableExecutionError("semantic_workload")
+        if case_kind == "cancel-work":
+            def cooperative_checkpoint(name: str) -> None:
+                if name == "during_semantic":
+                    (Path.cwd() / "ready").write_text("ready\n", encoding="utf-8")
+                    assert kwargs["cancel_event"].wait(5.0), "cancel was not delivered"
+
+            return original_execute(*args, **kwargs, checkpoint=cooperative_checkpoint)
+        if case_kind in {"completion", "heartbeat-late"}:
+            return original_execute(*args, **kwargs)
         if case_kind == "crash":
             if value != "after-materialization":
                 os._exit(17)
@@ -312,7 +356,11 @@ def main(argv: list[str] | None = None) -> int:
             "FileSystemArtifactStore",
             lambda root: ConfiguredFailureStore(),
         )
-    return portable_worker.main(worker_argv)
+    result = portable_worker.main(worker_argv)
+    if case_kind == "completion":
+        if value == "exit-error":
+            return 17
+    return result
 
 
 if __name__ == "__main__":

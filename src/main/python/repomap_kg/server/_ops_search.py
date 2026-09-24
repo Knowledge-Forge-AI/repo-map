@@ -80,6 +80,7 @@ def build_mcp_search_sql(
     limit: int,
     offset: int,
     include_raw: bool,
+    repository_identity: str | None = None,
 ) -> str:
     return _build_mcp_search_sql(
         root_path=root_path,
@@ -95,6 +96,7 @@ def build_mcp_search_sql(
         sql_literal=sql_literal,
         like_escape=like_escape,
         error_type=McpOpsError,
+        repository_identity=repository_identity,
     )
 
 
@@ -113,6 +115,7 @@ def query_mcp_search(
     psql_command: str | None = None,
     execute_readback_fn: Callable[..., Any] = default_execute_ops_json_readback,
     build_sql_fn: Callable[..., str] = build_mcp_search_sql,
+    repository_identity: str | None = None,
 ) -> dict[str, Any]:
     sql = build_sql_fn(
         root_path=root_path,
@@ -123,6 +126,7 @@ def query_mcp_search(
         limit=limit,
         offset=offset,
         include_raw=include_raw,
+        repository_identity=repository_identity,
     )
     payload = execute_readback_fn(
         config,
@@ -180,6 +184,7 @@ def search_payload(
         offset=safe_offset,
         include_raw=include_raw,
         psql_command=context.psql_command,
+        repository_identity=context.repository_identity,
     )
     results = list(raw_payload.get("results", ()))
     has_more = bool(raw_payload.get("has_more", False))

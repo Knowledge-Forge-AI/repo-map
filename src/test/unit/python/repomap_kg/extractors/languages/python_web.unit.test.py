@@ -313,3 +313,22 @@ class PythonWebProfileUnitTests(unittest.TestCase):
         self.assertIn("secret-like-assignment", payload)
         self.assertNotIn("fake-web-assignment-secret", payload)
         self.assertNotIn("fake-route-secret", payload)
+
+    def test_python_web_helpers_branches(self):
+        import ast
+        import repomap_kg.extractors.languages.python_web_helpers as pw
+
+        self.assertTrue(pw._looks_credentialed_url("https://token:secret@api.io"))
+        self.assertFalse(pw._looks_credentialed_url("https://api.io"))
+        self.assertTrue(pw._looks_like_django_settings_path("myproject/settings.py"))
+        self.assertFalse(pw._looks_like_django_settings_path("not_settings"))
+        route_meta = pw._route_path_metadata(None)
+        self.assertEqual(route_meta["route_path_kind"], "dynamic")
+        self.assertTrue(route_meta["dynamic"])
+        route_meta_lit = pw._route_path_metadata(ast.Constant(value="/api/v1/users/"))
+        self.assertEqual(route_meta_lit["route_path_kind"], "literal")
+        self.assertEqual(route_meta_lit["route_path"], "/api/v1/users/")
+        self.assertEqual(pw._bounded_metadata_string("test"), "test")
+        self.assertTrue(pw._bounded_metadata_string("x" * 500).endswith("..."))
+        self.assertTrue(pw._is_secret_like_name("JWT_SECRET_KEY"))
+        self.assertFalse(pw._is_secret_like_name("DATABASE_NAME"))

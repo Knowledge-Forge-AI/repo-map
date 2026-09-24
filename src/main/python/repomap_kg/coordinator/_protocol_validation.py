@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import re
 from typing import Iterable, Mapping, TypeGuard
@@ -103,6 +103,7 @@ _KNOWN_ARRAY_CATEGORIES = frozenset(
         "cancellation_not_applied",
         "multi-source-refresh-unsupported",
         "psql_authority_invalid",
+        "refresh-failed",
         "source-binding-refresh-unsupported",
         "synthetic_warning",
         "synthetic_diagnostic",
@@ -356,3 +357,7 @@ def _int_limit(limits: object, name: str, default: int) -> int:
     if not _is_int(value):
         raise ValueError(f"{name} has an invalid type")
     return value
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")

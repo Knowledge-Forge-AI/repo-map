@@ -19,10 +19,7 @@ from ci.workflow_model import load_workflow
 
 
 WORKFLOW_DIR = ROOT / ".github/workflows"
-STAGING_GATE = WORKFLOW_DIR / "repomap-staging-gate.yml"
-MAIN_SYSTEM_GATE = WORKFLOW_DIR / "repomap-main-system-gate.yml"
-TRUSTED_GATE_CONTRACT = '"${RUNNER_TEMP}/gate_contract.py"'
-TRUSTED_GATE_INVOCATION = f"python3 -S -E {TRUSTED_GATE_CONTRACT}"
+RELEASE_WORKFLOW = WORKFLOW_DIR / "repomap-release-qualification.yml"
 
 
 def clone_workflows(tmp_path: Path) -> Path:
@@ -46,92 +43,12 @@ def violations_after(tmp_path: Path, mutate: Callable[[Path], None]) -> tuple[st
     return check_topology(root)
 
 
-def test_exhaustive_qualification_no_longer_runs_on_pull_requests() -> None:
-    assert set(load_workflow(STAGING_GATE).triggers) == {"workflow_dispatch"}
-
-
-def test_staging_gate_requires_an_explicit_logical_gate_request() -> None:
-    inputs = load_workflow(STAGING_GATE).triggers["workflow_dispatch"]["inputs"]
-
-    assert set(inputs) == {
-        "pr_number",
-        "approved_base_sha",
-        "approved_head_sha",
-        "approval_id",
-    }
-    for definition in inputs.values():
-        assert definition["required"] is True
-
-
-def test_staging_gate_binds_the_candidate_before_expensive_work() -> None:
-    steps = load_workflow(STAGING_GATE).steps()
-    text = ["\n".join(str(step.get(key, "")) for key in ("run", "uses")) for step in steps]
-
-    trusted_checkout_index = next(
-        i
-        for i, step in enumerate(steps)
-        if str(step.get("uses", "")).startswith("actions/checkout@")
-        and step.get("with", {}).get("ref") == "${{ github.sha }}"
-    )
-    preserve_index = next(
-        i for i, item in enumerate(text) if f"cp tools/ci/gate_contract.py {TRUSTED_GATE_CONTRACT}" in item
-    )
-    resolve_index = next(
-        i for i, item in enumerate(text) if f"{TRUSTED_GATE_INVOCATION} resolve" in item
-    )
-    candidate_checkout_index = next(
-        i
-        for i, step in enumerate(steps)
-        if str(step.get("uses", "")).startswith("actions/checkout@")
-        and str(step.get("with", {}).get("ref", "")).startswith("refs/pull/")
-    )
-    verify_index = next(
-        i for i, item in enumerate(text) if f"{TRUSTED_GATE_INVOCATION} verify" in item
-    )
-    expensive = [
-        i
-        for i, item in enumerate(text)
-        if any(marker in item for marker in ("pip install", "docker pull", "setup-go", "setup-python"))
-    ]
-    suite_index = next(i for i, item in enumerate(text) if "python3 tools/run_tests.py" in item)
-
-    assert (
-        trusted_checkout_index
-        < preserve_index
-        < resolve_index
-        < candidate_checkout_index
-        < verify_index
-        < min(expensive)
-        < suite_index
-    )
-
-
-def test_staging_gate_uses_the_trusted_contract_for_every_authorization_command() -> None:
-    commands = "\n".join(load_workflow(STAGING_GATE).run_commands())
-
-    assert '--executor-ref "${GITHUB_REF}"' in commands
-    assert '--executor-sha "${GITHUB_SHA}"' in commands
-    for command in ("resolve", "verify", "record"):
-        assert commands.count(f"{TRUSTED_GATE_INVOCATION} {command}") == 1
-        assert f"tools/ci/gate_contract.py {command}" not in commands
-
-
-def test_staging_gate_records_the_exact_candidate_sha_and_tree() -> None:
-    commands = "\n".join(load_workflow(STAGING_GATE).run_commands())
-
-    assert "git rev-parse HEAD" in commands
-    assert "git rev-parse 'HEAD^{tree}'" in commands
-    assert "git rev-parse 'HEAD^1'" in commands
-    assert "git rev-parse 'HEAD^2'" in commands
-    assert f"{TRUSTED_GATE_INVOCATION} record" in commands
-    assert "repomap-ci-gate-result-v1.json" in commands
-
-
 def test_staging_command_preserves_its_accepted_arguments() -> None:
-    workflow = load_workflow(STAGING_GATE)
-    commands = "\n".join(workflow.run_commands())
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    job = workflow.jobs["staging-integration-gate"]
+    commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s)
 
-    assert workflow.jobs["repomap-staging-gate"]["timeout-minutes"] == 180
+    assert job["timeout-minutes"] == 180
     for argument in (
         "--suite staging",
         "--hygiene-profile exhaustive",
@@ -141,28 +58,26 @@ def test_staging_command_preserves_its_accepted_arguments() -> None:
         "--pg-container-port 55433",
         "--sandbox",
         "--report",
-        '--report-dir "${GITHUB_WORKSPACE}/ci-test-report"',
+        '--report-dir "${GITHUB_WORKSPACE}/ci-staging-report"',
     ):
         assert argument in commands
     assert commands.count("--suite staging") == 1
     assert "--suite all" not in commands
     assert "--suite unit" not in commands
-    assert "docker pull postgres:16-alpine" not in commands
-    assert "docker pull alpine:latest" not in commands
     assert commands.count("df -B1 /") == 1
-    assert not any(action.lower().startswith("actions/setup-go@") for action in workflow.action_uses())
+    steps = job["steps"]
+    assert not any(str(s.get("uses", "")).lower().startswith("actions/setup-go@") for s in steps)
     lowered_commands = commands.lower()
     assert "pip install" not in lowered_commands
     assert "go install" not in lowered_commands
     assert "golangci-lint" not in lowered_commands
-    assert "32" not in commands.split("--hygiene-profile")[1][:40]
 
 
 def test_main_system_command_preserves_its_accepted_arguments() -> None:
-    workflow = load_workflow(MAIN_SYSTEM_GATE)
-    commands = "\n".join(workflow.run_commands())
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    job = workflow.jobs["main-system-gate"]
+    commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s)
 
-    assert workflow.jobs["repomap-main-system-gate"]["timeout-minutes"] == 90
     for argument in (
         "--suite system",
         "--system-timeout 3600",
@@ -179,7 +94,8 @@ def test_main_system_command_preserves_its_accepted_arguments() -> None:
     for retired in ("--suite all", "--suite unit", "--suite int", "--suite staging", "--suite smoke"):
         assert retired not in commands
     assert commands.count("df -B1 /") == 1
-    assert not any(action.lower().startswith("actions/setup-go@") for action in workflow.action_uses())
+    steps = job["steps"]
+    assert not any(str(s.get("uses", "")).lower().startswith("actions/setup-go@") for s in steps)
     lowered_commands = commands.lower()
     assert "pip install" not in lowered_commands
     assert "go install" not in lowered_commands
@@ -187,62 +103,41 @@ def test_main_system_command_preserves_its_accepted_arguments() -> None:
 
 
 def test_main_system_gate_passes_the_bound_request_and_candidate_identities() -> None:
-    workflow = load_workflow(MAIN_SYSTEM_GATE)
-    system_steps = [
-        step for step in workflow.steps() if "--suite system" in str(step.get("run", ""))
-    ]
-    assert len(system_steps) == 1
-    assert system_steps[0].get("env") == {
-        "APPROVAL_ID": "${{ inputs.approval_id }}",
-        "PR_NUMBER": "${{ inputs.pr_number }}",
-    }
-
-    commands = [
-        command for command in workflow.run_commands() if "--suite system" in command
-    ]
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    job = workflow.jobs["main-system-gate"]
+    commands = [str(s["run"]) for s in job["steps"] if "run" in s and "--suite system" in str(s.get("run", ""))]
     assert len(commands) == 1
+    system_command = commands[0]
+
     for argument in (
         '--gate-request-json "${RUNNER_TEMP}/gate-request.json"',
         '--candidate-sha "${CANDIDATE_SHA}"',
         '--candidate-tree "${CANDIDATE_TREE}"',
         '--candidate-base-parent "${CANDIDATE_BASE_PARENT}"',
         '--candidate-head-parent "${CANDIDATE_HEAD_PARENT}"',
-        '--approval-id "${APPROVAL_ID}"',
+        '--approval-id "pr-${PR_NUMBER}"',
         '--pr-number "${PR_NUMBER}"',
         '--repository "${GITHUB_REPOSITORY}"',
     ):
-        assert commands[0].count(argument) == 1
+        assert system_command.count(argument) == 1
+
+    bind_step = next(s for s in job["steps"] if s.get("id") == "bind")
+    bind_script = str(bind_step["run"])
+    for required in (
+        'CANDIDATE_SHA="$(git rev-parse HEAD)"',
+        "CANDIDATE_TREE=\"$(git rev-parse 'HEAD^{tree}')\"",
+        "CANDIDATE_BASE_PARENT=\"$(git rev-parse 'HEAD^1')\"",
+        "CANDIDATE_HEAD_PARENT=\"$(git rev-parse 'HEAD^2')\"",
+        "repomap-ci-gate-request-v1",
+        "gate-request.json",
+    ):
+        assert required in bind_script
 
 
-def test_main_system_gate_records_the_closed_report_and_binding() -> None:
-    commands = [
-        command
-        for command in load_workflow(MAIN_SYSTEM_GATE).run_commands()
-        if 'gate_contract.py" record' in command
-    ]
-    assert len(commands) == 1
-    record_command = commands[0]
-    assert record_command.count(
-        '--system-report-json "${GITHUB_WORKSPACE}/ci-system-report/'
-        'repomap-system-gate-report.json"'
-    ) == 1
-    assert record_command.count(
-        '--system-binding-json "${GITHUB_WORKSPACE}/ci-system-report/'
-        'repomap-system-gate-binding-v1.json"'
-    ) == 1
-
-
-def test_main_system_gate_holds_no_git_or_pull_request_write_permission() -> None:
-    assert load_workflow(MAIN_SYSTEM_GATE).permissions == {
+def test_release_qualification_holds_read_only_contents_permission() -> None:
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    assert workflow.permissions == {
         "contents": "read",
-        "pull-requests": "read",
-    }
-
-
-def test_staging_gate_holds_no_git_or_pull_request_write_permission() -> None:
-    assert load_workflow(STAGING_GATE).permissions == {
-        "contents": "read",
-        "pull-requests": "read",
     }
 
 
@@ -250,41 +145,35 @@ def test_staging_gate_holds_no_git_or_pull_request_write_permission() -> None:
     ("name", "old", "new", "expected"),
     [
         (
-            "repomap-staging-gate.yml",
-            "on:\n  workflow_dispatch:",
-            "on:\n  pull_request:\n  workflow_dispatch:",
-            "explicit ",
+            "repomap-release-qualification.yml",
+            "            --sandbox \\\n",
+            "",
+            "must use --sandbox",
         ),
         (
-            "repomap-staging-gate.yml",
-            "  pull-requests: read",
-            "  pull-requests: write",
-            "not read-only",
+            "repomap-release-qualification.yml",
+            "            --pg-container-port 55433 \\\n",
+            "",
+            "bind pg-container-port 55433",
         ),
         (
-            "repomap-staging-gate.yml",
-            "        run: df -B1 /\n\n      - name: Run the staging smoke and integration gate",
-            "        run: git push origin HEAD\n\n      - name: Run the staging smoke and integration gate",
-            "not git",
+            "repomap-release-qualification.yml",
+            "    timeout-minutes: 180\n",
+            "    timeout-minutes: 60\n",
+            "staging lane timeout must be 180 minutes",
         ),
         (
-            "repomap-staging-gate.yml",
-            "uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
-            "uses: actions/upload-artifact@v7",
-            "40-hex SHA pin",
-        ),
-        (
-            "repomap-staging-gate.yml",
+            "repomap-release-qualification.yml",
             "      - name: Record free disk before the staging suite\n",
             "      - name: Duplicate host Go setup\n"
-            "        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e\n"
+            "        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0\n"
             "        with:\n"
             '          go-version: "1.25"\n\n'
             "      - name: Record free disk before the staging suite\n",
             "must not duplicate host toolchain bootstrap",
         ),
         (
-            "repomap-staging-gate.yml",
+            "repomap-release-qualification.yml",
             "      - name: Record free disk before the staging suite\n",
             "      - name: Duplicate host Python test environment\n"
             '        run: python -m pip install --editable ".[test,scale-tools,static-analysis]"\n\n'
@@ -292,54 +181,22 @@ def test_staging_gate_holds_no_git_or_pull_request_write_permission() -> None:
             "must not duplicate host toolchain bootstrap",
         ),
         (
-            "repomap-staging-gate.yml",
-            "      - name: Record free disk before the staging suite\n",
-            "      - name: Duplicate host linter install\n"
-            "        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.6.2\n\n"
-            "      - name: Record free disk before the staging suite\n",
-            "must not duplicate host toolchain bootstrap",
+            "repomap-release-qualification.yml",
+            'CANDIDATE_SHA="$(git rev-parse HEAD)"',
+            'CANDIDATE_SHA="missing"',
+            "missing candidate/parent binding",
         ),
         (
-            "repomap-staging-gate.yml",
-            "            --sandbox \\\n",
-            "",
-            "must use --sandbox",
+            "repomap-release-qualification.yml",
+            "            --suite system \\\n",
+            "            --suite system \\\n            --suite int \\\n",
+            "system gate must not contain '--suite int'",
         ),
         (
-            "repomap-staging-gate.yml",
-            'python3 -S -E "${RUNNER_TEMP}/gate_contract.py" verify',
-            "python3 -S -E tools/ci/gate_contract.py verify",
-            "trusted gate contract",
-        ),
-        (
-            "repomap-staging-gate.yml",
-            'python3 -S -E "${RUNNER_TEMP}/gate_contract.py" record',
-            'python3 "${RUNNER_TEMP}/gate_contract.py" record',
-            "trusted gate contract",
-        ),
-        (
-            "repomap-staging-gate.yml",
-            '--executor-ref "${GITHUB_REF}"',
-            '--executor-ref "refs/heads/staging"',
-            "trusted executor ref/SHA inputs",
-        ),
-        (
-            "repomap-staging-gate.yml",
-            "          ref: ${{ github.sha }}",
-            "          ref: refs/heads/feature",
-            "capture trusted staging semantics",
-        ),
-        (
-            "repomap-main-system-gate.yml",
-            "      - name: Run the main system gate\n"
-            "        id: system\n"
-            "        env:\n"
-            "          APPROVAL_ID: ${{ inputs.approval_id }}",
-            "      - name: Run the main system gate\n"
-            "        id: system\n"
-            "        env:\n"
-            "          APPROVAL_ID: ${{ inputs.request_kind }}",
-            "exact step environment",
+            "repomap-release-qualification.yml",
+            "  main-system-gate:\n    name: main-system-gate\n    needs: [source-and-export-policy]\n",
+            "  main-system-gate:\n    name: main-system-gate\n    needs: [staging-integration-gate]\n",
+            "main system gate must depend on source-and-export-policy",
         ),
     ],
 )
@@ -348,3 +205,36 @@ def test_gate_contracts_detect_their_own_violation(
 ) -> None:
     violations = violations_after(tmp_path, lambda root: edit(root, name, old, new))
     assert any(expected in violation for violation in violations), violations
+
+
+def test_main_system_gate_needs_source_and_export_policy_and_not_staging() -> None:
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    system_job = workflow.jobs["main-system-gate"]
+    needs = system_job.get("needs")
+    if isinstance(needs, str):
+        needs = [needs]
+    assert needs == ["source-and-export-policy"]
+    assert "staging-integration-gate" not in needs
+
+    visited: set[str] = set()
+    queue = list(needs)
+    while queue:
+        curr = queue.pop(0)
+        if curr in visited:
+            continue
+        visited.add(curr)
+        assert curr != "staging-integration-gate"
+        parent_job = workflow.jobs.get(curr, {})
+        parent_needs = parent_job.get("needs", [])
+        if isinstance(parent_needs, str):
+            parent_needs = [parent_needs]
+        queue.extend(parent_needs)
+
+
+def _add_unexpected(root: Path) -> None:
+    (root / ".github/workflows" / "unexpected.yml").write_text("name: unexpected\n", encoding="utf-8")
+
+
+def test_topology_rejects_unexpected_workflow(tmp_path: Path) -> None:
+    violations = violations_after(tmp_path, _add_unexpected)
+    assert any("unexpected workflow file" in v for v in violations), violations

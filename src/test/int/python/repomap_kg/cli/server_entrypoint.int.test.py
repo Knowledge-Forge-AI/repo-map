@@ -5,11 +5,12 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_test_support.cli_in_process import REPO_ROOT, module_environment
+from repomap_test_support.cli_in_process import REPO_ROOT, module_process_environment
 from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
     OPS_CONFIG_TEMPLATE,
 )
+from runner_coverage_observer import launch_observed_process, popen_observed_process
 
 from repomap_kg.ops.config_records import OpsPostgresStatus
 
@@ -33,14 +34,13 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
         request = json.dumps(
             {"jsonrpc": "2.0", "id": 1, "method": "initialize"}
         )
-        result = subprocess.run(
+        result = launch_observed_process(
             [sys.executable, "-m", "repomap_kg.server.mcp"],
+            family="cli_module",
             cwd=REPO_ROOT,
-            env=module_environment(),
-            input=f"{request}\n",
-            text=True,
-            capture_output=True,
-            check=False,
+            env=module_process_environment(),
+            input_text=f"{request}\n",
+            pid_namespace_relation="shared",
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -55,7 +55,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
             (home).mkdir()
             (home / "repomap.rpl.toml").write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
             port = self.local_server_test_port()
-            process = subprocess.Popen(
+            process = popen_observed_process(
                 [
                     sys.executable,
                     "-m",
@@ -69,11 +69,12 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
                     "--port",
                     str(port),
                 ],
+                family="cli_module",
                 cwd=REPO_ROOT,
-                env=module_environment(),
+                env=module_process_environment(),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True,
+                pid_namespace_relation="shared",
             )
             try:
                 live = self.fetch_json_when_ready(
@@ -91,11 +92,12 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
             finally:
                 process.terminate()
                 try:
-                    process.wait(timeout=5)
+                    process.wait(timeout=10)
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait(timeout=5)
 
+        self.assertEqual(process.returncode, 0)
         self.assertEqual(health["service"], "repomap")
         self.assertEqual(live["status"], "live")
         self.assertEqual(health["status"], "healthy")

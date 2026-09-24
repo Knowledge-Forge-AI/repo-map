@@ -160,3 +160,17 @@ def test_systemd_rejects_unrecognized_or_shell_definitions(
     assert not adapter.recognizes(content)
     with pytest.raises(ValueError, match="service_definition_invalid"):
         adapter.validate(content, spec)
+
+
+def test_systemd_quote_token_and_decode_error_branches():
+    from repomap_kg.service_package.systemd import _quote_systemd_exec_token
+
+    assert _quote_systemd_exec_token("token") == '"token"'
+    assert _quote_systemd_exec_token("with space") == '"with space"'
+
+    with pytest.raises(ValueError):
+        decode_systemd_exec_argv(b"x" * 70000)
+    with pytest.raises(ValueError):
+        decode_systemd_exec_argv(b"ExecStart=unquoted")
+    with pytest.raises(ValueError):
+        decode_systemd_exec_argv(b"ExecStart=\"/a\"\nExecStart=\"/b\"")

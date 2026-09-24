@@ -15,59 +15,34 @@ if str(TOOLS_ROOT) not in sys.path:
 from ci.workflow_model import load_workflow
 
 
-UNIT_WORKFLOW = ROOT / ".github/workflows/repomap-unit-tests.yml"
-STATIC_WORKFLOW = ROOT / ".github/workflows/repomap-static-analysis.yml"
+RELEASE_WORKFLOW = ROOT / ".github/workflows/repomap-release-qualification.yml"
 CANONICAL_UNIT_COMMAND = "python3 tools/run_tests.py --suite unit"
-EXPECTED_PATHS = [
-    "src/main/python/**",
-    "src/main/go/**",
-    "src/test/**",
-    "tools/**",
-    "pyproject.toml",
-    ".github/workflows/**",
-]
 
 
 def test_repomap_unit_workflow_contracts() -> None:
-    assert UNIT_WORKFLOW.exists(), "repomap-unit-tests.yml must exist"
-    workflow = load_workflow(UNIT_WORKFLOW)
+    assert RELEASE_WORKFLOW.exists(), "repomap-release-qualification.yml must exist"
+    workflow = load_workflow(RELEASE_WORKFLOW)
 
-    assert workflow.name == "repomap-unit-tests"
-    assert set(workflow.jobs) == {"repomap-unit-tests"}
-    job = workflow.jobs["repomap-unit-tests"]
-    assert job["name"] == "repomap-unit-tests"
+    assert "unit-tests" in workflow.jobs
+    job = workflow.jobs["unit-tests"]
+    assert job["name"] == "unit-tests"
     assert job["runs-on"] == "ubuntu-latest"
     assert job["timeout-minutes"] == 60
+    assert job["needs"] == ["source-and-export-policy"]
 
-    assert set(workflow.triggers) == {"pull_request", "workflow_dispatch"}
-    pull_request = workflow.triggers["pull_request"]
-    assert pull_request["branches"] == ["staging"]
-    assert sorted(pull_request["types"]) == [
-        "opened",
-        "ready_for_review",
-        "reopened",
-        "synchronize",
-    ]
-    assert pull_request["paths"] == EXPECTED_PATHS
-    assert "push" not in workflow.triggers
-
-    assert workflow.permissions == {"contents": "read"}
-    assert workflow.document["concurrency"] == {
-        "group": "repomap-unit-tests-${{ github.ref }}",
-        "cancel-in-progress": True,
-    }
-
-    action_uses = workflow.action_uses()
-    assert action_uses == (
+    steps = [s for s in job.get("steps", []) if isinstance(s, dict)]
+    job_action_uses = tuple(
+        str(step["uses"]) for step in steps if "uses" in step
+    )
+    assert job_action_uses == (
         "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
         "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
         "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
     )
-    for action in action_uses:
+    for action in job_action_uses:
         name, separator, pinned = action.partition("@")
         assert separator and re.fullmatch(r"[0-9a-f]{40}", pinned), name
 
-    steps = workflow.steps()
     checkout = next(
         step for step in steps if str(step.get("uses", "")).startswith("actions/checkout@")
     )
@@ -86,8 +61,7 @@ def test_repomap_unit_workflow_contracts() -> None:
         "cache": False,
     }
 
-    commands = workflow.run_commands()
-    assert commands.count("python3 tools/ci/ci_topology.py") == 1
+    commands = [str(step["run"]) for step in steps if "run" in step]
     assert commands.count('python -m pip install --editable ".[test,scale-tools,static-analysis]"') == 1
     bootstrap_command = next(
         command for command in commands if "bootstrap_tool.py" in command
@@ -129,17 +103,15 @@ def test_repomap_unit_workflow_contracts() -> None:
     assert "--report" not in command_text
     assert "--no-coverage" not in command_text
 
-    content = UNIT_WORKFLOW.read_text(encoding="utf-8").lower()
+    content = RELEASE_WORKFLOW.read_text(encoding="utf-8").lower()
     assert "secrets." not in content
     assert "continue-on-error" not in content
 
 
 def test_static_and_unit_lanes_remain_independent() -> None:
-    static = load_workflow(STATIC_WORKFLOW)
-    unit = load_workflow(UNIT_WORKFLOW)
+    workflow = load_workflow(RELEASE_WORKFLOW)
+    static_job = workflow.jobs["pre-review-static"]
+    assert "unit-tests" in workflow.jobs
 
-    assert static.name == "repomap-static-analysis"
-    assert unit.name == "repomap-unit-tests"
-    assert set(static.jobs) == {"repomap-static-analysis"}
-    assert set(unit.jobs) == {"repomap-unit-tests"}
-    assert CANONICAL_UNIT_COMMAND not in "\n".join(static.run_commands())
+    static_commands = "\n".join(str(s["run"]) for s in static_job["steps"] if "run" in s)
+    assert CANONICAL_UNIT_COMMAND not in static_commands

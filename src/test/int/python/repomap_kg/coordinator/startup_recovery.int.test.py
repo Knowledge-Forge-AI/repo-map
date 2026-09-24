@@ -10,11 +10,13 @@ import pytest
 
 from repomap_kg.coordinator import normalize_request
 from repomap_kg.coordinator._control_types import JobClaim
+from repomap_kg.coordinator.core import SyntheticCoordinator
+from repomap_kg.coordinator.storage import ControlStore, SingletonActiveError
 from repomap_kg.coordinator.startup_recovery import (
     PublicationRouteChangedError,
+    StartupRecoveryReport,
     recover_startup,
 )
-from repomap_kg.coordinator.storage import ControlStore
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
@@ -312,3 +314,87 @@ def test_startup_recovery_with_publication_reader() -> None:
     assert len(store.recorded_markers) == 2
     assert store.recorded_markers[0][1]["run_identity"] == "r-present"
     assert store.recorded_markers[1][1]["run_identity"] == "r-conflicting"
+
+
+def test_startup_recovery_lifecycle_with_durable_rejected_attempt_and_crash_recovery() -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        def connect():
+            return psycopg.connect(
+                host=postgres.host, port=postgres.port, user=postgres.user,
+                dbname=postgres.database, password=postgres.password,
+            )
+        store = ControlStore(connect)
+        store.initialize_schema()
+        captured_claim: list[JobClaim] = []
+
+        def uncertain_worker(claim: JobClaim, _cancel: object) -> dict[str, object]:
+            captured_claim.append(claim)
+            return {
+                "status": "failed",
+                "publication_state": "commit_unknown",
+                "error_category": "publication_unknown",
+                "_termination_proved": True,
+            }
+        predecessor = SyntheticCoordinator(
+            store,
+            "coord-predecessor",
+            uncertain_worker,
+            singleton_ttl=timedelta(seconds=30),
+        )
+        predecessor.startup(lambda: None)
+        try:
+            submitted = store.submit(_request("synthetic-recovery", "recovery-key"))
+            with pytest.raises(SingletonActiveError, match="singleton is active"):
+                store.acquire_singleton("coord-contender", timedelta(seconds=30))
+            assert predecessor.run_once() == "reconciliation_required"
+            assert store.status(submitted.job_id).state == "reconciliation_required"
+        finally:
+            predecessor.shutdown()
+        assert len(captured_claim) == 1
+        claim = captured_claim[0]
+        assert store.record_publication_marker(
+            claim,
+            run_identity="run-recovered",
+            source_generation=claim.source_generation,
+            config_generation=claim.config_generation,
+            extractor_generation=claim.extractor_generation,
+            canonicalizer_generation=claim.canonicalizer_generation,
+            outcome="committed",
+        )
+        replacement = SyntheticCoordinator(
+            store,
+            "coord-replacement",
+            lambda _claim, _cancel: {
+                "status": "failed",
+                "publication_state": "not_started",
+                "error_category": "permanent",
+                "_termination_proved": True,
+            },
+            singleton_ttl=timedelta(seconds=30),
+        )
+        replacement.startup(replacement.recover_startup)
+        try:
+            report = replacement.startup_recovery_report
+            assert isinstance(report, StartupRecoveryReport)
+            assert report.scanned == 1
+            assert report.resolved == 1
+            assert report.pending == 0
+            status = store.status(submitted.job_id)
+            assert (
+                status.state,
+                status.publication_state,
+                status.error_category,
+            ) == ("succeeded", "committed", None)
+            with connect() as connection:
+                assert connection.execute(
+                    "SELECT count(*) FROM graph_leases WHERE job_id = %s",
+                    (submitted.job_id,),
+                ).fetchone() == (0,)
+                assert connection.execute(
+                    "SELECT is_current, finished_at IS NOT NULL, result_category "
+                    "FROM job_attempts WHERE job_id = %s AND attempt = 1",
+                    (submitted.job_id,),
+                ).fetchone() == (False, True, None)
+        finally:
+            replacement.shutdown()

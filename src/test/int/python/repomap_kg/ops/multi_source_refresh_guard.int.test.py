@@ -1,25 +1,42 @@
 import json
 from pathlib import Path
+import tempfile
+
+import pytest
 
 from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import load_ops_config
+from repomap_kg.ops.config import OpsConfigError, load_ops_config
 from repomap_kg.ops.graph_file_sql import GraphFileFilters
 from repomap_kg.ops.graph_files import query_graph_files
+from repomap_kg.ops.ingestion.github_api import (
+    GitHubApiPolicyError,
+    PublicGitHubRestTransport,
+    acquire_github_api_source,
+    load_github_api_source_config,
+)
 from repomap_kg.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
 )
+from repomap_test_support.source_ingestion_integration import (
+    IntFakeGitHubOpener,
+    github_api_fixture_root,
+)
 
 
-def _binding(alias: str, root: Path, *, privacy: str = "public-dev") -> str:
+def _binding(
+    alias: str, root: Path, *, privacy: str = "public-dev",
+    binding_id: str | None = None, binding_alias: str | None = None,
+    input_name: str | None = None,
+) -> str:
     return f"""
 [[graphs.source_bindings]]
 schema_version = 1
-binding_id = "{graph_source_binding_id('fixture-graph', alias)}"
+binding_id = "{binding_id or graph_source_binding_id('fixture-graph', alias)}"
 source_definition_id = "src1:{alias}"
-alias = "{alias}"
+alias = "{binding_alias or alias}"
 revision = 1
 kind = "folder"
 root_path = "{root}"
@@ -30,7 +47,7 @@ evidence_retention = "metadata-only"
 extractor_profile = "default"
 resolution_policy = "allow-declared"
 role = "entry"
-input_name = "{alias}"
+input_name = "{input_name or alias}"
 exclude_paths = ["result-*"]
 """
 
@@ -226,3 +243,148 @@ def test_legacy_one_source_publication_and_readback_qualifies_keys_with_source_r
     assert graph_row["privacy"] == "public-dev"
     assert graph_row["root_path_display"] == str(root)
     assert graph_row["root_path_expanded"] == str(root)
+
+
+def test_multi_source_routing_and_config_refusals_prevent_storage_mutation(tmp_path):
+    require_postgres_binaries()
+    root = tmp_path / "valid_src"
+    root.mkdir()
+    (root / "sample.py").write_text("print('hello')\n", encoding="utf-8")
+
+    with temporary_postgres() as postgres:
+        apply_migrations(
+            default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command
+        )
+        baseline = _counts(postgres)
+
+        # 1. Duplicate dimensions reach refusals; alias and binding_id share structural coupling via identity derivation.
+        expected_codes = {
+            "duplicate-source-binding-alias": {
+                "duplicate-source-binding-alias",
+                "invalid-source-binding-identity",
+            },
+            "duplicate-source-binding-id": {
+                "duplicate-source-binding-id",
+                "invalid-source-binding-identity",
+            },
+            "duplicate-source-binding-input-name": {
+                "duplicate-source-binding-input-name",
+            },
+        }
+        for overrides, code in (
+            ({"binding_alias": "first"}, "duplicate-source-binding-alias"),
+            ({"binding_id": graph_source_binding_id("fixture-graph", "first")}, "duplicate-source-binding-id"),
+            ({"input_name": "first"}, "duplicate-source-binding-input-name"),
+        ):
+            p1 = tmp_path / f"{code}.toml"
+            p1.write_text(_config(postgres, _binding("first", root), _binding("second", root, **overrides)))
+            with pytest.raises(OpsConfigError) as exc1:
+                load_ops_config(p1)
+            assert {d.code for d in exc1.value.diagnostics if d.severity == "error"} == expected_codes[code]
+            assert _refresh(p1, postgres.psql_command)[0] == 1
+            assert _counts(postgres) == baseline
+
+        # 2. Conflicting source kinds for same source_definition_id
+        b1 = _binding("s1", root).replace(
+            'source_definition_id = "src1:s1"', 'source_definition_id = "src1:shared"'
+        )
+        b2 = (
+            _binding("s2", root)
+            .replace('source_definition_id = "src1:s2"', 'source_definition_id = "src1:shared"')
+            .replace('kind = "folder"', 'kind = "archive"')
+        )
+        p2 = tmp_path / "kind_conflict.toml"
+        p2.write_text(_config(postgres, b1, b2), encoding="utf-8")
+        with pytest.raises(OpsConfigError) as exc2:
+            load_ops_config(p2)
+        assert any(d.code == "source-definition-collision" for d in exc2.value.diagnostics)
+        assert _refresh(p2, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+        # 3. Invalid exclude path (with ..)
+        bad_exclude = _binding("s3", root).replace(
+            'exclude_paths = ["result-*"]', 'exclude_paths = ["../escape"]'
+        )
+        p3 = tmp_path / "bad_exclude.toml"
+        p3.write_text(_config(postgres, bad_exclude), encoding="utf-8")
+        with pytest.raises(OpsConfigError) as exc3:
+            load_ops_config(p3)
+        assert any(d.code == "invalid-source-binding-exclude-path" for d in exc3.value.diagnostics)
+        assert _refresh(p3, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+        # 4. Unsupported source binding privacy
+        bad_privacy = _binding("s4", root, privacy="unsupported-privacy")
+        p4 = tmp_path / "bad_privacy.toml"
+        p4.write_text(_config(postgres, bad_privacy), encoding="utf-8")
+        with pytest.raises(OpsConfigError) as exc4:
+            load_ops_config(p4)
+        assert any(d.code == "unsupported-source-binding-privacy" for d in exc4.value.diagnostics)
+        assert _refresh(p4, postgres.psql_command)[0] == 1
+        assert _counts(postgres) == baseline
+
+        # 5. Coherent recovery: valid configuration loads cleanly and publishes to storage
+        recovered_toml = _config(postgres, _binding("recovered", root))
+        p5 = tmp_path / "recovered.toml"
+        p5.write_text(recovered_toml, encoding="utf-8")
+        cfg5 = load_ops_config(p5)
+        assert not any(d.severity == "error" for d in cfg5.diagnostics)
+        assert _refresh(p5, postgres.psql_command)[0] == 0
+        assert _counts(postgres)[0] == baseline[0] + 1
+
+
+def test_offline_github_api_acquisition_refusals_leave_no_artifacts():
+    fixture_dir = github_api_fixture_root() / "public_real_transport_config"
+    config_path = fixture_dir / "github-source.toml"
+    load_github_api_source_config(config_path)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out = Path(tmpdir) / "output"
+
+        # 1. HTTP 404 error from fake opener
+        transport_404 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=404, headers={"content-type": "application/json"}, body=b'{"message": "Not Found"}'
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="returned HTTP status 404"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_404)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # 2. Redirect (302) from fake opener
+        transport_302 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=302,
+            headers={"content-type": "application/json", "location": "https://api.github.com/other"},
+            body=b'{}',
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="redirects are not followed"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_302)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # 3. Rate limit exhausted (x-ratelimit-remaining: 0)
+        transport_ratelimit = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200, headers={"content-type": "application/json", "x-ratelimit-remaining": "0"}, body=b'{}'
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="hit GitHub API rate limit"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_ratelimit)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # 4. Non-JSON response
+        transport_html = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200, headers={"content-type": "text/html"}, body=b'<html>Not JSON</html>'
+        ))
+        with pytest.raises(GitHubApiPolicyError, match="did not return a JSON response"):
+            acquire_github_api_source(config_path, root_path=out, transport=transport_html)
+        assert not out.exists() or not list(out.glob("*"))
+
+        # A successful acquisition writes artifacts but never publishes a graph.
+        transport_ok = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200,
+            headers={"content-type": "application/json; charset=utf-8", "x-ratelimit-remaining": "50"},
+            body=b'{"full_name": "fixture-owner/fixture-repo"}',
+        ))
+        summary = acquire_github_api_source(config_path, root_path=out, transport=transport_ok)
+        assert summary.publication.publication_state == "not_published"
+        assert summary.requests == summary.responses == 2
+        assert {record.endpoint_name for record in summary.response_records} == {"repository", "issues"}
+        manifest = json.loads((summary.output_path / "manifest.json").read_text())
+        assert manifest["api_run_id"] == summary.api_run_id
+        assert {observation.kind for observation in summary.raw_observations} >= {"github.repository", "config.document"}

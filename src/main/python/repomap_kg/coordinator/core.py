@@ -148,7 +148,10 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
                 with self._lock:
                     expected = self._active_expected_state(claim, cancel_event)
                     if not self._store.mark_reconciliation_required(
-                        claim, expected_state=expected, category="worker_crash"
+                        claim,
+                        expected_state=expected,
+                        category="worker_crash",
+                        diagnostic_summary="worker_crash:unhandled_exception",
                     ):
                         return "ownership_lost"
                     return "reconciliation_required"

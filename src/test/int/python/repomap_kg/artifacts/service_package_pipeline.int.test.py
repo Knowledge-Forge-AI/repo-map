@@ -10,12 +10,12 @@ Exercises:
 
 from __future__ import annotations
 
+from collections import defaultdict, deque
+import os
 import shutil
 import tempfile
 import unittest
 from pathlib import Path
-
-from typing import Mapping, Sequence
 
 from repomap_kg.artifacts.bundle import PublicationBundle
 from repomap_kg.artifacts.receipt import ExtractionReceipt
@@ -29,12 +29,27 @@ from repomap_kg.artifacts.validator import (
 )
 from repomap_kg.service_package.contract import build_service_package_spec
 from repomap_kg.service_package.launchd import LaunchdUserAdapter
+from repomap_kg.service_package.operations import CoordinatorServiceOperations, ServiceActionResult
+from repomap_kg.service_package.platforms import NativeServiceAdapter
 from repomap_kg.service_package.systemd import SystemdUserAdapter
 from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
-
-
+from repomap_test_support.service_publication_families import (
+    sample_publication_families,
+)
 from repomap_test_support.test_scratch import select_scratch_root
+
+
+class RecordingRunner:
+    def __init__(self, responses: dict[tuple[str, ...], list[int]] | None = None) -> None:
+        self.calls: list[tuple[str, ...]] = []
+        self.responses: dict[tuple[str, ...], deque[int]] = defaultdict(deque)
+        for argv, values in (responses or {}).items():
+            self.responses[argv].extend(values)
+
+    def __call__(self, argv: tuple[str, ...]) -> int:
+        self.calls.append(argv)
+        outcomes = self.responses[argv]
+        return outcomes.popleft() if outcomes else 0
 
 
 class ServicePackagePipelineIntegrationTests(unittest.TestCase):
@@ -112,73 +127,7 @@ class ServicePackagePipelineIntegrationTests(unittest.TestCase):
 
         vector = (("src:1", 1, "s" * 64),)
 
-        families_dict: dict[StageFamily, Sequence[Mapping[str, object]]] = {
-            "files": (
-                {
-                    "family_ordinal": 0,
-                    "path": "entry::service_config.json",
-                    "language": "json",
-                    "role": "source",
-                    "confidence": "exact",
-                    "content_hash": "sha256:" + "a" * 64,
-                    "executable": False,
-                    "generated": False,
-                    "metadata_json": {"binding_id": vector[0][0]},
-                },
-            ),
-            "raw_observations": (
-                {
-                    "source_ordinal": 0,
-                    "schema_version": 1,
-                    "kind": "service.definition",
-                    "source_id": "obs1",
-                    "path": "entry::service_config.json",
-                    "payload_json": {"service": "coordinator"},
-                    "payload_hash": "sha256:" + "b" * 64,
-                },
-            ),
-            "canonical_nodes": (
-                {
-                    "family_ordinal": 0,
-                    "graph_key_version": 1,
-                    "canonical_key": "service:coordinator",
-                    "kind": "Service",
-                    "display_name": "Coordinator",
-                    "metadata_json": {"binding_id": vector[0][0]},
-                    "confidence": "exact",
-                    "conflict": False,
-                },
-            ),
-            "canonical_edges": (),
-            "canonical_evidence": (
-                {
-                    "family_ordinal": 0,
-                    "graph_key_version": 1,
-                    "evidence_key": "evidence:1",
-                    "raw_observation_ordinal": 0,
-                    "raw_schema_version": 1,
-                    "raw_kind": "service.definition",
-                    "raw_source_id": "obs1",
-                    "path": "entry::service_config.json",
-                    "start_line": 1,
-                    "end_line": 5,
-                    "extractor": "service-pkg",
-                    "extractor_version": "1.0",
-                    "confidence": "exact",
-                    "metadata_json": {"binding_id": vector[0][0]},
-                },
-            ),
-            "canonical_node_evidence": (
-                {
-                    "family_ordinal": 0,
-                    "graph_key_version": 1,
-                    "canonical_key": "service:coordinator",
-                    "evidence_key": "evidence:1",
-                    "link_kind": "supports",
-                },
-            ),
-            "canonical_edge_evidence": (),
-        }
+        families_dict = sample_publication_families(vector)
 
         bundle = PublicationBundle.create(
             request_id="req-int-1",
@@ -339,6 +288,90 @@ class ServicePackagePipelineIntegrationTests(unittest.TestCase):
         r_path.write_bytes(b"truncated")
         with self.assertRaises(ArtifactIntegrityError):
             store.read(r_ref)
+
+    def test_coordinator_service_operations_full_lifecycle_and_adapters(self) -> None:
+        repomap_home = self.tmpdir / "coord_home"
+        repomap_home.mkdir(mode=0o700, parents=True, exist_ok=True)
+        spec = build_service_package_spec(repomap_home)
+
+        user_home = self.tmpdir / "coord_user"
+        user_home.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+        adapters: list[NativeServiceAdapter] = [
+            SystemdUserAdapter(user_home=user_home, uid=os.getuid()),
+            LaunchdUserAdapter(user_home=user_home, uid=os.getuid()),
+        ]
+
+        for adapter in adapters:
+            with self.subTest(adapter=adapter.platform_name):
+                inactive_code = 3 if adapter.platform_name == "linux" else 113
+                responses = {adapter.active_probe_argv(): [inactive_code, inactive_code, 0, 0, 0]}
+                enabled_probe = adapter.enabled_probe_argv()
+                if enabled_probe is not None:
+                    responses[enabled_probe] = [1, 1, 0, 0, 0]
+                runner = RecordingRunner(responses)
+                health_checks: list[bool] = []
+
+                def probe(_s):
+                    health_checks.append(True)
+                    return True
+
+                ops = CoordinatorServiceOperations(
+                    spec, adapter, runner=runner, health_probe=probe
+                )
+
+                res_install = ops.run("install")
+                assert isinstance(res_install, ServiceActionResult)
+                self.assertEqual(res_install.action, "install")
+                self.assertTrue(res_install.installed)
+                self.assertFalse(res_install.active)
+                self.assertTrue(adapter.target_path.is_file())
+                self.assertEqual(adapter.target_path.stat().st_mode & 0o777, 0o600)
+                self.assertTrue(adapter.recognizes(adapter.target_path.read_bytes()))
+
+                res_val = ops.run("validate")
+                assert isinstance(res_val, ServiceActionResult)
+                self.assertEqual(res_val.action, "validate")
+                self.assertTrue(res_val.installed)
+
+                res_status = ops.run("status")
+                assert isinstance(res_status, ServiceActionResult)
+                self.assertTrue(res_status.installed)
+                self.assertFalse(res_status.active)
+                self.assertFalse(res_status.ready)
+
+                res_start = ops.run("start")
+                assert isinstance(res_start, ServiceActionResult)
+                self.assertEqual(res_start.action, "start")
+                self.assertTrue(res_start.active)
+
+                res_status_running = ops.run("status")
+                assert isinstance(res_status_running, ServiceActionResult)
+                self.assertTrue(res_status_running.active)
+                self.assertTrue(res_status_running.ready)
+                self.assertTrue(len(health_checks) > 0)
+
+                home_v2 = self.tmpdir / f"coord_home_v2_{adapter.platform_name}"
+                home_v2.mkdir(mode=0o700, parents=True, exist_ok=True)
+                spec_v2 = build_service_package_spec(home_v2)
+                ops_v2 = CoordinatorServiceOperations(
+                    spec_v2, adapter, runner=runner, health_probe=probe
+                )
+                res_upg = ops_v2.run("upgrade")
+                assert isinstance(res_upg, ServiceActionResult)
+                self.assertEqual(res_upg.action, "upgrade")
+                self.assertTrue(res_upg.installed)
+                self.assertTrue(res_upg.changed)
+                adapter.validate(adapter.target_path.read_bytes(), spec_v2)
+
+                res_un = ops_v2.run("uninstall")
+                assert isinstance(res_un, ServiceActionResult)
+                self.assertEqual(res_un.action, "uninstall")
+                self.assertFalse(res_un.installed)
+                self.assertFalse(res_un.active)
+                self.assertFalse(adapter.target_path.exists())
+                for command in (*adapter.start_commands(), *adapter.stop_commands(), *adapter.reload_commands()):
+                    self.assertIn(command, runner.calls)
 
 
 if __name__ == "__main__":

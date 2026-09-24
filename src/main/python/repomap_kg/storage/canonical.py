@@ -46,6 +46,7 @@ def query_canonical_node_records(
     graph_key_version: int = 1,
     limit: int | None = None,
     offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> tuple[CanonicalNodeRecord, ...]:
     payload = execute_json_readback(
@@ -57,6 +58,7 @@ def query_canonical_node_records(
             graph_key_version=graph_key_version,
             limit=limit,
             offset=offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
@@ -76,6 +78,7 @@ def query_canonical_edge_records(
     graph_key_version: int = 1,
     limit: int | None = None,
     offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> tuple[CanonicalEdgeRecord, ...]:
     payload = execute_json_readback(
@@ -87,6 +90,7 @@ def query_canonical_edge_records(
             graph_key_version=graph_key_version,
             limit=limit,
             offset=offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
@@ -108,6 +112,7 @@ def query_canonical_neighborhood(
     node_offset: int = 0,
     edge_limit: int | None = None,
     edge_offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> CanonicalNeighborhoodRecord:
     if depth != 1:
@@ -122,6 +127,7 @@ def query_canonical_neighborhood(
             node_offset=node_offset,
             edge_limit=edge_limit,
             edge_offset=edge_offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
@@ -142,6 +148,7 @@ def query_canonical_edge_explanation(
     graph_key_version: int = 1,
     evidence_limit: int | None = None,
     evidence_offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> CanonicalEdgeExplanationRecord:
     payload = execute_json_readback(
@@ -154,6 +161,7 @@ def query_canonical_edge_explanation(
             graph_key_version=graph_key_version,
             evidence_limit=evidence_limit,
             evidence_offset=evidence_offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
@@ -167,11 +175,14 @@ def query_canonical_storage_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> CanonicalStorageSummaryRecord:
     return canonical_storage_summary_from_payload(
         execute_json_readback(
-            build_canonical_storage_summary_query_sql(root_path),
+            build_canonical_storage_summary_query_sql(
+                root_path, repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="canonical storage summary",

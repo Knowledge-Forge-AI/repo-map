@@ -157,3 +157,23 @@ An unexpected exception outside the typed pre-record guarantee remains
 debugging evidence and are not rendered by the public CLI projection. Normal
 confirmation, LIVE, UNKNOWN, and pin refusals remain normal operator results,
 not preflight exception categories.
+
+## Exact dead maintenance-owner recovery
+
+`tools/test_hygiene_maintenance.py recover-maintenance-owner` is a separate,
+cooperative recovery entry point (ADR 0069). It requires an explicitly configured
+absolute `REPOMAP_TEST_SCRATCH_ROOT`, `--record-id` equal to the existing
+maintenance record identity, and `--confirm` equal to:
+
+```text
+RECOVER EXACT PROVABLY DEAD MAINTENANCE OWNER
+```
+
+A real invocation requires current operator authorization. The command checks
+private ownership, exact schema and file identity, expired lease, PID and process
+start evidence. Live or unknown owners are refused. A matching dead recovery
+owner's admission barrier may be retired with it; foreign barriers are refused.
+Private intent and completion/interruption evidence live beneath the existing
+maintenance root. The command does not reclaim runs, reconstruct the index, or
+acquire the dead maintenance lease first. Normal test startup never invokes it.
+A refused or interrupted attempt is not authorization to retry or broaden scope.

@@ -216,6 +216,40 @@ def test_diagnostic_success_still_requires_measured_floors() -> None:
     assert not execution_succeeded(report, declarations=DECLARATIONS)
 
 
+@pytest.mark.parametrize("percent", [100.0, 0.0, 50.0, True, "100", float("nan"), float("inf")])
+def test_empty_file_percentage_agrees_with_producer(percent: Any) -> None:
+    report = _report()
+    summary = report["legs"]["M"]["measurement"]["summary"]
+    summary["files"].append({"path": "src/empty.py", "executable_lines": 0,
+        "covered_lines": 0, "line_percent": percent, "total_branches": 0,
+        "covered_branches": 0, "branch_percent": percent})
+    if percent == 100.0 and not isinstance(percent, bool):
+        validate_report(report, declarations=DECLARATIONS)
+        assert execution_succeeded(report, declarations=DECLARATIONS)
+    else:
+        with pytest.raises(ValueError, match="percentage|finite"):
+            validate_report(report, declarations=DECLARATIONS)
+
+
+@pytest.mark.parametrize("percent", [0.0, 100.0])
+def test_empty_aggregate_never_qualifies(percent: float) -> None:
+    report = _report()
+    summary = report["legs"]["M"]["measurement"]["summary"]
+    summary.update(total_lines=0, covered_lines=0, total_branches=0,
+                   covered_branches=0, line_percent=percent, branch_percent=percent, files=[])
+    with pytest.raises(ValueError, match="non-empty measured population"):
+        validate_report(report, declarations=DECLARATIONS)
+    assert not execution_succeeded(report, declarations=DECLARATIONS)
+    assert not qualifies(report, declarations=DECLARATIONS)
+
+
+def test_eighty_to_eighty_five_is_runner_success() -> None:
+    report = _report()
+    report["legs"]["M"]["measurement"]["summary"] = _summary(82.0, 81.0)
+    assert execution_succeeded(report, declarations=DECLARATIONS)
+    assert qualifies(report, declarations=DECLARATIONS)
+
+
 def test_summary_files_are_closed_and_safe() -> None:
     report = _report()
     report["legs"]["M"]["measurement"]["summary"]["files"][0]["path"] = "../escape.py"
@@ -293,13 +327,16 @@ def test_scoped_no_coverage_can_report_behavior_success() -> None:
     assert not qualifies(report, declarations=DECLARATIONS)
 
 
-def test_manager_identity_is_external_to_payload(tmp_path: Path) -> None:
+@pytest.mark.parametrize("identity", ["expected_commit", "expected_source_sha256", "expected_invocation_id"])
+def test_manager_identity_is_external_to_payload(tmp_path: Path, identity: str) -> None:
     report = _report()
     path = tmp_path / "report.json"
     persist_report(path, report)
     assert validate_manager_report(path, expected_commit=COMMIT, expected_source_sha256=SOURCE, expected_invocation_id=INVOCATION, declarations=DECLARATIONS) == report
+    expected = dict(expected_commit=COMMIT, expected_source_sha256=SOURCE, expected_invocation_id=INVOCATION)
+    expected[identity] = "f" * len(expected[identity])
     with pytest.raises(ValueError, match="identity"):
-        validate_manager_report(path, expected_commit="f" * 40, expected_source_sha256=SOURCE, expected_invocation_id=INVOCATION, declarations=DECLARATIONS)
+        validate_manager_report(path, **expected, declarations=DECLARATIONS)
 
 
 def test_persist_keeps_incomplete_observation_without_accepting_it(tmp_path: Path) -> None:
@@ -330,3 +367,32 @@ def test_missing_or_duplicate_records_are_rejected() -> None:
     report["legs"]["M"]["records"].append(copy.deepcopy(report["legs"]["M"]["records"][0]))
     with pytest.raises(ValueError, match="records"):
         validate_report(report, declarations=DECLARATIONS)
+
+
+def test_intentional_victim_diagnostic_snapshot_auditable_in_coverage_report() -> None:
+    from test_report_coverage import coverage_diagnostics
+    from runner_coverage_execution import ShardDiagnosticSnapshot
+
+    class DummySession:
+        diagnostic_snapshots = (
+            ShardDiagnosticSnapshot(
+                session_id="dummy-session",
+                shard_name="intentional_victim.pid1234",
+                file_type="intentional_victim",
+                size_bytes=0,
+                sha256=None,
+                reader_status="intentional_victim_receipt_verified",
+                stage="pre_combine",
+                termination_outcome="intentional_victim_terminated",
+                launch_role="intentional-victim",
+                test_owner="e0d161f049355f99326012d6730a079fc946ea779313dddcc55c4d7e93a29fa6",
+            ),
+        )
+
+    diagnostics = coverage_diagnostics(DummySession())
+    assert len(diagnostics) == 1
+    d = diagnostics[0]
+    assert d["file_type"] == "intentional_victim"
+    assert d["reader_status"] == "intentional_victim_receipt_verified"
+    assert d["termination_outcome"] == "intentional_victim_terminated"
+    assert d["launch_role"] == "intentional-victim"

@@ -95,7 +95,7 @@ FROZEN_SUCCESSOR_SOURCE_DIGESTS = (
     ),
     SourceDigest(
         "tools/scale28_backend_observer_session_cleanup.py",
-        "4de681f77b88342ce6be1cb2ec4eb144ba80dd74075881f1e022e42f70be3464",
+        "eb6e3d79bec896245a606d39e6e3346281b6271d7e966433c14f656a34b65fc6",
     ),
     SourceDigest(
         "tools/scale28_observer_deadlines.py",

@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+import os
 from pathlib import Path
 import sys
 import threading
+import time
 
 from repomap_kg.artifacts.references import ArtifactReference
 from repomap_kg.coordinator._portable_capability import (
@@ -14,6 +15,7 @@ from repomap_kg.coordinator._portable_capability import (
     load_portable_capability,
 )
 from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
+from repomap_kg.coordinator._protocol_validation import _utc_now as _utc_now
 from repomap_kg.coordinator._portable_semantic_adapter import (
     FailureReceiptWrite,
     PortableExecutionError,
@@ -22,10 +24,10 @@ from repomap_kg.coordinator._portable_semantic_adapter import (
 )
 from repomap_kg.coordinator._protocol_core import (
     MAX_JSONL_LINE_BYTES,
+    encode_jsonl,
     ProtocolError,
     ProtocolSession,
     decode_jsonl,
-    encode_jsonl,
 )
 
 
@@ -36,6 +38,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--attempt", required=True, type=int)
     args = parser.parse_args(argv)
     try:
+        # Raw nonblocking pipes have no Python buffered locks to strand at exit.
+        os.set_blocking(sys.stdin.fileno(), False)
+        os.set_blocking(sys.stdout.fileno(), False)
         capability = load_portable_capability(Path(args.capability))
         if capability.job_id != args.job_id or capability.attempt != args.attempt:
             raise ValueError("invalid portable capability")
@@ -58,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         session.accept_worker(hello)
         _write(hello)
         start = session.accept_coordinator(
-            decode_jsonl(sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1))
+            decode_jsonl(_read_frame(threading.Event()))
         )
         started_at = _utc_now()
         extension = start.get("portable_snapshot")
@@ -106,6 +111,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         stop = threading.Event()
         cancel_event = threading.Event()
+        lifecycle_failed = threading.Event()
 
         def emit(message: dict[str, object]) -> None:
             with lock:
@@ -129,13 +135,11 @@ def main(argv: list[str] | None = None) -> int:
 
         heartbeat = threading.Thread(
             target=_heartbeat_loop,
-            args=(session, identity, lock, stop),
-            daemon=True,
+            args=(session, identity, lock, stop, lifecycle_failed),
         )
         cancellation_reader = threading.Thread(
             target=_read_cancellation,
-            args=(session, identity, lock, stop, cancel_event),
-            daemon=True,
+            args=(session, identity, lock, stop, cancel_event, lifecycle_failed),
         )
         heartbeat.start()
         cancellation_reader.start()
@@ -145,76 +149,45 @@ def main(argv: list[str] | None = None) -> int:
                 emit_progress=progress,
                 cancel_event=cancel_event,
             )
-            if cancel_event.is_set():
-                terminal = _cancellation_terminal(
-                    identity, capability, started_at
-                )
-            else:
-                counts = result.bundle.family_counts
-                terminal = {
-                    "schema_version": 1,
-                    "message_type": "result",
-                    **identity,
-                    "job_kind": "refresh_graph",
-                    "graph_id": capability.graph_id,
-                    "status": "succeeded",
-                    "started_at": started_at,
-                    "finished_at": _utc_now(),
-                    "phase": "complete",
-                    "files": result.manifest.total_files,
-                    "observations": counts["raw_observations"],
-                    "canonical_nodes": counts["canonical_nodes"],
-                    "canonical_edges": counts["canonical_edges"],
-                    "warnings": [],
-                    "diagnostics": [],
-                    "publication_state": "not_started",
-                    "latest_run_identity": None,
-                    "source_generation": capability.source_generation,
-                    "config_generation": capability.config_generation,
-                    "extractor_generation": capability.extractor_generation,
-                    "canonicalizer_generation": capability.canonicalizer_generation,
-                    "retryable": False,
-                    "error_category": None,
-                    "portable_snapshot": {
-                        "contract_version": "1.0",
-                        "outcome": "completed",
-                        "receipt": result.receipt_reference.to_mapping(),
-                        "receipt_status": "stored",
-                        "receipt_diagnostic": None,
-                        "bundle": result.bundle_reference.to_mapping(),
-                    },
-                }
+            counts = result.bundle.family_counts
+            terminal = _terminal_payload(
+                identity, capability, started_at, "succeeded", "completed", None,
+                "result", result.receipt_reference,
+            )
+            terminal.update(files=result.manifest.total_files, observations=counts["raw_observations"],
+                            canonical_nodes=counts["canonical_nodes"], canonical_edges=counts["canonical_edges"])
+            extension = terminal["portable_snapshot"]
+            assert isinstance(extension, dict)
+            extension["bundle"] = result.bundle_reference.to_mapping()
         except PortableExecutionError as error:
             if error.category == "cancelled" or cancel_event.is_set():
-                terminal = _cancellation_terminal(
-                    identity,
-                    capability,
-                    started_at,
-                )
+                terminal = _cancellation_terminal(identity, capability, started_at)
             else:
-                terminal = _failure_terminal(
-                    identity,
-                    capability,
-                    started_at,
-                    error.category,
-                )
+                _emit_failure_stderr(error)
+                terminal = _failure_terminal(identity, capability, started_at, error.category)
         except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError) as error:
+            _emit_failure_stderr(error)
             terminal = _failure_terminal(
-                identity,
-                capability,
-                started_at,
-                _execution_error_category(error),
+                identity, capability, started_at, _execution_error_category(error),
             )
         finally:
             stop.set()
             heartbeat.join(timeout=1.0)
+            cancellation_reader.join(timeout=1.0)
+        if heartbeat.is_alive() or cancellation_reader.is_alive() or lifecycle_failed.is_set():
+            raise RuntimeError("worker protocol threads did not settle")
+        # The reader may accept an already-written cancel during settlement.
+        # Decide only after it has drained pending input and acknowledged it.
+        if cancel_event.is_set() and terminal["status"] != "cancelled":
+            terminal = _cancellation_terminal(identity, capability, started_at)
         emit(terminal)
         return 0
-    except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError):
+    except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError) as error:
+        _emit_failure_stderr(error)
         return 2
 
 
-def _heartbeat_loop(session, identity, lock, stop) -> None:
+def _heartbeat_loop(session, identity, lock, stop, lifecycle_failed) -> None:
     while not stop.wait(0.25):
         message = {
             "schema_version": 1,
@@ -226,15 +199,16 @@ def _heartbeat_loop(session, identity, lock, stop) -> None:
             try:
                 session.accept_worker(message)
                 _write(message)
-            except ProtocolError:
+            except (ProtocolError, OSError, RuntimeError):
+                lifecycle_failed.set()
                 return
 
 
-def _read_cancellation(session, identity, lock, stop, cancel_event) -> None:
-    frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
-    if stop.is_set() or not frame:
-        return
+def _read_cancellation(session, identity, lock, stop, cancel_event, lifecycle_failed) -> None:
     try:
+        frame = _read_frame(stop)
+        if not frame:
+            return
         with lock:
             session.accept_coordinator(decode_jsonl(frame))
             cancel_event.set()
@@ -247,27 +221,56 @@ def _read_cancellation(session, identity, lock, stop, cancel_event) -> None:
             session.accept_worker(acknowledgement)
             _write(acknowledgement)
     except ProtocolError:
+        lifecycle_failed.set()
+        cancel_event.set()
+    except (OSError, RuntimeError):
+        lifecycle_failed.set()
         cancel_event.set()
 
 
-def _cancellation_terminal(
+def _read_frame(stop: threading.Event) -> bytes:
+    frame = bytearray()
+    while True:
+        try:
+            # Do not prefetch cancellation bytes while reading job_start.
+            byte = os.read(sys.stdin.fileno(), 1)
+        except BlockingIOError:
+            if stop.is_set():
+                if frame:
+                    raise ProtocolError("invalid_jsonl")
+                return b""
+            stop.wait(0.01)
+            continue
+        if not byte:
+            return bytes(frame)
+        frame.extend(byte)
+        if byte == b"\n" or len(frame) > MAX_JSONL_LINE_BYTES:
+            return bytes(frame)
+
+
+def _terminal_payload(
     identity: dict[str, object],
     capability: PortableExecutionCapability,
     started_at: str,
+    status: str,
+    outcome: str,
+    error_category: str | None,
+    message_type: str,
     receipt_ref: ArtifactReference | FailureReceiptWrite | None = None,
+    cancellation_requested: bool = False,
 ) -> dict[str, object]:
     if receipt_ref is None:
         receipt_ref = create_failure_receipt(
-            capability, "cancelled", cancellation_requested=True
+            capability, outcome, cancellation_requested=cancellation_requested
         )
     receipt_write = _receipt_write(receipt_ref)
     return {
         "schema_version": 1,
-        "message_type": "result",
+        "message_type": message_type,
         **identity,
         "job_kind": "refresh_graph",
         "graph_id": capability.graph_id,
-        "status": "cancelled",
+        "status": status,
         "started_at": started_at,
         "finished_at": _utc_now(),
         "phase": "complete",
@@ -284,10 +287,10 @@ def _cancellation_terminal(
         "extractor_generation": capability.extractor_generation,
         "canonicalizer_generation": capability.canonicalizer_generation,
         "retryable": False,
-        "error_category": None,
+        "error_category": error_category,
         "portable_snapshot": {
             "contract_version": "1.0",
-            "outcome": "cancelled",
+            "outcome": outcome,
             "receipt": (
                 receipt_write.reference.to_mapping()
                 if receipt_write.reference is not None
@@ -298,6 +301,17 @@ def _cancellation_terminal(
             "bundle": None,
         },
     }
+
+
+def _cancellation_terminal(
+    identity: dict[str, object],
+    capability: PortableExecutionCapability,
+    started_at: str,
+    receipt_ref: ArtifactReference | FailureReceiptWrite | None = None,
+) -> dict[str, object]:
+    return _terminal_payload(
+        identity, capability, started_at, "cancelled", "cancelled", None, "result", receipt_ref, True
+    )
 
 
 def _failure_terminal(
@@ -307,53 +321,12 @@ def _failure_terminal(
     category: str,
     receipt_ref: ArtifactReference | FailureReceiptWrite | None = None,
 ) -> dict[str, object]:
-    if receipt_ref is None:
-        receipt_ref = create_failure_receipt(
-            capability, category, cancellation_requested=False
-        )
-    receipt_write = _receipt_write(receipt_ref)
-    return {
-        "schema_version": 1,
-        "message_type": "error",
-        **identity,
-        "job_kind": "refresh_graph",
-        "graph_id": capability.graph_id,
-        "status": "failed",
-        "started_at": started_at,
-        "finished_at": _utc_now(),
-        "phase": "complete",
-        "files": 0,
-        "observations": 0,
-        "canonical_nodes": 0,
-        "canonical_edges": 0,
-        "warnings": [],
-        "diagnostics": [],
-        "publication_state": "not_started",
-        "latest_run_identity": None,
-        "source_generation": capability.source_generation,
-        "config_generation": capability.config_generation,
-        "extractor_generation": capability.extractor_generation,
-        "canonicalizer_generation": capability.canonicalizer_generation,
-        "retryable": False,
-        "error_category": category,
-        "portable_snapshot": {
-            "contract_version": "1.0",
-            "outcome": category,
-            "receipt": (
-                receipt_write.reference.to_mapping()
-                if receipt_write.reference is not None
-                else None
-            ),
-            "receipt_status": receipt_write.status,
-            "receipt_diagnostic": receipt_write.diagnostic,
-            "bundle": None,
-        },
-    }
+    return _terminal_payload(
+        identity, capability, started_at, "failed", category, category, "error", receipt_ref, False
+    )
 
 
-def _receipt_write(
-    value: ArtifactReference | FailureReceiptWrite,
-) -> FailureReceiptWrite:
+def _receipt_write(value: ArtifactReference | FailureReceiptWrite) -> FailureReceiptWrite:
     if isinstance(value, ArtifactReference):
         return FailureReceiptWrite(value, "stored", None)
     return value
@@ -366,20 +339,61 @@ def _execution_error_category(error: BaseException) -> str:
         return "malformed_protocol"
     if isinstance(error, (KeyError, TypeError, ValueError)):
         return "contract_validation"
-    if isinstance(error, OSError):
+    return "source_capture" if isinstance(error, OSError) else "semantic_workload"
+
+
+def _classify_worker_cause(error: BaseException) -> str:
+    curr: BaseException | None = error
+    depth, seen = 0, set()
+    while curr is not None and depth < 16 and id(curr) not in seen:
+        seen.add(id(curr))
+        depth += 1
+        tname, msg = type(curr).__name__.lower(), str(curr).lower()
+        if "gohelperunavailable" in tname or "helper is unavailable" in msg:
+            return "helper_unavailable"
+        if "goprotocolerror" in tname or "helper protocol" in msg:
+            return "helper_protocol_violation"
+        if "runtime authority denied" in msg or "exec authority denied" in msg:
+            return "helper_launch_denied"
+        if "filesystem authority denied" in msg or (
+            isinstance(curr, PermissionError) and not any(k in msg for k in ("launch", "exec", "runtime"))
+        ):
+            return "filesystem_capture_denied"
+        if "source mutation" in msg or "source stability" in msg or "file changed" in msg:
+            return "source_mutation_failure"
+        if isinstance(curr, PermissionError) or "authority denied" in msg:
+            return "helper_launch_denied"
+        curr = curr.__cause__ or curr.__context__
+    allowed_sub = {"source_unavailable", "source_corrupt", "source_timeout", "source_mutation"}
+    for cand in (error, getattr(error, "__cause__", None)):
+        sub = getattr(cand, "category", None)
+        if sub in allowed_sub:
+            return f"source_capture_{sub}"
+    if isinstance(error, (PortableExecutionError, OSError)):
         return "source_capture"
-    return "semantic_workload"
+    return _execution_error_category(error)
+
+
+def _emit_failure_stderr(error: BaseException) -> None:
+    cause = _classify_worker_cause(error)
+    sys.stderr.write(f"refresh-failure:portable-worker:{cause}\n")
+    sys.stderr.flush()
 
 
 def _write(message: dict[str, object]) -> None:
-    sys.stdout.buffer.write(encode_jsonl(message))
-    sys.stdout.buffer.flush()
-
-
-def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace(
-        "+00:00", "Z"
-    )
+    remaining = memoryview(encode_jsonl(message))
+    deadline = time.monotonic() + 0.5
+    while remaining:
+        if time.monotonic() >= deadline:
+            raise RuntimeError("worker protocol output did not settle")
+        try:
+            written = os.write(sys.stdout.fileno(), remaining)
+        except BlockingIOError:
+            time.sleep(0.01)
+            continue
+        if written <= 0:
+            raise RuntimeError("worker protocol output closed")
+        remaining = remaining[written:]
 
 
 if __name__ == "__main__":  # pragma: no cover - subprocess entrypoint

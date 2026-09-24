@@ -6,7 +6,6 @@ import io
 import json
 from pathlib import Path
 import tempfile
-import types
 import unittest
 from unittest.mock import patch
 
@@ -70,6 +69,14 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
         import shutil
         shutil.rmtree(self.tmp, ignore_errors=True)
 
+    def _descriptor_stream(self, data):
+        # The worker consumes raw nonblocking file descriptors, not .buffer.
+        stream = tempfile.TemporaryFile(mode="w+b")
+        self.addCleanup(stream.close)
+        stream.write(data)
+        stream.seek(0)
+        return stream
+
     def test_cli_argument_parsing_requires_mandatory_flags(self):
         with self.assertRaises(SystemExit):
             pw.main([])
@@ -101,9 +108,9 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
                 "config_generation": self.cap.config_generation,
             }
             stdin_data = json.dumps(job_start_bad_ext).encode("utf-8") + b"\n"
-            mock_stdin = types.SimpleNamespace(buffer=io.BytesIO(stdin_data))
+            mock_stdin = self._descriptor_stream(stdin_data)
 
-            with patch.object(pw.sys, "stdin", mock_stdin), patch.object(pw, "_write"):
+            with patch.object(pw.sys, "stdin", mock_stdin), patch.object(pw.sys, "stdout", self._descriptor_stream(b"")), patch.object(pw, "_write"):
                 code = pw.main(["--capability", "/placeholder/cap", "--job-id", "job-123", "--attempt", "1"])
                 self.assertEqual(code, 2)
 
@@ -135,12 +142,12 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
             },
         }
         stdin_data = json.dumps(job_start).encode("utf-8") + b"\n"
-        mock_stdin = types.SimpleNamespace(buffer=io.BytesIO(stdin_data))
+        mock_stdin = self._descriptor_stream(stdin_data)
 
         with patch.object(pw, "load_portable_capability", return_value=self.cap), \
              patch.object(pw, "install_portable_authority_guard"), \
              patch.object(pw, "create_failure_receipt", return_value=self.receipt_write), \
-             patch.object(pw.sys, "stdin", mock_stdin), \
+             patch.object(pw.sys, "stdin", mock_stdin), patch.object(pw.sys, "stdout", self._descriptor_stream(b"")), \
              patch.object(pw.ArtifactReference, "from_mapping", side_effect=mock_from_mapping), \
              patch.object(pw, "_write") as mock_write:
             code = pw.main(["--capability", "/placeholder/cap", "--job-id", "job-123", "--attempt", "1"])
@@ -179,8 +186,8 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
                 },
             }
             stdin_data = json.dumps(job_start_diff_manifest).encode("utf-8") + b"\n"
-            mock_stdin = types.SimpleNamespace(buffer=io.BytesIO(stdin_data))
-            with patch.object(pw.sys, "stdin", mock_stdin), patch.object(pw, "_write") as mock_write:
+            mock_stdin = self._descriptor_stream(stdin_data)
+            with patch.object(pw.sys, "stdin", mock_stdin), patch.object(pw.sys, "stdout", self._descriptor_stream(b"")), patch.object(pw, "_write") as mock_write:
                 code = pw.main(["--capability", "/placeholder/cap", "--job-id", "job-123", "--attempt", "1"])
                 self.assertEqual(code, 0)
                 terminals = [call.args[0] for call in mock_write.call_args_list if call.args[0].get("message_type") == "error"]
@@ -204,8 +211,8 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
                 },
             }
             stdin_data2 = json.dumps(job_start_diff_graph).encode("utf-8") + b"\n"
-            mock_stdin2 = types.SimpleNamespace(buffer=io.BytesIO(stdin_data2))
-            with patch.object(pw.sys, "stdin", mock_stdin2), patch.object(pw, "_write") as mock_write2:
+            mock_stdin2 = self._descriptor_stream(stdin_data2)
+            with patch.object(pw.sys, "stdin", mock_stdin2), patch.object(pw.sys, "stdout", self._descriptor_stream(b"")), patch.object(pw, "_write") as mock_write2:
                 code2 = pw.main(["--capability", "/placeholder/cap", "--job-id", "job-123", "--attempt", "1"])
                 self.assertEqual(code2, 0)
                 terminals2 = [call.args[0] for call in mock_write2.call_args_list if call.args[0].get("message_type") == "error"]
@@ -244,6 +251,42 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
         self.assertEqual(pw._execution_error_category(ValueError("val")), "contract_validation")
         self.assertEqual(pw._execution_error_category(FileNotFoundError("no file")), "source_capture")
         self.assertEqual(pw._execution_error_category(RuntimeError("semantic")), "semantic_workload")
+
+    def test_classify_worker_cause_and_emit_stderr(self):
+        from repomap_kg.coordinator._portable_semantic_adapter import PortableExecutionError
+        from repomap_kg.extractors.languages.go_helper import GoHelperUnavailableError
+        from repomap_kg.extractors.languages.go_protocol import GoProtocolError
+        from repomap_kg.graph.multi_source_capture import MultiSourceCaptureError
+
+        err1 = PortableExecutionError("source_capture")
+        err1.__cause__ = MultiSourceCaptureError("helper missing")
+        err1.__cause__.__cause__ = GoHelperUnavailableError("Go parser helper is unavailable")
+        self.assertEqual(pw._classify_worker_cause(err1), "helper_unavailable")
+
+        err2 = PortableExecutionError("source_capture")
+        err2.__cause__ = GoProtocolError("helper protocol error")
+        self.assertEqual(pw._classify_worker_cause(err2), "helper_protocol_violation")
+
+        err3 = PortableExecutionError("source_capture")
+        err3.__cause__ = PermissionError("portable worker runtime authority denied")
+        self.assertEqual(pw._classify_worker_cause(err3), "helper_launch_denied")
+
+        err_fs = PortableExecutionError("source_capture")
+        err_fs.__cause__ = PermissionError("portable worker filesystem authority denied")
+        self.assertEqual(pw._classify_worker_cause(err_fs), "filesystem_capture_denied")
+
+        err_mut = PortableExecutionError("source_capture")
+        err_mut.__cause__ = OSError("file changed during capture")
+        self.assertEqual(pw._classify_worker_cause(err_mut), "source_mutation_failure")
+
+        err4 = PortableExecutionError("source_unavailable")
+        err4.__cause__ = MultiSourceCaptureError("source missing", category="source_unavailable")
+        self.assertEqual(pw._classify_worker_cause(err4), "source_capture_source_unavailable")
+
+        stderr_buf = io.StringIO()
+        with patch.object(pw.sys, "stderr", stderr_buf):
+            pw._emit_failure_stderr(err3)
+        self.assertEqual(stderr_buf.getvalue(), "refresh-failure:portable-worker:helper_launch_denied\n")
 
 
 if __name__ == "__main__":

@@ -272,6 +272,7 @@ def query_mcp_search(
     offset: int = 0,
     include_raw: bool = False,
     psql_command: str | None = None,
+    repository_identity: str | None = None,
 ) -> dict[str, Any]:
     return _ops_search_impl.query_mcp_search(
         config,
@@ -287,6 +288,7 @@ def query_mcp_search(
         psql_command=psql_command,
         execute_readback_fn=execute_ops_json_readback,
         build_sql_fn=build_mcp_search_sql,
+        repository_identity=repository_identity,
     )
 
 

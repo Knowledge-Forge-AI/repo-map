@@ -99,11 +99,15 @@ def query_js_framework_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> JSFrameworkSummaryRecord:
     return js_framework_summary_from_storage_payload(
         execute_json_readback(
-            build_js_framework_summary_query_sql(root_path),
+            build_js_framework_summary_query_sql(
+                root_path,
+                repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="js framework summary",
@@ -116,11 +120,15 @@ def query_openapi_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> OpenAPISummaryRecord:
     return openapi_summary_from_storage_payload(
         execute_json_readback(
-            build_openapi_summary_query_sql(root_path),
+            build_openapi_summary_query_sql(
+                root_path,
+                repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="openapi summary",
@@ -133,11 +141,15 @@ def query_terraform_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> TerraformSummaryRecord:
     return terraform_summary_from_storage_payload(
         execute_json_readback(
-            build_terraform_summary_query_sql(root_path),
+            build_terraform_summary_query_sql(
+                root_path,
+                repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="terraform summary",
@@ -150,11 +162,15 @@ def query_python_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> PythonSummaryRecord:
     return python_summary_from_storage_payload(
         execute_json_readback(
-            build_python_summary_query_sql(root_path),
+            build_python_summary_query_sql(
+                root_path,
+                repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="python summary",
@@ -167,11 +183,15 @@ def query_nix_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
 ) -> NixSummaryRecord:
     return nix_summary_from_storage_payload(
         execute_json_readback(
-            build_nix_summary_query_sql(root_path),
+            build_nix_summary_query_sql(
+                root_path,
+                repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="nix summary",

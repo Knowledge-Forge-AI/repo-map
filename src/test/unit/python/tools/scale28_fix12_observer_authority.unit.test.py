@@ -164,7 +164,7 @@ def test_delayed_timer_wake_does_not_consume_request_dispatch_authority(
             return None
 
         def join(self, *, timeout: float) -> None:
-            assert timeout == 0.0
+            assert timeout == pytest.approx(0.300)
 
     monkeypatch.setattr(observer_session, "_monotonic", lambda: now[0])
     monkeypatch.setattr(observer_session, "Timer", DelayedTimer)
@@ -254,7 +254,7 @@ def test_request_terminal_deadline_starts_at_actual_dispatch(
             return None
 
         def join(self, *, timeout: float) -> None:
-            assert timeout == 0.0
+            assert timeout == pytest.approx(0.300)
 
     connection = SlowPublicationConnection()
     session = _active_session(connection)

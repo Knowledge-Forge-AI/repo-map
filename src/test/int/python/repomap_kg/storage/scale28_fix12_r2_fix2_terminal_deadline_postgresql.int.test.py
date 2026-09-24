@@ -17,15 +17,53 @@ import scale15_actual_path_readback as readback
 def test_terminal_read_succeeds_once_and_settles_the_exact_connection() -> None:
     require_postgres_binaries()
     with temporary_postgres() as postgres:
-        before = _backend_count(postgres)
+        params = readback._psycopg_connection_params_from_psql_args(postgres.psql_args)
+        with psycopg.connect(
+            host=params.get("host"),
+            port=params.get("port"),
+            user=params.get("user"),
+            dbname=params.get("dbname"),
+        ) as connection:
+            other_before = 0
+            settle_deadline = monotonic() + 2.0
+            last_count = None
+            while monotonic() < settle_deadline:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT count(*) FROM pg_stat_activity "
+                        "WHERE datname = current_database() AND pid <> pg_backend_pid();"
+                    )
+                    row = cursor.fetchone()
+                    count = int(row[0]) if row else 0
+                if last_count is not None and count == last_count:
+                    other_before = count
+                    break
+                last_count = count
+                sleep(0.01)
+            else:
+                other_before = last_count if last_count is not None else 0
 
-        started = monotonic()
-        summary = readback.read_terminal_backend_summary(postgres.psql_args)
-        elapsed = monotonic() - started
+            started = monotonic()
+            summary = readback.read_terminal_backend_summary(postgres.psql_args)
+            elapsed = monotonic() - started
 
-        assert summary == {"observer": 1, "unknown": before - 1}
-        assert elapsed <= 0.5
-        assert _backend_count(postgres) == before
+            assert summary == {"observer": 1, "unknown": other_before + 1}
+            assert elapsed <= 0.5
+
+            deadline = monotonic() + 3.0
+            settled = False
+            while monotonic() < deadline:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT count(*) FROM pg_stat_activity "
+                        "WHERE datname = current_database() AND pid <> pg_backend_pid();"
+                    )
+                    row = cursor.fetchone()
+                    if row and int(row[0]) == other_before:
+                        settled = True
+                        break
+                sleep(0.01)
+            assert settled
 
 
 def test_terminal_query_is_bounded_by_the_single_terminal_deadline(
@@ -69,7 +107,7 @@ def _backend_count(postgres) -> int:
     return int(
         postgres.psql_scalar(
             "SELECT count(*) FROM pg_stat_activity "
-            "WHERE datname = current_database();"
+            "WHERE datname = current_database() AND pid <> pg_backend_pid();"
         )
     )
 

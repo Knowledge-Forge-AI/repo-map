@@ -178,6 +178,54 @@ def test_extract_diagnostic_summary_fallback_redacts() -> None:
     assert "/private/tmp" not in summary or "secret" not in summary
 
 
+def test_extract_diagnostic_summary_prefers_stderr_refresh_failure_over_generic_diagnostic() -> None:
+    stderr = "refresh-failure:portable-authority-denied:permission denied on path /secret/file\n"
+    result = SimpleNamespace(
+        terminal={"diagnostics": ["refresh-failed"]},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary == "refresh-failure:portable-authority-denied:permission denied on path [path]"
+
+
+def test_extract_diagnostic_summary_preserves_generic_diagnostic_without_refresh_failure() -> None:
+    stderr = "some non-failure output\n"
+    result = SimpleNamespace(
+        terminal={"diagnostics": ["refresh-failed"]},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary == "refresh-failed"
+
+
+def test_extract_diagnostic_summary_preserves_specific_terminal_diagnostic() -> None:
+    stderr = "refresh-failure:worker-crash:something failed\n"
+    result = SimpleNamespace(
+        terminal={"diagnostics": ["schema-unavailable"]},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary == "schema-unavailable"
+
+
+def test_extract_diagnostic_summary_byte_safe_truncation_multibyte() -> None:
+    text = "a" * 254 + "€€"
+    stderr = f"refresh-failure:{text}\n"
+    result = SimpleNamespace(
+        terminal={},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary is not None
+    encoded = summary.encode("utf-8")
+    assert len(encoded) <= 256
+    assert encoded.decode("utf-8") == summary
+
+
 def test_extract_diagnostic_summary_from_protocol_error() -> None:
     result = SimpleNamespace(
         terminal={},

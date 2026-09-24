@@ -1,175 +1,204 @@
-"""Child process coverage bootstrap generation and lifecycle hooks."""
+"""Child process coverage bootstrap generation, capability records, and lifecycle hooks."""
 
 from __future__ import annotations
 
-from pathlib import Path
-
-
-BOOTSTRAP_TEMPLATE = r'''# Runner-owned bootstrap: no product authority hooks are replaced.
-import atexit
-import os
+from dataclasses import dataclass
 import hashlib
+import json
+import os
+from pathlib import Path
+from typing import Any, Mapping
 
-_manifest = os.environ.get('COVERAGE_CHILD_MANIFEST_DIR')
-_config = os.environ.get('COVERAGE_PROCESS_START')
-_token = os.environ.get('COVERAGE_CHILD_REGISTRATION_TOKEN', '')
-_invocation = os.environ.get('COVERAGE_SESSION_INVOCATION_ID', '')
-_suite = os.environ.get('COVERAGE_SESSION_SUITE', '')
-_revision = os.environ.get('COVERAGE_SESSION_REVISION', '')
-_pid = os.getpid()
-_collector = None
-_terminals = {}
-_bootstrap_error = ''
-_role = os.environ.get('COVERAGE_CHILD_LAUNCH_ROLE', 'inherited-python')
-if _role not in {'portable', 'conformance', 'conformance-abrupt', 'inherited-python'}:
-    _role = 'unknown'
-import sys
-_raw_argv = getattr(sys, 'orig_argv', None) or getattr(sys, 'argv', [])
-_is_tracker = False
-_launch_shape = 'unknown'
-for _i, _a in enumerate(_raw_argv):
-    if _a == '-c' and _i + 1 < len(_raw_argv):
-        _cmd = _raw_argv[_i + 1]
-        _prefix = 'from multiprocessing.resource_tracker import main;main('
-        if _i + 2 == len(_raw_argv) and _cmd.startswith(_prefix) and _cmd.endswith(')'):
-            _inner = _cmd[len(_prefix):-1].strip()
-            if _inner.isdigit():
-                _is_tracker = True
-        if _is_tracker:
-            _launch_shape = 'cpython:resource_tracker'
-        else:
-            _launch_shape = 'cpython:-c'
-        break
-    elif _a == '-m' and _i + 1 < len(_raw_argv):
-        _launch_shape = f"-m:{_raw_argv[_i + 1][:24]}"
-        break
-    elif _a.endswith('.py'):
-        _launch_shape = f"script:{os.path.basename(_a)[:24]}"
-        break
-if _launch_shape == 'unknown' and getattr(sys, 'argv', []):
-    _a0 = sys.argv[0]
-    if _a0 == '-c':
-        _launch_shape = 'cpython:-c'
-    elif _a0 == '-m':
-        _launch_shape = '-m'
-    elif _a0:
-        _launch_shape = f"script:{os.path.basename(_a0)[:24]}"
-if _role == 'inherited-python' and _is_tracker:
-    _role = 'auxiliary-runtime'
-if _is_tracker:
-    _pause_fifo = os.environ.get('COVERAGE_CHILD_BOOTSTRAP_PAUSE_FIFO')
-    if _pause_fifo and os.path.exists(_pause_fifo):
+from runner_coverage_template import (
+    BOOTSTRAP_TEMPLATE as BOOTSTRAP_TEMPLATE,
+    RUNNER_BOOTSTRAP_MARKER as RUNNER_BOOTSTRAP_MARKER,
+    generate_bootstrap_source as generate_bootstrap_source,
+    install_bootstrap_directory as install_bootstrap_directory,
+)
+
+try:
+    from test_sandbox_contract import INNER_TEST_SCRATCH_ROOT
+except ImportError:
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from test_sandbox_contract import INNER_TEST_SCRATCH_ROOT
+
+
+@dataclass(frozen=True)
+class BootstrapCapabilityRecord:
+    """Namespace-aware authorized bootstrap identity and visible mount aliases."""
+
+    identity: str
+    host_visible_path: Path
+    same_namespace_path: Path
+    container_mount_aliases: tuple[str, ...] = ()
+    additional_host_paths: tuple[Path, ...] = ()
+
+    def is_alias(self, path: Path | str) -> bool:
+        p_str = str(path).rstrip(os.sep)
+        aliases = (
+            str(self.host_visible_path).rstrip(os.sep),
+            str(self.same_namespace_path).rstrip(os.sep),
+            *(str(p).rstrip(os.sep) for p in self.additional_host_paths),
+            *(str(a).rstrip(os.sep) for a in self.container_mount_aliases),
+        )
+        if p_str in aliases:
+            return True
         try:
-            with open(_pause_fifo, 'r', encoding='utf-8') as _pf:
-                _pf.readline()
-        except Exception:
-            pass
-_ppid = os.getppid()
-_owner = os.environ.get('COVERAGE_CHILD_TEST_OWNER', '')
-if len(_owner) != 64 or any(c not in '0123456789abcdef' for c in _owner):
-    _owner = ''
-if not _owner and os.environ.get('PYTEST_CURRENT_TEST'):
-    _owner = hashlib.sha256(os.environ['PYTEST_CURRENT_TEST'].encode()).hexdigest()
-if _config:
-    try:
-        import coverage
-        if _token:
-            _collector = coverage.Coverage(config_file=_config,
-                data_file=os.environ['COVERAGE_FILE'], data_suffix=False)
-            _collector.set_option('run:parallel', False)
-            _collector.start()
-        else:
-            _collector = coverage.process_startup()
-        if _collector is None:
-            _collector = coverage.Coverage.current()
-        if _collector is not None and _token:
-            # Initialize only this collector's SQLite schema before the product
-            # installs its audit guard; keep its owned data handle/lifetime.
-            _collector.get_data()
-    except Exception as exc:
-        _bootstrap_error = type(exc).__name__
-        _collector = None
+            p_res = Path(path).resolve()
+            targets = (
+                self.host_visible_path.resolve(),
+                self.same_namespace_path.resolve(),
+                *(p.resolve() for p in self.additional_host_paths),
+            )
+            return p_res in targets
+        except OSError:
+            return False
 
-_identity = (f'pid={_pid}\ninvocation={_invocation}\nsuite={_suite}\n'
-             f'token={_token}\nrevision={_revision}\nrole={_role}\nowner={_owner}\n'
-             f'ppid={_ppid}\nlaunch_shape={_launch_shape}\n')
-if _manifest:
-    try:
-        for _key in ([str(_pid), _token] if _token else [str(_pid)]):
-            with open(os.path.join(_manifest, f'{_key}.start'), 'x', encoding='utf-8') as _start:
-                _start.write(_identity + f'cov_start={int(_collector is not None)}\n'
-                             + f'bootstrap_error={_bootstrap_error}\n')
-            # These exact invocation-owned receipts are opened before guard
-            # installation. Exit uses existing handles, never extra authority.
-            for _suffix in ('exit', 'shard'):
-                _terminals[(_key, _suffix)] = open(
-                    os.path.join(_manifest, f'{_key}.{_suffix}'), 'x', encoding='utf-8')
-        if _is_tracker:
-            _handshake_fifo = os.environ.get('COVERAGE_CHILD_HANDSHAKE_FIFO')
-            if _handshake_fifo and os.path.exists(_handshake_fifo):
-                try:
-                    with open(_handshake_fifo, 'w', encoding='utf-8') as _hf:
-                        _hf.write(f'{_pid}:{_role}\n')
-                        _hf.flush()
-                except Exception:
-                    pass
-            _release_fifo = os.environ.get('COVERAGE_CHILD_RELEASE_FIFO')
-            if _release_fifo and os.path.exists(_release_fifo):
-                try:
-                    with open(_release_fifo, 'r', encoding='utf-8') as _rf:
-                        _rf.readline()
-                except Exception:
-                    pass
-    except Exception:
-        for _handle in _terminals.values():
-            _handle.close()
-        _terminals = {}
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "identity": self.identity,
+            "host_visible_path": str(self.host_visible_path),
+            "same_namespace_path": str(self.same_namespace_path),
+            "container_mount_aliases": list(self.container_mount_aliases),
+            "additional_host_paths": [str(p) for p in self.additional_host_paths],
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> BootstrapCapabilityRecord:
+        return cls(
+            identity=str(data["identity"]),
+            host_visible_path=Path(data["host_visible_path"]),
+            same_namespace_path=Path(data["same_namespace_path"]),
+            container_mount_aliases=tuple(data.get("container_mount_aliases", ())),
+            additional_host_paths=tuple(Path(p) for p in data.get("additional_host_paths", ())),
+        )
+
+    def save(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(self.to_dict()), encoding="utf-8")
+
+    @classmethod
+    def load(cls, path: Path, *, expected_dir: Path | None = None) -> BootstrapCapabilityRecord:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rec = cls.from_dict(data)
+        expected_ident = hashlib.sha256(BOOTSTRAP_TEMPLATE.encode("utf-8")).hexdigest()
+        if rec.identity != expected_ident:
+            raise ValueError(f"bootstrap capability identity mismatch: {rec.identity}")
+        if expected_dir is not None:
+            exp = expected_dir.resolve()
+            for host_p in (rec.host_visible_path, rec.same_namespace_path, *rec.additional_host_paths):
+                if not host_p.resolve().is_relative_to(exp):
+                    raise ValueError(f"bootstrap capability path {host_p} escapes session {expected_dir}")
+        return rec
 
 
-def _finish(_collector=_collector, _terminals=_terminals, _identity=_identity):
-    shard = ''
-    error = ''
-    measurement = 'unavailable'
+def is_runner_bootstrap_path(
+    path: Path | str,
+    *,
+    capability: BootstrapCapabilityRecord | None = None,
+) -> bool:
+    """Return True if path matches runner bootstrap capability aliases or contains the marker."""
+    if capability is not None and capability.is_alias(path):
+        return True
     try:
-        if _collector is not None:
-            _collector.stop()
-            _collector.save()
-            data = _collector.get_data()
-            shard = data.data_filename()
-            measurement = ('selected_hits' if any(data.lines(f) for f in data.measured_files())
-                           else 'no_selected_hits')
-    except Exception as exc:
-        error = type(exc).__name__
-    for (_, suffix), handle in _terminals.items():
+        p = Path(path)
+        # Avoid probing inaccessible foreign paths that cannot exist locally
+        if not p.is_absolute() or p.exists():
+            sitecust = p / "sitecustomize.py" if p.is_dir() else (p if p.name == "sitecustomize.py" else None)
+            if sitecust and sitecust.is_file():
+                with open(sitecust, "r", encoding="utf-8") as f:
+                    return RUNNER_BOOTSTRAP_MARKER in f.readline()
+    except OSError:
+        pass
+    return False
+
+
+def derive_container_mount_aliases(
+    bootstrap_dir: Path,
+    scratch_root: str | Path | None = None,
+    container_scratch_root: str | Path | None = None,
+) -> tuple[str, ...]:
+    """Derive container mount aliases mapping host scratch to sandbox scratch."""
+    root = scratch_root or os.environ.get("REPOMAP_TEST_SCRATCH_ROOT")
+    if not root:
+        return ()
+    c_root = Path(container_scratch_root) if container_scratch_root else INNER_TEST_SCRATCH_ROOT
+    aliases: list[str] = []
+    for bp in (bootstrap_dir, bootstrap_dir.resolve()):
+        for sr in (Path(root), Path(root).resolve()):
+            try:
+                rel = bp.relative_to(sr)
+                cand = str(c_root / rel)
+                if cand not in aliases:
+                    aliases.append(cand)
+            except ValueError:
+                pass
+    return tuple(aliases)
+
+
+_active_capability: BootstrapCapabilityRecord | None = None
+
+
+def set_active_bootstrap_capability(cap: BootstrapCapabilityRecord | None) -> None:
+    global _active_capability
+    _active_capability = cap
+
+
+def get_active_bootstrap_capability() -> BootstrapCapabilityRecord | None:
+    return _active_capability
+
+
+def resolve_bootstrap_capability(
+    capability: BootstrapCapabilityRecord | None = None,
+    *,
+    env: Mapping[str, str] | None = None,
+) -> BootstrapCapabilityRecord | None:
+    if capability is not None:
+        return capability
+    active = get_active_bootstrap_capability()
+    if active is not None:
+        return active
+    environ = os.environ if env is None else env
+    manifest_dir = environ.get("COVERAGE_CHILD_MANIFEST_DIR")
+    cfg = environ.get("COVERAGE_PROCESS_START")
+    session_dir = Path(manifest_dir).parent if manifest_dir else (Path(cfg).parent if cfg else None)
+    if session_dir and (cap_path := session_dir / "bootstrap_capability.json").is_file():
         try:
-            handle.write((_identity + f'shard={shard}\nerror={error}\ncomplete=1\n'
-                          + f'measurement={measurement}\n')
-                         if suffix == 'exit' else shard)
-            handle.flush()
-        finally:
-            handle.close()
+            return BootstrapCapabilityRecord.load(cap_path, expected_dir=session_dir)
+        except (json.JSONDecodeError, KeyError) as exc:
+            raise ValueError(f"malformed bootstrap capability record in {cap_path}: {exc}") from exc
+    return None
 
 
-atexit.register(_finish)
-'''
-
-
-def generate_bootstrap_source() -> str:
-    """Return the source code for the child process sitecustomize bootstrap."""
-    return BOOTSTRAP_TEMPLATE
-
-
-def install_bootstrap_directory(bootstrap_dir: Path) -> Path:
-    """Install sitecustomize.py in the specified bootstrap directory."""
-    target_dir = Path(bootstrap_dir).resolve()
-    target_dir.mkdir(parents=True, exist_ok=True)
-    sitecustomize_path = target_dir / "sitecustomize.py"
-    sitecustomize_path.write_text(BOOTSTRAP_TEMPLATE, encoding="utf-8")
-    return sitecustomize_path
+def extend_pythonpath(
+    base_pythonpath: str | None,
+    *paths: str | Path,
+    capability: BootstrapCapabilityRecord | None = None,
+) -> str:
+    """Extend base PYTHONPATH with paths, deduplicating and scrubbing bootstrap aliases."""
+    result: list[str] = []
+    for p in paths:
+        p_str = str(p)
+        if p_str and p_str not in result:
+            result.append(p_str)
+    if base_pythonpath:
+        for raw in base_pythonpath.split(os.pathsep):
+            if raw and raw not in result and not is_runner_bootstrap_path(raw, capability=capability):
+                result.append(raw)
+    return os.pathsep.join(result)
 
 
 __all__ = (
     "BOOTSTRAP_TEMPLATE",
+    "BootstrapCapabilityRecord",
+    "RUNNER_BOOTSTRAP_MARKER",
+    "derive_container_mount_aliases",
+    "extend_pythonpath",
     "generate_bootstrap_source",
+    "get_active_bootstrap_capability",
     "install_bootstrap_directory",
+    "is_runner_bootstrap_path",
+    "resolve_bootstrap_capability",
+    "set_active_bootstrap_capability",
 )
