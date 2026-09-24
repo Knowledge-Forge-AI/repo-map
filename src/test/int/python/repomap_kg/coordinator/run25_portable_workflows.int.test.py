@@ -152,6 +152,15 @@ def test_workflow_capability_mismatch_and_missing_capability_refusals(
         )
 
 
+def _assert_valid_terminal_result(result: Any) -> None:
+    assert result.protocol_error is None
+    assert not getattr(result, "synthesized_terminal", False), (
+        f"Synthesized terminal received: {result.terminal}, returncode={result.returncode}, "
+        f"hello_to={result.hello_timed_out}, hb_to={result.heartbeat_timed_out}, "
+        f"proc_to={result.process_timed_out}, stderr={result.stderr}"
+    )
+
+
 def test_workflow_cooperative_cancellation_and_attempt_cleanup(
     tmp_path: Path,
 ) -> None:
@@ -178,7 +187,7 @@ def test_workflow_cooperative_cancellation_and_attempt_cleanup(
         cancel_event=cancel_event,
     )
 
-    assert result.protocol_error is None
+    _assert_valid_terminal_result(result)
     assert result.terminal["status"] == "cancelled"
     assert result.terminal["error_category"] is None
     assert result.terminal["job_kind"] == "refresh_graph"
@@ -213,6 +222,7 @@ def test_workflow_missing_manifest_refusal_and_failure_receipt(
         RUN25_MANDATORY_LIMITS,
     )
 
+    _assert_valid_terminal_result(result)
     assert result.terminal["status"] == "failed"
     assert result.terminal["error_category"] == "artifact_missing"
     assert result.process_group_cleaned is True
@@ -245,7 +255,7 @@ def test_workflow_end_to_end_portable_worker_execution_and_cleanup(
         RUN25_MANDATORY_LIMITS,
     )
 
-    assert result.protocol_error is None
+    _assert_valid_terminal_result(result)
     assert result.terminal["status"] == "succeeded"
     assert result.terminal["publication_state"] == "not_started"
     assert result.terminal["error_category"] is None

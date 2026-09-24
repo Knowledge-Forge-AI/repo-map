@@ -49,6 +49,7 @@ class SyntheticWorkerResult:
     synthesized_terminal: bool
     managed_process_launches: tuple[tuple[str, ...], ...] = ()
     cleanup_error: str | None = None
+    original_terminal: dict[str, object] | None = None
 
 
 def _run_protocol_worker(
@@ -128,14 +129,35 @@ def _run_protocol_worker(
 
     if stdout_state["hello"] and process.poll() is None:
         job_start = _job_start(identity, job_context)
-        _send_coordinator(process, session, lock, job_start)
+        cancel_sent = (cancel_event is not None and cancel_event.is_set()) or (
+            automatic_cancellation and time.monotonic() - started_at >= cancel_after
+        )
+        _send_coordinator(process, session, lock, job_start,
+                          *([_cancel(identity)] if cancel_sent else []))
         heartbeat_at = time.monotonic()
-        cancellation_at: float | None = None
+        cancellation_at: float | None = heartbeat_at if cancel_sent else None
+        terminal_at: float | None = None
         while process.poll() is None:
             now = time.monotonic()
             if stdout_state["error"] is not None:
                 reason = "protocol"
                 break
+            with lock:
+                terminal_received = session.terminal is not None
+            if terminal_received:
+                if terminal_at is None:
+                    terminal_at = now
+                    try:
+                        process.stdin.close()
+                    except BrokenPipeError:
+                        pass
+                # Natural exit uses the remaining overall process budget;
+                # termination grace applies only to escalation and settlement.
+                if now - started_at >= process_deadline:
+                    reason = "completion_timeout"
+                    break
+                time.sleep(0.005)
+                continue
             observed_heartbeat = stdout_state["heartbeat_at"]
             if isinstance(observed_heartbeat, float):
                 heartbeat_at = observed_heartbeat
@@ -143,8 +165,8 @@ def _run_protocol_worker(
                 cancel_event is not None and cancel_event.is_set()
             ) or (automatic_cancellation and now - started_at >= cancel_after)
             if cancellation_requested and not cancel_sent:
-                _send_coordinator(process, session, lock, _cancel(identity))
-                cancel_sent, cancellation_at = True, now
+                cancel_sent = _send_coordinator(process, session, lock, _cancel(identity))
+                cancellation_at = now if cancel_sent else None
             elif cancel_sent and cancellation_at is not None and now - cancellation_at >= cancel_grace:
                 reason = "cancelled"
                 break
@@ -186,7 +208,17 @@ def _run_protocol_worker(
     if protocol_error is not None:
         reason = "protocol"
     terminal_dict = session.terminal
-    synthesized = protocol_error is not None or terminal_dict is None
+    if reason is None and not process_group_cleaned:
+        reason = "cleanup_failed"
+    if reason is None and process.returncode != 0:
+        reason = "process_exit"
+    # A terminal frame describes the child's claim, not its complete outcome.
+    # Keep that claim in messages; consumers receive only the effective result.
+    abnormal_completion = (
+        terminal_dict is not None and terminal_dict.get("status") in {"succeeded", "cancelled"}
+        and (reason is not None or terminated or killed or not waited)
+    )
+    synthesized = protocol_error is not None or terminal_dict is None or abnormal_completion
     if synthesized or terminal_dict is None:
         terminal_dict = _worker_exit(identity, process.returncode, reason or "process_exit")
     retained_bytes = stderr_state["retained"]
@@ -202,6 +234,7 @@ def _run_protocol_worker(
         process.supervision_kind, waited,
         protocol_error, synthesized,
         tuple(managed_process_launches),
+        original_terminal=session.terminal,
     )
 
 
@@ -240,12 +273,18 @@ def _read_worker_stderr(stream, state, max_bytes) -> None:
         retained.extend(chunk[: max(0, max_bytes - len(retained))])
 
 
-def _send_coordinator(process, session, lock, message) -> None:
+def _send_coordinator(process, session, lock, message, *following) -> bool:
     try:
         with lock:
-            session.accept_coordinator(message)
-        process.stdin.write(encode_jsonl(message))
-        process.stdin.flush()
+            if message["message_type"] == "cancel" and session.terminal is not None:
+                return False
+            frames = []
+            for frame in (message, *following):
+                session.accept_coordinator(frame)
+                frames.append(encode_jsonl(frame))
+            process.stdin.write(b"".join(frames))
+            process.stdin.flush()
+        return True
     except (BrokenPipeError, OSError) as error:
         raise ProtocolError("worker_input_closed") from error
 
@@ -289,5 +328,3 @@ def _bounded_wait(process, timeout: float) -> bool:
         return True
     except subprocess.TimeoutExpired:
         return False
-
-

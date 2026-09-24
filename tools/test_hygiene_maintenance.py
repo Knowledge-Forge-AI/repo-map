@@ -123,6 +123,9 @@ def parser() -> argparse.ArgumentParser:
     subcommands = command.add_subparsers(dest="command", required=True)
     subcommands.add_parser("inventory")
     subcommands.add_parser("recover-index")
+    dead_owner = subcommands.add_parser("recover-maintenance-owner")
+    dead_owner.add_argument("--record-id", required=True)
+    dead_owner.add_argument("--confirm", required=True)
     subcommands.add_parser("compact")
     subcommands.add_parser("quarantine")
     subcommands.add_parser("delete-quarantine")
@@ -144,6 +147,20 @@ def main(
     protection_provider_factory=None,
 ) -> int:
     args = parser().parse_args(argv)
+    if args.command == "recover-maintenance-owner":
+        from repomap_test_support.resource_maintenance_recovery import recover_maintenance_owner
+        explicit = os.environ.get(ENV_SCRATCH_ROOT)
+        try:
+            if not explicit or not Path(explicit).is_absolute():
+                raise ClaimError("explicit scratch root required")
+            result = recover_maintenance_owner(
+                Path(explicit), expected_record_id=args.record_id, confirmation=args.confirm,
+            )
+        except (OSError, ValueError, RuntimeError):
+            print({"outcome": "refused", "category": "maintenance_owner_recovery_refused"})
+            return 2
+        print(result)
+        return 0
     if args.command == "operator-reclaim":
         return execute_operator_reclaim(
             args,

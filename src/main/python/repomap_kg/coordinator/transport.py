@@ -11,7 +11,7 @@ import socketserver
 import stat
 import sys
 import threading
-from typing import Callable, Mapping
+from typing import Any, Callable, Mapping
 
 from repomap_kg.coordinator._transport_validation import (
     _contains_prohibited_authority,
@@ -100,54 +100,69 @@ else:
     _UNIX_SERVER_BASE = getattr(socketserver, "UnixStreamServer", socketserver.TCPServer)
 
 
-class _ThreadedUnixServer(socketserver.ThreadingMixIn, _UNIX_SERVER_BASE):
+class _BoundedThreadingMixIn(socketserver.ThreadingMixIn, socketserver.BaseServer):
     daemon_threads = False
     block_on_close = True
     connection_slots: threading.BoundedSemaphore
+    max_connections: int = 1
+    _active_handlers: int
+    _handler_lock: threading.Lock
 
-    def process_request(self, request, client_address) -> None:
-        if not self.connection_slots.acquire(blocking=False):
-            try:
-                request.sendall(_encode_response(_error_response("saturated")))
-            finally:
-                self.shutdown_request(request)
-            return
-        try:
-            super().process_request(request, client_address)
-        except BaseException:
-            self.connection_slots.release()
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._active_handlers = 0
+        self._handler_lock = threading.Lock()
+        self._request_state = threading.local()
 
-    def process_request_thread(self, request, client_address) -> None:
+    def finish_request(self, request: Any, client_address: Any) -> None:
+        self._request_state.response_ready = False
+        with self._handler_lock:
+            self._active_handlers += 1
         try:
-            super().process_request_thread(request, client_address)
+            super().finish_request(request, client_address)
         finally:
-            self.connection_slots.release()
+            if not self._request_state.response_ready:
+                with self._handler_lock:
+                    self._active_handlers -= 1
 
+    def response_ready(self) -> None:
+        """Return work capacity before publishing the one completed response."""
+        if not getattr(self._request_state, "response_ready", True):
+            with self._handler_lock:
+                self._active_handlers -= 1
+                self._request_state.response_ready = True
+                self.connection_slots.release()
 
-class _ThreadedTcpServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-    daemon_threads = False
-    block_on_close = True
-    allow_reuse_address = False
-    connection_slots: threading.BoundedSemaphore
-
-    def process_request(self, request, client_address) -> None:
+    def process_request(self, request: Any, client_address: Any) -> None:
         if not self.connection_slots.acquire(blocking=False):
-            try:
-                request.sendall(_encode_response(_error_response("saturated")))
-            finally:
-                self.shutdown_request(request)
-            return
+            with self._handler_lock:
+                is_active = self._active_handlers >= getattr(self, "max_connections", 1)
+            if is_active or not self.connection_slots.acquire(timeout=0.5):
+                try:
+                    request.sendall(_encode_response(_error_response("saturated")))
+                finally:
+                    self.shutdown_request(request)
+                return
         try:
             super().process_request(request, client_address)
         except BaseException:
             self.connection_slots.release()
             raise
 
-    def process_request_thread(self, request, client_address) -> None:
+    def process_request_thread(self, request: Any, client_address: Any) -> None:
         try:
             super().process_request_thread(request, client_address)
         finally:
-            self.connection_slots.release()
+            if not getattr(self._request_state, "response_ready", False):
+                self.connection_slots.release()
+
+
+class _ThreadedUnixServer(_BoundedThreadingMixIn, _UNIX_SERVER_BASE):
+    pass
+
+
+class _ThreadedTcpServer(_BoundedThreadingMixIn, socketserver.TCPServer):
+    allow_reuse_address = False
 
 
 class UnixSocketService(AbstractContextManager["UnixSocketService"]):
@@ -175,10 +190,11 @@ class UnixSocketService(AbstractContextManager["UnixSocketService"]):
 
         class Handler(socketserver.StreamRequestHandler):
             def handle(self) -> None:
-                _handle_stream(service, self.rfile, self.wfile)
+                _handle_stream(service, self.rfile, _ResponseWriter(self.wfile, service._server.response_ready))
 
         self._server = _ThreadedUnixServer(str(self._path), Handler)
         self._server.connection_slots = threading.BoundedSemaphore(max_connections)
+        self._server.max_connections = max_connections
         self._server.request_queue_size = max_connections
         os.chmod(self._path, 0o600)
         self._thread = threading.Thread(
@@ -236,13 +252,14 @@ class LoopbackTcpService(AbstractContextManager["LoopbackTcpService"]):
 
         class Handler(socketserver.StreamRequestHandler):
             def handle(self) -> None:
-                _handle_stream(service, self.rfile, self.wfile)
+                _handle_stream(service, self.rfile, _ResponseWriter(self.wfile, service._server.response_ready))
 
         try:
             self._server = _ThreadedTcpServer(("127.0.0.1", 0), Handler)
             self._server.connection_slots = threading.BoundedSemaphore(
                 max_connections
             )
+            self._server.max_connections = max_connections
             self._server.request_queue_size = max_connections
             self._descriptor = LoopbackEndpointDescriptor(
                 schema_version=1,
@@ -290,6 +307,18 @@ class LoopbackTcpService(AbstractContextManager["LoopbackTcpService"]):
     @staticmethod
     def _write_error(stream, category: str) -> None:
         stream.write(_encode_response(_error_response(category)))
+
+
+class _ResponseWriter:
+    """Application work ends once a complete response is ready for delivery."""
+
+    def __init__(self, writer: Any, ready: Callable[[], None]) -> None:
+        self._writer = writer
+        self._ready = ready
+
+    def write(self, frame: bytes) -> Any:
+        self._ready()
+        return self._writer.write(frame)
 
 
 def _handle_stream(service, reader, writer) -> None:

@@ -20,14 +20,15 @@ from runner_coverage_capability import (
 
 
 RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS: float = 0.5
+RUNNER_MEASURED_CHILD_HELLO_DEADLINE_SECONDS: float = 2.0
+RUNNER_MEASURED_CHILD_PROCESS_DEADLINE_SECONDS: float = 3.0
 
 
 class _CoveredManagedProcess:
     """Runner-owned process wrapper providing bounded receipt headroom before signal delegation."""
 
     def __init__(
-        self, inner: Any, token: str, manifest_dir: Path,
-        exit_timeout: float | None = None,
+        self, inner: Any, token: str, manifest_dir: Path, exit_timeout: float | None = None,
     ) -> None:
         self._inner, self._token, self._manifest_dir = inner, token, manifest_dir
         self._exit_timeout = RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS if exit_timeout is None else exit_timeout
@@ -79,10 +80,7 @@ def make_portable_worker_spec_adapter(
         raise CapabilityValidationError("capability is not bound to active session")
 
     def adapted_run_worker_spec(
-        spec: Any,
-        identity: Mapping[str, object],
-        limits: object,
-        *,
+        spec: Any, identity: Mapping[str, object], limits: object, *,
         job_context: Mapping[str, object] | None = None,
         cancel_event: threading.Event | None = None,
         _launch_process: Callable[..., Any] | None = None,
@@ -145,11 +143,8 @@ def make_portable_worker_spec_adapter(
         }
         clean_pypath = os.pathsep.join(approved_paths)
         env = prepare_child_coverage_environment(
-            base_child_env,
-            family="portable_worker",
-            measure=True,
-            bootstrap_dir=capability.bootstrap_dir,
-            capability=session.bootstrap_capability,
+            base_child_env, family="portable_worker", measure=True,
+            bootstrap_dir=capability.bootstrap_dir, capability=session.bootstrap_capability,
             extra_env={"PYTHONPATH": clean_pypath} if clean_pypath else None,
         )
         augmented_spec = replace(spec, environment=env)
@@ -179,11 +174,22 @@ def make_portable_worker_spec_adapter(
             )
             return _CoveredManagedProcess(process, token, capability.child_manifest_dir)
 
+        measured_limits = limits
+        cur_h = float(limits.get("hello_deadline_seconds", 0.5) if isinstance(limits, Mapping) else getattr(limits, "hello_deadline_seconds", 0.5))
+        cur_p = float(limits.get("process_deadline_seconds", 0.8) if isinstance(limits, Mapping) else getattr(limits, "process_deadline_seconds", 0.8))
+        new_h, new_p = max(cur_h, RUNNER_MEASURED_CHILD_HELLO_DEADLINE_SECONDS), max(cur_p, RUNNER_MEASURED_CHILD_PROCESS_DEADLINE_SECONDS)
+        if new_h != cur_h or new_p != cur_p:
+            if isinstance(limits, Mapping):
+                measured_limits = dict(limits, hello_deadline_seconds=new_h, process_deadline_seconds=new_p)
+            elif hasattr(limits, "__dict__"):
+                from types import SimpleNamespace
+                measured_limits = SimpleNamespace(**{**vars(limits), "hello_deadline_seconds": new_h, "process_deadline_seconds": new_p})
+
         try:
             result = original_run_worker_spec(
                 augmented_spec,
                 identity,
-                limits,
+                measured_limits,
                 job_context=job_context,
                 cancel_event=cancel_event,
                 _launch_process=registered_launch,
@@ -193,36 +199,54 @@ def make_portable_worker_spec_adapter(
 
         # 8. Acceptance validation
         accept_exc: Exception | None = None
+        meas_rec_err: BaseException | None = None
+        diag_rec_note: str | None = None
         try:
             if token not in capability.launched_pids:
                 raise CapabilityValidationError("registered child was not launched")
             if result is not None and (not result.waited or not result.process_group_cleaned):
                 raise CapabilityValidationError("registered child was not synchronously reaped")
             capability.validate_for_accept(token)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except Exception as exc:
             accept_exc = exc
-            if hasattr(session, "_create_snapshot") and hasattr(session, "_record_diagnostic"):
-                snap = session._create_snapshot(
-                    shard_name=f"portable_child.{token}", file_type="missing_or_corrupt",
-                    size_bytes=-1, sha256=None, reader_status=f"acceptance_failure: {exc}",
-                    stage="post_worker_reap", child_probe_id=f"token={token}",
-                    termination_outcome=(
-                        "declared_abrupt_measurement_incomplete"
-                        if env["COVERAGE_CHILD_LAUNCH_ROLE"] == "conformance-abrupt"
-                        else "child_measurement_failed"
-                    ),
-                    launch_role=env["COVERAGE_CHILD_LAUNCH_ROLE"],
-                    test_owner=env["COVERAGE_CHILD_TEST_OWNER"],
+            try:
+                if hasattr(session, "record_measurement_error"):
+                    session.record_measurement_error(exc)
+                else:
+                    meas_rec_err = RuntimeError("measurement_recording_failure: session lacks record_measurement_error")
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except BaseException as rec_err:
+                meas_rec_err = rec_err
+            try:
+                from runner_portable_diagnostics import capture_portable_acceptance_diagnostic
+                diag_rec_note, _ = capture_portable_acceptance_diagnostic(
+                    session=session, capability=capability, token=token, accept_exc=exc,
+                    result=result, launch_role=env.get("COVERAGE_CHILD_LAUNCH_ROLE", "portable"),
+                    test_owner=env.get("COVERAGE_CHILD_TEST_OWNER", ""),
                 )
-                session._record_diagnostic(snap)
-            if hasattr(session, "record_measurement_error"):
-                session.record_measurement_error(exc)
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except BaseException as diag_fault:
+                from runner_portable_diagnostics import safe_format_exception
+                diag_rec_note = safe_format_exception(
+                    "diagnostic_recording_failure", diag_fault, "diagnostic_fault_unrenderable"
+                )
 
         # 9. Disposition: preserve primary workload result and exception
         if workload_exc is not None:
-            if accept_exc is not None:
-                workload_exc.add_note(f"child coverage measurement failure: {accept_exc}")
+            from runner_portable_diagnostics import attach_workload_disposition_notes
+            attach_workload_disposition_notes(workload_exc, accept_exc, meas_rec_err, diag_rec_note)
             raise workload_exc
+
+        if accept_exc is not None:
+            from runner_portable_diagnostics import raise_unrecorded_measurement_escalation, safe_attach_note
+            if meas_rec_err is not None:
+                raise_unrecorded_measurement_escalation(accept_exc, meas_rec_err, diag_rec_note)
+            if diag_rec_note is not None:
+                safe_attach_note(accept_exc, f"diagnostic recording failure: {diag_rec_note}")
 
         return result
 
@@ -232,8 +256,7 @@ def make_portable_worker_spec_adapter(
 
 @contextmanager
 def scoped_portable_coverage_adapter(
-    session: Any,
-    capability: ChildCoverageCapability,
+    session: Any, capability: ChildCoverageCapability,
 ) -> Iterator[Callable[..., Any]]:
     """Context manager installing runner-owned scoped adapter at repomap_kg.coordinator._portable_worker_launch.run_worker_spec."""
     import repomap_kg.coordinator._portable_worker_launch as pwl
@@ -252,8 +275,7 @@ def validate_shard_directory_integrity(
     snapshot_fn: Callable[..., Any], record_fn: Callable[[Any], None],
     cov_mod: Any = None, registered_children: dict[int, dict[str, Any]] | None = None,
     child_manifest_dir: Path | None = None, source_root: Path | None = None,
-    checkout_root: Path | None = None, invocation_id: str | None = None,
-    observer: Any = None,
+    checkout_root: Path | None = None, invocation_id: str | None = None, observer: Any = None,
 ) -> None:
     """Validate that shard directory contains no fabricated or unregistered shards."""
     from runner_coverage_execution import extract_pid_match
@@ -265,14 +287,10 @@ def validate_shard_directory_integrity(
         if resolved_child not in allowed_shards:
             if ".parent." in child.name:
                 snap = snapshot_fn(
-                    shard_name=child.name,
-                    file_type="fabricated_parent",
-                    size_bytes=child.stat().st_size if child.is_file() else -1,
-                    sha256=None,
-                    reader_status="rejected_fabricated_parent_shard",
-                    stage="pre_combine",
-                    cov_mod=cov_mod,
-                    termination_outcome="unauthorized_parent_shard",
+                    shard_name=child.name, file_type="fabricated_parent",
+                    size_bytes=child.stat().st_size if child.is_file() else -1, sha256=None,
+                    reader_status="rejected_fabricated_parent_shard", stage="pre_combine",
+                    cov_mod=cov_mod, termination_outcome="unauthorized_parent_shard",
                 )
                 record_fn(snap)
                 raise RuntimeError(f"fabricated .parent coverage shard rejected: {child.name}")
@@ -281,28 +299,22 @@ def validate_shard_directory_integrity(
             manifest_dir = child_manifest_dir or (data_dir.parent / "child_procs")
             if child_info is None and pid is not None and manifest_dir and manifest_dir.exists():
                 from runner_coverage_capability import _parse_marker
-                for fail_candidate in (
-                    manifest_dir / f"{pid}.registration_failure",
-                    manifest_dir.parent / f"{pid}.registration_failure",
-                    manifest_dir / f"{pid}.start",
-                    manifest_dir.parent / f"{pid}.start",
-                ):
+                for fail_candidate in (manifest_dir / f"{pid}.registration_failure", manifest_dir.parent / f"{pid}.registration_failure", manifest_dir / f"{pid}.start", manifest_dir.parent / f"{pid}.start"):
                     if fail_candidate.is_file():
                         parsed = _parse_marker(fail_candidate)
+                        f_cls = parsed.get("failure_class", "unregistered_start_marker" if fail_candidate.name.endswith(".start") else None)
+                        f_rsn = parsed.get("failure_reason", "unregistered_with_start_marker" if fail_candidate.name.endswith(".start") else None)
                         child_info = {
                             "role": parsed.get("role"), "owner": parsed.get("owner"),
                             "ppid": int(parsed["ppid"]) if parsed.get("ppid", "").isdigit() else None,
-                            "launch_shape": parsed.get("launch_shape"),
-                            "failure_class": parsed.get("failure_class", "unregistered_start_marker" if fail_candidate.name.endswith(".start") else None),
-                            "failure_reason": parsed.get("failure_reason", "unregistered_with_start_marker" if fail_candidate.name.endswith(".start") else None),
+                            "launch_shape": parsed.get("launch_shape"), "failure_class": f_cls, "failure_reason": f_rsn,
                         }
                         break
             obs: Any = None
             if child_info is None and pid is not None:
                 inv_id: str | None = invocation_id
                 if inv_id is None and manifest_dir:
-                    candidates = (manifest_dir / "invocation_id.txt", manifest_dir.parent / "observations" / "invocation_id.txt")
-                    for inv_candidate in candidates:
+                    for inv_candidate in (manifest_dir / "invocation_id.txt", manifest_dir.parent / "observations" / "invocation_id.txt"):
                         if inv_candidate.is_file():
                             try:
                                 inv_id = inv_candidate.read_text(encoding="utf-8").strip()
@@ -325,8 +337,7 @@ def validate_shard_directory_integrity(
                     }
 
             sha256_val, size_val, sqlite_valid = None, -1, False
-            measured_files_count, measured_classification = None, None
-            forensics_data, forensic_failure_verdict = None, None
+            measured_files_count = measured_classification = forensics_data = forensic_failure_verdict = None
             if child.is_file():
                 from runner_coverage_diagnostics import compute_streaming_sha256
                 try:
@@ -335,17 +346,11 @@ def validate_shard_directory_integrity(
                     header = b""
                 if header.startswith(b"SQLite format 3\x00"):
                     from runner_coverage_forensics import read_anomalous_shard_forensics
-                    (
-                        sqlite_valid,
-                        measured_files_count,
-                        forensics_data,
-                        forensic_failure_verdict,
-                    ) = read_anomalous_shard_forensics(
-                        child,
-                        data_dir,
-                        source_root=source_root,
-                        checkout_root=checkout_root or Path.cwd(),
-                        max_paths=100,
+                    sqlite_valid, measured_files_count, forensics_data, forensic_failure_verdict = (
+                        read_anomalous_shard_forensics(
+                            child, data_dir, source_root=source_root,
+                            checkout_root=checkout_root or Path.cwd(), max_paths=100,
+                        )
                     )
                     if forensics_data is not None:
                         measured_classification = forensics_data.get("classification")
@@ -361,13 +366,9 @@ def validate_shard_directory_integrity(
                             child_info["owner"] = forensics_data["test_owner"]
 
             snap = snapshot_fn(
-                shard_name=child.name,
-                file_type="unregistered",
-                size_bytes=size_val,
-                sha256=sha256_val,
-                reader_status="unregistered_shard_rejected",
-                stage="pre_combine",
-                cov_mod=cov_mod,
+                shard_name=child.name, file_type="unregistered", size_bytes=size_val,
+                sha256=sha256_val, reader_status="unregistered_shard_rejected",
+                stage="pre_combine", cov_mod=cov_mod,
                 child_probe_id=f"pid={pid}" if pid is not None else None,
                 termination_outcome="unregistered_child",
                 launch_role=child_info.get("role") if child_info else None,
@@ -379,10 +380,8 @@ def validate_shard_directory_integrity(
                 "classification": measured_classification,
             }
             snap = merge_diagnostic_snapshot(
-                snap, child_info=child_info, obs=obs,
-                forensics=f_dict,
-                sqlite_valid=sqlite_valid,
-                forensic_verdict=forensic_failure_verdict,
+                snap, child_info=child_info, obs=obs, forensics=f_dict,
+                sqlite_valid=sqlite_valid, forensic_verdict=forensic_failure_verdict,
             )
             record_fn(snap)
             raise RuntimeError(f"unregistered coverage shard rejected: {child.name}")
@@ -390,6 +389,8 @@ def validate_shard_directory_integrity(
 
 __all__ = (
     "RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS",
+    "RUNNER_MEASURED_CHILD_HELLO_DEADLINE_SECONDS",
+    "RUNNER_MEASURED_CHILD_PROCESS_DEADLINE_SECONDS",
     "make_portable_worker_spec_adapter",
     "scoped_portable_coverage_adapter",
     "validate_shard_directory_integrity",

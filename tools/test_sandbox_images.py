@@ -6,9 +6,30 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 from typing import Callable
 
+from test_sandbox_report import write_sandbox_diagnostic
+
 from test_sandbox_contract import Captured, HostSnapshot, Runner
+
+
+def _image_diagnostic(stage: str, result, category: str) -> None:
+    """Emit a closed stderr projection; never emit image config or command argv."""
+    stderr = result.stderr or ""
+    phrases = (
+        "no such image", "permission denied", "cannot connect to the docker daemon",
+        "error during connect", "no space left on device", "failed to solve",
+        "connection refused", "tls handshake timeout",
+    )
+    safe = [phrase for phrase in phrases if phrase in stderr.lower()]
+    write_sandbox_diagnostic(json.dumps({
+        "event": "repomap-sandbox-image-diagnostic-v1", "stage": stage,
+        "category": category, "returncode": result.returncode,
+        "stderr": "; ".join(safe) if safe else ("<redacted>" if stderr else ""),
+        "stderr_bytes": len(stderr.encode("utf-8", errors="replace")),
+        "stderr_sha256": hashlib.sha256(stderr.encode("utf-8", errors="replace")).hexdigest(),
+    }, sort_keys=True))
 
 
 def inspect_managed_image(
@@ -27,6 +48,23 @@ def inspect_managed_image(
         timeout=30,
     )
     if result.returncode != 0:
+        # Permit surrounding warnings, but require an exact missing-image line
+        # for this tag. Endpoint failures always take precedence over cache state.
+        missing_lines = {
+            f"error response from daemon: no such image: {image_tag}".lower(),
+            f"error: no such image: {image_tag}".lower(),
+        }
+        missing = any(line.strip().lower() in missing_lines for line in (result.stderr or "").splitlines())
+        category = "cache_absent" if missing else "inspection_failed"
+        if any(text in (result.stderr or "").lower() for text in (
+            "cannot connect to the docker daemon", "error during connect",
+            "connection refused", "permission denied", "tls handshake timeout",
+        )):
+            category = "endpoint_unavailable"
+            missing = False
+        _image_diagnostic("inspect", result, category)
+        if not missing:
+            raise RuntimeError(f"managed sandbox image inspection failed: {category}; exit={result.returncode}")
         return result.returncode, None
     try:
         payload = json.loads(result.stdout)
@@ -34,12 +72,16 @@ def inspect_managed_image(
         labels = payload["Config"]["Labels"]
     except (KeyError, TypeError, json.JSONDecodeError) as error:
         raise RuntimeError("managed sandbox image inspection is malformed") from error
-    if exact_id.fullmatch(image_id) is None:
+    if not isinstance(image_id, str) or exact_id.fullmatch(image_id) is None:
         raise RuntimeError("managed sandbox image has no exact image ID")
+    if not isinstance(labels, dict):
+        raise RuntimeError("managed sandbox image inspection is malformed")
     if labels.get(owner_label) != "true":
         raise RuntimeError("sandbox image tag exists without exact RepoMap ownership")
     if labels.get(recipe_label) != recipe:
+        _image_diagnostic("inspect", result, "cache_stale")
         return 1, None
+    _image_diagnostic("inspect", result, "cache_hit")
     return 0, image_id
 
 
@@ -71,8 +113,9 @@ def ensure_sandbox_image(
         ],
         timeout=1800,
     )
+    _image_diagnostic("build", build, "build_failed" if build.returncode else "built")
     if build.returncode != 0:
-        raise RuntimeError("managed integration sandbox image build failed")
+        raise RuntimeError(f"managed integration sandbox image build failed: exit={build.returncode}")
     status, image_id = inspect(runner, recipe)
     if status != 0 or image_id is None:
         raise RuntimeError("managed integration sandbox image is absent after build")
@@ -174,7 +217,54 @@ def snapshot_host_resources(
     )
 
 
-def verify_host_snapshot(before: HostSnapshot, after: HostSnapshot) -> None:
+def _resource_diagnostic(kind: str, identity: str, inspect_resource) -> dict[str, object]:
+    """Identify residue without exposing private names, labels or Docker config."""
+    record: dict[str, object] = {
+        "kind": kind, "identity_sha256": hashlib.sha256(identity.encode()).hexdigest(),
+        "engine_id": identity if re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", identity) else None,
+        "inspection": "unavailable", "ownership": "unknown", "owner_label_sha256": {},
+    }
+    if inspect_resource is None:
+        return record
+    try:
+        result = inspect_resource(kind, identity)
+        record["returncode"] = result.returncode
+        if result.returncode != 0:
+            return record
+        if len(result.stdout) > 16384:
+            record["inspection"] = "oversized"
+            return record
+        labels = json.loads(result.stdout)
+        if labels is None:
+            labels = {}
+        if not isinstance(labels, dict):
+            record["inspection"] = "malformed"
+            return record
+        # These commitments permit exact local attribution/readback while no
+        # arbitrary label keys, paths, credentials or project names escape.
+        owner_keys = (
+            "org.repomap.test.sandbox.image", "org.repomap.test.run-id",
+            "org.repomap.test.resource.run_id", "org.repomap.test.resource.owner",
+            "com.docker.compose.project",
+            "com.docker.compose.volume", "com.docker.compose.service",
+        )
+        record["owner_label_sha256"] = {
+            key: hashlib.sha256(str(labels[key]).encode()).hexdigest()
+            for key in owner_keys if key in labels
+        }
+        record["inspection"] = "inspected"
+        record["ownership"] = (
+            "repomap_metadata" if any(key.startswith("org.repomap.") for key in labels)
+            else "unattributed"
+        )
+    except (OSError, subprocess.SubprocessError, ValueError) as error:
+        record["inspection"] = type(error).__name__
+    return record
+
+
+def verify_host_snapshot(
+    before: HostSnapshot, after: HostSnapshot, *, inspect_resource=None,
+) -> None:
     residue = {
         "containers": after.containers - before.containers,
         "images": after.images - before.images,
@@ -183,5 +273,17 @@ def verify_host_snapshot(before: HostSnapshot, after: HostSnapshot) -> None:
     }
     counts = {kind: len(identities) for kind, identities in residue.items() if identities}
     if counts:
+        remaining = 16
+        for kind, identities in sorted(residue.items()):
+            for identity in sorted(identities)[:remaining]:
+                write_sandbox_diagnostic(json.dumps({
+                    "event": "repomap-sandbox-residue-resource-v1",
+                    **_resource_diagnostic(kind, identity, inspect_resource),
+                }, sort_keys=True))
+                remaining -= 1
+        write_sandbox_diagnostic(json.dumps({
+            "event": "repomap-sandbox-residue-summary-v1", "counts": counts,
+            "omitted": sum(counts.values()) - (16 - remaining), "decision": "failed",
+        }, sort_keys=True))
         detail = ", ".join(f"{kind}={count}" for kind, count in sorted(counts.items()))
         raise RuntimeError(f"unexpected host Docker residue after sandbox cleanup: {detail}")

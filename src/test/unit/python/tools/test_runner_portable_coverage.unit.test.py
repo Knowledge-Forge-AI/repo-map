@@ -16,7 +16,10 @@ import coverage
 import repomap_kg.coordinator._portable_worker_launch as pwl
 from repomap_kg.coordinator._protocol_validation import WorkerLaunchError
 from repomap_kg.coordinator._worker_launch import WorkerLaunchSpec
-from repomap_test_support.run25_portable_workflows import build_run25_worker_limits
+from repomap_test_support.run25_portable_workflows import (
+    TINY_PORTABLE_CHILD_CODE as CHILD_CODE,
+    build_run25_worker_limits,
+)
 from runner_coverage import ChildCoverageSession
 from runner_coverage_capability import (
     CapabilityContainmentError,
@@ -29,88 +32,6 @@ from runner_portable_coverage import (
     scoped_portable_coverage_adapter,
     validate_shard_directory_integrity,
 )
-
-CHILD_CODE = '''"""Tiny maintained portable child fixture."""
-import argparse, sys
-from repomap_kg.coordinator.protocol import (
-    MAX_JSONL_LINE_BYTES,
-    ProtocolSession,
-    decode_jsonl,
-    encode_jsonl,
-)
-
-def branch_function(flag: bool) -> int:
-    if flag:
-        chosen = 100
-    else:
-        chosen = 200
-    return chosen
-
-def main() -> int:
-    from repomap_kg.coordinator import _portable_authority as authority
-    assert authority.install_portable_authority_guard.__module__ == authority.__name__
-    from pathlib import Path
-    workspace = Path.cwd() / 'guarded-workspace'
-    workspace.mkdir()
-    authority.install_portable_authority_guard(
-        store_root=workspace, workspace_root=workspace,
-        code_roots=(Path(__file__).parent, Path(authority.__file__).parents[2]),
-    )
-    try:
-        open(Path.cwd() / 'forbidden-output', 'w')
-    except PermissionError:
-        pass
-    else:
-        raise AssertionError('portable guard was weakened')
-    val = branch_function(True)
-    assert val == 100
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--job-id", default="job-1")
-    parser.add_argument("--attempt", type=int, default=1)
-    parser.add_argument("--mode", default="success", choices=["success", "cancel", "fail"])
-    parser.add_argument("--atexit-sleep", type=float, default=0.0)
-    args, _ = parser.parse_known_args()
-    if args.atexit_sleep > 0:
-        import atexit, time
-        atexit.register(time.sleep, args.atexit_sleep)
-    identity = {"job_id": args.job_id, "attempt": args.attempt}
-    session = ProtocolSession(identity)
-    hello = {
-        "schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1],
-        "worker_generation": "worker-v1", "capabilities": ["refresh_graph"], "process_nonce": "nonce-1",
-    }
-    session.accept_worker(hello)
-    sys.stdout.buffer.write(encode_jsonl(hello))
-    sys.stdout.buffer.flush()
-
-    line = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
-    job_start = decode_jsonl(line)
-    session.accept_coordinator(job_start)
-
-    base_term = {
-        "schema_version": 1, **identity, "job_kind": "refresh_graph",
-        "graph_id": job_start["graph_id"], "started_at": "2026-09-12T12:00:01Z",
-        "finished_at": "2026-09-12T12:00:02Z", "phase": "complete", "warnings": [],
-        "diagnostics": [], "source_generation": job_start["source_generation"],
-        "config_generation": job_start["config_generation"], "extractor_generation": "eg1:synth",
-        "canonicalizer_generation": "kg1:synth", "retryable": False,
-    }
-    if args.mode == "cancel":
-        line2 = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
-        session.accept_coordinator(decode_jsonl(line2))
-        terminal = {**base_term, "message_type": "result", "status": "cancelled", "files": 0, "observations": 0, "canonical_nodes": 0, "canonical_edges": 0, "publication_state": "not_started", "latest_run_identity": None, "error_category": None}
-    elif args.mode == "fail":
-        terminal = {**base_term, "message_type": "error", "status": "failed", "files": 0, "observations": 0, "canonical_nodes": 0, "canonical_edges": 0, "publication_state": "not_started", "latest_run_identity": None, "error_category": "authorization"}
-    else:
-        terminal = {**base_term, "message_type": "result", "status": "succeeded", "files": 1, "observations": 1, "canonical_nodes": 1, "canonical_edges": 1, "publication_state": "committed", "latest_run_identity": "run-1", "error_category": None}
-    session.accept_worker(terminal)
-    sys.stdout.buffer.write(encode_jsonl(terminal))
-    sys.stdout.buffer.flush()
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
-'''
 
 
 class RunnerPortableCoverageUnitTests(unittest.TestCase):
@@ -230,24 +151,32 @@ class RunnerPortableCoverageUnitTests(unittest.TestCase):
         self._assert_child_reaped_and_marked(result)
         self.assertIn(str(self.child_file.resolve()), self.session.combine(runner).get_data().measured_files())
 
-    def test_deterministic_traversal_of_heartbeat_timeout_with_atexit_sleep(self) -> None:
+    def test_post_terminal_delay_exceeding_termination_grace_exits_naturally(self) -> None:
         runner, result = self._run_worker_under_coverage(extra_args=("--atexit-sleep", "0.20"))
         self.assertEqual(result.terminal.get("status"), "succeeded")
         self._assert_child_reaped_and_marked(result)
-        self.assertTrue(result.heartbeat_timed_out and result.terminated)
+        self.assertFalse(result.heartbeat_timed_out or result.terminated or result.killed)
+        self.assertFalse(result.synthesized_terminal)
         self.assertEqual(result.returncode, 0)
         self.assertIn(str(self.child_file.resolve()), self.session.combine(runner).get_data().measured_files())
 
-    def test_mutation_sensitivity_headroom_zero_reproduces_run26_failure(self) -> None:
+    def test_completion_deadline_without_receipt_headroom_fails_measurement(self) -> None:
         runner = self.session.create_coverage(coverage)
         runner.start()
         try:
-            spec = self._make_spec(extra_args=("--atexit-sleep", "0.20"))
+            # Exceed the adapter's three-second process deadline, independently
+            # of the 80 ms escalation grace. No terminal can excuse this hang.
+            spec = self._make_spec(extra_args=("--atexit-sleep", "10.0"))
             with patch("runner_portable_coverage.RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS", 0.0):
                 with scoped_portable_coverage_adapter(self.session, self.cap):
                     result = pwl.run_worker_spec(spec, self.identity, self.limits)
                     self.assertTrue(result.terminated)
                     self.assertEqual(result.returncode, -15)
+                    self.assertEqual(result.terminal.get("message_type"), "worker_exit")
+                    self.assertEqual(result.terminal.get("reason"), "completion_timeout")
+                    self.assertTrue(result.synthesized_terminal)
+                    assert result.original_terminal is not None
+                    self.assertEqual(result.original_terminal.get("status"), "succeeded")
                     self.assertTrue(self.session.measurement_errors)
                     self.assertIsInstance(self.session.measurement_errors[0], CapabilityValidationError)
         finally:

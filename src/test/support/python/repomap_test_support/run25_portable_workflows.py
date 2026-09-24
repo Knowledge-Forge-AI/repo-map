@@ -42,6 +42,98 @@ RUN25_MANDATORY_LIMITS: dict[str, object] = {
     "max_array_items": 64,
 }
 
+TINY_PORTABLE_CHILD_CODE = '''"""Tiny maintained portable child fixture."""
+import argparse, sys
+from repomap_kg.coordinator.protocol import (
+    MAX_JSONL_LINE_BYTES,
+    ProtocolSession,
+    decode_jsonl,
+    encode_jsonl,
+)
+
+def branch_function(flag: bool) -> int:
+    if flag:
+        chosen = 100
+    else:
+        chosen = 200
+    return chosen
+
+def main() -> int:
+    from repomap_kg.coordinator import _portable_authority as authority
+    assert authority.install_portable_authority_guard.__module__ == authority.__name__
+    from pathlib import Path
+    workspace = Path.cwd() / 'guarded-workspace'
+    workspace.mkdir()
+    authority.install_portable_authority_guard(
+        store_root=workspace, workspace_root=workspace,
+        code_roots=(Path(__file__).parent, Path(authority.__file__).parents[2]),
+    )
+    try:
+        open(Path.cwd() / 'forbidden-output', 'w')
+    except PermissionError:
+        pass
+    else:
+        raise AssertionError('portable guard was weakened')
+    val = branch_function(True)
+    assert val == 100
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--job-id", default="job-1")
+    parser.add_argument("--attempt", type=int, default=1)
+    parser.add_argument("--mode", default="success", choices=["success", "cancel", "fail"])
+    parser.add_argument("--atexit-sleep", type=float, default=0.0)
+    parser.add_argument("--pre-hello-sleep", type=float, default=0.0)
+    parser.add_argument("--workload-sleep", type=float, default=0.0)
+    parser.add_argument("--exit-code", type=int, default=0)
+    args, _ = parser.parse_known_args()
+    if args.atexit_sleep > 0:
+        import atexit, time
+        atexit.register(time.sleep, args.atexit_sleep)
+    if args.pre_hello_sleep > 0:
+        import time
+        time.sleep(args.pre_hello_sleep)
+    identity = {"job_id": args.job_id, "attempt": args.attempt}
+    session = ProtocolSession(identity)
+    hello = {
+        "schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1],
+        "worker_generation": "worker-v1", "capabilities": ["refresh_graph"], "process_nonce": "nonce-1",
+    }
+    session.accept_worker(hello)
+    sys.stdout.buffer.write(encode_jsonl(hello))
+    sys.stdout.buffer.flush()
+
+    line = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
+    job_start = decode_jsonl(line)
+    session.accept_coordinator(job_start)
+
+    if args.workload_sleep > 0:
+        import time
+        time.sleep(args.workload_sleep)
+
+    base_term = {
+        "schema_version": 1, **identity, "job_kind": "refresh_graph",
+        "graph_id": job_start["graph_id"], "started_at": "2026-09-12T12:00:01Z",
+        "finished_at": "2026-09-12T12:00:02Z", "phase": "complete", "warnings": [],
+        "diagnostics": [], "source_generation": job_start["source_generation"],
+        "config_generation": job_start["config_generation"], "extractor_generation": "eg1:synth",
+        "canonicalizer_generation": "kg1:synth", "retryable": False,
+    }
+    if args.mode == "cancel":
+        line2 = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
+        session.accept_coordinator(decode_jsonl(line2))
+        terminal = {**base_term, "message_type": "result", "status": "cancelled", "files": 0, "observations": 0, "canonical_nodes": 0, "canonical_edges": 0, "publication_state": "not_started", "latest_run_identity": None, "error_category": None}
+    elif args.mode == "fail":
+        terminal = {**base_term, "message_type": "error", "status": "failed", "files": 0, "observations": 0, "canonical_nodes": 0, "canonical_edges": 0, "publication_state": "not_started", "latest_run_identity": None, "error_category": "authorization"}
+    else:
+        terminal = {**base_term, "message_type": "result", "status": "succeeded", "files": 1, "observations": 1, "canonical_nodes": 1, "canonical_edges": 1, "publication_state": "committed", "latest_run_identity": "run-1", "error_category": None}
+    session.accept_worker(terminal)
+    sys.stdout.buffer.write(encode_jsonl(terminal))
+    sys.stdout.buffer.flush()
+    return args.exit_code
+
+if __name__ == "__main__":
+    sys.exit(main())
+'''
+
 
 def build_clean_explicit_pythonpath(repo_root: Path) -> str:
     """Build a pinned explicit PYTHONPATH without ambient or empty path components."""
@@ -198,6 +290,7 @@ def build_worker_script_launch_spec(
 
 __all__ = (
     "RUN25_MANDATORY_LIMITS",
+    "TINY_PORTABLE_CHILD_CODE",
     "build_clean_explicit_pythonpath",
     "build_run25_worker_limits",
     "build_worker_script_launch_spec",

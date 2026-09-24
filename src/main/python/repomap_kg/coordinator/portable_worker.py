@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+import os
 from pathlib import Path
 import sys
 import threading
+import time
 
 from repomap_kg.artifacts.references import ArtifactReference
 from repomap_kg.coordinator._portable_capability import (
@@ -14,6 +15,7 @@ from repomap_kg.coordinator._portable_capability import (
     load_portable_capability,
 )
 from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
+from repomap_kg.coordinator._protocol_validation import _utc_now as _utc_now
 from repomap_kg.coordinator._portable_semantic_adapter import (
     FailureReceiptWrite,
     PortableExecutionError,
@@ -22,10 +24,10 @@ from repomap_kg.coordinator._portable_semantic_adapter import (
 )
 from repomap_kg.coordinator._protocol_core import (
     MAX_JSONL_LINE_BYTES,
+    encode_jsonl,
     ProtocolError,
     ProtocolSession,
     decode_jsonl,
-    encode_jsonl,
 )
 
 
@@ -36,6 +38,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--attempt", required=True, type=int)
     args = parser.parse_args(argv)
     try:
+        # Raw nonblocking pipes have no Python buffered locks to strand at exit.
+        os.set_blocking(sys.stdin.fileno(), False)
+        os.set_blocking(sys.stdout.fileno(), False)
         capability = load_portable_capability(Path(args.capability))
         if capability.job_id != args.job_id or capability.attempt != args.attempt:
             raise ValueError("invalid portable capability")
@@ -58,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         session.accept_worker(hello)
         _write(hello)
         start = session.accept_coordinator(
-            decode_jsonl(sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1))
+            decode_jsonl(_read_frame(threading.Event()))
         )
         started_at = _utc_now()
         extension = start.get("portable_snapshot")
@@ -106,6 +111,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         stop = threading.Event()
         cancel_event = threading.Event()
+        lifecycle_failed = threading.Event()
 
         def emit(message: dict[str, object]) -> None:
             with lock:
@@ -129,13 +135,11 @@ def main(argv: list[str] | None = None) -> int:
 
         heartbeat = threading.Thread(
             target=_heartbeat_loop,
-            args=(session, identity, lock, stop),
-            daemon=True,
+            args=(session, identity, lock, stop, lifecycle_failed),
         )
         cancellation_reader = threading.Thread(
             target=_read_cancellation,
-            args=(session, identity, lock, stop, cancel_event),
-            daemon=True,
+            args=(session, identity, lock, stop, cancel_event, lifecycle_failed),
         )
         heartbeat.start()
         cancellation_reader.start()
@@ -145,71 +149,37 @@ def main(argv: list[str] | None = None) -> int:
                 emit_progress=progress,
                 cancel_event=cancel_event,
             )
-            if cancel_event.is_set():
-                terminal = _cancellation_terminal(
-                    identity, capability, started_at
-                )
-            else:
-                counts = result.bundle.family_counts
-                terminal = {
-                    "schema_version": 1,
-                    "message_type": "result",
-                    **identity,
-                    "job_kind": "refresh_graph",
-                    "graph_id": capability.graph_id,
-                    "status": "succeeded",
-                    "started_at": started_at,
-                    "finished_at": _utc_now(),
-                    "phase": "complete",
-                    "files": result.manifest.total_files,
-                    "observations": counts["raw_observations"],
-                    "canonical_nodes": counts["canonical_nodes"],
-                    "canonical_edges": counts["canonical_edges"],
-                    "warnings": [],
-                    "diagnostics": [],
-                    "publication_state": "not_started",
-                    "latest_run_identity": None,
-                    "source_generation": capability.source_generation,
-                    "config_generation": capability.config_generation,
-                    "extractor_generation": capability.extractor_generation,
-                    "canonicalizer_generation": capability.canonicalizer_generation,
-                    "retryable": False,
-                    "error_category": None,
-                    "portable_snapshot": {
-                        "contract_version": "1.0",
-                        "outcome": "completed",
-                        "receipt": result.receipt_reference.to_mapping(),
-                        "receipt_status": "stored",
-                        "receipt_diagnostic": None,
-                        "bundle": result.bundle_reference.to_mapping(),
-                    },
-                }
+            counts = result.bundle.family_counts
+            terminal = _terminal_payload(
+                identity, capability, started_at, "succeeded", "completed", None,
+                "result", result.receipt_reference,
+            )
+            terminal.update(files=result.manifest.total_files, observations=counts["raw_observations"],
+                            canonical_nodes=counts["canonical_nodes"], canonical_edges=counts["canonical_edges"])
+            extension = terminal["portable_snapshot"]
+            assert isinstance(extension, dict)
+            extension["bundle"] = result.bundle_reference.to_mapping()
         except PortableExecutionError as error:
             if error.category == "cancelled" or cancel_event.is_set():
-                terminal = _cancellation_terminal(
-                    identity,
-                    capability,
-                    started_at,
-                )
+                terminal = _cancellation_terminal(identity, capability, started_at)
             else:
                 _emit_failure_stderr(error)
-                terminal = _failure_terminal(
-                    identity,
-                    capability,
-                    started_at,
-                    error.category,
-                )
+                terminal = _failure_terminal(identity, capability, started_at, error.category)
         except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError) as error:
             _emit_failure_stderr(error)
             terminal = _failure_terminal(
-                identity,
-                capability,
-                started_at,
-                _execution_error_category(error),
+                identity, capability, started_at, _execution_error_category(error),
             )
         finally:
             stop.set()
             heartbeat.join(timeout=1.0)
+            cancellation_reader.join(timeout=1.0)
+        if heartbeat.is_alive() or cancellation_reader.is_alive() or lifecycle_failed.is_set():
+            raise RuntimeError("worker protocol threads did not settle")
+        # The reader may accept an already-written cancel during settlement.
+        # Decide only after it has drained pending input and acknowledged it.
+        if cancel_event.is_set() and terminal["status"] != "cancelled":
+            terminal = _cancellation_terminal(identity, capability, started_at)
         emit(terminal)
         return 0
     except (KeyError, OSError, TypeError, ValueError, ProtocolError, RuntimeError) as error:
@@ -217,7 +187,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-def _heartbeat_loop(session, identity, lock, stop) -> None:
+def _heartbeat_loop(session, identity, lock, stop, lifecycle_failed) -> None:
     while not stop.wait(0.25):
         message = {
             "schema_version": 1,
@@ -229,15 +199,16 @@ def _heartbeat_loop(session, identity, lock, stop) -> None:
             try:
                 session.accept_worker(message)
                 _write(message)
-            except ProtocolError:
+            except (ProtocolError, OSError, RuntimeError):
+                lifecycle_failed.set()
                 return
 
 
-def _read_cancellation(session, identity, lock, stop, cancel_event) -> None:
-    frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
-    if stop.is_set() or not frame:
-        return
+def _read_cancellation(session, identity, lock, stop, cancel_event, lifecycle_failed) -> None:
     try:
+        frame = _read_frame(stop)
+        if not frame:
+            return
         with lock:
             session.accept_coordinator(decode_jsonl(frame))
             cancel_event.set()
@@ -250,7 +221,31 @@ def _read_cancellation(session, identity, lock, stop, cancel_event) -> None:
             session.accept_worker(acknowledgement)
             _write(acknowledgement)
     except ProtocolError:
+        lifecycle_failed.set()
         cancel_event.set()
+    except (OSError, RuntimeError):
+        lifecycle_failed.set()
+        cancel_event.set()
+
+
+def _read_frame(stop: threading.Event) -> bytes:
+    frame = bytearray()
+    while True:
+        try:
+            # Do not prefetch cancellation bytes while reading job_start.
+            byte = os.read(sys.stdin.fileno(), 1)
+        except BlockingIOError:
+            if stop.is_set():
+                if frame:
+                    raise ProtocolError("invalid_jsonl")
+                return b""
+            stop.wait(0.01)
+            continue
+        if not byte:
+            return bytes(frame)
+        frame.extend(byte)
+        if byte == b"\n" or len(frame) > MAX_JSONL_LINE_BYTES:
+            return bytes(frame)
 
 
 def _terminal_payload(
@@ -386,12 +381,19 @@ def _emit_failure_stderr(error: BaseException) -> None:
 
 
 def _write(message: dict[str, object]) -> None:
-    sys.stdout.buffer.write(encode_jsonl(message))
-    sys.stdout.buffer.flush()
-
-
-def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+    remaining = memoryview(encode_jsonl(message))
+    deadline = time.monotonic() + 0.5
+    while remaining:
+        if time.monotonic() >= deadline:
+            raise RuntimeError("worker protocol output did not settle")
+        try:
+            written = os.write(sys.stdout.fileno(), remaining)
+        except BlockingIOError:
+            time.sleep(0.01)
+            continue
+        if written <= 0:
+            raise RuntimeError("worker protocol output closed")
+        remaining = remaining[written:]
 
 
 if __name__ == "__main__":  # pragma: no cover - subprocess entrypoint

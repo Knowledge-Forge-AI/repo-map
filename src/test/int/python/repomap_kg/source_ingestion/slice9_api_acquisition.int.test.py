@@ -2,8 +2,11 @@ import json
 import shutil
 import tempfile
 import unittest
-from pathlib import Path
 from unittest.mock import MagicMock
+from dataclasses import replace
+from pathlib import Path
+
+from repomap_kg.ops.ingestion.github_api_records import GitHubRequestPlan
 
 from repomap_kg.ops.ingestion._github_api_transport import (
     github_public_rest_url,
@@ -159,24 +162,30 @@ class Slice9ApiAcquisitionIntegrationTests(unittest.TestCase):
         cfg = load_github_api_source_config(
             github_api_fixture_root() / "readonly_public_repo" / "github-source.toml"
         )
-        req = MagicMock()
-        req.endpoint_name = "repo"
-        req.path = "/repos/{owner}/{repo}"
+        req = GitHubRequestPlan(
+            endpoint_name="repo",
+            method="GET",
+            path="/repos/{owner}/{repo}",
+            response_type="application/json",
+            downstream_route="canonical_graph",
+            data_class="metadata",
+            request_id="req-1",
+        )
 
         url = github_public_rest_url(cfg, req)
         self.assertTrue(url.startswith("https://api.github.com/repos/fixture-owner/fixture-repo"))
 
-        req.path = "http://api.github.com/bad"
-        with self.assertRaises(GitHubApiPolicyError):
-            github_public_rest_url(cfg, req)
+        with self.assertRaises(GitHubApiPolicyError) as cm_rel:
+            github_public_rest_url(cfg, replace(req, path="http://api.github.com/bad"))
+        self.assertIn("endpoint path must be a relative API path", str(cm_rel.exception))
 
-        req.path = "/repos/{owner}/{repo}?query=leak"
-        with self.assertRaises(GitHubApiPolicyError):
-            github_public_rest_url(cfg, req)
+        with self.assertRaises(GitHubApiPolicyError) as cm_query:
+            github_public_rest_url(cfg, replace(req, path="/repos/{owner}/{repo}?query=leak"))
+        self.assertIn("GitHub REST URL must not include raw query data", str(cm_query.exception))
 
-        req.path = "/users/other"
-        with self.assertRaises(GitHubApiPolicyError):
-            github_public_rest_url(cfg, req)
+        with self.assertRaises(GitHubApiPolicyError) as cm_owner:
+            github_public_rest_url(cfg, replace(req, path="/users/other"))
+        self.assertIn("GitHub REST URL must stay under owner/repository", str(cm_owner.exception))
 
         resp_redirect = GitHubTransportResponse(
             status_code=301,
@@ -196,8 +205,9 @@ class Slice9ApiAcquisitionIntegrationTests(unittest.TestCase):
             headers={},
             rate_limit={"x-ratelimit-remaining": "0"},
         )
-        with self.assertRaises(GitHubApiPolicyError):
+        with self.assertRaises(GitHubApiPolicyError) as cm_rate:
             validate_transport_response(cfg, req, resp_exhausted)
+        self.assertIn("hit GitHub API rate limit", str(cm_rate.exception))
 
     def test_s9_b07_github_api_observations_and_secret_redaction(self) -> None:
         """GitHub API acquisition runs locally with fixture transport and redacts outputs."""

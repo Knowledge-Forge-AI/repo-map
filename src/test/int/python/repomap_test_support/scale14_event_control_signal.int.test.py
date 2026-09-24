@@ -10,8 +10,8 @@ _BLOCKER_PROGRAM = """
 from threading import Event
 
 try:
-    print("blocker_entered", flush=True)
     try:
+        print("blocker_entered", flush=True)
         Event().wait(30.0)
     except KeyboardInterrupt:
         print("keyboard_interrupt", flush=True)

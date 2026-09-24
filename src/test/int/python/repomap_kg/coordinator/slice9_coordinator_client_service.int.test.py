@@ -51,7 +51,15 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
             token_file.chmod(0o600)
             client = LocalCoordinatorClient(Path(temp_dir) / "test.sock", token_file, timeout_seconds=5.0)
 
-            oversized_payload = {"key": "x" * (1024 * 1024 + 10)}
+            # Exact 64 KiB frame boundary: base envelope is 107 bytes, pad = 65429
+            # 65,536 bytes passes frame check and attempts socket connect (raises unavailable)
+            exact_boundary_payload = {"k": "x" * 65429}
+            with self.assertRaises(CoordinatorClientError) as cm_exact:
+                client.submit(exact_boundary_payload)
+            self.assertEqual(str(cm_exact.exception), "unavailable")
+
+            # 65,537 bytes fails frame check before connect (raises invalid_request)
+            oversized_payload = {"k": "x" * 65430}
             with self.assertRaises(CoordinatorClientError) as cm_req:
                 client.submit(oversized_payload)
             self.assertEqual(str(cm_req.exception), "invalid_request")
@@ -74,6 +82,19 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
             _decode_response(b'{"schema_version":true,"ok":true}\n')
         self.assertEqual(str(cm_bool_ver.exception), "invalid_response")
 
+        # Exact 64 KiB + 1 response boundary: 65,537 bytes decodes ok, 65,538 raises invalid_response
+        prefix = b'{"ok":true,"result":{"k":"'
+        suffix = b'"},"schema_version":1}\n'
+        resp_65537 = prefix + b"a" * (65537 - len(prefix) - len(suffix)) + suffix
+        self.assertEqual(len(resp_65537), 65537)
+        self.assertTrue(_decode_response(resp_65537)["ok"])
+
+        resp_65538 = prefix + b"a" * (65538 - len(prefix) - len(suffix)) + suffix
+        self.assertEqual(len(resp_65538), 65538)
+        with self.assertRaises(CoordinatorClientError) as cm_resp_over:
+            _decode_response(resp_65538)
+        self.assertEqual(str(cm_resp_over.exception), "invalid_response")
+
         # Error category translation tested through client connected to real AF_UNIX socket
         with tempfile.TemporaryDirectory() as temp_dir:
             sock_path = Path(temp_dir) / "server.sock"
@@ -83,35 +104,44 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
             client = LocalCoordinatorClient(sock_path, token_file)
 
             server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            server.settimeout(2.0)
             server.bind(str(sock_path))
             server.listen(1)
             try:
                 def _serve_response(response_bytes: bytes) -> None:
-                    conn, _ = server.accept()
-                    with conn:
-                        conn.makefile("rb").readline()
-                        conn.sendall(response_bytes)
+                    try:
+                        conn, _ = server.accept()
+                        with conn:
+                            conn.settimeout(2.0)
+                            conn.makefile("rb").readline()
+                            conn.sendall(response_bytes)
+                    except Exception:
+                        pass
 
-                thread = threading.Thread(
+                t1 = threading.Thread(
                     target=_serve_response,
                     args=(b'{"schema_version":1,"ok":false,"error_category":"unauthorized"}\n',),
                 )
-                thread.start()
+                t1.start()
                 with self.assertRaises(CoordinatorClientError) as cm_unauth:
                     client.health()
-                thread.join()
+                t1.join(timeout=2.0)
                 self.assertEqual(str(cm_unauth.exception), "unauthorized")
 
-                thread = threading.Thread(
+                t2 = threading.Thread(
                     target=_serve_response,
                     args=(b'{"schema_version":1,"ok":false,"error_category":"unknown_category"}\n',),
                 )
-                thread.start()
+                t2.start()
                 with self.assertRaises(CoordinatorClientError) as cm_unknown:
                     client.health()
-                thread.join()
+                t2.join(timeout=2.0)
                 self.assertEqual(str(cm_unknown.exception), "invalid_response")
             finally:
+                if "t1" in locals() and t1.is_alive():
+                    t1.join(timeout=2.0)
+                if "t2" in locals() and t2.is_alive():
+                    t2.join(timeout=2.0)
                 server.close()
 
         decoded = _decode_response(
@@ -155,10 +185,12 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
     def test_s9_a11_coordinator_service_lifecycle_heartbeat_and_degrade(self) -> None:
         """Stream handling dispatches requests and enforces 64KB frame limit refusal."""
         server_sock, client_sock = socket.socketpair()
+        server_sock.settimeout(2.0)
+        client_sock.settimeout(2.0)
+        reader = server_sock.makefile("rb")
+        writer = server_sock.makefile("wb")
+        t: threading.Thread | None = None
         try:
-            client_sock.settimeout(1.0)
-            server_sock.settimeout(1.0)
-
             class _MockService:
                 _max_frame = 64 * 1024
                 _dispatcher = LocalRequestDispatcher(
@@ -177,9 +209,6 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
                 def _write_error(self, stream: Any, category: str) -> None:
                     payload = json.dumps({"schema_version": 1, "ok": False, "error_category": category}) + "\n"
                     stream.write(payload.encode("utf-8"))
-
-            reader = server_sock.makefile("rb")
-            writer = server_sock.makefile("wb")
 
             req = json.dumps(
                 {
@@ -204,12 +233,16 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
             t = threading.Thread(target=_handle_stream, args=(_MockService(), reader, writer))
             t.start()
             client_sock.sendall(oversized_req)
-            t.join()
+            t.join(timeout=2.0)
             writer.flush()
             err_resp = json.loads(client_sock.makefile("rb").readline())
             self.assertFalse(err_resp["ok"])
             self.assertEqual(err_resp["error_category"], "frame_too_large")
         finally:
+            if t is not None and t.is_alive():
+                t.join(timeout=2.0)
+            reader.close()
+            writer.close()
             server_sock.close()
             client_sock.close()
 

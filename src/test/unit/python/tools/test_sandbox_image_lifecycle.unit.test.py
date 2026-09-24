@@ -73,7 +73,7 @@ def test_managed_image_build_context_contains_only_sandbox_recipe(tmp_path):
         if command[:3] == ["docker", "image", "inspect"]:
             inspect_count += 1
             if inspect_count == 1:
-                return completed(command, status=1)
+                return subprocess.CompletedProcess(command, 1, "", f"Error response from daemon: No such image: {module.IMAGE_TAG}\n")
             return completed(command, stdout=inspect_payload + "\n")
         if command[:3] == ["docker", "image", "ls"]:
             return completed(command, stdout=image_id + "\n")

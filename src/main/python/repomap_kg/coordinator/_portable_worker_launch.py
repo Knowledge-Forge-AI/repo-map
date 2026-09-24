@@ -21,6 +21,7 @@ from repomap_kg.coordinator._portable_materialization import (
     _remove_attempt_root,
 )
 from repomap_kg.coordinator._protocol_core import ProtocolError, SyntheticWorkerResult
+from repomap_kg.coordinator._protocol_execution import _worker_exit
 from repomap_kg.coordinator._worker_environment import build_portable_worker_environment
 from repomap_kg.coordinator._worker_launch import WorkerLaunchSpec, run_worker_spec
 
@@ -147,6 +148,13 @@ def _run_portable_worker_command(
                     f"{type(recorded_cleanup_error).__name__}"
                 )
         elif cleanup_errors and result is not None:
+            if result.terminal.get("status") in {"succeeded", "cancelled"}:
+                result = replace(
+                    result,
+                    original_terminal=result.original_terminal or result.terminal,
+                    terminal=_worker_exit(identity, result.returncode, "cleanup_failed"),
+                    synthesized_terminal=True,
+                )
             result = replace(
                 result,
                 cleanup_error=",".join(
