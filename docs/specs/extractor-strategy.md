@@ -1,5 +1,18 @@
 # RepoMap Extractor Strategy
 
+## Post-promotion Rust and retained-Python direction
+
+[ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
+requires backend-independent Rust extraction before v0.1.0 through ADR 0050
+admission (D14's out-of-process default unless a variance is recorded). Compare Tree-sitter Rust, rust-analyzer parser
+or helper boundaries, and syn using current capability/license/packaging evidence.
+Measure startup and parse time, RSS/install footprint, observation yield,
+unresolved/ambiguous counts, curated graph quality, malformed-source partial
+evidence and containment costs. No parser is selected here. Helpers feed Python
+semantics; a broader campaign does not authorize replacing canonicalization or
+resolution. Existing retained-Python no-new-debt ratchets remain binding; neither
+speculative replacement nor repository-wide zero debt gates product work.
+
 ## Goal
 
 Extractors should turn source files into deterministic, evidence-backed facts.

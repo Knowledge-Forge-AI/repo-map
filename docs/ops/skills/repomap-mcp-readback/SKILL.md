@@ -46,6 +46,19 @@ configured, agent session has not reloaded its MCP inventory, approval/trust
 policy blocking calls, or missing storage connection defaults. Do not infer
 graph contents when the tools are unavailable.
 
+### SQLite Local Graphs
+
+For a SQLite Local home, all 23 graph-reading tools are supported: the four
+canonical tools, legacy `repomap_status` (with a graph-registry `project`),
+`repomap_graph_status`, `repomap_refresh_status`, `repomap_project_summary`,
+the three searches, `repomap_neighborhood`, the five language/framework
+summaries and the six source/feed tools (plus the configuration and
+server-memory tools). Source/feed answers come only from the graph's accepted
+publication. A graph published without acquired feed observations reads as
+empty, not as missing capability, so do not retry against another backend.
+Content tools on an initialized but never-published graph return
+`graph-publication-absent`.
+
 ## Selecting A Project Or Graph
 
 1. When the graph registry is active, call `repomap_list_graphs` first and
@@ -105,12 +118,22 @@ legacy consumer still needs the older bare shape.
   evidence.
 - Treat `external:*`, `dynamic:*`, and `unknown:*` reference targets as
   explicit uncertainty, not failures.
+- `repomap_neighborhood` (configured graph) sanitizes its payload, and its
+  edge `source_key`/`target_key` fields come back as `[REDACTED]`. Use
+  `repomap_canonical_neighborhood` with `project="<graph_id>"` when you need
+  edge endpoint identities.
 
 ## Error Handling And Privacy
 
 - MCP storage errors preserve the bounded failure reason but omit
   operational topology (host classification, container identity). Use the
   local ops CLI for authorized runtime diagnosis.
+- Every database-reading tool (canonical, `repomap_status`, graph/refresh
+  status, search, project summary, configured neighborhood, the five
+  language/framework summaries and the six source/feed tools) reads host-only
+  for configured graphs: a stopped or unreachable database is reported, never
+  worked around through a container. Graph and refresh status report it in
+  `storage.error` or per-graph `error`; the others refuse with bounded text.
 - If a call fails, report the exact error and which layer failed:
   configuration, session exposure, approval policy, storage connection, or
   RepoMap query.

@@ -4,81 +4,62 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
-from typing import Any
-
+import os
+from pathlib import Path
 import signal as signal
+import time
+from typing import Any
 
 import psycopg
 
+from repomap_kg.artifacts._bundle_stream_parse import ValidatedBundleDescriptor
 from repomap_kg.artifacts.bundle import PublicationBundle
 from repomap_kg.observations.raw import RawObservation
 from repomap_kg.runtime.maintenance import maintenance_activity
 from repomap_kg.storage._staged_ingestion_authority import (
-    IngestionAuthority,
-    new_direct_authority,
-    stage_id_for_authority,
+    IngestionAuthority, new_direct_authority, stage_id_for_authority,
 )
 from repomap_kg.storage._staged_ingestion_stages import (
-    _DEFAULT_STAGE_TTL,
-    _copy_families as _copy_families,
-    _create_run as _create_run,
-    _create_stage as _create_stage,
-    _ensure_repository as _ensure_repository,
-    _handle_existing_stage_state,
-    _handle_refresh_failure,
+    _DEFAULT_STAGE_TTL, _copy_families as _copy_families, _create_run as _create_run,
+    _create_stage as _create_stage, _ensure_repository as _ensure_repository,
+    _handle_existing_stage_state, _handle_refresh_failure,
     _install_connection_signal_handlers as _install_connection_signal_handlers,
     _mark_prepared as _mark_prepared,
-    _refresh_canonical_node_evidence_statistics as _refresh_canonical_node_evidence_statistics,
-    _resolve_prepared_rows,
-    _restore_connection_signal_handlers as _restore_connection_signal_handlers,
+    _refresh_canonical_edge_evidence_statistics,
+    _refresh_canonical_node_evidence_statistics,
+    _resolve_prepared_rows, _restore_connection_signal_handlers as _restore_connection_signal_handlers,
 )
 from repomap_kg.storage.authority import StageId
 from repomap_kg.storage.backend_ownership import ConnectionRole
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.errors import (
-    StorageCommitUnknownError,
-    StorageSchemaError,
-)
+from repomap_kg.storage.errors import StorageCommitUnknownError, StorageSchemaError
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
-from repomap_kg.storage.publication import (
-    PortablePublicationBinding,
-    RunPublicationReceipt,
-)
+from repomap_kg.storage.publication import PortablePublicationBinding, RunPublicationReceipt
 from repomap_kg.storage.publication_fencing import (
-    PublicationHandoff,
-    build_graph_publication_claim_statements,
+    PublicationHandoff, build_graph_publication_claim_statements,
 )
 from repomap_kg.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args as _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_connection_telemetry import (
-    close_owned_connection,
-    open_owned_connection,
-)
+from repomap_kg.storage.staged_connection_telemetry import close_owned_connection, open_owned_connection
 from repomap_kg.storage.staged_publication import (
-    _execute,
-    execute_final_transaction as execute_final_transaction,
-    existing_stage_state,
-    mark_failed_before_publication,
-    reconcile_commit_unknown,
+    _execute, execute_final_transaction as execute_final_transaction,
+    existing_stage_state, mark_failed_before_publication, reconcile_commit_unknown,
 )
 from repomap_kg.storage.staged_rows import PreparedStageRows, build_staged_rows
 from repomap_kg.storage.staged_validation import (
-    mark_validated as mark_validated,
-    mark_validating as mark_validating,
+    mark_validated as mark_validated, mark_validating as mark_validating,
     validate_stage as validate_stage,
 )
 from repomap_kg.storage.staging_copy import copy_stage_rows as copy_stage_rows
 from repomap_kg.storage.staging_merge import MergeContext
 from repomap_kg.storage.staging_observability import (
-    StagingMeasurementCategory,
-    StagingMeasurements,
+    StagingMeasurementCategory, StagingMeasurements,
 )
 from repomap_kg.storage.staging_ownership import StageOwner
 from repomap_kg.storage.staging_resource_observability import (
-    capture_staging_resources,
-    emit_staging_resource_measurements,
+    capture_staging_resources, emit_staging_resource_measurements,
 )
 
 __all__ = (
@@ -157,7 +138,7 @@ def run_staged_full_refresh(
 
 def run_staged_portable_refresh(
     psql_args: Sequence[str],
-    bundle: PublicationBundle,
+    bundle: PublicationBundle | ValidatedBundleDescriptor | None = None,
     *,
     repository_name: str,
     root_path: str,
@@ -167,6 +148,7 @@ def run_staged_portable_refresh(
     connect: Callable[..., Any] | None = None,
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
+    prepared_override: PreparedStageRows | None = None,
 ) -> LoadSummary:
     """Publish one validated current bundle through the existing sole writer."""
     stage_id = stage_id_for_authority(authority)
@@ -177,7 +159,14 @@ def run_staged_portable_refresh(
         or portable_binding.graph_lease_fencing_epoch != authority.graph_lease_fencing_epoch
     ):
         raise StorageSchemaError("portable publication authority mismatch")
-    prepared = prepare_portable_bundle_rows(bundle, stage_id=stage_id)
+    if prepared_override is not None:
+        prepared = prepared_override
+    elif isinstance(bundle, ValidatedBundleDescriptor):
+        prepared = bundle.to_prepared_stage_rows()
+    elif isinstance(bundle, PublicationBundle):
+        prepared = prepare_portable_bundle_rows(bundle, stage_id=stage_id)
+    else:
+        raise ValueError("either bundle or prepared_override is required")
     receipt = RunPublicationReceipt(
         authority.receipt().attempt,
         authority.receipt().generations,
@@ -189,23 +178,51 @@ def run_staged_portable_refresh(
             authority,
             backend_telemetry,
             lambda: _run_staged_full_refresh_admitted(
-                psql_args,
-                (),
-                repository_name=repository_name,
-                root_path=root_path,
-                authority=authority,
-                repository_identity=repository_identity,
-                stage_id=stage_id,
-                connect=connect,
-                backend_telemetry=backend_telemetry,
-                staging_measurements=staging_measurements,
-                prepared_override=prepared,
+                psql_args, (), repository_name=repository_name, root_path=root_path,
+                authority=authority, repository_identity=repository_identity, stage_id=stage_id,
+                connect=connect, backend_telemetry=backend_telemetry,
+                staging_measurements=staging_measurements, prepared_override=prepared,
                 receipt_override=receipt,
             ),
         )
-    except BaseException:
+    finally:
         prepared.close()
-        raise
+
+
+def _run_system_test_post_publication_pause() -> None:
+    """Internal test instrumentation: pause after transaction_started fsync before final transaction.
+
+    Disabled by default; only active when _REPOMAP_SYSTEM_TEST_POST_PUBLICATION_PAUSE_PATH
+    points to a valid private test directory.
+    """
+    pause_path_str = os.environ.get("_REPOMAP_SYSTEM_TEST_POST_PUBLICATION_PAUSE_PATH")
+    if not pause_path_str:
+        return
+    pause_path = Path(pause_path_str)
+    try:
+        if not pause_path.is_absolute() or pause_path.is_symlink() or pause_path.parent.is_symlink():
+            return
+        st = pause_path.parent.stat()
+        if st.st_uid != os.getuid() or (st.st_mode & 0o777) != 0o700:
+            return
+    except OSError:
+        return
+    ready_path = Path(f"{pause_path_str}.ready")
+    try:
+        flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_NOFOLLOW", 0)
+        marker_fd = os.open(str(ready_path), flags, 0o600)
+        with os.fdopen(marker_fd, "w", encoding="utf-8") as marker:
+            marker.write(f"pid={os.getpid()}\n")
+        deadline = time.monotonic() + 30.0
+        while pause_path.exists() and time.monotonic() < deadline:
+            time.sleep(0.05)
+    except (AttributeError, OSError):
+        pass
+    finally:
+        try:
+            ready_path.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 def _run_staged_full_refresh_admitted(
@@ -299,10 +316,12 @@ def _run_staged_full_refresh_admitted(
         _copy_families(connection, prepared, resolved_stage_id, staging_measurements=staging_measurements)
         if staging_measurements is None:
             _refresh_canonical_node_evidence_statistics(connection)
+            _refresh_canonical_edge_evidence_statistics(connection)
         else:
             with staging_measurements.timed(StagingMeasurementCategory.STATISTICS):
                 with staging_measurements.operation("statistics.canonical_node_evidence"):
                     _refresh_canonical_node_evidence_statistics(connection)
+                    _refresh_canonical_edge_evidence_statistics(connection)
         _mark_prepared(connection, resolved_stage_id, prepared.row_counts)
         connection.commit()
         if staging_measurements is None:
@@ -320,6 +339,9 @@ def _run_staged_full_refresh_admitted(
 
         handoff = PublicationHandoff(MergeContext(resolved_stage_id, owner, run_id), receipt).validate()
         try:
+            if authority.before_publication is not None:
+                authority.before_publication()
+            _run_system_test_post_publication_pause()
             execute_final_transaction(connection, handoff, staging_measurements=staging_measurements)
         except (Exception, KeyboardInterrupt):
             connection.rollback()

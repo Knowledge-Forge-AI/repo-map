@@ -3,11 +3,13 @@ import json
 from pathlib import Path
 import pytest
 from repomap_kg.ops.config import load_ops_config
+from repomap_kg.graph.keys import file_key
 from repomap_kg.ops.graph_files import (
     query_graph_files, GraphFileFilters, GraphFileRecord, OpsRefreshError,
     graph_file_page_to_jsonable, format_graph_file_table,
 )
 from repomap_kg.storage import apply_migrations, default_rdbms_root, run_psql
+from repomap_kg.storage.sql_core import sql_literal
 from repomap_test_support.postgres_harness import temporary_postgres
 
 
@@ -19,6 +21,50 @@ def configured_files(tmp_path_factory):
         home = tmp_path_factory.mktemp("slice16-readback")
         _write_config(home, postgres=postgres)
         yield load_ops_config(home / "repomap.rpl.toml"), postgres
+
+
+@pytest.mark.parametrize("metadata_kind", ["absent", "null", "empty-array", "empty-text", "text", "array"])
+def test_public_path_metadata_and_legacy_filters_escape_literal_paths(tmp_path, metadata_kind):
+    path = "docs/a %_é'/file.py"
+    metadata = {
+        "absent": {}, "null": {"source_relative_path": None},
+        "empty-array": {"source_relative_path": []},
+        "empty-text": {"source_relative_path": ""},
+        "text": {"source_relative_path": path},
+        "array": {"source_relative_path": [path]},
+    }[metadata_kind]
+    namespaced = metadata_kind in {"text", "array"}
+    key = file_key("entry/" + path if namespaced else path)
+    # Separate disposable DB: the module-scoped configured_files remains untouched.
+    with temporary_postgres() as postgres:
+        apply_migrations(default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command)
+        _seed(postgres)
+        _write_config(tmp_path, postgres=postgres)
+        config = load_ops_config(tmp_path / "repomap.rpl.toml")
+        for row_key, row_metadata in (
+            (key, metadata),
+            (file_key("docs/a XXé'/file.py"), {}),
+            (file_key("other/decoy.py"), {"source_relative_path": "docs/a XXé'/file.py"}),
+        ):
+            run_psql([postgres.psql_command, *postgres.psql_args, "-qAt", "-v", "ON_ERROR_STOP=1"],
+                     input_text=f"""INSERT INTO canonical_nodes(repository_id,
+graph_key_version, canonical_key, kind, display_name, metadata_json, confidence, conflict)
+SELECT id, 1, {sql_literal(row_key)}, 'file', 'fixture',
+{sql_literal(json.dumps(row_metadata))}::jsonb, 'extracted', false
+FROM repositories WHERE name = 'public-repository';""")
+        before = _storage_fingerprint(postgres)
+        for filters in (GraphFileFilters(path=path),
+                        GraphFileFilters(path_prefix="docs/a %_é'/"),
+                        GraphFileFilters(path_prefix="docs\\a %_é'\\")):
+            page = query_graph_files(config, "public", filters=filters,
+                                     psql_command=postgres.psql_command)
+            assert [(row.canonical_key, row.path) for row in page.records] == [(key, path)]
+            assert page.has_more is False
+        if namespaced:
+            page = query_graph_files(config, "public", filters=GraphFileFilters(path="entry/" + path),
+                                     psql_command=postgres.psql_command)
+            assert page.records == ()
+        assert _storage_fingerprint(postgres) == before
 
 
 @pytest.mark.parametrize("filters,expected", [

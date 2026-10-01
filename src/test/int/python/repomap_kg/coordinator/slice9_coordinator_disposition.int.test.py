@@ -234,7 +234,7 @@ class Slice9CoordinatorDispositionIntegrationTests(unittest.TestCase):
         coordinator.shutdown()
 
     def test_s9_a05_coordinator_worker_crash_unhandled_exception(self) -> None:
-        """Executor runner exception marked as worker_crash:unhandled_exception with reconciliation."""
+        """Executor runner exception retains class provenance with reconciliation."""
         store = _FencedCoordinatorStore()
         claim = JobClaim(job_id="job_a05", graph_id="graph_a05", attempt=1, instance_id="inst_1", fencing_epoch=1)
         store.claim = claim
@@ -253,7 +253,10 @@ class Slice9CoordinatorDispositionIntegrationTests(unittest.TestCase):
         self.assertEqual(outcome, "reconciliation_required")
         self.assertEqual(len(store.reconciliation_records), 1)
         self.assertEqual(store.reconciliation_records[0][1]["category"], "worker_crash")
-        self.assertEqual(store.reconciliation_records[0][1]["diagnostic_summary"], "worker_crash:unhandled_exception")
+        self.assertEqual(
+            store.reconciliation_records[0][1]["diagnostic_summary"],
+            "coordinator_exception:RuntimeError:simulated_runner_process_failure",
+        )
         coordinator.shutdown()
 
     def test_s9_a06_coordinator_terminal_failed_retry_scheduling_and_permanent(self) -> None:

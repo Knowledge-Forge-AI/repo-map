@@ -143,7 +143,7 @@ def config_generation(
 
 
 def extractor_generation(graph: OpsGraphConfig) -> str:
-    return f"eg1:repomap-{__version__}-{graph.extractor_profile}"
+    return f"eg1:repomap-{__version__}-{graph.extractor_profile}-config-binary64-v1"
 
 
 def canonicalizer_generation() -> str:

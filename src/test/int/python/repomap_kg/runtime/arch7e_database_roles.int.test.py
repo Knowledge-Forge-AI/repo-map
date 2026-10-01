@@ -65,17 +65,39 @@ def test_graph_and_control_privilege_matrix_is_exact() -> None:
             assert not _database_privilege(admin, REFRESH_PUBLICATION_ROLE, "arch7e_control", "CONNECT")
 
         with closing(_connection(postgres, postgres.database)) as admin:
-            row = admin.execute(
-                "SELECT rolsuper, rolcreatedb, rolcreaterole, rolinherit, rolreplication, rolbypassrls "
-                "FROM pg_roles WHERE rolname = %s",
-                (READ_STATUS_ROLE,),
-            ).fetchone()
-            assert row == (False, False, False, False, False, False)
-            membership_count = admin.execute(
-                "SELECT count(*) FROM pg_auth_members AS m JOIN pg_roles AS r ON r.oid = m.member WHERE r.rolname = %s",
-                (READ_STATUS_ROLE,),
-            ).fetchone()
-            assert membership_count == (0,)
+            for role in (READ_STATUS_ROLE, REFRESH_PUBLICATION_ROLE):
+                row = admin.execute(
+                    "SELECT rolsuper, rolcreatedb, rolcreaterole, rolinherit, rolreplication, rolbypassrls "
+                    "FROM pg_roles WHERE rolname = %s",
+                    (role,),
+                ).fetchone()
+                assert row == (False, False, False, False, False, False)
+                members = admin.execute(
+                    "SELECT count(*) FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.member WHERE r.rolname = %s",
+                    (role,),
+                ).fetchone()
+                assert members == (0,)
+                assert not admin.execute("SELECT pg_has_role(%s, %s, 'MEMBER')", (role, postgres.user)).fetchone()[0]
+
+        with closing(_connection(postgres, "arch7e_graph")) as g_admin:
+            datdba = g_admin.execute("SELECT datdba::regrole::text FROM pg_database WHERE datname = 'arch7e_graph'").fetchone()[0]
+            assert datdba == postgres.user and datdba != REFRESH_PUBLICATION_ROLE
+            owner = g_admin.execute("SELECT tableowner FROM pg_tables WHERE tablename = 'role_fixture'").fetchone()[0]
+            assert owner == postgres.user and owner != REFRESH_PUBLICATION_ROLE
+            srv_ver = int(g_admin.execute("SHOW server_version_num").fetchone()[0])
+            if srv_ver >= 170000:
+                assert not g_admin.execute("SELECT has_table_privilege(%s, 'role_fixture', 'MAINTAIN')", (REFRESH_PUBLICATION_ROLE,)).fetchone()[0]
+            stats_before = g_admin.execute("SELECT reltuples, relpages FROM pg_class WHERE relname = 'role_fixture'").fetchone()
+
+        notices: list[str] = []
+        with closing(_connection(postgres, "arch7e_graph", user=REFRESH_PUBLICATION_ROLE, password=secrets.refresh_publication)) as ref_conn:
+            ref_conn.add_notice_handler(lambda n: notices.append(str(n.message_primary)))
+            ref_conn.execute("ANALYZE role_fixture;")
+
+        with closing(_connection(postgres, "arch7e_graph")) as g_admin:
+            stats_after = g_admin.execute("SELECT reltuples, relpages FROM pg_class WHERE relname = 'role_fixture'").fetchone()
+            assert stats_before == stats_after
+            assert any("permission denied" in n or "skipping" in n for n in notices)
 
 
 def test_role_reconciliation_is_transactional_and_refuses_owned_objects() -> None:
@@ -126,13 +148,10 @@ def _create_fixture_and_roles(postgres, database, database_kind, secrets) -> Non
         admin.execute(role_sql)
 
 
-def _connection(postgres, database, *, autocommit=False):
+def _connection(postgres, database, *, user=None, password=None, autocommit=False):
     return psycopg.connect(
-        host=postgres.host,
-        port=postgres.port,
-        user=postgres.user,
-        dbname=database,
-        password=postgres.password,
+        host=postgres.host, port=postgres.port, user=user or postgres.user,
+        dbname=database, password=password if password is not None else postgres.password,
         autocommit=autocommit,
     )
 

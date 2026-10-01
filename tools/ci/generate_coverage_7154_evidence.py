@@ -114,7 +114,7 @@ def test_case():
         app_path = os.path.join(td, "app.py")
         with open(app_path, "w") as f:
             f.write("def run():\n    return 42\nrun()\n")
-        
+
         env = dict(os.environ, COVERAGE_PROCESS_START=rc_path)
         cmd = ["python3", app_path]
         res = subprocess.run(cmd, env=env, cwd=td, capture_output=True, text=True)

@@ -7,6 +7,7 @@ from typing import Any, Mapping, Sequence
 
 from repomap_kg.graph.discovery import DEFAULT_DISCOVERY_EXCLUDE_PATHS
 from repomap_kg.ops.config import PRIVATE_PRIVACY, OpsConfig, OpsGraphConfig
+from repomap_kg.ops.graph_registry import GraphRegistryConfig
 from repomap_kg.ops.reports import (
     OpsGraphSummary,
     OpsRefreshError,
@@ -64,14 +65,14 @@ def _graph_preflight_warnings(graph: OpsGraphConfig) -> tuple[Mapping[str, Any],
     )
 
 
-def _find_graph(config: OpsConfig, graph_id: str) -> OpsGraphConfig:
+def _find_graph(config: GraphRegistryConfig, graph_id: str) -> OpsGraphConfig:
     for graph in config.graphs:
         if graph.id == graph_id:
             return graph
     raise OpsRefreshError(f"graph {graph_id!r} is not configured")
 
 
-def _refresh_root_path(config: OpsConfig, graph: OpsGraphConfig) -> Path:
+def _refresh_root_path(config: GraphRegistryConfig, graph: OpsGraphConfig) -> Path:
     expanded = Path(graph.root_path_expanded)
     if expanded.is_absolute():
         return expanded

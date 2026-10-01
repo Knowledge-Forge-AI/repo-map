@@ -24,7 +24,9 @@ from ci.ci_topology import check_topology
 from ci.workflow_model import load_workflow
 
 WORKFLOW_DIR = ROOT / ".github/workflows"
-RELEASE_WORKFLOW = WORKFLOW_DIR / "repomap-release-qualification.yml"
+PR_FAST = WORKFLOW_DIR / "repomap-static-analysis.yml"
+PR_UNIT = WORKFLOW_DIR / "repomap-unit-tests.yml"
+MAIN_POLICY = WORKFLOW_DIR / "repomap-main-source-policy.yml"
 
 
 def clone_workflows(tmp_path: Path) -> Path:
@@ -90,18 +92,17 @@ def test_canonical_test_runner_appears_exactly_three_times() -> None:
     assert occurrences == 3
 
 
-def test_release_qualification_targets_main_pull_requests_only() -> None:
-    triggers = load_workflow(RELEASE_WORKFLOW).triggers
+def test_pr_fast_targets_staging_pull_requests_only() -> None:
+    triggers = load_workflow(PR_FAST).triggers
 
-    assert set(triggers) == {"pull_request"}
-    assert triggers["pull_request"]["branches"] == ["main"]
+    assert set(triggers) == {"pull_request", "workflow_dispatch"}
+    assert triggers["pull_request"]["branches"] == ["staging"]
     assert sorted(triggers["pull_request"]["types"]) == [
         "opened",
         "ready_for_review",
         "reopened",
         "synchronize",
     ]
-    assert "paths" not in triggers["pull_request"]
 
 
 def test_no_workflow_declares_a_duplicate_branch_push_lane() -> None:
@@ -115,15 +116,23 @@ def test_no_workflow_grants_a_write_permission() -> None:
             assert level in {"read", "none"}, f"{path.name}:{scope}"
 
 
-def test_source_and_export_policy_performs_no_expensive_work() -> None:
-    workflow = load_workflow(RELEASE_WORKFLOW)
-    job = workflow.jobs["source-and-export-policy"]
-    commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s).lower()
+def test_main_policy_applies_only_to_pull_requests_targeting_main() -> None:
+    triggers = load_workflow(MAIN_POLICY).triggers
 
-    assert "tools/ci/promotion_policy.py" in commands
-    assert "tools/ci/public_export_policy.py" in commands
+    assert triggers["pull_request"]["branches"] == ["main"]
+    assert "push" not in triggers
+
+
+def test_invalid_main_source_performs_no_expensive_work() -> None:
+    workflow = load_workflow(MAIN_POLICY)
+    commands = "\n".join(workflow.run_commands()).lower()
+
+    assert "tools/ci/promotion_policy.py" in "\n".join(workflow.run_commands())
     for expensive in ("run_tests.py", "docker", "postgres", "pytest", "pip install"):
         assert expensive not in commands
+    assert all(
+        not use.startswith("actions/setup-") for use in workflow.action_uses()
+    )
 
 
 def test_no_workflow_merges_updates_refs_or_closes_pull_requests() -> None:
@@ -172,10 +181,8 @@ def test_immutable_action_pins_and_read_only_checkout_are_preserved() -> None:
                 assert step["with"]["persist-credentials"] is False
 
 
-def test_pre_review_static_preserves_aggregate_check_owner() -> None:
-    workflow = load_workflow(RELEASE_WORKFLOW)
-    job = workflow.jobs["pre-review-static"]
-    commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s)
+def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
+    commands = "\n".join(load_workflow(PR_FAST).run_commands())
 
     assert "tools/ci/bootstrap_pre_review.py" in commands
     assert "tools/ci/run_pre_review.py" in commands
@@ -188,79 +195,88 @@ def test_pre_review_static_preserves_aggregate_check_owner() -> None:
     ("name", "old", "new", "expected"),
     [
         (
-            "repomap-release-qualification.yml",
-            "    branches: [main]",
+            "repomap-static-analysis.yml",
             "    branches: [staging]",
-            "must target 'main' only",
+            "    branches: [main]",
+            "PR Fast must target",
         ),
         (
-            "repomap-release-qualification.yml",
-            "  pull_request:",
-            "  push:\n    branches: [main]\n  pull_request:",
+            "repomap-static-analysis.yml",
+            "  workflow_dispatch:",
+            "  push:\n    branches: [main]\n  workflow_dispatch:",
             "no duplicate branch push lane",
         ),
         (
-            "repomap-release-qualification.yml",
-            "  pull_request:",
-            "  workflow_dispatch:\n  pull_request:",
-            "must not declare workflow_dispatch",
-        ),
-        (
-            "repomap-release-qualification.yml",
+            "repomap-main-source-policy.yml",
             "    branches: [main]",
-            "    branches: [main]\n    paths: ['src/**']",
-            "must not declare path filters",
+            "    branches: [staging]",
+            "must apply only to PRs targeting",
         ),
         (
-            "repomap-release-qualification.yml",
-            "  pre-review-static:\n"
-            "    name: pre-review-static\n"
-            "    needs: [source-and-export-policy]\n"
-            "    runs-on: ubuntu-latest\n"
-            "    timeout-minutes: 40\n"
-            "    steps:\n"
-            "      - name: Check out repository\n"
-            "        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n"
-            "        with:\n"
+            "repomap-main-source-policy.yml",
+            "        run: python3 tools/ci/promotion_policy.py",
+            "        run: |\n          python3 tools/ci/promotion_policy.py\n          docker pull alpine:latest",
+            "must cost nothing",
+        ),
+        (
+            "repomap-static-analysis.yml",
             "          fetch-depth: 0",
-            "  pre-review-static:\n"
-            "    name: pre-review-static\n"
-            "    needs: [source-and-export-policy]\n"
-            "    runs-on: ubuntu-latest\n"
-            "    timeout-minutes: 40\n"
-            "    steps:\n"
-            "      - name: Check out repository\n"
-            "        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n"
-            "        with:\n"
             "          fetch-depth: 1",
             "complete Git history",
         ),
         (
-            "repomap-release-qualification.yml",
-            "tools/ci/bootstrap_pre_review.py",
-            "tools/ci/removed_pre_review.py",
+            "repomap-static-analysis.yml",
+            "python3 tools/ci/bootstrap_pre_review.py",
+            "python3 tools/ci/removed_pre_review.py",
             "missing pre-review owner",
         ),
         (
-            "repomap-release-qualification.yml",
+            "repomap-static-analysis.yml",
             '          "${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python" \\\n',
             "          python3 \\\n",
             "missing pre-review owner",
         ),
         (
-            "repomap-release-qualification.yml",
+            "repomap-static-analysis.yml",
+            "      - name: Materialize the pinned pre-review toolchain\n",
+            "      - name: Duplicate host static install\n"
+            '        run: python -m pip install --editable ".[static-analysis]"\n\n'
+            "      - name: Materialize the pinned pre-review toolchain\n",
+            "must not be installed into host Python",
+        ),
+        (
+            "repomap-unit-tests.yml",
+            "    branches: [staging]",
+            "    branches: [main]",
+            "unit lane must target",
+        ),
+        (
+            "repomap-unit-tests.yml",
+            '      - "src/main/go/**"\n',
+            "",
+            "unit lane paths must be",
+        ),
+        (
+            "repomap-unit-tests.yml",
             "  contents: read",
             "  contents: write",
             "not read-only",
         ),
         (
-            "repomap-release-qualification.yml",
+            "repomap-unit-tests.yml",
             'python -m pip install --editable ".[test,scale-tools,static-analysis]"',
             'python -m pip install --editable ".[test,scale-tools]"',
             "unit lane must contain",
         ),
         (
-            "repomap-release-qualification.yml",
+            "repomap-unit-tests.yml",
+            "python -m pip install --require-hashes --no-deps --requirement "
+            "tools/ci/project_dependencies.lock",
+            "python -m pip install psycopg",
+            "unit lane must contain",
+        ),
+        (
+            "repomap-unit-tests.yml",
             "      - name: Set up Go for the canonical runner\n"
             "        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0\n"
             "        with:\n"
@@ -270,16 +286,18 @@ def test_pre_review_static_preserves_aggregate_check_owner() -> None:
             "canonical unit runner requires pinned Go",
         ),
         (
-            "repomap-release-qualification.yml",
-            "run: python3 tools/run_tests.py --suite unit",
-            "run: python -m pytest src/test/unit/python",
+            "repomap-unit-tests.yml",
+            "        run: python3 tools/run_tests.py --suite unit",
+            "        run: python -m pytest src/test/unit/python",
             "canonical runner",
         ),
         (
-            "repomap-release-qualification.yml",
-            "run: python3 tools/run_tests.py --suite unit",
-            "run: python3 tools/run_tests.py --suite unit --no-coverage",
-            "retain its coverage gate",
+            "repomap-unit-tests.yml",
+            "        run: python3 tools/run_tests.py --suite unit",
+            "        run: |\n"
+            "          python3 tools/run_tests.py --suite unit\n"
+            "          python3 tools/run_tests.py --suite int",
+            "must not contain '--suite int'",
         ),
     ],
 )
@@ -294,17 +312,9 @@ def test_topology_contracts_detect_their_own_violation(
     assert any(expected in violation for violation in violations), violations
 
 
-def test_retired_workflow_is_rejected(tmp_path: Path) -> None:
-    def mutate(root: Path) -> None:
-        (root / ".github/workflows/repomap-static-analysis.yml").write_text("name: test\n", encoding="utf-8")
-
-    violations = violations_after(tmp_path, mutate)
-    assert any("retired workflow must not exist" in v for v in violations)
-
-
 def test_retired_all_invocation_is_rejected(tmp_path: Path) -> None:
     def mutate(root: Path) -> None:
-        path = root / ".github/workflows/repomap-release-qualification.yml"
+        path = root / ".github/workflows/repomap-static-analysis.yml"
         path.write_text(
             path.read_text(encoding="utf-8")
             + "\n      - name: Sneaky\n        run: python3 tools/run_tests.py --suite all\n",

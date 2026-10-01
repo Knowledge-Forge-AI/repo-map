@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime.postgres_route import PostgresRoute, effective_postgres_route, execution_postgres
+
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,10 +38,8 @@ from repomap_kg.graph.multi_source_pipeline import (
     scan_multi_source_generations,
 )
 from repomap_kg.runtime.database_role_contract import project_database_role_config
-from repomap_kg.storage import (
-    read_latest_receipt_bearing_publication,
-    read_run_publication,
-)
+from repomap_kg.coordinator._publication_phase import retire_evidence
+from repomap_kg.storage import read_latest_receipt_bearing_publication, read_run_publication
 from repomap_kg.coordinator.windows_security import (
     WindowsSecurityError,
     reject_reparse_path,
@@ -94,6 +94,8 @@ class ConfiguredRefreshResolver:
             graph_id=snapshot.graph_id,
             config_path=self._config_path,
             psql_path=self._psql_path,
+            postgres_host=snapshot.route.host, postgres_port=snapshot.route.port,
+            postgres_route_kind=snapshot.route.kind,
             postgres_user=snapshot.postgres_user,
             postgres_password=snapshot.password,
             executable_search_path=_executable_search_path(self._psql_path),
@@ -148,9 +150,7 @@ class ConfiguredRefreshResolver:
             extractor_generation=extractor_generation(graph),
             canonicalizer_generation=canonicalizer_generation(),
             password=_postgres_password(authority_config, self._config_path),
-            psql_args=tuple(
-                authority_config.postgres.psql_args_for_database(database)
-            ),
+            psql_args=tuple(execution_postgres(authority_config).psql_args_for_database(database)),
         )
 
     def latest_publication(self, graph_id: str) -> Mapping[str, object] | None:
@@ -227,11 +227,10 @@ class ConfiguredRefreshResolver:
             config_generation=graph_config_generation,
             extractor_generation=extractor_generation(graph),
             canonicalizer_generation=canonicalizer_generation(),
+            route=effective_postgres_route(authority_config),
             postgres_user=authority_config.postgres.user,
             password=_postgres_password(authority_config, self._config_path),
-            psql_args=tuple(
-                authority_config.postgres.psql_args_for_database(database)
-            ),
+            psql_args=tuple(execution_postgres(authority_config).psql_args_for_database(database)),
         )
 
     def _authority_config(self, config):
@@ -246,6 +245,7 @@ class ConfiguredRefreshResolver:
 
 @dataclass(frozen=True)
 class _ConfiguredSnapshot:
+    route: PostgresRoute
     graph_id: str
     source_generation: str
     config_generation: str
@@ -298,6 +298,7 @@ def build_configured_refresh_coordinator(
             resolver.resolve_authority, capability_directory, limits
         ),
         publication_reader=resolver.read_publication,
+        publication_retirer=lambda claim: retire_evidence(capability_directory, claim),
         max_workers=limits.max_running_workers,
     )
 
@@ -354,7 +355,7 @@ def _executable_search_path(psql_path: Path) -> tuple[Path, ...]:
     candidates.extend(Path(value) for value in os.environ.get("PATH", "").split(os.pathsep))
     paths = []
     for path in candidates:
-        if path in paths:
+        if not path.is_absolute() or path in paths:
             continue
         try:
             details = path.stat()

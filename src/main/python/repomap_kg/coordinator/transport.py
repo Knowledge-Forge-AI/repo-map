@@ -25,6 +25,7 @@ from repomap_kg.coordinator.endpoint import (
     load_endpoint_descriptor,
     write_endpoint_descriptor,
 )
+from repomap_kg.coordinator.limits import AdmissionDeadline, AdmissionTimeout
 from repomap_kg.coordinator.windows_security import (
     WindowsSecurityError,
     reject_reparse_path,
@@ -80,6 +81,13 @@ class LocalRequestDispatcher:
             or not _valid_operation_payload(operation, payload)
         ):
             raise TransportError("invalid_request")
+        if operation == "submit":
+            try:
+                AdmissionDeadline.from_wire(payload["admission_deadline"])
+            except AdmissionTimeout:
+                raise TransportError("admission_timeout") from None
+            except ValueError:
+                raise TransportError("invalid_request") from None
         with self._lock:
             if self._in_flight >= self._max_in_flight:
                 raise TransportError("saturated")
@@ -382,10 +390,6 @@ def _validate_socket_parent(parent: Path) -> None:
         or stat.S_IMODE(details.st_mode) & 0o077
     ):
         raise TransportError("unsafe_socket_directory")
-
-
-
-
 __all__ = [
     "LocalRequestDispatcher",
     "LoopbackTcpService",

@@ -290,8 +290,16 @@ class ServicePackagePipelineIntegrationTests(unittest.TestCase):
             store.read(r_ref)
 
     def test_coordinator_service_operations_full_lifecycle_and_adapters(self) -> None:
+        from repomap_kg.runtime.local import setup_local_runtime
+
+        def native_home(home: Path) -> None:
+            setup_local_runtime(home)
+            config = home / "repomap.rpl.toml"
+            config.write_text(config.read_text().replace("[runtime]", '[runtime]\ncoordinator_mode = "native"'))
+
         repomap_home = self.tmpdir / "coord_home"
         repomap_home.mkdir(mode=0o700, parents=True, exist_ok=True)
+        native_home(repomap_home)
         spec = build_service_package_spec(repomap_home)
 
         user_home = self.tmpdir / "coord_user"
@@ -353,6 +361,7 @@ class ServicePackagePipelineIntegrationTests(unittest.TestCase):
 
                 home_v2 = self.tmpdir / f"coord_home_v2_{adapter.platform_name}"
                 home_v2.mkdir(mode=0o700, parents=True, exist_ok=True)
+                native_home(home_v2)
                 spec_v2 = build_service_package_spec(home_v2)
                 ops_v2 = CoordinatorServiceOperations(
                     spec_v2, adapter, runner=runner, health_probe=probe

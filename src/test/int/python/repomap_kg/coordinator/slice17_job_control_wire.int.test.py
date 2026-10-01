@@ -159,3 +159,23 @@ def test_invalid_job_or_health_claim_is_not_printed_as_a_valid_result(damage):
     (code, stdout, stderr), _ = _cli_peer(command, payload, options=options)
     assert code == 1 and stdout == ""
     assert ("invalid_response" if damage == "job-empty" else "coordinator_response_invalid") in stderr
+
+
+@pytest.mark.parametrize("as_json", [True, False])
+@pytest.mark.parametrize("command", ["coordinator-job-status", "coordinator-job-wait"])
+def test_bounded_diagnostic_survives_cli_json_and_table(command, as_json):
+    payload = {**_job("failed"), "diagnostic_summary": "worker_exit:17"}
+    (code, stdout, stderr), _ = _cli_peer(command, payload, as_json=as_json)
+    assert code == (1 if command.endswith("wait") else 0) and not stderr
+    if as_json:
+        assert json.loads(stdout)["job"]["diagnostic_summary"] == "worker_exit:17"
+    else:
+        assert "diagnostic_summary | worker_exit:17" in stdout
+
+
+@pytest.mark.parametrize("diagnostic", [None, 1, "x" * 257, "é" * 129,
+                                      "one\ntwo", "password=synthetic-sensitive"])
+def test_unsafe_peer_diagnostic_is_rejected_before_cli_output(diagnostic):
+    payload = {**_job("failed"), "diagnostic_summary": diagnostic}
+    (code, stdout, stderr), _ = _cli_peer("coordinator-job-status", payload)
+    assert code == 1 and not stdout and "invalid_response" in stderr

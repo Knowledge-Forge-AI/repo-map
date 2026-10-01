@@ -270,7 +270,8 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
         self.assertEqual(lease_row, ("synthetic-core", submitted.job_id, 1, "coord-crash", epoch))
         self._assert_attempt(
             submitted.job_id, 1, is_current=True, result_category="worker_crash",
-            publication_state="commit_unknown", diagnostic="worker_crash:unhandled_exception",
+            publication_state="commit_unknown",
+            diagnostic="coordinator_exception:RuntimeError:unhandled worker process fault",
             finished=False,
         )
         claims = self.store.reconciliation_claims(limit=10)

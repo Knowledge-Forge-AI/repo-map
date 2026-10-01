@@ -6,6 +6,7 @@ from repomap_kg.storage.canonical_staging_merge import (
     build_canonical_merge_statements,
 )
 from repomap_kg.storage.staged_ingestion import (
+    _refresh_canonical_edge_evidence_statistics,
     _refresh_canonical_node_evidence_statistics,
 )
 from repomap_kg.storage.authority import AttemptNumber, OperationId
@@ -44,7 +45,10 @@ def test_canonical_builder_is_caller_owned_and_set_based() -> None:
     sql = "\n".join(statements)
 
     assert all("BEGIN;" not in statement and "COMMIT;" not in statement for statement in statements)
-    assert sql.count("DISTINCT ON") >= 4
+    assert sql.count("DISTINCT ON") >= 3
+    assert "ANALYZE canonical_nodes" not in sql
+    assert "ANALYZE canonical_evidence" not in sql
+    assert "ANALYZE canonical_edges" not in sql
     assert "stage_canonical_nodes" in sql
     assert "stage_canonical_edges" in sql
     assert "stage_canonical_evidence" in sql
@@ -60,6 +64,7 @@ def test_canonical_builder_rejects_order_dependent_proposals_and_missing_referen
     sql = "\n".join(statements)
     edge_reference_guard = statements[5]
     node_evidence_reference_guard = statements[7]
+    edge_evidence_reference_guard = statements[9]
 
     assert sql.count("COUNT(DISTINCT (") >= 3
     assert "SCALE4 stage validation conflict" in sql
@@ -76,6 +81,11 @@ def test_canonical_builder_rejects_order_dependent_proposals_and_missing_referen
     assert "NOT EXISTS" not in node_evidence_reference_guard
     assert "LEFT JOIN canonical_nodes" not in node_evidence_reference_guard
     assert "LEFT JOIN canonical_evidence" not in node_evidence_reference_guard
+    assert edge_evidence_reference_guard.count("FULL JOIN") == 2
+    assert edge_evidence_reference_guard.count("IF EXISTS") == 2
+    assert "NOT EXISTS" not in edge_evidence_reference_guard
+    assert "LEFT JOIN canonical_edges" not in edge_evidence_reference_guard
+    assert "LEFT JOIN canonical_evidence" not in edge_evidence_reference_guard
 
 
 def test_node_evidence_guard_uses_narrow_spill_capable_identity_checks() -> None:
@@ -108,6 +118,29 @@ def test_node_evidence_merge_deduplicates_staged_logical_identities() -> None:
     assert "ON CONFLICT DO NOTHING" in merge
 
 
+def test_edge_evidence_merge_deduplicates_staged_logical_identities_variant_f() -> None:
+    merge = build_canonical_merge_statements(context())[10]
+
+    assert "CREATE TEMP TABLE temp_canonical_edge_map ON COMMIT DROP AS" in merge
+    assert "CREATE TEMP TABLE temp_canonical_evidence_map ON COMMIT DROP AS" in merge
+    assert "CREATE TEMP TABLE IF NOT EXISTS" not in merge
+    assert "ANALYZE pg_temp.temp_canonical_edge_map;" in merge
+    assert "ANALYZE pg_temp.temp_canonical_evidence_map;" in merge
+    assert "WITH staged_links AS MATERIALIZED" in merge
+    assert "GROUP BY s.graph_key_version, s.source_canonical_key, s.edge_kind" in merge
+    assert "FROM staged_links s" in merge
+    assert "JOIN pg_temp.temp_canonical_edge_map edge" in merge
+    assert "JOIN pg_temp.temp_canonical_evidence_map evidence" in merge
+    assert "SELECT DISTINCT\n" not in merge
+    assert "SELECT DISTINCT ON" not in merge
+    assert "ORDER BY" not in merge
+    assert "family_ordinal" not in merge
+    assert "ON CONFLICT DO NOTHING" in merge
+    assert "DROP TABLE IF EXISTS pg_temp.temp_canonical_edge_map;" in merge
+    assert "DROP TABLE IF EXISTS pg_temp.temp_canonical_evidence_map;" in merge
+
+
+
 def test_node_evidence_statistics_refresh_is_single_and_targeted() -> None:
     statements: list[str] = []
 
@@ -118,6 +151,18 @@ def test_node_evidence_statistics_refresh_is_single_and_targeted() -> None:
     _refresh_canonical_node_evidence_statistics(Connection())
 
     assert statements == ["ANALYZE stage_canonical_node_evidence"]
+
+
+def test_edge_evidence_statistics_refresh_is_single_and_targeted() -> None:
+    statements: list[str] = []
+
+    class Connection:
+        def execute(self, statement: str) -> None:
+            statements.append(statement)
+
+    _refresh_canonical_edge_evidence_statistics(Connection())
+
+    assert statements == ["ANALYZE stage_canonical_edge_evidence"]
 
 
 def test_canonical_builder_preserves_complete_owner_literals_and_no_private_data() -> None:

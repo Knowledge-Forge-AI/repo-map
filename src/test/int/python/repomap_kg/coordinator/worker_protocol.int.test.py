@@ -26,13 +26,9 @@ from repomap_test_support.synthetic_worker_adapter import (
 
 IDENTITY = {"job_id": "job-public-1", "attempt": 1}
 LIMITS = {
-    "process_deadline_seconds": 0.8,
-    "heartbeat_seconds": 0.15,
-    "hello_deadline_seconds": 0.5,
-    "cancellation_after_seconds": 0.08,
-    "cancel_deadline_seconds": 0.08,
-    "process_termination_grace_seconds": 0.08,
-    "max_diagnostic_bytes": 96,
+    "process_deadline_seconds": 0.8, "heartbeat_seconds": 0.15, "hello_deadline_seconds": 0.5,
+    "cancellation_after_seconds": 0.08, "cancel_deadline_seconds": 0.08,
+    "process_termination_grace_seconds": 0.08, "max_diagnostic_bytes": 96,
 }
 
 
@@ -81,41 +77,43 @@ def test_malformed_modes_synthesize_internal_worker_exit(mode: str):
 
 def test_pre_publication_crash_synthesizes_worker_exit_after_wait():
     result = run_synthetic_worker("pre_publication_crash", IDENTITY, LIMITS)
-    assert result.returncode != 0
-    assert result.terminal["message_type"] == "worker_exit"
-    assert result.terminal["reason"] == "process_exit"
-    assert result.waited is True
+    assert result.returncode != 0 and result.waited
+    assert result.terminal["message_type"] == "worker_exit" and result.terminal["reason"] == "process_exit"
 
 
 def test_cooperative_cancel_uses_cancel_ack_then_cancelled_result():
     result = run_synthetic_worker("cooperative_cancellation", IDENTITY, LIMITS)
-    assert result.terminated is False
-    assert [message["message_type"] for message in result.messages][-2:] == [
-        "cancel_ack", "result"]
+    assert not result.terminated and not result.synthesized_terminal
+    assert [message["message_type"] for message in result.messages][-2:] == ["cancel_ack", "result"]
     assert result.terminal["status"] == "cancelled"
-    assert result.synthesized_terminal is False
 
 
 def test_non_cooperative_cancel_kills_descendant_group_with_bounded_post_kill_wait():
     started = time.monotonic()
     result = run_synthetic_worker("non_cooperative_cancellation", IDENTITY, LIMITS)
     assert time.monotonic() - started < 1.0
-    assert result.terminated is True
-    assert result.killed is True
-    assert result.process_group_cleaned is True
-    assert result.waited is True
-    assert result.terminal["message_type"] == "worker_exit"
-    assert result.terminal["reason"] == "cancelled"
+    assert result.terminated and result.killed and result.process_group_cleaned and result.waited
+    assert result.terminal["message_type"] == "worker_exit" and result.terminal["reason"] == "cancelled"
 
 
-def test_heartbeat_deadline_is_distinct_from_longer_process_deadline():
+def test_heartbeat_and_hello_deadlines_are_distinct_from_longer_process_deadline():
     started = time.monotonic()
     result = run_synthetic_worker("heartbeat_loss", IDENTITY, LIMITS)
-    elapsed = time.monotonic() - started
-    assert elapsed < LIMITS["process_deadline_seconds"]
-    assert result.heartbeat_timed_out is True
-    assert result.process_timed_out is False
+    assert time.monotonic() - started < LIMITS["process_deadline_seconds"]
+    assert result.heartbeat_timed_out is True and not result.process_timed_out and not result.hello_timed_out
     assert result.terminal["reason"] == "heartbeat_timeout"
+
+    started = time.monotonic()
+    spec = WorkerLaunchSpec(
+        argv=(sys.executable, "-c", "import time; time.sleep(5)"),
+        environment={"LANG": "C.UTF-8"}, cwd=Path(__file__).resolve().parents[6],
+    )
+    result_hello = run_worker_spec(spec, IDENTITY, {
+        **LIMITS, "hello_deadline_seconds": 0.3, "heartbeat_seconds": 2.0, "process_deadline_seconds": 5.0,
+    })
+    assert time.monotonic() - started < 5.0
+    assert result_hello.hello_timed_out is True and not result_hello.heartbeat_timed_out and not result_hello.process_timed_out
+    assert result_hello.terminal["reason"] == "hello_timeout"
 
 
 def test_valid_progress_carried_heartbeat_refreshes_the_deadline():

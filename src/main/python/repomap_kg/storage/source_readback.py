@@ -47,6 +47,7 @@ def query_ingested_source_records(
     limit: int = 50,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> tuple[IngestedSourceRecord, ...]:
     payload = execute_json_readback(
         build_ingested_source_query_sql(
@@ -60,6 +61,7 @@ def query_ingested_source_records(
         psql_command=psql_command,
         label="ingested source records",
         expected_shape="array",
+        **({"password": password} if password is not None else {}),
     )
     return tuple(ingested_source_record_from_storage_payload(item) for item in payload)
 
@@ -71,6 +73,7 @@ def query_source_summary(
     source_id: str,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> SourceSummaryRecord:
     payload = execute_json_readback(
         build_source_summary_query_sql(
@@ -82,6 +85,7 @@ def query_source_summary(
         psql_command=psql_command,
         label="source summary",
         expected_shape="object",
+        **({"password": password} if password is not None else {}),
     )
     return source_summary_from_storage_payload(payload)
 
@@ -94,6 +98,7 @@ def query_source_run_records(
     limit: int = 25,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> tuple[SourceRunRecord, ...]:
     payload = execute_json_readback(
         build_source_run_query_sql(
@@ -106,6 +111,7 @@ def query_source_run_records(
         psql_command=psql_command,
         label="source run records",
         expected_shape="array",
+        **({"password": password} if password is not None else {}),
     )
     return tuple(source_run_record_from_storage_payload(item) for item in payload)
 
@@ -119,6 +125,7 @@ def query_source_feed_item_records(
     limit: int = 50,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> tuple[SourceFeedItemRecord, ...]:
     payload = execute_json_readback(
         build_source_feed_item_query_sql(
@@ -132,6 +139,7 @@ def query_source_feed_item_records(
         psql_command=psql_command,
         label="source feed item records",
         expected_shape="array",
+        **({"password": password} if password is not None else {}),
     )
     return tuple(source_feed_item_record_from_storage_payload(item) for item in payload)
 
@@ -146,6 +154,7 @@ def query_source_reference_records(
     limit: int = 50,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> tuple[SourceReferenceRecord, ...]:
     payload = execute_json_readback(
         build_source_reference_query_sql(
@@ -160,6 +169,7 @@ def query_source_reference_records(
         psql_command=psql_command,
         label="source reference records",
         expected_shape="array",
+        **({"password": password} if password is not None else {}),
     )
     return tuple(source_reference_record_from_storage_payload(item) for item in payload)
 
@@ -172,6 +182,7 @@ def query_source_feed_item_explanation(
     source_id: str | None = None,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> dict[str, Any]:
     payload = execute_json_readback(
         build_source_feed_item_explanation_query_sql(
@@ -184,6 +195,7 @@ def query_source_feed_item_explanation(
         psql_command=psql_command,
         label="source feed item explanation",
         expected_shape="object",
+        **({"password": password} if password is not None else {}),
     )
     if not isinstance(payload, dict):
         raise StorageSchemaError("source feed item explanation payload must be a JSON object")

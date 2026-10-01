@@ -3270,6 +3270,523 @@
       "status_path": "docs/status/2026/09/09/00863-pr26-staging-fix5-revise21-maintenance-candidate-exit.md",
       "source_commit": "9d00313373f260b7b02af2622e468e0e6ad677db",
       "source_manifest_sha256": "8d2f4b077210c2c69f515687a8f0625b7554b9b420ff90330f4e34264f54802f"
+    },
+    {
+      "changes": [
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.artifacts._bundle_stream",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/artifacts/_bundle_stream.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.artifacts._bundle_stream_encode",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_encode.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.artifacts._bundle_stream_links",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_links.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.artifacts._bundle_stream_parse",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_parse.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.artifacts._bundle_stream_sort",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_sort.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.artifacts._store_stream",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/artifacts/_store_stream.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.cli._ops_sqlite_dispatch",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/cli/_ops_sqlite_dispatch.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.cli._postgres_facade",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/cli/_postgres_facade.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.coordinator._local_admin_credentials",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/coordinator/_local_admin_credentials.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.coordinator._publication_phase",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/coordinator/_publication_phase.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.coordinator._runtime_paths",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/coordinator/_runtime_paths.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.coordinator.deployment",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/coordinator/deployment.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops._portable_retention",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/_portable_retention.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops._registry_status",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/_registry_status.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.config_local",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_local.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.config_storage",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_storage.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.graph_registry",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/graph_registry.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_backup",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_backup.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_cleanup",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_cleanup.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_ops_status",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_ops_status.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_readiness",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_readiness.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_refresh",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_refresh.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_refresh_enabled",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_refresh_enabled.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.ops.local_state_layout",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/local_state_layout.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.runtime._container_inspection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_container_inspection.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.runtime._home_authority",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_home_authority.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.runtime.coordinator_transition",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/coordinator_transition.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.runtime.postgres_route",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/postgres_route.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.server.canonical_read_store",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/canonical_read_store.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.server.graph_selection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/graph_selection.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.server.investigation_read_store",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/investigation_read_store.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.server.postgres_read_binding",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/postgres_read_binding.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.server.source_read_store",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/source_read_store.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.server.sqlite_read_binding",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/sqlite_read_binding.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.readback_credentials",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/readback_credentials.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/__init__.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.api_summary_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/api_summary_queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.backup",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/backup.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.backup_manifest",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/backup_manifest.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.connection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/connection.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.durability",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/durability.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.investigation_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/investigation_queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.locking",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/locking.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.merge_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/merge_sql.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.migrations",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/migrations.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.nix_summary_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/nix_summary_queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.orphans",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/orphans.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.publisher",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/publisher.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.raw_payload",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/raw_payload.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.restore",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/restore.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.schema",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/schema.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.source_feed_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/source_feed_queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.source_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/source_queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.summary_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/summary_queries.py",
+            "tier": "T1-future"
+          }
+        },
+        {
+          "old": null,
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.upgrade",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/upgrade.py",
+            "tier": "T1-future"
+          }
+        }
+      ],
+      "new_ownership_manifest_sha256": "14bcaf3fba2d3ad5e5f0a03e48c98ed2005211978cb45793a11d49f69d34713b",
+      "new_selected_set_sha256": "527ab4103073256609e99cd122bfeca2ce09adc15049224ccd8e1e920920af73",
+      "old_ownership_manifest_sha256": "407a9c6fb5e81c3cdbbf44e7b6fe91720e9362826ddd91f641247e88a39e3395",
+      "old_selected_set_sha256": "af0987330c717c5481a103a7ccb0912d9fca8eaef00c7e4c70da35621f5a78e7",
+      "phase": "REPOMAP-PRODUCT5-PUBLIC-STAGING-REPAIR1",
+      "reason": "Cumulative Product 2-4 retention lineage update for public staging projection repair",
+      "source_commit": "ce0ff28cb4a320778e86337099e2df1576e1b617",
+      "source_manifest_sha256": "407a9c6fb5e81c3cdbbf44e7b6fe91720e9362826ddd91f641247e88a39e3395",
+      "status_path": "docs/status/2026/10/01/00990-product5-public-staging-repair1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

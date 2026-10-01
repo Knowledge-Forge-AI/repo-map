@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from repomap_kg.coordinator._control_types import JobClaim
+from repomap_kg.coordinator._coordinator_protocols import CleanupReport
 from repomap_kg.coordinator.core import CoordinatorStore, SyntheticCoordinator
 from repomap_kg.coordinator.protocol import WorkerLaunchError
 
@@ -66,7 +67,8 @@ class FakeStore(CoordinatorStore):
         return True
 
     def mark_reconciliation_required(
-        self, claim: JobClaim, *, expected_state: str, category: str, diagnostic_summary: str | None = None,
+        self, claim: JobClaim, *, expected_state: str, category: str,
+        diagnostic_summary: str | None = None, publication_state: str = "commit_unknown",
     ) -> bool:
         self.calls.append(("reconcile", expected_state, category))
         return True
@@ -87,17 +89,19 @@ class FakeStore(CoordinatorStore):
         return True
 
     def mark_attempt_terminated(
-        self,
-        claim: JobClaim,
-        *,
-        process_cleanup_proved: bool,
-        reconciler_instance_id: str | None = None,
-        reconciler_epoch: int | None = None,
-        diagnostic_summary: str | None = None,
+        self, claim: JobClaim, *, process_cleanup_proved: bool, reconciler_instance_id: str | None = None,
+        reconciler_epoch: int | None = None, diagnostic_summary: str | None = None,
     ) -> bool:
         assert process_cleanup_proved is True
         self.calls.append(("terminated", claim.job_id))
         return True
+
+    def cleanup_terminal(
+        self, minimum_age: timedelta, *, limit: int, dry_run: bool,
+        publication_retirer: Callable[[object], object] | None = None,
+    ) -> CleanupReport:
+        self.calls.append(("cleanup", minimum_age, limit, dry_run))
+        return CleanupReport(deleted_job_ids=(), residuals=())
 
     def status(self, job_id: str) -> SimpleNamespace:
         return SimpleNamespace(state=self.state)

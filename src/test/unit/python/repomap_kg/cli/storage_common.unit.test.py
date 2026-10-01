@@ -6,6 +6,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
+from types import SimpleNamespace
 
 from typing import TYPE_CHECKING
 from repomap_kg.cli import main
@@ -93,6 +94,59 @@ class CliStorageCommonUnitTests(unittest.TestCase):
                 self.assertEqual(args.pg_user, "repo_map_test")
                 self.assertEqual(args.pg_database, "postgres")
                 self.assertEqual(args.psql_command, "/bin/psql")
+
+    def test_canonical_readback_accepts_home_graph_selector_without_root(self):
+        parser = build_parser()
+        for subcommand in ("edges", "explain-canonical-edge"):
+            with self.subTest(subcommand=subcommand):
+                required = (
+                    ["--kind", "sources", "--source-key", "file:a", "--target-key", "file:b"]
+                    if subcommand == "explain-canonical-edge"
+                    else []
+                )
+                args = parser.parse_args(
+                    [
+                        "storage",
+                        subcommand,
+                        "--repo-map-home",
+                        "/tmp/repo-map-home",
+                        "--graph",
+                        "graph-a",
+                        *required,
+                    ]
+                )
+                self.assertIsNone(args.root_path)
+                self.assertEqual(args.graph, "graph-a")
+                self.assertEqual(args.repo_map_home, "/tmp/repo-map-home")
+
+    def test_configured_edge_readback_passes_stable_repository_identity(self):
+        from repomap_kg.cli import storage_readback_edge_commands as owner
+
+        source = SimpleNamespace(
+            id="graph-a", root_path="~/source", root_path_expanded="/public/source",
+            explicit_source_bindings=False,
+        )
+        graph = SimpleNamespace(
+            source=source, database="graph_db", repository_identity="repo1:graph-a",
+        )
+        authority = SimpleNamespace(
+            postgres=SimpleNamespace(psql_args_for_database=lambda _db: []), password=None,
+        )
+        for explicit, expected_root in ((False, "/public/source"), (True, "graph:graph-a")):
+            source.explicit_source_bindings = explicit
+            with self.subTest(explicit=explicit), patch.object(
+                owner, "load_ops_config_home"
+            ), patch.object(owner, "readback_postgres_authority", return_value=authority), patch.object(
+                owner, "resolve_ops_config", return_value=SimpleNamespace(graph=lambda _id: graph)
+            ), patch("repomap_kg.cli.query_canonical_edge_records", return_value=[]) as query:
+                with redirect_stdout(io.StringIO()):
+                    result = main([
+                        "storage", "edges", "--repo-map-home", "/public/home",
+                        "--graph", "graph-a", "--kind", "sources", "--json",
+                    ])
+                self.assertEqual(result, 0)
+                self.assertEqual(query.call_args.kwargs["root_path"], expected_root)
+                self.assertEqual(query.call_args.kwargs["repository_identity"], "repo1:graph-a")
 
     def test_smoke_harden1_storage_cli_connection_errors_are_sanitized(self):
         synthetic_root = "/Users/synthetic-user/private-repo"

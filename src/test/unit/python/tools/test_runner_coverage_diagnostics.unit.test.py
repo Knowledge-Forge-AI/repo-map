@@ -391,4 +391,3 @@ def test_empty_coverage_db_pins_measured_files_zero(tmp_path):
     assert snap_json.is_file()
     jdata = json.loads(snap_json.read_text(encoding="utf-8"))
     assert jdata[0]["measured_files_count"] == 0
-

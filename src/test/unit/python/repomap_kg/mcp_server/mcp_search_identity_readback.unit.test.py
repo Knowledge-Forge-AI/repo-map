@@ -153,15 +153,20 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         )
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
-            patch("repomap_kg.server.ops.query_configured_storage") as mock_storage,
+            patch(
+                "repomap_kg.server.ops.query_canonical_storage_summary",
+                return_value=fake_summary,
+            ) as mock_summary,
+            patch(
+                "repomap_kg.server.ops.query_canonical_neighborhood",
+                return_value=fake_neighborhood,
+            ) as mock_neighborhood,
         ):
-            mock_storage.return_value = fake_summary
             repomap_project_summary(graph_id="repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
+            self.assertEqual(mock_summary.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
-            mock_storage.return_value = fake_neighborhood
             repomap_neighborhood(graph_id="repo-map", node="node:1")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
+            self.assertEqual(mock_neighborhood.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
     def test_schema_error_maps_to_public_mcp_error(self) -> None:
         config_path = self.write_ops_config(self.visible_ops_config())
@@ -228,30 +233,28 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
             TerraformSummaryRecord,
         )
 
+        # READSTORE3: each summary owner is reached through the named read store
+        # (host readback authority), never through the retained ops-psql wrapper.
         config_path = self.write_ops_config(self.visible_ops_config())
-        with (
-            patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
-            patch("repomap_kg.server.ops.query_configured_storage") as mock_storage,
-        ):
-            mock_storage.return_value = MagicMock(spec=PythonSummaryRecord, to_dict=lambda: {"root_path": "/app/fixture"})
-            repomap_python_summary(graph_id="repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
-
-            mock_storage.return_value = MagicMock(spec=TerraformSummaryRecord, to_dict=lambda: {"root_path": "/app/fixture"})
-            repomap_terraform_summary(graph_id="repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
-
-            mock_storage.return_value = MagicMock(spec=OpenAPISummaryRecord, to_dict=lambda: {"root_path": "/app/fixture"})
-            repomap_openapi_summary(graph_id="repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
-
-            mock_storage.return_value = MagicMock(spec=JSFrameworkSummaryRecord, to_dict=lambda: {"root_path": "/app/fixture"})
-            repomap_js_framework_summary(graph_id="repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
-
-            mock_storage.return_value = MagicMock(spec=NixSummaryRecord, to_dict=lambda: {"root_path": "[root-path]"})
-            repomap_nix_summary(graph_id="repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
+        cases = (
+            (repomap_python_summary, "query_python_summary", PythonSummaryRecord, "/app/fixture"),
+            (repomap_terraform_summary, "query_terraform_summary", TerraformSummaryRecord, "/app/fixture"),
+            (repomap_openapi_summary, "query_openapi_summary", OpenAPISummaryRecord, "/app/fixture"),
+            (repomap_js_framework_summary, "query_js_framework_summary", JSFrameworkSummaryRecord, "/app/fixture"),
+            (repomap_nix_summary, "query_nix_summary", NixSummaryRecord, "[root-path]"),
+        )
+        for tool, owner, record_type, root in cases:
+            record = MagicMock(spec=record_type, to_dict=lambda root=root: {"root_path": root})
+            with (
+                self.subTest(owner=owner),
+                patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
+                patch("repomap_kg.ops.refresh.run_storage_readback_with_ops_psql",
+                      side_effect=AssertionError("retained ops-psql wrapper used")),
+                patch(f"repomap_kg.server.ops.{owner}", return_value=record) as mock_owner,
+            ):
+                tool(graph_id="repo-map")
+            self.assertEqual(mock_owner.call_count, 1)
+            self.assertEqual(mock_owner.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
     def test_language_summaries_reject_invalid_identity_with_mcp_error(self) -> None:
         from repomap_kg.server.mcp import (

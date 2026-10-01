@@ -227,6 +227,7 @@ def format_coordinator_job_table(payload: Mapping[str, object]) -> str:
         "completed",
         "total",
         "error_category",
+        "diagnostic_summary",
     ):
         if field in job:
             lines.append(f"{field} | {job[field]}")

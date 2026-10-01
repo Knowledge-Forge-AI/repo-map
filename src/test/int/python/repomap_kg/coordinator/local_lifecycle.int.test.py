@@ -320,3 +320,81 @@ def test_coordinator_control_upgrade_rejections(monkeypatch):
                     authority.drop_created_database()
                 assert not authority.database_exists()
                 assert not LocalControlAuthority(uninit_home).database_exists()
+
+
+@pytest.mark.parametrize("credential_authority", ["generated", "literal", "environment"])
+def test_local_direct_route_control_lifecycle(tmp_path, monkeypatch, credential_authority):
+    import json
+    import os
+    import subprocess
+    import sys
+    from psycopg import sql
+    import repomap_kg
+    from repomap_kg.runtime.local import setup_local_runtime
+    home = tmp_path / "native-home"
+    setup_local_runtime(home)
+    assert home.stat().st_mode & 0o777 == 0o700
+    values = dict(line.split("=", 1) for line in
+                  (home / "runtime/.env").read_text().splitlines() if "=" in line)
+    secret = values["REPOMAP_PG_PASSWORD"]
+    if credential_authority != "generated":
+        secret = "fixture-explicit\ncredential"
+    with temporary_postgres() as postgres:
+        role = "home_authority_" + uuid.uuid4().hex[:12]
+        with psycopg.connect(host=postgres.host, port=postgres.port,
+                              user=postgres.user, dbname=postgres.database,
+                              password=postgres.password, autocommit=True) as bootstrap:
+            bootstrap.execute(sql.SQL("CREATE ROLE {} LOGIN SUPERUSER PASSWORD {}").format(
+                sql.Identifier(role), sql.Literal(secret)))
+            path = home / "repomap.rpl.toml"
+            path.write_text(path.read_text().replace(
+                "direct_host_port_enabled = false", "direct_host_port_enabled = true"
+            ).replace("host_port = 55432", f"host_port = {postgres.port}").replace(
+                'user = "repomap"', f'user = "{role}"'
+            ).replace('database = "repomap"', 'database = "native_route_fixture"'))
+            for key in ("REPOMAP_PG_PASSWORD", "PGPASSWORD", "PGPASSFILE", "PGSERVICE"):
+                monkeypatch.delenv(key, raising=False)
+            if credential_authority == "literal":
+                original = 'password_env = "REPOMAP_PG_PASSWORD"'
+                path.write_text(path.read_text().replace(original, "password = " + json.dumps(secret)))
+            elif credential_authority == "environment":
+                monkeypatch.setenv("REPOMAP_PG_PASSWORD", secret)
+            environment = dict(os.environ)
+            environment["PYTHONPATH"] = str(Path(repomap_kg.__file__).parents[1])
+            environment["PGPASSFILE"] = str(tmp_path / "absent-pgpass")
+            def command(name):
+                result = subprocess.run(
+                    [sys.executable, "-m", "repomap_kg", "ops", name,
+                     "--repo-map-home", str(home), "--json"],
+                    env=environment, capture_output=True, text=True, timeout=60,
+                )
+                assert not any(v in result.stdout + result.stderr for k, v in values.items()
+                               if "PASSWORD" in k and v)
+                payload = json.loads(result.stdout)
+                assert result.returncode == (1 if payload.get("result") == "unavailable" else 0)
+                assert not result.stderr
+                return payload
+            authority = LocalControlAuthority(home)
+            try:
+                assert command("coordinator-control-status")["result"] == "unavailable"
+                assert command("coordinator-control-init")["database_created"] is True
+                assert command("coordinator-control-status")["result"] == "ready"
+                assert command("coordinator-control-init")["database_created"] is False
+            finally:
+                if authority.database_exists():
+                    authority.drop_created_database()
+                bootstrap.execute(sql.SQL("DROP ROLE {}").format(sql.Identifier(role)))
+
+
+def test_custom_credential_does_not_use_generated_admin(tmp_path, monkeypatch):
+    from repomap_kg.runtime.local import setup_local_runtime
+
+    home = tmp_path / "custom-home"
+    setup_local_runtime(home)
+    path = home / "repomap.rpl.toml"
+    path.write_text(path.read_text().replace(
+        'password_env = "REPOMAP_PG_PASSWORD"', 'password_env = "CUSTOM_ADMIN_PASSWORD"'
+    ))
+    monkeypatch.delenv("CUSTOM_ADMIN_PASSWORD", raising=False)
+    with pytest.raises(CoordinatorControlError, match="local-admin-credential"):
+        coordinator_control_status(home)

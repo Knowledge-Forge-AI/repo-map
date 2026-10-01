@@ -644,6 +644,143 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product1.native_pg_seam_fix2.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/local_runtime_native_postgres.int.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/postgres_route.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/postgres_publication.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/postgres_route.unit.test.py"
+      ],
+      "rationale": "Focused native route and Engine publication regression owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product1.refresh_admission_readback_fix1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/admission.int.test.py",
+        "src/test/int/python/repomap_kg/ops/local_readback_authority.int.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/admission.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/readback_authority.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/readback_credentials.unit.test.py"
+      ],
+      "rationale": "Bounded synthetic admission and least-privilege host readback regression owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product2.host_mcp_native1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/mcp_host_native_runner.int.test.py",
+        "src/test/unit/python/tools/smoke/host_mcp_native.unit.test.py",
+        "src/test/unit/python/tools/smoke/host_mcp_native_kit.unit.test.py",
+        "src/test/unit/python/tools/smoke/host_mcp_native_launch.unit.test.py",
+        "src/test/unit/python/tools/smoke/host_mcp_native_status.unit.test.py"
+      ],
+      "rationale": "Host MCP native runner argument, environment, ownership, cleanup, redaction and kit unit owners plus the Linux-harness fixture and stdio integration owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product2.host_mcp_readstore1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/mcp_host_native_read_store.int.test.py",
+        "src/test/unit/python/repomap_kg/mcp_server/canonical_read_store.unit.test.py"
+      ],
+      "rationale": "Named canonical read-store dispatch, least-privilege adapter and host-native stdio PostgreSQL regression owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product2.host_mcp_readstore2.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/investigation_read_store.unit.test.py",
+        "src/test/unit/python/repomap_kg/mcp_server/investigation_read_store_adapter.unit.test.py"
+      ],
+      "rationale": "Named investigation read-store dispatch, validation-before-read, least-privilege adapter and host-only policy owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product2.host_mcp_readstore3.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/mcp_host_native_domain_read_store.int.test.py",
+        "src/test/unit/python/repomap_kg/mcp_server/domain_read_store.unit.test.py",
+        "src/test/unit/python/repomap_kg/mcp_server/domain_read_store_adapter.unit.test.py"
+      ],
+      "rationale": "Named domain read-store dispatch, validation-before-read, least-privilege adapter, host-only policy and host-native stdio PostgreSQL proof owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product2.host_mcp_resolve1.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/graph_selection.unit.test.py",
+        "src/test/unit/python/repomap_kg/mcp_server/postgres_read_binding.unit.test.py"
+      ],
+      "rationale": "Neutral graph selection, injected fake-store routing, PostgreSQL binding preservation and tripwire canary owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product3.sqlite_local1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/sqlite_local_backup_restore.int.test.py",
+        "src/test/int/python/repomap_kg/cli/sqlite_local_cleanup.int.test.py",
+        "src/test/int/python/repomap_kg/cli/sqlite_local_locking.int.test.py",
+        "src/test/int/python/repomap_kg/cli/sqlite_local_loop.int.test.py",
+        "src/test/int/python/repomap_kg/cli/sqlite_local_migration.int.test.py",
+        "src/test/int/python/repomap_kg/cli/sqlite_local_operator_workflow.int.test.py",
+        "src/test/int/python/repomap_kg/cli/sqlite_local_source_feed_loop.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_local_parity.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_local_read_differential.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_local_recovery.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_local_source_differential.int.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_local_backup_ops.unit.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_local_cleanup_ops.unit.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_local_import_boundary.unit.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_local_ops_status.unit.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_local_refresh_ops.unit.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_local_upgrade_ops.unit.test.py",
+        "src/test/unit/python/repomap_kg/mcp_server/sqlite_read_binding.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_cleanup.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_config.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_lock_consumers.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_readiness.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_reconcile.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_refresh.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_refresh_enabled.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_retention_layout.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sqlite_local_state_layout.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_backup.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_commit_outcome.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_connection.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_durability.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_locking.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_locking_windows.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_migrations.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_observation_index.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_orphans.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_publisher.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_queries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_restore.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_source_queries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_summaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/sqlite_local_upgrade.unit.test.py"
+      ],
+      "rationale": "SQLite Local config, publisher, query, binding and refresh unit owners plus the guarded loop, parity and recovery integration owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "revise34.policy_observations",
       "members": [
@@ -1560,6 +1697,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.coordinator_transition.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/coordinator_transition.int.test.py"
+      ],
+      "rationale": "Authenticated coordinator deployment transition contract.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-coordinator.core.int.test",
       "members": [
         "src/test/int/python/repomap_kg/coordinator/core.int.test.py"
@@ -1640,6 +1787,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.packaged_refresh_authority.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/packaged_refresh_authority.int.test.py"
+      ],
+      "rationale": "Contract owner for packaged refresh capability authority; bounded nonexecuting prelaunch regression.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-int-python-repomap_kg-coordinator.refresh_control_workflows.int.test",
       "members": [
         "src/test/int/python/repomap_kg/coordinator/refresh_control_workflows.int.test.py"
@@ -1655,6 +1812,16 @@
         "src/test/int/python/repomap_kg/coordinator/refresh_worker.int.test.py"
       ],
       "rationale": "Contract owner refresh_worker.int.test in src/test/int/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-coordinator.refresh_worker_watchdog.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/refresh_worker_watchdog.int.test.py"
+      ],
+      "rationale": "Contract owner refresh_worker_watchdog.int.test in src/test/int/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
       "root": "test_owners"
     },
     {
@@ -3612,6 +3779,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.canonical_merge_reference",
+      "members": [
+        "src/test/support/python/repomap_test_support/canonical_merge_reference.py"
+      ],
+      "rationale": "canonical_merge_reference responsibility in src/test/support/python/repomap_test_support; includes the declared module family independent of current quality findings.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
       "id": "src-test-support-python-repomap_test_support.canonicalization",
       "members": [
         "src/test/support/python/repomap_test_support/canonicalization.py"
@@ -3768,6 +3945,66 @@
         "src/test/support/python/repomap_test_support/go_canonicalization.py"
       ],
       "rationale": "go_canonicalization responsibility in src/test/support/python/repomap_test_support; includes the declared module family independent of current quality findings.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.host_mcp_domain_publication",
+      "members": [
+        "src/test/support/python/repomap_test_support/host_mcp_domain_publication.py"
+      ],
+      "rationale": "Disposable mixed-language and RSS-feed host MCP publication for integration proofs; bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.host_mcp_domain_reads",
+      "members": [
+        "src/test/support/python/repomap_test_support/host_mcp_domain_reads.py"
+      ],
+      "rationale": "Twelve-tool domain read requests and independent oracles for integration proofs; bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.host_mcp_investigation",
+      "members": [
+        "src/test/support/python/repomap_test_support/host_mcp_investigation.py"
+      ],
+      "rationale": "Seven-tool investigation requests and independent incumbent oracles for integration proofs; bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.host_mcp_publication",
+      "members": [
+        "src/test/support/python/repomap_test_support/host_mcp_publication.py"
+      ],
+      "rationale": "Disposable host-native MCP publication, role and snapshot helpers for integration proofs; bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.host_mcp_stdio",
+      "members": [
+        "src/test/support/python/repomap_test_support/host_mcp_stdio.py"
+      ],
+      "rationale": "Host-native MCP stdio session helper for scratch-environment child launches; bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.host_read_store_config",
+      "members": [
+        "src/test/support/python/repomap_test_support/host_read_store_config.py"
+      ],
+      "rationale": "Setup-owned home fixtures and no-fallback guards for MCP read-store unit owners; bounded test support.",
       "root": "test_support"
     },
     {
@@ -4731,6 +4968,66 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.sqlite_local_feed_corpus",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_local_feed_corpus.py"
+      ],
+      "rationale": "Real offline feed acquisitions and comparison-only crafted feed corpus for SQLite Local source/feed parity. Bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.sqlite_local_fixtures",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_local_fixtures.py"
+      ],
+      "rationale": "Public-safe SQLite Local home and publication fixtures. Bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.sqlite_local_guard",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_local_guard.py"
+      ],
+      "rationale": "Test-owned guarded CLI launcher denying PostgreSQL, socket and container paths. Bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.sqlite_local_harness",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_local_harness.py"
+      ],
+      "rationale": "Guarded SQLite Local child-process harness for integration proofs. Bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.sqlite_local_lock_children",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_local_lock_children.py"
+      ],
+      "rationale": "Pipe-synchronized SQLite Local graph-lock child processes for unit and integration proofs. Bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.sqlite_local_read_corpus",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_local_read_corpus.py"
+      ],
+      "rationale": "Public-safe SQLite Local polyglot source and crafted read-parity corpus. Bounded test support.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
       "id": "src-test-support-python-repomap_test_support.staging_transport_test_harness",
       "members": [
         "src/test/support/python/repomap_test_support/staging_transport_test_harness.py"
@@ -5172,6 +5469,26 @@
         "src/test/unit/python/repomap_kg/artifacts/bundle_receipt_validator.unit.test.py"
       ],
       "rationale": "Contract owner bundle_receipt_validator.unit.test in src/test/unit/python/repomap_kg/artifacts; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-artifacts.bundle_stream.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/artifacts/bundle_stream.unit.test.py"
+      ],
+      "rationale": "Contract owner bundle_stream.unit.test in src/test/unit/python/repomap_kg/artifacts; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-artifacts.bundle_stream_contract.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/artifacts/bundle_stream_contract.unit.test.py"
+      ],
+      "rationale": "Contract owner bundle_stream_contract.unit.test in src/test/unit/python/repomap_kg/artifacts; fixed existing test responsibility boundary.",
       "root": "test_owners"
     },
     {
@@ -6403,6 +6720,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-coordinator.local_admin_credentials.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/local_admin_credentials.unit.test.py"
+      ],
+      "rationale": "Focused local home and administrator authority test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-repomap_kg-coordinator.local_lifecycle.unit.test",
       "members": [
         "src/test/unit/python/repomap_kg/coordinator/local_lifecycle.unit.test.py",
@@ -6419,6 +6746,16 @@
         "src/test/unit/python/repomap_kg/coordinator/local_mode.unit.test.py"
       ],
       "rationale": "Contract owner local_mode.unit.test in src/test/unit/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-coordinator.packaged_refresh_authority.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/packaged_refresh_authority.unit.test.py"
+      ],
+      "rationale": "Contract owner for packaged refresh capability authority; bounded nonexecuting prelaunch regression.",
       "root": "test_owners"
     },
     {
@@ -6535,6 +6872,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-coordinator.publication_phase.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/publication_phase.unit.test.py"
+      ],
+      "rationale": "Contract owner publication_phase.unit.test in src/test/unit/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-repomap_kg-coordinator.refresh_adapter.unit.test",
       "members": [
         "src/test/unit/python/repomap_kg/coordinator/refresh_adapter.unit.test.py"
@@ -6550,6 +6897,16 @@
         "src/test/unit/python/repomap_kg/coordinator/refresh_capability_io.unit.test.py"
       ],
       "rationale": "Contract owner refresh_capability_io.unit.test in src/test/unit/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-coordinator.refresh_execution_pause_hook.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/refresh_execution_pause_hook.unit.test.py"
+      ],
+      "rationale": "Contract owner refresh_execution_pause_hook.unit.test in src/test/unit/python/repomap_kg/coordinator; fixed existing test responsibility boundary.",
       "root": "test_owners"
     },
     {
@@ -6681,6 +7038,16 @@
         "src/test/unit/python/repomap_kg/extractors/config/nix/imports_and_paths.unit.test.py"
       ],
       "rationale": "Contract owner imports_and_paths.unit.test in src/test/unit/python/repomap_kg/extractors/config/nix; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-extractors-config.portable_numbers.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/extractors/config/portable_numbers.unit.test.py"
+      ],
+      "rationale": "Contract owner portable_numbers.unit.test in src/test/unit/python/repomap_kg/extractors/config; fixed existing test responsibility boundary.",
       "root": "test_owners"
     },
     {
@@ -8249,6 +8616,26 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-runtime.coordinator_transition.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/runtime/coordinator_transition.unit.test.py"
+      ],
+      "rationale": "Coordinator transition behavior contract.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-runtime.local_home_authority.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/runtime/local_home_authority.unit.test.py"
+      ],
+      "rationale": "Focused local home and administrator authority test owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-repomap_kg-runtime.local_runtime.unit.test",
       "members": [
         "src/test/unit/python/repomap_kg/runtime/local_runtime.unit.test.py"
@@ -8965,6 +9352,16 @@
         "src/test/unit/python/repomap_kg/storage/package_structure.unit.test.py"
       ],
       "rationale": "Contract owner package_structure.unit.test in src/test/unit/python/repomap_kg/storage; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-storage.post_publication_pause_hook.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/post_publication_pause_hook.unit.test.py"
+      ],
+      "rationale": "Contract owner post_publication_pause_hook.unit.test in src/test/unit/python/repomap_kg/storage; fixed existing test responsibility boundary.",
       "root": "test_owners"
     },
     {
@@ -12626,6 +13023,24 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
+      "id": "tools-smoke.host_mcp_native",
+      "members": [
+        "tools/smoke/host_mcp_native.py",
+        "tools/smoke/host_mcp_native_backend.py",
+        "tools/smoke/host_mcp_native_checks.py",
+        "tools/smoke/host_mcp_native_evidence.py",
+        "tools/smoke/host_mcp_native_fixture.py",
+        "tools/smoke/host_mcp_native_kit.py",
+        "tools/smoke/host_mcp_native_launch.py",
+        "tools/smoke/host_mcp_native_run.py",
+        "tools/smoke/host_mcp_native_scenario.py"
+      ],
+      "rationale": "host_mcp_native responsibility in tools/smoke; includes the declared module family of the host MCP native qualification runner.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
       "id": "tools-smoke.lifecycle",
       "members": [
         "tools/smoke/lifecycle.py",
@@ -12822,6 +13237,16 @@
         "tools/go_runner_coverage.py"
       ],
       "rationale": "go_runner_coverage responsibility in tools; includes the declared module family independent of current quality findings.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "tools.host_mcp_native_qualify",
+      "members": [
+        "tools/host_mcp_native_qualify.py"
+      ],
+      "rationale": "host_mcp_native_qualify responsibility in tools; parent entrypoint of the host MCP native runner and its operator kit.",
       "root": "tools"
     },
     {
@@ -13484,6 +13909,26 @@
       ],
       "rationale": "test_sandbox responsibility in tools; includes the declared module family independent of current quality findings.",
       "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "worker_crash_diag_fix1.status_diagnostics.int",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/status_diagnostics.int.test.py"
+      ],
+      "rationale": "Bounded public diagnostic status contract owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "worker_crash_diag_fix1.status_diagnostics.unit",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/status_diagnostics.unit.test.py"
+      ],
+      "rationale": "Bounded public diagnostic status contract owner.",
+      "root": "test_owners"
     }
   ],
   "decompositions": [
@@ -22128,6 +22573,51 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/artifacts/_bundle_stream.py",
+      "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_encode.py",
+      "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_links.py",
+      "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_parse.py",
+      "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/artifacts/_bundle_stream_sort.py",
+      "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -22177,6 +22667,15 @@
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/artifacts/_store_memory.py",
+      "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/artifacts/_store_stream.py",
       "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
       "root": "product",
       "status": "retained_ratchet"
@@ -22794,6 +23293,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/cli/_ops_sqlite_dispatch.py",
+      "rationale": "Product3 SQLite Local CLI dispatch for sqlite-init and Local refresh-graph.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -22817,6 +23325,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/cli/_parser_sources.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/cli/_postgres_facade.py",
+      "rationale": "Product3 SQLite Local deferred PostgreSQL-implementation CLI facade names (driver-free startup).",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -23112,6 +23629,15 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_local_admin_credentials.py",
+      "rationale": "Focused local home and administrator authority repair owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/coordinator/_portable_authority.py",
       "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
       "root": "product",
@@ -23211,6 +23737,15 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_publication_phase.py",
+      "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/coordinator/_refresh_capability.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
       "root": "product",
@@ -23249,6 +23784,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/coordinator/_refresh_generation.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_runtime_paths.py",
+      "rationale": "Pre-staging ARCH1D cycle closure: neutral per-home coordinator endpoint-path owner moved verbatim from local_mode.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -23330,6 +23874,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/coordinator/core.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/deployment.py",
+      "rationale": "Bounded coordinator transition helper under retained Python enforcement.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -25026,6 +25579,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/_portable_retention.py",
+      "rationale": "Product3 retained portable attempt records shared by both publishers.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -25049,6 +25611,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/_refresh_queries.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/_registry_status.py",
+      "rationale": "Product3 backend-neutral config-check and graphs status envelopes.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -25128,6 +25699,15 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_local.py",
+      "rationale": "Product3 SQLite Local home configuration and registry loaders.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/config_records.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
       "root": "product",
@@ -25191,6 +25771,15 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_storage.py",
+      "rationale": "Product3 home storage backend selector.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/direct_publication.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
       "root": "product",
@@ -25229,6 +25818,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/graph_files.py",
       "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/graph_registry.py",
+      "rationale": "Product3 backend-neutral graph registry protocol.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -25506,6 +26104,69 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_backup.py",
+      "rationale": "Product3 SQLite Local sqlite-backup and sqlite-restore commands.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_cleanup.py",
+      "rationale": "Product3 SQLite Local sqlite-cleanup state hygiene command.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_ops_status.py",
+      "rationale": "Product3 SQLite Local config-check and graphs projections.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_readiness.py",
+      "rationale": "Product3 SQLite Local read-only graph-store readiness probe.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_refresh.py",
+      "rationale": "Product3 SQLite Local explicit init and full refresh.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_refresh_enabled.py",
+      "rationale": "Product3 SQLite Local refresh-enabled aggregation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/local_state_layout.py",
+      "rationale": "Product3 SQLite Local state-directory integrity rule for mutation owners.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/policy_dogfood.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
       "root": "product",
@@ -25659,6 +26320,24 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_container_inspection.py",
+      "rationale": "Native PostgreSQL route and observed publication repair owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_home_authority.py",
+      "rationale": "Focused local home and administrator authority repair owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/runtime/_plan_records.py",
       "rationale": "Cohesive implementation owner extracted without behavior changes and admitted under the actual zero-new-debt profile.",
       "root": "product",
@@ -25767,6 +26446,15 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/coordinator_transition.py",
+      "rationale": "Bounded coordinator transition helper under retained Python enforcement.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/runtime/database_role_contract.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
       "root": "product",
@@ -25805,6 +26493,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/runtime/plan.py",
       "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/postgres_route.py",
+      "rationale": "Native PostgreSQL route and observed publication repair owner.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -25992,8 +26689,35 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/canonical_read_store.py",
+      "rationale": "Product2 host-native MCP named canonical read-store seam and PostgreSQL adapter.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/graph_selection.py",
+      "rationale": "Product2 host-native MCP backend-neutral logical graph selection and public refusals.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/server/http.py",
       "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/investigation_read_store.py",
+      "rationale": "Product2 host-native MCP named investigation read-store seam and PostgreSQL adapter.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -26066,6 +26790,33 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/server/ops.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/postgres_read_binding.py",
+      "rationale": "Product2 host-native MCP PostgreSQL binding from a graph selection to the named read stores.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/source_read_store.py",
+      "rationale": "Product2 host-native MCP named source read-store seam and PostgreSQL adapter.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/sqlite_read_binding.py",
+      "rationale": "Product3 SQLite Local MCP read binding for the 23 database-reading tools.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -26550,6 +27301,15 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/readback_credentials.py",
+      "rationale": "Product1 execution-only readback credential boundary and authority regression coverage.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/storage/readback_driver.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
       "root": "product",
@@ -26705,6 +27465,195 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/storage/sql_summaries_python.py",
       "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/__init__.py",
+      "rationale": "Product3 SQLite Local storage package.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/api_summary_queries.py",
+      "rationale": "Product3 SQLite Local OpenAPI and JS-framework summary reads.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/backup.py",
+      "rationale": "Product3 SQLite Local consistent online backup snapshot and finalization.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/backup_manifest.py",
+      "rationale": "Product3 SQLite Local backup artifact contract and manifest.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/connection.py",
+      "rationale": "Product3 SQLite Local connection and publisher-lock policy.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/durability.py",
+      "rationale": "Product3 SQLite Local file and directory fsync durability helper.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/investigation_queries.py",
+      "rationale": "Product3 SQLite Local search, summary and status reads.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/locking.py",
+      "rationale": "Product3 SQLite Local platform-neutral graph lock owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/merge_sql.py",
+      "rationale": "Product3 SQLite Local family merge statements.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/migrations.py",
+      "rationale": "Product3 SQLite Local ordered checksummed migration catalog and schema states.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/nix_summary_queries.py",
+      "rationale": "Product3 SQLite Local Nix summary read.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/orphans.py",
+      "rationale": "Product3 SQLite Local orphan init/restore temporary classification and removal.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/publisher.py",
+      "rationale": "Product3 SQLite Local accepted-generation publisher.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/queries.py",
+      "rationale": "Product3 SQLite Local first-slice read queries.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/raw_payload.py",
+      "rationale": "Product3 SQLite Local PostgreSQL-JSONB read semantics over stored raw payload text.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/restore.py",
+      "rationale": "Product3 SQLite Local verified no-clobber restore.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/schema.py",
+      "rationale": "Product3 SQLite Local schema v1 and refusal vocabulary.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/source_feed_queries.py",
+      "rationale": "Product3 SQLite Local feed item, reference and explanation reads.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/source_queries.py",
+      "rationale": "Product3 SQLite Local source-observation scan and source inventory, summary and run reads.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/summary_queries.py",
+      "rationale": "Product3 SQLite Local Python and Terraform summary reads and shared summary row helpers.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/upgrade.py",
+      "rationale": "Product3 SQLite Local backup-first forward schema upgrade.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -27591,22 +28540,22 @@
       "status": "active_int_test"
     },
     {
-      "path": "src/test/int/python/repomap_kg/canonical_contract/slice20_escaped_hcl_pipeline.int.test.py",
-      "root": "test_owners",
-      "status": "active_int_test",
+      "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice20_escaped_hcl_pipeline.int.test.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
     },
     {
-      "path": "src/test/int/python/repomap_kg/canonical_contract/slice20_static_contrasts.int.test.py",
-      "root": "test_owners",
-      "status": "active_int_test",
+      "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/int/python/repomap_kg/canonical_contract/slice20_static_contrasts.int.test.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
     },
     {
       "confidence": 0.95,
@@ -27747,8 +28696,44 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/local_runtime_native_postgres.int.test.py",
+      "rationale": "Bounded PostgreSQL runtime seam regression owner.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/cli/mcp_domain_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/mcp_host_native_domain_read_store.int.test.py",
+      "rationale": "First-party int test owner for host-native stdio MCP domain reads.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/mcp_host_native_read_store.int.test.py",
+      "rationale": "First-party int test owner for host-native stdio MCP canonical reads.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/mcp_host_native_runner.int.test.py",
+      "rationale": "First-party int test owner for the host MCP native runner's Linux-harness fixture and stdio exercise.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -27792,6 +28777,78 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_backup_restore.int.test.py",
+      "rationale": "First-party integration test owner for the SQLite Local backup/restore accepted-publication round trip without PostgreSQL or its driver.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_cleanup.int.test.py",
+      "rationale": "First-party integration test owner for SQLite Local sqlite-cleanup over real refreshes, kills and restores without PostgreSQL or its driver.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_locking.int.test.py",
+      "rationale": "First-party integration test owner for SQLite Local interprocess graph locking and mixed-operation serialization without PostgreSQL or its driver.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_loop.int.test.py",
+      "rationale": "First-party int test owner for the guarded SQLite Local init, refresh and stdio MCP loop.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_migration.int.test.py",
+      "rationale": "First-party integration test owner for the SQLite Local v1 backup, v2 upgrade and v1 restore round trip without PostgreSQL or its driver.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_operator_workflow.int.test.py",
+      "rationale": "First-party integration test owner for the SQLite Local operator workflow without PostgreSQL or its driver.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/sqlite_local_source_feed_loop.int.test.py",
+      "rationale": "First-party int test owner for source-blind SQLite Local source/feed reads over guarded stdio MCP.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/admission.int.test.py",
+      "rationale": "Product1 admission deadline and local read/status regression proof.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/arch5a4a_maintenance_exclusion.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -27803,6 +28860,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/arch5b_provisioning_recovery.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/coordinator_transition.int.test.py",
+      "rationale": "Authenticated coordinator deployment transition contract.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -27882,6 +28948,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/packaged_refresh_authority.int.test.py",
+      "rationale": "First-party int test owner for packaged refresh capability authority.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/portable_durable_readback.int.test.py",
       "rationale": "REVISE39 actual portable worker bundle to durable PostgreSQL publication and readback; authored static-only.",
       "root": "test_owners",
@@ -27901,6 +28976,15 @@
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/refresh_worker.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/refresh_worker_watchdog.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
       "status": "active_int_test"
@@ -27987,22 +29071,22 @@
       "status": "active_int_test"
     },
     {
-      "path": "src/test/int/python/repomap_kg/coordinator/slice18_foreground_cleanup.int.test.py",
-      "root": "test_owners",
-      "status": "active_int_test",
+      "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/int/python/repomap_kg/coordinator/slice18_foreground_cleanup.int.test.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
     },
     {
-      "path": "src/test/int/python/repomap_kg/coordinator/slice18_refresh_wire.int.test.py",
-      "root": "test_owners",
-      "status": "active_int_test",
+      "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/int/python/repomap_kg/coordinator/slice18_refresh_wire.int.test.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
     },
     {
       "confidence": 0.95,
@@ -28055,6 +29139,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/startup_recovery.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/status_diagnostics.int.test.py",
+      "rationale": "WORKER-CRASH-DIAG-FIX1 bounded diagnostic status and current-attempt readback contract.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -28163,6 +29256,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/ops/graph_summary_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/local_readback_authority.int.test.py",
+      "rationale": "Product1 admission deadline and local read/status regression proof.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -28464,13 +29566,13 @@
       "status": "active_int_test"
     },
     {
-      "path": "src/test/int/python/repomap_kg/source_ingestion/slice19_api_row_recovery.int.test.py",
-      "root": "test_owners",
-      "status": "active_int_test",
+      "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/int/python/repomap_kg/source_ingestion/slice19_api_row_recovery.int.test.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
     },
     {
       "confidence": 0.95,
@@ -29463,13 +30565,13 @@
       "status": "active_int_test"
     },
     {
-      "path": "src/test/int/python/repomap_kg/storage/slice19_copy_recovery.int.test.py",
-      "root": "test_owners",
-      "status": "active_int_test",
+      "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/int/python/repomap_kg/storage/slice19_copy_recovery.int.test.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
     },
     {
       "confidence": 0.95,
@@ -29549,6 +30651,42 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/source_warc_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_local_parity.int.test.py",
+      "rationale": "First-party int test owner for same-input SQLite Local versus PostgreSQL parity.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_local_read_differential.int.test.py",
+      "rationale": "First-party int test owner for the crafted-corpus SQLite Local versus PostgreSQL query-owner differential.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_local_recovery.int.test.py",
+      "rationale": "First-party int test owner for SQLite Local rollback, kill, contention and coherent reads.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_local_source_differential.int.test.py",
+      "rationale": "First-party int test owner for same-input SQLite Local source/feed reads versus the PostgreSQL source query owners.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -29925,6 +31063,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/canonical_merge_reference.py",
+      "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/canonicalization.py",
       "rationale": "Shared test harness and test execution support library.",
       "root": "test_support",
@@ -30096,6 +31243,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/host_mcp_domain_publication.py",
+      "rationale": "Disposable mixed-language and RSS-feed host MCP publication for integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/host_mcp_domain_reads.py",
+      "rationale": "Twelve-tool domain read requests and independent oracles for integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/host_mcp_investigation.py",
+      "rationale": "Seven-tool investigation requests and independent oracles for integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/host_mcp_publication.py",
+      "rationale": "Disposable host-native MCP publication helpers for integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/host_mcp_stdio.py",
+      "rationale": "Host-native MCP stdio session helper for integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/host_read_store_config.py",
+      "rationale": "Setup-owned home fixtures and no-fallback guards for MCP read-store tests.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/local_db_backup.py",
       "rationale": "Shared test harness and test execution support library.",
       "root": "test_support",
@@ -30147,13 +31348,13 @@
       "status": "active_test_support"
     },
     {
-      "path": "src/test/support/python/repomap_test_support/observer_schedule.py",
-      "root": "test_support",
-      "status": "active_test_support",
+      "confidence": 1.0,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
-      "confidence": 1.0,
-      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement."
+      "path": "src/test/support/python/repomap_test_support/observer_schedule.py",
+      "rationale": "FIX42 deterministic repair barriers and caller-driven integration coverage; unchanged clean enforcement.",
+      "root": "test_support",
+      "status": "active_test_support"
     },
     {
       "confidence": 0.95,
@@ -31761,6 +32962,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_local_feed_corpus.py",
+      "rationale": "Real offline feed acquisitions and comparison-only crafted feed corpus for SQLite Local source/feed parity.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_local_fixtures.py",
+      "rationale": "Public-safe SQLite Local home and publication fixtures.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_local_guard.py",
+      "rationale": "Test-owned guarded CLI launcher denying PostgreSQL, socket and container paths.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_local_harness.py",
+      "rationale": "Guarded SQLite Local child-process harness for integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_local_lock_children.py",
+      "rationale": "Pipe-synchronized SQLite Local graph-lock child processes for unit and integration proofs.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_local_read_corpus.py",
+      "rationale": "Public-safe SQLite Local polyglot source and crafted read-parity corpus.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/staging_abrupt_launch.py",
       "rationale": "PR26-STAGING-CONTRACT1 exact staging population, observed abrupt lifecycle and report validation; immediate full retention enforcement.",
       "root": "test_support",
@@ -32482,6 +33737,24 @@
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/artifacts/bundle_receipt_validator.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/bundle_stream.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/bundle_stream_contract.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
       "status": "active_unit_test"
@@ -33282,6 +34555,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_backup_ops.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local sqlite-backup and sqlite-restore CLI routing, output policy and path-free refusals.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_cleanup_ops.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local sqlite-cleanup CLI routing, exit codes and path-free output.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_import_boundary.unit.test.py",
+      "rationale": "First-party unit test owner for Psycopg-independent SQLite Local startup and the CLI facade.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_ops_status.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local config-check and graphs CLI routing and projection.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_refresh_ops.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local preflight, refresh-enabled routing and coordinator refusal.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_upgrade_ops.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local sqlite-upgrade CLI routing, refusals and path-free payloads.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/cli/storage_canonical/arch7a1_public_read_pages.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -33552,6 +34879,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/admission.unit.test.py",
+      "rationale": "Product1 admission deadline and local read/status regression proof.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/arch1f_package_direction.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -33759,6 +35095,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/local_admin_credentials.unit.test.py",
+      "rationale": "Focused local home and administrator authority repair owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/local_lifecycle.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -33779,6 +35124,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/local_mode.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/packaged_refresh_authority.unit.test.py",
+      "rationale": "First-party unit test owner for packaged refresh capability authority.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -33876,6 +35230,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/postgres_route.unit.test.py",
+      "rationale": "Bounded PostgreSQL runtime seam regression owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/process_supervision.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -33912,6 +35275,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/publication_phase.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/refresh_adapter.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -33922,6 +35294,15 @@
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/refresh_capability_io.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/refresh_execution_pause_hook.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
       "status": "active_unit_test"
@@ -33986,6 +35367,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/startup_recovery.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/status_diagnostics.unit.test.py",
+      "rationale": "WORKER-CRASH-DIAG-FIX1 bounded diagnostic status and current-attempt readback contract.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -34075,6 +35465,15 @@
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/extractors/config/nix/imports_and_paths.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/config/portable_numbers.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
       "status": "active_unit_test"
@@ -34884,8 +36283,62 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/canonical_read_store.unit.test.py",
+      "rationale": "First-party unit test owner for the canonical read-store seam.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/config_and_summaries.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/domain_read_store.unit.test.py",
+      "rationale": "First-party unit test owner for twelve-tool domain read-store dispatch and validation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/domain_read_store_adapter.unit.test.py",
+      "rationale": "First-party unit test owner for domain read-store PostgreSQL adapter authority and host-only policy.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/graph_selection.unit.test.py",
+      "rationale": "First-party unit test owner for neutral graph selection and injected fake-store routing of all database-reading tools.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/investigation_read_store.unit.test.py",
+      "rationale": "First-party unit test owner for investigation read-store dispatch and validation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/investigation_read_store_adapter.unit.test.py",
+      "rationale": "First-party unit test owner for the investigation read-store PostgreSQL adapter authority.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -34992,6 +36445,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/postgres_read_binding.unit.test.py",
+      "rationale": "First-party unit test owner for the PostgreSQL read-store binding and tripwire canaries.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/private_payload_redaction.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -35030,6 +36492,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/schemas_jsonrpc.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/sqlite_read_binding.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local MCP routing, source/feed reads and validation before any open.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -35370,6 +36841,87 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_cleanup.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local cleanup attempt disposition, dry run, refusal and durability.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_config.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local home selection without PostgreSQL settings.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_lock_consumers.unit.test.py",
+      "rationale": "First-party unit test owner proving every SQLite Local mutation owner serializes on the one graph lock.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_readiness.unit.test.py",
+      "rationale": "First-party unit test owner for read-only, no-create SQLite Local readiness.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_reconcile.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local retained-attempt reconciliation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_refresh.unit.test.py",
+      "rationale": "First-party unit test owner for explicit SQLite Local write authority and CLI routing.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_refresh_enabled.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local refresh-enabled aggregation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_retention_layout.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local retention layout validation before any record write.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sqlite_local_state_layout.unit.test.py",
+      "rationale": "First-party unit test owner for the SQLite Local state-directory integrity rule across mutation and read paths.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/ops_ingestion/arch4b_acquisition_contracts.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -35640,8 +37192,53 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/coordinator_transition.unit.test.py",
+      "rationale": "Coordinator transition behavior test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/local_home_authority.unit.test.py",
+      "rationale": "Focused local home and administrator authority repair owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/local_runtime.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/postgres_publication.unit.test.py",
+      "rationale": "Native PostgreSQL route and observed publication repair owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/postgres_route.unit.test.py",
+      "rationale": "Native PostgreSQL route and observed publication repair owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/readback_authority.unit.test.py",
+      "rationale": "Product1 execution-only readback credential boundary and authority regression coverage.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -36135,6 +37732,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/post_publication_pause_hook.unit.test.py",
+      "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/psql_failure_messages.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -36173,6 +37779,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/python_summary_readback.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/readback_credentials.unit.test.py",
+      "rationale": "Secret-free driver failure chains and per-child password authority regression proof.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -36686,6 +38301,141 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/sql_and_tables/storage_source_tables.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_backup.unit.test.py",
+      "rationale": "First-party unit test owner for the SQLite Local backup manifest and consistent online snapshot.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_commit_outcome.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local commit outcome, rollback preservation and bounded write errors.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_connection.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local crash-safe initialization and connection error classification.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_durability.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local file and directory fsync durability.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_locking.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local lock backend dispatch, fcntl import neutrality and real POSIX process locking.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_locking_windows.unit.test.py",
+      "rationale": "First-party deterministic contract tests of the SQLite Local Windows lock algorithm with a fake msvcrt; not native Windows evidence.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_migrations.unit.test.py",
+      "rationale": "First-party unit test owner for the SQLite Local ordered migration catalog, preserved v1 identity and exact schema-state classification.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_observation_index.unit.test.py",
+      "rationale": "First-party unit test owner for the SQLite Local v2 observation path index planner workload and result identity.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_orphans.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local orphan init/restore namespace, classification and removal.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_publisher.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local schema v1, init and accepted-generation publication.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_queries.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local canonical, search, summary and status read semantics.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_restore.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local verified no-clobber restore.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_source_queries.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local source/feed reads over real offline feed publications.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_summaries.unit.test.py",
+      "rationale": "First-party unit test owner for SQLite Local summary reads and their PostgreSQL JSONB predicate semantics.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/sqlite_local_upgrade.unit.test.py",
+      "rationale": "First-party unit test owner for the SQLite Local backup-first schema upgrade and its commit outcome.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -39636,6 +41386,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/smoke/host_mcp_native.unit.test.py",
+      "rationale": "First-party unit test owner for the host MCP native qualification runner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/smoke/host_mcp_native_kit.unit.test.py",
+      "rationale": "First-party unit test owner for the host MCP native qualification runner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/smoke/host_mcp_native_launch.unit.test.py",
+      "rationale": "First-party unit test owner for the host MCP native qualification runner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/smoke/host_mcp_native_status.unit.test.py",
+      "rationale": "First-party unit test owner for the host MCP native fixture publication tuple and status-versus-stored-facts checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/smoke/lifecycle.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -41049,6 +42835,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/host_mcp_native_qualify.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/perf_base1_campaign.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -41996,6 +43791,87 @@
       "maintained_executable": true,
       "path": "tools/smoke/container_smoke.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_backend.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_checks.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): fresh fixture, independent oracles and ordered scenario; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_evidence.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_fixture.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): fresh fixture, independent oracles and ordered scenario; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_kit.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_launch.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_run.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/smoke/host_mcp_native_scenario.py",
+      "rationale": "Host MCP native qualification runner (PREPARE1): fresh fixture, independent oracles and ordered scenario; repository tooling.",
       "root": "tools",
       "status": "active_tool"
     },

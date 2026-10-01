@@ -102,8 +102,8 @@ def test_executable_search_path_excludes_unowned_directory(tmp_path, monkeypatch
 
     monkeypatch.setattr(Path, "stat", stat_with_unowned_directory)
     monkeypatch.setenv("PATH", "")
-
-    assert unowned not in _executable_search_path(unowned / "psql")
+    with pytest.raises(ValueError, match="executable search path is unavailable"):
+        _executable_search_path(unowned / "psql")
 
 
 def test_configured_publication_readback_uses_private_child_environment(
@@ -214,8 +214,9 @@ def test_configured_source_change_fails_before_capability_creation(
         extractor_generation=accepted.extractor_generation,
         canonicalizer_generation=accepted.canonicalizer_generation,
     )
+    limits = {"process_deadline_seconds": 20, "refresh_attempt_deadline_seconds": 120}
     runner = build_refresh_worker_runner(
-        resolver.resolve_authority, tmp_path, {}
+        resolver.resolve_authority, tmp_path, limits
     )
     terminal = runner(claim, threading.Event())
     assert terminal["publication_state"] == "not_started"

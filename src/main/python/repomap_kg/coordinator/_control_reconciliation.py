@@ -15,6 +15,7 @@ def reconcile_publication(
     max_attempts: int,
     reconciler_instance_id: str,
     reconciler_epoch: int,
+    unpublished_proved: bool = False,
 ) -> str:
     with connect() as connection:
         with connection.cursor(row_factory=dict_row) as cursor:
@@ -50,6 +51,8 @@ def reconcile_publication(
                     "protocol",
                 )
                 return "quarantined"
+            if unpublished_proved:
+                row["job_publication_state"] = "not_started"
             if row["job_publication_state"] == "commit_unknown":
                 return "reconciliation_required"
             if row["cancel_requested_at"] is not None:

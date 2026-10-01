@@ -63,6 +63,7 @@ def _run_protocol_worker(
     job_context: Mapping[str, object] | None,
     cancel_event: threading.Event | None,
     _launch_process: Callable[..., ManagedProcess] | None = None,
+    _timeout_probe: Callable[[], bool] | None = None,
 ) -> SyntheticWorkerResult:
     session = ProtocolSession(identity)
     process_deadline = _limit(limits, "process_deadline_seconds", 5.0)
@@ -125,6 +126,9 @@ def _run_protocol_worker(
         if time.monotonic() - started_at >= hello_deadline:
             hello_timed_out, reason = True, "hello_timeout"
             break
+        if _timeout_probe is not None and _timeout_probe():
+            process_timed_out, reason = True, "process_timeout"
+            break
         time.sleep(0.005)
 
     if stdout_state["hello"] and process.poll() is None:
@@ -141,6 +145,9 @@ def _run_protocol_worker(
             now = time.monotonic()
             if stdout_state["error"] is not None:
                 reason = "protocol"
+                break
+            if _timeout_probe is not None and _timeout_probe():
+                process_timed_out, reason = True, "process_timeout"
                 break
             with lock:
                 terminal_received = session.terminal is not None

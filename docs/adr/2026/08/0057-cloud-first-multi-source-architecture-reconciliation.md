@@ -1,5 +1,14 @@
 # ADR 0057: Cloud-First And Multi-Source Architecture Reconciliation
 
+> Post-promotion amendment (2026-09-24): [ADR 0071](../09/0071-post-promotion-local-server-cloud-architecture.md).
+> Cloud-first sequencing and SQLite deferral below are superseded in part. ADR
+> 0071’s supersession map covers sections 1, 5 and 7, the desktop alternatives
+> row and rejected interpretation, ADR 0031 posture, and deferral of
+> CLOUD-ALPHA6/CTRL-BAKEOFF7/CLOUD-HARDEN8/FED-LATER9 outside the required
+> v0.1.0 sequence. Identity, composition, privacy, evidence and
+> single-authority invariants remain. Implementation notes below retain their
+> historical checkpoint meaning.
+
 ## Status
 
 Accepted as product and roadmap architecture. MS-ID1 has a separately

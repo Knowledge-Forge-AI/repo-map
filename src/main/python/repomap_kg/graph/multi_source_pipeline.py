@@ -43,7 +43,7 @@ from repomap_kg.ops.config_records import OpsGraphConfig
 
 _MULTI_SOURCE_EXTRACTOR_IDENTITY = "cap1:python-static-v1"
 _MULTI_SOURCE_CANONICALIZER_IDENTITY = "canon1:graph-key-v1-binding-path"
-_MULTI_SOURCE_SEMANTIC_IDENTITY = "semantic1:multi-source-v1"
+_MULTI_SOURCE_SEMANTIC_IDENTITY = "semantic1:multi-source-config-binary64-v1"
 _MULTI_SOURCE_QUALITY_IDENTITY = "quality1:default"
 _MULTI_SOURCE_RESOLVER_VERSION = "nix-static-v2"
 

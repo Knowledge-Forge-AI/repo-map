@@ -1804,6 +1804,30 @@
             "E402"
           ],
           "target": "from test_sandbox_entrypoint import ("
+        },
+        {
+          "fingerprint": "5d0a55b544c3e704a59403cf191eb41cf223772ae503aed4fbcfbcbf5a947daf",
+          "justification": "The RawIOBase stub accepts Buffer, while this implementation accepts bytearray or memoryview and uses len and slice assignment directly. Widening the annotation alone would promise unsupported buffer operations; adding memoryview conversion would change input/error semantics. Retain only the override diagnostic on this exact method signature; no other code or error class is suppressed. Independently reviewed in REPOMAP-PRODUCT1-SCANNER-SUPPRESSION-FIX1.",
+          "kind": "type-ignore",
+          "line": 137,
+          "occurrence": 1,
+          "path": "src/main/python/repomap_kg/artifacts/_store_stream.py",
+          "scope": [
+            "override"
+          ],
+          "target": "def readinto(self, b: bytearray | memoryview) -> int:"
+        },
+        {
+          "fingerprint": "d9970041ae1b910486795f19465137a9208410366a83413fd2c827abe2253bfa",
+          "justification": "The IOBase stub accepts int | None, while this implementation accepts int and compares size < 0 directly. Widening the annotation requires handling None, changing the existing TypeError semantics; an annotation-only widening is not sound. Retain only the override diagnostic on this exact method signature; no other code or error class is suppressed. Independently reviewed in REPOMAP-PRODUCT1-SCANNER-SUPPRESSION-FIX1.",
+          "kind": "type-ignore",
+          "line": 145,
+          "occurrence": 1,
+          "path": "src/main/python/repomap_kg/artifacts/_store_stream.py",
+          "scope": [
+            "override"
+          ],
+          "target": "def readline(self, size: int = -1) -> bytes:"
         }
       ]
     },

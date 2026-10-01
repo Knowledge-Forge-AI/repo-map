@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Callable, TypeVar
+from typing import Any
 
 from repomap_kg import __version__
 from repomap_kg.ops.config import (
@@ -16,9 +16,8 @@ from repomap_kg.ops.config import (
 from repomap_kg.ops.readback import (
     execute_ops_json_readback as execute_ops_json_readback,
 )
-from repomap_kg.ops.refresh import (
+from repomap_kg.ops._refresh_queries import (
     query_refresh_status as query_refresh_status,
-    run_storage_readback_with_ops_psql as run_storage_readback_with_ops_psql,
 )
 
 from repomap_kg.server._ops_sanitization import (
@@ -48,6 +47,7 @@ from repomap_kg.server._ops_records import (
     ENV_PSQL_COMMAND as ENV_PSQL_COMMAND,
     McpOpsError as McpOpsError,
     McpOpsGraphContext as McpOpsGraphContext,
+    checked_graph as checked_graph,
     find_graph as find_graph,
     graph_context as graph_context,
     load_mcp_ops_config as load_mcp_ops_config,
@@ -66,6 +66,21 @@ from repomap_kg.server._ops_search import (
     validate_query as validate_query,
 )
 import repomap_kg.server._ops_summaries as _ops_summaries_impl
+from repomap_kg.server.graph_selection import select_graph
+from repomap_kg.server.investigation_read_store import (
+    ConfiguredInvestigationGraph,
+    GraphRefreshStatusQuery,
+    InvestigationStoreBinding,
+    InvestigationStorageQueries,
+    LanguageSummaryQueries,
+)
+from repomap_kg.ops.config_local import LocalSqliteConfig
+from repomap_kg.server.postgres_read_binding import postgres_investigation_stores
+from repomap_kg.server.sqlite_read_binding import (
+    SQLITE_DATABASE_SOURCE,
+    SQLITE_STORAGE_LABEL,
+    SqliteInvestigationStores,
+)
 from repomap_kg.storage import (
     query_canonical_neighborhood as query_canonical_neighborhood,
     query_canonical_storage_summary as query_canonical_storage_summary,
@@ -76,21 +91,39 @@ from repomap_kg.storage import (
     query_terraform_summary as query_terraform_summary,
 )
 
-_StorageReadbackT = TypeVar("_StorageReadbackT")
-
-
-def query_configured_storage(
-    context: McpOpsGraphContext,
-    storage_query: Callable[..., _StorageReadbackT],
-    **query_kwargs: Any,
-) -> _StorageReadbackT:
-    return run_storage_readback_with_ops_psql(
-        context.config,
-        context.database,
-        storage_query,
-        psql_command=context.psql_command,
-        **query_kwargs,
+def investigation_storage_queries() -> InvestigationStorageQueries:
+    """Bind the facade's investigation query owners at call time for the seam."""
+    return InvestigationStorageQueries(
+        refresh_status=query_refresh_status,
+        search=query_mcp_search,
+        storage_summary=query_canonical_storage_summary,
+        neighborhood=query_canonical_neighborhood,
+        language_summaries=LanguageSummaryQueries(
+            python=query_python_summary,
+            terraform=query_terraform_summary,
+            openapi=query_openapi_summary,
+            js_framework=query_js_framework_summary,
+            nix=query_nix_summary,
+        ),
     )
+
+
+def investigation_stores(config: OpsConfig | LocalSqliteConfig) -> InvestigationStoreBinding:
+    """Production investigation binding for the backend the home declares."""
+    if isinstance(config, LocalSqliteConfig):
+        return SqliteInvestigationStores(config)
+    return postgres_investigation_stores(config, investigation_storage_queries())
+
+
+def configured_graph(
+    graph_id: str,
+    *,
+    config_path: str | os.PathLike[str] | None = None,
+) -> ConfiguredInvestigationGraph:
+    """Select a visible configured graph, then bind its investigation stores."""
+    config = load_mcp_ops_config(config_path)
+    selection = select_graph(config, graph_id)
+    return ConfiguredInvestigationGraph(selection, investigation_stores(config))
 
 
 def graph_payload(graph: OpsGraphConfig, *, database: str | None = None) -> dict[str, Any]:
@@ -110,7 +143,11 @@ def graph_payload(graph: OpsGraphConfig, *, database: str | None = None) -> dict
         "name": redact_text(graph.name),
         "repository_name": graph.repository_name_display,
         "database": graph_database_display(graph, database),
-        "database_source": "graph" if graph.database else "postgres-default",
+        "database_source": (
+            SQLITE_DATABASE_SOURCE
+            if database == SQLITE_STORAGE_LABEL
+            else "graph" if graph.database else "postgres-default"
+        ),
         "privacy": graph.privacy,
         "enabled": graph.enabled,
         "mcp_visible": graph.mcp_visible,
@@ -161,11 +198,17 @@ def list_graphs_payload(
         "graph_count": len(graphs),
         "hidden_graph_count": len(config.graphs) - len(graphs),
         "graphs": [
-            graph_payload(graph, database=graph_database(config, graph))
+            graph_payload(graph, database=_storage_label(config, graph))
             for graph in graphs
         ],
         "safety": safety_markers(),
     }
+
+
+def _storage_label(config: OpsConfig | LocalSqliteConfig, graph: OpsGraphConfig) -> str:
+    if isinstance(config, LocalSqliteConfig):
+        return SQLITE_STORAGE_LABEL
+    return graph_database(config, graph)
 
 
 def graph_status_payload(
@@ -173,14 +216,14 @@ def graph_status_payload(
     *,
     config_path: str | os.PathLike[str] | None = None,
 ) -> dict[str, Any]:
-    context = graph_context(graph_id, config_path=config_path)
-    statuses = query_refresh_status(
-        context.config,
-        psql_command=context.psql_command,
+    target = configured_graph(graph_id, config_path=config_path)
+    selection = target.selection
+    statuses = target.stores.investigation_store().refresh_statuses(
+        GraphRefreshStatusQuery(graph_ids=(selection.graph_id,))
     )
-    status = statuses.get(context.graph.id)
+    status = statuses.get(selection.graph_id)
     storage = (
-        refresh_graph_status_payload(status, graph=context.graph)
+        refresh_graph_status_payload(status, graph=selection.graph)
         if status is not None
         else None
     )
@@ -188,7 +231,9 @@ def graph_status_payload(
         "server": "repomap-kg",
         "version": __version__,
         "read_only": True,
-        "graph": graph_payload(context.graph, database=context.database),
+        "graph": graph_payload(
+            selection.graph, database=target.stores.storage_label(selection)
+        ),
         "storage": storage,
         "safety": safety_markers(),
     }
@@ -202,26 +247,18 @@ def refresh_status_payload(
     config = load_mcp_ops_config(config_path)
     visible_by_id = {graph.id: graph for graph in visible_graphs(config)}
     if graph_id is not None:
-        graph = find_graph(config, graph_id)
-        if not graph.enabled:
-            raise McpOpsError(f"graph {graph_id!r} is not enabled")
-        if not graph.mcp_visible:
-            raise McpOpsError(f"graph {graph_id!r} is not MCP-visible")
+        graph = checked_graph(config, graph_id, require_readback=False)
         visible_by_id = {graph.id: graph}
-    statuses = query_refresh_status(config, psql_command=psql_command_from_environment())
+    statuses = investigation_stores(config).investigation_store().refresh_statuses(
+        GraphRefreshStatusQuery(graph_ids=tuple(visible_by_id))
+    )
     graphs = []
     for graph in visible_by_id.values():
         status = statuses.get(graph.id)
         if status is None:
             continue
         payload = refresh_graph_status_payload(status, graph=graph)
-        payload = {
-            **payload,
-            "warnings": graph_payload(
-                graph,
-                database=graph_database(config, graph),
-            )["warnings"],
-        }
+        payload = {**payload, "warnings": graph_payload(graph)["warnings"]}
         graphs.append(sanitize_jsonable(payload))
     return {
         "server": "repomap-kg",
@@ -235,27 +272,15 @@ def refresh_status_payload(
 
 def _ops_search_dependencies() -> _ops_search_impl.OpsSearchDependencies:
     return _ops_search_impl.OpsSearchDependencies(
-        graph_context=graph_context,
+        configured_graph=configured_graph,
         graph_payload=graph_payload,
-        query_mcp_search=query_mcp_search,
     )
 
 
-def _ops_summary_dependencies(
-    *,
-    query_storage_fn: Callable[..., Any] | None = None,
-) -> _ops_summaries_impl.OpsSummaryDependencies:
+def _ops_summary_dependencies() -> _ops_summaries_impl.OpsSummaryDependencies:
     return _ops_summaries_impl.OpsSummaryDependencies(
-        graph_context=graph_context,
+        configured_graph=configured_graph,
         graph_payload=graph_payload,
-        query_configured_storage=query_storage_fn or query_configured_storage,
-        query_canonical_storage_summary=query_canonical_storage_summary,
-        query_canonical_neighborhood=query_canonical_neighborhood,
-        query_python_summary=query_python_summary,
-        query_terraform_summary=query_terraform_summary,
-        query_openapi_summary=query_openapi_summary,
-        query_js_framework_summary=query_js_framework_summary,
-        query_nix_summary=query_nix_summary,
     )
 
 
@@ -326,9 +351,7 @@ def project_summary_payload(
     return _ops_summaries_impl.project_summary_payload(
         graph_id,
         config_path=config_path,
-        dependencies=_ops_summary_dependencies(
-            query_storage_fn=query_configured_storage,
-        ),
+        dependencies=_ops_summary_dependencies(),
     )
 
 
@@ -342,9 +365,7 @@ def summary_payload(
         graph_id,
         summary_kind=summary_kind,
         config_path=config_path,
-        dependencies=_ops_summary_dependencies(
-            query_storage_fn=query_configured_storage,
-        ),
+        dependencies=_ops_summary_dependencies(),
     )
 
 
@@ -362,7 +383,5 @@ def neighborhood_payload(
         direction=direction,
         depth=depth,
         config_path=config_path,
-        dependencies=_ops_summary_dependencies(
-            query_storage_fn=query_configured_storage,
-        ),
+        dependencies=_ops_summary_dependencies(),
     )

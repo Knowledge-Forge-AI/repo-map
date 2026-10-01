@@ -79,7 +79,7 @@ COPY pyproject.toml README.md ./
 COPY src/main/python ./src/main/python
 COPY src/main/resources ./src/main/resources
 RUN python -m pip install --no-cache-dir setuptools=={SETUPTOOLS_RELEASE_VERSION} \\
-    && python -m pip install --no-cache-dir --no-build-isolation .
+    && python -m pip install --no-cache-dir --no-build-isolation ".[postgres]"
 
 RUN python -c "from pathlib import Path; from repomap_kg.storage import discover_migrations; from repomap_kg.coordinator._control_schema import discover_control_migrations; encode=lambda items: tuple((item.relative_path,item.changeset_id,item.checksum) for item in items); installed_graph=encode(discover_migrations()); source_graph=encode(discover_migrations(Path('/build/src/main/resources/rdbms'))); installed_control=encode(discover_control_migrations()); source_control=encode(discover_control_migrations(Path('/build/src/main/resources/coordinator-rdbms'))); assert installed_graph == source_graph; assert installed_control == source_control"
 RUN python -m pip uninstall -y pip setuptools \\

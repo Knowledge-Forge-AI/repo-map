@@ -77,8 +77,15 @@ def main(argv: list[str] | None = None) -> int:
                 _write(heartbeat)
 
         try:
+            from repomap_kg.coordinator import _publication_phase
+
             refresh_result = _run_with_heartbeats(
-                lambda: execute_refresh(capability),
+                lambda: execute_refresh(
+                    capability,
+                    before_publication=lambda: _publication_phase.before_publication(
+                        Path(args.capability).parent, capability
+                    ),
+                ),
                 emit_heartbeat,
             )
             if getattr(refresh_result, "result", None) != "success":
@@ -110,17 +117,7 @@ def main(argv: list[str] | None = None) -> int:
             session.accept_worker(terminal)
             _write(terminal)
         return 0
-    except Exception as error:
-        from repomap_kg.ops.reports import _redact_text
-
-        category = "worker-error"
-        if isinstance(error, ProtocolError):
-            category = "protocol-error"
-        elif isinstance(error, (ValueError, OSError)) and "capability" in str(error).lower():
-            category = "capability-error"
-        safe_msg = _redact_text(str(error))[:256]
-        sys.stderr.write(f"refresh-failure:{category}:{safe_msg}\n")
-        sys.stderr.flush()
+    except (OSError, TypeError, ValueError, ProtocolError):
         return 2
 
 

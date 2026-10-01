@@ -55,6 +55,7 @@ class JobStatus:
     completed: int
     total: int | None
     error_category: str | None
+    diagnostic_summary: str | None = None
 
 
 @dataclass(frozen=True)

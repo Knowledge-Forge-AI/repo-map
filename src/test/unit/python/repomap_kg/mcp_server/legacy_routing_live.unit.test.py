@@ -10,7 +10,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 
 class McpServerLegacyRoutingLiveUnitTests(McpServerTestSupport):
-    def test_live_ops7_legacy_graph_fallback_uses_ops_psql_for_container_internal_host(self):
+    def test_live_ops7_configured_tools_refuse_host_only_for_container_internal_host(self):
         from repomap_kg.server.mcp import (
             repomap_canonical_edges, repomap_canonical_nodes, repomap_status,
         )
@@ -19,42 +19,15 @@ class McpServerLegacyRoutingLiveUnitTests(McpServerTestSupport):
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_container_internal_ops_config()
         unresolved_host = "could not translate host name \"postgres\" to address"
-        node = CanonicalNodeRecord(
-            canonical_key="python.module:repomap_kg.cli", graph_key_version=1,
-            kind="python.module", display_name="repomap_kg.cli", confidence="extracted",
-            conflict=False, metadata={}, first_seen_run_id=1, last_seen_run_id=2,
-        )
-        edge = CanonicalEdgeRecord(
-            source_key="python.module:repomap_kg.cli", edge_kind="imports",
-            target_key="python.module:repomap_kg.storage", graph_key_version=1,
-            identity_metadata={}, identity_metadata_hash=identity_metadata_hash({}),
-            metadata={}, confidence="extracted", conflict=False,
-            first_seen_run_id=1, last_seen_run_id=2,
-        )
         psql_calls: dict[str, list[tuple[list[str], str | None, str]]] = {
             "status": [], "nodes": [], "edges": [],
         }
 
-        def record_call(label: str, psql_args, *, root_path, psql_command, **_kwargs):
-            psql_calls[label].append((list(psql_args), psql_command, root_path))
-            if psql_command == "psql":
+        def host_query(label: str):
+            def query(psql_args, *, root_path, psql_command="psql", **_kwargs):
+                psql_calls[label].append((list(psql_args), psql_command, root_path))
                 raise StorageSchemaError(unresolved_host)
-
-        def status_query(psql_args, *, root_path, psql_command="psql", **kwargs):
-            record_call("status", psql_args, root_path=root_path, psql_command=psql_command, **kwargs)
-            return CanonicalStorageSummaryRecord(
-                root_path=root_path, repository_name="fixture", latest_run_id=22,
-                runs=2, files=3, raw_observations=13, canonical_nodes=5,
-                canonical_edges=7, canonical_evidence=11,
-            )
-
-        def node_query(psql_args, *, root_path, psql_command="psql", **kwargs):
-            record_call("nodes", psql_args, root_path=root_path, psql_command=psql_command, **kwargs)
-            return (node,)
-
-        def edge_query(psql_args, *, root_path, psql_command="psql", **kwargs):
-            record_call("edges", psql_args, root_path=root_path, psql_command=psql_command, **kwargs)
-            return (edge,)
+            return query
 
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
             with (
@@ -64,30 +37,27 @@ class McpServerLegacyRoutingLiveUnitTests(McpServerTestSupport):
                         command="podman", args_prefix=("exec", "-i", "repomap-postgres", "psql"),
                         strategy="container",
                     ),
-                ),
-                patch("repomap_kg.server.mcp.query_canonical_storage_summary", side_effect=status_query),
-                patch("repomap_kg.server.mcp.query_canonical_node_records", side_effect=node_query),
-                patch("repomap_kg.server.mcp.query_canonical_edge_records", side_effect=edge_query),
+                ) as container_execution,
+                patch("repomap_kg.server.mcp.query_canonical_storage_summary", side_effect=host_query("status")),
+                patch("repomap_kg.server.mcp.query_canonical_node_records", side_effect=host_query("nodes")),
+                patch("repomap_kg.server.mcp.query_canonical_edge_records", side_effect=host_query("edges")),
             ):
-                status = repomap_status(project="repo-map")
-                nodes = repomap_canonical_nodes(project="repo-map", kind="python.module")
-                edges = repomap_canonical_edges(project="repo-map", kind="imports")
+                # READSTORE1 (canonical tools) and READSTORE3 (legacy status):
+                # configured tools read host-only and refuse instead of
+                # reaching a container runtime, even when one is available.
+                with self.assertRaisesRegex(StorageSchemaError, "could not translate host name"):
+                    repomap_status(project="repo-map")
+                with self.assertRaisesRegex(StorageSchemaError, "could not translate host name"):
+                    repomap_canonical_nodes(project="repo-map", kind="python.module")
+                with self.assertRaisesRegex(StorageSchemaError, "could not translate host name"):
+                    repomap_canonical_edges(project="repo-map", kind="imports")
+                self.assertEqual(container_execution.call_count, 0)
 
-        assert isinstance(nodes, dict)
-        assert isinstance(edges, dict)
-        self.assertEqual(status["root_path"], "[graph-root]")
-        self.assertEqual(nodes["items"][0]["canonical_key"], "python.module:repomap_kg.cli")
-        self.assertEqual(edges["items"][0]["edge_kind"], "imports")
         expected_host_args = ["-h", "postgres", "-p", "5432", "-U", "repo_map", "-d", "repomap_repo_map"]
-        expected_container_args = ["exec", "-i", "repomap-postgres", "psql", *expected_host_args]
-        for label, calls in psql_calls.items():
-            self.assertEqual(len(calls), 2, label)
-            host_args, host_command, host_root = calls[0]
-            container_args, container_command, container_root = calls[1]
-            self.assertEqual((host_command, host_root, host_args), ("psql", "/tmp/fixture", expected_host_args))
-            self.assertEqual((container_command, container_root, container_args), ("podman", "/tmp/fixture", expected_container_args))
+        for label in ("status", "nodes", "edges"):
+            self.assertEqual(psql_calls[label], [(expected_host_args, "psql", "/tmp/fixture")], label)
 
-    def test_live_ops7_private_graph_legacy_fallback_keeps_public_root_redacted(self):
+    def test_live_ops7_private_graph_host_only_refusal_keeps_root_redacted(self):
         from repomap_kg.server.mcp import repomap_status
         from repomap_kg.ops.reports import OpsPsqlExecution
 
@@ -100,15 +70,9 @@ class McpServerLegacyRoutingLiveUnitTests(McpServerTestSupport):
         )
         roots_seen: list[str] = []
 
-        def status_query(psql_args, *, root_path, psql_command="psql", **_kwargs):
+        def status_query(_psql_args, *, root_path, **_kwargs):
             roots_seen.append(root_path)
-            if psql_command == "psql":
-                raise StorageSchemaError("could not translate host name \"postgres\" to address")
-            self.assertEqual(list(psql_args[:4]), ["exec", "-i", "repomap-postgres", "psql"])
-            return CanonicalStorageSummaryRecord(
-                root_path=root_path, repository_name="private-visible", latest_run_id=22,
-                runs=2, files=3, raw_observations=13, canonical_nodes=5, canonical_edges=7, canonical_evidence=11,
-            )
+            raise StorageSchemaError("could not translate host name \"postgres\" to address")
 
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
             with (
@@ -118,16 +82,20 @@ class McpServerLegacyRoutingLiveUnitTests(McpServerTestSupport):
                         command="podman", args_prefix=("exec", "-i", "repomap-postgres", "psql"),
                         strategy="container",
                     ),
-                ),
+                ) as container_execution,
                 patch("repomap_kg.server.mcp.query_canonical_storage_summary", side_effect=status_query),
+                # READSTORE3: legacy status reads host-only; one host attempt,
+                # no container fallback, and a bounded refusal without topology.
+                self.assertRaises(StorageSchemaError) as raised,
             ):
-                payload = repomap_status(project="private-visible")
+                repomap_status(project="private-visible")
 
-        self.assertEqual(roots_seen, [private_root, private_root])
-        self.assertEqual(payload["root_path"], "[private-root]")
-        serialized = json.dumps(payload, sort_keys=True)
+        self.assertEqual(container_execution.call_count, 0)
+        self.assertEqual(roots_seen, [private_root])
+        refusal = str(raised.exception)
+        self.assertIn("could not translate host name", refusal)
         for token in unsafe_tokens:
-            self.assertNotIn(token, serialized)
+            self.assertNotIn(token, refusal)
 
     def test_live_harden3_graph_registry_and_legacy_mcp_routing_smoke(self):
         from repomap_kg.server.mcp import (

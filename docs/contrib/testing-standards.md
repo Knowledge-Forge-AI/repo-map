@@ -98,23 +98,6 @@ persistent accepted state, reported separately from unattributed images and
 current-run ephemeral residue. Deployment `repomap-runtime:*` and legacy
 `repomap-runtime-<hash>:latest` images are never test-GC targets.
 
-The authoritative runtime image identity is exported via
-`REPOMAP_TEST_RUNTIME_IMAGE` by the test runner (`tools/runner_unit_execution.py`)
-when ensuring the canonical runtime image during smoke or integration suite runs.
-Container-based integration tests consume `REPOMAP_TEST_RUNTIME_IMAGE` rather
-than hardcoding outer sandbox images (e.g., `repomap-test-sandbox`), because the
-DinD inner daemon contains only pre-pulled dependencies and the managed runtime
-cache image. Inside the authenticated container sandbox (`active_sandbox()`),
-tests fail closed if `REPOMAP_TEST_RUNTIME_IMAGE` is absent. Outside the sandbox,
-when live Docker is unavailable or the runtime image identity is not configured,
-tests skip per capability policy.
-
-Child coverage sessions (`ChildCoverageSession`) install the canonical runner bootstrap
-into `bootstrap_dir` while retaining a copy in `session_dir` for backward-compatible
-visibility. The child execution path injects `bootstrap_dir` onto `PYTHONPATH`.
-`BOOTSTRAP_TEMPLATE._disarm_coverage` pops `COVERAGE_PROCESS_START` to disarm any
-subsequent or nested executions, and strips `session_dir` from `sys.path`.
-
 Runtime cache materialization uses one label-free, exactly ledgered temporary
 container, a collision-resistant run-bound name, a checkout-stable private
 recovery manifest, and one final `container.commit`. The persistent image must contain
@@ -215,9 +198,10 @@ credential-file coverage when `psql.exe` is unavailable.
 Scoped local verification is mandatory by default for ordinary development
 phases. The ordinary local default is the narrowest exact unit paths or node
 IDs beneath `src/test/unit/python` plus applicable changed-file static checks.
-A local integration selector is optional, prompt-owned diagnostic evidence;
-when requested, it remains automatically sandboxed and host-disposable. A
-justified directory beneath a suite root is still scoped; selecting the whole
+Behavior-changing product dispatches also require narrowly scoped local
+containerized integration for the changed product boundary, with both unit and
+integration owners updated in the same slice. Integration remains automatically
+sandboxed and host-disposable. A justified directory beneath a suite root is still scoped; selecting the whole
 suite root is a complete run.
 
 Unless the current prompt grants a complete-suite override, agents must:
@@ -226,10 +210,9 @@ Unless the current prompt grants a complete-suite override, agents must:
    owners without inventing automatic Git-diff-to-test heuristics.
 2. Run the narrowest exact unit paths or node IDs that cover the changed
    behavior.
-3. Run exact integration paths or node IDs only when the current prompt
-   explicitly requests that diagnostic; crossing a storage, process, runtime,
-   database, or container boundary identifies the eventual hosted owner but
-   does not make laptop integration an ordinary phase-closing requirement.
+3. For behavior-changing product slices, run exact containerized integration
+   paths or node IDs for the changed boundary with `--no-coverage`. Other
+   change classes select integration in proportion to the changed contract.
 4. Add adjacent owners only when a shared contract makes them affected.
 5. Run applicable changed-file static or compile checks.
 6. Run `git diff --check` and `git diff --cached --check`.
@@ -263,22 +246,32 @@ retained, pair it with an exact path and `--no-coverage`. Scoped runs use
 does not weaken or lower any threshold. Do not use `--threshold` to make a
 partial population pass.
 
-Agents must not routinely run complete unit, complete integration, staging,
-system, or the retired `--suite all`. Hosted qualification is unified in
-`.github/workflows/repomap-release-qualification.yml`: the `unit-tests` job
-owns the routine complete unit population, `staging-integration-gate` owns the
-logically approved smoke-then-complete-integration population, and
-`main-system-gate` owns the logically approved assembled-product scenario. A
-scope-complete local checkpoint does not become whole-population qualification,
-and pending hosted gates remain pending. Hosted `EXHAUSTED` or `UNKNOWN` state
-does not authorize a complete laptop substitute.
+Agents must not routinely run complete unit, complete integration, smoke, staging,
+system, or the retired combined `--suite all`. The hosted PR Fast pipeline owns the
+routine complete unit population in `repomap-unit-tests`; the logically approved
+smoke-then-complete-integration population in `repomap-staging-gate`, and the
+logically approved assembled-product scenario in
+`repomap-main-system-gate`. A scope-complete local checkpoint does not become
+whole-population qualification, and pending hosted gates remain pending.
+Hosted `EXHAUSTED` or `UNKNOWN` state does not authorize a complete laptop
+substitute.
 
 A locally verified product candidate may be retained and subsequent local
 product development may proceed while hosted integration qualification remains
 explicitly pending, unless the current operator prompt names a narrower
-mechanical blocker. Local sandbox unavailability likewise records diagnostic
-unavailability; it does not transfer the hosted qualification claim to the
-laptop or force unrelated local work to stop.
+mechanical blocker. Required local integration refusal or sandbox unavailability
+records a named verification gap and blocks claiming the behavior-changing slice
+complete unless the manager explicitly accepts that gap. A candidate may be
+retained and unrelated work may continue; no host-execution fallback or hosted
+qualification claim follows. Historical MS-ID1-FIX1/FIX2 dispositions remain
+historical, not exemptions for new product slices.
+
+For SQLite Local slices, containerized integration means testing temporary
+SQLite publication/read/recovery through repository-owned container isolation;
+PostgreSQL is needed for cross-backend parity, not SQLite-only behavior. The
+separately authorized implementation slice must provide any missing harness
+support without weakening isolation. Local product use itself remains host-native.
+See [ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md).
 
 ## Complete-Suite Override
 
@@ -377,16 +370,37 @@ means a logical approval of one exact pull-request revision, never GitHub's
 review-approval feature.
 
 ```text
+feature/fix PR -> staging
+        |
+        +--> PR Fast              two independent checks on every code-affecting PR update
+        |    |-- repomap-static-analysis
+        |    +-- repomap-unit-tests
+        |
+        +--> logical approval of exact base/head
+             |
+             v
+        Staging Gate              exhaustive qualification, dispatch-only
+             |
+             v
+        green SHA-bound merge authorization evidence
+             |
+             v
+        operator (later JACA) git broker -> staging
+
 staging PR -> main
         |
-        +--> repomap-release-qualification (.github/workflows/repomap-release-qualification.yml)
-             |-- source-and-export-policy    staging source policy & public export boundary
-             |-- pre-review-static           complete pre-review static analysis stack
-             |-- unit-tests                  complete unit population (85/85 coverage)
-             |-- staging-integration-gate    smoke and integration tests (exhaustive hygiene)
-             |-- main-system-gate            assembled-product system qualification
-             |-- codeql                      CodeQL security analysis (Python, Go)
-             +-- sbom-security               Syft SPDX SBOM generation & Grype scanning
+        +--> main source policy   only same-repo staging is valid
+        |
+        +--> logical milestone approval
+             |
+             v
+        Main Milestone            assembled-product system qualification
+             |
+             v
+        green SHA/tree-bound merge authorization evidence
+             |
+             v
+        operator (later JACA) git broker -> main
 ```
 
 GitHub Actions is an evidence executor, never a git broker. No workflow merges,
@@ -394,13 +408,10 @@ updates a ref, enables auto-merge, or closes a pull request, and no workflow
 holds a write permission. Until JACA owns merging, the human operator is the
 temporary broker and decides what to merge from the gate's evidence.
 
-RepoMap operates a unified release qualification workflow (`.github/workflows/repomap-release-qualification.yml`) spanning seven jobs across the qualification tiers:
+RepoMap operates five hosted CI lanes across the three cost tiers:
 
-1. `source-and-export-policy`:
-   The promotion and export policy check. It verifies that pull requests targeting `main` originate from this repository's `staging` branch, and runs `tools/ci/public_export_policy.py` to enforce that public export boundaries and candidate commit identities hold. Any invalid source or policy mismatch fails immediately and runs no downstream jobs.
-
-2. `pre-review-static` (formerly `repomap-static-analysis`):
-   The pre-review static analysis lane.
+1. `repomap-static-analysis` (`.github/workflows/repomap-static-analysis.yml`) —
+   the PR Fast lane.
    One sequential pre-review aggregate: Ruff, Pyflakes, mypy,
    retained-Python ratchets, file-length,
    compileall, actionlint, zizmor, pip-audit, govulncheck, Semgrep,
@@ -439,8 +450,8 @@ RepoMap operates a unified release qualification workflow (`.github/workflows/re
    digests plus phase/status authority. New retained modules enter only clean.
    Semgrep runs through the exact console script owned by that sealed Python.
    Maintained Python code quality is protected under ratchets immediately
-   rather than awaiting hypothetical replacement, with architecture placement
-   reserved for the post-main phase. Planned-Go, planned-Go/Rust, and
+   rather than awaiting hypothetical replacement, under ADR 0071’s retained
+   Python direction. Planned-Go, planned-Go/Rust, and
    transitional Python implementation outside explicit retained maintenance
    enrollment remain outside the product baseline; a retention assessment of
    at least 80% still requires clean admission and is not waived by that label.
@@ -474,18 +485,20 @@ RepoMap operates a unified release qualification workflow (`.github/workflows/re
    still a separate no-waiver contract. It also runs the stdlib-only
    project-owned CI topology check `tools/ci/ci_topology.py`, which structurally
    parses the repository's own workflow YAML and asserts the contracts described
-    here. The workflow triggers for pull requests targeting `main`, on
-    `opened`, `reopened`, `ready_for_review`, and `synchronize`. There is
-    deliberately no second arbitrary branch `push` trigger: `synchronize` *is* the
-    push-to-open-PR feedback signal, and a duplicate lane would double cost while
-    proving nothing extra. Static feedback remains independently visible and
-    cancellable from the unit population.
+   here. The lane triggers only for pull requests targeting `staging`, on
+   `opened`, `reopened`, `ready_for_review`, and `synchronize`. There is
+   deliberately no second arbitrary branch `push` trigger: `synchronize` *is* the
+   push-to-open-PR feedback signal, and a duplicate lane would double cost while
+   proving nothing extra. Static feedback remains independently visible and
+   cancellable from the unit population.
 
-3. `unit-tests` (formerly `repomap-unit-tests`) —
-   the behavioral unit qualification lane. TEST-ISO1 proved that `--suite unit` is unit-only
+2. `repomap-unit-tests` (`.github/workflows/repomap-unit-tests.yml`) —
+   the behavioral PR Fast lane. TEST-ISO1 proved that `--suite unit` is unit-only
    direct-host execution without Docker-backed integration resources, so this
    lane runs the complete canonical population exactly once through
-   `python3 tools/run_tests.py --suite unit`. It installs
+   `python3 tools/run_tests.py --suite unit`. It installs the hash-locked
+   `tools/ci/project_dependencies.lock` closure (Psycopg, which unit collection
+   imports but the base package no longer requires) and then
    `.[test,scale-tools,static-analysis]`. The `scale-tools` extra supplies `docker`
    and `psutil` for injected clients, parsers, and failure mapping. The pinned
    static-analysis extra supplies the real mypy and Ruff subprocesses exercised by
@@ -498,28 +511,44 @@ RepoMap operates a unified release qualification workflow (`.github/workflows/re
    fail closed on Docker or Postgres contact. The canonical runner validates and
    builds the existing Go helper, so the workflow pins the Go toolchain `src/main/go/go.mod` and bootstraps verified `golangci-lint` v2.6.2. Python
    statement coverage fails below 85% and branch coverage fails below 85% (settled
-   in REPOMAP-CI2A-R4D); Go retains its separate 85% statement gate. It has no
-   integration, smoke, sandbox, Docker, or Postgres access. Its 60-minute job
-   timeout is a conservative hosted qualification envelope, not an expected runtime.
+   in REPOMAP-CI2A-R4D); Go retains its separate 85% statement gate. The lane
+    uses the same staging PR event types and code-affecting filters as static
+   analysis, plus `src/main/go/**`, and has no integration, smoke, sandbox,
+    Docker, or Postgres access. Its 60-minute job timeout is a conservative
+    hosted qualification envelope, not an expected runtime. The first
+    15-minute hosted qualification was invalid: pytest alone consumed 821.10
+    seconds and the job expired during coverage/report settlement.
 
-4. `staging-integration-gate` (formerly `repomap-staging-gate`):
-   The staging smoke and integration gate. It runs with `--suite staging`,
-   `--hygiene-profile exhaustive`, selecting the owned DinD backend explicitly with
-   `--sandbox`. `--suite staging` owns smoke-then-integration ordering, so the workflow
-   does not run either stage separately and reproduces no test ordering, coverage
-   arithmetic, or operation accounting of its own. Third-party Actions are pinned to
-   immutable full commit SHAs. The host retains Python 3.13 for the repository-local
-   launcher, while the owned sandbox recipe supplies the Python test environment.
-   The composed gate owns integration tests with hard 80/80 coverage, container smoke,
-   and Docker operation and residue accounting. It emits a machine-readable
-   `repomap-ci-gate-result-v1` artifact binding that candidate. Its 180-minute outer
-   job timeout reserves hosted-runner variance around the semantic smoke-then-integration
-   gate.
+3. `repomap-staging-gate` (`.github/workflows/repomap-staging-gate.yml`, formerly
+   `repomap-dev-gate`):
+   The canonical post-review staging gate. It no longer runs on ordinary
+   pull-request updates. It runs on a GitHub-hosted Linux runner only when an
+   explicit logical gate request is dispatched, holds `contents: read` and
+   `pull-requests: read` with no write permission and no repository secret, and
+   invokes the hosted-CI form of
+   the project-owned exhaustive command from the Verification Policy section
+   exactly once, selecting the owned DinD backend explicitly with `--sandbox`.
+   `--suite staging` owns smoke-then-integration ordering, so the workflow does
+   not run either stage separately and reproduces no test ordering,
+   coverage arithmetic, or operation accounting of its own. Third-party Actions
+   are pinned to immutable full commit SHAs. The host retains Python 3.13 for the
+   repository-local launcher, while the owned sandbox recipe supplies the Python
+   test environment. The workflow must not duplicate the PR unit or pre-review
+   toolchain. The composed gate owns integration tests with hard 80/80 coverage,
+   container smoke, and Docker
+   operation and residue accounting. Unit evidence remains owned by the
+   independent PR lane. It qualifies the pull
+   request's exact merge candidate — `refs/pull/<N>/merge`, the head merged into
+   the approved base — rather than a stale feature head, and it emits a
+   machine-readable `repomap-ci-gate-result-v1` artifact binding that candidate.
+   Its 180-minute outer job timeout reserves hosted-runner variance around the
+   semantic smoke-then-integration gate; it does not change any product or
+   per-test timeout.
 
-5. `main-system-gate` (formerly `repomap-main-system-gate`):
+4. `repomap-main-system-gate` (`.github/workflows/repomap-main-system-gate.yml`):
    The canonical assembled-product main promotion qualification gate (REPOMAP-SYS0-FIX1).
-   It tests the packaged candidate release container image
-   (`repomap-system-candidate:<tree_prefix>`) built under managed boundary authority.
+   Invoked by an explicit `main-system` gate request, it tests the packaged candidate release
+   container image (`repomap-system-candidate:<tree_prefix>`) built under managed boundary authority.
    It strictly rejects host repository source mounts, verifies container cluster readiness,
    durable coordinator refresh, controlled coordinator crash/interruption recovery, idempotency
    replayed coalescing and fencing, and line-delimited JSON-RPC MCP stdio readback with deterministic
@@ -530,24 +559,24 @@ RepoMap operates a unified release qualification workflow (`.github/workflows/re
    for checkout, installation, image/build setup, cleanup, evidence, and hosted
    variance. The ordinary local system default remains 1,500 seconds.
 
-6. `codeql` (`codeql-analysis`):
-   Matrix security analysis for Python and Go with GitHub CodeQL action. Runs with
-   `security-events: write` permissions and 30-minute timeout.
-
-7. `sbom-security` (`sbom-and-vulnerability-scan`):
-   Generates a full SPDX-JSON Software Bill of Materials (SBOM) using Anchore Syft
-   and performs vulnerability scanning using Anchore Grype (`severity-cutoff: high`,
-   `fail-build: true`). Runs with 20-minute timeout and publishes `repomap-sbom` artifact.
-
-All hosted envelopes are ceilings rather than expected runtimes: `source-and-export-policy`
-has 10 minutes, `pre-review-static` has 40 minutes, `unit-tests` has 60 minutes,
-`staging-integration-gate` has 180 minutes, `main-system-gate` has 90 minutes,
-`codeql` has 30 minutes, and `sbom-security` has 20 minutes. Hosted runners are materially
+All four hosted envelopes are ceilings rather than expected runtimes: static
+analysis retains 25 minutes, PR Fast unit has 60 minutes, Staging Gate has 180
+minutes, and Main System Gate has 90 minutes. Hosted runners are materially
 slower and more variable than the operator laptop. Record actual durations so
 the outer envelopes can be tightened from evidence. Do not expand product,
 worker, heartbeat, deadlock, cancellation, subprocess, database, or
 individual-test deadlines, and do not add automatic retries to conceal
 deterministic failures.
+
+5. `repomap-main-source-policy`
+   (`.github/workflows/repomap-main-source-policy.yml`):
+   A cheap advisory topology check for pull requests targeting `main`. It passes
+   only when the base is `main`, the head repository is this repository, and the
+   head branch is `staging`. Any other source fails immediately and runs no
+   expensive work: no dependency install, no Go, no Docker, no Postgres, no test
+   suite. It does not close, label, or otherwise mutate the pull request, and it
+   is **not** the security boundary — JACA will ultimately refuse unauthorized
+   promotion authoritatively using the same policy.
 
 The gate supplies two ADR 0053 admission arguments that only an ephemeral
 single-tenant host may honestly make: the exclusive attestation and the
@@ -561,7 +590,7 @@ instead records two exact `df -B1` readings as evidence.
 **Hosted exhaustive correctness is ACCEPTED.** REPOMAP-CI0B live run
 `32516257994` completed the whole composed gate successfully, and earlier live
 failures demonstrated that a project-test failure or a managed-smoke cleanup
-failure makes the workflow red. `staging-integration-gate` therefore owns routine
+failure makes the workflow red. `repomap-staging-gate` therefore owns routine
 exhaustive correctness verification for private development, while development
 agents own the proportional local verification defined above.
 
@@ -583,7 +612,7 @@ supported way to move `main` is a `staging -> main` promotion, and the exact
 tree being promoted has already been qualified by a green staging gate against
 that same content. Re-running the identical suite on the identical tree would
 have produced evidence, not information. `staging -> main` promotion is
-governed by the `main-system-gate` assembled-product gate and the source and export policy.
+governed by the `repomap-main-system-gate` assembled-product gate and the main-source policy.
 
 The executable one-time bootstrap exception procedure is:
 1. An operator exception lands only the trusted executor bootstrap closure on
@@ -648,7 +677,7 @@ than a retry. That is the intended failure mode.
 ### Main milestone gate
 
 Promotion of `staging` to `main` requires logical milestone approval followed
-by the implemented `main-system-gate` job in `repomap-release-qualification.yml`. The gate runs the bounded SYS0
+by the implemented `repomap-main-system-gate`. The gate runs the bounded SYS0
 assembled-product system suite for the exact approved base/head pair and emits
 SHA/tree-bound authorization evidence. Later release, packaging, SBOM, and
 image/release security checks remain roadmap work; they are not implied by the

@@ -39,6 +39,9 @@ _CAPABILITY_FIELDS = frozenset({
     "graph_id",
     "config_path",
     "psql_path",
+    "postgres_host",
+    "postgres_port",
+    "postgres_route_kind",
     "postgres_user",
     "postgres_password",
     "executable_search_path",
@@ -49,6 +52,7 @@ _CAPABILITY_FIELDS = frozenset({
     "coordinator_instance_id",
     "singleton_fencing_epoch",
     "graph_lease_fencing_epoch",
+    "process_deadline_seconds",
 })
 _GRAPH_ID = re.compile(r"[a-z][a-z0-9-]{0,127}\Z")
 _MAX_CAPABILITY_BYTES = 4096
@@ -68,6 +72,9 @@ class ResolvedRefreshAuthority:
     config_generation: str
     extractor_generation: str
     canonicalizer_generation: str
+    postgres_host: str = "127.0.0.1"
+    postgres_port: int = 5432
+    postgres_route_kind: str = "configured"
 
 
 @dataclass(frozen=True)
@@ -87,9 +94,13 @@ class RefreshCapability:
     config_generation: str
     extractor_generation: str
     canonicalizer_generation: str
+    postgres_host: str = "127.0.0.1"
+    postgres_port: int = 5432
+    postgres_route_kind: str = "configured"
     coordinator_instance_id: str | None = None
     singleton_fencing_epoch: int = 0
     graph_lease_fencing_epoch: int = 0
+    process_deadline_seconds: int = 600
 
     def publication_generations(self) -> RunPublicationGenerations:
         return RunPublicationGenerations(
@@ -121,6 +132,13 @@ class RefreshCapability:
                 and _GRAPH_ID.fullmatch(self.graph_id) is not None
                 and isinstance(self.config_path, Path)
                 and self.config_path.is_absolute()
+                and isinstance(self.postgres_host, str)
+                and 0 < len(self.postgres_host) <= 255
+                and not any(char.isspace() or ord(char) < 32 for char in self.postgres_host)
+                and isinstance(self.postgres_port, int)
+                and not isinstance(self.postgres_port, bool)
+                and 0 < self.postgres_port <= 65535
+                and self.postgres_route_kind in ("configured", "local-native", "container-internal")
                 and isinstance(self.postgres_user, str)
                 and _GRAPH_ID.fullmatch(self.postgres_user.replace("_", "-"))
                 is not None
@@ -142,6 +160,9 @@ class RefreshCapability:
                 and isinstance(self.graph_lease_fencing_epoch, int)
                 and not isinstance(self.graph_lease_fencing_epoch, bool)
                 and self.graph_lease_fencing_epoch > 0
+                and isinstance(self.process_deadline_seconds, int)
+                and not isinstance(self.process_deadline_seconds, bool)
+                and 0 < self.process_deadline_seconds <= 3600
             )
             self.publication_generations()
         except (TypeError, ValueError):
@@ -224,6 +245,9 @@ def load_refresh_capability(path: Path) -> RefreshCapability:
             graph_id=payload["graph_id"],
             config_path=Path(payload["config_path"]),
             psql_path=Path(payload["psql_path"]),
+            postgres_host=payload["postgres_host"],
+            postgres_port=payload["postgres_port"],
+            postgres_route_kind=payload["postgres_route_kind"],
             postgres_user=payload["postgres_user"],
             postgres_password=payload["postgres_password"],
             executable_search_path=tuple(
@@ -236,6 +260,7 @@ def load_refresh_capability(path: Path) -> RefreshCapability:
             coordinator_instance_id=payload.get("coordinator_instance_id"),
             singleton_fencing_epoch=payload.get("singleton_fencing_epoch", 0),
             graph_lease_fencing_epoch=payload.get("graph_lease_fencing_epoch", 0),
+            process_deadline_seconds=payload.get("process_deadline_seconds", 600),
         ).validate()
         validate_config_file(capability.config_path)
         validate_psql(capability.psql_path)

@@ -1,4 +1,5 @@
 from typing import Any, cast
+import time
 
 import pytest
 
@@ -66,7 +67,10 @@ def test_transport_rejects_incompatible_unauthorized_or_authority_requests(
 def test_transport_exposes_only_the_six_bounded_operations(operation):
     payload: dict[str, object] = {}
     if operation == "submit":
-        payload = {"request": {"request_id": "request-1"}}
+        payload = {
+            "request": {"request_id": "request-1"},
+            "admission_deadline": time.time() + 60,
+        }
     elif operation == "list":
         payload = {"limit": 20}
     elif operation != "health":

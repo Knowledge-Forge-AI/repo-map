@@ -14,12 +14,13 @@ from repomap_kg.coordinator._coordinator_protocols import (
     require_payload_int,
     require_payload_string,
 )
+from repomap_kg.coordinator._transport_validation import public_diagnostic_summary
 from repomap_kg.coordinator.contracts import (
     JobRequest,
     TERMINAL_JOB_STATES,
     normalize_request,
 )
-from repomap_kg.coordinator.limits import CoordinatorLimits
+from repomap_kg.coordinator.limits import AdmissionDeadline, AdmissionTimeout, CoordinatorLimits
 from repomap_kg.coordinator.transport import TransportError
 
 
@@ -54,8 +55,19 @@ class ServiceHandlersMixin:
             if self._state != "ready":
                 raise TransportError("saturated")
         try:
+            deadline = AdmissionDeadline.from_wire(payload["admission_deadline"])
             request = self._request_resolver(payload["request"])
-            result = self._coordinator.submit(lambda: self._store.submit(request))
+            deadline.remaining()
+
+            def admit():
+                deadline.remaining()
+                return self._store.submit(request, admission_deadline=deadline)
+
+            result = self._coordinator.submit(admit)
+        except AdmissionTimeout:
+            raise TransportError("admission_timeout") from None
+        except TransportError:
+            raise
         except (KeyError, ValueError):
             raise TransportError("invalid_request") from None
         return {
@@ -96,6 +108,12 @@ class ServiceHandlersMixin:
             result["total"] = status.total
         if status.error_category is not None:
             result["error_category"] = status.error_category
+        if status.error_category is not None or status.state in {
+            "failed", "reconciliation_required", "quarantined"
+        }:
+            diagnostic = public_diagnostic_summary(status.diagnostic_summary)
+            if diagnostic is not None:
+                result["diagnostic_summary"] = diagnostic
         return result
 
     def _wait(self, payload: Mapping[str, object]) -> dict[str, object]:

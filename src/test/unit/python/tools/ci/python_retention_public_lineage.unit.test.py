@@ -81,7 +81,7 @@ class TestPythonRetentionPublicLineage(unittest.TestCase):
         self.assertTrue(hist_path.is_file(), "historical_ownership_manifests.json must exist")
 
         hist_data = json.loads(hist_path.read_text(encoding="utf-8"))
-        self.assertEqual(len(hist_data), 10, "must contain exactly 10 historical manifests")
+        self.assertEqual(len(hist_data), 11, "must contain exactly 11 historical manifests")
 
         # Test with known historical records from python_retention_transitions.json
         transitions_path = repo_root / "tools/ci/python_retention_transitions.json"

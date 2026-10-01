@@ -47,6 +47,17 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
     wheel = next(wheel_directory.glob("repomap_kg-*.whl"))
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
+        metadata = archive.read("repomap_kg-0.0.2.dist-info/METADATA").decode("utf-8")
+    header = metadata.split("\n\n", 1)[0].splitlines()
+
+    requirements = [line for line in header if line.startswith("Requires-Dist: ")]
+    unconditional = [line for line in requirements if "; extra ==" not in line]
+
+    assert unconditional == ["Requires-Dist: typing-extensions==4.16.0"]
+    assert [line for line in requirements if "psycopg" in line] == [
+        'Requires-Dist: psycopg[binary]==3.2.12; extra == "postgres"'
+    ]
+    assert "Provides-Extra: postgres" in header
 
     graph_resources = tuple(
         path.relative_to(REPO_ROOT / "src/main/resources").as_posix()

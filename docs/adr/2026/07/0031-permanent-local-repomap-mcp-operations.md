@@ -1,5 +1,9 @@
 # ADR 0031: Permanent Local RepoMap MCP Operations
 
+> Post-promotion amendment (2026-09-24): [ADR 0071](../09/0071-post-promotion-local-server-cloud-architecture.md).
+> ADR 0071 reaffirms the useful private Local baseline without reviving the
+> old physical topology or selecting a desktop GUI.
+
 ## Status
 
 Accepted

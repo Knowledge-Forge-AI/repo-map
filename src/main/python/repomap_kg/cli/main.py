@@ -8,42 +8,12 @@ import json
 import os as os
 import sys
 from pathlib import Path
+from typing import Any
 
 # Same-name aliases preserve the historical CLI facade and monkeypatch seams.
 from repomap_kg import __version__ as __version__
 from repomap_kg.coordinator.client import CoordinatorClientError as CoordinatorClientError
-from repomap_kg.coordinator.job_control import (
-    cancel_coordinator_job as cancel_coordinator_job,
-    coordinator_health as coordinator_health,
-    coordinator_job_status as coordinator_job_status,
-    format_coordinator_health_table as format_coordinator_health_table,
-    format_coordinator_job_table as format_coordinator_job_table,
-    format_coordinator_jobs_table as format_coordinator_jobs_table,
-    list_coordinator_jobs as list_coordinator_jobs,
-    wait_for_coordinator_job as wait_for_coordinator_job,
-)
-from repomap_kg.coordinator.local_lifecycle import (
-    CoordinatorControlError as CoordinatorControlError,
-    coordinator_control_status as coordinator_control_status,
-    format_coordinator_control_table as format_coordinator_control_table,
-    initialize_coordinator_control as initialize_coordinator_control,
-    maintenance_activity_for_home as maintenance_activity_for_home,
-    maintenance_window_for_coordinated_backup as maintenance_window_for_coordinated_backup,
-    maintenance_window_for_database_drop as maintenance_window_for_database_drop,
-    maintenance_window_for_graph_upgrade as maintenance_window_for_graph_upgrade,
-    upgrade_coordinator_control as upgrade_coordinator_control,
-)
-from repomap_kg.coordinator.local_mode import (
-    CoordinatorModeError as CoordinatorModeError,
-    format_coordinator_refresh_table as format_coordinator_refresh_table,
-    run_coordinator_refresh as run_coordinator_refresh,
-    serve_configured_coordinator as serve_configured_coordinator,
-)
 from repomap_kg.service_package.contract import apply_service_environment as apply_service_environment
-from repomap_kg.service_package.api import (
-    format_service_action_table as format_service_action_table,
-    run_coordinator_service_action as run_coordinator_service_action,
-)
 from repomap_kg.service_package.operations import ServicePackageError as ServicePackageError
 from repomap_kg.extractors.languages.go_helper import GoHelperUnavailableError as GoHelperUnavailableError
 from repomap_kg.extractors.languages.go_protocol import GoProtocolError as GoProtocolError
@@ -125,12 +95,6 @@ from repomap_kg.runtime.schema_upgrade import (
     format_graph_schema_upgrade_table as format_graph_schema_upgrade_table,
     upgrade_graph_schema as upgrade_graph_schema,
 )
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError as MaintenanceUnavailableError
-from repomap_kg.runtime.release_cluster import (
-    ReleaseClusterError as ReleaseClusterError,
-    initialize_release_cluster as initialize_release_cluster,
-    release_cluster_status as release_cluster_status,
-)
 from repomap_kg.server.http import LocalServerError as LocalServerError, serve_local_http as serve_local_http
 from repomap_kg.observations.normalization import normalize_observations as normalize_observations
 from repomap_kg.observations.raw import ObservationValidationError as ObservationValidationError, read_observations_jsonl as read_observations_jsonl
@@ -149,38 +113,11 @@ from repomap_kg.ops.policy_dogfood import (
     format_policy_dogfood_table as format_policy_dogfood_table,
     policy_dogfood_payload as policy_dogfood_payload,
 )
-from repomap_kg.ops.direct_publication import publish_observation_generation as publish_observation_generation
 from repomap_kg.ops.graph_files import (
     GraphFileFilters as GraphFileFilters,
     format_graph_file_table as format_graph_file_table,
     graph_file_page_to_jsonable as graph_file_page_to_jsonable,
     query_graph_files as query_graph_files,
-)
-from repomap_kg.ops.refresh import (
-    OpsRefreshError as OpsRefreshError,
-    baseline_prune_to_jsonable as baseline_prune_to_jsonable,
-    baseline_save_to_jsonable as baseline_save_to_jsonable,
-    drift_check_to_jsonable as drift_check_to_jsonable,
-    format_baseline_prune_table as format_baseline_prune_table,
-    format_baseline_save_table as format_baseline_save_table,
-    format_drift_check_table as format_drift_check_table,
-    format_graph_summary_table as format_graph_summary_table,
-    format_preflight_table as format_preflight_table,
-    format_refresh_result_table as format_refresh_result_table,
-    format_refresh_status_table as format_refresh_status_table,
-    graph_baseline_to_jsonable as graph_baseline_to_jsonable,
-    graph_summary_to_jsonable as graph_summary_to_jsonable,
-    preflight_graph as preflight_graph,
-    preflight_to_jsonable as preflight_to_jsonable,
-    query_drift_check as query_drift_check,
-    query_graph_summary as query_graph_summary,
-    query_refresh_status as query_refresh_status,
-    prune_graph_baselines as prune_graph_baselines,
-    refresh_enabled_graphs as refresh_enabled_graphs,
-    refresh_graph as refresh_graph,
-    refresh_result_to_jsonable as refresh_result_to_jsonable,
-    refresh_status_to_jsonable as refresh_status_to_jsonable,
-    save_graph_baselines as save_graph_baselines,
 )
 from repomap_kg.storage.backend_telemetry import (
     ConnectionTelemetryError as ConnectionTelemetryError,
@@ -265,7 +202,14 @@ from repomap_kg.storage import (
     ruby_summary_to_jsonable as ruby_summary_to_jsonable,
     terraform_summary_to_jsonable as terraform_summary_to_jsonable,
 )
-from repomap_kg.cli.dispatch import dispatch_command
+from repomap_kg.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
+from repomap_kg.cli._postgres_facade import (
+    POSTGRES_DRIVER_UNAVAILABLE,
+    POSTGRES_FACADE_NAMES,
+    is_postgres_driver_missing,
+    load_postgres_facade_name,
+)
+from repomap_kg.cli.dispatch import _print_cli_error, dispatch_command
 from repomap_kg.cli.host_mutator_commands import (
     CANONICAL_HOST_MUTATOR_BOOLEAN_METADATA_KEYS as CANONICAL_HOST_MUTATOR_BOOLEAN_METADATA_KEYS,
     CANONICAL_HOST_MUTATOR_EDGE_KINDS as CANONICAL_HOST_MUTATOR_EDGE_KINDS,
@@ -322,10 +266,38 @@ def _commands_module():
     return sys.modules.get("repomap_kg.cli", sys.modules[__name__])
 
 
+def __getattr__(name: str) -> Any:
+    # PostgreSQL-implementation facade names resolve on access (see _postgres_facade).
+    if name in POSTGRES_FACADE_NAMES:
+        return load_postgres_facade_name(name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | POSTGRES_FACADE_NAMES)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    return dispatch_command(args, parser, _commands_module())
+    if not args.version:
+        # SQLite Local ops commands route before the PostgreSQL dispatcher loads.
+        sqlite_result = dispatch_ops_sqlite_command(args, _print_cli_error)
+        if sqlite_result is not None:
+            return sqlite_result
+    try:
+        return dispatch_command(args, parser, _commands_module())
+    except ModuleNotFoundError as error:
+        if not is_postgres_driver_missing(error):
+            raise
+        _print_cli_error(
+            RuntimeError(
+                f"{POSTGRES_DRIVER_UNAVAILABLE}: this command needs the PostgreSQL "
+                "driver (psycopg), which is not installed"
+            ),
+            file=sys.stderr,
+        )
+        return 1
 
 
 def read_observations_argument(jsonl_path: str):

@@ -9,7 +9,7 @@ Covers:
 - CLI storage canonical-edges pagination and edge kinds on populated fixtures
 - CLI storage canonical-neighborhood structure and focal node on populated fixtures
 - MCP ops search public boundary composition (nodes search)
-- MCP ops summary payload composition via OpsSummaryDependencies executing query_fn
+- MCP ops summary payload composition via OpsSummaryDependencies and a read store
 - CLI storage readback error distinction, refusal, and clean recovery
 """
 
@@ -248,7 +248,7 @@ database = "{postgres.database}"
             self.assertTrue(payload["safety"]["read_only"])
 
     def test_s10_c09_mcp_server_ops_summary_dependencies_composition(self) -> None:
-        """OpsSummaryDependencies executes real query_canonical_storage_summary and decodes rows."""
+        """OpsSummaryDependencies reads a real canonical storage summary through a read store."""
         from repomap_kg.storage.canonical import query_canonical_storage_summary
 
         require_postgres_binaries()
@@ -264,6 +264,7 @@ database = "{postgres.database}"
                 root_path="/tmp/slice10-root",
             )
             mock_context = SimpleNamespace(
+                config=None,
                 root_path="/tmp/slice10-root",
                 repository_identity="repo1:slice10-repo",
                 graph=mock_graph,
@@ -272,21 +273,36 @@ database = "{postgres.database}"
                 psql_args=postgres.psql_args,
             )
 
-            def mock_graph_context(graph_id: str, **kwargs: Any) -> Any:
+            class TemporaryDatabaseReadStore:
+                """Investigation store over the temporary database's summary owner."""
+
+                def project_summary(self, query: Any) -> Any:
+                    assert query.graph_id == "test-graph"
+                    return query_canonical_storage_summary(
+                        mock_context.psql_args,
+                        root_path=mock_context.root_path,
+                        psql_command=mock_context.psql_command,
+                        repository_identity=mock_context.repository_identity,
+                    )
+
+            class TemporaryDatabaseBinding:
+                """Investigation binding over the temporary database."""
+
+                def storage_label(self, selection: Any) -> str:
+                    return postgres.database
+
+                def investigation_store(self) -> Any:
+                    return TemporaryDatabaseReadStore()
+
+            def mock_configured_graph(graph_id: str, **kwargs: Any) -> Any:
                 if graph_id != "test-graph":
                     raise McpOpsError(f"unknown graph: {graph_id}")
-                return mock_context
+                selection = SimpleNamespace(graph=mock_graph, graph_id=graph_id)
+                return SimpleNamespace(selection=selection, stores=TemporaryDatabaseBinding())
 
             deps = OpsSummaryDependencies(
-                graph_context=mock_graph_context,
+                configured_graph=mock_configured_graph,
                 graph_payload=lambda graph, **kwargs: {"id": graph.id},
-                query_configured_storage=lambda ctx, qfn, **kwargs: qfn(
-                    ctx.psql_args,
-                    root_path=ctx.root_path,
-                    psql_command=ctx.psql_command,
-                    repository_identity=ctx.repository_identity,
-                ),
-                query_canonical_storage_summary=query_canonical_storage_summary,
             )
 
             payload = project_summary_payload("test-graph", dependencies=deps)

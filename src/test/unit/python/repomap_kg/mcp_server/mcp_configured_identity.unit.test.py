@@ -1,59 +1,44 @@
 """Configured MCP identity routing and compatibility (ADR 0068)."""
 
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 from repomap_test_support.mcp_server import McpServerTestSupport
 
 
 class ConfiguredStorageIdentityTests(McpServerTestSupport):
-    def test_storage_connection_configured_identity_forwarding_and_kwargs_merging(self) -> None:
+    def test_configured_target_selection_carries_identity_and_binding_forwards_it(self) -> None:
+        from repomap_kg.server.canonical_read_store import read_storage_connection
+        from repomap_kg.server.mcp import storage_connection
         from repomap_kg.server.mcp_core import StorageConnection
         from repomap_kg.server.ops import graph_context
 
         config_path = self.write_ops_config(self.visible_ops_config())
-        with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True):
+        env = {"REPOMAP_OPS_CONFIG": str(config_path), "REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config())}
+        with patch.dict("os.environ", env, clear=True):
+            target: Any = storage_connection(project="repo-map")
             context = graph_context("repo-map")
+        self.assertEqual(target.selection.repository_identity, "repo1:repo-map")
+        self.assertEqual(target.selection.repository_identity, context.repository_identity)
+        self.assertEqual((target.root_path, target.root_path_display), ("/tmp/fixture", "[graph-root]"))
+
+        # The PostgreSQL binding forwards the selection identity; a legacy
+        # connection has no selection and forwards none.
+        configured = target.stores.canonical_store(target.selection).connection
+        mock_query = MagicMock(return_value="readback_result")
+        with patch("repomap_kg.server.canonical_read_store.readback_postgres_authority",
+                   return_value=MagicMock(password=None)) as authority:
+            self.assertEqual(read_storage_connection(configured, mock_query), "readback_result")
+        self.assertIs(authority.call_args.args[0], configured.context.config)
+        self.assertEqual(mock_query.call_args.kwargs["repository_identity"], "repo1:repo-map")
+        self.assertEqual(mock_query.call_args.kwargs["root_path"], "/tmp/fixture")
 
         legacy_connection = StorageConnection(
-            root_path="/tmp/legacy",
-            pg_database="repomap",
-            root_path_display="[explicit-root]",
-            ops_context=None,
+            root_path="/tmp/legacy", pg_database="repomap", root_path_display="[explicit-root]",
         )
-        self.assertIsNone(legacy_connection.repository_identity)
-
-        configured_connection = StorageConnection(
-            root_path=context.root_path,
-            pg_database=context.database,
-            root_path_display="[graph-root]",
-            ops_context=context,
-        )
-        self.assertEqual(configured_connection.repository_identity, "repo1:repo-map")
-
-        mock_storage = MagicMock(return_value="readback_result")
-        with patch("repomap_kg.server.mcp_core.query_configured_storage", mock_storage):
-            result = configured_connection.query_storage(
-                MagicMock(),
-                root_path=configured_connection.root_path,
-            )
-            self.assertEqual(result, "readback_result")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
-            self.assertEqual(mock_storage.call_args.kwargs["root_path"], "/tmp/fixture")
-
-            result_override = configured_connection.query_storage(
-                MagicMock(),
-                root_path=configured_connection.root_path,
-                repository_identity="conflicting-caller-val",
-            )
-            self.assertEqual(result_override, "readback_result")
-            self.assertEqual(mock_storage.call_args.kwargs["repository_identity"], "repo1:repo-map")
-
+        self.assertIsNone(legacy_connection.selection)
         legacy_mock = MagicMock(return_value="legacy_result")
-        result_legacy = legacy_connection.query_storage(
-            legacy_mock,
-            root_path=legacy_connection.root_path,
-        )
-        self.assertEqual(result_legacy, "legacy_result")
+        self.assertEqual(read_storage_connection(legacy_connection, legacy_mock), "legacy_result")
         self.assertNotIn("repository_identity", legacy_mock.call_args.kwargs)
         self.assertEqual(legacy_mock.call_args.kwargs["root_path"], "/tmp/legacy")
 

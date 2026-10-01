@@ -5,6 +5,9 @@ from __future__ import annotations
 import unittest
 
 from repomap_kg.artifacts.bundle import (
+    MAX_BUNDLE_BYTES,
+    MAX_BUNDLE_LINE_BYTES,
+    MAX_BUNDLE_RECORDS,
     PUBLICATION_FAMILIES,
     FamilySummary,
     PublicationBundle,
@@ -274,6 +277,106 @@ class BundleBoundariesUnitTests(unittest.TestCase):
         with self.assertRaises(ValueError) as caught:
             PublicationBundle.from_bytes(bad_bool)
         self.assertIn("publication bundle field is invalid", str(caught.exception))
+
+    def test_bundle_constants_bounds(self):
+        self.assertGreaterEqual(MAX_BUNDLE_BYTES, 64 * 1024 * 1024)
+        self.assertLessEqual(MAX_BUNDLE_BYTES, 512 * 1024 * 1024)
+        self.assertGreaterEqual(MAX_BUNDLE_RECORDS, 100_000)
+        self.assertLessEqual(MAX_BUNDLE_RECORDS, 10_000_000)
+        self.assertGreaterEqual(MAX_BUNDLE_LINE_BYTES, 64 * 1024)
+        self.assertLessEqual(MAX_BUNDLE_LINE_BYTES, 16 * 1024 * 1024)
+
+    def test_record_count_boundary_at_and_above_limit(self):
+        from unittest.mock import patch
+        from repomap_kg.artifacts import bundle as bundle_module
+        kwargs = _base_bundle_kwargs()
+        with patch.object(bundle_module, "MAX_BUNDLE_RECORDS", 5):
+            # Below limit (4 single-family)
+            kwargs["families"]["files"] = tuple({"path": f"p{i}"} for i in range(4))
+            b_below = PublicationBundle.create(**kwargs)
+            self.assertEqual(len(b_below.families["files"]), 4)
+
+            # Exact at limit (5 single-family)
+            kwargs["families"]["files"] = tuple({"path": f"p{i}"} for i in range(5))
+            b_at = PublicationBundle.create(**kwargs)
+            self.assertEqual(len(b_at.families["files"]), 5)
+
+            # Above limit (6 single-family) -> refusal
+            kwargs["families"]["files"] = tuple({"path": f"p{i}"} for i in range(6))
+            with self.assertRaises(ValueError) as caught:
+                PublicationBundle.create(**kwargs)
+            self.assertIn("publication bundle record bounds exceeded", str(caught.exception))
+
+            # Multi-family exact at limit (2 files + 3 observations = 5)
+            kwargs["families"]["files"] = tuple({"path": f"p{i}"} for i in range(2))
+            kwargs["families"]["raw_observations"] = tuple({"source_id": f"s{i}"} for i in range(3))
+            b_multi_at = PublicationBundle.create(**kwargs)
+            raw_multi = b_multi_at.canonical_bytes()
+            b_multi_decoded = PublicationBundle.from_bytes(raw_multi)
+            self.assertEqual(b_multi_decoded.bundle_id, b_multi_at.bundle_id)
+
+            # Multi-family above limit (2 files + 4 observations = 6) -> refusal
+            kwargs["families"]["raw_observations"] = tuple({"source_id": f"s{i}"} for i in range(4))
+            with self.assertRaises(ValueError) as caught:
+                PublicationBundle.create(**kwargs)
+            self.assertIn("publication bundle record bounds exceeded", str(caught.exception))
+
+    def test_bundle_bytes_and_line_bytes_boundary(self):
+        from unittest.mock import patch
+        from repomap_kg.artifacts import bundle as bundle_module
+        kwargs = _base_bundle_kwargs()
+        kwargs["families"]["files"] = ({"path": "p1"}, {"path": "p2"})
+        bundle = PublicationBundle.create(**kwargs)
+        raw_bytes = bundle.canonical_bytes()
+
+        # Below limit
+        with patch.object(bundle_module, "MAX_BUNDLE_BYTES", len(raw_bytes) + 128):
+            b_below = PublicationBundle.from_bytes(raw_bytes)
+            self.assertEqual(b_below.bundle_id, bundle.bundle_id)
+
+        # Exact at limit
+        with patch.object(bundle_module, "MAX_BUNDLE_BYTES", len(raw_bytes)):
+            b_at = PublicationBundle.from_bytes(raw_bytes)
+            self.assertEqual(b_at.bundle_id, bundle.bundle_id)
+
+        # Above limit (len - 1) -> refusal
+        with patch.object(bundle_module, "MAX_BUNDLE_BYTES", len(raw_bytes) - 1):
+            with self.assertRaises(ValueError) as caught:
+                PublicationBundle.from_bytes(raw_bytes)
+            self.assertIn("publication bundle framing is invalid", str(caught.exception))
+
+        max_line_len = max(len(line) for line in raw_bytes.splitlines(keepends=True))
+        with patch.object(bundle_module, "MAX_BUNDLE_LINE_BYTES", max_line_len + 64):
+            b_line_below = PublicationBundle.from_bytes(raw_bytes)
+            self.assertEqual(b_line_below.bundle_id, bundle.bundle_id)
+
+        with patch.object(bundle_module, "MAX_BUNDLE_LINE_BYTES", max_line_len):
+            b_line_at = PublicationBundle.from_bytes(raw_bytes)
+            self.assertEqual(b_line_at.bundle_id, bundle.bundle_id)
+
+        with patch.object(bundle_module, "MAX_BUNDLE_LINE_BYTES", max_line_len - 1):
+            with self.assertRaises(ValueError) as caught:
+                PublicationBundle.from_bytes(raw_bytes)
+            self.assertIn("publication bundle framing is invalid", str(caught.exception))
+
+    def test_bundle_decode_parity(self):
+        kwargs = _base_bundle_kwargs()
+        kwargs["families"]["files"] = (
+            {"family_ordinal": 0, "path": "test/path.py", "language": "python"},
+        )
+        kwargs["families"]["raw_observations"] = (
+            {"source_ordinal": 0, "kind": "import", "target": "os"},
+        )
+        bundle = PublicationBundle.create(**kwargs)
+        canonical = bundle.canonical_bytes()
+
+        decoded = PublicationBundle.from_bytes(canonical)
+        self.assertEqual(decoded, bundle)
+        self.assertEqual(decoded.canonical_bytes(), canonical)
+        self.assertEqual(decoded.bundle_id, bundle.bundle_id)
+        for fam in PUBLICATION_FAMILIES:
+            self.assertEqual(decoded.families[fam], bundle.families[fam])
+        self.assertEqual(decoded.family_summaries, bundle.family_summaries)
 
 
 if __name__ == "__main__":

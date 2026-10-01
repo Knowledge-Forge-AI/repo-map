@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 import threading
 from types import SimpleNamespace
@@ -17,6 +17,7 @@ from repomap_kg.coordinator._portable_capability import (
 )
 from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
 from repomap_kg.coordinator._protocol_core import ProtocolError
+from repomap_kg.coordinator.limits import DEFAULT_LIMITS, HARD_MAX_LIMITS
 from repomap_kg.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
@@ -28,17 +29,30 @@ from repomap_kg.storage.staging_family_contracts import PrivacyClassification
 
 
 def coordinator_test_limits() -> SimpleNamespace:
-    """Return validated deterministic limits for coordinator worker tests."""
-    return SimpleNamespace(
-        process_deadline_seconds=10.0,
-        heartbeat_seconds=2.0,
-        hello_deadline_seconds=2.0,
-        cancellation_after_seconds=1.0,
-        cancel_deadline_seconds=1.0,
-        process_termination_grace_seconds=1.0,
+    """Return validated deterministic limits for coordinator worker tests.
+
+    Canonical ``CoordinatorLimits`` fields come from ``DEFAULT_LIMITS`` with
+    explicit test overrides and production validation. The refresh attempt
+    deadline is a safety/cleanup bound above the leaf process deadline and the
+    child's 30-second system-test pause; it is not a performance target. The
+    last three fields are protocol-only knobs outside ``CoordinatorLimits``.
+    """
+    limits = replace(
+        DEFAULT_LIMITS,
+        process_deadline_seconds=10,
+        refresh_attempt_deadline_seconds=60,
+        heartbeat_seconds=2,
+        cancel_deadline_seconds=1,
         max_diagnostic_bytes=4096,
         max_protocol_line_bytes=65536,
         max_array_items=64,
+    )
+    limits.validate(hard_maxima=HARD_MAX_LIMITS)
+    return SimpleNamespace(
+        **asdict(limits),
+        hello_deadline_seconds=2.0,
+        cancellation_after_seconds=1.0,
+        process_termination_grace_seconds=1.0,
     )
 
 

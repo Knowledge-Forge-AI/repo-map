@@ -47,7 +47,7 @@ def recover_abandoned_attempts(
                 raise RuntimeError("replacement coordinator is not the live owner")
             cursor.execute(
                 """
-                SELECT j.job_id, j.current_attempt, j.publication_state
+                SELECT j.job_id, j.current_attempt, j.publication_state, j.state
                 FROM jobs AS j
                 JOIN job_attempts AS a
                   ON a.job_id = j.job_id AND a.attempt = j.current_attempt
@@ -62,7 +62,10 @@ def recover_abandoned_attempts(
             )
             rows = tuple(cursor.fetchall())
             for row in rows:
-                safely_unpublished = row["publication_state"] == "not_started"
+                safely_unpublished = (
+                    row["publication_state"] == "not_started"
+                    and row.get("state", "claimed") in {"claimed", "starting"}
+                )
                 publication_state = (
                     "not_started" if safely_unpublished else "commit_unknown"
                 )

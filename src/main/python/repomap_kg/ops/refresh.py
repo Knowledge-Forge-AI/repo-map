@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from repomap_kg.runtime.postgres_route import PostgresRoute
+
 from repomap_kg.graph.discovery import discover_observations
 from repomap_kg.ops._refresh_preflight import (
     format_preflight_table,
@@ -103,6 +105,7 @@ def refresh_graph(
     staged_authority: IngestionAuthority | None = None,
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
+    _postgres_route: PostgresRoute | None = None,
 ) -> OpsRefreshGraphResult:
     started_at = _utc_now_text()
     try:
@@ -116,6 +119,7 @@ def refresh_graph(
                 staged_authority=staged_authority,
                 backend_telemetry=backend_telemetry,
                 staging_measurements=None,
+                postgres_route=_postgres_route,
             )
         with staging_measurements.phase("refresh.total"):
             return _refresh_graph_impl(
@@ -127,6 +131,7 @@ def refresh_graph(
                 staged_authority=staged_authority,
                 backend_telemetry=backend_telemetry,
                 staging_measurements=staging_measurements,
+                postgres_route=_postgres_route,
             )
     except KeyboardInterrupt:
         graph = _find_graph(config, graph_id)
@@ -163,6 +168,7 @@ def _refresh_graph_impl(
     staged_authority: IngestionAuthority | None,
     backend_telemetry: BackendTelemetry | None,
     staging_measurements: StagingMeasurements | None,
+    postgres_route: PostgresRoute | None,
 ) -> OpsRefreshGraphResult:
     """Execute the selected portable production route without legacy fallback."""
     del psql_command
@@ -203,6 +209,7 @@ def _refresh_graph_impl(
             graph,
             database,
             authority=staged_authority,
+            postgres_route=postgres_route,
             backend_telemetry=backend_telemetry,
             staging_measurements=staging_measurements,
         )
@@ -214,7 +221,9 @@ def _refresh_graph_impl(
             and getattr(error, "is_commit_unknown", False)
         )
         pub_state = "commit_unknown" if is_commit_unknown else "not_started"
-        err_cat = "publication_unknown" if is_commit_unknown else "worker_crash"
+        err_cat = "publication_unknown" if is_commit_unknown else (
+            error.category if isinstance(error, PortableRefreshError) else "worker_crash"
+        )
         return _result_from_graph(
             graph,
             database=database,

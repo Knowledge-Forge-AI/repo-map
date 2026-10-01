@@ -11,13 +11,13 @@ from repomap_kg.ops.config import OpsConfig
 from repomap_kg.ops.readback import (
     execute_ops_json_readback as default_execute_ops_json_readback,
 )
-from repomap_kg.server._ops_records import (
-    McpOpsError,
-    McpOpsGraphContext,
+from repomap_kg.server._ops_records import McpOpsError
+from repomap_kg.server.investigation_read_store import (
+    ConfiguredInvestigationGraph,
+    GraphSearchQuery,
 )
 from repomap_kg.server._ops_sanitization import (
     raw_payload_policy,
-    readback_path_markers,
     safety_markers,
     sanitize_jsonable,
 )
@@ -134,7 +134,7 @@ def query_mcp_search(
         sql=sql,
         label=f"{target} MCP search",
         expected_shape="array",
-        mode="host_then_container",
+        mode="host_only",
         psql_command=psql_command,
     )
     if not isinstance(payload, list):
@@ -150,9 +150,8 @@ def query_mcp_search(
 
 @dataclass(frozen=True)
 class OpsSearchDependencies:
-    graph_context: Callable[..., McpOpsGraphContext]
+    configured_graph: Callable[..., ConfiguredInvestigationGraph]
     graph_payload: Callable[..., dict[str, Any]]
-    query_mcp_search: Callable[..., Any] = query_mcp_search
 
 
 def search_payload(
@@ -168,26 +167,25 @@ def search_payload(
     config_path: str | os.PathLike[str] | None = None,
     dependencies: OpsSearchDependencies,
 ) -> dict[str, Any]:
-    context = dependencies.graph_context(graph_id, config_path=config_path)
+    target_graph = dependencies.configured_graph(graph_id, config_path=config_path)
+    selection = target_graph.selection
     safe_query = validate_query(query)
     safe_limit = validate_limit(limit)
     safe_offset = validate_offset(offset)
-    raw_payload = dependencies.query_mcp_search(
-        context.config,
-        database=context.database,
-        root_path=context.root_path,
-        target=target,
-        query=safe_query,
-        kind=kind,
-        path=path,
-        limit=safe_limit,
-        offset=safe_offset,
-        include_raw=include_raw,
-        psql_command=context.psql_command,
-        repository_identity=context.repository_identity,
+    found = target_graph.stores.investigation_store().search(
+        GraphSearchQuery(
+            graph_id=selection.graph_id,
+            target=target,
+            query=safe_query,
+            kind=kind,
+            path=path,
+            limit=safe_limit,
+            offset=safe_offset,
+            include_raw=include_raw,
+        )
     )
-    results = list(raw_payload.get("results", ()))
-    has_more = bool(raw_payload.get("has_more", False))
+    results = list(found.rows)
+    has_more = found.has_more
     if len(results) > safe_limit:
         has_more = True
         results = results[:safe_limit]
@@ -195,7 +193,10 @@ def search_payload(
         "server": "repomap-kg",
         "version": __version__,
         "read_only": True,
-        "graph": dependencies.graph_payload(context.graph, database=context.database),
+        "graph": dependencies.graph_payload(
+            selection.graph,
+            database=target_graph.stores.storage_label(selection),
+        ),
         "target": target,
         "query": safe_query,
         "kind": kind,
@@ -203,11 +204,13 @@ def search_payload(
         "limit": safe_limit,
         "offset": safe_offset,
         "result_count": len(results),
-        "total": int(raw_payload.get("total", safe_offset + len(results))),
+        "total": (
+            found.total if found.total is not None else safe_offset + len(results)
+        ),
         "has_more": has_more,
         "results": sanitize_jsonable(
             results,
-            private_markers=readback_path_markers(context),
+            private_markers=selection.path_markers,
         ),
         "safety": safety_markers(),
     }

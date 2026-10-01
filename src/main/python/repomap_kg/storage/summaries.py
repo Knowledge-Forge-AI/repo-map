@@ -101,6 +101,7 @@ def query_js_framework_summary(
     root_path: str,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> JSFrameworkSummaryRecord:
     return js_framework_summary_from_storage_payload(
         execute_json_readback(
@@ -112,6 +113,7 @@ def query_js_framework_summary(
             psql_command=psql_command,
             label="js framework summary",
             expected_shape="object",
+            **({"password": password} if password is not None else {}),
         )
     )
 
@@ -122,6 +124,7 @@ def query_openapi_summary(
     root_path: str,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> OpenAPISummaryRecord:
     return openapi_summary_from_storage_payload(
         execute_json_readback(
@@ -133,6 +136,7 @@ def query_openapi_summary(
             psql_command=psql_command,
             label="openapi summary",
             expected_shape="object",
+            **({"password": password} if password is not None else {}),
         )
     )
 
@@ -143,6 +147,7 @@ def query_terraform_summary(
     root_path: str,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> TerraformSummaryRecord:
     return terraform_summary_from_storage_payload(
         execute_json_readback(
@@ -154,6 +159,7 @@ def query_terraform_summary(
             psql_command=psql_command,
             label="terraform summary",
             expected_shape="object",
+            **({"password": password} if password is not None else {}),
         )
     )
 
@@ -164,6 +170,7 @@ def query_python_summary(
     root_path: str,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> PythonSummaryRecord:
     return python_summary_from_storage_payload(
         execute_json_readback(
@@ -175,6 +182,7 @@ def query_python_summary(
             psql_command=psql_command,
             label="python summary",
             expected_shape="object",
+            **({"password": password} if password is not None else {}),
         )
     )
 
@@ -185,6 +193,7 @@ def query_nix_summary(
     root_path: str,
     repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> NixSummaryRecord:
     return nix_summary_from_storage_payload(
         execute_json_readback(
@@ -196,6 +205,7 @@ def query_nix_summary(
             psql_command=psql_command,
             label="nix summary",
             expected_shape="object",
+            **({"password": password} if password is not None else {}),
         )
     )
 

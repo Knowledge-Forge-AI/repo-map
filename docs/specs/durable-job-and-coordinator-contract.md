@@ -372,7 +372,8 @@ not enterprise or high-scale guarantees. Closure does not add a migration,
 dependency, storage backend, remote worker, multi-coordinator authority,
 automatic graph deletion, silent fallback, MCP mutation, or default-mode
 change. Optional watcher acceleration, Windows native background packaging,
-SQLite/Desktop, cloud/enterprise, incremental updates, remote workers,
+Local SQLite (now governed by ADR 0071), desktop GUI, cloud/enterprise,
+incremental updates, remote workers,
 multi-coordinator scaling, and high-scale ingestion require future phases with
 new evidence and decisions.
 
@@ -1270,6 +1271,28 @@ categories such as incompatible version, unauthenticated, unauthorized,
 invalid request, unavailable, saturated, conflict, and internal without raw
 exception text.
 
+Product1 admission (ADR 0074) makes the version-1 submit payload exactly
+`request` plus authenticated `admission_deadline`, an absolute Unix-seconds
+expiration. It is finite, numeric, non-boolean and no more than 300 seconds in
+the future. Expired valid authority returns `admission_timeout`; malformed,
+missing or extra fields refuse as `invalid_request`. Other RPCs reject it.
+The ceiling bounds admission resource occupancy, not performance.
+
+The coordinator-mode client derives `min(operator wait budget, 300 seconds)`
+for admission, plus at most one second for terminal response transport. Its
+ordinary RPC default stays five seconds. The existing post-submit wait budget
+starts after admission, so total duration can include both. Resolution checks
+the expiration before and after generation scanning; the durable transaction
+bounds lock/query waits and checks expiration after locking and before commit.
+Expiration rolls back rather than producing a late durable job. A monotonic
+budget prevents a backward clock adjustment from extending admitted work.
+
+A server-returned refusal maps to `coordinator_submit_timeout`; other transport
+loss remains uncertain, with no automatic resubmit or direct fallback. Same-key
+replay preserves durable identity. A refusal creates no new job but does not
+assert that an earlier same-key attempt never succeeded. Deadline authority is
+not persisted in request identity, operation options or job semantics.
+
 On POSIX, startup removes a stale socket only after proving that no live
 coordinator owns the matching singleton scope; it never unlinks an endpoint
 merely because connection failed. On Windows, the descriptor contains only
@@ -1835,10 +1858,15 @@ protect writes.
 Owner-private advisory lock files serialize cooperating RepoMap service-package mutations.
 A noncooperating process with the same user identity retains ordinary operating-system
 authority over that user's files and is outside this ownership boundary.
-Status and uninstall use a dependency-free inspection specification so a removed runtime
-dependency cannot strand an owned definition. Relocated executable files must match the
-fingerprints recorded at generation; missing closed references are removable but cannot be
-used as current runtime authority.
+The Python argv retains the lexical absolute current-interpreter path for virtual-environment
+discovery; validation and fingerprints follow its resolved executable target. Lifecycle
+commands must use the same invocation spelling. Fingerprints are checked during recognition,
+not on native-manager respawn; lexical links and their directories remain execution authority.
+Status and uninstall use a dependency-free inspection specification. Relocated executable
+files must match the fingerprints recorded at generation; plain missing closed references
+are removable but cannot be used as current runtime authority. Dangling symlinks remain
+unrecognized. Restore the original matching target before supported removal; never retarget
+an installed service to different executable bytes as a removal workaround.
 Upgrade and uninstall restore the prior recognized file and prior known native state when
 a later step fails. RepoMap never changes an unrelated native service.
 
@@ -2180,3 +2208,97 @@ There is no cross-database two-phase commit.
 graph receipt readback proves an exact match or absence. Accepted/validation-failed
 attempts receive bounded terminal retention. A later cancellation cannot rewrite an
 authoritatively committed success.
+
+### Local coordinator deployment and PostgreSQL route
+
+`runtime.coordinator_mode` accepts only `container` (the default) or `native`.
+Owned Compose up/down remove project orphans. Native-mode up must positively
+observe no Compose coordinator; unknown inventory is not absence. Container-mode
+up authenticates the exact home endpoint and refuses active or ambiguous native
+state before rendering/startup. No native auto-stop is authorized. Checked JSON
+adds bounded `compose_coordinator_state` and `native_coordinator_state` observations.
+Dry-run leaves generated files and coordinator state unchanged.
+
+Packaged native startup, distinguished by `--service-package-environment`, checks
+mode before and after a bounded per-home startup lock, before acquiring singleton
+ownership. Local up shares that lock through Compose build/start. A wrong-mode
+stale definition emits a bounded diagnostic and exits successfully so existing
+on-failure manager policies stay quiescent; explicit service start/restart/upgrade
+refuse before manager mutation. Stop/uninstall remain available. Foreground
+diagnostic launches keep their historical contract; database singleton fencing
+remains the backstop for uncoordinated foreground and automatic container
+restarts. Ambiguous stale artifacts refuse container entry; restore native mode
+and use supported native start then stop to recover safe owned artifacts.
+Unsafe artifacts require operator repair. No wrapper or second launcher is added.
+
+Container mode preserves the release coordinator. Native mode omits that
+Compose service and its coordinator-state volume so the supported native
+coordinator service can own the singleton. PostgreSQL, release initialization,
+HTTP, MCP/admin profiles, and existing publication/admin volume definitions
+remain available. `[service].mode` is independent.
+
+Configuration loading and generation inputs retain the configured PostgreSQL
+endpoint. Execution projects `postgres:5432` to literal `127.0.0.1` and the
+runtime PostgreSQL host port only for a local config home with direct exposure
+enabled outside the release image. The release marker alone prohibits this
+projection, even without the internal-operation environment flag. Remote and
+standalone-file configurations retain their endpoints.
+
+Control lifecycle, resolver polling/publication readback, host operational
+readback, and refresh execution share this rule. Private refresh capability
+schema version 1 adds effective host, port, and closed route kind to its exact
+field set; parent and worker ship together and retain the 4096-byte limit. The
+worker reloads configuration, validates configured generations, independently
+recomputes and compares the route, and passes only that matching recomputed
+route to storage. Capability values never supply independent client authority.
+Role-projected connection arguments receive the route; generation hashing never
+receives the projected endpoint. A route change fails before publication.
+
+`local up` still runs release initialization. Consequently, its control proof is
+ready → idempotent init with `database_created=false` → ready. Fresh disposable
+lifecycle tests independently prove unavailable → created=true → ready.
+
+### Local home and lifecycle administrator authority repair candidate
+
+Supported setup creates a fresh owner-private home and private runtime
+credential file before writing secrets. It validates existing authority and
+refuses unsafe homes without chmod. Windows follows the existing private ACL
+and reparse contracts; POSIX permission bits do not stand in for Windows ACLs.
+
+For a refused pre-fix home, stop the RepoMap runtime and native coordinator
+service before remediation. Verify that the home and relevant runtime
+objects belong to the current user and are not symlinks or reparse points.
+On POSIX, explicitly tighten the home, runtime, log and status directories to
+owner-private permissions (0700) before retrying setup; retain file-specific
+0600 permissions for runtime secrets. On Windows, use owner-private ACL
+tooling instead of POSIX chmod. The CLI does not perform this remediation
+on existing homes automatically.
+
+Lifecycle administrator precedence is literal → explicit private password file
+→ present named process environment value → eligible generated local secret.
+An explicitly selected empty/invalid credential fails closed. The last branch
+requires matching config-home provenance, the default administrator reference
+`REPOMAP_PG_PASSWORD`, an absent process variable, and the existing
+`local-native` route predicate (direct exposure enabled, configured
+`postgres:5432`, no release-container marker). The owner-private ordinary
+`runtime/.env` is read with bounded opened-file validation; exactly one exact
+nonempty key is required, at most 256 characters and without NUL/CR/LF.
+No other key is loaded or exported.
+
+Consumers include control status/init/upgrade, maintenance admission for direct
+operations, graph upgrade, coordinated backup, database drop, and release
+initialization/cleanup through `LocalControlAuthority`. Release container
+routes remain ineligible and retain their existing explicit authority.
+`release_cluster._runtime_password` is neither reused nor changed.
+Maintenance wrappers retain bounded authority diagnostics. Initialization
+preserves cleanup precedence and sanitizes unexpected failures.
+
+The configured refresh resolver retains its existing literal → environment →
+file ordering. This deliberate lifecycle-only ordering follows the repair
+scope and has a both-set regression. Coordinator control, refresh publication,
+and read/status role secrets, refresh capabilities, route binding, and native
+service environment scrubbing are unchanged.
+
+The [repair exit](../status/2026/09/27/00960-product1-local-home-authority-fix1-exit.md)
+records candidate evidence and outstanding gates. This does not accept Product
+step 2 or ADRs 0072/0073.

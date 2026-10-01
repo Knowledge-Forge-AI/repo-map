@@ -22,6 +22,7 @@ from repomap_test_support.postgres_harness import (
 )
 from repomap_test_support.source_ingestion_integration import (
     IntFakeGitHubOpener,
+    assert_public_path_readback,
     github_api_fixture_root,
 )
 
@@ -54,18 +55,15 @@ exclude_paths = ["result-*"]
 
 def _config(postgres, *bindings: str) -> str:
     return f"""schema_version = 1
-
 [service]
 mode = "local"
 mcp_transport = "stdio"
 log_level = "info"
-
 [postgres]
 host = "{postgres.socket_dir}"
 port = {postgres.port}
 database = "repomap_test"
 user = "{postgres.user}"
-
 [[graphs]]
 id = "fixture-graph"
 name = "Fixture Graph"
@@ -74,7 +72,6 @@ mcp_visible = true
 refresh_policy = "manual"
 database = "repomap_test"
 {''.join(bindings)}
-
 [server_memory]
 enabled = false
 path = "disabled"
@@ -84,18 +81,15 @@ mode = "read_only"
 
 def _legacy_config(postgres, root: Path) -> str:
     return f"""schema_version = 1
-
 [service]
 mode = "local"
 mcp_transport = "stdio"
 log_level = "info"
-
 [postgres]
 host = "{postgres.socket_dir}"
 port = {postgres.port}
 database = "repomap_test"
 user = "{postgres.user}"
-
 [[graphs]]
 id = "fixture-graph"
 name = "Fixture Graph"
@@ -107,7 +101,6 @@ mcp_visible = true
 extractor_profile = "default"
 refresh_policy = "manual"
 database = "repomap_test"
-
 [server_memory]
 enabled = false
 path = "disabled"
@@ -173,11 +166,27 @@ def test_multi_source_stages_one_atomic_publication_and_source_qualified_readbac
             config, "fixture-graph", filters=GraphFileFilters(),
             psql_command=postgres.psql_command,
         )
+        assert exit_code == 0, stderr
+        assert_public_path_readback(config_path, postgres.psql_command, (entry, composition))
+        assert _counts(postgres) == first_counts
         replay_code, replay_stdout, replay_stderr = _refresh(
             config_path, postgres.psql_command
         )
         replay_counts = _counts(postgres)
         replay_generations = _latest_generations(postgres)
+
+        # Fractional metadata publishes portably using binary64 value summary.
+        fractional_config = entry / "settings.json"
+        fractional_config.write_text('{"ratio": 1.25}\n', encoding="utf-8")
+        fractional_code, fractional_stdout, fractional_stderr = _refresh(
+            config_path, postgres.psql_command
+        )
+        fractional_counts = _counts(postgres)
+        fractional_generations = _latest_generations(postgres)
+        observation_payload = postgres.psql_scalar(
+            "SELECT payload_json FROM raw_observations WHERE path = 'entry/settings.json' AND kind = 'config.path' LIMIT 1;"
+        )
+        fractional_config.unlink()
 
         (composition / "flake.nix").unlink()
         (composition / "modules/default.nix").unlink()
@@ -186,7 +195,6 @@ def test_multi_source_stages_one_atomic_publication_and_source_qualified_readbac
         )
         failed_counts = _counts(postgres)
 
-    assert exit_code == 0, stderr
     assert replay_code == 0, replay_stderr
     assert failed_code == 1
     assert '"result": "success"' in stdout
@@ -198,11 +206,16 @@ def test_multi_source_stages_one_atomic_publication_and_source_qualified_readbac
     assert replay_generations == first_generations
     assert first_counts[1] == replay_counts[1]
     assert first_counts[3:] == replay_counts[3:]
-    assert failed_counts == replay_counts
-    rendered = stdout + replay_stdout + failed_stdout + failed_stderr
+    assert fractional_code == 0, fractional_stderr
+    assert '"result": "success"' in fractional_stdout
+    assert '"numeric_type": "binary64"' in observation_payload or '"numeric_type":"binary64"' in observation_payload
+    assert "0x1.4000000000000p+0" in observation_payload
+    assert fractional_counts[0] == replay_counts[0] + 1
+    assert fractional_generations != replay_generations
+    assert failed_counts == fractional_counts
+    rendered = stdout + replay_stdout + fractional_stdout + fractional_stderr + failed_stdout + failed_stderr
     assert str(entry) not in rendered
     assert str(composition) not in rendered
-
 
 def test_legacy_one_source_publication_and_readback_qualifies_keys_with_source_relative_path(tmp_path):
     require_postgres_binaries()
@@ -225,6 +238,7 @@ def test_legacy_one_source_publication_and_readback_qualifies_keys_with_source_r
             filters=GraphFileFilters(),
             psql_command=postgres.psql_command,
         )
+        assert_public_path_readback(config_path, postgres.psql_command, (root,))
 
     assert exit_code == 0, stderr
     record = next(item for item in page.records if item.path == "modules/default.nix")
@@ -340,51 +354,47 @@ def test_offline_github_api_acquisition_refusals_leave_no_artifacts():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         out = Path(tmpdir) / "output"
-
-        # 1. HTTP 404 error from fake opener
-        transport_404 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+        # 1. HTTP 404 error
+        t404 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
             status=404, headers={"content-type": "application/json"}, body=b'{"message": "Not Found"}'
         ))
         with pytest.raises(GitHubApiPolicyError, match="returned HTTP status 404"):
-            acquire_github_api_source(config_path, root_path=out, transport=transport_404)
+            acquire_github_api_source(config_path, root_path=out, transport=t404)
         assert not out.exists() or not list(out.glob("*"))
 
-        # 2. Redirect (302) from fake opener
-        transport_302 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
-            status=302,
-            headers={"content-type": "application/json", "location": "https://api.github.com/other"},
-            body=b'{}',
+        # 2. Redirect (302)
+        t302 = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=302, headers={"content-type": "application/json", "location": "https://api.github.com/other"}, body=b'{}'
         ))
         with pytest.raises(GitHubApiPolicyError, match="redirects are not followed"):
-            acquire_github_api_source(config_path, root_path=out, transport=transport_302)
+            acquire_github_api_source(config_path, root_path=out, transport=t302)
         assert not out.exists() or not list(out.glob("*"))
 
-        # 3. Rate limit exhausted (x-ratelimit-remaining: 0)
-        transport_ratelimit = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+        # 3. Rate limit exhausted
+        trlimit = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
             status=200, headers={"content-type": "application/json", "x-ratelimit-remaining": "0"}, body=b'{}'
         ))
         with pytest.raises(GitHubApiPolicyError, match="hit GitHub API rate limit"):
-            acquire_github_api_source(config_path, root_path=out, transport=transport_ratelimit)
+            acquire_github_api_source(config_path, root_path=out, transport=trlimit)
         assert not out.exists() or not list(out.glob("*"))
 
         # 4. Non-JSON response
-        transport_html = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+        thtml = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
             status=200, headers={"content-type": "text/html"}, body=b'<html>Not JSON</html>'
         ))
         with pytest.raises(GitHubApiPolicyError, match="did not return a JSON response"):
-            acquire_github_api_source(config_path, root_path=out, transport=transport_html)
+            acquire_github_api_source(config_path, root_path=out, transport=thtml)
         assert not out.exists() or not list(out.glob("*"))
 
         # A successful acquisition writes artifacts but never publishes a graph.
-        transport_ok = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
-            status=200,
-            headers={"content-type": "application/json; charset=utf-8", "x-ratelimit-remaining": "50"},
-            body=b'{"full_name": "fixture-owner/fixture-repo"}',
+        tok = PublicGitHubRestTransport(opener=IntFakeGitHubOpener(
+            status=200, headers={"content-type": "application/json; charset=utf-8", "x-ratelimit-remaining": "50"},
+            body=b'{"full_name": "fixture-owner/fixture-repo"}'
         ))
-        summary = acquire_github_api_source(config_path, root_path=out, transport=transport_ok)
+        summary = acquire_github_api_source(config_path, root_path=out, transport=tok)
         assert summary.publication.publication_state == "not_published"
         assert summary.requests == summary.responses == 2
         assert {record.endpoint_name for record in summary.response_records} == {"repository", "issues"}
         manifest = json.loads((summary.output_path / "manifest.json").read_text())
         assert manifest["api_run_id"] == summary.api_run_id
-        assert {observation.kind for observation in summary.raw_observations} >= {"github.repository", "config.document"}
+        assert {obs.kind for obs in summary.raw_observations} >= {"github.repository", "config.document"}

@@ -306,6 +306,7 @@ def test_psycopg17_psql_connector_preserves_psql_process_path() -> None:
             "ON_ERROR_STOP=1",
         ],
         input_text=sql,
+        env=None,
     )
 def test_psycopg17_psycopg_connector_preserves_psycopg_path() -> None:
     connector = readback_driver.PsycopgJsonReadbackConnector()
