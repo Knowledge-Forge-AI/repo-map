@@ -172,11 +172,12 @@ def test_control_lifecycle_validates_config_and_credential_paths_where_maintaine
             repository.mkdir()
             cred_path = home / "pgpass.pwd"
 
-            missing_home = root / "absent-config"
+            absent_config_home = root / "absent-config"
+            absent_config_home.mkdir(mode=0o700)
             with pytest.raises(CoordinatorControlError, match="coordinator_control_status_failed"):
-                coordinator_control_status(missing_home)
+                coordinator_control_status(absent_config_home)
             with pytest.raises(CoordinatorControlError, match="coordinator_control_init_failed"):
-                initialize_coordinator_control(missing_home)
+                initialize_coordinator_control(absent_config_home)
 
             config_file = home / "configured.rp.toml"
             config_file.write_text(
@@ -212,12 +213,12 @@ mode = "read_only"
 ''',
                 encoding="utf-8",
             )
-            with pytest.raises(CoordinatorControlError, match="coordinator_control_init_failed"):
+            with pytest.raises(CoordinatorControlError, match="local-admin-credential-unavailable-or-unsafe"):
                 initialize_coordinator_control(home)
 
             cred_path.write_text(postgres.password, encoding="utf-8")
             cred_path.chmod(0o666)
-            with pytest.raises(CoordinatorControlError, match="coordinator_control_init_failed"):
+            with pytest.raises(CoordinatorControlError, match="local-admin-credential-unavailable-or-unsafe"):
                 initialize_coordinator_control(home)
 
             cred_path.chmod(0o600)

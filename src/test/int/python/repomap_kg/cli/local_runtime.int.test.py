@@ -58,16 +58,16 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             home = Path(tmpdir) / "repo-map-home"
             runtime = home / "runtime"
             runtime.mkdir(parents=True)
-            (home / "repomap.rpl.toml").write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
-            (runtime / ".env").write_text(
-                "POSTGRES_PASSWORD=fake-existing-secret\n"
-                "REPOMAP_PG_PASSWORD=fake-existing-secret\n",
-                encoding="utf-8",
-            )
+            home.chmod(0o700)
+            runtime.chmod(0o700)
+            config_file = home / "repomap.rpl.toml"
+            config_file.write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
+            config_file.chmod(0o600)
+            env_file = runtime / ".env"
+            env_file.write_text("POSTGRES_PASSWORD=fake-existing-secret\nREPOMAP_PG_PASSWORD=fake-existing-secret\n", encoding="utf-8")
+            env_file.chmod(0o600)
 
-            exit_code, stdout, stderr = self.run_module_entrypoint(
-                "local", "setup", "--repo-map-home", str(home), "--json",
-            )
+            exit_code, stdout, stderr = self.run_module_entrypoint("local", "setup", "--repo-map-home", str(home), "--json")
 
         self.assertEqual(exit_code, 0, stderr)
         payload = json.loads(stdout)

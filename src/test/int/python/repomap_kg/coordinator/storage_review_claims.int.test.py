@@ -253,12 +253,12 @@ class ControlStoreReviewClaimsIntegrationTests(StorageReviewIntegrationBase):
         )
         status = self.store.status(claim.job_id)
         self.assertEqual(status.state, "reconciliation_required")
-        self.assertEqual(status.publication_state, "not_started")
+        self.assertEqual(status.publication_state, "commit_unknown")
         self.assertEqual(self.store.reconcile_publication(
             claim, reconciler_instance_id="instance-b", reconciler_epoch=replacement_epoch,
-        ), "queued")
+        ), "reconciliation_required")
         with self._connect() as connection:
-            self.assertEqual(connection.execute("SELECT count(*) FROM graph_leases").fetchone(), (0,))
+            self.assertEqual(connection.execute("SELECT count(*) FROM graph_leases").fetchone(), (1,))
         with self.assertRaises(SingletonActiveError):
             self.store.heartbeat_attempt(claim, timedelta(seconds=30))
 

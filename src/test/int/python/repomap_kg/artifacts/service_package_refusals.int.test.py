@@ -34,13 +34,10 @@ from repomap_test_support.service_publication_families import (
 
 class RecordingRunner:
     def __init__(
-        self,
-        expected: Sequence[tuple[str, ...]],
-        failures: Mapping[int, int] | None = None,
+        self, expected: Sequence[tuple[str, ...]], failures: Mapping[int, int] | None = None,
     ) -> None:
         self.calls: list[tuple[str, ...]] = []
-        self.expected = tuple(expected)
-        self.failures = dict(failures or {})
+        self.expected, self.failures = tuple(expected), dict(failures or {})
 
     def __call__(self, argv: tuple[str, ...]) -> int:
         index = len(self.calls)
@@ -305,18 +302,24 @@ class ServicePackageRefusalsIntegrationTests(unittest.TestCase):
         self.assertEqual(store.read(r_ref), receipt.canonical_bytes())
 
     def test_coordinator_service_operations_rollbacks_and_refusals(self) -> None:
+        from repomap_kg.runtime.local import setup_local_runtime
+
+        def native_home(home: Path) -> None:
+            setup_local_runtime(home)
+            config = home / "repomap.rpl.toml"
+            config.write_text(config.read_text().replace("[runtime]", '[runtime]\ncoordinator_mode = "native"'))
+
         repomap_home = self.tmpdir / "service_coord_home"
         user_home = self.tmpdir / "service_user_home"
         for d in (repomap_home, user_home):
             d.mkdir(mode=0o700, parents=True, exist_ok=True)
+        native_home(repomap_home)
         adapter = SystemdUserAdapter(user_home=user_home, uid=1000)
         spec = build_service_package_spec(repomap_home)
         fail_reload = ("/usr/bin/systemctl", "--user", "daemon-reload")
         self.assertEqual(adapter.reload_commands(), (fail_reload,))
         runner_fail_install = RecordingRunner((fail_reload, fail_reload), {0: 1})
-        ops_fail_install = CoordinatorServiceOperations(
-            spec, adapter, runner=runner_fail_install, health_probe=lambda _: True
-        )
+        ops_fail_install = CoordinatorServiceOperations(spec, adapter, runner=runner_fail_install, health_probe=lambda _: True)
         with self.assertRaises(ServicePackageError) as ctx_inst:
             ops_fail_install.run("install")
         self.assertEqual(str(ctx_inst.exception), "service_install_rolled_back")
@@ -325,9 +328,7 @@ class ServicePackageRefusalsIntegrationTests(unittest.TestCase):
         self.assertFalse(adapter.target_path.exists())
 
         normal_runner = RecordingRunner((fail_reload,))
-        ops_normal = CoordinatorServiceOperations(
-            spec, adapter, runner=normal_runner, health_probe=lambda _: True
-        )
+        ops_normal = CoordinatorServiceOperations(spec, adapter, runner=normal_runner, health_probe=lambda _: True)
         with self.assertRaises(ServicePackageError) as ctx_miss_start:
             ops_normal.run("start")
         self.assertEqual(str(ctx_miss_start.exception), "service_definition_missing")
@@ -346,22 +347,17 @@ class ServicePackageRefusalsIntegrationTests(unittest.TestCase):
         self.assertEqual(str(ctx_exists.exception), "service_definition_exists")
         home_v2 = self.tmpdir / "service_coord_home_v2"
         home_v2.mkdir(mode=0o700, parents=True, exist_ok=True)
+        native_home(home_v2)
         spec_v2 = build_service_package_spec(home_v2)
         fail_start = ("/usr/bin/systemctl", "--user", "start", "repomap-coordinator.service")
         upgrade_expected = [
             *_systemd_state_prefix(adapter),
-            *adapter.reload_commands(),
-            *adapter.enable_commands(),
-            *adapter.start_commands(),
-            *adapter.reload_commands(),
-            *adapter.enable_commands(),
-            *adapter.start_commands(),
+            *adapter.reload_commands(), *adapter.enable_commands(), *adapter.start_commands(),
+            *adapter.reload_commands(), *adapter.enable_commands(), *adapter.start_commands(),
         ]
         self.assertEqual(upgrade_expected[7], fail_start)
         runner_fail_upg = RecordingRunner(upgrade_expected, {7: 1})
-        ops_fail_upg = CoordinatorServiceOperations(
-            spec_v2, adapter, runner=runner_fail_upg, health_probe=lambda _: True
-        )
+        ops_fail_upg = CoordinatorServiceOperations(spec_v2, adapter, runner=runner_fail_upg, health_probe=lambda _: True)
         with self.assertRaises(ServicePackageError) as ctx_upg:
             ops_fail_upg.run("upgrade")
         self.assertEqual(str(ctx_upg.exception), "service_upgrade_rolled_back")
@@ -373,16 +369,12 @@ class ServicePackageRefusalsIntegrationTests(unittest.TestCase):
         self.assertEqual(str(ctx_outdated.exception), "service_definition_upgrade_required")
         uninstall_expected = [
             *_systemd_state_prefix(adapter),
-            *adapter.reload_commands(),
-            *adapter.reload_commands(),
-            *adapter.enable_commands(),
-            *adapter.start_commands(),
+            *adapter.reload_commands(), *adapter.reload_commands(),
+            *adapter.enable_commands(), *adapter.start_commands(),
         ]
         self.assertEqual(uninstall_expected[5], fail_reload)
         runner_fail_un = RecordingRunner(uninstall_expected, {5: 1})
-        ops_fail_un = CoordinatorServiceOperations(
-            spec, adapter, runner=runner_fail_un, health_probe=lambda _: True
-        )
+        ops_fail_un = CoordinatorServiceOperations(spec, adapter, runner=runner_fail_un, health_probe=lambda _: True)
         with self.assertRaises(ServicePackageError) as ctx_un:
             ops_fail_un.run("uninstall")
         self.assertEqual(str(ctx_un.exception), "service_uninstall_rolled_back")

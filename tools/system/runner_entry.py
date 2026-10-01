@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -240,6 +241,7 @@ def run_system_suite(
 
     tmp_root = run_root / "tmp"
     tmp_root.mkdir(parents=True, exist_ok=True)
+    os.chmod(tmp_root, 0o700)
     fixture_dir = tmp_root / "fixture_repo"
     compose_dir = tmp_root / "compose"
     repo_map_home = tmp_root / "repo_map_home"

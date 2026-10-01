@@ -130,6 +130,9 @@ jobs:
             --bin-dir "${RUNNER_TEMP}/repomap-tools/bin"
           "${RUNNER_TEMP}/repomap-tools/bin/golangci-lint" version
 
+      - name: Install locked dependencies
+        run: python -m pip install --require-hashes --no-deps --requirement tools/ci/project_dependencies.lock
+
       - name: Install unit-test dependencies
         run: python -m pip install --editable ".[test,scale-tools,static-analysis]"
 

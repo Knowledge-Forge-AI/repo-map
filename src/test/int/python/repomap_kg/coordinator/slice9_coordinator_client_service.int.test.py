@@ -9,6 +9,7 @@ import tempfile
 import threading
 from typing import Any
 import unittest
+from unittest.mock import patch
 
 from repomap_kg.coordinator.client import (
     CoordinatorClientError,
@@ -51,18 +52,20 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
             token_file.chmod(0o600)
             client = LocalCoordinatorClient(Path(temp_dir) / "test.sock", token_file, timeout_seconds=5.0)
 
-            # Exact 64 KiB frame boundary: base envelope is 107 bytes, pad = 65429
-            # 65,536 bytes passes frame check and attempts socket connect (raises unavailable)
-            exact_boundary_payload = {"k": "x" * 65429}
-            with self.assertRaises(CoordinatorClientError) as cm_exact:
-                client.submit(exact_boundary_payload)
-            self.assertEqual(str(cm_exact.exception), "unavailable")
+            # Exact 64 KiB frame boundary with deterministic timestamp:
+            # base envelope with admission deadline is 141 bytes, pad = 65395.
+            # 65,536 bytes passes frame check and attempts socket connect (raises unavailable).
+            with patch("repomap_kg.coordinator.client.time.time", return_value=1700000000.0):
+                exact_boundary_payload = {"k": "x" * 65395}
+                with self.assertRaises(CoordinatorClientError) as cm_exact:
+                    client.submit(exact_boundary_payload)
+                self.assertEqual(str(cm_exact.exception), "unavailable")
 
-            # 65,537 bytes fails frame check before connect (raises invalid_request)
-            oversized_payload = {"k": "x" * 65430}
-            with self.assertRaises(CoordinatorClientError) as cm_req:
-                client.submit(oversized_payload)
-            self.assertEqual(str(cm_req.exception), "invalid_request")
+                # 65,537 bytes fails frame check before connect (raises invalid_request)
+                oversized_payload = {"k": "x" * 65396}
+                with self.assertRaises(CoordinatorClientError) as cm_req:
+                    client.submit(oversized_payload)
+                self.assertEqual(str(cm_req.exception), "invalid_request")
 
     def test_s9_a09_coordinator_client_response_decode_refusal_categories(self) -> None:
         """Client decode handles framing errors, schema mismatch, and maps error categories."""

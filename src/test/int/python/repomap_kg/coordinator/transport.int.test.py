@@ -322,7 +322,7 @@ def test_authenticated_transport_paginates_and_cancels_durable_queued_jobs():
             return asdict(store.submit(request))
 
         def status(payload):
-            return asdict(store.status(payload["job_id"]))
+            return {k: v for k, v in asdict(store.status(payload["job_id"])).items() if v is not None}
 
         def cancel(payload):
             store.request_cancellation(payload["job_id"])

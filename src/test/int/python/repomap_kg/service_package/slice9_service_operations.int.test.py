@@ -44,8 +44,13 @@ class Slice9ServiceOperationsIntegrationTests(unittest.TestCase):
         runner: RecordingRunner | None = None,
         health_probe: Any = None,
     ) -> tuple[CoordinatorServiceOperations, SystemdUserAdapter, RecordingRunner]:
+        from repomap_kg.runtime.local import setup_local_runtime
+
         home = root / "home"
         home.mkdir(mode=0o700, exist_ok=True)
+        setup_local_runtime(home)
+        config = home / "repomap.rpl.toml"
+        config.write_text(config.read_text().replace("[runtime]", '[runtime]\ncoordinator_mode = "native"'))
         spec = build_service_package_spec(home)
         adapter = SystemdUserAdapter(user_home=root / "user", uid=os.getuid())
         rec_runner = runner or RecordingRunner()

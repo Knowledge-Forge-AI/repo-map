@@ -265,6 +265,6 @@ mode = "read_only"
                     with maintenance_activity_for_home(home):
                         pytest.fail("control plane activity admitted during graph upgrade")
 
-            with pytest.raises(MaintenanceUnavailableError, match="maintenance authority is unavailable"):
+            with pytest.raises(MaintenanceUnavailableError, match="repo-map-home-unsafe"):
                 with maintenance_activity_for_home(root / "nonexistent"):
                     pass

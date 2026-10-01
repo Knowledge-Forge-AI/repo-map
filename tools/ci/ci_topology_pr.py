@@ -132,6 +132,8 @@ def _check_unit_tests(
 
     commands = [str(step["run"]) for step in steps if "run" in step]
     required_commands = (
+        "python -m pip install --require-hashes --no-deps --requirement "
+        "tools/ci/project_dependencies.lock",
         'python -m pip install --editable ".[test,scale-tools,static-analysis]"',
         "df -B1 /",
         contracts.unit_command,
