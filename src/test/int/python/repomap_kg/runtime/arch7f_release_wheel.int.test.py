@@ -1,7 +1,6 @@
 import importlib.util
 import json
 import os
-import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -20,9 +19,15 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
 ) -> None:
     if importlib.util.find_spec("setuptools") is None:
         pytest.skip("setuptools build backend is unavailable")
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
+    from runner_coverage_execution import prepare_child_coverage_environment
+    from runner_coverage_observer import launch_observed_process
+
+    cap = resolve_bootstrap_capability(env=os.environ)
     wheel_directory = tmp_path / "wheel"
     wheel_directory.mkdir()
-    wheel_build = subprocess.run(
+    pip_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
+    wheel_build = launch_observed_process(
         (
             sys.executable,
             "-m",
@@ -34,15 +39,25 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
             str(wheel_directory),
             str(REPO_ROOT),
         ),
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
+        family="arch7f_pip",
+        env=pip_env,
+        capability=cap,
     )
     assert wheel_build.returncode == 0, wheel_build.stderr[-2_000:]
     wheel = next(wheel_directory.glob("repomap_kg-*.whl"))
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
+        metadata = archive.read("repomap_kg-0.0.2.dist-info/METADATA").decode("utf-8")
+    header = metadata.split("\n\n", 1)[0].splitlines()
+
+    requirements = [line for line in header if line.startswith("Requires-Dist: ")]
+    unconditional = [line for line in requirements if "; extra ==" not in line]
+
+    assert unconditional == ["Requires-Dist: typing-extensions==4.16.0"]
+    assert [line for line in requirements if "psycopg" in line] == [
+        'Requires-Dist: psycopg[binary]==3.2.12; extra == "postgres"'
+    ]
+    assert "Provides-Extra: postgres" in header
 
     graph_resources = tuple(
         path.relative_to(REPO_ROOT / "src/main/resources").as_posix()
@@ -65,7 +80,8 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
     assert installed_data == {*graph_resources, *control_resources}
 
     install_root = tmp_path / "installed"
-    subprocess.run(
+    pip_install_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
+    pip_install = launch_observed_process(
         (
             sys.executable,
             "-m",
@@ -76,12 +92,18 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
             str(install_root),
             str(wheel),
         ),
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
+        family="arch7f_pip",
+        env=pip_install_env,
+        capability=cap,
     )
-    probe = subprocess.run(
+    assert pip_install.returncode == 0, pip_install.stderr[-2_000:]
+    probe_env = prepare_child_coverage_environment(
+        os.environ,
+        family="arch7f_probe",
+        extra_env={"PYTHONPATH": str(install_root)},
+        capability=cap,
+    )
+    probe = launch_observed_process(
         (
             sys.executable,
             "-c",
@@ -101,11 +123,9 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
             "'control':encode(discover_control_migrations())},sort_keys=True))",
             str(install_root),
         ),
-        check=False,
-        env={**os.environ, "PYTHONPATH": str(install_root)},
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
+        family="arch7f_probe",
+        env=probe_env,
+        capability=cap,
     )
     assert probe.returncode == 0, probe.stderr[-2_000:]
     installed = json.loads(probe.stdout)

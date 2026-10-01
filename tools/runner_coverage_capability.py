@@ -154,10 +154,9 @@ class ChildCoverageCapability:
         """Validate capability authority, revision, and containment before launch."""
         if not self.active:
             raise CapabilityRefusalError("capability is inactive or expired")
-        if self.suite in DISALLOWED_SUITES:
-            raise CapabilityRefusalError(f"suite '{self.suite}' is excluded from portable measurement")
-        if self.suite not in ALLOWED_SUITES:
-            raise CapabilityRefusalError(f"unrecognized suite '{self.suite}'")
+        if self.suite in DISALLOWED_SUITES or self.suite not in ALLOWED_SUITES:
+            err = f"suite '{self.suite}' is excluded from portable measurement" if self.suite in DISALLOWED_SUITES else f"unrecognized suite '{self.suite}'"
+            raise CapabilityRefusalError(err)
 
         self._verify_roots()
         if not self.config_file.is_file() or self.config_file.is_symlink():
@@ -234,8 +233,15 @@ class ChildCoverageCapability:
         if not exit_p.is_file():
             raise CapabilityValidationError(f"terminal exit marker missing for {token}")
         exit_d = _parse_marker(exit_p)
-        if start_d.get("cov_start") != "1" or exit_d.get("complete") != "1":
-            raise CapabilityValidationError("child bootstrap or terminal receipt incomplete")
+        if start_d.get("cov_start") != "1":
+            err = start_d.get("bootstrap_error")
+            raise CapabilityValidationError(f"child collector bootstrap incomplete: {err}" if err else "child collector bootstrap incomplete")
+        if exit_d.get("complete") != "1":
+            if exit_d.get("error"):
+                raise CapabilityValidationError(f"child reported coverage save failure: {exit_d.get('error')}")
+            if exit_p.stat().st_size == 0:
+                raise CapabilityValidationError("child terminal receipt empty (0 bytes)")
+            raise CapabilityValidationError("child terminal receipt incomplete")
         for d, name in ((start_d, "start"), (exit_d, "exit")):
             if d.get("token") != token or d.get("invocation") != self.invocation_id:
                 raise CapabilityValidationError(f"{name} marker token/invocation mismatch")
@@ -249,11 +255,7 @@ class ChildCoverageCapability:
         if pid is not None and str(pid) != start_pid:
             raise CapabilityValidationError(f"PID mismatch: expected {pid}, got {start_pid}")
 
-        shard_str = exit_d.get("shard", "")
-        if not shard_str:
-            sm = md / f"{token}.shard"
-            if sm.is_file():
-                shard_str = sm.read_text(encoding="utf-8").strip()
+        shard_str = exit_d.get("shard", "") or ((md / f"{token}.shard").read_text(encoding="utf-8").strip() if (md / f"{token}.shard").is_file() else "")
         if not shard_str:
             raise CapabilityValidationError(f"no coverage shard recorded for {token}")
 
@@ -357,11 +359,11 @@ def issue_coverage_capability(
     return cap
 
 
-def prepare_session_capability(session: Any, *, suite: str | None = None,
-                               revision: str | None = None,
-                               permitted_python_paths: Sequence[Path | str] = (),
-                               allow_test_conformance: bool = False,
-                               portable_command: tuple[str, ...]) -> ChildCoverageCapability:
+def prepare_session_capability(
+    session: Any, *, suite: str | None = None, revision: str | None = None,
+    permitted_python_paths: Sequence[Path | str] = (), allow_test_conformance: bool = False,
+    portable_command: tuple[str, ...],
+) -> ChildCoverageCapability:
     """Prepare invocation assets and source paths before issuing the capability."""
     from runner_coverage_bootstrap import install_bootstrap_directory
 

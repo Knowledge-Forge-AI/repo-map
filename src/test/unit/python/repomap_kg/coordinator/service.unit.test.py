@@ -63,7 +63,7 @@ class FakeStore:
     def maintenance_ready(self):
         return self.ready
 
-    def submit(self, request):
+    def submit(self, request, *, admission_deadline=None):
         return type("Submission", (), {"job_id": request.request_id, "state": "queued", "replayed": False})()
 
     def status(self, job_id):
@@ -339,7 +339,9 @@ def test_service_uses_injected_authoritative_request_resolver(tmp_path):
             "priority": "manual",
             "operation_options": {"reason": "configured-pilot"},
         }
-        assert service._submit({"request": request})["job_id"] == "configured-request"
+        assert service._submit(
+            {"request": request, "admission_deadline": time.time() + 60}
+        )["job_id"] == "configured-request"
         assert seen == [request]
     finally:
         service.stop()

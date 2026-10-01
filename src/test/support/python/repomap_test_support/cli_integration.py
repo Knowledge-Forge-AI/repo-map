@@ -15,32 +15,25 @@ from urllib.request import urlopen
 from repomap_test_support.cli_in_process import (
     FIXTURE_ROOT,
     REPO_ROOT,
-    module_environment,
+    module_process_environment,
     run_repo_map_in_process,
     write_text_fixture,
 )
 
 
-def _module_process_environment() -> dict[str, str]:
-    env = module_environment()
-    # The runner prepends its owned sitecustomize directory to PYTHONPATH.
-    # Retain it for measured children while keeping the source helper's defaults.
-    inherited_path = os.environ.get("PYTHONPATH")
-    if inherited_path and env.get("COVERAGE_PROCESS_START") and env.get("COVERAGE_CHILD_MANIFEST_DIR"):
-        env["PYTHONPATH"] = os.pathsep.join((env["PYTHONPATH"], inherited_path))
-    return env
+_module_process_environment = module_process_environment
 
 
 def run_cli_module(*args: str, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    from runner_coverage_observer import launch_observed_process
+
+    return launch_observed_process(
         [sys.executable, "-m", "repomap_kg", *args],
-        check=False,
+        family="cli_module",
         cwd=REPO_ROOT,
         env=_module_process_environment(),
-        input=input_text,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
+        input_text=input_text,
+        pid_namespace_relation="shared",
     )
 
 

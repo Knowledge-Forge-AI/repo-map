@@ -33,7 +33,11 @@ class StorageBulkApiSourceLoadIntegrationTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            shutil.copytree(bulk_fixture_root() / "mixed_corpus", root / "mixed_corpus")
+            shutil.copytree(
+                bulk_fixture_root() / "mixed_corpus",
+                root / "mixed_corpus",
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            )
             corpus = root / "mixed_corpus"
             corpus_root = str(corpus.resolve())
             input_body = (corpus / "mail" / "single-message.eml").read_text(
@@ -208,6 +212,7 @@ WHERE payload_json->'metadata' ? 'bulk_run_id';
             shutil.copytree(
                 api_fixture_root() / "readonly_fixture_api",
                 root / "readonly_fixture_api",
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
             )
             config_path = root / "readonly_fixture_api" / "api-source.toml"
             source_text = (

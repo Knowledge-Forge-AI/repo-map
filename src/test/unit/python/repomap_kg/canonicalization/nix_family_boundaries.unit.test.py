@@ -225,6 +225,57 @@ class CanonicalizationNixFamilyBoundariesUnitTests(unittest.TestCase):
             "unknown:nix.package:missing-output-identity",
         )
 
+    def test_nix_patterns_and_resolver_validation(self):
+        from typing import Any
+        import repomap_kg.extractors.config.nix as nix
+        import repomap_kg.extractors.config.nix_resolver as nr
+
+        self.assertEqual(nix._dynamic_output_pattern("eachDefaultSystem (system:"), "eachDefaultSystem")
+        self.assertEqual(nix._dynamic_output_pattern("genAttrs ["), "genAttrs")
+        self.assertEqual(nix._dynamic_output_pattern("forAllSystems ="), "forAllSystems")
+        self.assertEqual(nix._dynamic_output_pattern("flake-utils.lib"), "flake-utils")
+        self.assertEqual(nix._dynamic_output_pattern("flake-parts.lib"), "flake-parts")
+        self.assertIsNone(nix._dynamic_output_pattern("simple = 1;"))
+
+        self.assertIsNotNone(nix._unsupported_output_section_shape("templates", "any"))
+        self.assertIsNotNone(nix._unsupported_output_section_shape("legacyPackages", "any"))
+        self.assertIsNotNone(nix._unsupported_output_section_shape("packages", "nested_attrset"))
+        self.assertIsNotNone(nix._unsupported_output_section_shape("packages", "merged_attrset"))
+        self.assertIsNotNone(nix._unsupported_output_section_shape("packages", "dynamic"))
+        self.assertIsNotNone(nix._unsupported_output_section_shape("packages", "unknown"))
+        self.assertIsNone(nix._unsupported_output_section_shape("packages", "direct_assignment"))
+
+        self.assertEqual(nix._output_section_shape("line", suffix="", in_merged_attrset=True), "merged_attrset")
+        self.assertEqual(nix._output_section_shape("flake-utils.lib", suffix="", in_merged_attrset=False), "helper_framework")
+        self.assertEqual(nix._output_section_shape("line", suffix="${val}", in_merged_attrset=False), "dynamic")
+        self.assertEqual(nix._output_section_shape("line", suffix="foo", in_merged_attrset=False), "direct_assignment")
+        self.assertEqual(nix._output_section_shape("packages = {", suffix="", in_merged_attrset=False), "nested_attrset")
+        self.assertEqual(nix._output_section_shape("import ./other.nix", suffix="", in_merged_attrset=False), "dynamic")
+        self.assertEqual(nix._output_section_shape("unknown line", suffix="", in_merged_attrset=False), "unknown")
+
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="", input_name=None, files=frozenset())
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name="", files=frozenset())
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name=None, files=frozenset(), binding_id="")
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name=None, files=frozenset(), snapshot_id="")
+        bad_exports_type: Any = "not-mapping"
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name=None, files=frozenset(), module_exports=bad_exports_type)
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name=None, files=frozenset(), module_exports={"": "val"})
+        bad_exports_dict: Any = {"m": 123}
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name=None, files=frozenset(), module_exports=bad_exports_dict)
+        with self.assertRaises(ValueError):
+            nr.NixBindingView(alias="a", input_name=None, files=frozenset(), module_exports={"m": [""]})
+
+        view = nr.NixBindingView(alias="main", input_name=None, files=frozenset({"flake.nix"}), binding_id="b1", snapshot_id="s1")
+        self.assertEqual(view.alias, "main")
+        self.assertIn("flake.nix", view.files)
+
 
 if __name__ == "__main__":
     unittest.main()

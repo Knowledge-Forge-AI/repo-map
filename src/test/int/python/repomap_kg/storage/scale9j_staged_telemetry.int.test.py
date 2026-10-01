@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import psycopg
 import pytest
 
@@ -16,6 +17,7 @@ from repomap_kg.storage.backend_telemetry import (
     ConnectionTelemetryEvent,
     TelemetryEventKind,
 )
+from repomap_kg.storage.backend_telemetry_events import frame_telemetry_event, read_telemetry_event
 from repomap_kg.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
@@ -241,15 +243,25 @@ def test_direct_contention_rejection_has_no_receipt() -> None:
                 0,
                 0,
             )
-        assert [
-            event.event
-            for event in events
-            if event.connection_role is ConnectionRole.DIRECT_STAGED_REFRESH
-        ] == [
+        # Decode the actual refused refresh's events, then check attribution and
+        # closure of its real backend across the transport boundary.
+        wire = io.BytesIO(b"".join(frame_telemetry_event(event) for event in events))
+        decoded = [read_telemetry_event(wire) for _ in events]
+        assert decoded == events
+        assert read_telemetry_event(wire) is None
+        refresh = [event for event in decoded if event is not None
+                   and event.connection_role is ConnectionRole.DIRECT_STAGED_REFRESH]
+        assert [event.event for event in refresh] == [
             TelemetryEventKind.CONNECTION_OPENED,
             TelemetryEventKind.CONNECTION_READY,
             TelemetryEventKind.CONNECTION_CLOSED,
         ]
+        opened, ready, closed = refresh
+        assert opened.backend_pid is not None and opened.backend_pid > 0
+        assert {(event.connection_sequence, event.connection_generation, event.backend_pid)
+                for event in refresh} == {
+                    (opened.connection_sequence, 1, opened.backend_pid)}
+        assert opened.monotonic_ns <= ready.monotonic_ns <= closed.monotonic_ns
 
 
 def test_opt_in_telemetry_preserves_staged_operations_state_and_receipt() -> None:

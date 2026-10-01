@@ -20,6 +20,7 @@ if __package__ in (None, ""):
         sys.path.insert(0, str(tools_root))
 
 from ci.ci_topology_contracts import (
+    ALLOWED_WORKFLOWS,
     DEFAULT_CONTRACTS,
     EXPENSIVE_MARKERS,
     FEEDBACK_TYPES,
@@ -33,7 +34,10 @@ from ci.ci_topology_contracts import (
     PROTECTION_MARKERS,
     PROTECTION_PATHS,
     READ_ONLY_PERMISSIONS,
+    RELEASE_WORKFLOW,
     REQUIRED_GATE_INPUTS,
+    REQUIRED_RELEASE_JOBS,
+    RETIRED_WORKFLOWS,
     RUNNER_MARKER,
     STAGING_BRANCH,
     STAGING_GATE_WORKFLOW,
@@ -56,10 +60,15 @@ from ci.ci_topology_gates import (
     _check_staging_gate as _gates_check_staging_gate,
 )
 from ci.ci_topology_pr import (
+    _check_codeql as _pr_check_codeql,
     _check_global as _pr_check_global,
     _check_main_policy as _pr_check_main_policy,
+    _check_pre_review_static as _pr_check_pre_review_static,
     _check_pr_fast as _pr_check_pr_fast,
     _check_pr_unit as _pr_check_pr_unit,
+    _check_sbom_security as _pr_check_sbom_security,
+    _check_source_and_export_policy as _pr_check_source_and_export_policy,
+    _check_unit_tests as _pr_check_unit_tests,
 )
 from ci.workflow_model import Workflow, WorkflowParseError, load_workflows
 
@@ -73,6 +82,10 @@ def _contract_values() -> TopologyContractValues:
         staging_gate_workflow=STAGING_GATE_WORKFLOW,
         main_system_gate_workflow=MAIN_SYSTEM_GATE_WORKFLOW,
         main_policy_workflow=MAIN_POLICY_WORKFLOW,
+        release_workflow=RELEASE_WORKFLOW,
+        retired_workflows=RETIRED_WORKFLOWS,
+        allowed_workflows=ALLOWED_WORKFLOWS,
+        required_release_jobs=REQUIRED_RELEASE_JOBS,
         staging_branch=STAGING_BRANCH,
         main_branch=MAIN_BRANCH,
         feedback_types=FEEDBACK_TYPES,
@@ -200,27 +213,33 @@ def _check_protection_config(repo_root: Path) -> list[str]:
 def check_topology(repo_root: Path) -> tuple[str, ...]:
     """Return every CI topology violation for the repository at ``repo_root``."""
     workflow_dir = repo_root / ".github/workflows"
+    contracts = _contract_values()
+    violations: list[str] = []
+
+    for retired in contracts.retired_workflows:
+        if (workflow_dir / retired).exists():
+            violations.append(f"{retired}: retired workflow must not exist")
+
     workflows = load_workflows(workflow_dir)
     by_name = _by_name(workflows)
-    violations: list[str] = []
-    required_workflows = (
-        PR_FAST_WORKFLOW,
-        PR_UNIT_WORKFLOW,
-        STAGING_GATE_WORKFLOW,
-        MAIN_SYSTEM_GATE_WORKFLOW,
-        MAIN_POLICY_WORKFLOW,
-    )
-    for required in required_workflows:
-        if required not in by_name:
-            violations.append(f"{required} is missing")
-    if violations:
+
+    for name in by_name:
+        if name not in contracts.allowed_workflows:
+            violations.append(f"{name}: unexpected workflow file; only {contracts.release_workflow} is allowed")
+
+    if contracts.release_workflow not in by_name:
+        violations.append(f"{contracts.release_workflow} is missing")
         return tuple(violations)
-    violations.extend(_check_pr_fast(by_name[PR_FAST_WORKFLOW]))
-    violations.extend(_check_pr_unit(by_name[PR_UNIT_WORKFLOW]))
-    violations.extend(_check_staging_gate(by_name[STAGING_GATE_WORKFLOW]))
-    violations.extend(_check_main_system_gate(by_name[MAIN_SYSTEM_GATE_WORKFLOW]))
-    violations.extend(_check_main_policy(by_name[MAIN_POLICY_WORKFLOW]))
+
+    release_wf = by_name[contracts.release_workflow]
     violations.extend(_check_global(workflows))
+    violations.extend(_pr_check_source_and_export_policy(release_wf, contracts))
+    violations.extend(_pr_check_pre_review_static(release_wf, contracts))
+    violations.extend(_pr_check_unit_tests(release_wf, contracts))
+    violations.extend(_check_staging_gate(release_wf))
+    violations.extend(_check_main_system_gate(release_wf))
+    violations.extend(_pr_check_codeql(release_wf, contracts))
+    violations.extend(_pr_check_sbom_security(release_wf, contracts))
     violations.extend(_check_protection_config(repo_root))
     return tuple(violations)
 

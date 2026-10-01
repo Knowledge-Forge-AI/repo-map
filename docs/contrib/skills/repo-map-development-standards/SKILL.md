@@ -44,8 +44,8 @@ Use the human-facing standards under `docs/contrib/` as the source of truth:
 - Evaluate dependencies with `docs/contrib/dependency-standards.md` before
   proposing them.
 - Protect maintained Python code quality under ratchets immediately without
-  awaiting hypothetical replacement (architectural placement is reserved for
-  post-main; see `testing-standards.md`).
+  awaiting hypothetical replacement (ADR 0071 retains the Python semantic path;
+  see `testing-standards.md`).
 
 ## Before Finishing
 

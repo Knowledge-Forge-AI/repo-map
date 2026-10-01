@@ -19,7 +19,12 @@ from repomap_kg.ops.config import (
     load_ops_config,
 )
 from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.readback_driver import (
+    PG_CONNECTOR_ENV, READBACK_DRIVER_ENV, diagnose_psycopg_database_presence,
+    execute_json_readback_with_driver,
+)
+import pytest
 
 
 def test_psycopg98_postgres_readiness_connector_cli_and_graph_parity() -> None:
@@ -244,3 +249,43 @@ def _run_cli(
     exit_code, stdout, stderr = run_repo_map_in_process(*args)
     assert exit_code == 0, stderr
     return json.loads(stdout), stdout
+
+@pytest.mark.parametrize("options", [
+    "", "-c statement_timeout=1s", "-cstatement_timeout=0",
+    "-c default_transaction_read_only=off -c application_name=fixture",
+])
+def test_catalog_diagnostics_and_json_readback_use_real_configured_database(options, monkeypatch):
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        monkeypatch.setenv("PGPASSWORD", postgres.password)
+        monkeypatch.setenv("PGOPTIONS", options)
+        monkeypatch.delenv("PGCONNECT_TIMEOUT", raising=False)
+        assert diagnose_psycopg_database_presence(
+            psql_args=postgres.psql_args, target_database=postgres.database,
+        ) == "present"
+        assert diagnose_psycopg_database_presence(
+            psql_args=postgres.psql_args, target_database="absent_fixture_database",
+            timeout_seconds=5,
+        ) == "absent"
+        for driver in ("psql", "psycopg"):
+            args = dict(psql_args=postgres.psql_args, psql_command=postgres.psql_command,
+                        label="fixture readback", driver=driver)
+            assert execute_json_readback_with_driver(
+                "SELECT json_build_object('state', 'ready', 'count', 2)",
+                expected_shape="object", **args,
+            ) == {"state": "ready", "count": 2}
+            assert execute_json_readback_with_driver(
+                "SELECT json_build_array('alpha', 'beta')", expected_shape="array", **args,
+            ) == ["alpha", "beta"]
+            with pytest.raises(StorageSchemaError, match="as a JSON object"):
+                execute_json_readback_with_driver(
+                    "SELECT json_build_array('alpha')", expected_shape="object", **args,
+                )
+        monkeypatch.setenv("PGOPTIONS", "-c statement_timeout=invalid")
+        assert diagnose_psycopg_database_presence(
+            psql_args=postgres.psql_args, target_database=postgres.database,
+        ) == "unavailable"
+        monkeypatch.setenv("PGOPTIONS", options)
+        assert diagnose_psycopg_database_presence(
+            psql_args=postgres.psql_args, target_database=postgres.database,
+        ) == "present"

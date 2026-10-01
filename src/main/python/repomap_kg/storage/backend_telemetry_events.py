@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import fcntl
 import json
 import math
 import os
@@ -209,6 +208,9 @@ def _validated_inherited_fifo(fd: int, *, writable: bool) -> int:
             raise ValueError
         if not stat.S_ISFIFO(os.fstat(fd).st_mode):
             raise ValueError
+        # Imported here so the SQLite Local closure never imports ``fcntl``.
+        import fcntl
+
         flags = fcntl.fcntl(fd, fcntl.F_GETFL)
         access_mode = flags & os.O_ACCMODE
         if writable and access_mode == os.O_RDONLY:
@@ -217,7 +219,7 @@ def _validated_inherited_fifo(fd: int, *, writable: bool) -> int:
             raise ValueError
         if not writable:
             os.set_blocking(fd, False)
-    except (OSError, ValueError) as error:
+    except (ImportError, OSError, ValueError) as error:
         raise ConnectionTelemetryError(
             "backend telemetry channel is unavailable"
         ) from error

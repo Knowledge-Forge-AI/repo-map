@@ -14,7 +14,8 @@ override. Ordinary phases forward exact scoped selectors after `--` with
 
 - `--suite unit` for pure source-level behavior, directly without Docker.
 - `--suite int --pg-container-port 55433` for integration-only storage/runtime
-  behavior. This is an explicit local diagnostic: the runner automatically
+  behavior. Required scoped product-boundary evidence remains diagnostic, not
+  whole-suite qualification: the runner automatically
   dispatches it into the authenticated host-disposable sandbox, and direct host
   execution is unavailable.
 - `--suite smoke` for manager-backed pass/fail containerized runtime sanity.
@@ -125,10 +126,14 @@ fixture changes, apply this sequence:
    runtime, database, or container boundary and name its test owners.
 2. Select the narrowest exact unit paths or node IDs that cover the changed
    behavior.
-3. Select exact integration paths or node IDs only when the current prompt
-   owns that optional diagnostic. A crossed integration, storage, process,
-   runtime, database, or container boundary identifies pending hosted evidence;
-   it does not make local integration an ordinary closeout requirement.
+3. Behavior-changing product dispatches must run exact local containerized
+   integration paths or node IDs for the changed boundary with `--no-coverage`;
+   update unit and integration owners in the same slice. Required integration
+   refusal/unavailability is a named gap blocking completion absent explicit
+   manager acceptance; never bypass isolation or claim hosted qualification.
+   SQLite boundaries use temporary SQLite in repository-owned container
+   isolation; the later slice must supply missing harness support. PostgreSQL
+   is needed for parity, not SQLite-only behavior.
 4. Add adjacent owners or a justified subdirectory only when a shared contract
    makes them affected. Do not invent automatic Git-diff-to-test mapping.
 5. Check the current prompt for a complete-suite override naming suites,
@@ -207,8 +212,8 @@ RepoMap operates five hosted CI lanes across three cost tiers:
   history as a tool failure, forbids baseline reinitialization and debt growth,
   and requires exact append-only authority for retained-scope removal or
   reclassification. Clean additions remain permitted; maintained Python
-  quality protection does not await hypothetical replacement, while
-  architectural placement is reserved for post-main. The global file-length
+  quality protection does not await hypothetical replacement, under
+  ADR 0071’s retained-Python direction. The global file-length
   profile remains separate. The lane retains current-checkout `MYPYPATH`, seals exact runtime
   dependencies into the tool Python, and invokes Semgrep through that Python's
   exact console script. It also runs the stdlib-only `tools/ci/ci_topology.py`
@@ -216,7 +221,7 @@ RepoMap operates five hosted CI lanes across three cost tiers:
 - `repomap-unit-tests` (PR Fast): the complete canonical unit population through
   `python3 tools/run_tests.py --suite unit`, with Python 3.13 and hard 85% statement
   and 85% branch coverage (settled in REPOMAP-CI2A-R4D),
-  `.[test,scale-tools,static-analysis]`, and the Go toolchain pinned from `src/main/go/go.mod`
+  the hash-locked project closure plus `.[test,scale-tools,static-analysis]`, and the Go toolchain pinned from `src/main/go/go.mod`
   because the canonical runner validates/builds the existing helper; the lane
   bootstraps exact verified `golangci-lint` v2.6.2; TEST-ISO1 purity guards
   prohibit live Docker and Postgres use, and the lane has no integration,

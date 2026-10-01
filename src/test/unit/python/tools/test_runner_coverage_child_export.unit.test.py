@@ -1,4 +1,4 @@
-"""Unit tests for child coverage runner export, reconciliation, and threshold regressions."""
+"""Unit tests for child coverage runner export, reconciliation, and threshold regressions."""  # REPOMAP-PUBLIC-V002-FIX10-R1 dynamic boundary re-attestation
 
 from __future__ import annotations
 
@@ -23,7 +23,6 @@ TOOLS_DIR = REPO_ROOT / "tools"
 
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
-
 
 class CoverageRegressionTestCase(unittest.TestCase):
     def setUp(self):

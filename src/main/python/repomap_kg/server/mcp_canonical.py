@@ -1,10 +1,23 @@
-"""Implementation support for canonical RepoMap MCP tools."""
+"""Implementation support for canonical RepoMap MCP tools.
+
+The four canonical tools and legacy ``repomap_status`` read through the named
+canonical read-store seam.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from typing import Any, Callable
 
+from repomap_kg import __version__
+from repomap_kg.graph.keys import GRAPH_KEY_VERSION
+from repomap_kg.server.canonical_read_store import (
+    CanonicalEdgeExplanationQuery,
+    CanonicalEdgeQuery,
+    CanonicalNeighborhoodQuery,
+    CanonicalNodeQuery,
+    CanonicalReadStore,
+)
 from repomap_kg.server.mcp_core import private_storage_payload
 
 
@@ -20,10 +33,7 @@ class CanonicalToolDependencies:
     validate_limit: Callable[[int], int]
     validate_offset: Callable[[int], int]
     validate_read_schema_version: Callable[[int], int]
-    query_canonical_node_records: Callable[..., Any]
-    query_canonical_edge_records: Callable[..., Any]
-    query_canonical_edge_explanation: Callable[..., Any]
-    query_canonical_neighborhood: Callable[..., Any]
+    canonical_read_store: Callable[[Any], CanonicalReadStore]
     canonical_node_records_to_jsonable: Callable[..., list[dict[str, Any]]]
     canonical_edge_records_to_jsonable: Callable[..., list[dict[str, Any]]]
     canonical_edge_explanation_to_jsonable: Callable[..., dict[str, Any]]
@@ -32,6 +42,50 @@ class CanonicalToolDependencies:
     public_read_page_to_jsonable: Callable[..., dict[str, Any]]
     public_embedded_read_result_to_jsonable: Callable[..., dict[str, Any]]
     identity_metadata_hash: Callable[[dict[str, Any]], str]
+
+
+def status_payload(
+    *,
+    root_path: str | None,
+    project: str | None,
+    pg_database: str | None,
+    pg_host: str | None,
+    pg_port: str | int | None,
+    pg_user: str | None,
+    psql_command: str | None,
+    dependencies: CanonicalToolDependencies,
+) -> dict[str, Any]:
+    connection = dependencies.storage_connection(
+        root_path=root_path,
+        project=project,
+        pg_database=pg_database,
+        pg_host=pg_host,
+        pg_port=pg_port,
+        pg_user=pg_user,
+        psql_command=psql_command,
+    )
+    summary = dependencies.canonical_read_store(connection).canonical_storage_summary()
+    payload = {
+        "server": "repomap-kg",
+        "version": __version__,
+        "read_only": True,
+        "root_path": summary.root_path,
+        "repository_name": summary.repository_name,
+        "graph_key_version": GRAPH_KEY_VERSION,
+        "storage_model": "canonical",
+        "counts": {
+            "runs": summary.runs,
+            "files": summary.files,
+            "raw_observations": summary.raw_observations,
+            "canonical_nodes": summary.canonical_nodes,
+            "canonical_edges": summary.canonical_edges,
+            "canonical_evidence": summary.canonical_evidence,
+        },
+    }
+    payload["root_path"] = connection.root_path_display
+    if connection.project is not None:
+        payload["project"] = connection.project
+    return payload
 
 
 def canonical_nodes_payload(
@@ -72,15 +126,15 @@ def canonical_nodes_payload(
         path_prefix=path_prefix,
         graph_key_version=graph_key_version,
     )
-    records = connection.query_storage(
-        dependencies.query_canonical_node_records,
-        root_path=connection.root_path,
-        kind=node_kind,
-        canonical_key=canonical_key,
-        path_prefix=path_prefix,
-        graph_key_version=graph_key_version,
-        limit=safe_limit + 1,
-        offset=safe_offset,
+    records = dependencies.canonical_read_store(connection).canonical_nodes(
+        CanonicalNodeQuery(
+            kind=node_kind,
+            canonical_key=canonical_key,
+            path_prefix=path_prefix,
+            graph_key_version=graph_key_version,
+            limit=safe_limit + 1,
+            offset=safe_offset,
+        )
     )
     page = dependencies.public_read_page(
         records,
@@ -138,15 +192,15 @@ def canonical_edges_payload(
         target_key=target_key,
         graph_key_version=graph_key_version,
     )
-    records = connection.query_storage(
-        dependencies.query_canonical_edge_records,
-        root_path=connection.root_path,
-        kind=kind,
-        source_key=source_key,
-        target_key=target_key,
-        graph_key_version=graph_key_version,
-        limit=safe_limit + 1,
-        offset=safe_offset,
+    records = dependencies.canonical_read_store(connection).canonical_edges(
+        CanonicalEdgeQuery(
+            kind=kind,
+            source_key=source_key,
+            target_key=target_key,
+            graph_key_version=graph_key_version,
+            limit=safe_limit + 1,
+            offset=safe_offset,
+        )
     )
     page = dependencies.public_read_page(
         records,
@@ -206,16 +260,16 @@ def canonical_edge_explanation_payload(
     safe_schema_version = dependencies.validate_read_schema_version(
         result_schema_version
     )
-    record = connection.query_storage(
-        dependencies.query_canonical_edge_explanation,
-        root_path=connection.root_path,
-        source_key=source_key,
-        kind=kind,
-        target_key=target_key,
-        identity_metadata_hash=dependencies.identity_metadata_hash(metadata),
-        graph_key_version=graph_key_version,
-        evidence_limit=safe_evidence_limit + 1,
-        evidence_offset=safe_evidence_offset,
+    record = dependencies.canonical_read_store(connection).canonical_edge_explanation(
+        CanonicalEdgeExplanationQuery(
+            source_key=source_key,
+            kind=kind,
+            target_key=target_key,
+            identity_metadata_hash=dependencies.identity_metadata_hash(metadata),
+            graph_key_version=graph_key_version,
+            evidence_limit=safe_evidence_limit + 1,
+            evidence_offset=safe_evidence_offset,
+        )
     )
     evidence_page = dependencies.public_read_page(
         record.evidence,
@@ -276,17 +330,17 @@ def canonical_neighborhood_payload(
     safe_schema_version = dependencies.validate_read_schema_version(
         result_schema_version
     )
-    record = connection.query_storage(
-        dependencies.query_canonical_neighborhood,
-        root_path=connection.root_path,
-        node=node,
-        direction=direction,
-        depth=depth,
-        graph_key_version=graph_key_version,
-        node_limit=safe_node_limit + 1,
-        node_offset=safe_node_offset,
-        edge_limit=safe_edge_limit + 1,
-        edge_offset=safe_edge_offset,
+    record = dependencies.canonical_read_store(connection).canonical_neighborhood(
+        CanonicalNeighborhoodQuery(
+            node=node,
+            direction=direction,
+            depth=depth,
+            graph_key_version=graph_key_version,
+            node_limit=safe_node_limit + 1,
+            node_offset=safe_node_offset,
+            edge_limit=safe_edge_limit + 1,
+            edge_offset=safe_edge_offset,
+        )
     )
     node_page = dependencies.public_read_page(
         record.nodes,

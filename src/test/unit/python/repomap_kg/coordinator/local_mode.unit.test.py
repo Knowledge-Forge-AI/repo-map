@@ -20,9 +20,11 @@ class FakeClient:
     def __init__(self, statuses):
         self.statuses = iter(statuses)
         self.submitted = []
+        self.admission_budgets = []
 
-    def submit(self, request):
+    def submit(self, request, *, admission_budget_seconds=5.0):
         self.submitted.append(request)
+        self.admission_budgets.append(admission_budget_seconds)
         return {"job_id": "job-1", "state": "queued", "replayed": False}
 
     def wait(self, job_id):
@@ -102,6 +104,7 @@ def test_coordinator_refresh_uses_derived_endpoint_and_stable_request_identity(t
             "operation_options": {"reason": "operator-request"},
         }
     ]
+    assert client.admission_budgets == [30]
     assert result == {
         "command": "refresh-graph",
         "mode": "coordinator",
@@ -122,6 +125,16 @@ def test_windows_runtime_paths_use_one_private_endpoint_descriptor():
         "coordinator.endpoint.json",
         "coordinator.endpoint.json",
     )
+
+
+def test_lower_owners_keep_local_mode_and_report_identities():
+    from repomap_kg.coordinator import _runtime_paths, local_mode
+    from repomap_kg.ops import report_records, reports
+
+    for name in ("CoordinatorModeError", "coordinator_runtime_paths", "_coordinator_endpoint_names"):
+        assert getattr(local_mode, name) is getattr(_runtime_paths, name)
+    assert CoordinatorModeError.__module__ == "repomap_kg.coordinator.local_mode"
+    assert reports._redact_text is report_records._redact_text
 
 
 def test_coordinator_refresh_timeout_leaves_durable_job_running(tmp_path):
@@ -345,7 +358,7 @@ def test_foreground_serve_fails_when_service_becomes_degraded(tmp_path):
 
 def test_coordinator_refresh_rejects_non_bool_replayed(tmp_path):
     class MalformedSubmitClient:
-        def submit(self, _request):
+        def submit(self, _request, *, admission_budget_seconds=5.0):
             return {"job_id": "job-1", "replayed": "not-a-bool"}
 
         def wait(self, _job_id):
@@ -363,7 +376,7 @@ def test_coordinator_refresh_rejects_non_bool_replayed(tmp_path):
 
 def test_coordinator_refresh_rejects_missing_state_in_wait_status(tmp_path):
     class MissingStateClient:
-        def submit(self, _request):
+        def submit(self, _request, *, admission_budget_seconds=5.0):
             return {"job_id": "job-1", "replayed": False}
 
         def wait(self, _job_id):

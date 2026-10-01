@@ -18,7 +18,7 @@ from repomap_kg.runtime.local import (
 from repomap_kg.runtime.release import PACKAGED_PG_RESTORE, PACKAGED_PSQL
 
 BACKUP_ROOT_DIR = "backups"
-CONTAINER_INTERNAL_MARKER = Path("/etc/repomap-release-container")
+from repomap_kg.runtime.postgres_route import CONTAINER_INTERNAL_MARKER
 SAFE_DATABASE_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]{0,62}$")
 RUNTIME_HOME_HASH_RE = re.compile(r"^[0-9a-f]{12}$")
 

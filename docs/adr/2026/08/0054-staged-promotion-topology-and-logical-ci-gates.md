@@ -1,5 +1,12 @@
 # ADR 0054: Staged Promotion Topology And Logical CI Gates
 
+> Post-promotion amendment (2026-09-24): [ADR 0071](../09/0071-post-promotion-local-server-cloud-architecture.md).
+> Development continues on private main; public staging receives separately
+> authorized significant milestones, not every slice. Passing hosted gates and
+> separate manager promotion authority precede v0.0.2. Pre-v0.1.0 previews are
+> GitHub-only; v0.1.0 targets package managers. Logical gate and actor-owned
+> branch movement rules below remain unchanged.
+
 ## Status
 
 Accepted, amended by REPOMAP-CI2A-R1, REPOMAP-SYS0, REPOMAP-SYS0-FIX1,

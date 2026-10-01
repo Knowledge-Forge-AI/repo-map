@@ -11,6 +11,10 @@ This document records third-party dependency notices for RepoMap. It is not lega
 - License URL: <https://github.com/psycopg/psycopg/blob/master/LICENSE.txt>
 
 RepoMap uses Psycopg as an unmodified third-party dependency. RepoMap does not modify Psycopg.
+Psycopg is a supported optional dependency of the PostgreSQL Server Engine,
+declared by the `postgres` extra (`repomap-kg[postgres]`). The base SQLite
+Local distribution does not install it. The generated Server image always
+installs the extra.
 
 The binary package bundles libpq 17.6. libpq is distributed under the
 PostgreSQL License. The release image also uses the official PostgreSQL 16.14
@@ -24,8 +28,9 @@ Bookworm image for matching `psql`, `pg_dump`, and `pg_restore` clients.
 - Upstream URL: <https://github.com/python/typing_extensions>
 - License URL: <https://github.com/python/typing_extensions/blob/main/LICENSE>
 
-RepoMap pins this unmodified Psycopg runtime requirement so the release image
-has a reproducible dependency closure.
+RepoMap pins this unmodified package as its only base dependency. No packaged
+RepoMap module imports it. It is also Psycopg's runtime requirement, so the pin
+keeps the Server image's dependency closure reproducible.
 
 ## setuptools
 

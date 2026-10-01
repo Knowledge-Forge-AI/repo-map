@@ -5,13 +5,21 @@ from threading import Event, Thread
 
 import psycopg
 
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
+import pytest
+
+from repomap_kg.storage.backend_observer import (
+    BackendObservationError,
+    BackendOwnershipObserver,
+)
 from repomap_kg.storage.backend_ownership import (
     BackendClassification,
+    BackendIdentity,
     ConnectionRole,
 )
 from repomap_kg.storage.backend_telemetry import (
     BackendTelemetry,
+    ConnectionTelemetryEvent,
+    TelemetryEventKind,
 )
 from repomap_kg.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
@@ -274,3 +282,87 @@ def test_observer_classifies_a_real_parallel_worker_for_an_owned_leader() -> Non
                 assert isinstance(errors[0], psycopg.errors.QueryCanceled)
             finally:
                 tracked.close()
+
+
+def test_observer_refuses_non_autocommit_or_unregistered_and_projects_public_summary() -> None:
+    require_postgres_binaries()
+
+    with temporary_postgres() as postgres:
+        params = _psycopg_connection_params_from_psql_args(postgres.psql_args)
+        conninfo = " ".join(f"{k}={v}" for k, v in params.items())
+        with psycopg.connect(conninfo, autocommit=True) as observer_connection:
+            observer = BackendOwnershipObserver()
+            observer_identity = observer.register_connection(observer_connection)
+
+            observer.register_observer(observer_identity)
+            assert observer.observer_identities == (observer_identity,)
+
+            foreign_identity = BackendIdentity(
+                backend_pid=999999, backend_start=observer_identity.backend_start
+            )
+            with pytest.raises(BackendObservationError, match="observer limit exceeded"):
+                observer.register_observer(foreign_identity)
+
+            with psycopg.connect(conninfo, autocommit=False) as non_autocommit_conn:
+                with pytest.raises(
+                    BackendObservationError, match="observer connection is unavailable"
+                ):
+                    observer.classify(non_autocommit_conn)
+
+            with psycopg.connect(conninfo, autocommit=True) as other_conn:
+                with pytest.raises(
+                    BackendObservationError, match="observer connection is unavailable"
+                ):
+                    observer.classify(other_conn)
+
+            summary = observer.public_summary(observer_connection)
+            assert summary.get(BackendClassification.OBSERVER.value) == 1
+            assert set(summary) <= {category.value for category in BackendClassification}
+            assert all(isinstance(count, int) and count >= 0 for count in summary.values())
+
+
+def test_observer_event_sink_refuses_closed_or_mismatched_connection() -> None:
+    require_postgres_binaries()
+
+    with temporary_postgres() as postgres:
+        params = _psycopg_connection_params_from_psql_args(postgres.psql_args)
+        conninfo = " ".join(f"{k}={v}" for k, v in params.items())
+        with psycopg.connect(conninfo, autocommit=True) as observer_connection:
+            observer = BackendOwnershipObserver()
+            observer.register_connection(observer_connection)
+            sink = observer.event_sink(observer_connection)
+
+            client_conn = psycopg.connect(conninfo)
+            event = ConnectionTelemetryEvent(
+                connection_sequence=1,
+                backend_pid=client_conn.info.backend_pid,
+                connection_role=ConnectionRole.DIRECT_STAGED_REFRESH,
+                schema_version=1, connection_generation=1,
+                event=TelemetryEventKind.CONNECTION_READY,
+                monotonic_ns=1000,
+            )
+
+            client_conn.close()
+            with pytest.raises(
+                BackendObservationError, match="source connection is unavailable"
+            ):
+                sink(event, client_conn)
+            assert observer.owned_backends == ()
+
+            other_conn = psycopg.connect(conninfo)
+            mismatched_event = ConnectionTelemetryEvent(
+                connection_sequence=2,
+                backend_pid=other_conn.info.backend_pid + 99999,
+                connection_role=ConnectionRole.DIRECT_STAGED_REFRESH,
+                schema_version=1, connection_generation=1,
+                event=TelemetryEventKind.CONNECTION_READY,
+                monotonic_ns=2000,
+            )
+            try:
+                with pytest.raises(
+                    BackendObservationError, match="source connection is unavailable"
+                ):
+                    sink(mismatched_event, other_conn)
+                assert observer.owned_backends == ()
+            finally:
+                other_conn.close()

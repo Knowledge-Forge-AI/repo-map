@@ -6,11 +6,7 @@ import os
 from typing import Any
 
 from repomap_kg.graph.keys import parse_key
-from repomap_kg.ops.config import PRIVATE_PRIVACY
-from repomap_kg.server.ops import (
-    readback_path_markers,
-    sanitize_jsonable,
-)
+from repomap_kg.server.ops import sanitize_jsonable
 
 _CANONICAL_IDENTITY_FIELDS = frozenset(
     {
@@ -31,12 +27,12 @@ class RepoMapMcpError(ValueError):
 
 def private_storage_payload(connection: Any, payload: Any) -> Any:
     """Redact configured private markers at the MCP presentation boundary."""
-    context = connection.ops_context
-    if context is None or context.graph.privacy not in PRIVATE_PRIVACY:
+    selection = connection.selection
+    if selection is None or not selection.private:
         return payload
     return _sanitize_private_storage_payload(
         payload,
-        private_markers=readback_path_markers(context),
+        private_markers=selection.path_markers,
     )
 
 

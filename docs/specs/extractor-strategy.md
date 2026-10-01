@@ -1,5 +1,18 @@
 # RepoMap Extractor Strategy
 
+## Post-promotion Rust and retained-Python direction
+
+[ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
+requires backend-independent Rust extraction before v0.1.0 through ADR 0050
+admission (D14's out-of-process default unless a variance is recorded). Compare Tree-sitter Rust, rust-analyzer parser
+or helper boundaries, and syn using current capability/license/packaging evidence.
+Measure startup and parse time, RSS/install footprint, observation yield,
+unresolved/ambiguous counts, curated graph quality, malformed-source partial
+evidence and containment costs. No parser is selected here. Helpers feed Python
+semantics; a broader campaign does not authorize replacing canonicalization or
+resolution. Existing retained-Python no-new-debt ratchets remain binding; neither
+speculative replacement nor repository-wide zero debt gates product work.
+
 ## Goal
 
 Extractors should turn source files into deterministic, evidence-backed facts.
@@ -245,6 +258,30 @@ Safety here is a property of the invocation mode rather than of the Nix tooling:
 it an admissible candidate direction where the evaluating modes are not. It is a
 candidate subject to the ADR 0050 adoption gate, not a selection, and it is not
 the only conceivable static-parse direction for Nix.
+
+### Flake Input URL Classification Precedence
+
+Static flake input classification inspects input attributes (`inputs.<name>.url`
+and nested attrset forms) to determine the input source category without
+evaluating expressions or initiating network access.
+
+URL expressions are classified according to the following strict precedence:
+
+1. **GitHub sources**: Prefixed with `github:` or containing `github.com`.
+2. **Git sources**: Prefixed with `git+` or `git:`.
+3. **Path sources**: Prefixed with `path:`, `./`, or `../`.
+4. **Dynamic sources**: Expressions containing `${...}` string interpolation.
+5. **Tarball sources**: Suffix matching standard archive extensions (`.tar.gz`,
+   `.tgz`, `.tar.xz`, `.zip`).
+6. **Unknown sources**: Any expression not matching the above categories.
+
+Under this precedence rule (Option A), dynamic interpolation (`${...}`) strictly
+takes precedence over archive suffixes. If an input URL contains string
+interpolation even while ending with an archive extension (such as
+`https://example.com/archive/${version}.tar.gz`), it is deterministically
+classified as `dynamic` rather than `tarball`. This classification directly
+determines downstream storage summary accounting, contributing to
+`source_types.dynamic` rather than `source_types.tarball`.
 
 ## Python Extractor
 

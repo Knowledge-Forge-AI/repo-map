@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from repomap_kg.runtime.postgres_route import PostgresRoute
+
 from repomap_kg.graph.discovery import discover_observations
 from repomap_kg.ops._refresh_preflight import (
     format_preflight_table,
@@ -103,28 +105,56 @@ def refresh_graph(
     staged_authority: IngestionAuthority | None = None,
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
+    _postgres_route: PostgresRoute | None = None,
 ) -> OpsRefreshGraphResult:
-    if staging_measurements is None:
-        return _refresh_graph_impl(
-            config,
-            graph_id,
-            psql_command=psql_command,
-            publication_receipt=publication_receipt,
-            ingestion_mode=ingestion_mode,
-            staged_authority=staged_authority,
-            backend_telemetry=backend_telemetry,
-            staging_measurements=None,
-        )
-    with staging_measurements.phase("refresh.total"):
-        return _refresh_graph_impl(
-            config,
-            graph_id,
-            psql_command=psql_command,
-            publication_receipt=publication_receipt,
-            ingestion_mode=ingestion_mode,
-            staged_authority=staged_authority,
-            backend_telemetry=backend_telemetry,
-            staging_measurements=staging_measurements,
+    started_at = _utc_now_text()
+    try:
+        if staging_measurements is None:
+            return _refresh_graph_impl(
+                config,
+                graph_id,
+                psql_command=psql_command,
+                publication_receipt=publication_receipt,
+                ingestion_mode=ingestion_mode,
+                staged_authority=staged_authority,
+                backend_telemetry=backend_telemetry,
+                staging_measurements=None,
+                postgres_route=_postgres_route,
+            )
+        with staging_measurements.phase("refresh.total"):
+            return _refresh_graph_impl(
+                config,
+                graph_id,
+                psql_command=psql_command,
+                publication_receipt=publication_receipt,
+                ingestion_mode=ingestion_mode,
+                staged_authority=staged_authority,
+                backend_telemetry=backend_telemetry,
+                staging_measurements=staging_measurements,
+                postgres_route=_postgres_route,
+            )
+    except KeyboardInterrupt:
+        graph = _find_graph(config, graph_id)
+        database = graph_database(config, graph)
+        warnings = _graph_refresh_warnings(graph)
+        return _result_from_graph(
+            graph,
+            database=database,
+            result="failure",
+            publication_state="rolled_back",
+            error_category="cancelled",
+            started_at=started_at,
+            finished_at=_utc_now_text(),
+            warnings=warnings,
+            diagnostics=(
+                _diagnostic(
+                    "error",
+                    "refresh-failed",
+                    f"graphs.{graph.id}",
+                    "refresh cancelled",
+                ),
+            ),
+            error="refresh cancelled",
         )
 
 
@@ -138,6 +168,7 @@ def _refresh_graph_impl(
     staged_authority: IngestionAuthority | None,
     backend_telemetry: BackendTelemetry | None,
     staging_measurements: StagingMeasurements | None,
+    postgres_route: PostgresRoute | None,
 ) -> OpsRefreshGraphResult:
     """Execute the selected portable production route without legacy fallback."""
     del psql_command
@@ -162,27 +193,43 @@ def _refresh_graph_impl(
         raise OpsRefreshGenerationChangedError("refresh generation changed")
     database = graph_database(config, graph)
     warnings = _graph_refresh_warnings(graph)
+    from repomap_kg.ops.portable_refresh import (
+        PortableRefreshError,
+        execute_portable_refresh,
+    )
+    from repomap_kg.storage.errors import StorageCommitUnknownError
+
     started_at = _utc_now_text()
     try:
         if ingestion_mode != "staged":
             raise ValueError("refresh ingestion mode is invalid")
-        from repomap_kg.ops.portable_refresh import execute_portable_refresh
 
         outcome = execute_portable_refresh(
             config,
             graph,
             database,
             authority=staged_authority,
+            postgres_route=postgres_route,
             backend_telemetry=backend_telemetry,
             staging_measurements=staging_measurements,
         )
     except OpsRefreshGenerationChangedError:
         raise
-    except (OSError, StorageSchemaError, ValueError) as error:
+    except (OSError, StorageSchemaError, ValueError, PortableRefreshError) as error:
+        is_commit_unknown = isinstance(error, StorageCommitUnknownError) or (
+            isinstance(error, StorageSchemaError)
+            and getattr(error, "is_commit_unknown", False)
+        )
+        pub_state = "commit_unknown" if is_commit_unknown else "not_started"
+        err_cat = "publication_unknown" if is_commit_unknown else (
+            error.category if isinstance(error, PortableRefreshError) else "worker_crash"
+        )
         return _result_from_graph(
             graph,
             database=database,
             result="failure",
+            publication_state=pub_state,
+            error_category=err_cat,
             started_at=started_at,
             finished_at=_utc_now_text(),
             warnings=warnings,
@@ -195,6 +242,7 @@ def _refresh_graph_impl(
         graph,
         database=database,
         result="success",
+        publication_state="committed",
         started_at=started_at,
         finished_at=_utc_now_text(),
         repository_id=outcome.summary.repository_id,
@@ -216,14 +264,15 @@ def refresh_enabled_graphs(
         if not graph.enabled:
             continue
         try:
-            results.append(
-                refresh_graph(
-                    config,
-                    graph.id,
-                    psql_command=psql_command,
-                    ingestion_mode=ingestion_mode,
-                )
+            graph_result = refresh_graph(
+                config,
+                graph.id,
+                psql_command=psql_command,
+                ingestion_mode=ingestion_mode,
             )
+            results.append(graph_result)
+            if graph_result.error_category == "cancelled":
+                break
         except OpsRefreshError as error:
             results.append(
                 _result_from_graph(

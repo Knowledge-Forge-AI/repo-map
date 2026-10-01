@@ -270,6 +270,13 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
         ),
         (
             "repomap-unit-tests.yml",
+            "python -m pip install --require-hashes --no-deps --requirement "
+            "tools/ci/project_dependencies.lock",
+            "python -m pip install psycopg",
+            "unit lane must contain",
+        ),
+        (
+            "repomap-unit-tests.yml",
             "      - name: Set up Go for the canonical runner\n"
             "        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0\n"
             "        with:\n"

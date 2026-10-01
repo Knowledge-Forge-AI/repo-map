@@ -282,3 +282,30 @@ def test_real_extractor_metadata_reaches_evaluation_dependent_resolution():
         ResolutionOutcome.EVALUATION_DEPENDENT,
         ResolutionOutcome.EVALUATION_DEPENDENT,
     ]
+
+
+def test_escaping_import_resolves_to_unsupported():
+    bindings = _bindings(
+        _view("entry", "entry", {"flake.nix", "local.nix"}),
+    )
+    escaping_obs = RawObservation(
+        kind="nix.import",
+        source_id="entry:flake.nix#escape",
+        path="entry/flake.nix",
+        target="file:../outside.nix",
+        confidence="extracted",
+        extractor="nix",
+        extractor_version="fixture",
+        metadata={
+            "binding_alias": "entry",
+            "binding_id": _identity("bind1", "entry"),
+            "snapshot_id": _identity("snap1", "entry"),
+            "source_relative_path": "flake.nix",
+            "resolved_path": "../outside.nix",
+        },
+    )
+    resolutions = resolve_nix_relations((escaping_obs,), bindings)
+    assert len(resolutions) == 1
+    assert resolutions[0].outcome == ResolutionOutcome.UNSUPPORTED
+    assert resolutions[0].target_binding == "entry"
+    assert resolutions[0].target_path is None

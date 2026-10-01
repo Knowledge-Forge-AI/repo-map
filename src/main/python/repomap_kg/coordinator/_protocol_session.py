@@ -122,7 +122,8 @@ class ProtocolSession:
             "awaiting_hello": {"worker_hello"},
             "awaiting_start": {"job_start"},
             "running": {"progress", "heartbeat", "cancel", "result", "error"},
-            "cancel_requested": {"cancel_ack", "result", "error"},
+            # Independent pipes can carry progress written before cancel was read.
+            "cancel_requested": {"progress", "heartbeat", "cancel_ack", "result", "error"},
             "cancelling": {"progress", "heartbeat", "result", "error"},
         }
         if message_type not in allowed[self.state]:
@@ -277,5 +278,4 @@ class ProtocolSession:
         elif message_type in {"result", "error"}:
             self.terminal = dict(payload)
             self.state = "terminal"
-
 

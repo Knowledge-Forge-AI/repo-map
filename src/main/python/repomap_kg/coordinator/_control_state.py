@@ -360,10 +360,12 @@ def status(connect: ConnectionFactory, job_id: str) -> JobStatus:
         with connection.cursor(row_factory=dict_row) as cursor:
             cursor.execute(
                 """
-                SELECT job_id, graph_id, state, current_attempt,
-                       publication_state, phase, progress_completed,
-                       progress_total, error_category
-                FROM jobs WHERE job_id = %s
+                SELECT j.job_id, j.graph_id, j.state, j.current_attempt,
+                       j.publication_state, j.phase, j.progress_completed,
+                       j.progress_total, j.error_category, a.diagnostic_summary
+                FROM jobs AS j LEFT JOIN job_attempts AS a
+                  ON a.job_id = j.job_id AND a.attempt = j.current_attempt
+                WHERE j.job_id = %s
                 """,
                 (job_id,),
             )
@@ -373,7 +375,7 @@ def status(connect: ConnectionFactory, job_id: str) -> JobStatus:
             return JobStatus(
                 row["job_id"], row["graph_id"], row["state"], row["current_attempt"],
                 row["publication_state"], row["phase"], row["progress_completed"],
-                row["progress_total"], row["error_category"],
+                row["progress_total"], row["error_category"], row["diagnostic_summary"],
             )
 
 

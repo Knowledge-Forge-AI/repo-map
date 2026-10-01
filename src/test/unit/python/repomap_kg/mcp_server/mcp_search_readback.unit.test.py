@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import subprocess
+from typing import Any, Callable
 from unittest.mock import patch
 
+import repomap_kg.graph.multi_source_pipeline as multi_source_pipeline
+import repomap_kg.ops.direct_publication as direct_publication
+import repomap_kg.ops.refresh as ops_refresh
 from repomap_kg.ops.config import load_ops_config
 from repomap_kg.server.ops import (
     build_mcp_search_sql,
@@ -9,7 +14,34 @@ from repomap_kg.server.ops import (
 )
 from repomap_kg.storage import StorageSchemaError
 
+from repomap_test_support.host_read_store_config import patched_guards, setup_owned_home
 from repomap_test_support.mcp_server import McpServerTestSupport
+
+ROWS = [{"path": "src/main.py"}, {"path": "src/other.py"}]
+# Lifecycle, source-traversal and container attempts that NO_FALLBACK_GUARDS
+# must intercept if any configured-search binding ever made them.
+# Attributes are looked up at call time, so the patched guards are what run;
+# the untyped module handles let a synthetic argument stand in for real inputs.
+_refresh: Any = ops_refresh
+_capture: Any = multi_source_pipeline
+_publication: Any = direct_publication
+SIDE_EFFECT_ATTEMPTS: tuple[tuple[str, Callable[[], Any]], ...] = (
+    ("refresh", lambda: _refresh.refresh_graph("synthetic")),
+    ("source capture", lambda: _capture.capture_multi_source_candidate("synthetic")),
+    ("publication", lambda: _publication.publish_observation_generation("synthetic")),
+    ("container exec", lambda: subprocess.run(["docker", "exec", "synthetic"], check=False)),
+)
+
+
+class _DriverRecorder:
+    """Answer the host JSON driver with fixed rows, recording its arguments."""
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
+    def __call__(self, sql: str, **kwargs: Any) -> Any:
+        self.calls.append(kwargs)
+        return list(ROWS)
 
 
 class McpSearchReadbackUnitTests(McpServerTestSupport):
@@ -52,11 +84,11 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
             ),
             label="files MCP search",
             expected_shape="array",
-            mode="host_then_container",
+            mode="host_only",
             psql_command="/usr/local/bin/psql",
         )
 
-    def test_psycopg108_search_payload_bypasses_generic_wrapper(self):
+    def test_psycopg108_search_payload_reaches_the_bound_search_owner(self):
         from repomap_kg.server.mcp import repomap_search_files
 
         config_path = self.write_ops_config(self.visible_ops_config())
@@ -65,10 +97,6 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
                 "os.environ",
                 {"REPOMAP_OPS_CONFIG": str(config_path)},
                 clear=True,
-            ),
-            patch(
-                "repomap_kg.server.ops.query_configured_storage",
-                side_effect=AssertionError("generic wrapper used for search"),
             ),
             patch(
                 "repomap_kg.server.ops.query_mcp_search",
@@ -128,20 +156,64 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
             with self.assertRaisesRegex(RepoMapMcpError, "bounded search failure"):
                 repomap_search_files(graph_id="repo-map", query="main")
 
-    def test_psycopg108_moves_no_other_configured_callback(self):
+    def test_psycopg108_query_uses_the_operational_readback_owner(self):
         import inspect
 
         from repomap_kg.server import ops
 
-        search_source = inspect.getsource(ops.search_payload)
         query_source = inspect.getsource(ops.query_mcp_search)
-        project_source = inspect.getsource(ops.project_summary_payload)
-        summary_source = inspect.getsource(ops.summary_payload)
-        neighborhood_source = inspect.getsource(ops.neighborhood_payload)
-
-        self.assertNotIn("query_configured_storage", search_source)
         self.assertIn("execute_ops_json_readback", query_source)
         self.assertNotIn("run_psql", query_source)
         self.assertNotIn("parse_psql_json", query_source)
-        for source in (project_source, summary_source, neighborhood_source):
-            self.assertIn("query_configured_storage", source)
+
+
+class McpSearchSideEffectGuardTests(McpServerTestSupport):
+    """RESOLVE1 advisory B: guard the real factory-to-driver search boundary."""
+
+    def _env(self, home: Any):
+        return patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()),
+                                         "REPOMAP_HOME": str(home)}, clear=True)
+
+    def test_configured_search_reads_host_only_through_real_binding_without_side_effects(self):
+        from repomap_kg.runtime.database_role_contract import read_read_status_password
+        from repomap_kg.server.mcp import repomap_search_files
+
+        home = setup_owned_home(self)
+        recorder = _DriverRecorder()
+        with self._env(home), patched_guards(), \
+                patch("repomap_kg.ops.readback.execute_json_readback_with_driver", recorder):
+            payload = repomap_search_files(graph_id="host-one", query="main", limit=1)
+
+        self.assertEqual(payload["results"], ROWS[:1])
+        self.assertTrue(payload["has_more"])
+        self.assertEqual(len(recorder.calls), 1)
+        call = recorder.calls[0]
+        self.assertEqual(call["label"], "files MCP search")
+        self.assertEqual(list(call["psql_args"]), ["-h", "127.0.0.1", "-p", "55439", "-U", "repomap_read_status",
+                                                   "-d", "repomap_host_one"])
+        self.assertEqual(call["password"], read_read_status_password(home))
+
+    def test_guard_canary_detects_a_binding_that_attempts_a_side_effect(self):
+        # Synthetic canary: a store bound through the real factory seam tries
+        # one lifecycle/source/container action; the same guards must fire and
+        # the refusal must escape the tool rather than become a read result.
+        from repomap_kg.server.mcp import repomap_search_files
+
+        home = setup_owned_home(self)
+        for label, attempt in SIDE_EFFECT_ATTEMPTS:
+
+            class _SideEffectStore:
+                def search(self, _query: Any, _attempt: Callable[[], Any] = attempt) -> Any:
+                    return _attempt()
+
+            class _Binding:
+                def storage_label(self, _selection: Any) -> str:
+                    return "synthetic"
+
+                def investigation_store(self) -> Any:
+                    return _SideEffectStore()
+
+            with self.subTest(attempt=label), self._env(home), patched_guards(), \
+                    patch("repomap_kg.server.ops.investigation_stores", lambda _config: _Binding()), \
+                    self.assertRaisesRegex(AssertionError, "container, or subprocess path"):
+                repomap_search_files(graph_id="host-one", query="main")

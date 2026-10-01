@@ -7,6 +7,8 @@ from datetime import timedelta
 
 import psycopg
 
+from typing import Callable
+
 from repomap_kg.coordinator import (
     _control_coalescing as coalescing, _control_listing as listing,
     _control_maintenance as maintenance, _control_ownership as ownership,
@@ -14,6 +16,7 @@ from repomap_kg.coordinator import (
     _control_schema as schema, _control_startup as startup,
     _control_state as state, _control_submission as submission,
 )
+from repomap_kg.coordinator._control_maintenance import CleanupReport
 from repomap_kg.coordinator._control_types import (
     ConnectionFactory, ControlSchemaError, ControlStoreError, JobClaim,
     JobListPage, JobStatus, SingletonActiveError, SubmissionResult,
@@ -92,9 +95,11 @@ class ControlStore:
         request: JobRequest,
         *,
         requester: str = "local",
+        admission_deadline: submission.AdmissionDeadline | None = None,
     ) -> SubmissionResult:
         return submission.submit(
-            self._connect, request, requester=requester, limits=self._limits
+            self._connect, request, requester=requester, limits=self._limits,
+            admission_deadline=admission_deadline,
         )
 
     def coalesce_automatic(
@@ -281,12 +286,15 @@ class ControlStore:
     def mark_reconciliation_required(
         self, claim: JobClaim, *, expected_state: str, category: str,
         diagnostic_summary: str | None = None,
+        publication_state: str = "commit_unknown",
     ) -> bool:
+        if publication_state not in {"not_started", "commit_unknown"}:
+            raise ValueError("invalid reconciliation publication state")
         return self.compare_and_set_state(
             claim.job_id,
             expected_state=expected_state, new_state="reconciliation_required",
             attempt=claim.attempt, instance_id=claim.instance_id,
-            fencing_epoch=claim.fencing_epoch, publication_state="commit_unknown",
+            fencing_epoch=claim.fencing_epoch, publication_state=publication_state,
             error_category=category, diagnostic_summary=diagnostic_summary,
         )
 
@@ -315,11 +323,13 @@ class ControlStore:
     def reconcile_publication(
         self, claim: JobClaim, *,
         reconciler_instance_id: str | None = None, reconciler_epoch: int | None = None,
+        unpublished_proved: bool = False,
     ) -> str:
         return reconciliation.reconcile_publication(
             self._connect, claim, max_attempts=self._limits.max_retry_attempts,
             reconciler_instance_id=reconciler_instance_id or claim.instance_id,
             reconciler_epoch=reconciler_epoch if reconciler_epoch is not None else claim.fencing_epoch,
+            unpublished_proved=unpublished_proved,
         )
 
     def schedule_retry(
@@ -355,14 +365,21 @@ class ControlStore:
         )
 
     def cleanup_terminal(
-        self, minimum_age: timedelta, *, limit: int, dry_run: bool
-    ) -> tuple[str, ...]:
+        self,
+        minimum_age: timedelta,
+        *,
+        limit: int,
+        dry_run: bool,
+        publication_retirer: Callable[[object], object] | None = None,
+    ) -> CleanupReport:
         return maintenance.cleanup_terminal(
             self._connect,
             minimum_age,
             limit=limit,
             dry_run=dry_run,
+            publication_retirer=publication_retirer,
         )
+
 
     def status(self, job_id: str) -> JobStatus:
         return state.status(self._connect, job_id)

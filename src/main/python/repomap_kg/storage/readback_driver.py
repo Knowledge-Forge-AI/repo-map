@@ -6,23 +6,24 @@ import importlib
 import json
 import math
 import os
-import re
 import time
 from collections.abc import Callable, Mapping, Sequence
-from typing import Any, Literal, NamedTuple, Protocol
+from typing import Any, Literal, Protocol
 
 from repomap_kg.storage.errors import StorageSchemaError
 from repomap_kg.storage.psql import parse_psql_json, run_psql
+from repomap_kg.storage.readback_credentials import (
+    DiagnosticOptions,
+    _resolve_diagnostic_options as _resolve_diagnostic_options,
+    psql_environment,
+    psycopg_connection_params,
+    sanitized_psycopg_error,
+)
 
 ExpectedJsonShape = Literal["object", "array"]
 JsonReadbackPayload = dict[str, Any] | list[Any]
 JsonReadbackDriver = Literal["psql", "psycopg"]
 CatalogPresence = Literal["absent", "present", "denied", "unavailable", "malformed"]
-
-
-class DiagnosticOptions(NamedTuple):
-    options: str
-    effective_timeout_ms: int
 
 
 PG_CONNECTOR_ENV = "REPOMAP_STORAGE_PG_CONNECTOR"
@@ -49,6 +50,7 @@ class PgJsonReadbackConnector(Protocol):
         psql_command: str,
         label: str,
         expected_shape: ExpectedJsonShape,
+        password: str | None = None,
     ) -> JsonReadbackPayload: ...
 
 
@@ -64,8 +66,21 @@ class PsqlJsonReadbackConnector:
         psql_command: str,
         label: str,
         expected_shape: ExpectedJsonShape,
+        password: str | None = None,
     ) -> JsonReadbackPayload:
-        result = run_psql([psql_command, *psql_args, "-qAt", "-v", "ON_ERROR_STOP=1"], input_text=sql)
+        sanitized_error: StorageSchemaError | None = None
+        try:
+            result = run_psql(
+                [psql_command, *psql_args, "-qAt", "-v", "ON_ERROR_STOP=1"],
+                input_text=sql,
+                env=psql_environment(password),
+            )
+        except StorageSchemaError:
+            if password is None:
+                raise
+            sanitized_error = StorageSchemaError(f"psql readback failed for {label}")
+        if sanitized_error is not None:
+            raise sanitized_error
         payload = parse_psql_json(result.stdout, label)
         return _validate_json_readback_payload(payload, label=label, expected_shape=expected_shape)
 
@@ -82,10 +97,14 @@ class PsycopgJsonReadbackConnector:
         psql_command: str,
         label: str,
         expected_shape: ExpectedJsonShape,
+        password: str | None = None,
     ) -> JsonReadbackPayload:
         psycopg = _import_psycopg()
-        connection_params = _psycopg_connection_params_from_psql_args(psql_args)
+        connection_params = psycopg_connection_params(
+            _psycopg_connection_params_from_psql_args(psql_args), password
+        )
         phase = "connect"
+        sanitized_error: StorageSchemaError | None = None
         try:
             with psycopg.connect(**connection_params) as connection:
                 phase = "query"
@@ -95,9 +114,9 @@ class PsycopgJsonReadbackConnector:
         except StorageSchemaError:
             raise
         except Exception as error:
-            schema_error = StorageSchemaError(f"psycopg readback failed for {label}")
-            setattr(schema_error, "_readback_phase", phase)
-            raise schema_error from error
+            sanitized_error = sanitized_psycopg_error(label, phase, error)
+        if sanitized_error is not None:
+            raise sanitized_error
 
         payload = _json_payload_from_psycopg_row(row, label=label)
         return _validate_json_readback_payload(
@@ -110,6 +129,7 @@ class PsycopgJsonReadbackConnector:
         psql_args: Sequence[str],
         target_database: str,
         timeout_seconds: float | None = None,
+        password: str | None = None,
         clock: Callable[[], float] = time.monotonic,
     ) -> CatalogPresence:
         """Execute a single bounded catalog query to verify target database presence.
@@ -127,7 +147,9 @@ class PsycopgJsonReadbackConnector:
             return "unavailable"
         try:
             psycopg = _import_psycopg()
-            params = _psycopg_connection_params_from_psql_args(psql_args)
+            params = psycopg_connection_params(
+                _psycopg_connection_params_from_psql_args(psql_args), password
+            )
         except Exception:
             return "unavailable"
         if not (host := params.get("host")) or "," in host:
@@ -185,51 +207,6 @@ class PsycopgJsonReadbackConnector:
         return "present" if row[0] is True else "absent"
 
 
-def _resolve_diagnostic_options(existing: str | None, target_ms: int) -> DiagnosticOptions | None:
-    if not existing or not existing.strip():
-        return DiagnosticOptions(f"-c default_transaction_read_only=on -c statement_timeout={target_ms}", target_ms)
-    if any(ch in existing for ch in ('"', "'", "\\")):
-        return None
-    mults = {"ms": 1, "s": 1000, "min": 60_000, "h": 3_600_000, "d": 86_400_000}
-    tokens, new_toks, seen = existing.strip().split(), [], set()
-    has_to, has_ro, eff_to, i = False, False, target_ms, 0
-    while i < len(tokens):
-        tok = tokens[i]
-        if tok == "-c" and i + 1 < len(tokens):
-            is_att, pair, i = False, tokens[i + 1], i + 2
-        elif tok.startswith("-c") and len(tok) > 2:
-            is_att, pair, i = True, tok[2:], i + 1
-        else:
-            return None
-        if "=" not in pair:
-            return None
-        k, v = (x.strip() for x in pair.split("=", 1))
-        k = k.lower()
-        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", k) or k in seen:
-            return None
-        seen.add(k)
-        if k == "statement_timeout":
-            if not (m := re.match(r"^(\d+)(ms|s|min|h|d)?$", v.lower())):
-                return None
-            has_to, parsed = True, int(m.group(1)) * mults[m.group(2) or "ms"]
-            eff_to = target_ms if parsed == 0 else min(target_ms, parsed)
-            val = f"statement_timeout={eff_to}"
-        elif k == "default_transaction_read_only":
-            if v.lower() not in {"on", "off", "true", "false", "yes", "no", "1", "0"}:
-                return None
-            has_ro, val = True, "default_transaction_read_only=on"
-        elif re.match(r"^[a-zA-Z0-9_.,:-]+$", v):
-            val = f"{k}={v}"
-        else:
-            return None
-        new_toks.append(f"-c{val}" if is_att else f"-c {val}")
-    if not has_ro:
-        new_toks.append("-c default_transaction_read_only=on")
-    if not has_to:
-        new_toks.append(f"-c statement_timeout={target_ms}")
-    return DiagnosticOptions(" ".join(new_toks), eff_to)
-
-
 CONNECTORS: dict[str, PgJsonReadbackConnector] = {
     "psql": PsqlJsonReadbackConnector(),
     "psycopg": PsycopgJsonReadbackConnector(),
@@ -241,6 +218,7 @@ def diagnose_psycopg_database_presence(
     psql_args: Sequence[str],
     target_database: str,
     timeout_seconds: float | None = None,
+    password: str | None = None,
     clock: Callable[[], float] = time.monotonic,
 ) -> CatalogPresence:
     connector = CONNECTORS.get("psycopg")
@@ -249,6 +227,7 @@ def diagnose_psycopg_database_presence(
             psql_args=psql_args,
             target_database=target_database,
             timeout_seconds=timeout_seconds,
+            password=password,
             clock=clock,
         )
     return "unavailable"
@@ -261,6 +240,7 @@ def execute_json_readback(
     psql_command: str = "psql",
     label: str,
     expected_shape: ExpectedJsonShape,
+    password: str | None = None,
 ) -> JsonReadbackPayload:
     return execute_json_readback_with_driver(
         sql,
@@ -269,6 +249,7 @@ def execute_json_readback(
         psql_command=psql_command,
         label=label,
         expected_shape=expected_shape,
+        password=password,
     )
 
 
@@ -280,11 +261,18 @@ def execute_json_readback_with_driver(
     psql_command: str,
     label: str,
     expected_shape: ExpectedJsonShape,
+    password: str | None = None,
 ) -> JsonReadbackPayload:
     if (connector := CONNECTORS.get(driver)) is None:
         raise StorageSchemaError("unsupported storage readback driver")
+    kwargs = {"password": password} if password is not None else {}
     return connector.execute_json(
-        sql, psql_args=psql_args, psql_command=psql_command, label=label, expected_shape=expected_shape
+        sql,
+        psql_args=psql_args,
+        psql_command=psql_command,
+        label=label,
+        expected_shape=expected_shape,
+        **kwargs,
     )
 
 
@@ -328,7 +316,11 @@ def _execute_json_readback_with_psql(
     expected_shape: ExpectedJsonShape,
 ) -> JsonReadbackPayload:
     return PsqlJsonReadbackConnector().execute_json(
-        sql, psql_args=psql_args, psql_command=psql_command, label=label, expected_shape=expected_shape
+        sql,
+        psql_args=psql_args,
+        psql_command=psql_command,
+        label=label,
+        expected_shape=expected_shape,
     )
 
 
@@ -340,7 +332,11 @@ def _execute_json_readback_with_psycopg(
     expected_shape: ExpectedJsonShape,
 ) -> JsonReadbackPayload:
     return PsycopgJsonReadbackConnector().execute_json(
-        sql, psql_args=psql_args, psql_command="psql", label=label, expected_shape=expected_shape
+        sql,
+        psql_args=psql_args,
+        psql_command="psql",
+        label=label,
+        expected_shape=expected_shape,
     )
 
 

@@ -2,7 +2,7 @@
 
 ## Storage Decision
 
-RepoMap uses a Postgres container as its primary database layer. The graph shape
+The current reference implementation uses containerized PostgreSQL. Its graph shape
 is represented with relational tables and JSONB metadata rather than a dedicated
 graph database.
 
@@ -24,12 +24,47 @@ Postgres provides:
 - core relational search operators, including `ILIKE` substring matching;
 - a familiar path to dashboards, reports, and service integrations.
 
-Relational PostgreSQL with JSONB is the primary authoritative storage for the
-normalized graph and control data.
+Relational PostgreSQL with JSONB currently owns normalized graph and control
+data. [ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
+selects SQLite as ordinary Local graph authority and PostgreSQL for Server/Cloud.
+Shared graph semantics do not require identical physical schemas. Local starts
+with one database per graph, multiple bindings, one serialized publisher, bounded
+readers and explicit accepted-generation identity; failures preserve the previous
+generation. Ordered/checksummed/drift-refusing/backup-first migration principles
+carry across backends.
+
+### SQLite Local first slice (step 4, in progress)
+
+[ADR 0075](../adr/2026/09/0075-sqlite-local-first-slice.md) implements the first
+bounded Local loop. A SQLite view and a PostgreSQL view are separately owned
+authorities: there is no replication, active-active synchronization, merge or
+server fallback between them, and a SQLite graph is never produced by exporting
+PostgreSQL rows. The only pre-existing SQLite use,
+`artifacts._bundle_stream_links.DiskFamilyLinkValidator`, is a transient
+parent-side link-validation scratch database deleted after validation; it is
+not graph authority and is not reused.
+
+| Concern | Where it lives |
+|---|---|
+| Files, raw observations, canonical nodes/edges/evidence and node/edge evidence links of one graph | Local: that graph's `state/sqlite-local/graphs/<graph_id>.sqlite3` |
+| Publication runs (portable ids, snapshot vector, family receipts, generations, attempt) and the accepted-publication marker | Local: the same database (`runs`, `accepted_publication`) |
+| Graph binding (`graph_id`, `repo1:` identity, `graph:` root, repository name) | Local: the same database (`graph_binding`), checked on every open |
+| Schema version, ordered checksums and application id | Local: `local_schema_migrations` (one row per applied catalog migration: v1 `sqlite-local-v1`, v2 `sqlite-local-v2-observation-path-index`), `PRAGMA user_version`, `PRAGMA application_id`; the catalog itself is `storage.sqlite_local.migrations` |
+| Physical read indexes | Local: private to the SQLite schema; v2 adds `idx_raw_observations_path_run (path, run_id DESC, ordinal)` for exact-path observation search, with no contract change |
+| Control/coordinator state, staging tables, `graph_publication_authority`, database roles, backups, maintenance admission | PostgreSQL Server Engine only |
+| Source configuration, privacy and user preferences | The home's `*.rp.toml`/`*.rpl.toml`; never graph facts |
+
+Shared logical contracts, not shared SQL: `graph:<id>` roots and `repo1:<id>`
+identities, binding-qualified canonical keys, bundle/receipt/candidate/manifest
+ids, family counts, evidence and provenance fields, first/last-seen run
+semantics and the page/serializer contracts. Backend-local row ids and run ids
+are not shared: SQLite run ids equal accepted generations. PostgreSQL status and
+graph summary select repositories by the configured name for pre-identity
+restore compatibility; SQLite has no pre-identity state and binds by identity.
 
 ## Database Extensions
 
-RepoMap admits no new PostgreSQL extension. Search, ordering, and traversal
+Current behavior: RepoMap admits no new PostgreSQL extension. Search, ordering, and traversal
 semantics rest on the core relational contract; `ILIKE` substring matching
 remains the authoritative search behavior.
 
@@ -43,9 +78,12 @@ graph-language extensions — must pass the admission and lifecycle policy in
 before it may be relied on as a RepoMap-required capability here. Policy
 admission is not database enablement.
 
-Dedicated graph databases remain a future option if RepoMap develops graph
-algorithm needs that are awkward in SQL. Adopting one would be a backend and
-storage decision, not an extension decision.
+ADR 0071 requires useful optional Server pgvector before v0.1.0, but satisfies
+only ADR 0051 D14 reconsideration, not D15 admission. Exact search anchors recall;
+HNSW leads approximate evaluation. Similarity remains heuristic. No Apache AGE
+or other graph database is selected; RepoMap owns canonical graph semantics.
+JSONB expansion requires named metadata/evidence workloads; identity, authority,
+fencing, required constraints and core relations remain relational.
 
 ## Data Layers
 
@@ -360,13 +398,15 @@ edges, and evidence as table or JSON output.
 The default development database should run in a Postgres container. Tests may
 use isolated schemas or disposable databases.
 
-Integration tests can also use host Postgres tools for disposable local
-clusters. When `pg_config` is available, the test harness uses it to locate the
-matching Postgres binary and share directories before falling back to the
-`initdb` location on `PATH`.
+Integration tests use the repository-owned container isolation harness, never
+host Postgres or a developer database. SQLite boundary integration tests
+exercise temporary SQLite inside that isolation; PostgreSQL is needed for
+backend parity, not for SQLite storage itself. Hermetic unit owners may use
+temporary SQLite files under the test's own temporary directory (a local file,
+not a live service); integration success is still claimed only from the
+container cohort. SQLite is the accepted Local authority, not merely
+a cache; native Local product operation will not require containers.
 
-SQLite may be considered later as an optional lightweight cache backend, but it
-is not the primary design target.
 ## STR-WORK4-FIX3 Bundle And Receipt Refinement
 
 Current bundle creation must explicitly select `stage-unassigned-v1`; only the

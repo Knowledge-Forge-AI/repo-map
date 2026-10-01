@@ -63,6 +63,67 @@ def test_client_uses_strict_frames_and_bounds_remote_errors(tmp_path, monkeypatc
     }
 
 
+def test_ordinary_rpc_timeout_stays_short_and_submit_accepts_longer_budget(
+    tmp_path, monkeypatch
+):
+    token_path = tmp_path / "coordinator.token"
+    token_path.write_text("synthetic-token", encoding="utf-8")
+    token_path.chmod(0o600)
+    timeouts: list[float] = []
+    observed: dict[str, object] = {}
+
+    class FakeSocket:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def settimeout(self, value):
+            timeouts.append(value)
+
+        def connect(self, _path):
+            return None
+
+        def sendall(self, frame):
+            observed["request"] = json.loads(frame)
+
+        def makefile(self, _mode):
+            class Reader:
+                def readline(self, _limit):
+                    request = observed["request"]
+                    assert isinstance(request, dict)
+                    operation = request["operation"]
+                    result = {"status": "ready"} if operation == "health" else {
+                        "job_id": "job-1", "state": "queued", "replayed": False
+                    }
+                    return json.dumps(
+                        {"schema_version": 1, "ok": True, "result": result}
+                    ).encode() + b"\n"
+
+            return Reader()
+
+    monkeypatch.setattr(socket, "socket", lambda *_args: FakeSocket())
+    monkeypatch.setattr(
+        "repomap_kg.coordinator.client.time.time", lambda: 100.0
+    )
+    monkeypatch.setattr(
+        "repomap_kg.coordinator.client.time.monotonic", lambda: 0.0
+    )
+    client = LocalCoordinatorClient(tmp_path / "coordinator.sock", token_path)
+
+    client.health()
+    ordinary_timeouts = list(timeouts)
+    client.submit({"request_id": "request-1"}, admission_budget_seconds=10)
+
+    assert ordinary_timeouts and all(value == 5.0 for value in ordinary_timeouts)
+    assert timeouts[len(ordinary_timeouts) :]
+    assert all(value == 11.0 for value in timeouts[len(ordinary_timeouts) :])
+    request = observed["request"]
+    assert isinstance(request, dict)
+    assert request["payload"]["admission_deadline"] == 110.0
+
+
 def test_client_bounds_non_json_request_values(tmp_path):
     token_path = tmp_path / "coordinator.token"
     token_path.write_text("synthetic-token", encoding="utf-8")
@@ -131,6 +192,7 @@ def test_client_token_from_endpoint_descriptor(tmp_path, monkeypatch):
         (b'{"schema_version":2,"ok":true,"result":{}}\n', "invalid_response"),
         (b'{"schema_version":1,"ok":false,"unknown_cat":"foo"}\n', "invalid_response"),
         (b'{"schema_version":1,"ok":false,"error_category":"unknown_not_allowed"}\n', "invalid_response"),
+        (b'{"schema_version":1,"ok":false,"error_category":"admission_timeout"}\n', "admission_timeout"),
         (b'{"schema_version":1,"ok":true,"result":"not-a-dict"}\n', "invalid_response"),
         (b'{"schema_version":1,"ok":true,"result":{"database":"val"}}\n', "invalid_response"),
     ],

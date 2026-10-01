@@ -3,6 +3,7 @@
 from dataclasses import replace
 import os
 from pathlib import Path
+import subprocess
 import sys
 
 import coverage
@@ -14,6 +15,8 @@ from repomap_test_support.portable_worker_conformance import run_portable_worker
 from runner_coverage import ChildCoverageSession
 from runner_coverage_capability import CapabilityContainmentError, CapabilityValidationError
 from runner_coverage_conformance import CONFORMANCE_COMMAND
+from runner_coverage_execution import read_registered_children
+from runner_integration_obligations import COV5G_OWNER_SHA256
 from runner_portable_coverage import make_portable_worker_spec_adapter, scoped_portable_coverage_adapter
 from unittest.mock import patch
 
@@ -207,3 +210,137 @@ def test_canonical_test_session_explicitly_binds_conformance(tmp_path, suite):
             assert ROOT / 'src/test/support/python' not in cap.paths_for_command(cap.portable_command)
     finally:
         session.cleanup()
+
+
+def _run_victim_trial(tmp_path, role, owner, victim_fields=None):
+    source = tmp_path / "source"
+    source.mkdir(exist_ok=True)
+    (source / "uncovered.py").write_text("VALUE = 1\n")
+    session = ChildCoverageSession(
+        coverage_module=coverage, scratch_dir=tmp_path / "measure", source_root=source, suite="int"
+    )
+    with session:
+        runner = session.create_coverage(coverage)
+        runner.start()
+        env = dict(os.environ)
+        if role:
+            env["COVERAGE_CHILD_LAUNCH_ROLE"] = role
+        if owner:
+            env["COVERAGE_CHILD_TEST_OWNER"] = owner
+        result = subprocess.run(
+            [sys.executable, "-c", "import os, signal; os.kill(os.getpid(), signal.SIGTERM)"],
+            env=env,
+            capture_output=True,
+        )
+        assert result.returncode == -15
+        records = read_registered_children(session.child_manifest_dir, session.session_dir.name, "int")
+        pid, _ = next(iter(records.items()))
+        if victim_fields is not None:
+            defaults = {
+                "pid": str(pid), "ppid": str(os.getpid()), "invocation": session.session_dir.name,
+                "suite": "int", "owner": owner or "", "case_id": "c1", "parent_action": "KILL",
+                "exitcode": "-15", "backend_disappeared": "1", "descriptor_closed": "1",
+                "process_cleaned": "1",
+            }
+            defaults.update(victim_fields)
+            content = "\n".join(f"{k}={v}" for k, v in defaults.items()) + "\n"
+            (session.child_manifest_dir / f"{pid}.victim").write_text(content, encoding="utf-8")
+        runner.stop()
+        runner.save()
+        return session, runner
+
+
+def test_intentional_victim_verified_receipt_and_diagnostic_snapshot(tmp_path):
+    session, runner = _run_victim_trial(tmp_path, "intentional-victim", COV5G_OWNER_SHA256, {})
+    try:
+        session.combine(runner)
+        snaps = [s for s in session.diagnostic_snapshots if s.file_type == "intentional_victim"]
+        assert len(snaps) == 1
+        snap = snaps[0]
+        assert snap.reader_status == "intentional_victim_receipt_verified"
+        assert snap.termination_outcome == "intentional_victim_terminated"
+        assert snap.launch_role == "intentional-victim"
+        assert snap.test_owner == COV5G_OWNER_SHA256
+    finally:
+        session.cleanup()
+
+
+@pytest.mark.parametrize("role,owner,fields", [
+    ("inherited-python", None, None),
+    ("intentional-victim", "a" * 64, {"owner": "a" * 64}),
+    ("intentional-victim", COV5G_OWNER_SHA256, None),
+    ("intentional-victim", COV5G_OWNER_SHA256, {"exitcode": "0"}),
+    ("intentional-victim", COV5G_OWNER_SHA256, {"exitcode": "1"}),
+    ("intentional-victim", COV5G_OWNER_SHA256, {"backend_disappeared": "0"}),
+    ("intentional-victim", COV5G_OWNER_SHA256, {"descriptor_closed": "0"}),
+    ("intentional-victim", COV5G_OWNER_SHA256, {"process_cleaned": "0"}),
+])
+def test_victim_failure_cases_fail_closed(tmp_path, role, owner, fields):
+    session, runner = _run_victim_trial(tmp_path, role, owner, fields)
+    try:
+        with pytest.raises(RuntimeError, match="child terminal receipt is incomplete"):
+            session.combine(runner)
+    finally:
+        session.cleanup()
+
+
+def test_graceful_child_and_intentional_victim_coexist(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir(exist_ok=True)
+    mod = source / "worker_mod.py"
+    mod.write_text("def worker_job():\n    return 42\n")
+    session = ChildCoverageSession(
+        coverage_module=coverage, scratch_dir=tmp_path / "measure", source_root=source, suite="int"
+    )
+    with session:
+        runner = session.create_coverage(coverage)
+        runner.start()
+
+        # 1. Graceful child produces normal coverage shard
+        graceful_env = dict(os.environ)
+        res_graceful = subprocess.run(
+            [sys.executable, "-c", f"import sys; sys.path.insert(0, '{source}'); import worker_mod; assert worker_mod.worker_job() == 42"],
+            env=graceful_env,
+            capture_output=True,
+        )
+        assert res_graceful.returncode == 0
+
+        # 2. Intentional victim child terminates abruptly with verified receipt
+        victim_env = dict(os.environ)
+        victim_env["COVERAGE_CHILD_LAUNCH_ROLE"] = "intentional-victim"
+        victim_env["COVERAGE_CHILD_TEST_OWNER"] = COV5G_OWNER_SHA256
+        res_victim = subprocess.run(
+            [sys.executable, "-c", "import os, signal; os.kill(os.getpid(), signal.SIGTERM)"],
+            env=victim_env,
+            capture_output=True,
+        )
+        assert res_victim.returncode == -15
+
+        records = read_registered_children(session.child_manifest_dir, session.session_dir.name, "int")
+        victim_pid = next(pid for pid, r in records.items() if r.get("role") == "intentional-victim")
+        victim_content = (
+            f"pid={victim_pid}\n"
+            f"ppid={os.getpid()}\n"
+            f"invocation={session.session_dir.name}\n"
+            f"suite=int\n"
+            f"owner={COV5G_OWNER_SHA256}\n"
+            f"case_id=c1\n"
+            f"parent_action=KILL\n"
+            f"exitcode=-15\n"
+            f"backend_disappeared=1\n"
+            f"descriptor_closed=1\n"
+            f"process_cleaned=1\n"
+        )
+        (session.child_manifest_dir / f"{victim_pid}.victim").write_text(victim_content, encoding="utf-8")
+
+        runner.stop()
+        runner.save()
+        try:
+            combined = session.combine(runner)
+            data = combined.get_data()
+            assert data.lines(str(mod))
+            snaps = [s for s in session.diagnostic_snapshots if s.file_type == "intentional_victim"]
+            assert len(snaps) == 1
+            assert snaps[0].reader_status == "intentional_victim_receipt_verified"
+        finally:
+            session.cleanup()

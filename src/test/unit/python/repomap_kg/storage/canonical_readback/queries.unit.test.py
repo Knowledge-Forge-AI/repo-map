@@ -229,3 +229,38 @@ class StorageCanonicalQueryUnitTests(unittest.TestCase):
                 node="tool:nix",
                 depth=2,
             )
+
+    def test_query_canonical_forwards_repository_identity(self):
+        empty_array = "[]\n"
+        empty_object = '{"edge": null, "evidence": []}\n'
+        with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql"}):
+            with patch("repomap_kg.storage.subprocess.run") as run:
+                run.side_effect = [
+                    subprocess.CompletedProcess(["psql"], 0, stdout=empty_array),
+                    subprocess.CompletedProcess(["psql"], 0, stdout=empty_array),
+                    subprocess.CompletedProcess(["psql"], 0, stdout=empty_object),
+                ]
+                query_canonical_node_records(
+                    ["-d", "postgres"],
+                    root_path="/tmp/fixture",
+                    repository_identity="repo1:ident",
+                )
+                query_canonical_edge_records(
+                    ["-d", "postgres"],
+                    root_path="/tmp/fixture",
+                    repository_identity="repo1:ident",
+                )
+                query_canonical_edge_explanation(
+                    ["-d", "postgres"],
+                    root_path="/tmp/fixture",
+                    source_key="s",
+                    kind="k",
+                    target_key="t",
+                    identity_metadata_hash="0" * 64,
+                    repository_identity="repo1:ident",
+                )
+
+        for call in run.call_args_list:
+            sql = call.kwargs["input"]
+            self.assertIn("repository_identity = 'repo1:ident'", sql)
+            self.assertIn("DESC NULLS LAST, id LIMIT 1", sql)

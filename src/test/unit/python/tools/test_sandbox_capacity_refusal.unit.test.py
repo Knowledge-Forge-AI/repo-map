@@ -92,6 +92,46 @@ def test_parent_refuses_unsupported_driver_without_installing_binding(driver):
     assert not any(command[1] == "exec" for command in calls)
 
 
+@pytest.mark.parametrize(
+    "case,status_val,graph_val,c_driver,storage_val,upper_val,expected_reason",
+    [
+        ("contradictory_graph_driver", [["driver-type", "io.containerd.snapshotter.v1"]], {"Name": "overlay2"}, "overlayfs", {"RootFS": {"Snapshot": {"Name": "overlayfs"}}}, "/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs", "unsupported_backing_mapping"),
+        ("missing_snapshotter_status", [["driver-type", "other"]], None, "overlayfs", {"RootFS": {"Snapshot": {"Name": "overlayfs"}}}, "/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs", "unsupported_backing_mapping"),
+        ("mismatched_container_driver", [["driver-type", "io.containerd.snapshotter.v1"]], None, "vfs", {"RootFS": {"Snapshot": {"Name": "overlayfs"}}}, "/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs", "unsupported_backing_mapping"),
+        ("mismatched_storage_snapshotter", [["driver-type", "io.containerd.snapshotter.v1"]], None, "overlayfs", {"RootFS": {"Snapshot": {"Name": "other"}}}, "/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs", "unsupported_backing_mapping"),
+        ("unbound_upper_path", [["driver-type", "io.containerd.snapshotter.v1"]], None, "overlayfs", {"RootFS": {"Snapshot": {"Name": "overlayfs"}}}, "/var/lib/other/snapshots/1/fs", "unbound_backing_evidence"),
+    ],
+)
+def test_overlayfs_refuses_invalid_or_contradictory_metadata(
+    case, status_val, graph_val, c_driver, storage_val, upper_val, expected_reason
+):
+    calls = []
+
+    def runner(command, **kwargs):
+        calls.append(command)
+        output = ""
+        if command[1] == "info":
+            if "DriverStatus" in command[-1]:
+                output = json.dumps(status_val)
+            elif "Driver" in command[-1]:
+                output = json.dumps("overlayfs")
+            else:
+                output = json.dumps("/var/lib/docker")
+        elif command[1] == "inspect":
+            if "GraphDriver" in command[-1]:
+                output = json.dumps(graph_val)
+            elif "Driver" in command[-1]:
+                output = json.dumps(c_driver)
+            elif "Storage" in command[-1]:
+                output = json.dumps(storage_val)
+        elif command[-1] == "probe":
+            output = json.dumps(evidence() | {"upper": upper_val})
+        return subprocess.CompletedProcess(command, 0, output, "")
+
+    with pytest.raises(RuntimeError, match=expected_reason):
+        capacity.bind_backing_capacity(runner, "d" * 64, TOKEN)
+
+
 @pytest.mark.parametrize("secondary,probe_kind", [
     (None, "low"), ("cleanup", "low"), ("cleanup_io", "low"), ("diagnostic", "low"),
     (None, "malformed"), (None, "unbound"), (None, "wrong_mapping"),

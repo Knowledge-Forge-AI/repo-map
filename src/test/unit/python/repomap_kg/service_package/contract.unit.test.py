@@ -1,3 +1,4 @@
+import hashlib
 import inspect
 import os
 import shutil
@@ -143,6 +144,38 @@ def test_executable_authority_accepts_safe_indirection(tmp_path, service_authori
     link.symlink_to(service_authority.python_path)
 
     assert is_approved_python_executable(link)
+
+
+def test_service_spec_preserves_lexical_python_invocation(tmp_path, service_authority):
+    invoked = private_bin_directory(tmp_path / "venv") / "python"
+    invoked.symlink_to(service_authority.python_path)
+    with patch.object(contract, "sys", SimpleNamespace(executable=str(invoked))):
+        assert is_approved_python_executable(invoked)
+        spec = build_service_package_spec(tmp_path / "home")
+
+    assert spec.foreground_argv[0] == str(invoked)
+    assert spec.foreground_argv[0] != str(invoked.resolve())
+    assert spec.python_sha256 == hashlib.sha256(
+        service_authority.python_path.read_bytes()
+    ).hexdigest()
+
+
+def test_service_spec_rejects_dangling_python_invocation(tmp_path, service_authority):
+    invoked = private_bin_directory(tmp_path / "venv") / "python"
+    invoked.symlink_to(tmp_path / "missing" / "python3")
+    with patch.object(contract, "sys", SimpleNamespace(executable=str(invoked))):
+        assert not is_approved_python_executable(invoked)
+        with pytest.raises(RuntimeError, match="service_foreground_executable_invalid"):
+            build_service_package_spec(tmp_path / "home")
+
+
+@pytest.mark.parametrize("executable", ["bin/python", ""])
+def test_service_spec_rejects_relative_python_invocation(
+    tmp_path, service_authority, executable
+):
+    with patch.object(contract, "sys", SimpleNamespace(executable=executable)):
+        with pytest.raises(RuntimeError, match="service_foreground_executable_invalid"):
+            build_service_package_spec(tmp_path / "home")
 
 
 @contextmanager

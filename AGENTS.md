@@ -6,9 +6,11 @@ entrypoint; agent-specific adapters such as `CLAUDE.md` supplement it and
 must not weaken it.
 
 RepoMap is a deterministic knowledge graph system for polyglot software
-repositories. The current implementation is local and PostgreSQL-backed; the
-long-term product direction is cloud-first with additive multi-source graph
-composition. The local system remains the as-built/reference implementation.
+repositories. The current implementation is PostgreSQL-backed with multi-source
+composition. ADR 0071 defines one product: SQLite Local, PostgreSQL Server Engine,
+and managed Cloud. Local SQLite has a first bounded slice (ADR 0075; step 4 in
+progress); the containerized PostgreSQL system remains the current
+as-built/reference implementation.
 Its Python distribution is `repomap-kg`, its import package is `repomap_kg`,
 and its CLI is `repomap-kg`.
 
@@ -38,7 +40,7 @@ These boundaries hold for every task:
 - The RepoMap MCP surface remains read-only.
 - Runtime/database destructive work is backup-first and scoped to
   RepoMap-owned resources.
-- The local runtime is containerized and localhost-bound by default; do not
+- The current reference runtime is containerized and localhost-bound; do not
   assume host Postgres, host IPC, or a developer's live database.
 - Public behavior, schema, CLI/MCP contract, or graph vocabulary changes
   require explicit phase authority.
@@ -71,11 +73,13 @@ projection bodies are never canonical.
 - `docs/ops/` — operator skills and durable operations references.
 - `docs/contrib/` — contribution standards and contributor skills.
 - `docs/adr/YYYY/MM/` — ADRs (independent four-digit sequence).
-- `CHANGELOG.md` and `docs/releases/` — public release notes and change history.
+- `docs/status/YYYY/MM/DD/` — complete historical status archive; new
+  primary phase records use the next global five-digit number, end in
+  `-exit.md`, and have an H1 title containing `Exit`.
 - `.agents/skills` and `.claude/skills` — skill discovery projection
   catalogs for the canonical skill roots under `docs/`.
 
-Do not relocate project roots, package names, CLI names, test roots, release
+Do not relocate project roots, package names, CLI names, test roots, status
 paths, or ADR paths unless an accepted phase explicitly authorizes it.
 
 ## Git, Phases, And Publication
@@ -108,9 +112,11 @@ Before editing:
 - Inspect nearby code and tests before inventing new patterns.
 - Determine whether the change is docs-only, test-only, source-affecting,
   schema-affecting, runtime-affecting, or behavior-affecting.
-- Use scoped unit and changed-boundary integration selectors by default.
-  Complete unit, integration, staging, or system runs require an explicit
-  override in the current prompt.
+- Behavior-changing product slices require exact scoped unit and containerized
+  integration selectors with `--no-coverage`; update both owners in the slice.
+  Required integration gaps block completion absent explicit manager disposition.
+  Complete unit, integration, smoke, staging, system, or combined runs require
+  a current manager-prompt override with a bounded execution count.
 
 ## Task-Closeout Obligations
 

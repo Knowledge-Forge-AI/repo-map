@@ -135,7 +135,7 @@ def test_foreground_service_uses_loopback_adapter_and_removes_descriptor(tmp_pat
             return "cancelled"
 
     class Store:
-        def submit(self, _request):
+        def submit(self, _request, *, admission_deadline=None):
             raise AssertionError("not used")
 
         def status(self, _job_id):

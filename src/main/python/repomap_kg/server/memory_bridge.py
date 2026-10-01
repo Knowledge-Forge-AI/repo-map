@@ -8,8 +8,12 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from repomap_kg import __version__
+from repomap_kg.ops.config_local import (
+    load_graph_registry_config,
+    load_graph_registry_config_home,
+)
+from repomap_kg.ops.graph_registry import GraphRegistryConfig
 from repomap_kg.ops.config import (
-    OpsConfig,
     load_ops_config as load_ops_config,
     load_ops_config_home as load_ops_config_home,
     redact_text as redact_text,
@@ -142,7 +146,7 @@ def server_memory_search_payload(
     }
 
 
-def load_server_memory_catalog(config: OpsConfig) -> ServerMemoryCatalog:
+def load_server_memory_catalog(config: GraphRegistryConfig) -> ServerMemoryCatalog:
     memory = config.server_memory
     path_display = redact_text(memory.path)
     if not memory.enabled:
@@ -232,13 +236,14 @@ def load_server_memory_ops_config(
     config_path: str | Path | None = None,
     *,
     config_home: str | Path | None = None,
-) -> OpsConfig:
+) -> GraphRegistryConfig:
+    """Server memory reads only ``[server_memory]``; any backend's home works."""
     if config_home is not None:
-        return load_ops_config_home(config_home)
+        return load_graph_registry_config_home(config_home)
     path_value = config_path or os.environ.get(ENV_OPS_CONFIG)
     if path_value:
-        return load_ops_config(Path(path_value).expanduser())
-    return load_ops_config_home()
+        return load_graph_registry_config(Path(path_value).expanduser())
+    return load_graph_registry_config_home()
 
 
 def summary_counts(catalog: ServerMemoryCatalog) -> dict[str, int]:

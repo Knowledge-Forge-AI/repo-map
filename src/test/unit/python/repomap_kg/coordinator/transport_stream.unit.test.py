@@ -124,49 +124,133 @@ def test_loopback_tcp_service_write_error() -> None:
     }
 
 
-def test_threaded_unix_server_process_request_saturation_and_recovery() -> None:
-    server = transport._ThreadedUnixServer.__new__(transport._ThreadedUnixServer)
+@pytest.fixture(params=[transport._ThreadedUnixServer, transport._ThreadedTcpServer])
+def bounded_server(request: pytest.FixtureRequest):
+    # Run the real mixin constructor without binding a listening socket.
+    address = "unused.sock" if request.param is transport._ThreadedUnixServer else ("127.0.0.1", 0)
+    server = request.param(address, Mock(), bind_and_activate=False)
     server.connection_slots = threading.BoundedSemaphore(1)
-    server.connection_slots.acquire()
-    mock_req = Mock()
-    shutdown_mock = Mock()
-    setattr(server, "shutdown_request", shutdown_mock)
-    server.process_request(mock_req, None)
-    mock_req.sendall.assert_called_once_with(
+    server.max_connections = 1
+    assert server._active_handlers == 0
+    assert server._handler_lock.acquire(blocking=False)
+    server._handler_lock.release()
+    try:
+        yield server
+    finally:
+        server.server_close()
+
+
+def test_threaded_server_active_saturation_and_recovery(bounded_server) -> None:
+    server = bounded_server
+    assert server.connection_slots.acquire(blocking=False)
+    server._active_handlers = 1
+    request = Mock()
+    with patch.object(server, "shutdown_request") as shutdown:
+        server.process_request(request, None)
+    request.sendall.assert_called_once_with(
         b'{"error_category":"saturated","ok":false,"schema_version":1}\n'
     )
-    shutdown_mock.assert_called_once_with(mock_req)
+    shutdown.assert_called_once_with(request)
+    assert not server.connection_slots.acquire(blocking=False)
+    server._active_handlers = 0
+    server.connection_slots.release()
+    error = RuntimeError("thread fail")
+    with patch("socketserver.ThreadingMixIn.process_request", side_effect=error):
+        with pytest.raises(RuntimeError) as caught:
+            server.process_request(request, None)
+    assert caught.value is error
+    assert server.connection_slots.acquire(blocking=False)
+    server.connection_slots.release()
 
-    server.connection_slots = threading.BoundedSemaphore(1)
-    with patch("socketserver.ThreadingMixIn.process_request", side_effect=RuntimeError("thread fail")):
-        server.process_request(mock_req, None)
-    assert server.connection_slots.acquire(blocking=False) is True
+
+@pytest.mark.parametrize("error", [RuntimeError("handler fail"), KeyboardInterrupt()])
+def test_threaded_server_handler_failure_settles_capacity(bounded_server, error) -> None:
+    server = bounded_server
+    request = Mock()
+    observed = []
+
+    def fail(*_args):
+        observed.append(server._active_handlers)
+        raise error
+
+    assert server.connection_slots.acquire(blocking=False)
+    with patch.object(server, "RequestHandlerClass", side_effect=fail), \
+            patch.object(server, "handle_error") as handle_error, \
+            patch.object(server, "shutdown_request") as shutdown:
+        if isinstance(error, Exception):
+            server.process_request_thread(request, None)
+            handle_error.assert_called_once_with(request, None)
+        else:
+            with pytest.raises(KeyboardInterrupt) as caught:
+                server.process_request_thread(request, None)
+            assert caught.value is error
+        shutdown.assert_called_once_with(request)
+    assert observed == [1]
+    assert server._active_handlers == 0
+    assert server.connection_slots.acquire(blocking=False)
+    server.connection_slots.release()
 
 
-class _ControlledTcpServer(transport._ThreadedTcpServer):
-    connection_slots: threading.BoundedSemaphore
+@pytest.mark.parametrize("released", [True, False])
+def test_threaded_server_reserved_slot_handoff(bounded_server, released) -> None:
+    server = bounded_server
+    real_slots = server.connection_slots
+    assert real_slots.acquire(blocking=False)
+    attempts = []
+
+    def acquire(*, blocking=True, timeout=None):
+        attempts.append((blocking, timeout))
+        if timeout is not None:
+            assert timeout == 0.5
+            assert server._active_handlers == 0
+            if released:
+                real_slots.release()
+        return real_slots.acquire(blocking=False)
+
+    server.connection_slots = Mock(wraps=real_slots)
+    server.connection_slots.acquire.side_effect = acquire
+    request = Mock()
+    with patch("socketserver.ThreadingMixIn.process_request") as start, \
+            patch.object(server, "shutdown_request") as shutdown:
+        server.process_request(request, None)
+    assert attempts == [(False, None), (True, 0.5)]
+    if released:
+        start.assert_called_once_with(request, None)
+        shutdown.assert_not_called()
+        request.sendall.assert_not_called()
+    else:
+        start.assert_not_called()
+        shutdown.assert_called_once_with(request)
+        assert json.loads(request.sendall.call_args.args[0])["error_category"] == "saturated"
+    assert not real_slots.acquire(blocking=False)
+    real_slots.release()
 
 
-def test_threaded_tcp_server_process_request_saturation_and_recovery(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    server = _ControlledTcpServer.__new__(_ControlledTcpServer)
-    server.connection_slots = threading.BoundedSemaphore(1)
-    server.connection_slots.acquire()
-    mock_req = Mock()
-    shutdown_request = Mock()
-    monkeypatch.setattr(server, "shutdown_request", shutdown_request)
-    server.process_request(mock_req, ("127.0.0.1", 1234))
-    mock_req.sendall.assert_called_once_with(
-        b'{"error_category":"saturated","ok":false,"schema_version":1}\n'
-    )
-    shutdown_request.assert_called_once_with(mock_req)
+def test_threaded_server_active_handler_releases_slot_on_join(bounded_server) -> None:
+    server = bounded_server
+    entered = threading.Event()
+    release = threading.Event()
 
-    server.connection_slots = threading.BoundedSemaphore(1)
-    with patch("socketserver.ThreadingMixIn.process_request", side_effect=RuntimeError("thread fail")):
-        with pytest.raises(RuntimeError, match="thread fail"):
-            server.process_request(mock_req, ("127.0.0.1", 1234))
-    assert server.connection_slots.acquire(blocking=False) is True
+    def handler(*_args):
+        entered.set()
+        assert release.wait(5)
+
+    first, refused = Mock(), Mock()
+    with patch.object(server, "RequestHandlerClass", side_effect=handler), \
+            patch.object(server, "shutdown_request") as shutdown:
+        try:
+            server.process_request(first, None)
+            assert entered.wait(5)
+            assert server._active_handlers == 1
+            server.process_request(refused, None)
+            assert json.loads(refused.sendall.call_args.args[0])["error_category"] == "saturated"
+        finally:
+            release.set()
+            server.server_close()
+        assert server._active_handlers == 0
+        assert shutdown.call_count == 2
+        assert server.connection_slots.acquire(blocking=False)
+        server.connection_slots.release()
 
 
 def test_unix_socket_handler_stream_protocol() -> None:

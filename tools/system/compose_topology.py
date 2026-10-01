@@ -33,6 +33,7 @@ def prepare_system_compose_topology(
     compose_dir.mkdir(parents=True, exist_ok=True)
     repo_map_home = Path(repo_map_home).resolve()
     repo_map_home.mkdir(parents=True, exist_ok=True)
+    os.chmod(repo_map_home, 0o700)
 
     config_content = f"""\
 schema_version = 1

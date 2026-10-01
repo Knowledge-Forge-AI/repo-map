@@ -269,6 +269,86 @@ def test_parent_binds_only_daemon_layer_after_measuring(monkeypatch):
     assert TOKEN not in " ".join(calls[-1][0])
 
 
+def test_parent_binds_overlayfs_containerd_layer_after_measuring(monkeypatch):
+    calls = []
+    overlayfs_upper = (
+        "/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs"
+    )
+
+    def runner(command, **kwargs):
+        calls.append((command, kwargs))
+        output = ""
+        if command[1] == "info":
+            if "DriverStatus" in command[-1]:
+                output = json.dumps([["driver-type", "io.containerd.snapshotter.v1"]])
+            elif "Driver" in command[-1]:
+                output = json.dumps("overlayfs")
+            else:
+                output = json.dumps("/var/lib/docker")
+        elif command[1] == "inspect":
+            if "GraphDriver" in command[-1]:
+                output = json.dumps(None)
+            elif "Driver" in command[-1]:
+                output = json.dumps("overlayfs")
+            elif "Storage" in command[-1]:
+                output = json.dumps({"RootFS": {"Snapshot": {"Name": "overlayfs"}}})
+        elif command[-1] == "probe":
+            output = json.dumps(evidence() | {"upper": overlayfs_upper})
+        return subprocess.CompletedProcess(command, 0, output, "")
+
+    capacity.bind_backing_capacity(runner, "d" * 64, TOKEN)
+    assert calls[-2][0][-1] == "probe"
+    binding = json.loads(calls[-1][1]["input"])
+    assert binding == {
+        "schema": capacity.SCHEMA,
+        "token": TOKEN,
+        "mount_sha256": DIGEST,
+    }
+    assert TOKEN not in " ".join(calls[-1][0])
+
+
+def test_overlayfs_structural_validation_and_malformed_storage():
+    overlayfs_upper = (
+        "/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs"
+    )
+    # Valid structural check
+    assert capacity.validate_probe(
+        evidence() | {"upper": overlayfs_upper},
+        driver="overlayfs",
+        docker_root="/var/lib/docker",
+    )
+    # Rejects path outside containerd
+    with pytest.raises(RuntimeError, match="sandbox_capacity_refused: unbound_backing_evidence"):
+        capacity.validate_probe(
+            evidence() | {"upper": "/var/lib/docker/other/snapshots/1/fs"},
+            driver="overlayfs",
+            docker_root="/var/lib/docker",
+        )
+    # Rejects path missing containerd/snapshots when docker_root is None
+    with pytest.raises(RuntimeError, match="sandbox_capacity_refused: unbound_backing_evidence"):
+        capacity.validate_probe(
+            evidence() | {"upper": "/custom/path/1/fs"},
+            driver="overlayfs",
+        )
+
+    # Malformed / null storage in bind_backing_capacity
+    def runner_null_storage(command, **kwargs):
+        if "Storage" in command[-1]:
+            return subprocess.CompletedProcess(command, 0, json.dumps(None), "")
+        if "DriverStatus" in command[-1]:
+            return subprocess.CompletedProcess(command, 0, json.dumps([["driver-type", "snapshotter"]]), "")
+        if "Driver" in command[-1]:
+            return subprocess.CompletedProcess(command, 0, json.dumps("overlayfs"), "")
+        if "DockerRootDir" in command[-1]:
+            return subprocess.CompletedProcess(command, 0, json.dumps("/var/lib/docker"), "")
+        if "GraphDriver" in command[-1]:
+            return subprocess.CompletedProcess(command, 0, json.dumps(None), "")
+        return subprocess.CompletedProcess(command, 0, json.dumps({}), "")
+
+    with pytest.raises(RuntimeError, match="sandbox_capacity_refused: unsupported_backing_mapping"):
+        capacity.bind_backing_capacity(runner_null_storage, "d" * 64, TOKEN)
+
+
 
 
 @pytest.mark.parametrize(

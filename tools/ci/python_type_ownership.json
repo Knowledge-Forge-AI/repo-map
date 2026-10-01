@@ -30,6 +30,51 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.artifacts._bundle_stream",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._bundle_stream_encode",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._bundle_stream_links",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._bundle_stream_parse",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._bundle_stream_sort",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.artifacts._canonical",
       "match": "exact",
       "ownership_class": "cross_language_contract",
@@ -76,6 +121,15 @@
     },
     {
       "module_prefix": "repomap_kg.artifacts._store_memory",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "publication_bundle_v1",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.artifacts._store_stream",
       "match": "exact",
       "ownership_class": "python_retained",
       "architecture_box": "publication_bundle_v1",
@@ -264,6 +318,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.cli._ops_sqlite_dispatch",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local ops sqlite-init and Local refresh-graph dispatch; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.cli._parser_ops_control",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -288,6 +351,15 @@
       "architecture_box": "go_control_and_api",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.cli._parser_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.cli._postgres_facade",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Deferred PostgreSQL-implementation names of the CLI facade so SQLite Local startup never imports the PostgreSQL driver; admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -579,6 +651,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.coordinator._local_admin_credentials",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Bounded local home and lifecycle administrator authority repair; retained under zero-new-debt Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.coordinator._portable_authority",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -678,6 +759,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.coordinator._publication_phase",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator._publication_phase under zero-new-debt Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.coordinator._refresh_capability",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -720,6 +810,15 @@
       "architecture_box": "go_control_and_supervisor",
       "enforcement_tier": "T1-future",
       "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator._runtime_paths",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Neutral per-home coordinator endpoint-path owner below local_mode, deployment and runtime transitions; extracted to remove the ARCH1D import cycle and admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -801,6 +900,15 @@
       "architecture_box": "go_control_and_supervisor",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.coordinator.core under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.coordinator.deployment",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Coordinator deployment transition safety; retained Python under zero-new-debt enforcement.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -1227,6 +1335,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.ops._portable_retention",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Retained portable attempt records and SQLite Local reconciliation helpers shared by the PostgreSQL and SQLite routes, extracted from portable_refresh; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.ops._refresh_preflight",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -1251,6 +1368,15 @@
       "architecture_box": "go_control_and_supervisor",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.ops._refresh_queries under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops._registry_status",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Backend-neutral config-check and graphs status envelopes shared by PostgreSQL and SQLite Local projections; admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -1326,6 +1452,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.ops.config_local",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local home configuration and SQLite-capable registry loaders; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.ops.config_records",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -1389,6 +1524,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.ops.config_storage",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Home-level storage backend selector and PostgreSQL-loader refusal of SQLite homes; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.ops.direct_publication",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -1431,6 +1575,15 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.ops.graph_files under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.graph_registry",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Backend-neutral configured graph registry protocol; admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -1704,6 +1857,69 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.ops.local_backup",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local ops sqlite-backup and sqlite-restore entry points with output policy and path-free refusals; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.local_cleanup",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local ops sqlite-cleanup dry-run inventory and conservative removal with count-only payloads; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.local_ops_status",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local config-check and graphs projections with redacted storage status; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.local_readiness",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Read-only, no-create SQLite Local graph-store readiness classification; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.local_refresh",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Explicit SQLite Local init and full refresh supervising the portable semantic path; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.local_refresh_enabled",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local refresh-enabled aggregation over per-graph direct refreshes; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.ops.local_state_layout",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_control_and_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local state-directory integrity rule checked by every Local mutation owner before any lock or write; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.ops.policy_dogfood",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -1857,6 +2073,24 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.runtime._container_inspection",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Bounded local runtime routing and owned Engine observation; maintained under retained Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime._home_authority",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Bounded local home and lifecycle administrator authority repair; retained under zero-new-debt Python enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.runtime._plan_records",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -1965,6 +2199,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.runtime.coordinator_transition",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Coordinator deployment transition safety; retained Python under zero-new-debt enforcement.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.runtime.database_role_contract",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -2007,6 +2250,15 @@
       "architecture_box": "go_execution_supervisor",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.runtime.plan under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.runtime.postgres_route",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_execution_supervisor",
+      "enforcement_tier": "T1-future",
+      "justification": "Bounded local runtime routing and owned Engine observation; maintained under retained Python enforcement.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -2190,12 +2442,39 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.server.canonical_read_store",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Named canonical read-store seam and PostgreSQL adapter for the four host-native MCP canonical tools; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.graph_selection",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Backend-neutral logical graph selection record and public refusals for configured-graph MCP tools; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.server.http",
       "match": "exact",
       "ownership_class": "python_retained",
       "architecture_box": "go_query_and_api",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.server.http under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.investigation_read_store",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Named investigation read-store seam and PostgreSQL adapter for seven configured-graph MCP tools; admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -2268,6 +2547,33 @@
       "architecture_box": "go_query_and_api",
       "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.server.ops under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.postgres_read_binding",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "PostgreSQL binding from a neutral graph selection to the canonical, investigation and source read stores; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.source_read_store",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "Named source read-store seam and PostgreSQL adapter for six ingested-source MCP tools; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.server.sqlite_read_binding",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "go_query_and_api",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local binding from a neutral graph selection to the first-slice read stores; admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {
@@ -2748,6 +3054,15 @@
       "disposition": "retained_python_ratcheted"
     },
     {
+      "module_prefix": "repomap_kg.storage.readback_credentials",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "Execution-only readback credentials and sanitized connection failures; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
       "module_prefix": "repomap_kg.storage.readback_driver",
       "match": "exact",
       "ownership_class": "python_retained",
@@ -2907,6 +3222,195 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "enforcement_tier": "T1-future",
       "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local graph authority package; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.api_summary_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local OpenAPI and JS-framework summary reads; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.backup",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local consistent online backup snapshot, validation and manifest-last finalization; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.backup_manifest",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local backup artifact contract and strict public-safe manifest; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.connection",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local read-only reader and single-writer connection policy; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.durability",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local POSIX file and directory fsync durability helper with bounded refusals; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.investigation_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local search, summary and status reads; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.locking",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local platform-neutral graph lock owner (POSIX flock, contract-tested Windows msvcrt backend); admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.merge_sql",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local set-based merge statements for the seven logical families; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.migrations",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local ordered checksummed migration catalog, exact schema-state classification and fresh-schema creation; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.nix_summary_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local Nix summary read; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.orphans",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local orphan init/restore temporary classification and descriptor-relative removal; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.publisher",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local one-transaction publisher of validated seven-family bundles; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local first-slice read queries; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.raw_payload",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local PostgreSQL-JSONB read semantics over stored raw payload text; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.restore",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local verified no-clobber restore into an absent target; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.schema",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local schema v1, ledger and bounded refusal vocabulary; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.source_feed_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local feed item, reference and explanation reads; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.source_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local source-observation scan, fan-out and source inventory, summary and run reads; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.summary_queries",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local Python and Terraform summary reads and shared summary row helpers; admitted with zero new quality debt.",
+      "disposition": "retained_python_ratcheted"
+    },
+    {
+      "module_prefix": "repomap_kg.storage.sqlite_local.upgrade",
+      "match": "exact",
+      "ownership_class": "python_retained",
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "enforcement_tier": "T1-future",
+      "justification": "SQLite Local explicit backup-first forward schema upgrade with commit-outcome tagging; admitted with zero new quality debt.",
       "disposition": "retained_python_ratcheted"
     },
     {

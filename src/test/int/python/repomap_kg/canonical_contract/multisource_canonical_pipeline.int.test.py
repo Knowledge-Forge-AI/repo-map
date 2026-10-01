@@ -9,6 +9,8 @@ Exercises:
 6. Nix cross-source relation resolution across binding boundaries.
 7. Malformed path traversal and unavailable source refusal.
 8. Privacy boundary inheritance across heterogeneous source bindings.
+9. Mixed-source Nix and JavaScript routing ownership and framework semantics.
+10. Bounded Nix resolver non-exact outcomes and opaque targets without invented edges.
 """
 
 from __future__ import annotations
@@ -20,6 +22,18 @@ import tempfile
 import unittest
 
 from repomap_kg.canonicalization.main import canonicalize_observations
+from repomap_kg.extractors.config.nix_resolver import ResolutionOutcome
+from repomap_kg.graph.keys import (
+    js_class_key,
+    js_component_key,
+    js_function_key,
+    js_method_key,
+    js_module_key,
+    js_route_key,
+    js_variable_key,
+    nix_app_key,
+    nix_package_key,
+)
 from repomap_kg.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
@@ -226,6 +240,151 @@ class MultiSourceCanonicalPipelineIntegrationTests(unittest.TestCase):
             _graph("g-priv", b_pub1, b_priv, privacy="public-dev")
         )
         self.assertEqual(priv_bundle.privacy, "private-ops")
+
+    def test_mixed_source_nix_and_javascript_routing_and_non_exact_resolution(self) -> None:
+        infra = self.tmpdir / "infra"
+        frontend = self.tmpdir / "frontend"
+        shared_a = self.tmpdir / "shared_a"
+        shared_b = self.tmpdir / "shared_b"
+        conflict = self.tmpdir / "conflict"
+        for path in (infra, frontend, shared_a, shared_b, conflict):
+            path.mkdir(parents=True)
+        (infra / "modules").mkdir()
+        (infra / "modules" / "srv.nix").write_text("{ ... }: {}\n", encoding="utf-8")
+        (infra / "flake.nix").write_text(
+            "{\n  inputs = {\n"
+            '    nixpkgs.url = "github:NixOS/nixpkgs";\n'
+            '    ui.url = "path:../frontend";\n'
+            '    ui.follows = "nixpkgs";\n'
+            '    shared.url = "path:../shared_a";\n'
+            '    conflict.url = "path:../conflict";\n'
+            "  };\n"
+            "  outputs = { self, nixpkgs, ui }: {\n"
+            "    packages.x86_64-linux.srv = ./modules/srv.nix;\n"
+            '    apps.x86_64-linux.srv = { type = "app"; program = "${self.packages.x86_64-linux.srv}/bin/srv"; };\n'
+            "    nixosModules.srv = ./modules/srv.nix;\n"
+            "  };\n}\n",
+            encoding="utf-8",
+        )
+        (infra / "deploy.nix").write_text(
+            "{\n  imports = [\n"
+            "    inputs.ui.nixosModules.web\n"
+            "    inputs.shared.nixosModules.srv\n"
+            "    inputs.conflict.nixosModules.dup\n"
+            "    inputs.unregistered.nixosModules.missing\n"
+            "    inputs.ui.nixosModules.${dyn}\n"
+            "  ];\n}\n",
+            encoding="utf-8",
+        )
+        (frontend / "modules").mkdir()
+        (frontend / "modules" / "web.nix").write_text("{ ... }: {}\n", encoding="utf-8")
+        (frontend / "flake.nix").write_text(
+            "{ outputs = { self }: { nixosModules.web = ./modules/web.nix; }; }\n",
+            encoding="utf-8",
+        )
+        (frontend / "src").mkdir()
+        (frontend / "src" / "svc.js").write_text(
+            "export function query() { return 1; }\n", encoding="utf-8"
+        )
+        (frontend / "src" / "app.jsx").write_text(
+            'import React, { useState } from "react";\n'
+            'import express from "express";\n'
+            'import { query } from "./svc.js";\n'
+            "const api = express();\n"
+            'api.get("/api/health", (req, res) => res.send("ok"));\n'
+            "export class Runner {\n"
+            "  run() {\n"
+            "    return query();\n"
+            "  }\n"
+            "}\n"
+            "export function Widget() {\n"
+            "  const [val] = useState(0);\n"
+            "  return <div>{val}</div>;\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        for path in (shared_a, shared_b):
+            (path / "mod.nix").write_text("{ ... }: {}\n", encoding="utf-8")
+            (path / "flake.nix").write_text(
+                "{ outputs = { self }: { nixosModules.srv = ./mod.nix; }; }\n",
+                encoding="utf-8",
+            )
+        (conflict / "m1.nix").write_text("{ ... }: {}\n", encoding="utf-8")
+        (conflict / "m2.nix").write_text("{ ... }: {}\n", encoding="utf-8")
+        (conflict / "flake.nix").write_text(
+            "{\n  outputs = { self }: {\n"
+            "    nixosModules.dup = ./m1.nix;\n"
+            "    nixosModules.dup = ./m2.nix;\n"
+            "  };\n}\n",
+            encoding="utf-8",
+        )
+
+        bindings = (
+            _binding("g-all", infra, "infra", role="entry"),
+            _binding("g-all", frontend, "frontend", role="frontend", input_name="ui"),
+            _binding("g-all", shared_a, "sa", input_name="shared"),
+            _binding("g-all", shared_b, "sb", input_name="shared"),
+            _binding("g-all", conflict, "conflict", input_name="conflict"),
+        )
+        graph = _graph("g-all", *bindings)
+        bundle = capture_multi_source_candidate(graph)
+        inputs_by_name = {
+            o.name: o.metadata for o in bundle.observations if o.kind == "nix.flake_input"
+        }
+        self.assertEqual(inputs_by_name["ui"]["source_type"], "follows")
+        self.assertTrue(inputs_by_name["ui"]["has_follows"])
+
+        for obs in bundle.observations:
+            self.assertIn("binding_alias", obs.metadata)
+            self.assertIn("snapshot_id", obs.metadata)
+
+        res_by_outcome = {r.outcome: r for r in bundle.resolutions}
+        self.assertIn(ResolutionOutcome.EXACT, res_by_outcome)
+        self.assertIn(ResolutionOutcome.AMBIGUOUS, res_by_outcome)
+        self.assertIn(ResolutionOutcome.CONFLICTING, res_by_outcome)
+        self.assertIn(ResolutionOutcome.UNSUPPORTED, res_by_outcome)
+        self.assertIn(ResolutionOutcome.EVALUATION_DEPENDENT, res_by_outcome)
+        self.assertEqual(res_by_outcome[ResolutionOutcome.EXACT].target_path, "frontend/modules/web.nix")
+        self.assertEqual(res_by_outcome[ResolutionOutcome.AMBIGUOUS].candidate_bindings, ("sa", "sb"))
+        self.assertEqual(res_by_outcome[ResolutionOutcome.CONFLICTING].target_binding, "conflict")
+
+        canon = canonicalize_observations(bundle.observations)
+        self.assertTrue(canon.ok)
+        self.assertTrue(canon.graph.edge_evidence_links)
+        nodes = {n.canonical_key for n in canon.graph.nodes}
+        edges = {(e.source_key, e.kind, e.target_key) for e in canon.graph.edges}
+
+        self.assertIn(nix_package_key("infra", "x86_64-linux", "srv"), nodes)
+        self.assertIn(nix_app_key("infra", "x86_64-linux", "srv"), nodes)
+        self.assertIn(("file:infra/deploy.nix", "sources", "file:frontend/modules/web.nix"), edges)
+
+        cls_key = js_class_key("src/app.jsx", "Runner")
+        mth_key = js_method_key(cls_key, "run")
+        mod_key = js_module_key("src/app.jsx")
+        self.assertIn(cls_key, nodes)
+        self.assertIn(mth_key, nodes)
+        self.assertIn(js_component_key("src/app.jsx", "Widget"), nodes)
+        self.assertIn(js_function_key("src/app.jsx", "Widget"), nodes)
+        self.assertIn(js_variable_key("src/app.jsx", "api"), nodes)
+        self.assertIn(js_route_key("src/app.jsx", "/routes/get:/api/health"), nodes)
+        self.assertIn(js_function_key("src/svc.js", "query"), nodes)
+        self.assertIn("external:js-package:react", nodes)
+        self.assertIn("external:js-package:express", nodes)
+
+        self.assertIn((mod_key, "defines", cls_key), edges)
+        self.assertIn((cls_key, "defines", mth_key), edges)
+        self.assertIn((mod_key, "defines", js_component_key("src/app.jsx", "Widget")), edges)
+        self.assertIn((mod_key, "defines", js_route_key("src/app.jsx", "/routes/get:/api/health")), edges)
+        self.assertIn((mod_key, "references", "external:js-package:react"), edges)
+        self.assertIn((mod_key, "references", "external:js-package:express"), edges)
+        self.assertIn((mod_key, "references", "file:frontend/src/svc.js"), edges)
+
+        opaque = {d.placeholder_key for d in canon.diagnostics if "opaque" in d.category}
+        self.assertEqual(len(opaque), 4)
+        real_targets = {"file:sa/mod.nix", "file:sb/mod.nix", "file:conflict/m1.nix", "file:conflict/m2.nix"}
+        edge_targets = {e.target_key for e in canon.graph.edges if e.source_key == "file:infra/deploy.nix"}
+        self.assertTrue(real_targets.isdisjoint(edge_targets))
+        self.assertTrue(opaque.issubset(edge_targets))
 
 
 if __name__ == "__main__":

@@ -321,7 +321,7 @@ class ControlStoreIntegrationTests(unittest.TestCase):
             )
         )
         dry_run = self.store.cleanup_terminal(timedelta(seconds=0), limit=10, dry_run=True)
-        self.assertEqual(dry_run, (submitted.job_id,))
+        self.assertEqual(dry_run.deleted_job_ids, (submitted.job_id,))
         self.assertEqual(self.store.status(submitted.job_id).state, "succeeded")
 
     def test_safe_retry_closes_attempt_and_releases_matching_lease(self):

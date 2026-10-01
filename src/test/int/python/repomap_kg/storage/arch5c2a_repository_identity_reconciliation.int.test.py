@@ -3,10 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 import psycopg
+import pytest
 
 from repomap_kg.storage import (
+    StorageSchemaError,
     apply_migrations,
     repository_identity_reconciliation_sql,
+    repository_upsert_sql,
     run_psql,
 )
 from repomap_kg.storage.readback_driver import (
@@ -110,25 +113,44 @@ SELECT
                 "SELECT singleton_fencing_epoch, graph_lease_fencing_epoch "
                 "FROM graph_publication_authority"
             ).fetchone()
+            surviving_node = connection.execute(
+                "SELECT id, name FROM nodes WHERE stable_key = 'node:shared'"
+            ).fetchone()
+            surviving_file = connection.execute(
+                "SELECT id, path FROM files WHERE path = 'src/app.py'"
+            ).fetchone()
+            surviving_edge = connection.execute(
+                "SELECT id, evidence_id FROM edges WHERE stable_key = 'edge:shared'"
+            ).fetchone()
+            surviving_canonical_node = connection.execute(
+                "SELECT id, display_name FROM canonical_nodes WHERE canonical_key = 'key:shared'"
+            ).fetchone()
+            surviving_canonical_edge = connection.execute(
+                "SELECT id FROM canonical_edges WHERE source_canonical_key = 'key:shared'"
+            ).fetchone()
 
-    assert repository is not None
-    survivor_id = repository[0]
-    assert repository[1:] == (
+    assert repository == (
+        2,
         "public-fixture",
         "/workspace/current",
         "repo1:public-fixture",
     )
-    assert all(set(rows) <= {(survivor_id,)} for rows in owner_sets.values())
+    assert all(set(rows) <= {(2,)} for rows in owner_sets.values())
     assert counts == (2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 1)
     assert authority == (2, 2)
+    assert surviving_node == (2, "current")
+    assert surviving_file == (2, "src/app.py")
+    assert surviving_edge == (2, 2)
+    assert surviving_canonical_node == (2, "current")
+    assert surviving_canonical_edge == (2,)
 
 
 def _relocated_fixture_sql() -> str:
     return """
-INSERT INTO repositories(id, name, root_path) VALUES
-    (1, 'old', '/workspace/old'),
-    (2, 'current', '/workspace/current'),
-    (3, 'older', '/workspace/older');
+INSERT INTO repositories(id, name, root_path, repository_identity) VALUES
+    (1, 'old', '/workspace/current', NULL),
+    (2, 'current', '/workspace/staging', 'repo1:public-fixture'),
+    (3, 'older', '/workspace/older', NULL);
 INSERT INTO runs(id, repository_id, status) VALUES
     (1, 1, 'complete'), (2, 2, 'complete');
 INSERT INTO files(id, repository_id, path) VALUES
@@ -204,3 +226,153 @@ INSERT INTO graph_publication_authority(
     (2, 2, 2, 'job-new', 1, 'worker-new', 'sg1:b', 'cg1:b', 'eg1:b',
      'kg1:b', 'stage-new', 2);
 """
+
+
+def test_arch5c2a_reconciles_legacy_only_and_no_match_cases(
+    tmp_path: Path,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        apply_migrations(
+            pre_arch5d_rdbms_root(tmp_path),
+            postgres.psql_args,
+            psql_command=postgres.psql_command,
+        )
+        params = _psycopg_connection_params_from_psql_args(postgres.psql_args)
+        command = [
+            postgres.psql_command,
+            *postgres.psql_args,
+            "-X",
+            "-v",
+            "ON_ERROR_STOP=1",
+        ]
+
+        # Case 1: Legacy-only matching root selects matching root repository
+        with psycopg.connect(
+            host=params["host"],
+            port=int(params["port"]),
+            user=params["user"],
+            dbname=params["dbname"],
+        ) as connection:
+            connection.execute(
+                "INSERT INTO repositories(id, name, root_path, repository_identity) VALUES "
+                "(1, 'old-a', '/workspace/old-a', NULL), "
+                "(2, 'target-match', '/workspace/target-matched', NULL);"
+            )
+
+        run_psql(
+            command,
+            input_text=repository_identity_reconciliation_sql(
+                "repo1:matched-legacy",
+                "matched-legacy",
+                "/workspace/target-matched",
+            ),
+        )
+        with psycopg.connect(
+            host=params["host"],
+            port=int(params["port"]),
+            user=params["user"],
+            dbname=params["dbname"],
+        ) as connection:
+            repo = connection.execute(
+                "SELECT id, name, root_path, repository_identity FROM repositories"
+            ).fetchall()
+            assert repo == [
+                (2, "matched-legacy", "/workspace/target-matched", "repo1:matched-legacy")
+            ]
+            connection.execute("DELETE FROM repositories;")
+
+        # Case 2: Legacy-only no root matches breaks tie by lowest repository ID
+        with psycopg.connect(
+            host=params["host"],
+            port=int(params["port"]),
+            user=params["user"],
+            dbname=params["dbname"],
+        ) as connection:
+            connection.execute(
+                "INSERT INTO repositories(id, name, root_path, repository_identity) VALUES "
+                "(10, 'legacy-10', '/workspace/path-10', NULL), "
+                "(20, 'legacy-20', '/workspace/path-20', NULL);"
+            )
+
+        run_psql(
+            command,
+            input_text=repository_identity_reconciliation_sql(
+                "repo1:no-match-id-tie",
+                "no-match-id-tie",
+                "/workspace/unmatched-new-root",
+            ),
+        )
+        with psycopg.connect(
+            host=params["host"],
+            port=int(params["port"]),
+            user=params["user"],
+            dbname=params["dbname"],
+        ) as connection:
+            repo = connection.execute(
+                "SELECT id, name, root_path, repository_identity FROM repositories"
+            ).fetchall()
+            assert repo == [
+                (10, "no-match-id-tie", "/workspace/unmatched-new-root", "repo1:no-match-id-tie")
+            ]
+
+
+def test_arch5c2a_reconciliation_refusal_contracts(
+    tmp_path: Path,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        apply_migrations(
+            pre_arch5d_rdbms_root(tmp_path),
+            postgres.psql_args,
+            psql_command=postgres.psql_command,
+        )
+        params = _psycopg_connection_params_from_psql_args(postgres.psql_args)
+        command = [
+            postgres.psql_command,
+            *postgres.psql_args,
+            "-X",
+            "-v",
+            "ON_ERROR_STOP=1",
+        ]
+
+        with psycopg.connect(
+            host=params["host"],
+            port=int(params["port"]),
+            user=params["user"],
+            dbname=params["dbname"],
+        ) as connection:
+            connection.execute(
+                "INSERT INTO repositories(id, name, root_path, repository_identity) VALUES "
+                "(1, 'existing', '/workspace/occupied', 'repo1:foreign-identity');"
+            )
+
+        # Refuses conflicting stable identity
+        with pytest.raises(
+            StorageSchemaError,
+            match="conflicting stable repository identity",
+        ):
+            run_psql(
+                command,
+                input_text=repository_identity_reconciliation_sql(
+                    "repo1:my-identity",
+                    "my-name",
+                    "/workspace/occupied",
+                ),
+            )
+
+        # Refuses direct upsert on occupied root without reconciliation
+        with psycopg.connect(
+            host=params["host"],
+            port=int(params["port"]),
+            user=params["user"],
+            dbname=params["dbname"],
+        ) as connection:
+            with pytest.raises(psycopg.errors.UniqueViolation):
+                connection.execute(
+                    repository_upsert_sql(
+                        "new-repo",
+                        "/workspace/occupied",
+                        "repo1:new-identity",
+                    )
+                )

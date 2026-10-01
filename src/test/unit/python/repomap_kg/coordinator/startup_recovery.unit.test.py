@@ -100,3 +100,75 @@ def test_startup_recovery_does_not_count_lost_ownership_as_resolved() -> None:
 
     assert report.resolved == 0
     assert report.pending == 1
+
+
+def test_startup_recovery_retires_evidence_on_resolved_outcomes() -> None:
+    store = Store()
+    store.claims = [Claim("succeeded"), Claim("queued"), Claim("failed")]
+    retired_claims: list[str] = []
+
+    def mock_reconcile(claim, **_owner):
+        return claim.job_id
+
+    store.reconcile_publication = mock_reconcile
+
+    report = recover_startup(
+        store,
+        lambda _claim: None,
+        instance_id="new-owner",
+        fencing_epoch=2,
+        limit=3,
+        publication_retirer=lambda claim: retired_claims.append(getattr(claim, "job_id", "")),
+    )
+
+    assert report.resolved == 3
+    assert report.residuals == 0
+    assert retired_claims == ["succeeded", "queued", "failed"]
+
+
+def test_startup_recovery_preserves_evidence_on_reconciliation_required_or_quarantine() -> None:
+    store = Store()
+    store.claims = [Claim("quarantined"), Claim("reconciliation_required"), Claim("lost")]
+    retired_claims: list[str] = []
+
+    def mock_reconcile(claim, **_owner):
+        if claim.job_id == "lost":
+            return "ownership_lost"
+        return claim.job_id
+
+    store.reconcile_publication = mock_reconcile
+
+    report = recover_startup(
+        store,
+        lambda _claim: None,
+        instance_id="new-owner",
+        fencing_epoch=2,
+        limit=3,
+        publication_retirer=lambda claim: retired_claims.append(getattr(claim, "job_id", "")),
+    )
+
+    assert report.resolved == 1  # quarantined is considered resolved terminal state
+    assert report.pending == 2
+    assert retired_claims == []  # But neither quarantined, nor rec_req, nor lost should be retired!
+
+
+def test_startup_recovery_surfaces_residual_when_retirement_refused() -> None:
+    store = Store()
+    store.claims = [Claim("succeeded")]
+
+    store.reconcile_publication = lambda _claim, **_owner: "succeeded"
+
+    def refusing_retirer(_claim):
+        raise ValueError("corrupted publication evidence")
+
+    report = recover_startup(
+        store,
+        lambda _claim: None,
+        instance_id="new-owner",
+        fencing_epoch=2,
+        limit=3,
+        publication_retirer=refusing_retirer,
+    )
+
+    assert report.resolved == 1
+    assert report.residuals == 1

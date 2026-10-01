@@ -178,8 +178,20 @@ def snapshot_host_resources(runner: Runner = subprocess.run) -> HostSnapshot:
     return _images.snapshot_host_resources(runner, ids=_ids)
 
 
-def verify_host_snapshot(before: HostSnapshot, after: HostSnapshot) -> None:
-    _images.verify_host_snapshot(before, after)
+def verify_host_snapshot(
+    before: HostSnapshot, after: HostSnapshot, *, runner: Runner | None = None,
+) -> None:
+    def inspect_resource(kind: str, identity: str):
+        assert runner is not None
+        resource = {"containers": "container", "images": "image",
+                    "volumes": "volume", "networks": "network"}[kind]
+        labels = ".Config.Labels" if kind in {"containers", "images"} else ".Labels"
+        return _captured(runner, ["docker", resource, "inspect", "--format",
+                                 "{{json " + labels + "}}", "--", identity], timeout=2)
+
+    _images.verify_host_snapshot(
+        before, after, inspect_resource=inspect_resource if runner is not None else None,
+    )
 
 
 def _wait_for_inner_daemon(runner: Runner, container_id: str) -> None:
@@ -340,7 +352,8 @@ def run_in_sandbox(
         start_follower=_start_log_follower, drain_follower=_drain_log_follower,
         terminate_follower=_terminate_log_follower, stop_outer=_stop_outer,
         export_report=_export_sandbox_report, cleanup_outer=_cleanup_outer,
-        verify_snapshot=verify_host_snapshot, write_diagnostic=write_sandbox_diagnostic,
+        verify_snapshot=lambda before, after: verify_host_snapshot(before, after, runner=runner),
+        write_diagnostic=write_sandbox_diagnostic,
         exact_container_id=EXACT_CONTAINER_ID, set_cleanup_phase=_set_cleanup_phase,
         report_arguments=_sandbox_report_arguments,
         cleanup_error_for=_bounded_cleanup_error,

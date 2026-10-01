@@ -119,3 +119,72 @@ def test_dispose_terminal_passes_diagnostic_summary_to_transition() -> None:
     assert t["diagnostic_summary"] == "generation_changed:identity_mismatch"
     assert t["error_category"] == "generation_changed"
     assert t["publication_state"] == "not_started"
+
+
+def test_dispose_terminal_passes_diagnostic_to_reconciliation_and_termination() -> None:
+    store = MagicMock()
+    store.mark_reconciliation_required.return_value = True
+    store.mark_attempt_terminated.return_value = True
+    store.reconcile_publication.return_value = "reconciled"
+    retry_policy = MagicMock()
+    coord = DummyCoordinator(store=store, retry_policy=retry_policy, instance_id="coord-42")
+    claim = MagicMock()
+    claim.attempt = 1
+    claim.job_id = "job-2"
+
+    terminal = {
+        "status": "other",
+        "publication_state": "prepared",
+        "_termination_proved": True,
+        "_error_category": "custom_category",
+        "_diagnostic_summary": "custom:diagnostic_details",
+    }
+    result = coord._dispose_terminal(claim, "running", terminal)
+    assert result == "reconciled"
+    store.mark_reconciliation_required.assert_called_once_with(
+        claim,
+        expected_state="running",
+        category="custom_category",
+        diagnostic_summary="custom:diagnostic_details",
+    )
+    store.mark_attempt_terminated.assert_called_once_with(
+        claim,
+        process_cleanup_proved=True,
+        reconciler_instance_id="coord-42",
+        reconciler_epoch=1,
+        diagnostic_summary="custom:diagnostic_details",
+    )
+
+
+def test_dispose_terminal_worker_crash_diagnostic_fallback() -> None:
+    store = MagicMock()
+    store.mark_reconciliation_required.return_value = True
+    store.mark_attempt_terminated.return_value = True
+    store.reconcile_publication.return_value = "reconciled"
+    retry_policy = MagicMock()
+    coord = DummyCoordinator(store=store, retry_policy=retry_policy, instance_id="coord-42")
+    claim = MagicMock()
+    claim.attempt = 1
+    claim.job_id = "job-3"
+
+    terminal = {
+        "status": "other",
+        "publication_state": "prepared",
+        "_termination_proved": True,
+        "_error_category": "worker_crash",
+    }
+    result = coord._dispose_terminal(claim, "running", terminal)
+    assert result == "reconciled"
+    store.mark_reconciliation_required.assert_called_once_with(
+        claim,
+        expected_state="running",
+        category="worker_crash",
+        diagnostic_summary="worker_crash:unproved_termination",
+    )
+    store.mark_attempt_terminated.assert_called_once_with(
+        claim,
+        process_cleanup_proved=True,
+        reconciler_instance_id="coord-42",
+        reconciler_epoch=1,
+        diagnostic_summary="worker_crash:unproved_termination",
+    )

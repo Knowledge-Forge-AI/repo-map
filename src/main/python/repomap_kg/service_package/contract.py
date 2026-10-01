@@ -62,7 +62,9 @@ def build_service_package_spec(repo_map_home: str | Path) -> ServicePackageSpec:
     """Build the single approved service specification for one RepoMap home."""
 
     normalized_home = _normalize_home(repo_map_home)
-    executable = Path(os.path.realpath(sys.executable))
+    # Preserve virtual-environment discovery through the lexical invocation path.
+    # Approval and hashing still follow the resolved executable target.
+    executable = Path(sys.executable)
     if not is_approved_python_executable(executable):
         raise RuntimeError("service_foreground_executable_invalid")
     psql_path = _resolve_psql_dependency()

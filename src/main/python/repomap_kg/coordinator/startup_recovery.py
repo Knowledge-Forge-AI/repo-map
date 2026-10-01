@@ -24,6 +24,7 @@ class RecoveryStore(Protocol):
         *,
         reconciler_instance_id: str | None = None,
         reconciler_epoch: int | None = None,
+        unpublished_proved: bool = False,
     ) -> str: ...
 
     def acquire_singleton(self, instance_id: str, ttl: timedelta) -> int: ...
@@ -40,6 +41,7 @@ class StartupRecoveryReport:
     pending: int
     route_changed: int
     unavailable: int
+    residuals: int = 0
 
 
 class StartupRecoveryMixin:
@@ -50,6 +52,7 @@ class StartupRecoveryMixin:
     _singleton_ttl: timedelta
     _epoch: int | None
     _publication_reader: Callable[[object], Mapping[str, object] | None] | None
+    _publication_retirer: Callable[[object], object] | None
 
     def startup(self, reconcile_startup: Callable[[], object]) -> int:
         epoch = self._store.acquire_singleton(
@@ -77,9 +80,11 @@ class StartupRecoveryMixin:
         """Reconcile the bounded durable uncertainty set under this fence."""
 
         reader = self._publication_reader or (lambda _claim: None)
+        retirer = getattr(self, "_publication_retirer", None)
         return recover_startup(
             self._store,
             reader,
+            publication_retirer=retirer,
             instance_id=self._instance_id,
             fencing_epoch=self._require_started(),
             limit=DEFAULT_LIMITS.max_nonterminal_jobs,
@@ -100,6 +105,7 @@ def recover_startup(
     instance_id: str,
     fencing_epoch: int,
     limit: int,
+    publication_retirer: Callable[[object], object] | None = None,
 ) -> StartupRecoveryReport:
     """Reconcile a stable bounded set before the coordinator accepts clients."""
 
@@ -107,6 +113,7 @@ def recover_startup(
     pending = 0
     route_changed = 0
     unavailable = 0
+    residuals = 0
     claims = store.reconciliation_claims(limit)
     for claim in claims:
         try:
@@ -126,9 +133,15 @@ def recover_startup(
             claim,
             reconciler_instance_id=instance_id,
             reconciler_epoch=fencing_epoch,
+            **({"unpublished_proved": True} if marker is not None and marker.get("publication_state") == "not_started" else {}),
         )
         if outcome in {"succeeded", "queued", "failed", "cancelled", "quarantined"}:
             resolved += 1
+            if outcome in {"succeeded", "queued", "failed", "cancelled"} and publication_retirer is not None:
+                try:
+                    publication_retirer(claim)
+                except (OSError, ValueError):
+                    residuals += 1
         else:
             pending += 1
     return StartupRecoveryReport(
@@ -137,7 +150,9 @@ def recover_startup(
         pending=pending,
         route_changed=route_changed,
         unavailable=unavailable,
+        residuals=residuals,
     )
+
 
 
 def _record_marker(

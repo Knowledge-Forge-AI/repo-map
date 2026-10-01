@@ -1,4 +1,11 @@
-"""Shared records, context, and error classes for MCP operations."""
+"""PostgreSQL compatibility context and config loading for MCP operations.
+
+Logical graph selection and its refusals live in ``server.graph_selection`` and
+are re-exported here for existing importers. :class:`McpOpsGraphContext` is the
+PostgreSQL-specific context (database name, psql arguments, client command)
+built only by the PostgreSQL binding and the ``graph_context`` compatibility
+constructor; configured MCP tool paths select a neutral ``GraphSelection``.
+"""
 
 from __future__ import annotations
 
@@ -10,20 +17,27 @@ from repomap_kg.ops.config import (
     OpsConfig,
     OpsGraphConfig,
     graph_database,
-    load_ops_config,
-    load_ops_config_home,
 )
+from repomap_kg.ops.config_local import (
+    LocalSqliteConfig,
+    load_graph_registry_config,
+    load_graph_registry_config_home,
+)
+from repomap_kg.ops.resolved_config import configured_repository_identity
 from repomap_kg.runtime.database_role_contract import (
     READ_STATUS_PASSWORD_ENV,
     project_read_status_config,
 )
+from repomap_kg.server.graph_selection import (
+    McpOpsError as McpOpsError,
+    checked_graph as checked_graph,
+    configured_graph_root_path,
+    find_graph as find_graph,
+    visible_graphs as visible_graphs,
+)
 
 ENV_OPS_CONFIG = "REPOMAP_OPS_CONFIG"
 ENV_PSQL_COMMAND = "REPOMAP_PSQL_COMMAND"
-
-
-class McpOpsError(ValueError):
-    """Raised when an MCP operations readback request is invalid."""
 
 
 @dataclass(frozen=True)
@@ -38,22 +52,27 @@ class McpOpsGraphContext:
 
     @property
     def root_path(self) -> str:
-        if self.graph.explicit_source_bindings:
-            return f"graph:{self.graph.id}"
-        return self.graph.root_path_expanded or self.graph.root_path
+        return configured_graph_root_path(self.graph)
+
+    @property
+    def repository_identity(self) -> str:
+        return str(configured_repository_identity(self.graph.id))
 
     @property
     def psql_args(self) -> list[str]:
         return self.config.postgres.psql_args_for_database(self.database)
 
 
-def load_mcp_ops_config(config_path: str | os.PathLike[str] | None = None) -> OpsConfig:
+def load_mcp_ops_config(
+    config_path: str | os.PathLike[str] | None = None,
+) -> OpsConfig | LocalSqliteConfig:
+    """Load the MCP graph registry as whichever backend the home declares."""
     path_value = config_path or os.environ.get(ENV_OPS_CONFIG)
     if path_value:
-        config = load_ops_config(Path(path_value).expanduser())
+        config = load_graph_registry_config(Path(path_value).expanduser())
     else:
-        config = load_ops_config_home()
-    if READ_STATUS_PASSWORD_ENV in os.environ:
+        config = load_graph_registry_config_home()
+    if isinstance(config, OpsConfig) and READ_STATUS_PASSWORD_ENV in os.environ:
         return project_read_status_config(config)
     return config
 
@@ -71,32 +90,15 @@ def psql_command_from_environment() -> str | None:
     return command
 
 
-def visible_graphs(config: OpsConfig) -> tuple[OpsGraphConfig, ...]:
-    return tuple(graph for graph in config.graphs if graph.enabled and graph.mcp_visible)
-
-
-def find_graph(config: OpsConfig, graph_id: str) -> OpsGraphConfig:
-    if not isinstance(graph_id, str) or not graph_id.strip():
-        raise McpOpsError("graph_id is required")
-    for graph in config.graphs:
-        if graph.id == graph_id:
-            return graph
-    raise McpOpsError(f"unknown graph_id: {graph_id}")
-
-
 def graph_context(
     graph_id: str,
     *,
     config_path: str | os.PathLike[str] | None = None,
 ) -> McpOpsGraphContext:
     config = load_mcp_ops_config(config_path)
-    graph = find_graph(config, graph_id)
-    if not graph.enabled:
-        raise McpOpsError(f"graph {graph_id!r} is not enabled")
-    if graph.readback_unsupported_classification is not None:
-        raise McpOpsError(graph.readback_unsupported_classification)
-    if not graph.mcp_visible:
-        raise McpOpsError(f"graph {graph_id!r} is not MCP-visible")
+    if not isinstance(config, OpsConfig):
+        raise McpOpsError("graph context is PostgreSQL-only; this home selects SQLite Local")
+    graph = checked_graph(config, graph_id)
     return McpOpsGraphContext(
         config=config,
         graph=graph,

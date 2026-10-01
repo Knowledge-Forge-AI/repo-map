@@ -258,6 +258,42 @@ class StorageCanonicalRowsSqlUnitTests(unittest.TestCase):
         self.assertIn("canonical_edges.edge_kind = 'executes'", sql)
         self.assertIn("canonical_edges.target_canonical_key = 'tool:nix'", sql)
         self.assertIn(f"canonical_edges.identity_metadata_hash = '{hash_text}'", sql)
+        self.assertIn("canonical_evidence.repository_id = matching_edge.repository_id", sql)
+        self.assertIn("raw_observations.repository_id = matching_edge.repository_id", sql)
+
+    def test_canonical_builders_support_repository_identity_selection(self):
+        hash_text = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+        identity = "repo1:fixture"
+
+        node_sql = build_canonical_node_query_sql(
+            "/tmp/fixture",
+            kind="file",
+            repository_identity=identity,
+        )
+        self.assertIn("repositories.id = (SELECT id FROM repositories WHERE", node_sql)
+        self.assertIn(f"repository_identity = '{identity}'", node_sql)
+        self.assertIn("DESC NULLS LAST, id LIMIT 1", node_sql)
+
+        edge_sql = build_canonical_edge_query_sql(
+            "/tmp/fixture",
+            kind="executes",
+            repository_identity=identity,
+        )
+        self.assertIn("repositories.id = (SELECT id FROM repositories WHERE", edge_sql)
+        self.assertIn(f"repository_identity = '{identity}'", edge_sql)
+
+        explain_sql = build_explain_canonical_edge_query_sql(
+            "/tmp/fixture",
+            source_key="file:bin/tool",
+            kind="executes",
+            target_key="tool:nix",
+            identity_metadata_hash=hash_text,
+            repository_identity=identity,
+        )
+        self.assertIn("repositories.id = (SELECT id FROM repositories WHERE", explain_sql)
+        self.assertIn(f"repository_identity = '{identity}'", explain_sql)
+        self.assertIn("canonical_evidence.repository_id = matching_edge.repository_id", explain_sql)
+        self.assertIn("raw_observations.repository_id = matching_edge.repository_id", explain_sql)
     def test_build_canonical_neighborhood_query_sql_filters_and_orders(self):
         sql = build_canonical_neighborhood_query_sql(
             "/tmp/fixture",

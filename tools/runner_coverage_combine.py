@@ -135,3 +135,45 @@ def execute_shard_combine(
             cov_mod=cov_mod, termination_outcome="unconsumed_after_combine",
         ))
         raise RuntimeError(f"coverage shard {path} is empty or unreadable: unconsumed during combine")
+
+
+def identify_parent_shard(
+    runner: Any,
+    data_dir: Path,
+    expected_data_file: str | None = None,
+) -> str | None:
+    """Identify the parent runner's owned data shard path if present."""
+    if runner is None:
+        return None
+    cand: str | None = None
+    try:
+        if hasattr(runner, "get_data"):
+            d = runner.get_data()
+            if d is not None and hasattr(d, "data_filename"):
+                cand = d.data_filename()
+        if not cand and hasattr(runner, "_data"):
+            cand = getattr(runner._data, "_filename", None)
+        if not cand and expected_data_file:
+            cand = expected_data_file
+        elif not cand and hasattr(runner, "data_file"):
+            df = getattr(runner, "data_file", None)
+            if df and Path(df).is_file():
+                cand = str(df)
+    except Exception:
+        pass
+    if cand:
+        cand_path = Path(cand)
+        if cand_path.is_symlink():
+            raise RuntimeError(f"parent coverage shard is a symlink: {cand_path}")
+        if cand_path.is_file() and cand_path.parent == data_dir.resolve():
+            return str(cand_path)
+    return None
+
+
+__all__ = (
+    "close_owned_runners",
+    "close_runner_data",
+    "combine_and_reload",
+    "execute_shard_combine",
+    "identify_parent_shard",
+)

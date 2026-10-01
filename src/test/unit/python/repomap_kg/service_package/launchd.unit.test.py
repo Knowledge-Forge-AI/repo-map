@@ -1,3 +1,8 @@
+from types import SimpleNamespace
+from unittest.mock import patch
+
+from repomap_kg.service_package import contract
+
 from dataclasses import replace
 import plistlib
 import shutil
@@ -144,3 +149,36 @@ def test_launchd_recognizes_an_owned_definition_after_psql_relocation(
     assert adapter.recognizes(content)
     stale_psql.unlink()
     assert adapter.recognizes(content)
+
+
+@pytest.mark.parametrize("stale_state", ["retargeted", "dangling", "missing"])
+def test_launchd_lexical_python_digest_and_stale_reference(
+    tmp_path, service_authority, stale_state
+):
+    invoked = tmp_path / "venv" / "bin" / "python"
+    invoked.parent.mkdir(parents=True, mode=0o700)
+    invoked.symlink_to(service_authority.python_path)
+    adapter = LaunchdUserAdapter(user_home=tmp_path / "user", uid=501)
+    with patch.object(contract, "sys", SimpleNamespace(executable=str(invoked))):
+        spec = build_service_package_spec(tmp_path / "home")
+        content = adapter.render(spec)
+        assert plistlib.loads(content)["ProgramArguments"][0] == str(invoked)
+        adapter.validate(content, spec)
+        assert adapter.recognizes(content)
+
+        alternate = invoked.with_name("python3")
+        alternate.symlink_to(service_authority.python_path)
+        with patch.object(contract, "sys", SimpleNamespace(executable=str(alternate))):
+            alternate_spec = build_service_package_spec(tmp_path / "home")
+        with pytest.raises(ValueError, match="service_definition_invalid"):
+            adapter.validate(content, alternate_spec)
+
+        invoked.unlink()
+        if stale_state == "retargeted":
+            target = tmp_path / "python3"
+            target.write_bytes(b"different executable bytes")
+            target.chmod(0o700)
+            invoked.symlink_to(target)
+        elif stale_state == "dangling":
+            invoked.symlink_to(tmp_path / "absent" / "python3")
+        assert adapter.recognizes(content) is (stale_state == "missing")

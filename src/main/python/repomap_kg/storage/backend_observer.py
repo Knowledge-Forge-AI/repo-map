@@ -239,11 +239,21 @@ def _require_live_source_connection(
 ) -> None:
     if connection is None:
         raise BackendObservationError("source connection is unavailable")
+    from psycopg import OperationalError
+
     try:
+        if connection.closed is not False:
+            raise BackendObservationError("source connection is unavailable")
         backend_pid = connection.info.backend_pid
         closed = connection.closed
     except AttributeError as error:
         raise BackendObservationError("source connection is unavailable") from error
+    except OperationalError as error:
+        # A source may close between the liveness check and libpq inspection.
+        # Operational failures on a still-live connection keep their identity.
+        if connection.closed is not False:
+            raise BackendObservationError("source connection is unavailable") from error
+        raise
     if (
         isinstance(backend_pid, bool)
         or not isinstance(backend_pid, int)

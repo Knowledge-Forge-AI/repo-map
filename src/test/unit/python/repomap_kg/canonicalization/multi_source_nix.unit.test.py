@@ -1,3 +1,5 @@
+import hashlib
+
 from repomap_kg.canonicalization.main import canonicalize_observations
 from repomap_kg.observations.raw import RawObservation
 
@@ -128,3 +130,38 @@ def test_non_exact_resolution_uses_per_observation_identity():
     assert all(
         item.target_key.startswith("dynamic:file:") for item in edges
     )
+
+
+def test_unsupported_resolution_produces_opaque_unknown_target_with_deterministic_digest():
+    raw_source_id = "bind:entry:flake.nix#escape"
+    expected_digest = hashlib.sha256(raw_source_id.encode("utf-8")).hexdigest()[:24]
+    expected_placeholder = f"unknown:file:nix-cross-source-unsupported#{expected_digest}"
+
+    obs = RawObservation(
+        kind="nix.import",
+        source_id=raw_source_id,
+        path="entry/flake.nix",
+        target="unknown:file:nix-cross-source-unsupported",
+        confidence="heuristic",
+        extractor="nix",
+        extractor_version="fixture",
+        metadata={
+            "resolution_outcome": "unsupported",
+            "resolution_evidence_class": "bounded-unknown",
+            "cross_binding": False,
+            "source_binding": "entry",
+            "target_binding": "entry",
+            "binding_id": "bind1:entry",
+            "snapshot_id": "snap1:entry",
+            "candidate_id": "cand1:fixture",
+        },
+    )
+
+    result = canonicalize_observations((obs,))
+    diag_categories = {d.category for d in result.diagnostics}
+    assert "opaque_unknown_target" in diag_categories
+    assert "unsupported_raw_observation_kind" not in diag_categories
+
+    edge = next(item for item in result.graph.edges if item.kind == "sources")
+    assert edge.target_key == expected_placeholder
+    assert edge.metadata["resolution_outcome"] == "unsupported"

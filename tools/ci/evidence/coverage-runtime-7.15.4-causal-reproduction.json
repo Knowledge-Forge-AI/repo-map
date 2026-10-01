@@ -1,0 +1,23 @@
+{
+  "causal_evidence": {
+    "causal_mechanism_verified": true,
+    "causal_verdict": "a1_coverage_pth_is_causal_mechanism",
+    "scenario_with_a1_coverage_pth": {
+      "exit_code": 0,
+      "measured_file_count": 1,
+      "schema_version": 7,
+      "shard_created": true
+    },
+    "scenario_without_a1_coverage_pth": {
+      "exit_code": 0,
+      "measured_file_count": 0,
+      "schema_version": null,
+      "shard_created": false
+    }
+  },
+  "provenance": {
+    "dockerfile_sha256": "f73887ce64ce0bd64141e1b3ca06480bf5d1ec81b3ffd1f41b9d42ef733ad1a1",
+    "lockfile_sha256": "f608765459c709b0736373f26cf81581ecb57265d31db1dfcf46ffc9e97c3fd0"
+  },
+  "schema": "repomap-coverage-causal-reproduction-v1"
+}

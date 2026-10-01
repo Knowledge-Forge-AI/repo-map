@@ -1,3 +1,6 @@
+import ast
+import sys
+import tomllib
 from pathlib import Path
 
 from repomap_kg.runtime.commands import (
@@ -13,10 +16,22 @@ REPO_ROOT = Path(__file__).resolve().parents[6]
 
 def test_release_metadata_pins_psycopg_and_preserves_migration_paths() -> None:
     metadata = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    project = tomllib.loads(metadata)["project"]
 
     assert 'requires = ["setuptools==83.0.0"]' in metadata
-    assert '"psycopg[binary]==3.2.12"' in metadata
-    assert '"typing-extensions==4.16.0"' in metadata
+    assert project["dependencies"] == ["typing-extensions==4.16.0"]
+    assert project["optional-dependencies"]["postgres"] == ["psycopg[binary]==3.2.12"]
+    assert set(project["optional-dependencies"]) == {
+        "test",
+        "scale-tools",
+        "static-analysis",
+        "postgres",
+    }
+    assert not any(
+        driver in requirement.lower()
+        for requirement in project["dependencies"]
+        for driver in ("psycopg", "libpq", "pg8000", "asyncpg")
+    )
     for destination in (
         '"share/repomap-kg/rdbms"',
         '"share/repomap-kg/rdbms/2026/06"',
@@ -51,7 +66,11 @@ def test_release_dockerfile_uses_only_pinned_build_and_runtime_resources() -> No
     assert "FROM ${" not in dockerfile
     assert dockerfile.count("go build") == 1
     assert "setuptools==83.0.0" in dockerfile
-    assert "python -m pip install --no-cache-dir --no-build-isolation ." in dockerfile
+    assert (
+        'python -m pip install --no-cache-dir --no-build-isolation ".[postgres]"'
+        in dockerfile
+    )
+    assert "--no-build-isolation .\n" not in dockerfile
     assert "installed_graph == source_graph" in dockerfile
     assert "installed_control == source_control" in dockerfile
     assert "python -m pip uninstall -y pip setuptools" in dockerfile
@@ -69,6 +88,36 @@ def test_release_dockerfile_uses_only_pinned_build_and_runtime_resources() -> No
     assert "! command -v go" in dockerfile
     assert "PYTHONPATH" not in dockerfile
     assert "assert pq.version() == 170006" in dockerfile
+
+
+def test_packaged_modules_import_only_the_postgres_extra_driver() -> None:
+    package_root = REPO_ROOT / "src/main/python/repomap_kg"
+    third_party: set[str] = set()
+    for path in package_root.rglob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.Import):
+                names = [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                names = [node.module]
+            elif (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, (ast.Attribute, ast.Name))
+                and getattr(node.func, "attr", getattr(node.func, "id", None))
+                in {"import_module", "__import__"}
+                and node.args
+                and isinstance(node.args[0], ast.Constant)
+                and isinstance(node.args[0].value, str)
+            ):
+                names = [node.args[0].value]
+            else:
+                continue
+            third_party.update(
+                top
+                for top in (name.split(".")[0] for name in names)
+                if top and top not in sys.stdlib_module_names and top != "repomap_kg"
+            )
+
+    assert third_party == {"psycopg"}
 
 
 def test_release_notices_cover_binary_runtime_redistribution() -> None:

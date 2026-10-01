@@ -1,5 +1,19 @@
+from dataclasses import replace
+from pathlib import Path
+import tempfile
 import unittest
 
+from repomap_kg.canonicalization.main import canonicalize_observations
+from repomap_kg.graph.keys import (
+    js_class_key, js_function_key, js_method_key, js_module_key,
+    ruby_class_key, ruby_method_key, ruby_module_key,
+    ruby_singleton_method_key, unknown_key,
+)
+from repomap_kg.observations.raw import (
+    RawObservation,
+    read_observations_jsonl,
+    write_observations_jsonl,
+)
 from repomap_kg.extractors.languages import javascript as javascript_module
 from repomap_kg.extractors.languages import ruby as ruby_module
 from repomap_kg.extractors.languages.javascript import extract_javascript_file_observations
@@ -8,6 +22,50 @@ from repomap_kg.extractors.languages.ruby_helpers import _Scope
 
 
 class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):
+    def _assert_reference_pipeline(self, observations: list[RawObservation]) -> None:
+        result = canonicalize_observations(observations)
+        self.assertTrue(result.ok, result.diagnostics)
+        edges = {(edge.source_key, edge.kind, edge.target_key): edge for edge in result.graph.edges}
+        evidence = {item.evidence_key: item for item in result.graph.evidence}
+        references = [item for item in observations if item.kind in ("ruby.reference", "js.reference")]
+        self.assertTrue(references)
+        for observation in references:
+            source = observation.metadata["source_key"]
+            assert isinstance(source, str) and observation.target is not None
+            edge = edges[(source, "references", observation.target)]
+            linked = [evidence[link.evidence_key] for link in result.graph.edge_evidence_links
+                      if link.edge_key == edge.edge_key]
+            self.assertTrue(any(item.raw_source_id == observation.source_id for item in linked))
+        self.assertEqual(result.graph, canonicalize_observations(observations).graph)
+
+    def test_nested_definition_ownership_survives_language_pipeline(self) -> None:
+        ruby = list(extract_ruby_file_observations("lib/release.rb", (
+            "module Release\n  class Runner\n    def run\n    end\n"
+            "    def self.build\n    end\n  end\nend\n"
+        )))
+        javascript = list(extract_javascript_file_observations("src/release.js", (
+            'import helper from "./helper.js";\nexport class Runner {\n'
+            '  run() { return helper(); }\n}\nexport function release() {}\n'
+        ), repository_paths=frozenset({"src/release.js", "src/helper.js"})))
+        result = canonicalize_observations([*ruby, *javascript])
+        self.assertTrue(result.ok, result.diagnostics)
+        nodes = {node.canonical_key for node in result.graph.nodes}
+        expected = {
+            (ruby_class_key("Release::Runner"), "defines", ruby_method_key("Release::Runner", "run")),
+            (ruby_class_key("Release::Runner"), "defines", ruby_singleton_method_key("Release::Runner", "build")),
+            (js_module_key("src/release.js"), "defines", js_class_key("src/release.js", "Runner")),
+            (js_class_key("src/release.js", "Runner"), "defines", js_method_key(js_class_key("src/release.js", "Runner"), "run")),
+            (js_module_key("src/release.js"), "references", "file:src/helper.js"),
+        }
+        self.assertIn(ruby_module_key("Release"), nodes)
+        self.assertTrue(expected <= {(e.source_key, e.kind, e.target_key) for e in result.graph.edges})
+        self.assertFalse(any(e.source_key == ruby_module_key("Release") and
+                             e.target_key == ruby_method_key("Release::Runner", "run")
+                             for e in result.graph.edges))
+        linked_edges = {link.edge_key for link in result.graph.edge_evidence_links}
+        self.assertTrue(all(e.edge_key in linked_edges for e in result.graph.edges
+                            if (e.source_key, e.kind, e.target_key) in expected))
+
     def test_static_ruby_extractor_edge_contracts(self):
         rb_edge = (
             'require "./local"\nrequire_relative "../outside"\nrequire "#{dynamic_name}"\n'
@@ -47,6 +105,7 @@ class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):
         self.assertNotIn("pass@example", payload)
         self.assertNotIn("token=value", payload)
         self.assertIn("token%3DREDACTED", payload)
+        self._assert_reference_pipeline(observations)
 
     def test_static_ruby_profile_dsl_contracts(self):
         v_code = 'Vagrant.configure("2") do |config|\n  config.vm.network "private_network", type: "dhcp"\n  config.vm.provider "virtualbox"\n  config.vm.synced_folder "https://example.invalid/assets?token=value", "/vagrant/assets"\nend\n'
@@ -92,6 +151,7 @@ class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):
         self.assertNotIn("hash # inside literal", payload)
         self.assertNotIn("outside comment", payload)
         self.assertIn("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", payload)
+        self._assert_reference_pipeline(observations)
 
     def test_static_ruby_reference_helper_contracts(self):
         for expr, expected in [
@@ -162,6 +222,7 @@ class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):
         self.assertTrue(variable_metadata["apiToken"]["redacted"])
         self.assertNotIn("fixture-js-secret-value", payload)
         self.assertIn("token%3DREDACTED", payload)
+        self._assert_reference_pipeline(observations)
 
     def test_static_javascript_profile_contracts(self):
         worker_code = 'importScripts("https://example.invalid/sw.js");\naxios.get("https://example.invalid/api");\nclass Widget extends React.Component {\n  render() { return null; }\n}\nfunction useLocalData() {}\n'
@@ -186,6 +247,7 @@ class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):
             self.assertIn(t, targets)
         self.assertTrue(any(o.metadata.get("hook_name") == "useLocalData" for o in observations))
         self.assertTrue(any(o.metadata.get("route_pattern") == "/vue-home" for o in observations))
+        self._assert_reference_pipeline(observations)
 
     def test_static_javascript_reference_helper_contracts(self):
         for expr, expected in [
@@ -236,3 +298,86 @@ class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):
         self.assertTrue(javascript_module._looks_like_non_method("if (ready) {"))
         self.assertTrue(javascript_module._looks_like_component("Widget", "react", "jsx", ""))
         self.assertFalse(javascript_module._looks_like_component("TOKEN", "react", "jsx", ""))
+
+    def test_mixed_language_jsonl_attribution_and_optional_reference_targets(self) -> None:
+        rb_code = (
+            "module Gateway\n"
+            "  class Dispatcher\n"
+            "    def dispatch(event)\n"
+            "    end\n"
+            "  end\n"
+            "end\n"
+        )
+        js_code = (
+            'import { Dispatcher } from "./gateway.js";\n'
+            'export function routeEvent(event) {\n'
+            '  return new Dispatcher().dispatch(event);\n'
+            '}\n'
+        )
+        ruby_obs = list(extract_ruby_file_observations("services/gateway.rb", rb_code))
+        js_obs = list(extract_javascript_file_observations(
+            "src/router.js", js_code, repository_paths=frozenset({"src/router.js", "src/gateway.js"}),
+        ))
+        valid_reference = next(item for item in js_obs if item.kind == "js.reference")
+        self.assertIsNotNone(valid_reference.target)
+        source_key = valid_reference.metadata["source_key"]
+        self.assertEqual(source_key, js_module_key("src/router.js"))
+        missing_metadata = {
+            key: value for key, value in valid_reference.metadata.items()
+            if key != "target_key"
+        }
+        missing_reference = replace(
+            valid_reference,
+            source_id=f"{valid_reference.source_id}:missing",
+            target=None,
+            metadata=missing_metadata,
+        )
+        malformed_reference = replace(
+            valid_reference,
+            source_id=f"{valid_reference.source_id}:malformed",
+            target="bad target key",
+            metadata={**valid_reference.metadata, "target_key": "bad target key"},
+        )
+        combined = [*ruby_obs, *js_obs, missing_reference, malformed_reference]
+
+        with tempfile.TemporaryDirectory(prefix="repomap-ruby-js-jsonl-") as temporary:
+            jsonl_path = Path(temporary) / "raw_observations.jsonl"
+            write_observations_jsonl(combined, jsonl_path)
+            round_tripped = read_observations_jsonl(jsonl_path)
+
+        self.assertEqual(round_tripped, combined)
+        result = canonicalize_observations(round_tripped)
+        self.assertTrue(result.ok, result.diagnostics)
+        self.assertIn("missing_required_metadata", {d.category for d in result.diagnostics})
+        self.assertIn("invalid_canonical_key", {d.category for d in result.diagnostics})
+
+        nodes = {node.canonical_key for node in result.graph.nodes}
+        for expected_key in (
+            ruby_class_key("Gateway::Dispatcher"),
+            ruby_method_key("Gateway::Dispatcher", "dispatch"),
+            js_module_key("src/router.js"),
+            js_function_key("src/router.js", "routeEvent"),
+        ):
+            self.assertIn(expected_key, nodes)
+
+        valid_target = valid_reference.target
+        assert valid_target is not None
+        expected_edges = {
+            (ruby_class_key("Gateway::Dispatcher"), "defines", ruby_method_key("Gateway::Dispatcher", "dispatch")),
+            (source_key, "references", valid_target),
+            (source_key, "references", unknown_key("js.reference", "missing-target")),
+            (source_key, "references", unknown_key("js.reference", "malformed-target")),
+        }
+        edges = {(edge.source_key, edge.kind, edge.target_key): edge for edge in result.graph.edges}
+        self.assertTrue(expected_edges <= set(edges))
+        evidence = {item.evidence_key: item for item in result.graph.evidence}
+        for observation, target in (
+            (valid_reference, valid_target),
+            (missing_reference, unknown_key("js.reference", "missing-target")),
+            (malformed_reference, unknown_key("js.reference", "malformed-target")),
+        ):
+            edge = edges[(observation.metadata["source_key"], "references", target)]
+            linked = [evidence[link.evidence_key] for link in result.graph.edge_evidence_links
+                      if link.edge_key == edge.edge_key]
+            self.assertTrue(any(item.raw_source_id == observation.source_id for item in linked))
+        self.assertEqual(result.graph, canonicalize_observations(round_tripped).graph)

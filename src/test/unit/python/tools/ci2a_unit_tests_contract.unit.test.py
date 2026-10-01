@@ -88,6 +88,14 @@ def test_repomap_unit_workflow_contracts() -> None:
 
     commands = workflow.run_commands()
     assert commands.count("python3 tools/ci/ci_topology.py") == 1
+    assert commands.count(
+        "python -m pip install --require-hashes --no-deps --requirement "
+        "tools/ci/project_dependencies.lock"
+    ) == 1
+    assert commands.index(
+        "python -m pip install --require-hashes --no-deps --requirement "
+        "tools/ci/project_dependencies.lock"
+    ) < commands.index('python -m pip install --editable ".[test,scale-tools,static-analysis]"')
     assert commands.count('python -m pip install --editable ".[test,scale-tools,static-analysis]"') == 1
     bootstrap_command = next(
         command for command in commands if "bootstrap_tool.py" in command

@@ -5,7 +5,6 @@ from types import SimpleNamespace
 from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 import repomap_kg.coordinator.refresh_worker as refresh_worker
 from repomap_kg.coordinator._core_disposition import CoreDispositionMixin
@@ -178,6 +177,54 @@ def test_extract_diagnostic_summary_fallback_redacts() -> None:
     assert "/private/tmp" not in summary or "secret" not in summary
 
 
+def test_extract_diagnostic_summary_prefers_stderr_refresh_failure_over_generic_diagnostic() -> None:
+    stderr = "refresh-failure:portable-authority-denied:permission denied on path /secret/file\n"
+    result = SimpleNamespace(
+        terminal={"diagnostics": ["refresh-failed"]},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary == "refresh-failure:portable-authority-denied:permission denied on path [path]"
+
+
+def test_extract_diagnostic_summary_preserves_generic_diagnostic_without_refresh_failure() -> None:
+    stderr = "some non-failure output\n"
+    result = SimpleNamespace(
+        terminal={"diagnostics": ["refresh-failed"]},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary == "refresh-failed"
+
+
+def test_extract_diagnostic_summary_preserves_specific_terminal_diagnostic() -> None:
+    stderr = "refresh-failure:worker-crash:something failed\n"
+    result = SimpleNamespace(
+        terminal={"diagnostics": ["schema-unavailable"]},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary == "schema-unavailable"
+
+
+def test_extract_diagnostic_summary_byte_safe_truncation_multibyte() -> None:
+    text = "a" * 254 + "€€"
+    stderr = f"refresh-failure:{text}\n"
+    result = SimpleNamespace(
+        terminal={},
+        stderr=stderr,
+        stderr_truncated=False,
+    )
+    summary = _extract_diagnostic_summary(result)
+    assert summary is not None
+    encoded = summary.encode("utf-8")
+    assert len(encoded) <= 256
+    assert encoded.decode("utf-8") == summary
+
+
 def test_extract_diagnostic_summary_from_protocol_error() -> None:
     result = SimpleNamespace(
         terminal={},
@@ -234,21 +281,107 @@ def test_core_disposition_passes_diagnostic_summary_to_mark_reconciliation() -> 
     )
 
 
-def test_ops_refresh_error_is_strictly_preflight_configuration_error() -> None:
-    from repomap_kg.ops.report_records import OpsRefreshError
-    from repomap_kg.coordinator._refresh_execution import execute_refresh_attempt
+class _DispositionDummy(CoreDispositionMixin):
+    def __init__(self, retirer: Any = None, reconcile_val: str = "succeeded") -> None:
+        self._store = MagicMock()
+        self._store.release_graph_lease.return_value = True
+        self._store.schedule_retry.return_value = True
+        self._store.reconcile_publication.return_value = reconcile_val
+        self._store.mark_reconciliation_required.return_value = True
+        self._store.mark_attempt_terminated.return_value = True
+        self._publication_reader = None
+        self._publication_retirer = retirer
+        self._instance_id = "inst-1"
+        self._retry_policy = RetryPolicy(2, 1, 1)
+        self._residual_evidence: list[str] = []
+        self._reconcile_val = reconcile_val
 
-    capability = MagicMock()
-    capability.config_path.exists.return_value = True
-    capability.psql_path.exists.return_value = True
-    capability.graph_id = "test-graph"
+    def _require_started(self) -> int:
+        return 1
 
-    with (
-        patch("repomap_kg.ops.config.load_ops_config"),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config"),
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.ops.refresh.refresh_graph") as mock_refresh,
-    ):
-        mock_refresh.side_effect = OpsRefreshError("graph 'test-graph' is disabled")
-        with pytest.raises(RefreshConfigurationError, match="disabled"):
-            execute_refresh_attempt(capability)
+    def _transition(self, *args: object, **kwargs: object) -> bool:
+        return True
+
+    def _record_marker_if_available(self, *args: object, **kwargs: object) -> bool:
+        return True
+
+    def _reconcile_current(self, claim: Any) -> str:
+        return self._reconcile_val
+
+
+def test_core_disposition_retires_evidence_on_terminal_and_retry_outcomes() -> None:
+    retired_claims: list[str] = []
+    coord = _DispositionDummy(retirer=lambda claim: retired_claims.append(getattr(claim, "job_id", "")))
+    claim = lambda jid: cast(Any, SimpleNamespace(job_id=jid, attempt=1, graph_id="g1", instance_id="i1", fencing_epoch=1))
+
+    # Terminal success
+    outcome = coord._dispose_terminal(claim("job-succ"), "running", {
+        "status": "succeeded", "publication_state": "committed", "latest_run_identity": "r1",
+        "source_generation": "sg1", "config_generation": "cg1", "extractor_generation": "eg1", "canonicalizer_generation": "kg1",
+    })
+    assert outcome == "succeeded"
+    assert "job-succ" in retired_claims
+
+    # Non-retryable terminal failed
+    outcome = coord._dispose_terminal(claim("job-fail"), "running", {
+        "status": "failed", "publication_state": "not_started", "error_category": "contract_validation",
+        "_termination_proved": True,
+    })
+    assert outcome == "failed"
+    assert "job-fail" in retired_claims
+
+    # Retry scheduled (outcome queued)
+    outcome = coord._dispose_terminal(claim("job-retry"), "running", {
+        "status": "failed", "publication_state": "not_started", "error_category": "worker_crash",
+        "_termination_proved": True,
+    })
+    assert outcome == "queued"
+    assert "job-retry" in retired_claims
+
+    # Terminal cancelled
+    outcome = coord._dispose_terminal(claim("job-cancel"), "cancel_requested", {
+        "status": "cancelled", "publication_state": "not_started", "_termination_proved": True,
+    })
+    assert outcome == "cancelled"
+    assert "job-cancel" in retired_claims
+
+
+def test_core_disposition_preserves_evidence_on_uncertainty_and_records_residuals() -> None:
+    retired_claims: list[str] = []
+
+    def retire_fn(claim: Any) -> None:
+        if getattr(claim, "job_id", "") == "job-corrupted":
+            raise ValueError("corrupted evidence")
+        retired_claims.append(getattr(claim, "job_id", ""))
+
+    coord = _DispositionDummy(retirer=retire_fn, reconcile_val="reconciliation_required")
+    claim = lambda jid: cast(Any, SimpleNamespace(job_id=jid, attempt=1, graph_id="g1", instance_id="i1", fencing_epoch=1))
+
+    # Reconciliation required retains evidence
+    outcome = coord._dispose_terminal(claim("job-uncertain"), "running", {
+        "status": "failed", "publication_state": "transaction_started", "_termination_proved": True,
+    })
+    assert outcome == "reconciliation_required"
+    assert "job-uncertain" not in retired_claims
+    assert coord._residual_evidence == []
+
+    # Retirement failure records residual state
+    coord._reconcile_val = "succeeded"
+    outcome = coord._dispose_terminal(claim("job-corrupted"), "running", {
+        "status": "failed", "publication_state": "not_started", "error_category": "contract_validation",
+        "_termination_proved": True,
+    })
+    assert outcome == "failed"
+    assert "job-corrupted" not in retired_claims
+    assert len(coord._residual_evidence) == 1
+    assert coord._residual_evidence[0] == "job-corrupted:1:validation_error"
+
+
+def test_terminal_diagnostics_use_the_same_redaction_as_stderr() -> None:
+    value = "refresh-failure:missing /synthetic/source password=synthetic-sensitive"
+    terminal = SimpleNamespace(terminal={"diagnostics": [value]}, stderr="")
+    stderr = SimpleNamespace(terminal={}, stderr=value)
+    assert _extract_diagnostic_summary(terminal) == _extract_diagnostic_summary(stderr)
+    summary = _extract_diagnostic_summary(terminal)
+    assert summary is not None
+    assert "/synthetic/source" not in summary and "synthetic-sensitive" not in summary

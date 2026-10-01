@@ -123,9 +123,14 @@ def read_project_runtime_dependencies(repo_root: Path, psycopg_release_version: 
         project = tomllib.loads(path.read_text(encoding="utf-8"))["project"]
     except (OSError, KeyError, TypeError, tomllib.TOMLDecodeError) as error:
         raise TestImageError("project runtime dependencies are unavailable") from error
-    if "dependencies" in tuple(project.get("dynamic") or ()):
+    dynamic = tuple(project.get("dynamic") or ())
+    if "dependencies" in dynamic or "optional-dependencies" in dynamic:
         raise TestImageError("dynamic project dependencies are not authorized")
-    dependencies = project.get("dependencies")
+    # The PostgreSQL test runtime is the base package plus its `postgres` extra.
+    optional = project.get("optional-dependencies") or {}
+    postgres = optional.get("postgres", []) if isinstance(optional, dict) else None
+    base = project.get("dependencies")
+    dependencies = base + postgres if isinstance(base, list) and isinstance(postgres, list) else None
     if not isinstance(dependencies, list) or not dependencies or not all(
         isinstance(item, str) and item.strip() for item in dependencies
     ):

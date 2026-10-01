@@ -12,6 +12,7 @@ from repomap_kg.ops.config import (
     bool_text,
     graph_database,
 )
+from repomap_kg.ops.graph_registry import GraphRegistryConfig
 from repomap_kg.ops.report_records import (
     SafetyMarkerBuilder,
     OpsBaselinePruneKindResult,
@@ -36,8 +37,7 @@ from repomap_kg.ops.report_records import (
 )
 
 def preflight_to_jsonable(
-    config: OpsConfig,
-    result: OpsRefreshPreflightResult,
+    config: GraphRegistryConfig, result: OpsRefreshPreflightResult,
     *,
     safety_markers: SafetyMarkerBuilder | None = None,
 ) -> dict[str, Any]:
@@ -57,7 +57,7 @@ def preflight_to_jsonable(
     }
 
 def format_preflight_table(
-    config: OpsConfig,
+    config: GraphRegistryConfig,
     result: OpsRefreshPreflightResult,
     *,
     safety_markers: SafetyMarkerBuilder | None = None,

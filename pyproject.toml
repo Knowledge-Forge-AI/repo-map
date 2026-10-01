@@ -4,14 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "repomap-kg"
-version = "0.0.1"
+version = "0.0.2"
 description = "Deterministic knowledge graph builder for polyglot repositories."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "AGPL-3.0-or-later"
 authors = [{ name = "RepoMap contributors" }]
 dependencies = [
-  "psycopg[binary]==3.2.12",
   "typing-extensions==4.16.0",
 ]
 
@@ -31,6 +30,9 @@ static-analysis = [
   "types-docker==7.2.0.20260819",
   "types-psutil==7.2.2.20260518",
   "types-requests==2.33.0.20260518",
+]
+postgres = [
+  "psycopg[binary]==3.2.12",
 ]
 
 [project.scripts]

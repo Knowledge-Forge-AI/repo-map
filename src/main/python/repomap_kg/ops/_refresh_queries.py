@@ -16,6 +16,7 @@ from repomap_kg.ops.config import (
 )
 from repomap_kg.ops.readback import (
     MissingDatabaseReadbackError,
+    OpsJsonReadbackMode,
     execute_ops_json_readback as _base_execute_ops_json_readback,
 )
 from repomap_kg.ops.refresh_graphs import (
@@ -75,6 +76,7 @@ def query_refresh_status(
     *,
     graph_ids: Sequence[str] | None = None,
     psql_command: str | None = None,
+    readback_mode: OpsJsonReadbackMode = "host_then_container",
 ) -> dict[str, OpsRefreshGraphStatus]:
     statuses: dict[str, OpsRefreshGraphStatus] = {}
     graphs_by_database: dict[str, list[OpsGraphConfig]] = {}
@@ -96,7 +98,7 @@ def query_refresh_status(
                 sql=build_postgres_status_sql(),
                 label="operations postgres status",
                 expected_shape="object",
-                mode="host_then_container",
+                mode=readback_mode,
                 psql_command=psql_command,
             )
         except StorageSchemaError as error:
@@ -134,7 +136,7 @@ def query_refresh_status(
                 ),
                 label="operations refresh status",
                 expected_shape="object",
-                mode="host_then_container",
+                mode=readback_mode,
                 psql_command=psql_command,
             )
         except StorageSchemaError as error:

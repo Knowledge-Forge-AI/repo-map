@@ -362,7 +362,7 @@ def test_multi_source_generations_and_semantic_identities_independently_asserted
         "cap1:python-static-v1",
         identities[1],
         "canon1:graph-key-v1-binding-path",
-        "semantic1:multi-source-v1",
+        "semantic1:multi-source-config-binary64-v1",
         "quality1:default",
     )
     assert identities[1].startswith("resolver1:nix-static-v2-")

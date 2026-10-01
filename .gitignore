@@ -39,3 +39,7 @@ tmp/
 
 # Keep explicit examples and templates trackable.
 !.env.example
+
+# Keep explicit test fixtures trackable even when matching ignored directory names.
+!src/test/fixtures/**/node_modules/
+!src/test/fixtures/**/node_modules/**

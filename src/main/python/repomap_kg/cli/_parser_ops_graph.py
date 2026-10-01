@@ -40,7 +40,10 @@ def add_ops_graph_commands(
     config_check.add_argument(
         "--check-db",
         action="store_true",
-        help="run a read-only Postgres schema readiness probe",
+        help=(
+            "run a read-only storage readiness probe (PostgreSQL schema, or "
+            "SQLite Local graph databases without creating them)"
+        ),
     )
     config_check.add_argument(
         "--psql-command",
@@ -58,7 +61,10 @@ def add_ops_graph_commands(
     ops_graphs.add_argument(
         "--check-db",
         action="store_true",
-        help="run read-only storage namespace readiness checks",
+        help=(
+            "run read-only storage namespace readiness checks (SQLite Local: "
+            "per-graph database state, never created)"
+        ),
     )
     ops_graphs.add_argument(
         "--psql-command",
@@ -99,6 +105,55 @@ def add_ops_graph_commands(
     )
     refresh_graph_command.add_argument("--psql-command", help="psql executable to use for loading storage")
     refresh_graph_command.add_argument("--json", action="store_true", help="emit graph refresh result as JSON")
+    sqlite_init = ops_subcommands.add_parser(
+        "sqlite-init",
+        help="create the SQLite Local database of one configured graph at the current schema",
+    )
+    add_ops_config_arguments(sqlite_init)
+    sqlite_init.add_argument("--graph", required=True, help="configured graph id to initialize")
+    sqlite_init.add_argument("--json", action="store_true", help="emit the outcome as JSON")
+    sqlite_backup = ops_subcommands.add_parser(
+        "sqlite-backup",
+        help="write a verified backup/export directory of one SQLite Local graph database",
+    )
+    add_ops_config_arguments(sqlite_backup)
+    sqlite_backup.add_argument("--graph", required=True, help="configured graph id to back up")
+    sqlite_backup.add_argument(
+        "--output", required=True, help="new or empty directory to write the backup into"
+    )
+    sqlite_backup.add_argument("--json", action="store_true", help="emit the outcome as JSON")
+    sqlite_restore = ops_subcommands.add_parser(
+        "sqlite-restore",
+        help="restore a verified SQLite Local backup into an absent graph database",
+    )
+    add_ops_config_arguments(sqlite_restore)
+    sqlite_restore.add_argument("--graph", required=True, help="configured graph id to restore")
+    sqlite_restore.add_argument("--backup", required=True, help="completed backup directory")
+    sqlite_restore.add_argument("--json", action="store_true", help="emit the outcome as JSON")
+    sqlite_upgrade = ops_subcommands.add_parser(
+        "sqlite-upgrade",
+        help="back up, then migrate one older-schema SQLite Local graph database to the current schema",
+    )
+    add_ops_config_arguments(sqlite_upgrade)
+    sqlite_upgrade.add_argument("--graph", required=True, help="configured graph id to upgrade")
+    sqlite_upgrade.add_argument(
+        "--backup-output",
+        required=True,
+        help="new or empty directory for the verified pre-upgrade backup",
+    )
+    sqlite_upgrade.add_argument("--json", action="store_true", help="emit the outcome as JSON")
+    sqlite_cleanup = ops_subcommands.add_parser(
+        "sqlite-cleanup",
+        help="inventory (dry run) or, with --yes, remove provably safe stale SQLite Local state of one graph",
+    )
+    add_ops_config_arguments(sqlite_cleanup)
+    sqlite_cleanup.add_argument("--graph", required=True, help="configured graph id to clean")
+    sqlite_cleanup.add_argument(
+        "--yes",
+        action="store_true",
+        help="remove what is provably safe and sync the state directory (default: dry run)",
+    )
+    sqlite_cleanup.add_argument("--json", action="store_true", help="emit the outcome as JSON")
     refresh_preflight = ops_subcommands.add_parser(
         "refresh-preflight",
         help="inspect one configured graph refresh without loading storage",
@@ -140,8 +195,8 @@ def add_ops_graph_commands(
     add_ops_config_arguments(graph_files)
     graph_files.add_argument("--graph", required=True, help="configured graph id to query")
     graph_file_path = graph_files.add_mutually_exclusive_group()
-    graph_file_path.add_argument("--path", help="include only this canonical path")
-    graph_file_path.add_argument("--path-prefix", help="include only canonical files under this path prefix")
+    graph_file_path.add_argument("--path", help="include files with this public source-relative path")
+    graph_file_path.add_argument("--path-prefix", help="include files under this public source-relative path prefix")
     graph_files.add_argument("--language", help="include this canonical language")
     graph_files.add_argument("--role", help="include this canonical file role")
     graph_files.add_argument(

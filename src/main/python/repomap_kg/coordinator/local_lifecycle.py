@@ -35,6 +35,8 @@ def maintenance_activity_for_home(
             yield
     except MaintenanceUnavailableError:
         raise
+    except CoordinatorControlError as error:
+        raise MaintenanceUnavailableError(str(error)) from None
     except Exception:
         raise MaintenanceUnavailableError(
             "maintenance authority is unavailable"
@@ -58,6 +60,8 @@ def maintenance_window_for_graph_upgrade(
             yield
     except MaintenanceUnavailableError:
         raise
+    except CoordinatorControlError as error:
+        raise MaintenanceUnavailableError(str(error)) from None
     except Exception:
         raise MaintenanceUnavailableError(
             "maintenance authority is unavailable"
@@ -75,6 +79,8 @@ def maintenance_window_for_coordinated_backup(
         graph_databases = authority.graph_databases
     except MaintenanceUnavailableError:
         raise
+    except CoordinatorControlError as error:
+        raise MaintenanceUnavailableError(str(error)) from None
     except Exception:
         raise MaintenanceUnavailableError(
             "maintenance authority is unavailable"
@@ -113,6 +119,8 @@ def maintenance_window_for_database_drop(
             )
     except MaintenanceUnavailableError:
         raise
+    except CoordinatorControlError as error:
+        raise MaintenanceUnavailableError(str(error)) from None
     except Exception:
         raise MaintenanceUnavailableError(
             "maintenance authority is unavailable"
@@ -178,7 +186,7 @@ def initialize_coordinator_control(
             "database_created": created,
             "schema_version": version,
         }
-    except Exception:
+    except Exception as error:
         if created:
             try:
                 if authority is None:
@@ -190,6 +198,8 @@ def initialize_coordinator_control(
                 raise CoordinatorControlError(
                     "coordinator_control_init_cleanup_failed"
                 ) from None
+        if isinstance(error, CoordinatorControlError):
+            raise
         raise CoordinatorControlError("coordinator_control_init_failed") from None
 
 

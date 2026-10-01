@@ -198,9 +198,10 @@ credential-file coverage when `psql.exe` is unavailable.
 Scoped local verification is mandatory by default for ordinary development
 phases. The ordinary local default is the narrowest exact unit paths or node
 IDs beneath `src/test/unit/python` plus applicable changed-file static checks.
-A local integration selector is optional, prompt-owned diagnostic evidence;
-when requested, it remains automatically sandboxed and host-disposable. A
-justified directory beneath a suite root is still scoped; selecting the whole
+Behavior-changing product dispatches also require narrowly scoped local
+containerized integration for the changed product boundary, with both unit and
+integration owners updated in the same slice. Integration remains automatically
+sandboxed and host-disposable. A justified directory beneath a suite root is still scoped; selecting the whole
 suite root is a complete run.
 
 Unless the current prompt grants a complete-suite override, agents must:
@@ -209,10 +210,9 @@ Unless the current prompt grants a complete-suite override, agents must:
    owners without inventing automatic Git-diff-to-test heuristics.
 2. Run the narrowest exact unit paths or node IDs that cover the changed
    behavior.
-3. Run exact integration paths or node IDs only when the current prompt
-   explicitly requests that diagnostic; crossing a storage, process, runtime,
-   database, or container boundary identifies the eventual hosted owner but
-   does not make laptop integration an ordinary phase-closing requirement.
+3. For behavior-changing product slices, run exact containerized integration
+   paths or node IDs for the changed boundary with `--no-coverage`. Other
+   change classes select integration in proportion to the changed contract.
 4. Add adjacent owners only when a shared contract makes them affected.
 5. Run applicable changed-file static or compile checks.
 6. Run `git diff --check` and `git diff --cached --check`.
@@ -246,8 +246,8 @@ retained, pair it with an exact path and `--no-coverage`. Scoped runs use
 does not weaken or lower any threshold. Do not use `--threshold` to make a
 partial population pass.
 
-Agents must not routinely run complete unit, complete integration, staging,
-system, or the retired `--suite all`. The hosted PR Fast pipeline owns the
+Agents must not routinely run complete unit, complete integration, smoke, staging,
+system, or the retired combined `--suite all`. The hosted PR Fast pipeline owns the
 routine complete unit population in `repomap-unit-tests`; the logically approved
 smoke-then-complete-integration population in `repomap-staging-gate`, and the
 logically approved assembled-product scenario in
@@ -259,9 +259,19 @@ substitute.
 A locally verified product candidate may be retained and subsequent local
 product development may proceed while hosted integration qualification remains
 explicitly pending, unless the current operator prompt names a narrower
-mechanical blocker. Local sandbox unavailability likewise records diagnostic
-unavailability; it does not transfer the hosted qualification claim to the
-laptop or force unrelated local work to stop.
+mechanical blocker. Required local integration refusal or sandbox unavailability
+records a named verification gap and blocks claiming the behavior-changing slice
+complete unless the manager explicitly accepts that gap. A candidate may be
+retained and unrelated work may continue; no host-execution fallback or hosted
+qualification claim follows. Historical MS-ID1-FIX1/FIX2 dispositions remain
+historical, not exemptions for new product slices.
+
+For SQLite Local slices, containerized integration means testing temporary
+SQLite publication/read/recovery through repository-owned container isolation;
+PostgreSQL is needed for cross-backend parity, not SQLite-only behavior. The
+separately authorized implementation slice must provide any missing harness
+support without weakening isolation. Local product use itself remains host-native.
+See [ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md).
 
 ## Complete-Suite Override
 
@@ -440,8 +450,8 @@ RepoMap operates five hosted CI lanes across the three cost tiers:
    digests plus phase/status authority. New retained modules enter only clean.
    Semgrep runs through the exact console script owned by that sealed Python.
    Maintained Python code quality is protected under ratchets immediately
-   rather than awaiting hypothetical replacement, with architecture placement
-   reserved for the post-main phase. Planned-Go, planned-Go/Rust, and
+   rather than awaiting hypothetical replacement, under ADR 0071’s retained
+   Python direction. Planned-Go, planned-Go/Rust, and
    transitional Python implementation outside explicit retained maintenance
    enrollment remain outside the product baseline; a retention assessment of
    at least 80% still requires clean admission and is not waived by that label.
@@ -486,7 +496,9 @@ RepoMap operates five hosted CI lanes across the three cost tiers:
    the behavioral PR Fast lane. TEST-ISO1 proved that `--suite unit` is unit-only
    direct-host execution without Docker-backed integration resources, so this
    lane runs the complete canonical population exactly once through
-   `python3 tools/run_tests.py --suite unit`. It installs
+   `python3 tools/run_tests.py --suite unit`. It installs the hash-locked
+   `tools/ci/project_dependencies.lock` closure (Psycopg, which unit collection
+   imports but the base package no longer requires) and then
    `.[test,scale-tools,static-analysis]`. The `scale-tools` extra supplies `docker`
    and `psutil` for injected clients, parsers, and failure mapping. The pinned
    static-analysis extra supplies the real mypy and Ruff subprocesses exercised by
