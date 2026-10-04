@@ -8,24 +8,29 @@ import os
 import subprocess
 import time
 from pathlib import Path
-from typing import Any, Callable, Protocol
+from typing import Any, Callable, TypeAlias
 
+from repomap_kg.runtime.system_test_pause import (
+    SYSTEM_TEST_STATUS_TIMEOUT_SECONDS,
+    SYSTEM_TEST_INTERRUPTION_TIMEOUT_SECONDS,
+    validate_pause_window_contract,
+)
 from repomap_kg.runtime.plan import LocalRuntimePlan
+from tools.system.scenario_readback import _fixture_status, _parse_json
+from tools.system.scenario_restart_fence import verify_restart_fence
 from tools.system.config import SystemTestError
 from tools.system.report import SystemStepResult
 from tools.system.scenario_recovery_wait import wait_for_recovered_coordinator_job
+from tools.system.scenario_submission import (
+    BudgetTimer, ComposeRunner, _process_output, _reap, _wait_for_marker as _wait_for_marker,
+)
 
-class BudgetTimer(Protocol):
-    def check_budget(self) -> None: ...
-    def remaining_for_test(self) -> float: ...
 
-
-ComposeRunner = Callable[..., subprocess.CompletedProcess[str]]
 EnvironmentLoader = Callable[[LocalRuntimePlan | None], dict[str, str]]
-ControlEvidence = Callable[..., dict[str, Any]]
-AuthorityEvidence = ControlEvidence
-OwnerEvidence = ControlEvidence
-ReplacementWaiter = Callable[..., dict[str, Any]]
+ControlEvidence: TypeAlias = Callable[..., dict[str, Any]]
+AuthorityEvidence: TypeAlias = ControlEvidence
+OwnerEvidence: TypeAlias = ControlEvidence
+ReplacementWaiter: TypeAlias = ControlEvidence
 ProcessFactory = Callable[..., subprocess.Popen[str]]
 
 def _compose(
@@ -37,77 +42,6 @@ def _compose(
 def _ops(*args: str) -> list[str]:
     return ["exec", "-T", "coordinator", "python", "-m", "repomap_kg", "ops", *args]
 
-def _parse_json(stdout: str, message: str, *, include_output: bool = False) -> dict[str, Any]:
-    try:
-        payload = json.loads(stdout)
-    except json.JSONDecodeError as error:
-        detail = f": {stdout}" if include_output else ""
-        raise SystemTestError(f"{message}{detail}") from error
-    if not isinstance(payload, dict):
-        raise SystemTestError(f"{message} returned a non-object")
-    return payload
-
-def _fixture_status(payload: dict[str, Any], message: str) -> dict[str, Any]:
-    graphs = payload.get("graphs", [])
-    if not isinstance(graphs, list):
-        raise SystemTestError("refresh-status graphs field is not a list")
-    matches = [row for row in graphs if isinstance(row, dict) and row.get("graph_id") == "fixture"]
-    if len(matches) != 1:
-        raise SystemTestError(message)
-    return matches[0]
-
-def _wait_for_marker(
-    compose_dir: Path,
-    env: dict[str, str],
-    timer: BudgetTimer,
-    run_compose: ComposeRunner,
-    sleep: Callable[[float], None],
-) -> tuple[str, int | None]:
-    job_id = ""
-    attempt: int | None = None
-    for _ in range(60):
-        timer.check_budget()
-        marker = _compose(
-            run_compose,
-            compose_dir,
-            ["exec", "-T", "coordinator", "cat", "/tmp/system_pause_trigger.ready"],
-            env,
-            timer,
-            timeout=10.0,
-            check=False,
-        )
-        if marker.returncode == 0 and marker.stdout.strip():
-            for line in marker.stdout.strip().splitlines():
-                if line.startswith("job_id="):
-                    job_id = line.split("=", 1)[1].strip()
-                elif line.startswith("attempt="):
-                    try:
-                        attempt = int(line.split("=", 1)[1].strip())
-                    except ValueError as error:
-                        raise SystemTestError(
-                            "worker pause marker carried an invalid attempt"
-                        ) from error
-        if job_id and attempt is not None:
-            break
-        sleep(0.25)
-    return job_id, attempt
-
-def _process_output(process: subprocess.Popen[str]) -> tuple[int | None, str, str]:
-    code = process.poll()
-    stdout = process.stdout.read() if process.stdout else ""
-    stderr = process.stderr.read() if process.stderr else ""
-    return code, stdout, stderr
-
-def _reap(process: subprocess.Popen[str]) -> None:
-    if process.poll() is None:
-        process.terminate()
-        try:
-            process.communicate(timeout=5)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.communicate(timeout=5)
-    if process.poll() is None:
-        raise SystemTestError("background coordinator submission was not reaped")
 
 
 def step_2_durable_coordinator_execution(
@@ -125,6 +59,7 @@ def step_2_durable_coordinator_execution(
     sleep: Callable[[float], None] = time.sleep,
 ) -> tuple[SystemStepResult, str, str, dict[str, Any]]:
     """Submit a refresh and capture its durable in-flight identity."""
+    validate_pause_window_contract()
     step_start = clock()
     timer.check_budget()
     env = load_plan_env(plan)
@@ -158,8 +93,8 @@ def step_2_durable_coordinator_execution(
         env=run_env,
     )
     try:
-        job_id, marker_attempt = _wait_for_marker(
-            compose_dir, env, timer, run_compose, sleep
+        job_id, marker_attempt, handoff = _wait_for_marker(
+            compose_dir, env, timer, run_compose
         )
         if not job_id or marker_attempt is None:
             code, stdout, stderr = _process_output(process) if process.poll() is not None else (None, "", "")
@@ -167,17 +102,25 @@ def step_2_durable_coordinator_execution(
                 "worker did not publish an exact durable job/attempt marker: "
                 f"exit={code} stdout={stdout.strip()} stderr={stderr.strip()}"
             )
+        if (set(handoff) != {"repository_id", "stage_id", "run_id", "receipt"}
+                or any(type(handoff.get(key)) is not int or handoff[key] <= 0 for key in ("repository_id", "run_id"))
+                or not isinstance(handoff.get("stage_id"), str) or not handoff["stage_id"]
+                or not isinstance(handoff.get("receipt"), dict)
+                or handoff["receipt"].get("publication_job_id") != job_id
+                or handoff["receipt"].get("publication_attempt") != marker_attempt):
+            raise SystemTestError("worker did not retain its validated publication handoff")
         if process.poll() is not None:
             raise SystemTestError(
                 "background coordinator submission exited before the interruption boundary"
             )
+        timer.check_budget()
         status_res = _compose(
             run_compose,
             compose_dir,
             _ops("coordinator-job-status", "--repo-map-home", "/repo-map-home", "--job-id", job_id, "--json"),
             env,
             timer,
-            timeout=30.0,
+            timeout=SYSTEM_TEST_STATUS_TIMEOUT_SECONDS,
         )
         status_data = _parse_json(status_res.stdout, "invalid JSON from coordinator-job-status")
         job_info = status_data.get("job")
@@ -192,6 +135,7 @@ def step_2_durable_coordinator_execution(
             raise SystemTestError("coordinator status did not match the fixture job identity")
         if job_info.get("attempt_count") != marker_attempt or marker_attempt <= 0:
             raise SystemTestError("coordinator status did not match the marker attempt")
+        timer.check_budget()
         durable = control_job_evidence(compose_dir, plan, timer, job_id)
         digest = hashlib.sha256(idempotency_key.encode("utf-8")).hexdigest()
         expected = {"job_id": job_id, "graph_id": "fixture", "idempotency_digest": digest,
@@ -213,9 +157,13 @@ def step_2_durable_coordinator_execution(
             "initial_attempt": marker_attempt, "initial_instance_id": instance_id,
             "initial_singleton_fencing_epoch": singleton_epoch,
             "initial_graph_lease_fencing_epoch": lease_epoch,
+            "initial_publication_handoff": handoff,
             "attempt_1": marker_attempt, "attempt_1_instance_id": instance_id,
             "attempt_1_singleton_fencing_epoch": singleton_epoch,
             "attempt_1_graph_lease_fencing_epoch": lease_epoch,
+            "initial_generations": {key: durable.get(key) for key in (
+                "source_generation", "config_generation", "extractor_generation", "canonicalizer_generation",
+            )},
         }
     finally:
         _reap(process)
@@ -252,7 +200,7 @@ def step_3_controlled_coordinator_interruption_recovery(
     initial_instance = coordinator_evidence["initial_instance_id"]
     initial_attempt = coordinator_evidence["initial_attempt"]
     initial_epoch = coordinator_evidence["initial_singleton_fencing_epoch"]
-    _compose(run_compose, compose_dir, ["kill", "--signal", "KILL", "coordinator"], env, timer, timeout=30.0)
+    _compose(run_compose, compose_dir, ["kill", "--signal", "KILL", "coordinator"], env, timer, timeout=SYSTEM_TEST_INTERRUPTION_TIMEOUT_SECONDS)
     stopped = _compose(run_compose, compose_dir, ["ps", "--all", "--format", "json", "coordinator"], env, timer, timeout=30.0)
     try:
         rows = [json.loads(line) for line in stopped.stdout.splitlines() if line.strip()]
@@ -313,6 +261,10 @@ def step_3_controlled_coordinator_interruption_recovery(
     lease_epoch = authority.get("graph_lease_fencing_epoch")
     if not isinstance(lease_epoch, int) or lease_epoch <= 0:
         raise SystemTestError("publication authority omitted its graph-lease fence")
+    coordinator_evidence.update(verify_restart_fence(
+        compose_dir, plan, timer, job_id=job_id, coordinator_evidence=coordinator_evidence,
+        durable=durable, authority=authority, env=env, run_compose=run_compose,
+    ))
     prefixes = {"snapshot_manifest_id": "snapmanifest1:", "extraction_receipt_id": "receipt1:",
                 "publication_bundle_id": "bundle1:", "graph_candidate_id": "cand1:"}
     if authority.get("execution_route") != "portable-worker-v1" or any(

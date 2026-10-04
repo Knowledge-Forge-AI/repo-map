@@ -1,9 +1,12 @@
 import importlib.util
 import json
 import os
+import shutil
 import sys
+import tomllib
 import zipfile
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -14,40 +17,19 @@ from repomap_kg.storage import discover_migrations
 REPO_ROOT = Path(__file__).resolve().parents[6]
 
 
-def test_wheel_contains_complete_graph_and_control_migration_catalogs(
+def _verify_wheel_contents(
+    wheel: Path,
+    expected_version: str,
     tmp_path: Path,
+    cap: Any,
+    family_suffix: str,
 ) -> None:
-    if importlib.util.find_spec("setuptools") is None:
-        pytest.skip("setuptools build backend is unavailable")
-    from runner_coverage_bootstrap import resolve_bootstrap_capability
     from runner_coverage_execution import prepare_child_coverage_environment
     from runner_coverage_observer import launch_observed_process
 
-    cap = resolve_bootstrap_capability(env=os.environ)
-    wheel_directory = tmp_path / "wheel"
-    wheel_directory.mkdir()
-    pip_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
-    wheel_build = launch_observed_process(
-        (
-            sys.executable,
-            "-m",
-            "pip",
-            "wheel",
-            "--no-deps",
-            "--no-build-isolation",
-            "--wheel-dir",
-            str(wheel_directory),
-            str(REPO_ROOT),
-        ),
-        family="arch7f_pip",
-        env=pip_env,
-        capability=cap,
-    )
-    assert wheel_build.returncode == 0, wheel_build.stderr[-2_000:]
-    wheel = next(wheel_directory.glob("repomap_kg-*.whl"))
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
-        metadata = archive.read("repomap_kg-0.0.2.dist-info/METADATA").decode("utf-8")
+        metadata = archive.read(f"repomap_kg-{expected_version}.dist-info/METADATA").decode("utf-8")
     header = metadata.split("\n\n", 1)[0].splitlines()
 
     requirements = [line for line in header if line.startswith("Requires-Dist: ")]
@@ -78,9 +60,14 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
     }
 
     assert installed_data == {*graph_resources, *control_resources}
+    october = {path for path in control_resources if path.startswith("coordinator-rdbms/2026/10/")}
+    assert october, "October coordinator migration catalog must be nonempty"
+    assert october <= installed_data
 
-    install_root = tmp_path / "installed"
-    pip_install_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
+    install_root = tmp_path / f"installed_{family_suffix}"
+    pip_install_env = prepare_child_coverage_environment(
+        os.environ, family="arch7f_pip", capability=cap
+    )
     pip_install = launch_observed_process(
         (
             sys.executable,
@@ -141,3 +128,88 @@ def test_wheel_contains_complete_graph_and_control_migration_catalogs(
     ]
 
     assert installed == {"control": source_control, "graph": source_graph}
+
+
+def test_wheel_contains_complete_graph_and_control_migration_catalogs(
+    tmp_path: Path,
+) -> None:
+    if importlib.util.find_spec("setuptools") is None:
+        pytest.skip("setuptools build backend is unavailable")
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
+    from runner_coverage_execution import prepare_child_coverage_environment
+    from runner_coverage_observer import launch_observed_process
+
+    cap = resolve_bootstrap_capability(env=os.environ)
+    wheel_directory = tmp_path / "wheel_private"
+    wheel_directory.mkdir()
+    pip_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
+    wheel_build = launch_observed_process(
+        (
+            sys.executable,
+            "-m",
+            "pip",
+            "wheel",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            str(wheel_directory),
+            str(REPO_ROOT),
+        ),
+        family="arch7f_pip",
+        env=pip_env,
+        capability=cap,
+    )
+    assert wheel_build.returncode == 0, wheel_build.stderr[-2_000:]
+    wheel = next(wheel_directory.glob("repomap_kg-*.whl"))
+    version = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text())["project"]["version"]
+    _verify_wheel_contents(wheel, version, tmp_path, cap, "private")
+
+
+def test_projected_public_wheel_contains_complete_graph_and_control_migration_catalogs(
+    tmp_path: Path,
+) -> None:
+    if importlib.util.find_spec("setuptools") is None:
+        pytest.skip("setuptools build backend is unavailable")
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
+    from runner_coverage_execution import prepare_child_coverage_environment
+    from runner_coverage_observer import launch_observed_process
+
+    cap = resolve_bootstrap_capability(env=os.environ)
+    current_version = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text())["project"]["version"]
+    if current_version == "0.0.2":
+        test_wheel_contains_complete_graph_and_control_migration_catalogs(tmp_path)
+        return
+
+    projected_src = tmp_path / "projected_source"
+    projected_src.mkdir()
+    raw_pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'version = "0.1.0"' in raw_pyproject
+    (projected_src / "pyproject.toml").write_text(
+        raw_pyproject.replace('version = "0.1.0"', 'version = "0.0.2"', 1),
+        encoding="utf-8",
+    )
+    shutil.copyfile(REPO_ROOT / "README.md", projected_src / "README.md")
+    shutil.copytree(REPO_ROOT / "src", projected_src / "src")
+
+    wheel_directory = tmp_path / "wheel_public"
+    wheel_directory.mkdir()
+    pip_env = prepare_child_coverage_environment(os.environ, family="arch7f_pip", capability=cap)
+    wheel_build = launch_observed_process(
+        (
+            sys.executable,
+            "-m",
+            "pip",
+            "wheel",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            str(wheel_directory),
+            str(projected_src),
+        ),
+        family="arch7f_pip",
+        env=pip_env,
+        capability=cap,
+    )
+    assert wheel_build.returncode == 0, wheel_build.stderr[-2_000:]
+    wheel = next(wheel_directory.glob("repomap_kg-0.0.2-*.whl"))
+    _verify_wheel_contents(wheel, "0.0.2", tmp_path, cap, "public")

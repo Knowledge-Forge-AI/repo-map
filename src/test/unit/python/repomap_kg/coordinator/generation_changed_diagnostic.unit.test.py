@@ -146,6 +146,7 @@ def test_dispose_terminal_passes_diagnostic_to_reconciliation_and_termination() 
         expected_state="running",
         category="custom_category",
         diagnostic_summary="custom:diagnostic_details",
+        publication_state="commit_unknown",
     )
     store.mark_attempt_terminated.assert_called_once_with(
         claim,
@@ -180,6 +181,7 @@ def test_dispose_terminal_worker_crash_diagnostic_fallback() -> None:
         expected_state="running",
         category="worker_crash",
         diagnostic_summary="worker_crash:unproved_termination",
+        publication_state="commit_unknown",
     )
     store.mark_attempt_terminated.assert_called_once_with(
         claim,

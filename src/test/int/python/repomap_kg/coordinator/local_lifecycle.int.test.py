@@ -19,6 +19,7 @@ from repomap_kg.coordinator.local_lifecycle import (
     upgrade_coordinator_control,
 )
 from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
+from repomap_test_support.cli_in_process import scrub_coverage_environment
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
@@ -34,9 +35,7 @@ def _sanitize_db_name(raw: str, max_length: int = 55) -> str:
     return cleaned
 
 
-def test_explicit_control_lifecycle_creates_replays_and_rejects_incompatible_state(
-    monkeypatch,
-):
+def test_explicit_control_lifecycle_creates_replays_and_rejects_incompatible_state(monkeypatch):
     require_postgres_binaries()
     with short_test_directory("async10-", "incompatible/configured.rp.toml") as directory:
         root = Path(directory)
@@ -359,7 +358,7 @@ def test_local_direct_route_control_lifecycle(tmp_path, monkeypatch, credential_
                 path.write_text(path.read_text().replace(original, "password = " + json.dumps(secret)))
             elif credential_authority == "environment":
                 monkeypatch.setenv("REPOMAP_PG_PASSWORD", secret)
-            environment = dict(os.environ)
+            environment = scrub_coverage_environment(os.environ)
             environment["PYTHONPATH"] = str(Path(repomap_kg.__file__).parents[1])
             environment["PGPASSFILE"] = str(tmp_path / "absent-pgpass")
             def command(name):

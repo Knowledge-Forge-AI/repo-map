@@ -51,8 +51,16 @@ def reconcile_publication(
                     "protocol",
                 )
                 return "quarantined"
-            if unpublished_proved:
-                row["job_publication_state"] = "not_started"
+            if (
+                row.get("attempt_graph_lease_fencing_epoch") is not None
+                and int(row["attempt_graph_lease_fencing_epoch"]) <= 0
+            ):
+                return "reconciliation_required"
+            if unpublished_proved and (
+                row["job_publication_state"] != "not_started"
+                or row["attempt_publication_state"] != "not_started"
+            ):
+                return "reconciliation_required"
             if row["job_publication_state"] == "commit_unknown":
                 return "reconciliation_required"
             if row["cancel_requested_at"] is not None:
@@ -65,7 +73,9 @@ def reconcile_publication(
                     cursor, claim, "failed", "rolled_back", "permanent"
                 )
                 return "failed"
-            _queue_retry(cursor, claim)
+            _queue_retry(cursor, claim, publication=(
+                "not_started" if row["job_publication_state"] == "not_started" else "rolled_back"
+            ))
             return "queued"
 
 
@@ -82,10 +92,12 @@ def _lock_evidence(cursor, claim):
                j.extractor_generation AS job_extractor_generation,
                j.canonicalizer_generation AS job_canonicalizer_generation,
                a.finished_at AS attempt_finished_at,
+               a.publication_state AS attempt_publication_state,
                a.source_generation AS attempt_source_generation,
                a.config_generation AS attempt_config_generation,
                a.extractor_generation AS attempt_extractor_generation,
                a.canonicalizer_generation AS attempt_canonicalizer_generation,
+               a.graph_lease_fencing_epoch AS attempt_graph_lease_fencing_epoch,
                m.outcome AS marker_outcome,
                m.graph_id AS marker_graph_id,
                m.source_generation AS marker_source_generation,
@@ -169,7 +181,7 @@ def _pause_graph_intent(cursor, claim) -> None:
     )
 
 
-def _queue_retry(cursor, claim) -> None:
+def _queue_retry(cursor, claim, publication="rolled_back") -> None:
     cursor.execute(
         """
         UPDATE jobs SET state = 'queued', publication_state = 'not_started',
@@ -181,7 +193,7 @@ def _queue_retry(cursor, claim) -> None:
         """,
         (claim.job_id, claim.attempt),
     )
-    _close_attempt(cursor, claim, "rolled_back", "transient")
+    _close_attempt(cursor, claim, publication, "transient")
     _delete_lease(cursor, claim)
 
 
@@ -190,7 +202,8 @@ def _close_attempt(cursor, claim, publication, category) -> None:
         """
         UPDATE job_attempts
         SET is_current = false, finished_at = COALESCE(finished_at, now()),
-            publication_state = %s, result_category = %s
+            publication_state = %s, result_category = %s,
+            supervisor_registration_digest = NULL
         WHERE job_id = %s AND attempt = %s AND is_current
           AND coordinator_instance_id = %s AND fencing_epoch = %s
         """,

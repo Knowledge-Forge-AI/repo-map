@@ -33,6 +33,19 @@ from repomap_kg.coordinator.refresh_adapter import (
     execute_refresh,
     load_refresh_capability,
 )
+from datetime import timedelta
+from repomap_test_support.startup_recovery_scenarios import _harness, _refresh_harness, _make_refresh_fixture, _req, _req_norm
+
+
+def _running_claim(store, request):
+    epoch = store.acquire_singleton("watchdog-owner", timedelta(seconds=300))
+    store.submit(request)
+    claim = store.claim_next("watchdog-owner", epoch, timedelta(seconds=300))
+    assert claim is not None
+    for before, after in (("claimed", "starting"), ("starting", "running")):
+        assert store.compare_and_set_state(claim.job_id, expected_state=before, new_state=after,
+            attempt=claim.attempt, instance_id=claim.instance_id, fencing_epoch=epoch)
+    return claim
 
 
 def search_path():
@@ -72,25 +85,21 @@ def _route_fields(config: Any) -> dict[str, Any]:
 
 
 def test_refresh_worker_timeout_before_publication_records_not_started(monkeypatch):
-    with short_test_directory("async4-", "repository/README.md") as directory:
-        root = Path(directory)
-        repository = root / "repository"
-        repository.mkdir()
-        (repository / "README.md").write_text("# Fixture\n", encoding="utf-8")
-        config_path = root / "ops.toml"
-        _write_config(config_path, repository)
+    with _refresh_harness() as (store, root, connect, postgres, graph_db):
+        config_path, sg, cg, eg, kg = _make_refresh_fixture(postgres, root, graph_db, "synthetic-refresh")
+        claim = _running_claim(store, _req_norm("prepub-timeout", sg, cg, eg, kg, "synthetic-refresh"))
         loaded_config = load_ops_config(config_path)
         configured = configured_graph(loaded_config, "synthetic-refresh")
         scan = scan_multi_source_generations(configured)
-        psql_path = controlled_psql_copy(root)
+        psql_path = Path(postgres.psql_command)
         capability = RefreshCapability(
-            schema_version=1, job_id="job-refresh-prepub-timeout", attempt=1,
+            schema_version=1, job_id=claim.job_id, attempt=claim.attempt,
             graph_id="synthetic-refresh", config_path=config_path, psql_path=psql_path,
-            postgres_user="repomap_refresh_publication", postgres_password="test-only", **_route_fields(loaded_config),
+            postgres_user=postgres.user, postgres_password=postgres.password, **_route_fields(loaded_config),
             executable_search_path=(psql_path.parent,), source_generation=scan.source_generation,
             config_generation=scan.config_generation, extractor_generation=extractor_generation(configured),
-            canonicalizer_generation=canonicalizer_generation(), coordinator_instance_id="worker-refresh-timeout",
-            singleton_fencing_epoch=1, graph_lease_fencing_epoch=1,
+            canonicalizer_generation=canonicalizer_generation(), coordinator_instance_id=claim.instance_id,
+            singleton_fencing_epoch=claim.fencing_epoch, graph_lease_fencing_epoch=claim.graph_lease_fencing_epoch,
         )
         path = create_refresh_capability(root, capability)
 
@@ -128,6 +137,8 @@ def test_refresh_worker_timeout_before_publication_records_not_started(monkeypat
         result = run_refresh_worker(
             path, {"job_id": capability.job_id, "attempt": capability.attempt}, limits,
             job_context={"graph_id": capability.graph_id, "source_generation": capability.source_generation, "config_generation": capability.config_generation},
+            fencing_prover=store.in_process_fencing_proof,
+            launch_registrar=store.register_supervisor_launch,
         )
         injector.join()
 
@@ -335,19 +346,19 @@ def test_refresh_worker_leaf_and_outer_deadlines_observed_distinct_in_single_att
 
 
 def test_refresh_worker_anti_aliasing_and_cancellation():
-    with short_test_directory("async4-", "repository/README.md") as directory:
-        root = Path(directory)
+    with _harness() as (store, root, connect):
+        claim = _running_claim(store, _req("synthetic-refresh", "cancel"))
         config_path = root / "ops.toml"
         config_path.write_text("version = 1\n", encoding="utf-8")
         psql_path = controlled_psql_copy(root)
         capability = RefreshCapability(
-            schema_version=1, job_id="job-refresh-cancel", attempt=1,
+            schema_version=1, job_id=claim.job_id, attempt=claim.attempt,
             graph_id="synthetic-refresh", config_path=config_path, psql_path=psql_path,
             postgres_user="repomap_refresh_publication", postgres_password="test-only",
-            executable_search_path=(psql_path.parent,), source_generation="sg1:source",
-            config_generation="cg1:config", extractor_generation="eg1:extractor",
-            canonicalizer_generation="kg1:canonicalizer", coordinator_instance_id="worker-refresh-cancel",
-            singleton_fencing_epoch=1, graph_lease_fencing_epoch=1,
+            executable_search_path=(psql_path.parent,), source_generation=claim.source_generation,
+            config_generation=claim.config_generation, extractor_generation=claim.extractor_generation,
+            canonicalizer_generation=claim.canonicalizer_generation, coordinator_instance_id=claim.instance_id,
+            singleton_fencing_epoch=claim.fencing_epoch, graph_lease_fencing_epoch=claim.graph_lease_fencing_epoch,
         )
         path = create_refresh_capability(root, capability)
 
@@ -379,6 +390,8 @@ def test_refresh_worker_anti_aliasing_and_cancellation():
             path, {"job_id": capability.job_id, "attempt": capability.attempt}, worker_limits(),
             job_context={"graph_id": capability.graph_id, "source_generation": capability.source_generation, "config_generation": capability.config_generation},
             cancel_event=cancel_event,
+            fencing_prover=store.in_process_fencing_proof,
+            launch_registrar=store.register_supervisor_launch,
         )
         assert result.terminal["status"] in {"failed", "cancelled"}
         assert result.terminal["publication_state"] == "not_started"

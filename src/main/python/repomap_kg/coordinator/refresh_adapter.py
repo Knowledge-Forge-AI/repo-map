@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import copy
 import os
 from dataclasses import replace
 from pathlib import Path
 import sys
 import threading
-from typing import Any, Callable, Mapping, cast
+from typing import Callable, Mapping
 
 from repomap_kg.coordinator._transport_validation import (
     sanitize_diagnostic_summary,
@@ -41,24 +40,8 @@ from repomap_kg.coordinator._refresh_generation import (
 from repomap_kg.coordinator._worker_environment import (
     add_windows_runtime_environment,
 )
-
-
-def _refresh_attempt_supervision_limits(limits: object) -> object:
-    from repomap_kg.coordinator.limits import CoordinatorLimits
-
-    att = limits.get("refresh_attempt_deadline_seconds") if isinstance(limits, Mapping) else getattr(limits, "refresh_attempt_deadline_seconds", None)
-    proc = limits.get("process_deadline_seconds") if isinstance(limits, Mapping) else getattr(limits, "process_deadline_seconds", None)
-    if att is None:
-        raise ValueError("refresh_attempt_deadline_seconds is required for refresh worker supervision")
-    if proc is not None and att <= proc:
-        raise ValueError("refresh_attempt_deadline_seconds must be greater than process_deadline_seconds")
-    if isinstance(limits, CoordinatorLimits):
-        return replace(limits, process_deadline_seconds=att)
-    if isinstance(limits, Mapping):
-        return {**limits, "process_deadline_seconds": att}
-    projected = copy.copy(cast(Any, limits))
-    setattr(projected, "process_deadline_seconds", att)
-    return projected
+from repomap_kg.coordinator._publication_phase import WorkerFencingProof
+from repomap_kg.coordinator._supervisor_fencing import _refresh_attempt_supervision_limits
 
 
 def run_refresh_worker(
@@ -68,12 +51,18 @@ def run_refresh_worker(
     *,
     job_context: Mapping[str, object],
     cancel_event: threading.Event | None = None,
+    fencing_prover: Callable[[object, object], WorkerFencingProof] | None = None,
+    launch_registrar: Callable[[object, object], None] | None = None,
 ) -> SyntheticWorkerResult:
     """Run the one allowlisted production refresh worker through v1 protocol."""
 
     supervision_limits = _refresh_attempt_supervision_limits(limits)
     capability = load_refresh_capability(capability_path)
     from repomap_kg.coordinator import _publication_phase
+    from repomap_kg.coordinator._supervisor_fencing import (
+        register_worker_launch, release_unlaunched_registration, _transfer_reaped_result,
+    )
+    launch_ticket = None
 
     try:
         if (
@@ -105,7 +94,7 @@ def run_refresh_worker(
             environment["PYTHONPATH"] = str(repo_root / "src/main/python")
         elif "PYTHONPATH" in os.environ:
             environment["PYTHONPATH"] = os.environ["PYTHONPATH"]
-        for pvar in ("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", "_REPOMAP_SYSTEM_TEST_POST_PUBLICATION_PAUSE_PATH"):
+        for pvar in ("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", "_REPOMAP_SYSTEM_TEST_POST_PUBLICATION_PAUSE_PATH", "_REPOMAP_SYSTEM_TEST_STAGED_PAUSE_PATH"):
             if pvar in os.environ:
                 environment[pvar] = os.environ[pvar]
         add_windows_runtime_environment(environment)
@@ -117,18 +106,22 @@ def run_refresh_worker(
             if _is_safe_test_path(tp):
                 timeout_probe = lambda: tp.is_file() and not tp.is_symlink()
         _publication_phase.initialize(capability_path.parent, capability)
+        argv = (
+            sys.executable,
+            "-m",
+            "repomap_kg.coordinator.refresh_worker",
+            "--capability",
+            str(capability_path),
+            "--job-id",
+            str(identity["job_id"]),
+            "--attempt",
+            str(identity["attempt"]),
+        )
+        launch_ticket = register_worker_launch(capability, argv)
+        if launch_registrar is not None:
+            launch_registrar(launch_ticket, capability)
         result = _run_protocol_worker(
-            (
-                sys.executable,
-                "-m",
-                "repomap_kg.coordinator.refresh_worker",
-                "--capability",
-                str(capability_path),
-                "--job-id",
-                str(identity["job_id"]),
-                "--attempt",
-                str(identity["attempt"]),
-            ),
+            argv,
             environment,
             work_dir,
             False,
@@ -137,10 +130,20 @@ def run_refresh_worker(
             job_context=job_context,
             cancel_event=cancel_event,
             _timeout_probe=timeout_probe,
+            _launch_ticket=launch_ticket,
         )
+        original_result = result
         if result.waited and result.process_group_cleaned:
+            try:
+                proof = fencing_prover(result, capability) if fencing_prover is not None else None
+            except PermissionError:
+                proof = None
+            if proof is not None:
+                _publication_phase.close_unpublished(
+                    capability_path.parent, capability, proof=proof
+                )
             state = _publication_phase.publication_state(
-                capability_path.parent, capability, close_unpublished=True
+                capability_path.parent, capability
             )
             cancelled = cancel_event is not None and cancel_event.is_set()
             if result.synthesized_terminal or result.process_timed_out or result.heartbeat_timed_out or cancelled:
@@ -155,8 +158,10 @@ def run_refresh_worker(
                 })
             elif state == "not_started" and result.terminal.get("publication_state") == "commit_unknown":
                 result = replace(result, terminal={**result.terminal, "publication_state": state})
+        _transfer_reaped_result(original_result, result)
         return result
     finally:
+        release_unlaunched_registration(launch_ticket)
         remove_refresh_capability(capability_path)
 
 
@@ -232,6 +237,9 @@ def build_refresh_worker_runner(
     resolve: Callable[[str], ResolvedRefreshAuthority],
     capability_directory: Path,
     limits: object,
+    *,
+    fencing_prover: Callable[[object, object], WorkerFencingProof] | None = None,
+    launch_registrar: Callable[[object, object], None] | None = None,
 ) -> Callable[[RefreshClaim, threading.Event], Mapping[str, object]]:
     """Build the explicit pilot runner used by the existing coordinator core."""
 
@@ -292,6 +300,8 @@ def build_refresh_worker_runner(
                 "config_generation": claim.config_generation,
             },
             cancel_event=cancel_event,
+            fencing_prover=fencing_prover,
+            launch_registrar=launch_registrar,
         )
         if result.protocol_error is not None:
             category = "protocol"

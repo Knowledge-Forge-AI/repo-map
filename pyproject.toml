@@ -84,6 +84,9 @@ where = ["src/main/python"]
 "share/repomap-kg/coordinator-rdbms/2026/07" = [
   "src/main/resources/coordinator-rdbms/2026/07/*.sql",
 ]
+"share/repomap-kg/coordinator-rdbms/2026/10" = [
+  "src/main/resources/coordinator-rdbms/2026/10/*.sql",
+]
 
 [tool.ruff]
 target-version = "py312"

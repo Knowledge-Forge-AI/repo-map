@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from collections import deque
 from datetime import timedelta
 import re
 import threading
@@ -13,6 +14,7 @@ _T = TypeVar("_T")
 from repomap_kg.coordinator._control_maintenance import CleanupReport
 from repomap_kg.coordinator._coordinator_protocols import (
     CoordinatorStore,
+    PublicationCloser,
     PublicationReader,
     PublicationRetirer,
     WorkerRunner,
@@ -26,7 +28,7 @@ from repomap_kg.coordinator._transport_validation import (
 from repomap_kg.coordinator.limits import DEFAULT_LIMITS
 from repomap_kg.coordinator.protocol import WorkerLaunchError
 from repomap_kg.coordinator.semantics import RetryPolicy
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryMixin
+from repomap_kg.coordinator.startup_recovery import RecoveryDiagnostic, StartupRecoveryMixin, _expected_refusal
 
 
 def _coordinator_exception_diagnostic(error: BaseException) -> str:
@@ -67,6 +69,7 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         *,
         publication_reader: PublicationReader | None = None,
         publication_retirer: PublicationRetirer | None = None,
+        publication_closer: PublicationCloser | None = None,
         max_workers: int = 1,
         singleton_ttl: timedelta | None = None,
         lease_ttl: timedelta | None = None,
@@ -82,6 +85,7 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         self._worker_runner = worker_runner
         self._publication_reader = publication_reader
         self._publication_retirer = publication_retirer
+        self._publication_closer = publication_closer
         self._residual_evidence = []
         self._max_workers = max_workers
         default_ttl = timedelta(
@@ -93,6 +97,9 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         self._active_workers = 0
         self._manual_claims = 0
         self._lock = threading.Lock()
+        self._recovery_diagnostics: deque[RecoveryDiagnostic] = deque(maxlen=32)
+        self._recovery_diagnostics_lock = threading.Lock()
+        self._recovery_diagnostic_sequence = 0
         self._executor = ThreadPoolExecutor(
             max_workers=max_workers,
             thread_name_prefix="synthetic-coordinator-worker",
@@ -186,7 +193,7 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
                     if not self._store.mark_reconciliation_required(
                         claim,
                         expected_state=expected,
-                        category="worker_crash",
+                        category="publication_unknown" if _expected_refusal(error) else "worker_crash",
                         diagnostic_summary=diagnostic,
                     ):
                         return "ownership_lost"
@@ -201,9 +208,13 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
 
     def heartbeat(self) -> bool:
         epoch = self._require_started()
-        return self._store.heartbeat_singleton(
+        renewed = self._store.heartbeat_singleton(
             self._instance_id, epoch, self._singleton_ttl
         )
+        report = self.startup_recovery_report
+        if renewed and getattr(report, "pending", False):
+            self._record_startup_recovery_report(self.recover_startup())
+        return renewed
 
     def request_cancel(self, job_id: str) -> str:
         self._require_started()

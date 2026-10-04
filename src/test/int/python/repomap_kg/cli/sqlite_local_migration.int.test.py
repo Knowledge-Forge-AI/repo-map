@@ -37,6 +37,7 @@ from repomap_test_support.sqlite_local_harness import (
     LocalHarness,
     await_ready,
     initialize,
+    kill_paused_child,
     refusal,
     release,
     structured,
@@ -306,7 +307,7 @@ def test_upgrade_refusals_faults_and_contention(tmp_path: Path) -> None:
     paused = harness.start(
         "ops", "sqlite-upgrade", "--repo-map-home", str(home), "--graph", GRAPH,
         "--backup-output", str(tmp_path / "killed-backup"),
-        extra_env=harness.paused_env("upgrade:before-commit", barrier),
+        extra_env=harness.paused_env("upgrade:before-commit", barrier, abrupt=True),
     )
     try:
         await_ready(barrier, paused)
@@ -316,7 +317,7 @@ def test_upgrade_refusals_faults_and_contention(tmp_path: Path) -> None:
         assert not (tmp_path / "contender").exists()
         message = _refused(harness, home, "ops", "refresh-graph", "--graph", GRAPH, env=v1)
         assert message == "ERROR: graph-publication-in-progress", message
-        os.kill(paused.pid, signal.SIGKILL)
+        kill_paused_child(paused)
     finally:
         if paused.poll() is None:
             release(barrier)

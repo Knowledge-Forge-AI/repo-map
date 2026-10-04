@@ -372,74 +372,74 @@
       "root": "test_owners"
     },
     {
-      "id": "fix42.observer_schedule.py",
-      "root": "test_support",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
+      "id": "fix42.observer_schedule.py",
       "members": [
         "src/test/support/python/repomap_test_support/observer_schedule.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_support"
     },
     {
-      "id": "fix42.slice18_foreground_cleanup.int.test.py",
-      "root": "test_owners",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "fix42.slice18_foreground_cleanup.int.test.py",
       "members": [
         "src/test/int/python/repomap_kg/coordinator/slice18_foreground_cleanup.int.test.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_owners"
     },
     {
-      "id": "fix42.slice18_refresh_wire.int.test.py",
-      "root": "test_owners",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "fix42.slice18_refresh_wire.int.test.py",
       "members": [
         "src/test/int/python/repomap_kg/coordinator/slice18_refresh_wire.int.test.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_owners"
     },
     {
-      "id": "fix42.slice19_api_row_recovery.int.test.py",
-      "root": "test_owners",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "fix42.slice19_api_row_recovery.int.test.py",
       "members": [
         "src/test/int/python/repomap_kg/source_ingestion/slice19_api_row_recovery.int.test.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_owners"
     },
     {
-      "id": "fix42.slice19_copy_recovery.int.test.py",
-      "root": "test_owners",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "fix42.slice19_copy_recovery.int.test.py",
       "members": [
         "src/test/int/python/repomap_kg/storage/slice19_copy_recovery.int.test.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_owners"
     },
     {
-      "id": "fix42.slice20_escaped_hcl_pipeline.int.test.py",
-      "root": "test_owners",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "fix42.slice20_escaped_hcl_pipeline.int.test.py",
       "members": [
         "src/test/int/python/repomap_kg/canonical_contract/slice20_escaped_hcl_pipeline.int.test.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_owners"
     },
     {
-      "id": "fix42.slice20_static_contrasts.int.test.py",
-      "root": "test_owners",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "fix42.slice20_static_contrasts.int.test.py",
       "members": [
         "src/test/int/python/repomap_kg/canonical_contract/slice20_static_contrasts.int.test.py"
       ],
-      "admission": "admitted",
-      "rationale": "FIX42 bounded owner under unchanged clean profile."
+      "rationale": "FIX42 bounded owner under unchanged clean profile.",
+      "root": "test_owners"
     },
     {
       "admission": "admitted",
@@ -777,6 +777,206 @@
         "src/test/unit/python/repomap_kg/storage/sqlite_local_upgrade.unit.test.py"
       ],
       "rationale": "SQLite Local config, publisher, query, binding and refresh unit owners plus the guarded loop, parity and recovery integration owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair10.public_topology_support",
+      "members": [
+        "src/test/unit/python/tools/ci/pipe0_topology_support.py"
+      ],
+      "rationale": "Retain the public-only topology fixture under the existing strict clean profile; preserve original source and public baseline ownership.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair10.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_test_support/sqlite_managed_child_interrupt.unit.test.py"
+      ],
+      "rationale": "REPAIR10 responsibility-based owners admitted with zero debt under unchanged quality profiles.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "repair10.tools",
+      "members": [
+        "tools/system/scenario_submission.py"
+      ],
+      "rationale": "REPAIR10 responsibility-based owners admitted with zero debt under unchanged quality profiles.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair4.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/startup_recovery_control.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/startup_recovery_fencing.int.test.py",
+        "src/test/int/python/repomap_kg/storage/publication_fencing.int.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/control_schema_upgrade.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/restart_fencing.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/publication_fencing.unit.test.py",
+        "src/test/unit/python/repomap_test_support/sqlite_abrupt_ownership.unit.test.py",
+        "src/test/unit/python/repomap_test_support/test_scratch_cleanup.unit.test.py",
+        "src/test/unit/python/repomap_test_support/test_scratch_cleanup_lifecycle.unit.test.py",
+        "src/test/unit/python/tools/staging_holder_evidence.unit.test.py",
+        "src/test/unit/python/tools/system/scenario_restart_fence.unit.test.py"
+      ],
+      "rationale": "REPAIR4 bounded publication fencing and qualification support owners; immediate clean-profile admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "repair4.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/fencing_control_fakes.py",
+        "src/test/support/python/repomap_test_support/sqlite_abrupt_ownership.py",
+        "src/test/support/python/repomap_test_support/startup_recovery_scenarios.py",
+        "src/test/support/python/repomap_test_support/test_scratch_cleanup.py"
+      ],
+      "rationale": "REPAIR4 bounded publication fencing and qualification support owners; immediate clean-profile admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "repair4.tools",
+      "members": [
+        "tools/system/scenario_readback.py",
+        "tools/system/scenario_restart_fence.py"
+      ],
+      "rationale": "REPAIR4 bounded publication fencing and qualification support owners; immediate clean-profile admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair5.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/supervisor_launch_binding.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/coordinator_migration_packaging.unit.test.py",
+        "src/test/unit/python/repomap_test_support/sqlite_managed_child.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_command_contracts.unit.test.py"
+      ],
+      "rationale": "REPAIR5 bounded owners admitted under unchanged clean profiles; previous cohort membership remains sealed.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "repair5.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_abrupt_symbols.py",
+        "src/test/support/python/repomap_test_support/sqlite_managed_child.py"
+      ],
+      "rationale": "REPAIR5 bounded owners admitted under unchanged clean profiles; previous cohort membership remains sealed.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "repair5.tools",
+      "members": [
+        "tools/ci/qualification_command_contracts.py"
+      ],
+      "rationale": "REPAIR5 bounded owners admitted under unchanged clean profiles; previous cohort membership remains sealed.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "repair6.coordinator-core-fakes",
+      "members": [
+        "src/test/support/python/repomap_test_support/coordinator_core_fakes.py"
+      ],
+      "rationale": "Shared typed coordinator fixtures for bounded core and diagnostic owners.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair6.recovery-diagnostics",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/recovery_diagnostics.unit.test.py"
+      ],
+      "rationale": "Recovery ring persistence, acknowledgement, redaction and expected contention owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair6.sealed-refresh-publication",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/sealed_refresh_publication.int.test.py"
+      ],
+      "rationale": "REPAIR6 complete bounded stale-capability scenario owner; no historical debt.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair6.supervisor-registration",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/supervisor_registration.int.test.py"
+      ],
+      "rationale": "REPAIR6 real child durable registration scenario; no historical debt.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair7.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/service.int.test.py",
+        "src/test/unit/python/repomap_test_support/sqlite_managed_failure_cleanup.unit.test.py"
+      ],
+      "rationale": "REPAIR7 bounded quote grammar and managed failure cleanup owners admitted under unchanged zero-debt profiles.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "repair7.tools",
+      "members": [
+        "tools/ci/qualification_shell_syntax.py"
+      ],
+      "rationale": "REPAIR7 bounded quote grammar and managed failure cleanup owners admitted under unchanged zero-debt profiles.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair8.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_test_support/sqlite_abrupt_reflection.unit.test.py"
+      ],
+      "rationale": "REPAIR8 cohesive reflection policy and counterexample ownership; existing cohorts unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "repair8.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/sqlite_abrupt_reflection.py"
+      ],
+      "rationale": "REPAIR8 cohesive reflection policy and counterexample ownership; existing cohorts unchanged.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "repair9.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/staged_publication_pause.unit.test.py",
+        "src/test/unit/python/repomap_test_support/arch7f_launch_family.unit.test.py"
+      ],
+      "rationale": "REPAIR9 bounded owners admitted under unchanged clean profiles; existing cohort membership remains sealed.",
       "root": "test_owners"
     },
     {
@@ -15510,6 +15710,27 @@
       "to": [
         "src/test/unit/python/tools/staging_execution_fixtures.py"
       ]
+    },
+    {
+      "from": "tools/system/scenario_publication.py",
+      "rationale": "REPAIR10 Separate submission marker capture/reaping from scenario orchestration.",
+      "to": [
+        "tools/system/scenario_submission.py"
+      ]
+    },
+    {
+      "from": "src/main/python/repomap_kg/coordinator/_refresh_execution.py",
+      "rationale": "REPAIR10 Share the producer/consumer window without a storage-to-coordinator dependency.",
+      "to": [
+        "src/main/python/repomap_kg/runtime/system_test_pause.py"
+      ]
+    },
+    {
+      "from": "src/test/unit/python/repomap_test_support/sqlite_managed_child.unit.test.py",
+      "rationale": "REPAIR10 Separate orderly interruption assertions without weakening abrupt ownership.",
+      "to": [
+        "src/test/unit/python/repomap_test_support/sqlite_managed_child_interrupt.unit.test.py"
+      ]
     }
   ],
   "dynamic_boundaries": [
@@ -23491,6 +23712,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_configured_fencing.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -23788,6 +24018,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_restart_fencing.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -23811,6 +24050,24 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/coordinator/_service_handlers.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_supervisor_fencing.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/coordinator/_supervisor_registration.py",
+      "rationale": "REPAIR6 bounded durable supervisor launch registration; immediate retained Python protection.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -26578,6 +26835,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/system_test_pause.py",
+      "rationale": "REPAIR10 Shared runtime-only authority for producer and consumer pause budgets.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -27024,6 +27290,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/storage/_staged_ingestion_stages.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/_staged_publication_pause.py",
+      "rationale": "REPAIR10 Disabled staging/publication checkpoint instrumentation separated from transaction orchestration.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -29002,6 +29277,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/service.int.test.py",
+      "rationale": "REPAIR7 operator diagnostic service readback owner; immediate unchanged zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/service_client.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -29143,6 +29427,24 @@
       "status": "active_int_test"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/startup_recovery_control.int.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/startup_recovery_fencing.int.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
       "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -29202,6 +29504,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/storage_review_lifecycle.int.test.py",
       "rationale": "REVISE34 semantic successor of src/test/int/python/repomap_kg/coordinator/storage_review.int.test.py.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/supervisor_registration.int.test.py",
+      "rationale": "REPAIR6 real launch/durable row lifecycle owner; immediate zero-debt admission.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -30199,6 +30510,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/publication_fencing.int.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/publication_receipt_constraints.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -30552,6 +30872,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/scale9l_node_evidence_merge.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sealed_refresh_publication.int.test.py",
+      "rationale": "REPAIR6 sealed-capability worker publication owner; immediate zero-debt admission.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -31180,8 +31509,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/coordinator_core_fakes.py",
+      "rationale": "Shared typed coordinator core fixtures for bounded core and diagnostics owners.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/executable_authority.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/fencing_control_fakes.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -32962,6 +33309,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_abrupt_ownership.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_abrupt_reflection.py",
+      "rationale": "REPAIR8 bounded maintained-source reflection owner under unchanged zero-debt profiles.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_abrupt_symbols.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/sqlite_local_feed_corpus.py",
       "rationale": "Real offline feed acquisitions and comparison-only crafted feed corpus for SQLite Local source/feed parity.",
       "root": "test_support",
@@ -33016,6 +33390,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_managed_child.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/staging_abrupt_launch.py",
       "rationale": "PR26-STAGING-CONTRACT1 exact staging population, observed abrupt lifecycle and report validation; immediate full retention enforcement.",
       "root": "test_support",
@@ -33027,6 +33410,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/staging_transport_test_harness.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/startup_recovery_scenarios.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -33621,6 +34013,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/test_scratch.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/test_scratch_cleanup.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -34996,6 +35397,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/control_schema_upgrade.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/control_startup.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -35284,6 +35694,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/recovery_diagnostics.unit.test.py",
+      "rationale": "Heartbeat recovery ring persistence, acknowledgement, redaction and contention test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/refresh_adapter.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -35322,6 +35741,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/refresh_worker_diagnostics.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/restart_fencing.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -35376,6 +35804,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/status_diagnostics.unit.test.py",
       "rationale": "WORKER-CRASH-DIAG-FIX1 bounded diagnostic status and current-attempt readback contract.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/supervisor_launch_binding.unit.test.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -37192,6 +37629,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/coordinator_migration_packaging.unit.test.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/coordinator_transition.unit.test.py",
       "rationale": "Coordinator transition behavior test owner.",
       "root": "test_owners",
@@ -37761,6 +38207,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/psql_stream.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/publication_fencing.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -38443,6 +38898,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/staged_publication_pause.unit.test.py",
+      "rationale": "REPAIR9 final-publication checkpoint or ARCH7F launch-family contract owner; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/staging_lifecycle_cancellation.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -38463,6 +38927,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/version_consistency.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/arch7f_launch_family.unit.test.py",
+      "rationale": "REPAIR9 final-publication checkpoint or ARCH7F launch-family contract owner; immediate zero-debt enforcement.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -39640,6 +40113,51 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/sqlite_abrupt_ownership.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/sqlite_abrupt_reflection.unit.test.py",
+      "rationale": "REPAIR8 bounded maintained-source reflection owner under unchanged zero-debt profiles.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/sqlite_managed_child.unit.test.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/sqlite_managed_child_interrupt.unit.test.py",
+      "rationale": "REPAIR10 Orderly ManagedChild SIGINT and adjacent abrupt-refusal contract owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/sqlite_managed_failure_cleanup.unit.test.py",
+      "rationale": "REPAIR7 bounded quote grammar and managed failure cleanup owners admitted under unchanged zero-debt profiles.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/staging_transport_test_harness.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -40054,6 +40572,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/test_scratch_cleanup.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/test_scratch_cleanup_lifecycle.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/unit_purity.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -40164,6 +40700,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/pipe0_topology_gates.unit.test.py",
       "rationale": "REVISE13 cohesive extraction from src/test/unit/python/tools/ci/pipe0_topology_contract.unit.test.py; inherited language-confidence and complete profile obligations preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/pipe0_topology_support.py",
+      "rationale": "Shared workflow test helpers extracted to maintain 400-line limit across topology test owners.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -40461,6 +41006,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/python_retention_substitution.unit.test.py",
       "rationale": "REVISE41 closed retention or runner measurement contract; immediate governance.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_command_contracts.unit.test.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -41467,6 +42021,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/staging_holder_evidence.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/staging_population.unit.test.py",
       "rationale": "PR26-STAGING-CONTRACT1 exact staging population, observed abrupt lifecycle and report validation; immediate full retention enforcement.",
       "root": "test_owners",
@@ -41487,6 +42050,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/staging_report_presentation.unit.test.py",
       "rationale": "PR26-STAGING-CONTRACT1 report/execution regression owner; immediate full retention enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/scenario_restart_fence.unit.test.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -42711,6 +43283,24 @@
       "maintained_executable": true,
       "path": "tools/ci/python_type_ownership.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_command_contracts.py",
+      "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_shell_syntax.py",
+      "rationale": "REPAIR7 bounded quote grammar and managed failure cleanup owners admitted under unchanged zero-debt profiles.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -44032,8 +44622,35 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/system/scenario_readback.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/system/scenario_recovery_wait.py",
       "rationale": "FIX6 state-aware coordinator recovery wait; same maintained responsibility and quality profile.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/scenario_restart_fence.py",
+      "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/scenario_submission.py",
+      "rationale": "REPAIR10 Coordinator submission marker capture and bounded child reaping.",
       "root": "tools",
       "status": "active_tool"
     },

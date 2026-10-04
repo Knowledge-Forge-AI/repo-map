@@ -301,7 +301,7 @@ failure is reported and never installs, starts, or falls back to direct mode.
 The neutral operator lifecycle remains CLI-owned, and service-package adapters
 remain optional wrappers around the foreground entrypoint.
 
-Coordinator health is a version-1 path-free projection with these bounded
+Coordinator health is a path-free projection with these bounded
 sections: `service`, `ownership`, `queue`, `workers`, `publication`, `polling`,
 `transport`, and `storage`. Lifecycle, ownership, transport, and polling facts
 are reported only from current authoritative state. Sections without a bounded
@@ -309,6 +309,33 @@ provider use `not_reported`; health does not infer queue pressure, worker
 completion, publication freshness, or storage readiness from process exit,
 queue emptiness, or a terminal job state. Existing top-level `status` and
 polling fields remain compatible.
+
+The original `health_schema_version: 1` shape contains exactly the eight
+sections above plus `health_schema_version` and `status`. Its maintained
+validator rejects unknown top-level fields. Recovery diagnostics change that
+shape, so the service now emits **health schema version 2**, containing exactly
+those fields plus the required top-level `recovery_diagnostics` array. This
+version is separate from the unchanged version-1 transport/worker protocols.
+The current CLI accepts the exact original v1 shape (and treats absent
+diagnostics as empty when formatting) and the exact v2 shape. V1 with diagnostics,
+v2 without diagnostics, extra fields, unsupported versions and non-integer
+versions are invalid. Older v1-only validators refuse v2; no forward
+compatibility or version negotiation is promised.
+
+In v2, empty diagnostics serialize as `[]`. Populated diagnostics contain at
+most 32 objects, each with exactly `category`, `summary` and `sequence`.
+The service publishes a category matching `[A-Za-z0-9_.-]{1,64}`, a redacted
+exception-class summary matching `[A-Za-z_][A-Za-z_0-9]{0,63}`, and a nonnegative
+integer sequence (booleans are invalid). The CLI additionally enforces the
+public-result privacy policy and bounds accepted summaries to 256 characters
+matching `[A-Za-z0-9_.: -]{1,256}`. Raw exception messages, identities, routes,
+paths and credentials are never diagnostic payloads. Unexpected recovery
+failures enter the process-local ring and structured warning log; expected
+contention remains separate. Successful heartbeats and repeated health/CLI
+reads do not acknowledge entries. Only the maintained service acknowledgement
+method clears entries through an explicitly observed sequence; there is no
+wire acknowledgement operation. The ring is lost on restart, and persistent
+log retention depends on an operator-owned external collector.
 
 `repomap-kg ops coordinator-health` is a read-only authenticated inspection
 surface. It validates the health schema, section vocabulary, response bounds,

@@ -29,7 +29,7 @@ def test_early_identity_mismatch_failure_emits_structured_stderr() -> None:
             exit_code = worker_main(["--capability", "dummy.json", "--job-id", "my_job", "--attempt", "1"])
     assert exit_code == 2
     output = stderr.getvalue()
-    assert "refresh-failure:capability-error:" in output or "refresh-failure:worker-error:" in output
+    assert output.startswith("refresh-failure:capability-error:")
 
 
 def test_protocol_failure_emits_structured_stderr() -> None:
@@ -60,7 +60,7 @@ def test_unexpected_exception_after_start_emits_redacted_stderr() -> None:
         mock_cap.extractor_generation = "eg1:synthetic"
         mock_cap.canonicalizer_generation = "kg1:synthetic"
         mock_load.return_value = mock_cap
-        with patch("repomap_kg.coordinator.refresh_worker._run_with_heartbeats", side_effect=ValueError("secret password in /secret/path")):
+        with patch("repomap_kg.coordinator.refresh_worker._run_with_heartbeats", side_effect=ValueError("secret password=supersecret in /secret/path")):
             start_bytes = json.dumps({'schema_version': 1, 'message_type': 'job_start', 'job_id': 'j1', 'attempt': 1, 'job_kind': 'refresh_graph', 'graph_id': 'g1', 'source_generation': 'sg1:source', 'config_generation': 'cg1:config'}).encode() + b"\n"
             with patch("sys.stdin.buffer.readline", return_value=start_bytes):
                 with patch("sys.stdout.buffer.write"), patch("sys.stdout.buffer.flush"):
@@ -68,8 +68,9 @@ def test_unexpected_exception_after_start_emits_redacted_stderr() -> None:
                         exit_code = worker_main(["--capability", "dummy.json", "--job-id", "j1", "--attempt", "1"])
     assert exit_code == 0
     output = stderr.getvalue()
-    assert "refresh-failure:worker-error:" in output
-    assert "[redacted-password]" in output or "password" in output
+    assert output.startswith("refresh-failure:worker-error:")
+    assert "password=[REDACTED]" in output
+    assert "supersecret" not in output
 
 
 def test_supervisor_extracts_and_redacts_stderr_summary() -> None:

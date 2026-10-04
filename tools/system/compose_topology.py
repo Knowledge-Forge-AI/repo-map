@@ -104,7 +104,7 @@ mode = "read_only"
         override_yaml_lines.append(f"    image: {config.candidate_tag}")
         if svc == "coordinator":
             override_yaml_lines.append("    environment:")
-            override_yaml_lines.append("      _REPOMAP_SYSTEM_TEST_PAUSE_PATH: /tmp/system_pause_trigger")
+            override_yaml_lines.append("      _REPOMAP_SYSTEM_TEST_STAGED_PAUSE_PATH: /tmp/system_pause_trigger")
             override_yaml_lines.append("      REPOMAP_PG_PASSWORD: ${REPOMAP_PG_PASSWORD}")
             override_yaml_lines.append("      PGPASSWORD: ${REPOMAP_PG_PASSWORD}")
     override_yaml_lines.append("")

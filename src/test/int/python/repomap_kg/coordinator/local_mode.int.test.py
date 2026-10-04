@@ -105,7 +105,7 @@ def test_explicit_local_mode_launches_and_replays_configured_refresh(
                 assert isinstance(health_payload, dict)
                 polling_payload = health_payload["polling"]
                 assert isinstance(polling_payload, dict)
-                assert health_payload["health_schema_version"] == 1
+                assert health_payload["health_schema_version"] == 2
                 assert polling_payload["status"] == "running"
                 first = run_coordinator_refresh(
                     home,
@@ -186,7 +186,7 @@ def test_explicit_local_mode_launches_and_replays_configured_refresh(
 
                 health_table = format_coordinator_health_table(health)
                 assert "RepoMap coordinator health" in health_table
-                assert "health_schema_version | 1" in health_table
+                assert "health_schema_version | 2" in health_table
                 assert "status | ready" in health_table
                 assert "polling | running" in health_table
 

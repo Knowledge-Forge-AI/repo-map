@@ -290,10 +290,11 @@ def test_unix_socket_handler_stream_protocol() -> None:
         assert json.loads(h.wfile.getvalue())["error_category"] == "unauthorized"
 
         h = handler_cls.__new__(handler_cls)
-        large_req = json.dumps({"schema_version": 1, "auth_token": "tok", "operation": "submit", "payload": {"request": {}}}).encode() + b"\n"
-        h.rfile, h.wfile = BytesIO(large_req), BytesIO()
-        h.handle()
-        assert json.loads(h.wfile.getvalue())["error_category"] == "invalid_response"
+        with patch("time.time", return_value=1_000_000.0), patch("time.monotonic", return_value=500.0):
+            large_req = json.dumps({"schema_version": 1, "auth_token": "tok", "operation": "submit", "payload": {"request": {}, "admission_deadline": 1_000_010.0}}, separators=(",", ":")).encode() + b"\n"
+            h.rfile, h.wfile = BytesIO(large_req), BytesIO()
+            h.handle()
+            assert json.loads(h.wfile.getvalue())["error_category"] == "invalid_response"
 
         class BrokenWriter(BytesIO):
             def write(self, data: Buffer, /) -> int:

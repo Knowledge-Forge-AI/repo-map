@@ -23,7 +23,7 @@ from __future__ import annotations
 import json
 import os
 import signal
-import subprocess
+from repomap_test_support.sqlite_managed_child import ManagedChild
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +40,7 @@ from repomap_test_support.sqlite_local_harness import (
 from repomap_test_support.sqlite_local_lock_children import (
     HOLD_AND_SPAWN,
     attempt,
+    kill_holder,
     release_holder,
     start_holder,
 )
@@ -95,14 +96,14 @@ def _mcp_state(harness: LocalHarness, home: Path) -> tuple[dict[str, Any], list[
     return structured(responses, 2)["storage"], nodes
 
 
-def _paused(harness: LocalHarness, tmp_path: Path, point: str, *args: str) -> tuple[subprocess.Popen[str], Path]:
+def _paused(harness: LocalHarness, tmp_path: Path, point: str, *args: str) -> tuple[ManagedChild, Path]:
     barrier = tmp_path / f"barrier-{point.replace(':', '-')}"
     process = harness.start(*args, "--json", extra_env=harness.paused_env(point, barrier))
     await_ready(barrier, process)
     return process, barrier
 
 
-def _released(process: subprocess.Popen[str], barrier: Path) -> dict[str, Any]:
+def _released(process: ManagedChild, barrier: Path) -> dict[str, Any]:
     release(barrier)
     stdout, stderr = process.communicate(timeout=300)
     assert process.returncode == 0, stderr
@@ -126,9 +127,9 @@ def test_graph_lock_is_interprocess_and_released_by_exit_and_kill(tmp_path: Path
     assert release_holder(holder) == 0
     assert attempt(one, env) == "acquired" and attempt(one, env, "probe") == "probed"
 
-    killed, _ = start_holder(one, env)
+    killed, _ = start_holder(one, env, abrupt=True)
     assert attempt(one, env) == IN_PROGRESS
-    killed.send_signal(signal.SIGKILL)
+    kill_holder(killed)
     killed.communicate(timeout=120)
     assert killed.returncode == -signal.SIGKILL
     assert attempt(one, env) == "acquired", "the OS released the killed holder's lock"

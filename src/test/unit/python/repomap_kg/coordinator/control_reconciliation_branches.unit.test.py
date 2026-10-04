@@ -16,6 +16,7 @@ def evidence() -> dict[str, object]:
     return {
         "attempt_finished_at": "finished",
         "job_publication_state": "prepared",
+        "attempt_publication_state": "prepared",
         "current_attempt": 2,
         "error_category": "transient",
         "cancel_requested_at": None,
@@ -103,6 +104,18 @@ def test_reconcile_publication_reports_lost_job_ownership(monkeypatch) -> None:
     ) == "ownership_lost"
 
 
+def test_fabricated_unpublished_boolean_does_not_override_uncertainty(monkeypatch) -> None:
+    row = evidence()
+    row.update(job_publication_state="commit_unknown", attempt_publication_state="commit_unknown")
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+    assert subject.reconcile_publication(
+        connect_with(cursor), CLAIM, max_attempts=3,
+        reconciler_instance_id="coordinator", reconciler_epoch=7, unpublished_proved=True,
+    ) == "reconciliation_required"
+    assert not any(query.lstrip().startswith("UPDATE") for query, _ in cursor.executions)
+
+
 @pytest.mark.parametrize(
     ("key", "value"),
     [
@@ -164,3 +177,22 @@ def test_reconciliation_helpers_bind_claim_identity() -> None:
     assert "INSERT INTO coalescing_state" in rendered
     assert "UPDATE jobs SET state = %s" in rendered
     assert "UPDATE jobs SET state = 'queued'" in rendered
+
+
+def test_reconcile_publication_refuses_zero_epoch_without_graph_fence(monkeypatch) -> None:
+    row = evidence()
+    row.update(attempt_graph_lease_fencing_epoch=0)
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+
+    assert subject.reconcile_publication(
+        connect_with(cursor),
+        CLAIM,
+        max_attempts=3,
+        reconciler_instance_id="coordinator",
+        reconciler_epoch=7,
+    ) == "reconciliation_required"
+
+    rendered = "\n".join(statement for statement, _ in cursor.executions)
+    assert "DELETE FROM graph_leases" not in rendered
+    assert "UPDATE jobs" not in rendered

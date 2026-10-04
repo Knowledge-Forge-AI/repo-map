@@ -10,7 +10,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
@@ -22,32 +21,15 @@ if str(TOOLS_ROOT) not in sys.path:
 
 from ci.ci_topology import check_topology
 from ci.workflow_model import load_workflow
-
-WORKFLOW_DIR = ROOT / ".github/workflows"
-PR_FAST = WORKFLOW_DIR / "repomap-static-analysis.yml"
-PR_UNIT = WORKFLOW_DIR / "repomap-unit-tests.yml"
-MAIN_POLICY = WORKFLOW_DIR / "repomap-main-source-policy.yml"
-
-
-def clone_workflows(tmp_path: Path) -> Path:
-    root = tmp_path / "repo"
-    (root / ".github/workflows").mkdir(parents=True)
-    for path in WORKFLOW_DIR.iterdir():
-        shutil.copy(path, root / ".github/workflows" / path.name)
-    return root
-
-
-def edit(root: Path, name: str, old: str, new: str) -> None:
-    path = root / ".github/workflows" / name
-    content = path.read_text(encoding="utf-8")
-    assert old in content, f"{name} no longer contains {old!r}"
-    path.write_text(content.replace(old, new, 1), encoding="utf-8")
-
-
-def violations_after(tmp_path: Path, mutate: Callable[[Path], None]) -> tuple[str, ...]:
-    root = clone_workflows(tmp_path)
-    mutate(root)
-    return check_topology(root)
+from src.test.unit.python.tools.ci.pipe0_topology_support import (
+    MAIN_POLICY,
+    PR_FAST,
+    PUBLIC_QUALIFICATION_GATE,
+    WORKFLOW_DIR,
+    clone_workflows,
+    edit,
+    violations_after,
+)
 
 
 def test_topology_holds_for_current_workflows() -> None:
@@ -93,6 +75,13 @@ def test_canonical_test_runner_appears_exactly_three_times() -> None:
 
 
 def test_pr_fast_targets_staging_pull_requests_only() -> None:
+    if not PR_FAST.exists():
+        rel = PUBLIC_QUALIFICATION_GATE
+        if rel.exists():
+            triggers = load_workflow(rel).triggers
+            assert triggers["pull_request"]["branches"] == ["main"]
+            return
+        pytest.skip("withheld in public projection: PR_FAST and release qualification absent")
     triggers = load_workflow(PR_FAST).triggers
 
     assert set(triggers) == {"pull_request", "workflow_dispatch"}
@@ -117,6 +106,13 @@ def test_no_workflow_grants_a_write_permission() -> None:
 
 
 def test_main_policy_applies_only_to_pull_requests_targeting_main() -> None:
+    if not MAIN_POLICY.exists():
+        rel = PUBLIC_QUALIFICATION_GATE
+        if rel.exists():
+            triggers = load_workflow(rel).triggers
+            assert triggers["pull_request"]["branches"] == ["main"]
+            return
+        pytest.skip("withheld in public projection: MAIN_POLICY absent")
     triggers = load_workflow(MAIN_POLICY).triggers
 
     assert triggers["pull_request"]["branches"] == ["main"]
@@ -124,6 +120,17 @@ def test_main_policy_applies_only_to_pull_requests_targeting_main() -> None:
 
 
 def test_invalid_main_source_performs_no_expensive_work() -> None:
+    if not MAIN_POLICY.exists():
+        rel = PUBLIC_QUALIFICATION_GATE
+        if not rel.exists():
+            pytest.skip("withheld in public projection: MAIN_POLICY and release qualification absent")
+        workflow = load_workflow(rel)
+        job = workflow.jobs["source-and-export-policy"]
+        commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s).lower()
+        assert "tools/ci/promotion_policy.py" in commands
+        for expensive in ("run_tests.py", "docker", "postgres", "pytest", "pip install"):
+            assert expensive not in commands
+        return
     workflow = load_workflow(MAIN_POLICY)
     commands = "\n".join(workflow.run_commands()).lower()
 
@@ -137,16 +144,8 @@ def test_invalid_main_source_performs_no_expensive_work() -> None:
 
 def test_no_workflow_merges_updates_refs_or_closes_pull_requests() -> None:
     forbidden = (
-        "git push",
-        "git merge",
-        "git commit",
-        "git tag",
-        "git update-ref",
-        "gh pr merge",
-        "gh pr close",
-        "gh pr edit",
-        "auto-merge",
-        "automerge",
+        "git push", "git merge", "git commit", "git tag", "git update-ref",
+        "gh pr merge", "gh pr close", "gh pr edit", "auto-merge", "automerge",
     )
     for path in WORKFLOW_DIR.iterdir():
         commands = "\n".join(load_workflow(path).run_commands()).lower()
@@ -157,17 +156,11 @@ def test_no_workflow_merges_updates_refs_or_closes_pull_requests() -> None:
 
 
 def test_no_github_ruleset_or_protection_configuration_is_introduced() -> None:
-    for relative in (
-        ".github/rulesets",
-        ".github/CODEOWNERS",
-        "CODEOWNERS",
-        "docs/CODEOWNERS",
-    ):
+    for relative in (".github/rulesets", ".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"):
         assert not (ROOT / relative).exists(), relative
     for path in WORKFLOW_DIR.iterdir():
         content = path.read_text(encoding="utf-8").lower()
-        assert "/protection" not in content
-        assert "/rulesets" not in content
+        assert "/protection" not in content and "/rulesets" not in content
 
 
 def test_immutable_action_pins_and_read_only_checkout_are_preserved() -> None:
@@ -182,6 +175,19 @@ def test_immutable_action_pins_and_read_only_checkout_are_preserved() -> None:
 
 
 def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
+    if not PR_FAST.exists():
+        rel = PUBLIC_QUALIFICATION_GATE
+        if not rel.exists():
+            pytest.skip("withheld in public projection: PR_FAST and release qualification absent")
+        workflow = load_workflow(rel)
+        job = workflow.jobs["pre-review-static"]
+        commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s)
+        assert "tools/ci/bootstrap_pre_review.py" in commands
+        assert "tools/ci/run_pre_review.py" in commands
+        lowered = commands.lower()
+        for expensive in ("docker", "postgres", "pytest", "run_tests.py"):
+            assert expensive not in lowered
+        return
     commands = "\n".join(load_workflow(PR_FAST).run_commands())
 
     assert "tools/ci/bootstrap_pre_review.py" in commands
@@ -304,26 +310,35 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
 def test_topology_contracts_detect_their_own_violation(
     tmp_path: Path, name: str, old: str, new: str, expected: str
 ) -> None:
-    def mutate(root: Path) -> None:
-        edit(root, name, old, new)
-
-    violations = violations_after(tmp_path, mutate)
-
+    if not (WORKFLOW_DIR / name).exists():
+        pytest.skip(f"withheld in public projection: workflow {name} absent")
+    violations = violations_after(tmp_path, lambda root: edit(root, name, old, new))
     assert any(expected in violation for violation in violations), violations
 
 
 def test_retired_all_invocation_is_rejected(tmp_path: Path) -> None:
+    target = PR_FAST if PR_FAST.exists() else PUBLIC_QUALIFICATION_GATE
+
     def mutate(root: Path) -> None:
-        path = root / ".github/workflows/repomap-static-analysis.yml"
+        path = root / ".github/workflows" / target.name
         path.write_text(
             path.read_text(encoding="utf-8")
-            + "\n      - name: Sneaky\n        run: python3 tools/run_tests.py --suite all\n",
+            + "\n      - name: S\n        run: python3 tools/run_tests.py --suite all\n",
             encoding="utf-8",
         )
 
     violations = violations_after(tmp_path, mutate)
+    assert any("the retired --suite all command must not appear" in v for v in violations)
 
-    assert any("retired --suite all" in violation for violation in violations)
+
+def test_retired_workflow_is_rejected(tmp_path: Path) -> None:
+    if PR_FAST.exists():
+        pytest.skip("withheld in private workspace: PR_FAST present")
+
+    def mutate(root: Path) -> None:
+        (root / ".github/workflows/repomap-static-analysis.yml").write_text("name: test\n", encoding="utf-8")
+
+    assert any("retired workflow must not exist" in v for v in violations_after(tmp_path, mutate))
 
 
 def test_protection_configuration_is_rejected(tmp_path: Path) -> None:

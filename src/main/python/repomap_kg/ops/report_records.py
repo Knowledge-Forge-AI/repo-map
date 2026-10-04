@@ -472,17 +472,17 @@ def _diagnostic(severity: str, code: str, path: str, message: str) -> Mapping[st
 
 def _redact_mapping(payload: Mapping[str, Any]) -> dict[str, Any]:
     return {
-        key: _redact_text(value) if isinstance(value, str) else value
-        for key, value in payload.items()
+        key: _redact_text(value) if isinstance(value, str) else value for key, value in payload.items()
     }
 
 
-def _redact_text(value: str | None) -> str:
+def redact_sensitive_text(value: str | None) -> str:
     if not value:
         return ""
-    redacted = redact_text(value)
     assignment = re.compile(
-        r"(?i)(password|passwd|secret|token|api[_-]?key|authorization)"
-        r"\s*[:=]\s*[^\s,;]+"
+        r"(?i)(password|passwd|secret|token|api[_-]?key|authorization)\s*[:=]\s*[^\s,;]+"
     )
-    return assignment.sub(lambda match: match.group(1) + "=" + "[REDACTED]", redacted)
+    return assignment.sub(lambda match: match.group(1) + "=" + "[REDACTED]", redact_text(value))
+
+
+_redact_text = redact_sensitive_text

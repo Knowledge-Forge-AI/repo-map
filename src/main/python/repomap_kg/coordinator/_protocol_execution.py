@@ -64,7 +64,15 @@ def _run_protocol_worker(
     cancel_event: threading.Event | None,
     _launch_process: Callable[..., ManagedProcess] | None = None,
     _timeout_probe: Callable[[], bool] | None = None,
+    _launch_ticket: object | None = None,
+    _fencing_identity: Mapping[str, object] | None = None,
 ) -> SyntheticWorkerResult:
+    if _launch_ticket is not None:
+        from repomap_kg.coordinator._supervisor_fencing import _validate_launch
+
+        if _launch_process is not None:
+            raise PermissionError("registered launch cannot use an injected child factory")
+        _validate_launch(_launch_ticket, argv, identity)
     session = ProtocolSession(identity)
     process_deadline = _limit(limits, "process_deadline_seconds", 5.0)
     heartbeat_deadline = _limit(limits, "heartbeat_seconds", 1.0)
@@ -97,6 +105,10 @@ def _run_protocol_worker(
         managed_process_launches.append(tuple(argv))
     except (OSError, ProcessBoundaryError) as error:
         raise WorkerLaunchError("worker_launch_failed") from error
+    if _launch_ticket is not None:
+        from repomap_kg.coordinator._supervisor_fencing import _bind_launch_process
+
+        _bind_launch_process(_launch_ticket, process)
     assert process.stdin is not None and process.stdout is not None
     assert process.stderr is not None
 
@@ -234,7 +246,7 @@ def _run_protocol_worker(
     total_value = stderr_state["total"]
     assert isinstance(total_value, int)
     total = int(total_value)
-    return SyntheticWorkerResult(
+    result = SyntheticWorkerResult(
         argv, tuple(messages), terminal_dict, retained, total, total > diagnostic_limit,
         process.returncode, process_timed_out, heartbeat_timed_out,
         hello_timed_out, terminated, killed, process_group_cleaned,
@@ -243,6 +255,11 @@ def _run_protocol_worker(
         tuple(managed_process_launches),
         original_terminal=session.terminal,
     )
+    if process_group_cleaned and _launch_process is None and _launch_ticket is not None:
+        from repomap_kg.coordinator._supervisor_fencing import _record_reaped_launch
+
+        _record_reaped_launch(result, process, _launch_ticket)
+    return result
 
 
 def _read_worker_stdout(

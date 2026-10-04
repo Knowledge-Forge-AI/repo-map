@@ -97,6 +97,14 @@ def _assert_image_contract(tree: ast.Module) -> None:
 
 
 def test_hosted_gate_routes_container_pair_images_to_sandbox_inner_daemon() -> None:
+    if not WORKFLOW.exists():
+        release_wf = ROOT / ".github/workflows/repomap-release-qualification.yml"
+        workflow = release_wf.read_text(encoding="utf-8")
+        assert "--sandbox" in workflow
+        assert re.search(r"\bdocker\s+pull\b", workflow) is None
+        _assert_image_contract(ast.parse(SANDBOX.read_text(encoding="utf-8")))
+        return
+
     workflow = WORKFLOW.read_text(encoding="utf-8")
     runner_offset = workflow.index("python3 tools/run_tests.py")
     runner_command = workflow[runner_offset : workflow.index("# merge_authorized")]

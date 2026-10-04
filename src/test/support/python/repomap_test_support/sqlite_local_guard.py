@@ -47,6 +47,7 @@ from typing import Any
 GUARD_LOG_ENV = "REPOMAP_TEST_SQLITE_GUARD_LOG"
 PAUSE_AT_ENV = "REPOMAP_TEST_SQLITE_PAUSE_AT"
 BARRIER_ENV = "REPOMAP_TEST_SQLITE_BARRIER"
+ABRUPT_SETTLEMENT_ENV = "REPOMAP_TEST_SQLITE_ABRUPT_SETTLEMENT"
 SCHEMA_CEILING_ENV = "REPOMAP_TEST_SQLITE_SCHEMA_CEILING"
 SYNC_LOG_ENV = "REPOMAP_TEST_SQLITE_SYNC_LOG"
 PAUSE_DEADLINE_SECONDS = 300
@@ -179,12 +180,40 @@ def _install_pause() -> None:
     def pause(name: str) -> None:
         if name != point:
             return
+        is_abrupt = os.environ.get(ABRUPT_SETTLEMENT_ENV) == "1"
+        if is_abrupt:
+            coverage_armed = bool(
+                os.environ.get("COVERAGE_PROCESS_START")
+                or os.environ.get("COVERAGE_CHILD_MANIFEST_DIR")
+            )
+            sc = sys.modules.get("sitecustomize")
+            if coverage_armed:
+                if not sc or not hasattr(sc, "_settle_terminal_receipt"):
+                    err_msg = "guard: abrupt terminal settlement hook missing or renamed while coverage is armed"
+                    (barrier / "settlement_error").write_text(f"RuntimeError: {err_msg}\n", encoding="utf-8")
+                    raise RuntimeError(err_msg)
+                try:
+                    sc._settle_terminal_receipt()
+                except Exception as error:
+                    (barrier / "settlement_error").write_text(f"{type(error).__name__}: {error}\n", encoding="utf-8")
+                    raise RuntimeError(f"abrupt terminal settlement failed: {error}") from error
+            elif sc and hasattr(sc, "_settle_terminal_receipt"):
+                try:
+                    sc._settle_terminal_receipt()
+                except Exception as error:
+                    (barrier / "settlement_error").write_text(f"{type(error).__name__}: {error}\n", encoding="utf-8")
+                    raise RuntimeError(f"abrupt terminal settlement failed: {error}") from error
         (barrier / "ready").write_text(str(os.getpid()), encoding="utf-8")
         deadline = time.monotonic() + PAUSE_DEADLINE_SECONDS
         while not (barrier / "release").exists():
             if time.monotonic() > deadline:
                 raise TimeoutError("guard pause was never released")
             time.sleep(0.05)
+        if is_abrupt:
+            sc = sys.modules.get("sitecustomize")
+            if sc and hasattr(sc, "_invalidate_terminal_receipt"):
+                sc._invalidate_terminal_receipt()
+            raise RuntimeError("guard: abrupt termination child was released instead of killed")
 
     publisher._fault_point = pause
     connection._fault_point = pause

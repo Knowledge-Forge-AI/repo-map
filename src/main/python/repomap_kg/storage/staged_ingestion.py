@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
-import os
-from pathlib import Path
 import signal as signal
-import time
 from typing import Any
 
 import psycopg
@@ -29,6 +26,10 @@ from repomap_kg.storage._staged_ingestion_stages import (
     _refresh_canonical_node_evidence_statistics,
     _resolve_prepared_rows, _restore_connection_signal_handlers as _restore_connection_signal_handlers,
 )
+from repomap_kg.storage._staged_publication_pause import (
+    _run_system_test_publication_pause,
+    _run_system_test_post_publication_pause as _run_system_test_post_publication_pause,
+)
 from repomap_kg.storage.authority import StageId
 from repomap_kg.storage.backend_ownership import ConnectionRole
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
@@ -36,9 +37,7 @@ from repomap_kg.storage.errors import StorageCommitUnknownError, StorageSchemaEr
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
 from repomap_kg.storage.publication import PortablePublicationBinding, RunPublicationReceipt
-from repomap_kg.storage.publication_fencing import (
-    PublicationHandoff, build_graph_publication_claim_statements,
-)
+from repomap_kg.storage.publication_fencing import PublicationHandoff, build_graph_publication_claim_statements
 from repomap_kg.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args as _psycopg_connection_params_from_psql_args,
 )
@@ -70,7 +69,6 @@ __all__ = (
     "run_staged_portable_refresh",
     "stage_id_for_authority",
 )
-
 
 
 def _admit_and_run(
@@ -189,40 +187,6 @@ def run_staged_portable_refresh(
         prepared.close()
 
 
-def _run_system_test_post_publication_pause() -> None:
-    """Internal test instrumentation: pause after transaction_started fsync before final transaction.
-
-    Disabled by default; only active when _REPOMAP_SYSTEM_TEST_POST_PUBLICATION_PAUSE_PATH
-    points to a valid private test directory.
-    """
-    pause_path_str = os.environ.get("_REPOMAP_SYSTEM_TEST_POST_PUBLICATION_PAUSE_PATH")
-    if not pause_path_str:
-        return
-    pause_path = Path(pause_path_str)
-    try:
-        if not pause_path.is_absolute() or pause_path.is_symlink() or pause_path.parent.is_symlink():
-            return
-        st = pause_path.parent.stat()
-        if st.st_uid != os.getuid() or (st.st_mode & 0o777) != 0o700:
-            return
-    except OSError:
-        return
-    ready_path = Path(f"{pause_path_str}.ready")
-    try:
-        flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_NOFOLLOW", 0)
-        marker_fd = os.open(str(ready_path), flags, 0o600)
-        with os.fdopen(marker_fd, "w", encoding="utf-8") as marker:
-            marker.write(f"pid={os.getpid()}\n")
-        deadline = time.monotonic() + 30.0
-        while pause_path.exists() and time.monotonic() < deadline:
-            time.sleep(0.05)
-    except (AttributeError, OSError):
-        pass
-    finally:
-        try:
-            ready_path.unlink(missing_ok=True)
-        except OSError:
-            pass
 
 
 def _run_staged_full_refresh_admitted(
@@ -336,9 +300,9 @@ def _run_staged_full_refresh_admitted(
                 mark_validated(connection, resolved_stage_id)
             with staging_measurements.phase("staging.pre_final_commit"):
                 connection.commit()
-
         handoff = PublicationHandoff(MergeContext(resolved_stage_id, owner, run_id), receipt).validate()
         try:
+            _run_system_test_publication_pause(handoff)
             if authority.before_publication is not None:
                 authority.before_publication()
             _run_system_test_post_publication_pause()

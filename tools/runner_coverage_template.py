@@ -232,7 +232,54 @@ if _config:
                     pass
 
 
+_invalidated = False
+
+
+def _settle_terminal_receipt(_collector=_collector, _terminals=_terminals, _identity=_identity):
+    if _invalidated:
+        return
+    shard = ''
+    error = ''
+    measurement = 'unavailable'
+    try:
+        if _collector is not None:
+            _collector.save()
+            data = _collector.get_data()
+            shard = data.data_filename()
+            measurement = ('selected_hits' if any(data.lines(f) for f in data.measured_files())
+                           else 'no_selected_hits')
+    except Exception as exc:
+        error = type(exc).__name__
+    for (_, suffix), handle in list(_terminals.items()):
+        if not handle.closed:
+            handle.seek(0)
+            handle.write((_identity + f'shard={shard}\nerror={error}\ncomplete=1\n'
+                          + f'measurement={measurement}\n')
+                         if suffix == 'exit' else shard)
+            handle.truncate()
+            handle.flush()
+
+
+def _invalidate_terminal_receipt(_collector=_collector, _terminals=_terminals, _identity=_identity):
+    global _invalidated
+    _invalidated = True
+    for (_, suffix), handle in list(_terminals.items()):
+        if not handle.closed:
+            handle.seek(0)
+            handle.write((_identity + 'shard=\nerror=unexpected_release\ncomplete=0\n'
+                          + 'measurement=unavailable\n')
+                         if suffix == 'exit' else '')
+            handle.truncate()
+            handle.flush()
+            try:
+                handle.close()
+            except Exception:
+                pass
+
+
 def _finish(_collector=_collector, _terminals=_terminals, _identity=_identity):
+    if _invalidated:
+        return
     shard = ''
     error = ''
     measurement = 'unavailable'
@@ -246,14 +293,20 @@ def _finish(_collector=_collector, _terminals=_terminals, _identity=_identity):
                            else 'no_selected_hits')
     except Exception as exc:
         error = type(exc).__name__
-    for (_, suffix), handle in _terminals.items():
+    for (_, suffix), handle in list(_terminals.items()):
         try:
-            handle.write((_identity + f'shard={shard}\nerror={error}\ncomplete=1\n'
-                          + f'measurement={measurement}\n')
-                         if suffix == 'exit' else shard)
-            handle.flush()
+            if not handle.closed:
+                handle.seek(0)
+                handle.write((_identity + f'shard={shard}\nerror={error}\ncomplete=1\n'
+                              + f'measurement={measurement}\n')
+                             if suffix == 'exit' else shard)
+                handle.truncate()
+                handle.flush()
         finally:
-            handle.close()
+            try:
+                handle.close()
+            except Exception:
+                pass
 
 
 atexit.register(_finish)

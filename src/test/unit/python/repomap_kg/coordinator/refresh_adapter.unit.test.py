@@ -1,5 +1,6 @@
 from repomap_kg.runtime.postgres_route import PostgresRoute
 from dataclasses import fields, replace
+import os
 from pathlib import Path
 import threading
 from types import SimpleNamespace
@@ -202,11 +203,20 @@ def test_failed_refresh_never_infers_rollback_or_success(tmp_path: Path) -> None
 
 
 def test_execute_refresh_emits_bounded_system_interruption_marker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    tmp_path.chmod(0o700)
     target, pause_path = capability(tmp_path, _cfg(tmp_path)), tmp_path / "pause"
+    pause_path.touch()
+    ready_path = pause_path.with_name("pause.ready")
     monkeypatch.setenv("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", str(pause_path))
+    observed: list[str] = []
+
+    def _observe_and_resume(_duration: float) -> None:
+        if ready_path.exists():
+            observed.append(ready_path.read_text(encoding="utf-8"))
+            pause_path.unlink()
+
     with (
-        patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", pause_path),
-        patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", pause_path.with_name("pause.ready")),
+        patch("repomap_kg.coordinator._refresh_execution.time.sleep", side_effect=_observe_and_resume),
         patch("repomap_kg.ops.config.load_ops_config", return_value="loaded-config"),
         patch("repomap_kg.ops.refresh.refresh_graph", return_value="complete"),
         patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
@@ -214,7 +224,9 @@ def test_execute_refresh_emits_bounded_system_interruption_marker(tmp_path: Path
         patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
     ):
         assert execute_refresh(target) == "complete"
-    assert pause_path.with_name("pause.ready").read_text(encoding="utf-8") == "job_id=job-refresh-1\nattempt=1\n"
+    assert len(observed) == 1
+    assert f"job_id=job-refresh-1\nattempt=1\npid={os.getpid()}\n" in observed[0]
+    assert not ready_path.exists()
 
 
 def test_execute_refresh_ignores_unapproved_system_interruption_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -234,6 +246,7 @@ def test_execute_refresh_ignores_unapproved_system_interruption_path(tmp_path: P
 
 
 def test_execute_refresh_does_not_follow_system_marker_symlink(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    tmp_path.chmod(0o700)
     target, pause_path, ready_path, victim_path = capability(tmp_path, _cfg(tmp_path)), tmp_path / "pause", tmp_path / "pause.ready", tmp_path / "victim"
     victim_path.write_text("preserved\n", encoding="utf-8")
     ready_path.symlink_to(victim_path)

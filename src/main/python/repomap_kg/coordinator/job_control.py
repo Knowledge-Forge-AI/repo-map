@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from pathlib import Path
+import re
 import time
 from typing import Protocol, TypeVar
 
@@ -249,6 +250,14 @@ def format_coordinator_health_table(payload: Mapping[str, object]) -> str:
         if not isinstance(value, Mapping):
             raise CoordinatorModeError("coordinator_response_invalid")
         lines.append(f"{section} | {value['status']}")
+    diagnostics = health.get("recovery_diagnostics")
+    if isinstance(diagnostics, list) and diagnostics:
+        lines.append("recovery_diagnostic | sequence | category | summary")
+        for diag in diagnostics:
+            if isinstance(diag, Mapping):
+                lines.append(
+                    f"recovery_diagnostic | {diag.get('sequence')} | {diag.get('category')} | {diag.get('summary')}"
+                )
     return "\n".join(lines)
 
 
@@ -293,8 +302,13 @@ def _validated_list_item(value: object, graph_filter: str | None) -> dict[str, s
 def _validated_health(value: object) -> dict[str, object]:
     if not isinstance(value, Mapping) or not validate_public_result(value):
         raise CoordinatorModeError("coordinator_response_invalid")
-    expected = {"health_schema_version", "status", *_HEALTH_SECTIONS}
-    if set(value) != expected or value.get("health_schema_version") != 1:
+    keys = set(value)
+    allowed_base = {"health_schema_version", "status", *_HEALTH_SECTIONS}
+    version = value.get("health_schema_version")
+    if type(version) is not int or version not in {1, 2}:
+        raise CoordinatorModeError("coordinator_response_invalid")
+    expected = allowed_base if version == 1 else allowed_base | {"recovery_diagnostics"}
+    if keys != expected:
         raise CoordinatorModeError("coordinator_response_invalid")
     status = value.get("status")
     if not isinstance(status, str) or status not in _HEALTH_STATUS_VALUES:
@@ -310,6 +324,41 @@ def _validated_health(value: object) -> dict[str, object]:
             or section_status not in _HEALTH_STATUS_VALUES
         ):
             raise CoordinatorModeError("coordinator_response_invalid")
+    raw_diagnostics = value.get("recovery_diagnostics", [])
+    if "recovery_diagnostics" in value:
+        if not isinstance(raw_diagnostics, (list, tuple)) or len(raw_diagnostics) > 32:
+            raise CoordinatorModeError("coordinator_response_invalid")
+        validated_diagnostics: list[dict[str, object]] = []
+        for item in raw_diagnostics:
+            if not isinstance(item, Mapping):
+                raise CoordinatorModeError("coordinator_response_invalid")
+            if set(item.keys()) != {"category", "summary", "sequence"}:
+                raise CoordinatorModeError("coordinator_response_invalid")
+            cat = item["category"]
+            summ = item["summary"]
+            seq = item["sequence"]
+            if (
+                not isinstance(cat, str)
+                or not cat
+                or len(cat) > 64
+                or not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", cat)
+            ):
+                raise CoordinatorModeError("coordinator_response_invalid")
+            if (
+                not isinstance(summ, str)
+                or not summ
+                or len(summ) > 256
+                or not re.fullmatch(r"[A-Za-z0-9_.: -]{1,256}", summ)
+            ):
+                raise CoordinatorModeError("coordinator_response_invalid")
+            if not isinstance(seq, int) or isinstance(seq, bool) or seq < 0:
+                raise CoordinatorModeError("coordinator_response_invalid")
+            validated_diagnostics.append({
+                "category": cat,
+                "summary": summ,
+                "sequence": seq,
+            })
+        health["recovery_diagnostics"] = validated_diagnostics
     return health
 
 

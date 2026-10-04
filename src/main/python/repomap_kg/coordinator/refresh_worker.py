@@ -25,6 +25,8 @@ from repomap_kg.coordinator.refresh_adapter import (
     refresh_terminal,
 )
 
+from repomap_kg.ops.report_records import redact_sensitive_text
+
 _PUBLIC_CONFIGURATION_DIAGNOSTICS = frozenset(
     {"multi-source-refresh-unsupported", "source-binding-refresh-unsupported"}
 )
@@ -36,33 +38,48 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--job-id", required=True)
     parser.add_argument("--attempt", required=True, type=int)
     args = parser.parse_args(argv)
+
     try:
-        capability = load_refresh_capability(Path(args.capability))
-        if capability.job_id != args.job_id or capability.attempt != args.attempt:
-            raise ValueError("invalid refresh capability")
-        identity = {"job_id": capability.job_id, "attempt": capability.attempt}
-        session = ProtocolSession(identity)
-        hello = {
-            "schema_version": 1,
-            "message_type": "worker_hello",
-            "protocol_versions": [1],
-            "worker_generation": "refresh-adapter-v1",
-            "capabilities": ["refresh_graph"],
-            "process_nonce": "refresh-worker-v1",
-        }
-        session.accept_worker(hello)
-        _write(hello)
-        frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
-        start = session.accept_coordinator(decode_jsonl(frame))
-        if any(
-            start[field] != expected
-            for field, expected in (
-                ("graph_id", capability.graph_id),
-                ("source_generation", capability.source_generation),
-                ("config_generation", capability.config_generation),
-            )
-        ):
-            raise ProtocolError("identity_mismatch")
+        try:
+            capability = load_refresh_capability(Path(args.capability))
+            if capability.job_id != args.job_id or capability.attempt != args.attempt:
+                raise ValueError("invalid refresh capability")
+        except (OSError, TypeError, ValueError) as error:
+            safe_error = redact_sensitive_text(str(error))[:256]
+            sys.stderr.write(f"refresh-failure:capability-error:{safe_error}\n")
+            sys.stderr.flush()
+            return 2
+
+        try:
+            identity = {"job_id": capability.job_id, "attempt": capability.attempt}
+            session = ProtocolSession(identity)
+            hello = {
+                "schema_version": 1,
+                "message_type": "worker_hello",
+                "protocol_versions": [1],
+                "worker_generation": "refresh-adapter-v1",
+                "capabilities": ["refresh_graph"],
+                "process_nonce": "refresh-worker-v1",
+            }
+            session.accept_worker(hello)
+            _write(hello)
+            frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
+            start = session.accept_coordinator(decode_jsonl(frame))
+            if any(
+                start[field] != expected
+                for field, expected in (
+                    ("graph_id", capability.graph_id),
+                    ("source_generation", capability.source_generation),
+                    ("config_generation", capability.config_generation),
+                )
+            ):
+                raise ProtocolError("identity_mismatch")
+        except ProtocolError as error:
+            safe_error = redact_sensitive_text(str(error))[:256]
+            sys.stderr.write(f"refresh-failure:protocol-error:{safe_error}\n")
+            sys.stderr.flush()
+            return 2
+
         protocol_lock = threading.Lock()
 
         def emit_heartbeat() -> None:
@@ -107,9 +124,7 @@ def main(argv: list[str] | None = None) -> int:
                 diagnostic=str(error),
             )
         except (OSError, TypeError, ValueError) as error:
-            from repomap_kg.ops.reports import _redact_text
-
-            safe_error = _redact_text(str(error))[:256]
+            safe_error = redact_sensitive_text(str(error))[:256]
             sys.stderr.write(f"refresh-failure:worker-error:{safe_error}\n")
             sys.stderr.flush()
             terminal = _exception_terminal(capability, identity, started=True)
@@ -206,8 +221,6 @@ def _exception_terminal(
 
 
 def _write_failure_categories(result: object) -> None:
-    from repomap_kg.ops.reports import _redact_text
-
     categories = []
     for diagnostic in getattr(result, "diagnostics", ()):
         if isinstance(diagnostic, dict) and isinstance(diagnostic.get("code"), str):
@@ -223,7 +236,7 @@ def _write_failure_categories(result: object) -> None:
         categories.append("authorization-failed")
     else:
         categories.append("unclassified")
-    safe_error = _redact_text(str(getattr(result, "error", "")))[:512]
+    safe_error = redact_sensitive_text(str(getattr(result, "error", "")))[:512]
     sys.stderr.write(
         "refresh-failure:" + ",".join(categories[:8]) + ":" + safe_error + "\n"
     )

@@ -132,9 +132,10 @@ def test_ambient_database_user_does_not_override_config_authority(
 def test_enabled_source_root_is_read_only_only_where_execution_requires_it() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         home = Path(tmpdir) / "home"
-        source = home / "source"
-        source.mkdir(parents=True)
         setup_local_runtime(home)
+        source = home / "source"
+        source.mkdir(mode=0o700, exist_ok=True)
+        source.chmod(0o700)
         config = home / "repomap.rpl.toml"
         config.write_text(
             config.read_text(encoding="utf-8")

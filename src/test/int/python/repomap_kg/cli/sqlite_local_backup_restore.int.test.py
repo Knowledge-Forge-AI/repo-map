@@ -38,6 +38,7 @@ from repomap_test_support.sqlite_local_harness import (
     LocalHarness,
     await_ready,
     initialize,
+    kill_paused_child,
     release,
     remove_database,
     structured,
@@ -254,11 +255,11 @@ def test_tampered_incompatible_and_existing_targets_are_refused(tmp_path: Path) 
     barrier = tmp_path / "restore-barrier"
     killed = harness.start(
         "ops", "sqlite-restore", "--repo-map-home", str(home), "--graph", GRAPH, "--backup", str(good),
-        extra_env=harness.paused_env("restore:before-install", barrier),
+        extra_env=harness.paused_env("restore:before-install", barrier, abrupt=True),
     )
     try:
         await_ready(barrier, killed)
-        os.kill(killed.pid, signal.SIGKILL)
+        kill_paused_child(killed)
     finally:
         killed.communicate()
     assert killed.returncode == -signal.SIGKILL
@@ -281,11 +282,11 @@ def test_interrupted_or_contending_backup_never_claims_success(tmp_path: Path) -
     output = tmp_path / "killed"
     killed = harness.start(
         "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", GRAPH, "--output", str(output),
-        extra_env=harness.paused_env("backup:before-manifest-link", barrier),
+        extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
     )
     try:
         await_ready(barrier, killed)
-        os.kill(killed.pid, signal.SIGKILL)
+        kill_paused_child(killed)
     finally:
         killed.communicate()
     assert killed.returncode == -signal.SIGKILL
@@ -318,7 +319,7 @@ def test_interrupted_or_contending_backup_never_claims_success(tmp_path: Path) -
         assert holder.returncode == 0, holder_stderr
     finally:
         if holder.poll() is None:
-            holder.kill()
+            kill_paused_child(holder)
             holder.communicate()
     after = _backup(harness, home, tmp_path / "after-writer")
     assert after["accepted_generation"] == 2, after

@@ -8,11 +8,14 @@ capability cleanup so startup reconciliation can consume the same evidence.
 
 from __future__ import annotations
 
+from contextlib import AbstractContextManager
 import hashlib
 import json
 import os
 from pathlib import Path
 import stat
+from typing import Callable
+from weakref import WeakKeyDictionary, WeakSet
 
 from repomap_kg.coordinator._refresh_capability_io import validate_private_directory
 
@@ -90,8 +93,101 @@ def before_publication(directory: Path, attempt: object) -> None:
     })
 
 
+class WorkerFencingProof:
+    """Opaque internal capability; fields and booleans cannot create authority."""
+
+    __slots__ = ("__weakref__",)
+
+    def __new__(cls, *args: object, **kwargs: object):
+        raise PermissionError("WorkerFencingProof cannot be fabricated")
+
+    @property
+    def proof_kind(self) -> str:
+        return _proof_record(self)[1]
+
+    @property
+    def registration_digest(self) -> str | None:
+        return _proof_record(self)[3]
+
+    def validate(self, attempt: object) -> None:
+        if _proof_record(self)[0] != _fencing_identity(attempt):
+            raise ValueError("Worker fencing proof identity mismatch")
+
+    def open_closure_context(self, attempt: object) -> AbstractContextManager[object]:
+        if self in _CONSUMED_PROOFS:
+            raise PermissionError("WorkerFencingProof has already been consumed or invalidated")
+        record = _PROOFS.pop(self, None)
+        if record is None:
+            raise PermissionError("WorkerFencingProof cannot be fabricated")
+        _CONSUMED_PROOFS.add(self)
+        if record[0] != _fencing_identity(attempt):
+            raise ValueError("Worker fencing proof identity mismatch")
+        # Every issued capability revalidates current durable ownership under locks.
+        return record[2]()
+
+
+_PROOFS: WeakKeyDictionary[WorkerFencingProof, tuple[
+    dict[str, object], str, Callable[[], AbstractContextManager[object]], str | None,
+]] = WeakKeyDictionary()
+_CONSUMED_PROOFS: WeakSet[WorkerFencingProof] = WeakSet()
+
+
+def _fencing_identity(attempt: object) -> dict[str, object]:
+    return {**_identity(attempt), "graph_lease_epoch": getattr(attempt, "graph_lease_fencing_epoch", 0)}
+
+
+def _proof_record(proof: WorkerFencingProof):
+    if proof in _CONSUMED_PROOFS:
+        raise PermissionError("WorkerFencingProof has already been consumed or invalidated")
+    record = _PROOFS.get(proof)
+    if record is None:
+        raise PermissionError("WorkerFencingProof cannot be fabricated")
+    return record
+
+
+def _issue_fencing_proof(
+    attempt: object, kind: str,
+    currency_context: Callable[[], AbstractContextManager[object]],
+    registration_digest: str | None = None,
+) -> WorkerFencingProof:
+    """Private issuance for locked store operations and real supervisor results."""
+    proof = object.__new__(WorkerFencingProof)
+    _PROOFS[proof] = (_fencing_identity(attempt), kind, currency_context, registration_digest)
+    return proof
+
+
+def close_unpublished(
+    directory: Path,
+    attempt: object,
+    *,
+    proof: WorkerFencingProof,
+) -> bool:
+    """Close an un-published attempt as not_started only after validating authoritative fencing proof."""
+    if not isinstance(proof, WorkerFencingProof):
+        raise TypeError("Authoritative WorkerFencingProof is required to close unpublished attempt")
+    proof.validate(attempt)
+    try:
+        validate_private_directory(directory)
+        identity = _identity(attempt)
+        if _read(_path(directory, attempt, "initial")) != identity:
+            return False
+        decision = _path(directory, attempt, "decision")
+        with proof.open_closure_context(attempt):
+            try:
+                _write(decision, {**identity, "publication_state": "not_started"})
+            except FileExistsError:
+                pass
+            payload = _read(decision)
+            state = payload.pop("publication_state", None)
+            return payload == identity and state == "not_started"
+    except (OSError, ValueError, TypeError, AttributeError, PermissionError):
+        return False
+
+
+
 def publication_state(
-    directory: Path, attempt: object, *, close_unpublished: bool = False,
+    directory: Path,
+    attempt: object,
 ) -> str:
     try:
         validate_private_directory(directory)
@@ -99,11 +195,6 @@ def publication_state(
         if _read(_path(directory, attempt, "initial")) != identity:
             return "commit_unknown"
         decision = _path(directory, attempt, "decision")
-        if close_unpublished:
-            try:
-                _write(decision, {**identity, "publication_state": "not_started"})
-            except FileExistsError:
-                pass
         payload = _read(decision)
         state = payload.pop("publication_state", None)
         if payload == identity and state == "not_started":

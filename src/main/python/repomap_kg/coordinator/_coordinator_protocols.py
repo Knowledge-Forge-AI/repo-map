@@ -24,6 +24,7 @@ _T = TypeVar("_T")
 _Claim = JobClaim
 WorkerRunner = Callable[[JobClaim, threading.Event], Mapping[str, object]]
 PublicationReader = Callable[[object], Mapping[str, object] | None]
+PublicationCloser = Callable[[object, object], bool]
 PublicationRetirer = Callable[[object], object]
 
 

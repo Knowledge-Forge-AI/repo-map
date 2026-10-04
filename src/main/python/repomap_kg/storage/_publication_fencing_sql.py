@@ -199,7 +199,10 @@ ON CONFLICT (repository_id) DO UPDATE SET
     updated_at = now()
 WHERE (
     graph_publication_authority.singleton_fencing_epoch
-        <= EXCLUDED.singleton_fencing_epoch
+        < EXCLUDED.singleton_fencing_epoch
+) OR (
+    graph_publication_authority.singleton_fencing_epoch
+        = EXCLUDED.singleton_fencing_epoch
     AND graph_publication_authority.graph_lease_fencing_epoch
         < EXCLUDED.graph_lease_fencing_epoch
 ) OR (
@@ -234,8 +237,13 @@ def build_authority_check_sql(owner: StageOwner) -> str:
     IF EXISTS (
         SELECT 1 FROM graph_publication_authority
         WHERE repository_id = {owner.repository_id}
-          AND (singleton_fencing_epoch > {owner.singleton_fencing_epoch}
-               OR graph_lease_fencing_epoch > {owner.graph_lease_fencing_epoch})
+          AND (
+              singleton_fencing_epoch > {owner.singleton_fencing_epoch}
+              OR (
+                  singleton_fencing_epoch = {owner.singleton_fencing_epoch}
+                  AND graph_lease_fencing_epoch > {owner.graph_lease_fencing_epoch}
+              )
+          )
     ) THEN
         RAISE EXCEPTION 'SCALE5 stale publication fence';
     END IF;"""

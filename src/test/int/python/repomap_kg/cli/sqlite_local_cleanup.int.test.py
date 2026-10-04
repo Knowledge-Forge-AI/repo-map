@@ -43,6 +43,7 @@ from repomap_test_support.sqlite_local_harness import (
     LocalHarness,
     await_ready,
     initialize,
+    kill_paused_child,
     remove_database,
     structured,
     temp_orphans,
@@ -216,10 +217,10 @@ def test_attempt_cleanup_dry_run_and_current_durability(tmp_path: Path) -> None:
 
 def _killed_at(harness: LocalHarness, tmp_path: Path, point: str, *args: str) -> None:
     barrier = tmp_path / f"barrier-{point.replace(':', '-')}"
-    process = harness.start(*args, extra_env=harness.paused_env(point, barrier))
+    process = harness.start(*args, extra_env=harness.paused_env(point, barrier, abrupt=True))
     try:
         await_ready(barrier, process)
-        os.kill(process.pid, signal.SIGKILL)
+        kill_paused_child(process)
     finally:
         process.communicate()
     assert process.returncode == -signal.SIGKILL

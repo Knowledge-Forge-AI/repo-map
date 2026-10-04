@@ -35,7 +35,6 @@ import hashlib
 import json
 import os
 import shutil
-import signal
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -53,6 +52,7 @@ from repomap_test_support.sqlite_local_harness import (
     LocalHarness,
     await_ready,
     initialize,
+    kill_paused_child,
     refusal,
     remove_database,
     structured,
@@ -336,11 +336,11 @@ def test_unreadable_or_conflicting_state_refuses_and_preserves_the_pending_attem
     barrier = tmp_path / "after-commit-barrier"
     writer = harness.start(
         "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", ONE,
-        extra_env=harness.paused_env("after_commit", barrier),
+        extra_env=harness.paused_env("after_commit", barrier, abrupt=True),
     )
     try:
         await_ready(barrier, writer)
-        os.kill(writer.pid, signal.SIGKILL)
+        kill_paused_child(writer)
     finally:
         writer.communicate()
     pending = [record for record in _records(home, ONE).values() if _retention(record) == "publication-reconciliation"]

@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 from typing import Callable, Protocol
 
+from repomap_kg.runtime import system_test_pause as pause_window
 from repomap_kg.coordinator._refresh_contracts import (
     RefreshConfigurationError,
     RefreshGenerationChangedError,
@@ -16,12 +17,27 @@ from repomap_kg.coordinator._refresh_generation import (
     ConfiguredGenerationChanged,
     validate_configured_generations,
 )
-from repomap_kg.runtime.postgres_route import effective_postgres_route
+from repomap_kg.runtime.postgres_route import (
+    CONTAINER_INTERNAL_MARKER,
+    effective_postgres_route,
+)
+from repomap_kg.runtime.system_test_pause import (
+    SYSTEM_TEST_PRODUCER_PAUSE_SECONDS as SYSTEM_TEST_PRODUCER_PAUSE_SECONDS,
+    SYSTEM_TEST_CONSUMER_DEADLINE_SECONDS as SYSTEM_TEST_CONSUMER_DEADLINE_SECONDS,
+    SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS as SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS,
+    SYSTEM_TEST_STATUS_TIMEOUT_SECONDS as SYSTEM_TEST_STATUS_TIMEOUT_SECONDS,
+    SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS as SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS,
+    SYSTEM_TEST_SUBMISSION_REAP_TIMEOUT_SECONDS as SYSTEM_TEST_SUBMISSION_REAP_TIMEOUT_SECONDS,
+    SYSTEM_TEST_INTERRUPTION_TIMEOUT_SECONDS as SYSTEM_TEST_INTERRUPTION_TIMEOUT_SECONDS,
+    SYSTEM_TEST_PAUSE_SAFETY_MARGIN_SECONDS as SYSTEM_TEST_PAUSE_SAFETY_MARGIN_SECONDS,
+    validate_pause_window_contract as validate_pause_window_contract,
+)
 from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
 from repomap_kg.storage.publication import RunPublicationReceipt
 
-_SYSTEM_TEST_PAUSE_PATH: Path | None = None
-_SYSTEM_TEST_READY_PATH: Path | None = None
+_SYSTEM_TEST_PAUSE_PATH: Path | None = Path("/tmp/system_pause_trigger")
+_SYSTEM_TEST_READY_PATH: Path | None = Path("/tmp/system_pause_trigger.ready")
+
 
 
 class ExecutionCapability(Protocol):
@@ -81,15 +97,20 @@ def _run_system_test_pause(capability: ExecutionCapability) -> None:
     """Internal test instrumentation: pause before publication when configured.
 
     Disabled by default; only active when _REPOMAP_SYSTEM_TEST_PAUSE_PATH points
-    to a valid private test directory or matches an explicit test pause path.
+    to a valid private test directory or matches an explicit containerized test pause path.
     """
     pause_path_str = os.environ.get("_REPOMAP_SYSTEM_TEST_PAUSE_PATH")
     if not pause_path_str:
         return
     pause_path = Path(pause_path_str)
-    is_legacy_hook = _SYSTEM_TEST_PAUSE_PATH is not None and pause_path == _SYSTEM_TEST_PAUSE_PATH
+    is_legacy_hook = (
+        _SYSTEM_TEST_PAUSE_PATH is not None
+        and pause_path == _SYSTEM_TEST_PAUSE_PATH
+        and CONTAINER_INTERNAL_MARKER.is_file()
+    )
     if not is_legacy_hook and not _is_safe_test_path(pause_path):
         return
+    validate_pause_window_contract()
     ready_path = (
         _SYSTEM_TEST_READY_PATH
         if is_legacy_hook and _SYSTEM_TEST_READY_PATH is not None
@@ -107,17 +128,16 @@ def _run_system_test_pause(capability: ExecutionCapability) -> None:
                 marker.write(
                     f"job_id={capability.job_id}\nattempt={capability.attempt}\npid={os.getpid()}\n"
                 )
-        deadline = time.monotonic() + 30.0
+        deadline = time.monotonic() + pause_window.SYSTEM_TEST_PRODUCER_PAUSE_SECONDS
         while pause_path.exists() and time.monotonic() < deadline:
             time.sleep(0.05)
     except (AttributeError, OSError):
         pass
     finally:
-        if not is_legacy_hook:
-            try:
-                ready_path.unlink(missing_ok=True)
-            except OSError:
-                pass
+        try:
+            ready_path.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 def execute_refresh_attempt(

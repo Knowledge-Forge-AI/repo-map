@@ -71,6 +71,11 @@ from ci.ci_topology_pr import (
     _check_unit_tests as _pr_check_unit_tests,
 )
 from ci.workflow_model import Workflow, WorkflowParseError, load_workflows
+from ci.qualification_command_contracts import (
+    _validate_staging_runner_tokens as _validate_staging_runner_tokens,
+    _validate_main_system_gate_ordering as _validate_main_system_gate_ordering,
+    _validate_downstream_dependencies as _validate_downstream_dependencies,
+)
 
 
 def _contract_values() -> TopologyContractValues:
@@ -236,7 +241,10 @@ def check_topology(repo_root: Path) -> tuple[str, ...]:
     violations.extend(_pr_check_source_and_export_policy(release_wf, contracts))
     violations.extend(_pr_check_pre_review_static(release_wf, contracts))
     violations.extend(_pr_check_unit_tests(release_wf, contracts))
+    violations.extend(_validate_downstream_dependencies(release_wf))
+    violations.extend(_validate_staging_runner_tokens(release_wf, "staging-integration-gate"))
     violations.extend(_check_staging_gate(release_wf))
+    violations.extend(_validate_main_system_gate_ordering(release_wf))
     violations.extend(_check_main_system_gate(release_wf))
     violations.extend(_pr_check_codeql(release_wf, contracts))
     violations.extend(_pr_check_sbom_security(release_wf, contracts))

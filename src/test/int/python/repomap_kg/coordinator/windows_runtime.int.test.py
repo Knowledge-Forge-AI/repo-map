@@ -79,12 +79,12 @@ def test_loopback_descriptor_acl_rotation_frames_and_concurrent_clients(tmp_path
         client = LocalCoordinatorClient(endpoint, endpoint, timeout_seconds=2)
         health = client.health()
         assert health["status"] == "ready"
-        assert health["health_schema_version"] == 1
+        assert health["health_schema_version"] == 2
         with ThreadPoolExecutor(max_workers=4) as pool:
             concurrent_health = list(pool.map(lambda _value: client.health(), range(8)))
         assert all(item["status"] == "ready" for item in concurrent_health)
         assert all(
-            item["health_schema_version"] == 1 for item in concurrent_health
+            item["health_schema_version"] == 2 for item in concurrent_health
         )
         with socket.create_connection((descriptor.host, descriptor.port), timeout=2) as raw:
             raw.sendall(b"not-json\n")
@@ -152,7 +152,7 @@ def test_foreground_service_uses_loopback_adapter_and_removes_descriptor(tmp_pat
             service.socket_path, service.token_path, timeout_seconds=2
         ).health()
         assert health["status"] == "ready"
-        assert health["health_schema_version"] == 1
+        assert health["health_schema_version"] == 2
     finally:
         service.stop()
     assert not service.socket_path.exists()

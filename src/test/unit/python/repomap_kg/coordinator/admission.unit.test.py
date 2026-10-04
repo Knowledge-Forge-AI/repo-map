@@ -3,6 +3,7 @@
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from types import SimpleNamespace
+import tempfile
 import threading
 import time
 
@@ -240,11 +241,12 @@ def test_deadline_crossed_during_resolver_never_calls_store(tmp_path, monkeypatc
     assert store.submissions == []
 
 
-def test_caller_socket_timeout_cannot_create_a_late_job_after_resolver_release(tmp_path):
-    entered = threading.Event()
-    release = threading.Event()
-    resolver_done = threading.Event()
-    store = _RecordingStore()
+def test_caller_socket_timeout_cannot_create_a_late_job_after_resolver_release():
+    entered, release, resolver_done, store = (
+        threading.Event(), threading.Event(), threading.Event(), _RecordingStore(),
+    )
+    td = tempfile.TemporaryDirectory()
+    run_dir = Path(td.name)
 
     def delayed_resolver(payload):
         entered.set()
@@ -255,7 +257,7 @@ def test_caller_socket_timeout_cannot_create_a_late_job_after_resolver_release(t
     service = CoordinatorService(
         _ServiceCoordinator(),
         store,
-        tmp_path,
+        run_dir,
         request_resolver=delayed_resolver,
         transport_factory=UnixSocketService,
         idle_poll_seconds=0.01,
@@ -289,6 +291,7 @@ def test_caller_socket_timeout_cannot_create_a_late_job_after_resolver_release(t
         release.set()
         caller.join(timeout=2)
         service.stop()
+        td.cleanup()
 
 
 def test_deadline_crossed_in_coordinator_callback_never_calls_store(tmp_path, monkeypatch):

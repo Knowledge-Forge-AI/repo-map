@@ -38,6 +38,7 @@ from repomap_test_support.cli_in_process import module_process_environment
 from repomap_test_support.sqlite_local_lock_children import (
     HOLD_AND_SPAWN,
     attempt,
+    kill_holder,
     release_holder,
     start_holder,
 )
@@ -305,9 +306,9 @@ def test_posix_lock_is_interprocess_and_released_by_exit_kill_and_not_inherited(
     assert release_holder(holder) == 0
     assert attempt(one, env) == "acquired"
 
-    killed, _ = start_holder(one, env)
+    killed, _ = start_holder(one, env, abrupt=True)
     assert attempt(one, env) == IN_PROGRESS
-    killed.send_signal(signal.SIGKILL)
+    kill_holder(killed)
     killed.communicate(timeout=120)
     assert killed.returncode == -signal.SIGKILL
     assert attempt(one, env) == "acquired", "the OS released the killed holder's lock"

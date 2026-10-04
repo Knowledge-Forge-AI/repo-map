@@ -36,10 +36,40 @@ def test_release_metadata_pins_psycopg_and_preserves_migration_paths() -> None:
         '"share/repomap-kg/rdbms"',
         '"share/repomap-kg/rdbms/2026/06"',
         '"share/repomap-kg/rdbms/2026/07"',
+        '"share/repomap-kg/rdbms/2026/09"',
         '"share/repomap-kg/coordinator-rdbms"',
         '"share/repomap-kg/coordinator-rdbms/2026/07"',
+        '"share/repomap-kg/coordinator-rdbms/2026/10"',
     ):
         assert destination in metadata
+
+
+def test_projected_public_metadata_preserves_migration_paths_and_psycopg_isolation() -> None:
+    metadata = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert tomllib.loads(metadata)["project"]["version"] in {"0.1.0", "0.0.2"}
+    private_metadata = metadata.replace('version = "0.0.2"', 'version = "0.1.0"', 1)
+    public_metadata = private_metadata.replace('version = "0.1.0"', 'version = "0.0.2"', 1)
+    public_project = tomllib.loads(public_metadata)["project"]
+    assert public_project["version"] == "0.0.2"
+    assert public_project["dependencies"] == ["typing-extensions==4.16.0"]
+    assert public_project["optional-dependencies"]["postgres"] == [
+        "psycopg[binary]==3.2.12"
+    ]
+    assert not any(
+        driver in requirement.lower()
+        for requirement in public_project["dependencies"]
+        for driver in ("psycopg", "libpq", "pg8000", "asyncpg")
+    )
+    for destination in (
+        '"share/repomap-kg/rdbms"',
+        '"share/repomap-kg/rdbms/2026/06"',
+        '"share/repomap-kg/rdbms/2026/07"',
+        '"share/repomap-kg/rdbms/2026/09"',
+        '"share/repomap-kg/coordinator-rdbms"',
+        '"share/repomap-kg/coordinator-rdbms/2026/07"',
+        '"share/repomap-kg/coordinator-rdbms/2026/10"',
+    ):
+        assert destination in public_metadata
 
 
 def test_release_dockerfile_uses_only_pinned_build_and_runtime_resources() -> None:

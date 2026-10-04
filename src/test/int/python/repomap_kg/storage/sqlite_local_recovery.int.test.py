@@ -42,8 +42,12 @@ from repomap_test_support.sqlite_local_harness import (
     CHILD_DEADLINE_SECONDS,
     LocalHarness,
     await_ready,
+    cleanup_after_failure,
+    cleanup_child,
     init_orphans,
     initialize,
+    interrupt_paused_child,
+    kill_paused_child,
     release,
     remove_database,
     structured,
@@ -160,11 +164,11 @@ def test_killed_writer_leaves_previous_generation_readable_and_recoverable(tmp_p
     barrier = tmp_path / "kill-barrier"
     writer = harness.start(
         "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", GRAPH,
-        extra_env=harness.paused_env("after_family:canonical_edges", barrier),
+        extra_env=harness.paused_env("after_family:canonical_edges", barrier, abrupt=True),
     )
     try:
         await_ready(barrier, writer)
-        os.kill(writer.pid, signal.SIGKILL)
+        kill_paused_child(writer)
     finally:
         writer.communicate()
     assert writer.returncode == -signal.SIGKILL
@@ -208,9 +212,12 @@ def test_writer_contention_is_refused_and_reads_stay_coherent(tmp_path: Path) ->
             assert investigation_queries.status_fields(connection) == before  # one operation, one snapshot
         assert before["latest_run_id"] == 1
         assert _state(config, GRAPH)["latest_run_id"] == 2  # the next operation sees the commit
-    finally:
+    except BaseException as primary:
+        cleanup_after_failure(holder, primary)
+        raise
+    else:
         if holder.poll() is None:
-            holder.kill()
+            cleanup_child(holder)
             holder.communicate()
     assert harness.forbidden_events() == []
     for graph in (GRAPH, FRESH):
@@ -298,16 +305,22 @@ def test_post_commit_uncertainty_is_reconciled_without_sources_or_a_new_generati
     barrier = tmp_path / "after-commit-barrier"
     writer = harness.start(
         "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", GRAPH, "--json",
-        extra_env=harness.paused_env("after_commit", barrier),
+        extra_env=harness.paused_env("after_commit", barrier, abrupt=(stop == signal.SIGKILL)),
     )
     try:
         await_ready(barrier, writer)
         assert _state(config, GRAPH)["latest_run_id"] == 2  # the pause is past COMMIT
-        os.kill(writer.pid, stop)
+        if stop == signal.SIGKILL:
+            kill_paused_child(writer)
+        else:
+            interrupt_paused_child(writer)
         stdout, stderr = writer.communicate(timeout=CHILD_DEADLINE_SECONDS)
-    finally:
+    except BaseException as primary:
+        cleanup_after_failure(writer, primary)
+        raise
+    else:
         if writer.poll() is None:
-            writer.kill()
+            cleanup_child(writer)
             writer.communicate()
     assert writer.returncode != 0, (writer.returncode, stdout)
     assert '"result"' not in stdout and "accepted generation" not in stdout, stdout
@@ -354,11 +367,11 @@ def test_killed_initializer_never_poisons_the_final_path(tmp_path: Path, point: 
     barrier = tmp_path / "init-barrier"
     initializer = harness.start(
         "ops", "sqlite-init", "--repo-map-home", str(home), "--graph", GRAPH,
-        extra_env=harness.paused_env(point, barrier),
+        extra_env=harness.paused_env(point, barrier, abrupt=True),
     )
     try:
         await_ready(barrier, initializer)
-        os.kill(initializer.pid, signal.SIGKILL)
+        kill_paused_child(initializer)
     finally:
         initializer.communicate()
     assert initializer.returncode == -signal.SIGKILL
