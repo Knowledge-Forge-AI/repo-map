@@ -15,7 +15,7 @@ from repomap_kg.coordinator.refresh_adapter import RefreshCapability, create_ref
 from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
 from repomap_kg.ops.config import load_ops_config
 from repomap_kg.runtime.postgres_route import effective_postgres_route
-from repomap_test_support.startup_recovery_scenarios import _make_refresh_fixture, _refresh_harness, _req_norm, _search_path
+from repomap_test_support.startup_recovery_scenarios import _assert_retry_waiting_and_advance, _make_refresh_fixture, _refresh_harness, _req_norm, _search_path
 
 
 class ReapedResult:
@@ -103,8 +103,12 @@ def test_real_launch_registration_is_durable_consumed_and_rotated():
             reconciler_epoch=replacement_epoch, file_closer=lambda attempt, evidence: phase.close_unpublished(cap_dir, attempt, proof=evidence))
         assert store.reconcile_publication(claim, reconciler_instance_id="launch-replacement",
                                           reconciler_epoch=replacement_epoch, unpublished_proved=True) == "queued"
+        _assert_retry_waiting_and_advance(store, connect, claim, "launch-replacement", replacement_epoch)
         next_claim = store.claim_next("launch-replacement", replacement_epoch, timedelta(seconds=300))
         assert next_claim is not None and next_claim.attempt == claim.attempt + 1
+        assert next_claim.instance_id == "launch-replacement"
+        assert next_claim.fencing_epoch > claim.fencing_epoch
+        assert next_claim.graph_lease_fencing_epoch > claim.graph_lease_fencing_epoch
         with connect() as connection:
             assert connection.execute(query, (next_claim.job_id, next_claim.attempt)).fetchone()[0:2] == (None, False)
         sealed.unlink()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, cast
+from typing import cast
 import psycopg
 import pytest
 
@@ -157,7 +157,7 @@ def test_connected_interruption_before_publication_start_proof_yields_not_starte
         )
 
         reader_spy_calls: list[dict[str, object]] = []
-        closer_spy_calls: list[tuple[JobClaim, Any]] = []
+        closer_spy_calls: list[tuple[JobClaim, str, _publication_phase.WorkerFencingProof]] = []
 
         def reader_spy(c: object) -> dict[str, object]:
             st = _publication_phase.publication_state(cap_dir, c)
@@ -165,8 +165,9 @@ def test_connected_interruption_before_publication_start_proof_yields_not_starte
             return {"publication_state": st}
 
         def closer_spy(c: object, proof: object) -> bool:
-            closer_spy_calls.append((cast(JobClaim, c), proof))
-            return _publication_phase.close_unpublished(cap_dir, c, proof=cast(_publication_phase.WorkerFencingProof, proof))
+            capability = cast(_publication_phase.WorkerFencingProof, proof)
+            closer_spy_calls.append((cast(JobClaim, c), capability.proof_kind, capability))
+            return _publication_phase.close_unpublished(cap_dir, c, proof=capability)
 
         coord2 = SyntheticCoordinator(
             store,
@@ -186,7 +187,9 @@ def test_connected_interruption_before_publication_start_proof_yields_not_starte
             assert reader_spy_calls[0]["state"] == "commit_unknown"
             # Closer called with authoritative store_fenced proof
             assert len(closer_spy_calls) == 1
-            assert closer_spy_calls[0][1].proof_kind == "store_fenced"
+            assert closer_spy_calls[0][1] == "store_fenced"
+            with pytest.raises(PermissionError, match="consumed or invalidated"):
+                _ = closer_spy_calls[0][2].proof_kind
             # Final state transitioned to queued / not_started
             final_status = store.status(sub.job_id)
             assert (final_status.state, final_status.publication_state, final_status.error_category) == (

@@ -160,10 +160,15 @@ def test_connected_startup_recovery_closes_superseded_fenced_dead_attempt() -> N
                     "SELECT count(*) FROM runs WHERE status = 'complete'"
                 ).fetchone() == (0,)
 
-            # Replacement attempt claims the queued job, executes, and publishes cleanly
+            from repomap_test_support.startup_recovery_scenarios import _assert_retry_waiting_and_advance
+            _assert_retry_waiting_and_advance(store, connect, claim, "inst-new-owner", coord._require_started())
+            # Replacement attempt claims the eligible job, executes, and publishes cleanly
             claim2 = store.claim_next("inst-new-owner", coord._require_started(), timedelta(seconds=30))
             assert claim2 is not None
             assert claim2.attempt == 2
+            assert claim2.instance_id == "inst-new-owner"
+            assert claim2.fencing_epoch > claim.fencing_epoch
+            assert claim2.graph_lease_fencing_epoch > claim.graph_lease_fencing_epoch
             cap2_dir = Path(cap_dir) / "cap2"
             cap2_dir.mkdir(parents=True, exist_ok=True)
             cap2_dir.chmod(0o700)
@@ -218,6 +223,7 @@ def test_connected_startup_recovery_refuses_closure_when_graph_lease_is_active()
 
 
 def test_connected_startup_recovery_contention_preserves_singleton_liveness() -> None:
+    import time
     with _refresh_harness() as (store, cap_dir, connect, postgres, graph_db):
         config, sg, cg, eg, kg = _make_refresh_fixture(postgres, cap_dir, graph_db)
         sub = store.submit(_req_norm("contention-crashed", sg, cg, eg, kg))
@@ -239,21 +245,26 @@ def test_connected_startup_recovery_contention_preserves_singleton_liveness() ->
         coord = SyntheticCoordinator(store, "inst-new-contention", lambda *_: {},
             publication_reader=lambda c: {"publication_state": _publication_phase.publication_state(cap_dir, c)},
             publication_closer=lambda c, proof: _publication_phase.close_unpublished(cap_dir, c, proof=cast(_publication_phase.WorkerFencingProof, proof)))
-        coord.startup(coord.recover_startup)
         try:
-            # Competing transaction holds exclusive lock on repositories table
+            # Establish contention before startup attempts its first closure.
             with psycopg.connect(host=postgres.host, port=postgres.port, user=postgres.user,
                                  dbname=graph_db, password=postgres.password) as lock_conn:
                 lock_conn.execute("BEGIN;")
                 lock_conn.execute("LOCK TABLE repositories IN ACCESS EXCLUSIVE MODE;")
 
-                # Fencing closure attempt times out on the locked table within 5000ms
-                # Startup recovery records refusal and pending without crashing coordinator singleton
-                report = coord.recover_startup()
-                assert report.pending >= 1
-                assert report.refused >= 1
+                started = time.monotonic()
+                coord.startup(coord.recover_startup)
+                report = cast(StartupRecoveryReport, coord.startup_recovery_report)
+                assert (report.pending, report.refused, report.unexpected) == (1, 1, ())
                 assert coord.heartbeat() is True  # Coordinator singleton remains alive
+                assert time.monotonic() - started < 5
+                assert store.status(sub.job_id).state == "reconciliation_required"
+                assert _publication_phase.publication_state(cap_dir, claim) == "commit_unknown"
                 lock_conn.rollback()
+            assert coord.heartbeat() is True
+            report = cast(StartupRecoveryReport, coord.startup_recovery_report)
+            assert (report.resolved, report.pending, report.refused, report.unexpected) == (1, 0, 0, ())
+            assert store.status(sub.job_id).state == "queued"
         finally:
             coord.shutdown()
 

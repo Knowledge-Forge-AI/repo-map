@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import signal
 import subprocess
+import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -83,3 +84,53 @@ def test_interrupt_paused_child_helper(tmp_path: Path) -> None:
     mock_duck_err = MagicMock(pid=44, barrier=barrier)
     with pytest.raises(AssertionError, match="paused writer settlement error: hook crashed on duck"):
         interrupt_paused_child(mock_duck_err)
+
+
+def test_observed_guard_sigint_settles_authentic_receipt_and_owned_group(tmp_path: Path) -> None:
+    import coverage
+    from runner_coverage import ChildCoverageSession
+    from repomap_test_support import sqlite_local_guard
+    from repomap_test_support.sqlite_local_fixtures import graph_toml, write_shell_source, write_sqlite_home
+    from repomap_test_support.sqlite_local_harness import LocalHarness, await_ready, release
+
+    source = write_shell_source(tmp_path / "source")
+    home = write_sqlite_home(tmp_path / "home", graph_toml("interrupt-proof", source))
+    harness = LocalHarness(tmp_path / "harness")
+    with ChildCoverageSession(
+        coverage_module=coverage, scratch_dir=tmp_path / "coverage",
+        source_root=Path(sqlite_local_guard.__file__).parent,
+    ) as session:
+        assert harness.cli_json("ops", "sqlite-init", "--repo-map-home", str(home),
+                                "--graph", "interrupt-proof")["result"] == "initialized"
+        barrier = tmp_path / "barrier"
+        child = harness.start(
+            "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", "interrupt-proof",
+            extra_env=harness.paused_env("after_commit", barrier),
+        )
+        try:
+            await_ready(barrier, child)
+            # The readiness PID comes from the guard, not a launcher or wrapper.
+            pid = int((barrier / "ready").read_text())
+            assert str(pid) == str(child.pid)
+            assert os.getsid(pid) == os.getpgid(pid) == pid
+            receipt_path = session.child_manifest_dir / f"{pid}.exit"
+            assert "complete=1" not in receipt_path.read_text()
+            interrupt_paused_child(child)
+            _, stderr = child.communicate(timeout=10)
+            assert child.returncode != 0 and "KeyboardInterrupt" in stderr
+            child.settle()  # Validates the authentic child start/exit identity pair.
+            child.verify_dead_and_group()
+            receipt = dict(line.split("=", 1) for line in receipt_path.read_text().splitlines())
+            assert receipt["complete"] == "1" and receipt["error"] == ""
+            assert receipt["measurement"] == "selected_hits"
+            assert Path(receipt["shard"]).is_file()
+            observation = session.observation_dir / f"parent_obs_{pid}.json"
+            assert observation.is_file()
+            assert receipt_path.is_file()
+            assert not (barrier / "release").exists()
+        finally:
+            # A failed topology assertion must still release and reap its guard.
+            if child.poll() is None:
+                release(barrier)
+                child.communicate(timeout=10)
+        assert harness.forbidden_events() == []

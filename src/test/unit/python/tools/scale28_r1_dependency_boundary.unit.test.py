@@ -23,7 +23,6 @@ def test_scale_tools_extra_has_only_the_selected_exact_pins() -> None:
         "docker==7.2.0",
     ]
     assert metadata["project"]["dependencies"] == [
-        "psycopg[binary]==3.2.12",
         "typing-extensions==4.16.0",
     ]
 

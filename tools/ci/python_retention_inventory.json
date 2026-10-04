@@ -22762,6 +22762,214 @@
       ],
       "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
       "test_sha256": "0e4f4fb2f003cb74940eb6b9f8c4af1543ec946522f0212cc8ab3698a0d89a07"
+    },
+    {
+      "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+      "id": "v002.revise41.base_package_import.0.hosted_ci_repair1",
+      "kind": "spec_from_file_location",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.0",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd"
+    },
+    {
+      "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+      "id": "v002.revise41.base_package_import.1.hosted_ci_repair1",
+      "kind": "module_from_spec",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd"
+    },
+    {
+      "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+      "id": "v002.revise41.base_package_import.2.hosted_ci_repair1",
+      "kind": "modules",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.2",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd"
+    },
+    {
+      "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+      "id": "v002.revise41.base_package_import.3.hosted_ci_repair1",
+      "kind": "exec_module",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.3",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "5467723bb53746cc8a8f3e7f81b9909bf5a4d08c9b07c1a168b932ac66d7c09d",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",

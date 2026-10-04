@@ -86,7 +86,8 @@ def _expired_refresh_claim(store, connect, request):
     for before, after in (("claimed", "starting"), ("starting", "running")):
         assert store.compare_and_set_state(claim.job_id, expected_state=before, new_state=after,
             attempt=claim.attempt, instance_id=claim.instance_id, fencing_epoch=epoch)
-    assert store.mark_reconciliation_required(claim, expected_state="running", category="publication_unknown")
+    # Leave a crashed running attempt for startup's abandonment owner to retire.
+    # Merely marking reconciliation_required does not record attempt completion.
     with connect() as connection:
         connection.execute("UPDATE coordinator_instances SET expires_at = now() - interval '1 second'")
         connection.execute("UPDATE graph_leases SET expires_at = now() - interval '1 second'")
@@ -107,6 +108,11 @@ def test_quarantine_legacy_zero_epoch_and_replacement_scheduling() -> None:
             connection.execute("UPDATE graph_leases SET graph_lease_fencing_epoch = 0 WHERE job_id = %s", (claim.job_id,))
         coordinator = SyntheticCoordinator(store, "replacement", lambda *_: {})
         coordinator.startup(coordinator.recover_startup)
+        with connect() as connection:
+            assert connection.execute(
+                "SELECT finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s",
+                (claim.job_id,),
+            ).fetchone() == (True,)
         try:
             assert cast(StartupRecoveryReport, coordinator.startup_recovery_report).pending == 1
             with connect() as connection:
@@ -156,6 +162,11 @@ def test_publication_authority_rowlock_bounded_and_singleton_renewed() -> None:
             reconciler_epoch=epoch, prior_lease_epoch=claim.graph_lease_fencing_epoch)
         store.set_durable_fence_callback(resolver.install_graph_publication_fence)
         try:
+            with connect() as connection:
+                assert connection.execute(
+                    "SELECT finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s",
+                    (claim.job_id,),
+                ).fetchone() == (True,)
             with psycopg.connect(host=postgres.host, port=postgres.port, user=postgres.user,
                                  password=postgres.password, dbname=graph_db) as orphan:
                 orphan.execute("SELECT 1 FROM graph_publication_authority FOR UPDATE")
@@ -171,7 +182,8 @@ def test_publication_authority_rowlock_bounded_and_singleton_renewed() -> None:
                 assert _publication_phase.publication_state(cap_dir, claim) == "commit_unknown"
                 orphan.rollback()
             assert coordinator.heartbeat() is True
-            assert cast(StartupRecoveryReport, coordinator.startup_recovery_report).pending == 0
+            report = cast(StartupRecoveryReport, coordinator.startup_recovery_report)
+            assert (report.resolved, report.pending, report.refused, report.unexpected) == (1, 0, 0, ())
             assert store.status(claim.job_id).state == "queued"
         finally:
             coordinator.shutdown()

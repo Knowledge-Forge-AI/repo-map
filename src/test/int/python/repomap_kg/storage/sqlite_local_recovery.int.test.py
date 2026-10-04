@@ -315,6 +315,9 @@ def test_post_commit_uncertainty_is_reconciled_without_sources_or_a_new_generati
         else:
             interrupt_paused_child(writer)
         stdout, stderr = writer.communicate(timeout=CHILD_DEADLINE_SECONDS)
+        if stop == signal.SIGINT:
+            writer.settle()
+            writer.verify_dead_and_group()
     except BaseException as primary:
         cleanup_after_failure(writer, primary)
         raise

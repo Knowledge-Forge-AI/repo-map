@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from collections.abc import Callable
+from datetime import timedelta
 import hashlib
 import json
 import os
@@ -137,3 +139,35 @@ def _req(graph_id: str, key: str):
 
 def _req_norm(key: str, sg: str, cg: str, eg: str, kg: str, graph_id: str = "synthetic-g1"):
     return normalize_request({"schema_version": 1, "job_kind": "refresh_graph", "graph_id": graph_id, "request_id": f"req-{key}", "idempotency_key": f"k-{key}", "priority": "manual", "operation_options": {"reason": "test"}}, source_generation=sg, config_generation=cg, extractor_generation=eg, canonicalizer_generation=kg)
+
+
+def _assert_retry_waiting_and_advance(
+    store: ControlStore, connect: Callable[[], psycopg.Connection], claim: JobClaim,
+    instance_id: str, epoch: int,
+) -> None:
+    """Prove the recorded retry delay and advance the existing SQL eligibility seam."""
+    assert store.status(claim.job_id).state == "queued"
+    with connect() as connection:
+        assert connection.execute(
+            "SELECT next_eligible_at - updated_at FROM jobs WHERE job_id = %s",
+            (claim.job_id,),
+        ).fetchone() == (timedelta(seconds=1),)
+        assert connection.execute(
+            "SELECT is_current, finished_at IS NOT NULL FROM job_attempts "
+            "WHERE job_id = %s AND attempt = %s", (claim.job_id, claim.attempt),
+        ).fetchone() == (False, True)
+        assert connection.execute(
+            "SELECT count(*) FROM graph_leases WHERE job_id = %s", (claim.job_id,),
+        ).fetchone() == (0,)
+        # Freeze eligibility ahead of the wall clock so the refusal is deterministic,
+        # even when other assertions took longer than the recorded one-second delay.
+        connection.execute(
+            "UPDATE jobs SET next_eligible_at = now() + interval '1 day' WHERE job_id = %s",
+            (claim.job_id,),
+        )
+    assert store.claim_next(instance_id, epoch, timedelta(seconds=30)) is None
+    with connect() as connection:
+        connection.execute(
+            "UPDATE jobs SET next_eligible_at = now() - interval '1 second' WHERE job_id = %s",
+            (claim.job_id,),
+        )

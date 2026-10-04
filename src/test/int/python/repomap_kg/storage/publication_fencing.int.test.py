@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 import psycopg
 from typing import Any
 import pytest
@@ -11,8 +13,10 @@ from repomap_kg.storage.publication import (
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
+from repomap_kg.storage._publication_fencing_sql import build_authority_upsert_sql
 from repomap_kg.storage.publication_fencing import (
     PublicationHandoff,
+    build_graph_publication_claim_statements,
     build_graph_publication_fence_statements,
     build_publication_finalize_statements,
     build_publication_prepare_statements,
@@ -204,6 +208,10 @@ def test_replacement_owned_publication_fence_rejects_stale_capability() -> None:
             _execute(connection, fence_statements)
             connection.commit()
 
+            assert connection.execute(
+                "SELECT last_stage_id, last_run_id FROM graph_publication_authority"
+            ).fetchone() == ("fence", None)
+            _assert_equal_epoch_refusals(connection, new_owner, published=False)
             # Stale old worker attempts actual maintained prepare/merge/finalize
             with pytest.raises(psycopg.errors.RaiseException, match="SCALE5 stale publication fence"):
                 execute_final_transaction(connection, old_handoff)
@@ -240,10 +248,13 @@ def test_replacement_owned_publication_fence_rejects_stale_capability() -> None:
             ).fetchone()
             assert new_stage_row == ("published", "committed")
             auth_row = connection.execute(
-                "SELECT singleton_fencing_epoch, coordinator_instance_id, job_id "
+                "SELECT singleton_fencing_epoch, coordinator_instance_id, job_id, last_stage_id, last_run_id "
                 "FROM graph_publication_authority WHERE repository_id = 1"
             ).fetchone()
-            assert auth_row == (2, "coord-2", "job-new")
+            assert auth_row == (2, "coord-2", "job-new", "stage-new", 2)
+            _execute(connection, build_publication_finalize_statements(new_handoff))
+            connection.commit()
+            _assert_equal_epoch_refusals(connection, new_owner, published=True)
 
 
 def test_adversarial_orphan_publish_blocked_after_replacement_fence() -> None:
@@ -288,7 +299,8 @@ def test_adversarial_orphan_publish_blocked_after_replacement_fence() -> None:
             assert _scalar(connection, "SELECT count(*) FROM canonical_nodes") == 0
 
 
-def test_lexicographical_epoch_advancement_across_generations() -> None:
+@pytest.mark.parametrize("singleton,lease", [(2, 1), (1, 11)], ids=["singleton", "graph-lease"])
+def test_lexicographical_epoch_advancement_across_generations(singleton: int, lease: int) -> None:
     require_postgres_binaries()
     with temporary_postgres() as postgres:
         apply_migrations(
@@ -312,19 +324,18 @@ def test_lexicographical_epoch_advancement_across_generations() -> None:
             ).fetchone()
             assert row == (1, 10)
 
-            # Gen B: new coordinator acquires singleton 2, starts first lease at 1
-            # Lexicographical check (singleton 2 > 1) MUST succeed even though lease 1 < 10!
-            owner_gen_b = _owner(job_id="job-gen-b", instance_id="coord-b", singleton=2, graph_fence=1)
+            # Advance the singleton, or the graph lease within the same singleton.
+            owner_gen_b = _owner(job_id="job-gen-b", instance_id="coord-b", singleton=singleton, graph_fence=lease)
             _seed(postgres, "stage-gen-b", owner=owner_gen_b, run_id=2, files=1)
 
             _execute(connection, build_graph_publication_fence_statements(owner_gen_b))
             connection.commit()
 
-            # Authority is now superseded to singleton 2, lease 1
+            # Authority follows the lexicographically greater epoch pair.
             row_b = connection.execute(
                 "SELECT singleton_fencing_epoch, graph_lease_fencing_epoch, job_id FROM graph_publication_authority WHERE repository_id = 1"
             ).fetchone()
-            assert row_b == (2, 1, "job-gen-b")
+            assert row_b == (singleton, lease, "job-gen-b")
 
             # Gen A is rejected as stale
             handoff_a = _handoff("stage-gen-a", owner=owner_gen_a, run_id=1)
@@ -341,3 +352,34 @@ def test_lexicographical_epoch_advancement_across_generations() -> None:
                 "SELECT state, merge_status FROM ingestion_stages WHERE stage_id = 'stage-gen-b'"
             ).fetchone()
             assert published_row == ("published", "committed")
+            auth_row_final = connection.execute(
+                "SELECT singleton_fencing_epoch, graph_lease_fencing_epoch, job_id, last_stage_id, last_run_id "
+                "FROM graph_publication_authority WHERE repository_id = 1"
+            ).fetchone()
+            assert auth_row_final == (singleton, lease, "job-gen-b", "stage-gen-b", 2)
+
+
+def _assert_equal_epoch_refusals(connection, owner: StageOwner, *, published: bool) -> None:
+    candidates = [
+        (replace(owner, job_id=JobId("other-job")), "stage-new", "2"),
+        (replace(owner, attempt=AttemptNumber(2)), "stage-new", "2"),
+        (replace(owner, coordinator_instance_id="other-coordinator"), "stage-new", "2"),
+        (replace(owner, source_generation="other-generation"), "stage-new", "2"),
+        (replace(owner, config_generation="other-generation"), "stage-new", "2"),
+        (replace(owner, extractor_generation="other-generation"), "stage-new", "2"),
+        (replace(owner, canonicalizer_generation="other-generation"), "stage-new", "2"),
+    ]
+    if published:
+        candidates.extend([(owner, "other-stage", "2"), (owner, "stage-new", "3"),
+                           (owner, "stage-new", "NULL"), (owner, "fence", "NULL")])
+    else:
+        candidates.extend([(owner, "other-stage", "NULL"), (owner, "fence", "2")])
+    for candidate, stage, run in candidates:
+        authority = build_authority_upsert_sql(candidate, stage, run, allow_sentinel_handoff=True)
+        with pytest.raises(psycopg.errors.RaiseException, match="SCALE5 stale publication fence"):
+            _execute(connection, (f"DO $proof$ BEGIN {authority} END $proof$;",))
+        connection.rollback()
+    if published:
+        with pytest.raises(psycopg.errors.RaiseException, match="ARCH1C stale graph publication claim"):
+            _execute(connection, build_graph_publication_claim_statements(MergeContext("stage-new", owner, 2)))
+        connection.rollback()

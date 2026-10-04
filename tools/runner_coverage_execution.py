@@ -261,6 +261,7 @@ def popen_observed_process(
         stdout=kwargs.get("stdout", subprocess.PIPE),
         stderr=kwargs.get("stderr", subprocess.PIPE),
         text=text,
+        start_new_session=kwargs.get("start_new_session", False),
     )
     if obs is not None:
         obs.observe_launch(
