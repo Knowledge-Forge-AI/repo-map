@@ -182,13 +182,15 @@ def test_worker_cancellation_disposition() -> None:
         assert res.process_group_cleaned is True
         assert res.terminal["status"] == "cancelled"
         assert res.terminal["error_category"] == "cancelled"
+        assert res.cleanup_error is None
         assert not cap_path.exists()
 
         with psycopg.connect(
             host=postgres.host, port=postgres.port, user=postgres.user, dbname=graph_db, password=postgres.password,
         ) as conn:
             with conn.cursor() as cur:
-                count = cur.execute("SELECT count(*) FROM runs").fetchone()
+                # Interrupted staging can retain run evidence; it must not publish.
+                count = cur.execute("SELECT count(*) FROM runs WHERE status = 'complete'").fetchone()
                 assert count == (0,)
 
 
@@ -244,7 +246,11 @@ def test_worker_database_authorization_failure_disposition() -> None:
         assert res.waited is True and res.process_group_cleaned is True
         assert res.terminal["status"] == "failed"
         assert "refresh-failure:" in res.stderr
-        assert "authorization-failed" in res.stderr
+        assert "refresh-failure:refresh-failed,connection-unavailable:" in res.stderr
+        assert res.terminal["diagnostics"] == ["refresh-failed"]
+        assert res.terminal["publication_state"] == "not_started"
+        assert "definitely-wrong-password-for-test" not in res.stderr
+        assert "definitely-wrong-password-for-test" not in str(res.terminal)
         assert not cap_path.exists()
 
 

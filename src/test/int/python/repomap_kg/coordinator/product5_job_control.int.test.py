@@ -227,10 +227,18 @@ class Product5JobControlIntegrationTests(unittest.TestCase):
                     **base_v2,
                     "recovery_diagnostics": [{"sequence": i, "category": "c", "summary": "s"} for i in range(33)],
                 }
-                with self.assertRaises(CoordinatorClientError):
+                with self.assertRaisesRegex(CoordinatorClientError, "invalid_response"):
                     coordinator_health(home)
 
-                for bad_diag in (
+                for wire_diag in (
+                    [{"sequence": 1, "category": "", "summary": "s"}],
+                    [{"sequence": 1, "category": "c", "summary": ""}],
+                ):
+                    mock_payloads["health"] = {**base_v2, "recovery_diagnostics": wire_diag}
+                    with self.assertRaisesRegex(CoordinatorClientError, "invalid_response"):
+                        coordinator_health(home)
+
+                for mode_diag in (
                     "not_a_list",
                     ["not_a_mapping"],
                     [{"sequence": 1, "category": "c"}],
@@ -239,13 +247,11 @@ class Product5JobControlIntegrationTests(unittest.TestCase):
                     [{"sequence": -1, "category": "c", "summary": "s"}],
                     [{"sequence": True, "category": "c", "summary": "s"}],
                     [{"sequence": "one", "category": "c", "summary": "s"}],
-                    [{"sequence": 1, "category": "", "summary": "s"}],
                     [{"sequence": 1, "category": 1, "summary": "s"}],
                     [{"sequence": 1, "category": "c" * 65, "summary": "s"}],
-                    [{"sequence": 1, "category": "c", "summary": ""}],
                     [{"sequence": 1, "category": "c", "summary": None}],
                 ):
-                    mock_payloads["health"] = {**base_v2, "recovery_diagnostics": bad_diag}
+                    mock_payloads["health"] = {**base_v2, "recovery_diagnostics": mode_diag}
                     with self.assertRaises(CoordinatorModeError):
                         coordinator_health(home)
 
@@ -253,6 +259,7 @@ class Product5JobControlIntegrationTests(unittest.TestCase):
                 with self.assertRaises(CoordinatorModeError):
                     coordinator_job_status(home, "j-hostile")
 
+                mock_payloads["status"] = {"job_id": "j-hostile", "graph_id": "g1", "state": "running"}
                 with self.assertRaises(CoordinatorModeError):
                     coordinator_job_status(home, "different-id")
 

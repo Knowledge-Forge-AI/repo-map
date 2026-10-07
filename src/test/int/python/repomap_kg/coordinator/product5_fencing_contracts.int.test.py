@@ -275,10 +275,13 @@ def test_quarantine_legacy_attempt_boundary_conditions() -> None:
         config, sg, cg, eg, kg = _make_refresh_fixture(postgres, cap_dir, graph_db, graph_id="synthetic-leg")
         resolver = ConfiguredRefreshResolver(config, Path(postgres.psql_command))
         real_fence = lambda cl, **kw: resolver.install_graph_publication_fence(cl, **kw)
-        store.submit(_req_norm("legacy-key", sg, cg, eg, kg, graph_id="synthetic-leg"))
+        req = replace(_req_norm("legacy-key", sg, cg, eg, kg, graph_id="synthetic-leg"), priority="automatic")
+        store.coalesce_automatic(req, requester="watcher")
         epoch1 = store.acquire_singleton("inst-leg-prior", timedelta(seconds=300))
         claim = store.claim_next("inst-leg-prior", epoch1, timedelta(seconds=300))
         assert claim is not None
+        with connect() as conn:
+            assert conn.execute("SELECT running_job_id FROM coalescing_state WHERE graph_id = %s", (claim.graph_id,)).fetchone() == (claim.job_id,)
         _to_running(store, claim, epoch1)
         assert store.mark_reconciliation_required(claim, expected_state="running", category="worker_crash")
         assert store.mark_attempt_terminated(claim, process_cleanup_proved=True)

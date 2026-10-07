@@ -15,7 +15,7 @@ from repomap_test_support.startup_recovery_scenarios import _harness, _req
 @pytest.mark.parametrize("boundary", ["before-running", "after-running"])
 def test_cancellation_at_running_transition_settles_without_publication(monkeypatch, boundary):
     with _harness() as (store, _, connect):
-        submitted = store.submit(_req("cancellation-graph", "transition"))
+        submitted = store.submit(_req("synthetic-cancellation", "transition"))
         original = store.compare_and_set_state
         launches: list[str] = []
 
@@ -50,10 +50,10 @@ def test_cancellation_at_running_transition_settles_without_publication(monkeypa
 def test_claim_retry_is_bounded_and_only_accepts_graph_lease_conflicts(monkeypatch, race):
     with _harness() as (store, _, connect):
         epoch = store.acquire_singleton("claim-owner", timedelta(seconds=300))
-        held = store.submit(_req("held-graph", "held"))
+        held = store.submit(_req("synthetic-held", "held"))
         lease = store.claim_next("claim-owner", epoch, timedelta(seconds=300))
         assert lease is not None and lease.job_id == held.job_id
-        queued = store.submit(_req("free-graph", "queued"))
+        queued = store.submit(_req("synthetic-free", "queued"))
         original = store._claim_once
         attempts = 0
 
@@ -96,7 +96,7 @@ def test_claim_retry_is_bounded_and_only_accepts_graph_lease_conflicts(monkeypat
 
 def test_cleanup_retains_jobs_and_sanitized_residuals_when_evidence_io_fails():
     with _harness() as (store, _, connect):
-        submitted = store.submit(_req("cleanup-graph", "cleanup"))
+        submitted = store.submit(_req("synthetic-cleanup", "cleanup"))
         fail_retirement = False
 
         def retire(_: object):

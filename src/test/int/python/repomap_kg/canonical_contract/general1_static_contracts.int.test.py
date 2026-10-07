@@ -232,7 +232,7 @@ variable "region" {
         self.assertIn("file", node_kinds)
         self.assertIn("powershell.manifest", node_kinds)
         self.assertIn("powershell.function", node_kinds)
-        self.assertIn("powershell.manifest_export", node_kinds)
+        self.assertIn("powershell.export", node_kinds)
 
         self.assertTrue(len(canonical.graph.edges) >= 4)
         edge_kinds = {edge.kind for edge in canonical.graph.edges}

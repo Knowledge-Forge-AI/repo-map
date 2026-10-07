@@ -102,8 +102,12 @@ def test_recovery_refusals_preserve_current_attempt_and_evidence(boundary: str) 
         assert (report.scanned, report.resolved, report.pending) == (1, 0, 1)
         expected_errors = {"closer-error": ("OSError",), "prover-error": ("KeyError",), "legacy-error": ("KeyError",)}
         assert report.unexpected == expected_errors.get(boundary, ())
-        refused = boundary in {"reader-contention", "prover-refused", "prover-contention", "file-refused", "legacy-contention"}
+        # Reader contention is an OSError: unavailable, without a closure refusal.
+        refused = boundary in {"prover-refused", "prover-contention", "file-refused", "legacy-contention"}
         assert report.refused == int(refused)
+        assert report.unavailable == int(boundary == "reader-contention")
+        assert report.route_changed == 0
+        assert report.residuals == 0
         assert initial.read_bytes() == before
         assert _publication_phase.publication_state(directory, claim) == "commit_unknown"
         with connect() as conn:

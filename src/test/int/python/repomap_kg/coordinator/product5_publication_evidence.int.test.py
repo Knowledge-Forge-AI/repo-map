@@ -19,7 +19,7 @@ from repomap_test_support.startup_recovery_scenarios import _harness, _req
 def test_unsafe_evidence_cannot_authorize_closure_or_partial_retirement(corruption):
     with _harness() as (store, directory, _connect):
         epoch = store.acquire_singleton("evidence-owner", timedelta(seconds=30))
-        submitted = store.submit(_req("evidence-graph", "evidence-unsafe"))
+        submitted = store.submit(_req("synthetic-evidence", "evidence-unsafe"))
         claim = store.claim_next("evidence-owner", epoch, timedelta(seconds=30))
         assert claim is not None and claim.job_id == submitted.job_id
         phase.initialize(directory, claim)
@@ -55,14 +55,17 @@ def test_unsafe_evidence_cannot_authorize_closure_or_partial_retirement(corrupti
         assert (initial.read_bytes(), decision.read_bytes()) == before
         assert foreign.read_text() == "fixture-owned-elsewhere"
         assert store.status(submitted.job_id).state == "claimed"
-        assert store.status(submitted.job_id).publication_state != "committed"
+        assert store.status(submitted.job_id).publication_state == "not_started"
+        with _connect() as conn:
+            assert conn.execute("SELECT state, publication_state FROM jobs WHERE job_id = %s", (submitted.job_id,)).fetchone() == ("claimed", "not_started")
+            assert conn.execute("SELECT count(*) FROM graph_leases WHERE job_id = %s", (submitted.job_id,)).fetchone() == (1,)
         assert store.stop_singleton("evidence-owner", epoch)
 
 
 def test_mismatched_initial_evidence_prevents_publication_start():
     with _harness() as (store, directory, _connect):
         epoch = store.acquire_singleton("evidence-owner", timedelta(seconds=30))
-        store.submit(_req("evidence-graph", "evidence-mismatch"))
+        store.submit(_req("synthetic-evidence", "evidence-mismatch"))
         claim = store.claim_next("evidence-owner", epoch, timedelta(seconds=30))
         assert claim is not None
         phase.initialize(directory, claim)
@@ -77,13 +80,15 @@ def test_mismatched_initial_evidence_prevents_publication_start():
         assert initial.read_bytes() == before
         assert phase.publication_state(directory, claim) == "commit_unknown"
         assert store.status(claim.job_id).state == "claimed"
+        with _connect() as conn:
+            assert conn.execute("SELECT state, publication_state FROM jobs WHERE job_id = %s", (claim.job_id,)).fetchone() == ("claimed", "not_started")
         assert store.stop_singleton("evidence-owner", epoch)
 
 
 def test_failed_initial_evidence_write_never_becomes_nonpublication_proof(monkeypatch):
     with _harness() as (store, directory, _connect):
         epoch = store.acquire_singleton("evidence-owner", timedelta(seconds=30))
-        store.submit(_req("evidence-graph", "evidence-write-failure"))
+        store.submit(_req("synthetic-evidence", "evidence-write-failure"))
         claim = store.claim_next("evidence-owner", epoch, timedelta(seconds=30))
         assert claim is not None
         with monkeypatch.context() as fault:
@@ -98,4 +103,6 @@ def test_failed_initial_evidence_write_never_becomes_nonpublication_proof(monkey
         assert initial.exists()
         assert not tuple(directory.glob("publication-*.decision.json"))
         assert store.status(claim.job_id).state == "claimed"
+        with _connect() as conn:
+            assert conn.execute("SELECT state, publication_state FROM jobs WHERE job_id = %s", (claim.job_id,)).fetchone() == ("claimed", "not_started")
         assert store.stop_singleton("evidence-owner", epoch)

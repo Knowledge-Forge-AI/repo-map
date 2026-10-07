@@ -101,6 +101,7 @@ def test_configured_refresh_resolver_authority_and_payload_contracts(tmp_path: P
     req_disabled = {
         "schema_version": 1, "job_kind": "refresh_graph", "graph_id": "fixture-disabled-binding",
         "request_id": "r-disabled", "idempotency_key": "k-disabled", "priority": "manual",
+        "operation_options": {"reason": "test"},
     }
     with pytest.raises(ValueError, match="source-binding-refresh-unsupported"):
         resolver_valid.resolve_request(req_disabled)
@@ -111,6 +112,7 @@ def test_configured_refresh_resolver_authority_and_payload_contracts(tmp_path: P
     req_missing = {
         "schema_version": 1, "job_kind": "refresh_graph", "graph_id": "fixture-g1",
         "request_id": "r-missing", "idempotency_key": "k-missing", "priority": "manual",
+        "operation_options": {"reason": "test"},
     }
     with pytest.raises(ValueError, match="configured graph root is unavailable"):
         resolver_missing.resolve_request(req_missing)
@@ -125,6 +127,7 @@ def test_configured_refresh_credential_security_contracts(tmp_path: Path) -> Non
     req = {
         "schema_version": 1, "job_kind": "refresh_graph", "graph_id": "fixture-g1",
         "request_id": "r-cred", "idempotency_key": "k-cred", "priority": "manual",
+        "operation_options": {"reason": "test"},
     }
 
     cfg_env = tmp_path / "ops_env.toml"
@@ -238,12 +241,15 @@ def test_configured_publication_fence_and_coordinator_lifecycle() -> None:
             config, Path(postgres.psql_command), postgres_user=postgres.user, postgres_password=postgres.password,
         )
 
-        req = resolver.resolve_request({
+        payload = {
             "schema_version": 1, "job_kind": "refresh_graph", "graph_id": "synthetic-g1",
             "request_id": "req-live-1", "idempotency_key": "k-live-1", "priority": "manual",
             "operation_options": {"reason": "test"},
-        })
-        store.submit(req)
+        }
+        req = resolver.resolve_request(payload)
+        prior = store.submit(resolver.resolve_request({
+            **payload, "request_id": "req-fenced-1", "idempotency_key": "k-fenced-1",
+        }))
         epoch = store.acquire_singleton("coord-inst-live", timedelta(seconds=300))
         claim = store.claim_next("coord-inst-live", epoch, timedelta(seconds=300))
         assert claim is not None
@@ -267,6 +273,25 @@ def test_configured_publication_fence_and_coordinator_lifecycle() -> None:
                 ).fetchone()
                 assert row == (epoch, claim.graph_lease_fencing_epoch, claim.instance_id, claim.job_id, claim.attempt)
 
+        # The fence sentinel belongs to the prior attempt. An equal-epoch new
+        # stage cannot replace it; the live refresh needs a fresh durable lease.
+        prior_lease_epoch = claim.graph_lease_fencing_epoch
+        assert claim.job_id == prior.job_id
+        assert store.request_cancellation(claim.job_id) == "cancel_requested"
+        for expected, target in (("cancel_requested", "cancelling"), ("cancelling", "cancelled")):
+            assert store.compare_and_set_state(
+                claim.job_id, expected_state=expected, new_state=target, attempt=claim.attempt,
+                instance_id=claim.instance_id, fencing_epoch=epoch,
+                publication_state="not_started", error_category="cancelled",
+            )
+        assert store.release_graph_lease(
+            claim.graph_id, claim.job_id, claim.attempt, claim.instance_id, epoch,
+            reconciler_instance_id=claim.instance_id, reconciler_epoch=epoch,
+        )
+        submitted = store.submit(req)
+        claim = store.claim_next("coord-inst-live", epoch, timedelta(seconds=300))
+        assert claim is not None and claim.job_id == submitted.job_id
+        assert claim.graph_lease_fencing_epoch > prior_lease_epoch
         coord = build_configured_refresh_coordinator(store, "coord-inst-live", resolver, cap_dir)
         assert coord is not None
 
@@ -285,7 +310,10 @@ def test_configured_publication_fence_and_coordinator_lifecycle() -> None:
             launch_registrar=store.register_supervisor_launch,
         )
         term = runner(claim, threading.Event())
-        assert term["status"] == "succeeded"
+        assert term["status"] == "succeeded", {
+            key: term.get(key) for key in ("status", "error_category", "publication_state", "_diagnostic_summary")
+        }
+        assert term.get("publication_state") == "committed"
         assert term["_termination_proved"] is True
 
         marker = resolver.read_publication(claim)
@@ -300,7 +328,19 @@ def test_configured_publication_fence_and_coordinator_lifecycle() -> None:
             claim.job_id, expected_state="running", new_state="succeeded", attempt=claim.attempt,
             instance_id=claim.instance_id, fencing_epoch=epoch, publication_state="committed",
         )
-        assert store.status(claim.job_id).state == "succeeded"
+        final_status = store.status(claim.job_id)
+        assert final_status.state == "succeeded"
+        assert final_status.publication_state == "committed"
+        assert final_status.error_category is None
+        with connect() as conn:
+            assert conn.execute(
+                "SELECT state, publication_state, error_category FROM jobs WHERE job_id = %s",
+                (claim.job_id,),
+            ).fetchone() == ("succeeded", "committed", None)
+            assert conn.execute(
+                "SELECT outcome, run_identity FROM synthetic_publication_markers WHERE job_id = %s",
+                (claim.job_id,),
+            ).fetchone() == ("committed", marker["latest_run_identity"])
         assert store.stop_singleton(claim.instance_id, epoch)
 
 
@@ -336,6 +376,7 @@ def test_refresh_adapter_runner_contract_and_generation_safeguards() -> None:
         term_src = runner_source_err(claim_wrong_gid, threading.Event())
         assert term_src["status"] == "failed"
         assert term_src["error_category"] == "source_unavailable"
+        assert term_src.get("publication_state") == "not_started"
 
         claim_gen_diff = SimpleNamespace(
             job_id="job-stale-gen", attempt=1, graph_id="synthetic-g1",
@@ -346,3 +387,4 @@ def test_refresh_adapter_runner_contract_and_generation_safeguards() -> None:
         term_diff = runner(claim_gen_diff, threading.Event())
         assert term_diff["status"] == "failed"
         assert term_diff["error_category"] == "generation_changed"
+        assert term_diff.get("publication_state") == "not_started"

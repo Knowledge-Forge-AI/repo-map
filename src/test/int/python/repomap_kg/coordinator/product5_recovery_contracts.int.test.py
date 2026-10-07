@@ -97,7 +97,7 @@ def test_reconciliation_terminal_classifications_and_marker_conflicts(kind: str)
 def test_startup_reader_failures_retain_durable_uncertainty(failure: type[Exception]) -> None:
     with _harness() as (store, _, connect):
         epoch = store.acquire_singleton("reader", timedelta(seconds=300))
-        store.submit(_req("reader-graph", "reader"))
+        store.submit(_req("synthetic-reader", "reader"))
         claim = store.claim_next("reader", epoch, timedelta(seconds=300))
         assert claim is not None
         _to_running(store, claim, epoch)
@@ -109,6 +109,7 @@ def test_startup_reader_failures_retain_durable_uncertainty(failure: type[Except
         assert (report.scanned, report.resolved, report.pending) == (1, 0, 1)
         assert report.route_changed == int(failure is PublicationRouteChangedError)
         assert report.unavailable == int(failure in {OSError, KeyError})
+        assert report.refused == 0
         assert report.unexpected == (("KeyError",) if failure is KeyError else ())
         with connect() as conn:
             assert conn.execute("SELECT state, publication_state FROM jobs WHERE job_id = %s", (claim.job_id,)).fetchone() == ("reconciliation_required", "commit_unknown")

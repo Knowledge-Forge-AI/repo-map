@@ -75,11 +75,12 @@ def _make_home(root: Path, postgres, graph_db: str) -> Path:
     home = root / "home"
     home.mkdir(parents=True, mode=0o700)
     cfg = (
-        f'schema_version = 1\n[service]\nmode = "local"\nmcp_transport = "stdio"\n'
+        f'schema_version = 1\n[service]\nmode = "local"\nmcp_transport = "stdio"\nlog_level = "info"\n'
         f'[postgres]\nhost = "{postgres.socket_dir}"\nport = {postgres.port}\ndatabase = "{graph_db}"\n'
         f'user = "{postgres.user}"\npassword_env = "TEST_PG_PASSWORD"\n[[graphs]]\nid = "test-graph"\n'
         f'name = "Test Graph"\nroot_path = "/placeholder"\nrepository_name = "test"\nprivacy = "public-dev"\n'
-        f'enabled = true\nrefresh_policy = "manual"\n[server_memory]\nenabled = false\npath = "disabled"\n'
+        f'enabled = true\nmcp_visible = false\nextractor_profile = "default"\nrefresh_policy = "manual"\n'
+        f'[server_memory]\nenabled = false\npath = "disabled"\nmode = "read_only"\n'
     )
     (home / "configured.rp.toml").write_text(cfg, encoding="utf-8")
     ensure_role_secrets(home / "runtime" / ".env")
@@ -115,8 +116,7 @@ def _test_inspect_seam(repo_map_home: str | Path | None, backup_id_or_path: str 
         dump_file, manifest["dump_files"][0], dump_file.name,
     )
     toc = subprocess.run(
-        [str(postgres_bin_dir() / "pg_restore"), "--list", str(dump_file)],
-        check=True, capture_output=True, text=True,
+        [str(postgres_bin_dir() / "pg_restore"), "--list", str(dump_file)], check=True, capture_output=True, text=True,
     ).stdout
     summary = summarize_pg_restore_toc(toc, dump_file=dump_file.name, dump_format="pgcustom")
     return SimpleNamespace(
@@ -215,7 +215,8 @@ def test_upgrade_ledgered_schema_refusals_rollback_and_success(tmp_path):
     with temporary_postgres() as postgres:
         db_name, scratch_ref = f"ctrl_upg_{uuid.uuid4().hex[:8]}", f"scratch_ref_{uuid.uuid4().hex[:8]}"
         with _connect(postgres, autocommit=True) as root_conn:
-            root_conn.execute(f'CREATE DATABASE "{db_name}"; CREATE DATABASE "{scratch_ref}"')
+            root_conn.execute(f'CREATE DATABASE "{db_name}"')
+            root_conn.execute(f'CREATE DATABASE "{scratch_ref}"')
         try:
             ref_store = ControlStore(lambda: _connect(postgres, scratch_ref))
             ref_store.initialize_schema()
@@ -250,10 +251,7 @@ def test_upgrade_ledgered_schema_refusals_rollback_and_success(tmp_path):
 
             # 2. Refusal and Rollback: manifest mismatch
             with pytest.raises(ControlSchemaError, match="upgraded control schema is not exact-current"):
-                store.upgrade_ledgered_schema(
-                    expected_manifest=("unexpected_manifest_signature",),
-                    backup_verified=True,
-                )
+                store.upgrade_ledgered_schema(expected_manifest=("unexpected_manifest_signature",), backup_verified=True)
             readiness = store.schema_readiness()
             assert readiness.status is ControlSchemaStatus.BEHIND and readiness.applied_count == 1
             with _connect(postgres, db_name) as conn:
@@ -285,7 +283,8 @@ def test_upgrade_ledgered_schema_refusals_rollback_and_success(tmp_path):
                 _assert_sentinel_job(conn, "sentinel-job-upg")
         finally:
             with _connect(postgres, autocommit=True) as root_conn:
-                root_conn.execute(f'DROP DATABASE IF EXISTS "{db_name}"; DROP DATABASE IF EXISTS "{scratch_ref}"')
+                root_conn.execute(f'DROP DATABASE IF EXISTS "{db_name}"')
+                root_conn.execute(f'DROP DATABASE IF EXISTS "{scratch_ref}"')
 
 
 def test_coordinator_control_upgrade_lifecycle_flow_and_refusals(monkeypatch):
@@ -372,9 +371,8 @@ def test_coordinator_control_upgrade_lifecycle_flow_and_refusals(monkeypatch):
                 dump_pg, manifest_pg = backup_dir / "dump.pgcustom", backup_dir / "manifest.json"
                 assert dump_pg.is_file() and manifest_pg.is_file()
                 dump_data = dump_pg.read_bytes()
-                assert dump_data[:5] == b"PGDMP"
                 persisted_manifest = json.loads(manifest_pg.read_text(encoding="utf-8"))
-                assert hashlib.sha256(dump_data).hexdigest() == persisted_manifest["dump_files"][0]["sha256"]
+                assert dump_data[:5] == b"PGDMP" and hashlib.sha256(dump_data).hexdigest() == persisted_manifest["dump_files"][0]["sha256"]
                 assert persisted_manifest["database"] == authority.database_name and persisted_manifest["restore_supported"] is True
 
                 # Data preservation of original rows and sentinel, plus real persisted schema
