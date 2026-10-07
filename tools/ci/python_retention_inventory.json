@@ -443,6 +443,197 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.integration_contracts",
+      "members": [
+        "src/test/int/python/repomap_kg/canonical_contract/general1_composition_contracts.int.test.py",
+        "src/test/int/python/repomap_kg/canonical_contract/general1_language_contracts.int.test.py",
+        "src/test/int/python/repomap_kg/canonical_contract/general1_static_contracts.int.test.py",
+        "src/test/int/python/repomap_kg/ops/ingestion/general1_api_contracts.int.test.py"
+      ],
+      "rationale": "General coverage hardening through maintained public parsing, graph, manifest and process contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_baseline_dispatch_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/cli/local_ops/general1_baseline_dispatch_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_disposition_refusals",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/general1_disposition_refusals.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_host_mutator_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/cli/general1_host_mutator_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_host_mutator_summary_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/cli/general1_host_mutator_summary_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_javascript_reference_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/extractors/languages/general1_javascript_reference_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_memory_policy_dispatch_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/cli/local_ops/general1_memory_policy_dispatch_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_portable_authority_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/general1_portable_authority_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_portable_execution_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/general1_portable_execution_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_staged_ingestion_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/general1_staged_ingestion_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_staged_publication_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/general1_staged_publication_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_startup_refusal_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/coordinator/general1_startup_refusal_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_stream_refusals",
+      "members": [
+        "src/test/unit/python/repomap_kg/artifacts/general1_stream_refusals.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_zsh_refusal_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/extractors/shell/general1_zsh_refusal_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.recover2.unit.general1_zunit_refusal_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/extractors/shell/general1_zunit_refusal_contracts.unit.test.py"
+      ],
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "general1.unit_contracts",
+      "members": [
+        "src/test/unit/python/repomap_kg/artifacts/general1_manifest_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/canonicalization/general1_go_routing_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/canonicalization/general1_language_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/canonicalization/general1_shell_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/general1_state_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/config/general1_static_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/documents/general1_document_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/general1_composition_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/ingestion/general1_api_contracts.unit.test.py"
+      ],
+      "rationale": "General coverage hardening through maintained public parsing, graph, manifest and process contracts.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "hosted_ci_repair2.integration_contracts",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/product5_configured_refresh.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_control_races.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_control_schema.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_fencing_contracts.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_job_control.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_publication_evidence.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_recovery_contracts.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_recovery_refusals.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_service_lifecycle.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/product5_worker_disposition.int.test.py",
+        "src/test/int/python/repomap_kg/storage/product5_publication_pause.int.test.py"
+      ],
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
       "members": [
@@ -28873,6 +29064,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/general1_composition_contracts.int.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/general1_language_contracts.int.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/canonical_contract/general1_static_contracts.int.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/canonical_contract/html_css.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -29449,6 +29667,96 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_configured_refresh.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_control_races.int.test.py",
+      "rationale": "Product5 connected control races and recovery refusal integration contracts.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_control_schema.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_fencing_contracts.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_job_control.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_publication_evidence.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_recovery_contracts.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_recovery_refusals.int.test.py",
+      "rationale": "Product5 connected control races and recovery refusal integration contracts.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_service_lifecycle.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/product5_worker_disposition.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/refresh_control_workflows.int.test.py",
       "rationale": "Maintained REVISE14 implementation or executable test owner; inherits its source family's Python retention forecast and applicable existing checks. Assignment is not effective enforcement without successful checks.",
       "root": "test_owners",
@@ -29775,6 +30083,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/ops/graph_summary_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/ingestion/general1_api_contracts.int.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -30657,6 +30974,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/perf_base1_observability.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/product5_publication_pause.int.test.py",
+      "rationale": "Product5 hosted-CI repair integration contracts: connected control, publication, worker, and lifecycle behavior.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -34381,6 +34707,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/general1_manifest_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/general1_stream_refusals.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/artifacts/offline_parity.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -34635,6 +34979,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/canonicalization/fixtures.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/canonicalization/general1_go_routing_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/canonicalization/general1_language_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/canonicalization/general1_shell_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -34984,8 +35355,44 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/general1_host_mutator_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/general1_host_mutator_summary_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/cli/local_ops/backend_telemetry.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/local_ops/general1_baseline_dispatch_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/local_ops/general1_memory_policy_dispatch_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -35686,6 +36093,51 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/general1_disposition_refusals.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/general1_portable_authority_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/general1_portable_execution_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/general1_startup_refusal_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/general1_state_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/generation_changed_diagnostic.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -36073,6 +36525,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/config/general1_static_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/extractors/config/nix/diagnostics_and_gap_fixtures.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -36235,6 +36696,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/documents/general1_document_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/extractors/documents/html.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -36273,6 +36743,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/extractors/helpers.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/languages/general1_javascript_reference_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -36523,6 +37002,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/shell/general1_zsh_refusal_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/shell/general1_zunit_refusal_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/extractors/shell/powershell_boundaries.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -36705,6 +37202,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/graph/files.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/general1_composition_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -37308,6 +37814,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/ops/helper_branches_runtime_backup_mcp.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/ingestion/general1_api_contracts.unit.test.py",
+      "rationale": "General coverage hardening through maintained public behavioral contracts.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -38307,6 +38822,24 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/email_summary_readback.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/general1_staged_ingestion_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/general1_staged_publication_contracts.unit.test.py",
+      "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

@@ -364,10 +364,10 @@ def _assert_equal_epoch_refusals(connection, owner: StageOwner, *, published: bo
         (replace(owner, job_id=JobId("other-job")), "stage-new", "2"),
         (replace(owner, attempt=AttemptNumber(2)), "stage-new", "2"),
         (replace(owner, coordinator_instance_id="other-coordinator"), "stage-new", "2"),
-        (replace(owner, source_generation="other-generation"), "stage-new", "2"),
-        (replace(owner, config_generation="other-generation"), "stage-new", "2"),
-        (replace(owner, extractor_generation="other-generation"), "stage-new", "2"),
-        (replace(owner, canonicalizer_generation="other-generation"), "stage-new", "2"),
+        (replace(owner, source_generation="sg1:other-generation"), "stage-new", "2"),
+        (replace(owner, config_generation="cg1:other-generation"), "stage-new", "2"),
+        (replace(owner, extractor_generation="eg1:other-generation"), "stage-new", "2"),
+        (replace(owner, canonicalizer_generation="kg1:other-generation"), "stage-new", "2"),
     ]
     if published:
         candidates.extend([(owner, "other-stage", "2"), (owner, "stage-new", "3"),
