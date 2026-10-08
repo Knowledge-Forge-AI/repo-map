@@ -4,6 +4,17 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cancel-publication-race1.test-owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/cancel_publication_race.int.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/refresh_cancellation.unit.test.py"
+      ],
+      "rationale": "Publication-safe cancellation contract: refresh safe points, committed receipt disposition and uncertain attempt retention.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "fix21.int.run25_acquisition_wave",
       "members": [
         "src/test/int/python/repomap_kg/source_ingestion/run25_acquisition_wave.int.test.py"
@@ -29568,6 +29579,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/cancel_publication_race.int.test.py",
+      "rationale": "Publication-safe cancellation contract: refresh safe points, committed receipt disposition and uncertain attempt retention.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/coordinator_transition.int.test.py",
       "rationale": "Authenticated coordinator deployment transition contract.",
       "root": "test_owners",
@@ -36365,6 +36385,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/coordinator/refresh_adapter.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/refresh_cancellation.unit.test.py",
+      "rationale": "Publication-safe cancellation contract: refresh safe points, committed receipt disposition and uncertain attempt retention.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

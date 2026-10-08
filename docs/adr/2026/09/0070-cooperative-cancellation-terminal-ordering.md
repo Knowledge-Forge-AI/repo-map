@@ -38,6 +38,51 @@ No new handshake, schema, deadlines, sleep, execution authority or artifact
 publication behavior is introduced. Process exit, supervision and cleanup remain
 independent requirements; a terminal frame alone does not establish success.
 
+### Publication-safe cancellation disposition
+
+The pending-input override applies to unpublished semantic work. For the refresh
+publisher, the durable coordinator contract governs publication independently:
+cancellation may stop work at the existing pre-publication gate, but cannot
+override a matching committed publication. Such an attempt succeeds with the
+existing bounded `cancellation_not_applied` diagnostic. An uncertain publication
+requires reconciliation; terminal cancellation requires proved absence or
+rollback. Refresh input checks use bounded nonblocking reads at safe points and
+defer consumption during the publication-critical section. Protocol version 1,
+the flushed start/cancel batch, and accepted-terminal ordering remain unchanged.
+
+The pure reconciliation model accepts keyword-only `absence_proof`, defaulting
+to `unproved`. `fenced_absence` represents an already successful durable and
+file-gate closure of both job and attempt as `not_started`; it issues no
+`WorkerFencingProof` and grants no store mutation authority. A `rolled_back`
+model input represents already validated rollback without uncertain job or
+attempt evidence. Absent markers and stored `not_started`/`prepared` labels
+alone leave requested cancellation unresolved. Non-cancellation retry policy
+is preserved. Receipt conflicts quarantine; matching commits still win.
+
+### Recovery and framing limitations
+
+A cancellation with uncertain publication retains the current attempt, lease
+and publication evidence. The bounded existing recovery route is replacement
+coordinator startup after prior singleton turnover and graph lease expiry:
+`recover_startup` re-reads publication, installs the durable graph fence under
+currency locks, consumes a one-shot proof to close the file gate, closes both
+durable publication states, and reconciles using that earned closure result.
+Matching receipt readback takes precedence throughout. Unavailable readback or
+failed fencing leaves reconciliation pending. Same-owner periodic recovery
+cannot earn replacement-owner fencing while its lease stays active; progress
+can therefore wait for an operator-managed restart. Automatic restart, online
+recovery redesign and unfenced lease release are outside this repair.
+
+Nonblocking buffered `readline` can return a partial frame before its newline.
+At the decision boundary, complete pending cancel is accepted; no pending bytes
+or EOF after a valid start permits normal work. Fragmented, unterminated or
+malformed pending bytes fail closed with exit 2, without a terminal success or
+cancellation and without opening the publication gate. A logically valid frame
+whose remainder arrives later is still refused at that boundary. This is the
+existing incomplete-input rule and an availability limitation, not proof that
+pipe frames cannot split. Readers and descriptors remain owned by their process
+or fixture; no sleep, extra timeout or framing/schema expansion is introduced.
+
 ### FIX41 natural-completion correction
 
 After accepting a terminal, close coordinator input and allow natural process

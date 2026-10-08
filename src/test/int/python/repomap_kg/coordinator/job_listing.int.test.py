@@ -1,10 +1,13 @@
 import base64
 from datetime import datetime, timedelta, timezone
 import json
+from pathlib import Path
 import psycopg
 import pytest
 
 from repomap_kg.coordinator import JobRequest, normalize_request
+from repomap_kg.coordinator import _publication_phase
+from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
 from repomap_kg.coordinator.job_listing import (
     JobListCursor,
     decode_job_cursor,
@@ -14,6 +17,9 @@ from repomap_kg.coordinator.storage import ControlStore
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
+)
+from repomap_test_support.startup_recovery_scenarios import (
+    _make_refresh_fixture, _refresh_harness, _req_norm,
 )
 
 
@@ -153,23 +159,16 @@ def test_job_listing_empty_database_and_multi_page_traversal():
 
 
 def test_job_listing_durable_mutation_refusal_and_cancellation_states():
-    require_postgres_binaries()
-    with temporary_postgres() as postgres:
-        def connect():
-            return psycopg.connect(
-                host=postgres.host,
-                port=postgres.port,
-                user=postgres.user,
-                dbname=postgres.database,
-                password=postgres.password,
-            )
-
-        store = ControlStore(connect)
-        store.initialize_schema()
+    with _refresh_harness() as (store, directory, connect, postgres, graph_db):
+        config, sg, cg, eg, kg = _make_refresh_fixture(
+            postgres, directory, graph_db, graph_id="synthetic-beta",
+        )
+        resolver = ConfiguredRefreshResolver(config, Path(postgres.psql_command))
+        store.set_durable_fence_callback(resolver.install_graph_publication_fence)
 
         # Submit 3 distinct jobs
         job_a = store.submit(_request("req-state-1", "key-state-1", "synthetic-alpha"))
-        job_b = store.submit(_request("req-state-2", "key-state-2", "synthetic-beta"))
+        job_b = store.submit(_req_norm("state-2", sg, cg, eg, kg, graph_id="synthetic-beta"))
         job_c = store.submit(_request("req-state-3", "key-state-3", "synthetic-alpha"))
 
         # Direct cancellation of queued job
@@ -197,8 +196,7 @@ def test_job_listing_durable_mutation_refusal_and_cancellation_states():
             assert cancel_b == "cancel_requested"
             assert store.status(job_b.job_id).state == "cancel_requested"
 
-            # Model the maintained cancellation cleanup path: fence the live
-            # attempt, reconcile its terminal state, and release its lease.
+            # Process cleanup and phase labels alone do not prove absence.
             assert store.compare_and_set_state(
                 job_b.job_id,
                 expected_state="cancel_requested",
@@ -209,45 +207,62 @@ def test_job_listing_durable_mutation_refusal_and_cancellation_states():
                 publication_state="not_started",
                 error_category="cancelled",
             )
-            assert store.mark_attempt_terminated(
-                claim_b,
-                process_cleanup_proved=True,
-            )
-            assert store.reconcile_publication(claim_b) == "cancelled"
+            assert store.mark_attempt_terminated(claim_b, process_cleanup_proved=True)
+            def authority():
+                with connect() as conn:
+                    return (
+                        conn.execute("SELECT is_current, finished_at, publication_state FROM job_attempts WHERE job_id = %s AND attempt = %s", (job_b.job_id, claim_b.attempt)).fetchone(),
+                        conn.execute("SELECT * FROM graph_leases WHERE job_id = %s", (job_b.job_id,)).fetchone(),
+                    )
+            before_attempt, before_lease = authority()
+            assert before_attempt is not None and before_attempt[0] is True
+            assert before_attempt[1] is not None and before_attempt[2] == "not_started"
+            assert before_lease is not None
+            assert store.reconcile_publication(claim_b) == "reconciliation_required"
+            assert store.status(job_b.job_id).state == "reconciliation_required"
+            assert authority() == (before_attempt, before_lease)
+
+            # Replacement-owner route advances only the lease clock, not publication labels.
+            _publication_phase.initialize(directory, claim_b)
+            with connect() as conn:
+                conn.execute(
+                    "UPDATE graph_leases SET expires_at = now() - interval '1 second' "
+                    "WHERE job_id = %s", (job_b.job_id,),
+                )
         finally:
             store.stop_singleton("inst-test-state", epoch)
 
+        replacement = store.acquire_singleton("inst-test-replacement", timedelta(seconds=60))
+        try:
+            closed = store.close_unpublished_reconciliation(
+                claim_b, reconciler_instance_id="inst-test-replacement", reconciler_epoch=replacement,
+                file_closer=lambda claim, proof: _publication_phase.close_unpublished(directory, claim, proof=proof),
+            )
+            assert closed is True
+            assert _publication_phase.publication_state(directory, claim_b) == "not_started"
+            assert resolver.read_publication(claim_b) is None
+            assert store.reconcile_publication(
+                claim_b, reconciler_instance_id="inst-test-replacement", reconciler_epoch=replacement,
+                unpublished_proved=closed,
+            ) == "cancelled"
+        finally:
+            store.stop_singleton("inst-test-replacement", replacement)
+
         with connect() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    SELECT state, current_attempt, publication_state,
-                           error_category, finished_at
-                    FROM jobs WHERE job_id = %s
-                    """,
-                    (job_b.job_id,),
-                )
-                cancelled_row = cur.fetchone()
-                cur.execute(
-                    """
-                    SELECT is_current, finished_at, result_category,
-                           publication_state
-                    FROM job_attempts
-                    WHERE job_id = %s AND attempt = %s
-                    """,
-                    (job_b.job_id, claim_b.attempt),
-                )
-                attempt_row = cur.fetchone()
-                cur.execute(
-                    "SELECT count(*) FROM graph_leases WHERE job_id = %s",
-                    (job_b.job_id,),
-                )
-                lease_count = cur.fetchone()
+            cancelled_row = conn.execute(
+                "SELECT state, current_attempt, publication_state, error_category, finished_at "
+                "FROM jobs WHERE job_id = %s", (job_b.job_id,),
+            ).fetchone()
+            attempt_row = conn.execute(
+                "SELECT is_current, finished_at, result_category, publication_state "
+                "FROM job_attempts WHERE job_id = %s AND attempt = %s", (job_b.job_id, claim_b.attempt),
+            ).fetchone()
+            lease_count = conn.execute(
+                "SELECT count(*) FROM graph_leases WHERE job_id = %s", (job_b.job_id,),
+            ).fetchone()
 
         assert cancelled_row is not None
-        assert cancelled_row[:4] == (
-            "cancelled", 1, "rolled_back", "cancelled"
-        )
+        assert cancelled_row[:4] == ("cancelled", 1, "rolled_back", "cancelled")
         assert cancelled_row[4] is not None
         assert attempt_row is not None
         assert attempt_row[0] is False

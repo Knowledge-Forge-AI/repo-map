@@ -6,10 +6,54 @@ import pytest
 
 from repomap_kg.coordinator import _control_reconciliation as subject
 from repomap_kg.coordinator._control_types import JobClaim
+from repomap_kg.coordinator.semantics import reconcile_publication as model_reconcile
 from repomap_test_support.control_db_fakes import ScriptedCursor, connect_with
 
 
 CLAIM = JobClaim("job-1", "graph-1", 2, "worker-1", 3)
+
+
+@pytest.mark.parametrize("cancel", [False, True])
+@pytest.mark.parametrize("marker", ["absent", "matching_committed", "conflicting"])
+@pytest.mark.parametrize(
+    "publication,proof,without_cancel,with_cancel",
+    [
+        ("not_started", "unproved", "queued", "reconciliation_required"),
+        ("prepared", "unproved", "queued", "reconciliation_required"),
+        ("rolled_back", "unproved", "queued", "cancelled"),
+        ("commit_unknown", "unproved", "reconciliation_required", "reconciliation_required"),
+        ("not_started", "fenced_absence", "queued", "cancelled"),
+        ("prepared", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("rolled_back", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("commit_unknown", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("transaction_started", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("committed", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+    ],
+)
+def test_model_and_durable_decision_table_agree(
+    monkeypatch, publication, marker, proof, without_cancel, with_cancel, cancel,
+):
+    row = matching_evidence() if marker != "absent" else evidence()
+    row.update(
+        job_publication_state=publication, attempt_publication_state=publication,
+        cancel_requested_at="now" if cancel else None,
+    )
+    if marker == "conflicting":
+        row["marker_graph_id"] = "conflicting-graph"
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+    outcome = subject.reconcile_publication(
+        connect_with(cursor), CLAIM, max_attempts=3,
+        reconciler_instance_id="coordinator", reconciler_epoch=7,
+        unpublished_proved=proof == "fenced_absence",
+    )
+    expected = {"matching_committed": "succeeded", "conflicting": "quarantined"}.get(
+        marker, with_cancel if cancel else without_cancel,
+    )
+    assert outcome == expected
+    assert model_reconcile(publication, marker, cancel, absence_proof=proof) == expected
+    if outcome == "reconciliation_required":
+        assert not any(stmt.lstrip().startswith("UPDATE") for stmt, _ in cursor.executions)
 
 
 def evidence() -> dict[str, object]:
@@ -59,7 +103,16 @@ def matching_evidence() -> dict[str, object]:
         (lambda row: row.update(marker_outcome="committed", marker_graph_id="other"), 3, "quarantined"),
         (lambda row: row.update(error_category="protocol"), 3, "quarantined"),
         (lambda row: row.update(job_publication_state="commit_unknown"), 3, "reconciliation_required"),
-        (lambda row: row.update(cancel_requested_at="now"), 3, "cancelled"),
+        (lambda row: row.update(cancel_requested_at="now"), 3, "reconciliation_required"),
+        (
+            lambda row: row.update(
+                cancel_requested_at="now",
+                job_publication_state="rolled_back",
+                attempt_publication_state="rolled_back",
+            ),
+            3,
+            "cancelled",
+        ),
         (lambda _row: None, 2, "failed"),
     ],
 )
@@ -78,7 +131,7 @@ def test_reconcile_publication_decisions(monkeypatch, mutate, maximum, expected)
     ) == expected
 
 
-def test_reconcile_publication_accepts_matching_commit(monkeypatch) -> None:
+def test_reconcile_publication_accepts_matching_commit_without_cancel(monkeypatch) -> None:
     cursor = ScriptedCursor(rows=[matching_evidence()])
     monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
 
@@ -89,6 +142,115 @@ def test_reconcile_publication_accepts_matching_commit(monkeypatch) -> None:
         reconciler_instance_id="coordinator",
         reconciler_epoch=7,
     ) == "succeeded"
+
+    attempt_updates = [
+        (stmt, params) for stmt, params in cursor.executions
+        if "UPDATE job_attempts" in stmt
+    ]
+    assert len(attempt_updates) == 1
+    assert attempt_updates[0][1] == (
+        "committed", None, None, CLAIM.job_id, CLAIM.attempt, CLAIM.instance_id, CLAIM.fencing_epoch
+    )
+
+
+def test_reconcile_publication_matching_commit_after_cancel_succeeds_with_diagnostic(monkeypatch) -> None:
+    row = matching_evidence()
+    row.update(cancel_requested_at="2026-10-07T12:00:00Z")
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+
+    assert subject.reconcile_publication(
+        connect_with(cursor),
+        CLAIM,
+        max_attempts=3,
+        reconciler_instance_id="coordinator",
+        reconciler_epoch=7,
+    ) == "succeeded"
+
+    job_updates = [
+        (stmt, params) for stmt, params in cursor.executions
+        if "UPDATE jobs SET state = %s" in stmt
+    ]
+    assert len(job_updates) == 1
+    assert job_updates[0][1] == ("succeeded", "committed", None, CLAIM.job_id, CLAIM.attempt)
+
+    attempt_updates = [
+        (stmt, params) for stmt, params in cursor.executions
+        if "UPDATE job_attempts" in stmt
+    ]
+    assert len(attempt_updates) == 1
+    assert attempt_updates[0][1] == (
+        "committed", None, "cancellation_not_applied",
+        CLAIM.job_id, CLAIM.attempt, CLAIM.instance_id, CLAIM.fencing_epoch,
+    )
+
+
+def test_reconcile_publication_fenced_absence_permits_cancellation(monkeypatch) -> None:
+    row = evidence()
+    row.update(
+        job_publication_state="not_started",
+        attempt_publication_state="not_started",
+        cancel_requested_at="2026-10-07T12:00:00Z",
+    )
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+
+    assert subject.reconcile_publication(
+        connect_with(cursor),
+        CLAIM,
+        max_attempts=3,
+        reconciler_instance_id="coordinator",
+        reconciler_epoch=7,
+        unpublished_proved=True,
+    ) == "cancelled"
+
+    job_updates = [
+        (stmt, params) for stmt, params in cursor.executions
+        if "UPDATE jobs SET state = %s" in stmt
+    ]
+    assert len(job_updates) == 1
+    assert job_updates[0][1] == ("cancelled", "rolled_back", "cancelled", CLAIM.job_id, CLAIM.attempt)
+
+
+def test_reconcile_publication_unproved_absence_retains_uncertainty(monkeypatch) -> None:
+    row = evidence()
+    row.update(
+        job_publication_state="not_started",
+        attempt_publication_state="not_started",
+        cancel_requested_at="2026-10-07T12:00:00Z",
+    )
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+
+    assert subject.reconcile_publication(
+        connect_with(cursor),
+        CLAIM,
+        max_attempts=3,
+        reconciler_instance_id="coordinator",
+        reconciler_epoch=7,
+        unpublished_proved=False,
+    ) == "reconciliation_required"
+    assert not any(stmt.lstrip().startswith("UPDATE") for stmt, _ in cursor.executions)
+
+
+def test_reconcile_publication_attempt_commit_unknown_retains_uncertainty(monkeypatch) -> None:
+    row = evidence()
+    row.update(
+        job_publication_state="prepared",
+        attempt_publication_state="commit_unknown",
+        cancel_requested_at="2026-10-07T12:00:00Z",
+    )
+    cursor = ScriptedCursor(rows=[row])
+    monkeypatch.setattr(subject, "require_live_owner", lambda *_args: None)
+
+    assert subject.reconcile_publication(
+        connect_with(cursor),
+        CLAIM,
+        max_attempts=3,
+        reconciler_instance_id="coordinator",
+        reconciler_epoch=7,
+    ) == "reconciliation_required"
+    assert not any(stmt.lstrip().startswith("UPDATE") for stmt, _ in cursor.executions)
 
 
 def test_reconcile_publication_reports_lost_job_ownership(monkeypatch) -> None:

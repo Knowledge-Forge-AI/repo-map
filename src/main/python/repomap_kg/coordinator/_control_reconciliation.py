@@ -29,7 +29,19 @@ def reconcile_publication(
                 return "reconciliation_required"
             marker = _marker_classification(row)
             if marker == "matching_committed":
-                _close_terminal(cursor, claim, "succeeded", "committed", None)
+                diagnostic = (
+                    "cancellation_not_applied"
+                    if row["cancel_requested_at"] is not None
+                    else None
+                )
+                _close_terminal(
+                    cursor,
+                    claim,
+                    "succeeded",
+                    "committed",
+                    None,
+                    diagnostic_summary=diagnostic,
+                )
                 return "succeeded"
             if marker == "conflicting":
                 _pause_graph_intent(cursor, claim)
@@ -61,13 +73,31 @@ def reconcile_publication(
                 or row["attempt_publication_state"] != "not_started"
             ):
                 return "reconciliation_required"
-            if row["job_publication_state"] == "commit_unknown":
+            if (
+                row["job_publication_state"] == "commit_unknown"
+                or row["attempt_publication_state"] == "commit_unknown"
+            ):
                 return "reconciliation_required"
             if row["cancel_requested_at"] is not None:
-                _close_terminal(
-                    cursor, claim, "cancelled", "rolled_back", "cancelled"
+                proved_absence = (
+                    unpublished_proved
+                    and row["job_publication_state"] == "not_started"
+                    and row["attempt_publication_state"] == "not_started"
                 )
-                return "cancelled"
+                proved_rollback = (
+                    row["job_publication_state"] in {"not_started", "rolled_back"}
+                    and row["attempt_publication_state"] in {"not_started", "rolled_back"}
+                    and (
+                        row["job_publication_state"] == "rolled_back"
+                        or row["attempt_publication_state"] == "rolled_back"
+                    )
+                )
+                if proved_absence or proved_rollback:
+                    _close_terminal(
+                        cursor, claim, "cancelled", "rolled_back", "cancelled"
+                    )
+                    return "cancelled"
+                return "reconciliation_required"
             if row["current_attempt"] >= max_attempts:
                 _close_terminal(
                     cursor, claim, "failed", "rolled_back", "permanent"
@@ -144,7 +174,15 @@ def _marker_classification(row) -> str:
     return "matching_committed" if matches else "conflicting"
 
 
-def _close_terminal(cursor, claim, target, publication, category) -> None:
+def _close_terminal(
+    cursor,
+    claim,
+    target: str,
+    publication: str,
+    category: str | None,
+    *,
+    diagnostic_summary: str | None = None,
+) -> None:
     cursor.execute(
         """
         UPDATE jobs SET state = %s, publication_state = %s,
@@ -155,7 +193,9 @@ def _close_terminal(cursor, claim, target, publication, category) -> None:
         """,
         (target, publication, category, claim.job_id, claim.attempt),
     )
-    _close_attempt(cursor, claim, publication, category)
+    _close_attempt(
+        cursor, claim, publication, category, diagnostic_summary=diagnostic_summary
+    )
     _delete_lease(cursor, claim)
 
 
@@ -197,12 +237,20 @@ def _queue_retry(cursor, claim, publication="rolled_back") -> None:
     _delete_lease(cursor, claim)
 
 
-def _close_attempt(cursor, claim, publication, category) -> None:
+def _close_attempt(
+    cursor,
+    claim,
+    publication: str,
+    category: str | None,
+    *,
+    diagnostic_summary: str | None = None,
+) -> None:
     cursor.execute(
         """
         UPDATE job_attempts
         SET is_current = false, finished_at = COALESCE(finished_at, now()),
             publication_state = %s, result_category = %s,
+            diagnostic_summary = COALESCE(%s, diagnostic_summary),
             supervisor_registration_digest = NULL
         WHERE job_id = %s AND attempt = %s AND is_current
           AND coordinator_instance_id = %s AND fencing_epoch = %s
@@ -210,6 +258,7 @@ def _close_attempt(cursor, claim, publication, category) -> None:
         (
             publication,
             category,
+            diagnostic_summary,
             claim.job_id,
             claim.attempt,
             claim.instance_id,

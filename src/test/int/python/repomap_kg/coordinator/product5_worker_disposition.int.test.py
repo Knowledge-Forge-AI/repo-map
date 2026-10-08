@@ -16,6 +16,7 @@ from pathlib import Path
 
 import psycopg
 import pytest
+from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
 from repomap_kg.coordinator.protocol import (
     ProtocolError,
     run_refresh_worker,
@@ -166,6 +167,7 @@ def test_worker_cancellation_disposition() -> None:
         epoch = store.acquire_singleton("inst-cancel", timedelta(seconds=300))
         claim = store.claim_next("inst-cancel", epoch, timedelta(seconds=300))
         assert claim is not None
+        assert store.request_cancellation(claim.job_id) == "cancel_requested"
 
         cap_path, _ = _make_worker_capability(postgres, cap_dir, config, claim, sg, cg, eg, kg)
         cancel_event = threading.Event()
@@ -177,21 +179,60 @@ def test_worker_cancellation_disposition() -> None:
             coordinator_test_limits(),
             job_context={"graph_id": claim.graph_id, "source_generation": sg, "config_generation": cg},
             cancel_event=cancel_event,
+            fencing_prover=store.in_process_fencing_proof,
+            launch_registrar=store.register_supervisor_launch,
         )
         assert res.waited is True
         assert res.process_group_cleaned is True
         assert res.terminal["status"] == "cancelled"
         assert res.terminal["error_category"] == "cancelled"
+        assert res.terminal["publication_state"] == "not_started"
+        assert res.original_terminal is not None
+        assert res.original_terminal["status"] == "cancelled"
+        assert not res.synthesized_terminal and res.returncode == 0
+        assert any(message["message_type"] == "cancel_ack" for message in res.messages)
         assert res.cleanup_error is None
         assert not cap_path.exists()
 
+        resolver = ConfiguredRefreshResolver(config, Path(postgres.psql_command))
+        # Complete runs and receipt readback are both publication authorities.
+        assert resolver.read_publication(claim) is None
+        assert resolver.latest_publication(claim.graph_id) is None
         with psycopg.connect(
             host=postgres.host, port=postgres.port, user=postgres.user, dbname=graph_db, password=postgres.password,
         ) as conn:
             with conn.cursor() as cur:
-                # Interrupted staging can retain run evidence; it must not publish.
-                count = cur.execute("SELECT count(*) FROM runs WHERE status = 'complete'").fetchone()
-                assert count == (0,)
+                assert cur.execute("SELECT count(*) FROM runs WHERE status = 'complete'").fetchone() == (0,)
+                # This fresh graph must retain no public content, even without a receipt.
+                assert cur.execute(
+                    "SELECT (SELECT count(*) FROM canonical_nodes), "
+                    "(SELECT count(*) FROM canonical_edges), "
+                    "(SELECT count(*) FROM canonical_evidence), "
+                    "(SELECT count(*) FROM canonical_node_evidence), "
+                    "(SELECT count(*) FROM canonical_edge_evidence), "
+                    "(SELECT count(*) FROM raw_observations), "
+                    "(SELECT count(*) FROM files)"
+                ).fetchone() == (0, 0, 0, 0, 0, 0, 0)
+                assert cur.execute(
+                    "SELECT count(*) FROM graph_publication_authority "
+                    "WHERE job_id = %s AND attempt = %s AND last_run_id IS NOT NULL",
+                    (claim.job_id, claim.attempt),
+                ).fetchone() == (0,)
+                assert cur.execute(
+                    "SELECT count(*) FROM ingestion_stages WHERE job_id = %s AND attempt = %s "
+                    "AND (state = 'published' OR merge_status = 'committed')",
+                    (claim.job_id, claim.attempt),
+                ).fetchone() == (0,)
+        with connect() as conn:
+            assert conn.execute(
+                "SELECT count(*) FROM synthetic_publication_markers WHERE job_id = %s AND attempt = %s",
+                (claim.job_id, claim.attempt),
+            ).fetchone() == (0,)
+            assert conn.execute(
+                "SELECT publication_state, run_identity FROM job_attempts WHERE job_id = %s AND attempt = %s",
+                (claim.job_id, claim.attempt),
+            ).fetchone() == ("not_started", None)
+        assert store.stop_singleton("inst-cancel", epoch)
 
 
 @pytest.mark.parametrize("failure", ["configuration", "generation_changed"])

@@ -342,7 +342,9 @@ def test_coordinator_semantics_coalescing_and_progress() -> None:
     assert reconcile_publication("prepared", "matching_committed", False) == "succeeded"
     assert reconcile_publication("prepared", "conflicting", False) == "quarantined"
     assert reconcile_publication("prepared", "unknown", False) == "reconciliation_required"
-    assert reconcile_publication("not_started", "absent", True) == "cancelled"
+    assert reconcile_publication("not_started", "absent", True) == "reconciliation_required"
+    assert reconcile_publication("not_started", "absent", True, absence_proof="fenced_absence") == "cancelled"
+    assert reconcile_publication("rolled_back", "absent", True) == "cancelled"
     assert reconcile_publication("not_started", "absent", False) == "queued"
 
     rp = RetryPolicy(max_attempts=3, base_seconds=1.0, maximum_seconds=10.0)

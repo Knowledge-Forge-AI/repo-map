@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import secrets
+import tempfile
 from types import SimpleNamespace
 
 import psycopg
@@ -103,17 +104,16 @@ def _worker_terminal(monkeypatch, sealed):
     capability = load_refresh_capability(sealed)
     start = dict(schema_version=1, message_type="job_start", job_kind="refresh_graph",
                  job_id=capability.job_id, attempt=capability.attempt,
-                 graph_id=capability.graph_id,
-                 source_generation=capability.source_generation,
-                 config_generation=capability.config_generation)
+                 graph_id=capability.graph_id, source_generation=capability.source_generation, config_generation=capability.config_generation)
     output = io.BytesIO()
-    with monkeypatch.context() as streams:
-        streams.setattr(refresh_worker.sys, "stdin", SimpleNamespace(buffer=io.BytesIO(encode_jsonl(start))))
+    with tempfile.TemporaryFile("w+b") as stream, monkeypatch.context() as streams:
+        stream.write(encode_jsonl(start))
+        stream.seek(0)
+        streams.setattr(refresh_worker.sys, "stdin", SimpleNamespace(buffer=stream, fileno=stream.fileno))
         streams.setattr(refresh_worker.sys, "stdout", SimpleNamespace(buffer=output))
         streams.setattr(refresh_worker.sys, "stderr", io.StringIO())
         assert refresh_worker.main([
-            "--capability", str(sealed), "--job-id", capability.job_id,
-            "--attempt", str(capability.attempt),
+            "--capability", str(sealed), "--job-id", capability.job_id, "--attempt", str(capability.attempt),
         ]) == 0
     messages = [json.loads(line) for line in output.getvalue().splitlines()]
     assert messages[0]["message_type"] == "worker_hello"

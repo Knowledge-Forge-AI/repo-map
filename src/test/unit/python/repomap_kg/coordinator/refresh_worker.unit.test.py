@@ -65,7 +65,7 @@ def test_worker_terminal_preserves_unsupported_configuration_diagnostic():
         }
     )
     messages: list[dict[str, object]] = []
-    fake_stdin = SimpleNamespace(buffer=BytesIO(start))
+    fake_stdin = SimpleNamespace(buffer=BytesIO(start), fileno=lambda: 0)
     with (
         patch.object(refresh_worker, "load_refresh_capability", return_value=capability),
         patch.object(
@@ -77,6 +77,7 @@ def test_worker_terminal_preserves_unsupported_configuration_diagnostic():
         ),
         patch.object(refresh_worker, "_write", side_effect=messages.append),
         patch.object(refresh_worker.sys, "stdin", fake_stdin),
+        patch.object(refresh_worker.os, "set_blocking"),
     ):
         assert refresh_worker.main(
             ["--capability", "fixture", "--job-id", capability.job_id, "--attempt", "1"]

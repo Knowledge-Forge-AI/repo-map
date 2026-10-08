@@ -142,19 +142,26 @@ def run_refresh_worker(
                 _publication_phase.close_unpublished(
                     capability_path.parent, capability, proof=proof
                 )
-            state = _publication_phase.publication_state(
-                capability_path.parent, capability
+            state = _publication_phase.publication_state(capability_path.parent, capability)
+            abnormal = result.synthesized_terminal or result.process_timed_out or result.heartbeat_timed_out
+            # Accepted terminals win over later requests. Phase evidence proves
+            # absence; committed publication requires receipt reconciliation.
+            cancelled = result.terminal.get("status") == "cancelled" or (
+                abnormal and cancel_event is not None and cancel_event.is_set()
             )
-            cancelled = cancel_event is not None and cancel_event.is_set()
-            if result.synthesized_terminal or result.process_timed_out or result.heartbeat_timed_out or cancelled:
-                err = "cancelled" if cancelled else (
-                    "protocol" if result.protocol_error else (
-                        "worker_timeout" if result.process_timed_out or result.heartbeat_timed_out else "worker_crash"
-                    )
-                )
+            if abnormal or cancelled:
+                safe_cancel = cancelled and state == "not_started"
+                if cancelled:
+                    err = "cancelled" if safe_cancel else "publication_unknown"
+                elif result.protocol_error:
+                    err = "protocol"
+                elif result.process_timed_out or result.heartbeat_timed_out:
+                    err = "worker_timeout"
+                else:
+                    err = "worker_crash"
                 result = replace(result, terminal={
                     **result.terminal, "publication_state": state,
-                    "status": "cancelled" if cancelled else "failed", "error_category": err,
+                    "status": "cancelled" if safe_cancel else "failed", "error_category": err,
                 })
             elif state == "not_started" and result.terminal.get("publication_state") == "commit_unknown":
                 result = replace(result, terminal={**result.terminal, "publication_state": state})

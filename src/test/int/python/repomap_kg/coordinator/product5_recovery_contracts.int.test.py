@@ -56,6 +56,12 @@ def test_reconciliation_terminal_classifications_and_marker_conflicts(kind: str)
             claim, expected_state=expected, category="protocol" if kind == "protocol" else "worker_crash",
         )
         assert store.mark_attempt_terminated(claim, process_cleanup_proved=True)
+        if kind == "cancelled":
+            # Process settlement and absent receipt alone do not prove rollback.
+            assert store.reconcile_publication(
+                claim, reconciler_instance_id="prior", reconciler_epoch=epoch,
+            ) == "reconciliation_required"
+            assert store.status(claim.job_id).publication_state == "commit_unknown"
         if kind == "conflicting":
             assert store.record_publication_marker(
                 claim, run_identity="conflicting-run", source_generation="sg1:different",
@@ -73,6 +79,8 @@ def test_reconciliation_terminal_classifications_and_marker_conflicts(kind: str)
                 claim, reconciler_instance_id="replacement", reconciler_epoch=replacement,
                 file_closer=lambda cl, proof: _publication_phase.close_unpublished(cap_dir, cl, proof=proof),
             )
+            assert _publication_phase.publication_state(cap_dir, claim) == "not_started"
+            assert resolver.read_publication(claim) is None
         outcome = store.reconcile_publication(
             claim, reconciler_instance_id="replacement", reconciler_epoch=replacement, unpublished_proved=closed,
         )
