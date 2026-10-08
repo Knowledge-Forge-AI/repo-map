@@ -32,7 +32,7 @@ static-analysis = [
   "types-requests==2.33.0.20260518",
 ]
 postgres = [
-  "psycopg[binary]==3.2.12",
+  "psycopg[binary]==3.3.6",
 ]
 
 [project.scripts]
