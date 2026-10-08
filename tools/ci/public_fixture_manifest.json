@@ -1,0 +1,17 @@
+{
+  "schema": "repomap-public-fixture-manifest-v1",
+  "fixtures": [
+    {
+      "path": "src/test/fixtures/bulk/email_export/node_modules/ignored.js",
+      "sha256": "9f5387b893913d25cba3ebe62390c21ce12bca2aae4d7146dc39e0cc199486c0",
+      "mode": "100644",
+      "purpose": "directory exclusion test fixture"
+    },
+    {
+      "path": "src/test/fixtures/source_ingestion/archive_artifacts/example-test-report/node_modules/ignored.js",
+      "sha256": "9f5387b893913d25cba3ebe62390c21ce12bca2aae4d7146dc39e0cc199486c0",
+      "mode": "100644",
+      "purpose": "archive source exclusion test fixture"
+    }
+  ]
+}

@@ -17,6 +17,7 @@ KNOWN_TOP_LEVEL_SECTIONS = frozenset(
         "graphs",
         "server_memory",
         "sources",
+        "storage",
     )
 )
 KNOWN_SERVICE_FIELDS = frozenset(("mode", "mcp_transport", "log_level"))
@@ -24,7 +25,7 @@ KNOWN_POSTGRES_FIELDS = frozenset(
     ("host", "port", "database", "user", "password_env", "password_file", "password")
 )
 KNOWN_RUNTIME_FIELDS = frozenset(
-    ("container_runtime", "postgres_host_port", "server_host_port", "bind_host", "postgres")
+    ("coordinator_mode", "container_runtime", "postgres_host_port", "server_host_port", "bind_host", "postgres")
 )
 KNOWN_RUNTIME_POSTGRES_FIELDS = frozenset(
     ("direct_host_port_enabled", "host_port", "bind_host")

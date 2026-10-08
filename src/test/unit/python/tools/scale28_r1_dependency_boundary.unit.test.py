@@ -23,7 +23,6 @@ def test_scale_tools_extra_has_only_the_selected_exact_pins() -> None:
         "docker==7.2.0",
     ]
     assert metadata["project"]["dependencies"] == [
-        "psycopg[binary]==3.2.12",
         "typing-extensions==4.16.0",
     ]
 
@@ -49,3 +48,4 @@ def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
         module = importlib.util.module_from_spec(specification)
         sys.modules[module_name] = module
         specification.loader.exec_module(module)
+# v0.0.2 dynamic target re-attestation.

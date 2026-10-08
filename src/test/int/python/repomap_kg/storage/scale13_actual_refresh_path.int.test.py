@@ -194,6 +194,8 @@ def test_actual_configured_refresh_proves_backend_ownership_and_live_readers(
     (
         "staging.family_copy.files",
         "guard.source_index_stage",
+        "merge.canonical_edges",
+        "receipt.finalize",
     ),
 )
 def test_actual_configured_refresh_cancels_without_partial_publication(

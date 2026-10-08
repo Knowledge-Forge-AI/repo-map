@@ -8,6 +8,7 @@ from datetime import timedelta
 import threading
 from typing import Protocol, TypeVar
 
+from repomap_kg.coordinator._control_maintenance import CleanupReport
 from repomap_kg.coordinator._control_types import (
     JobClaim,
     JobListPage,
@@ -15,6 +16,7 @@ from repomap_kg.coordinator._control_types import (
     SubmissionResult,
 )
 from repomap_kg.coordinator.contracts import JobRequest
+from repomap_kg.coordinator.limits import AdmissionDeadline
 from repomap_kg.coordinator.startup_recovery import RecoveryStore
 
 _T = TypeVar("_T")
@@ -22,6 +24,9 @@ _T = TypeVar("_T")
 _Claim = JobClaim
 WorkerRunner = Callable[[JobClaim, threading.Event], Mapping[str, object]]
 PublicationReader = Callable[[object], Mapping[str, object] | None]
+PublicationCloser = Callable[[object, object], bool]
+PublicationRetirer = Callable[[object], object]
+
 
 _Transport = AbstractContextManager[object]
 TransportFactory = Callable[..., _Transport]
@@ -45,6 +50,7 @@ class CoordinatorStore(RecoveryStore, Protocol):
         expected_state: str,
         category: str,
         diagnostic_summary: str | None = None,
+        publication_state: str = "commit_unknown",
     ) -> bool: ...
     def mark_attempt_terminated(
         self,
@@ -92,6 +98,14 @@ class CoordinatorStore(RecoveryStore, Protocol):
         reconciler_instance_id: str,
         reconciler_epoch: int,
     ) -> bool: ...
+    def cleanup_terminal(
+        self,
+        minimum_age: timedelta,
+        *,
+        limit: int,
+        dry_run: bool,
+        publication_retirer: Callable[[object], object] | None = None,
+    ) -> CleanupReport: ...
 
 
 class ServiceCoordinator(Protocol):
@@ -104,7 +118,7 @@ class ServiceCoordinator(Protocol):
 
 
 class ServiceStore(Protocol):
-    def submit(self, request: JobRequest) -> SubmissionResult: ...
+    def submit(self, request: JobRequest, *, admission_deadline: AdmissionDeadline | None = None) -> SubmissionResult: ...
     def status(self, job_id: str) -> JobStatus: ...
     def list_recent_jobs(
         self,

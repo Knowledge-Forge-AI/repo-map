@@ -133,33 +133,9 @@ def resolve_ops_config(config: OpsConfig) -> ResolvedOpsConfig:
         else:
             database_owners[database] = graph.id
 
-        identity = configured_repository_identity(graph.id)
-        prior_identity = identity_owners.get(identity)
-        if prior_identity is not None:
-            diagnostics.append(
-                _error(
-                    "duplicate-configured-repository-identity",
-                    f"{path}.id",
-                    "configured repository identity collision is not allowed",
-                )
-            )
-        else:
-            identity_owners[identity] = graph.id
-        try:
-            bindings = tuple(
-                item.domain_binding(graph.id) for item in graph.effective_source_bindings
-            )
-            config_id = multi_source_configuration_id(graph.id, bindings)
-        except MultiSourceIdentityError as error:
-            diagnostics.append(
-                _error(
-                    "invalid-source-binding-identity",
-                    f"{path}.source_bindings" if graph.explicit_source_bindings else path,
-                    str(error),
-                )
-            )
-            bindings = ()
-            config_id = ""
+        identity, bindings, config_id = resolve_graph_identity(
+            graph, path=path, identity_owners=identity_owners, diagnostics=diagnostics
+        )
         resolved_graphs.append(
             ResolvedGraphConfig(
                 graph,
@@ -192,6 +168,45 @@ def resolve_ops_config(config: OpsConfig) -> ResolvedOpsConfig:
     )
 
 
+def resolve_graph_identity(
+    graph: OpsGraphConfig,
+    *,
+    path: str,
+    identity_owners: dict[ConfiguredRepositoryIdentity, str],
+    diagnostics: list[OpsConfigDiagnostic],
+) -> tuple[ConfiguredRepositoryIdentity, tuple[GraphSourceBinding, ...], str]:
+    """Validate one graph's backend-neutral identity and source bindings."""
+
+    identity = configured_repository_identity(graph.id)
+    prior_identity = identity_owners.get(identity)
+    if prior_identity is not None:
+        diagnostics.append(
+            _error(
+                "duplicate-configured-repository-identity",
+                f"{path}.id",
+                "configured repository identity collision is not allowed",
+            )
+        )
+    else:
+        identity_owners[identity] = graph.id
+    try:
+        bindings = tuple(
+            item.domain_binding(graph.id) for item in graph.effective_source_bindings
+        )
+        config_id = multi_source_configuration_id(graph.id, bindings)
+    except MultiSourceIdentityError as error:
+        diagnostics.append(
+            _error(
+                "invalid-source-binding-identity",
+                f"{path}.source_bindings" if graph.explicit_source_bindings else path,
+                str(error),
+            )
+        )
+        bindings = ()
+        config_id = ""
+    return identity, bindings, config_id
+
+
 def _database_name(
     value: str,
     *,
@@ -222,5 +237,6 @@ __all__ = [
     "ResolvedOpsConfig",
     "configured_repository_identity",
     "control_database_for",
+    "resolve_graph_identity",
     "resolve_ops_config",
 ]

@@ -43,7 +43,18 @@ def add_storage_commands(
         "explain-canonical-edge",
         help="explain one stored canonical graph edge from Postgres storage",
     )
-    add_storage_root_argument(storage_explain_canonical_edge)
+    explain_root_or_graph = storage_explain_canonical_edge.add_mutually_exclusive_group(
+        required=True
+    )
+    explain_root_or_graph.add_argument("--root-path")
+    explain_root_or_graph.add_argument(
+        "--graph",
+        help="configured graph id when using --repo-map-home",
+    )
+    storage_explain_canonical_edge.add_argument(
+        "--repo-map-home",
+        help="setup-owned RepoMap home for local read/status authority",
+    )
     storage_explain_canonical_edge.add_argument("--source-key", required=True)
     storage_explain_canonical_edge.add_argument("--kind", required=True)
     storage_explain_canonical_edge.add_argument("--target-key", required=True)
@@ -194,7 +205,16 @@ def add_storage_commands(
         "edges",
         help="list stored relationship edges from Postgres storage",
     )
-    add_storage_root_argument(storage_edges)
+    edges_root_or_graph = storage_edges.add_mutually_exclusive_group(required=True)
+    edges_root_or_graph.add_argument("--root-path")
+    edges_root_or_graph.add_argument(
+        "--graph",
+        help="configured graph id when using --repo-map-home",
+    )
+    storage_edges.add_argument(
+        "--repo-map-home",
+        help="setup-owned RepoMap home for local read/status authority",
+    )
     storage_edges.add_argument("--kind", help="include only edges with this kind")
     storage_edges.add_argument(
         "--source-key",

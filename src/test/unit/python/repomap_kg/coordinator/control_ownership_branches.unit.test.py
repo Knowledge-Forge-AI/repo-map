@@ -115,6 +115,9 @@ def test_claim_once_records_attempt_and_graph_lease(monkeypatch, priority) -> No
     rendered = "\n".join(statement for statement, _ in cursor.executions)
     assert "INSERT INTO job_attempts" in rendered
     assert "INSERT INTO graph_leases" in rendered
+    epoch_inserts = [(sql, params) for sql, params in cursor.executions
+                     if "INSERT INTO job_attempts" in sql or "INSERT INTO graph_leases" in sql]
+    assert all("graph_lease_fencing_epoch" in sql and isinstance(params, tuple) and 91 in params for sql, params in epoch_inserts)
     assert ("UPDATE coalescing_state" in rendered) is (priority == "automatic")
 
 

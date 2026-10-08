@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from pathlib import Path
 import tempfile
-from typing import cast
+from typing import Any, Sequence, cast
 import unittest
 from unittest.mock import MagicMock
 
@@ -26,6 +26,46 @@ from repomap_kg.coordinator._service_endpoints import (
     _remove_stale_endpoint,
     _validate_runtime_directory,
 )
+
+
+class _FakeWorkerProcess:
+    def __init__(self, stdout_lines: Sequence[bytes] = ()):
+        import io
+        self.stdin = io.BytesIO()
+        self.stdout = io.BytesIO(b"".join(stdout_lines))
+        self.stderr = io.BytesIO()
+        self.pid = 99999
+        self.supervision_kind = "test"
+        self.returncode: int | None = None
+        self._poll_count = 0
+        self.actions: list[str] = []
+
+    def poll(self) -> int | None:
+        self._poll_count += 1
+        return self.returncode
+
+    def wait(self, timeout: float | None = None) -> int:
+        if self.returncode is None:
+            self.returncode = 0
+        return self.returncode
+
+    def terminate_gracefully(self) -> None:
+        self.actions.append("terminate")
+        self.returncode = -15
+
+    def kill_tree(self) -> None:
+        self.actions.append("kill")
+        self.returncode = -9
+
+    def tree_exists(self) -> bool:
+        return False
+
+    def cleanup(self, term_timeout: float | None = None, kill_timeout: float | None = None) -> bool:
+        self.actions.append("cleanup")
+        return True
+
+    def close(self) -> None:
+        self.actions.append("close")
 
 
 class DecompositionResilienceUnitTests(unittest.TestCase):
@@ -203,6 +243,67 @@ class DecompositionResilienceUnitTests(unittest.TestCase):
                 cancel_event=None,
             )
         self.assertIn("diagnostic limit exceeds", str(cm.exception))
+
+    def test_protocol_execution_hello_timeout_escalation(self) -> None:
+        fake = _FakeWorkerProcess()
+        res = _run_protocol_worker(
+            argv=("echo",), environment={}, working_directory=Path(tempfile.gettempdir()),
+            automatic_cancellation=False, identity={"job_id": "job-h1", "attempt": 1},
+            limits={"process_deadline_seconds": 1.0, "heartbeat_seconds": 0.5, "hello_deadline_seconds": 0.02,
+                    "cancellation_after_seconds": 0.1, "cancel_deadline_seconds": 0.1, "process_termination_grace_seconds": 0.1},
+            job_context=None, cancel_event=None, _launch_process=cast(Any, lambda *a, **k: fake),
+        )
+        self.assertTrue(res.hello_timed_out)
+        self.assertFalse(res.process_timed_out)
+        self.assertIn("terminate", fake.actions)
+        self.assertTrue(res.process_group_cleaned)
+
+    def test_protocol_execution_heartbeat_timeout_escalation(self) -> None:
+        hello_frame = encode_jsonl({"schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1], "worker_generation": "wg1", "capabilities": ["refresh_graph"], "process_nonce": "n1"})
+        fake = _FakeWorkerProcess(stdout_lines=[hello_frame])
+        res = _run_protocol_worker(
+            argv=("echo",), environment={}, working_directory=Path(tempfile.gettempdir()),
+            automatic_cancellation=False, identity={"job_id": "job-hb1", "attempt": 1},
+            limits={"process_deadline_seconds": 1.0, "heartbeat_seconds": 0.02, "hello_deadline_seconds": 1.0,
+                    "cancellation_after_seconds": 0.1, "cancel_deadline_seconds": 0.1, "process_termination_grace_seconds": 0.1},
+            job_context=None, cancel_event=None, _launch_process=cast(Any, lambda *a, **k: fake),
+        )
+        self.assertTrue(res.heartbeat_timed_out)
+        self.assertFalse(res.process_timed_out)
+        self.assertIn("terminate", fake.actions)
+        self.assertTrue(res.process_group_cleaned)
+
+    def test_protocol_execution_process_deadline_expiry(self) -> None:
+        hello_frame = encode_jsonl({"schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1], "worker_generation": "wg1", "capabilities": ["refresh_graph"], "process_nonce": "n1"})
+        fake = _FakeWorkerProcess(stdout_lines=[hello_frame])
+        res = _run_protocol_worker(
+            argv=("echo",), environment={}, working_directory=Path(tempfile.gettempdir()),
+            automatic_cancellation=False, identity={"job_id": "job-proc1", "attempt": 1},
+            limits={"process_deadline_seconds": 0.02, "heartbeat_seconds": 1.0, "hello_deadline_seconds": 1.0,
+                    "cancellation_after_seconds": 0.1, "cancel_deadline_seconds": 0.1, "process_termination_grace_seconds": 0.1},
+            job_context=None, cancel_event=None, _launch_process=cast(Any, lambda *a, **k: fake),
+        )
+        self.assertTrue(res.process_timed_out)
+        self.assertIn("terminate", fake.actions)
+        self.assertTrue(res.process_group_cleaned)
+
+    def test_protocol_execution_timeout_probe_trigger(self) -> None:
+        hello_frame = encode_jsonl({"schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1], "worker_generation": "wg1", "capabilities": ["refresh_graph"], "process_nonce": "n1"})
+        fake = _FakeWorkerProcess(stdout_lines=[hello_frame])
+        probed: list[bool] = []
+        def probe() -> bool:
+            probed.append(True)
+            return len(probed) >= 2
+        res = _run_protocol_worker(
+            argv=("echo",), environment={}, working_directory=Path(tempfile.gettempdir()),
+            automatic_cancellation=False, identity={"job_id": "job-probe1", "attempt": 1},
+            limits={"process_deadline_seconds": 10.0, "heartbeat_seconds": 10.0, "hello_deadline_seconds": 10.0,
+                    "cancellation_after_seconds": 1.0, "cancel_deadline_seconds": 0.1, "process_termination_grace_seconds": 0.1},
+            job_context=None, cancel_event=None, _launch_process=cast(Any, lambda *a, **k: fake), _timeout_probe=probe,
+        )
+        self.assertTrue(res.process_timed_out)
+        self.assertIn("terminate", fake.actions)
+        self.assertTrue(res.process_group_cleaned)
 
     def test_service_endpoints_resilience(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

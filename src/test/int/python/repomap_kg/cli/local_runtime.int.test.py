@@ -9,6 +9,7 @@ from repomap_test_support.cli_integration import (
 )
 
 from repomap_kg.runtime.local import LocalRuntimeIdentity
+from repomap_kg.runtime.plan import LocalContainerStatus
 
 
 class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
@@ -57,16 +58,16 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             home = Path(tmpdir) / "repo-map-home"
             runtime = home / "runtime"
             runtime.mkdir(parents=True)
-            (home / "repomap.rpl.toml").write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
-            (runtime / ".env").write_text(
-                "POSTGRES_PASSWORD=fake-existing-secret\n"
-                "REPOMAP_PG_PASSWORD=fake-existing-secret\n",
-                encoding="utf-8",
-            )
+            home.chmod(0o700)
+            runtime.chmod(0o700)
+            config_file = home / "repomap.rpl.toml"
+            config_file.write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
+            config_file.chmod(0o600)
+            env_file = runtime / ".env"
+            env_file.write_text("POSTGRES_PASSWORD=fake-existing-secret\nREPOMAP_PG_PASSWORD=fake-existing-secret\n", encoding="utf-8")
+            env_file.chmod(0o600)
 
-            exit_code, stdout, stderr = self.run_module_entrypoint(
-                "local", "setup", "--repo-map-home", str(home), "--json",
-            )
+            exit_code, stdout, stderr = self.run_module_entrypoint("local", "setup", "--repo-map-home", str(home), "--json")
 
         self.assertEqual(exit_code, 0, stderr)
         payload = json.loads(stdout)
@@ -145,6 +146,7 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             with (
                 patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
                 patch("repomap_kg.runtime.local.subprocess.run") as run_mock,
+                patch("repomap_kg.runtime.local.inspect_container", return_value=LocalContainerStatus("postgres", "postgres", postgres_host_binding_valid=True)),
             ):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "up", "--repo-map-home", str(home), "--json",
@@ -158,9 +160,10 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
         self.assertFalse(payload["graph_roots_read"])
         self.assertFalse(payload["server_memory_read"])
         self.assertNotIn("planned_command", payload)
-        command = run_mock.call_args.args[0]
+        command = run_mock.call_args_list[0].args[0]
         self.assertIn("compose", command)
         self.assertIn("--project-name", command)
+        self.assertIn("--remove-orphans", command)
         self.assertNotIn("psql", command)
 
     def test_local_down_non_dry_run_preserves_persistent_volume(self):
@@ -184,8 +187,9 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
         self.assertEqual(payload["result"], "stopped")
         self.assertFalse(payload["persistent_volume_deleted"])
         self.assertNotIn("planned_command", payload)
-        command = run_mock.call_args.args[0]
+        command = run_mock.call_args_list[0].args[0]
         self.assertIn("down", command)
+        self.assertIn("--remove-orphans", command)
         self.assertNotIn("-v", command)
 
     def test_local_status_reports_not_running_without_reading_private_roots(self):
@@ -227,10 +231,14 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
                 def read(self): return b'{"status":"ok","service":"repomap"}'
 
             def fake_run(command, **kwargs):
+                if command == ["docker", "ps", "-aq", "--filter",
+                               f"label=com.docker.compose.project={LocalRuntimeIdentity.from_home(home).project_name}",
+                               "--filter", "label=com.docker.compose.service=coordinator"]:
+                    return type("Completed", (), {"returncode": 0, "stdout": "", "stderr": ""})()
                 if command[:2] == ["docker", "inspect"]:
-                    component = "server" if "server" in command[-1] else "postgres"
+                    component = "http" if "server" in command[-1] else "postgres"
                     labels = {"org.repomap.runtime": "true", "org.repomap.home_hash": home_hash, "org.repomap.component": component}
-                    inspect_body = json.dumps([{"Config": {"Labels": labels}, "State": {"Status": "running", "ExitCode": 0, "Health": {"Status": "healthy"}}}])
+                    inspect_body = json.dumps([{"Config": {"Labels": labels}, "State": {"Status": "running", "ExitCode": 0, "Health": {"Status": "healthy"}}, "NetworkSettings": {"Ports": {"5432/tcp": None}}}])
                     return type("Completed", (), {"returncode": 0, "stdout": inspect_body, "stderr": ""})()
                 raise AssertionError(command)
 
@@ -278,13 +286,13 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             self.assertEqual(up_exit, 0, up_stderr)
             payload = json.loads(up_stdout)
             self.assertTrue(payload["runtime"]["direct_db_host_port_enabled"])
-            self.assertTrue(payload["runtime"]["postgres_host_port_published"])
+            self.assertFalse(payload["runtime"]["postgres_host_port_published"])
             self.assertTrue(payload["dbeaver"]["enabled"])
             self.assertEqual(payload["dbeaver"]["host"], "127.0.0.1")
             self.assertEqual(payload["dbeaver"]["port"], 55432)
             self.assertEqual(payload["dbeaver"]["password"], "[REDACTED: see runtime/.env]")
             compose_text = (home / "runtime" / "compose.yaml").read_text(encoding="utf-8")
-            self.assertIn("127.0.0.1:55432:5432", compose_text)
+            self.assertNotIn("127.0.0.1:55432:5432", compose_text)
         self.assertEqual(up_stderr, "")
 
     def test_local_status_check_containers_reports_missing_runtime_safely(self):

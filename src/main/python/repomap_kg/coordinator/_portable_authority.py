@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import errno
 import os
 from pathlib import Path
+import stat
 import sys
 import sysconfig
 from typing import Iterable
@@ -27,7 +29,6 @@ _DENIED_IMPORT_PREFIXES = (
 )
 _DENIED_EVENTS = (
     "socket.",
-    "subprocess.",
     "os.exec",
     "os.posix_spawn",
     "os.spawn",
@@ -73,6 +74,7 @@ def install_portable_authority_guard(
             )
         )
     )
+    resolved_code_roots = tuple(dict.fromkeys(path.resolve() for path in code_roots))
     store_root = store_root.resolve()
     write_roots = (
         store_root / "objects",
@@ -83,10 +85,38 @@ def install_portable_authority_guard(
 
     def guard(event: str, args: tuple[object, ...]) -> None:
         _validate_audit_event(
-            event, args, read_roots, write_roots, exact_mkdir_roots
+            event, args, read_roots, write_roots, exact_mkdir_roots, resolved_code_roots
         )
 
     sys.addaudithook(guard)
+
+
+def _is_approved_go_helper(
+    args: tuple[object, ...], code_roots: tuple[Path, ...]
+) -> bool:
+    if not args:
+        return False
+    raw_exe = args[0]
+    if raw_exe is None and len(args) > 1:
+        argv = args[1]
+        raw_exe = argv[0] if isinstance(argv, (list, tuple)) and argv else None
+    if not isinstance(raw_exe, (str, bytes, os.PathLike)):
+        return False
+    try:
+        candidate = Path(os.fsdecode(raw_exe)).resolve()
+    except (TypeError, ValueError):
+        return False
+    if candidate.name not in {"repomap-go-extract", "repomap-go-extract.exe"}:
+        return False
+    if any(candidate == root or candidate.is_relative_to(root) for root in code_roots):
+        return True
+    helper_env = os.environ.get("REPOMAP_GO_HELPER")
+    if helper_env:
+        try:
+            return candidate == Path(helper_env).resolve()
+        except (TypeError, ValueError):
+            pass
+    return False
 
 
 def _validate_audit_event(
@@ -95,11 +125,19 @@ def _validate_audit_event(
     read_roots: tuple[Path, ...],
     write_roots: tuple[Path, ...],
     exact_mkdir_roots: tuple[Path, ...] = (),
+    code_roots: tuple[Path, ...] = (),
 ) -> None:
     if event == "import" and args and isinstance(args[0], str):
         if args[0].startswith(_DENIED_IMPORT_PREFIXES):
             raise PermissionError("portable worker import authority denied")
+    if (
+        event in {"os.posix_spawn", "os.posix_spawnp", "subprocess.Popen"}
+        and _is_approved_go_helper(args, code_roots)
+    ):
+        return
     if event.startswith(_DENIED_EVENTS):
+        raise PermissionError("portable worker runtime authority denied")
+    if event.startswith("subprocess."):
         raise PermissionError("portable worker runtime authority denied")
     if event == "open":
         _validate_open(args, read_roots, write_roots)
@@ -159,6 +197,36 @@ def _validate_audit_event(
         _require_allowed(destination, write_roots)
 
 
+def _is_anonymous_pipe(fd: int) -> bool:
+    if not isinstance(fd, int) or isinstance(fd, bool) or fd < 0:
+        return False
+    try:
+        st = os.fstat(fd)
+    except OSError:
+        return False
+    if not stat.S_ISFIFO(st.st_mode):
+        return False
+    proc_fd = Path(f"/proc/self/fd/{fd}")
+    try:
+        target = os.readlink(proc_fd)
+        return target.startswith("pipe:[") and target.endswith("]")
+    except (OSError, ValueError):
+        pass
+    if fcntl is not None and hasattr(fcntl, "F_GETPATH"):
+        try:
+            # Darwin kernel invariant: F_GETPATH on anonymous pipes raises EBADF
+            # and st_nlink == 0; named filesystem FIFOs resolve to a path and have st_nlink >= 1.
+            encoded = fcntl.fcntl(fd, fcntl.F_GETPATH, b"\0" * 1024)
+            decoded = os.fsdecode(encoded.split(b"\0", 1)[0])
+            if decoded:
+                return False
+        except OSError as exc:
+            if exc.errno == errno.EBADF and st.st_nlink == 0:
+                return True
+        return False
+    return False
+
+
 def _validate_open(
     args: tuple[object, ...],
     read_roots: tuple[Path, ...],
@@ -166,11 +234,17 @@ def _validate_open(
 ) -> None:
     if not args:
         raise PermissionError("portable worker filesystem authority denied")
-    path = (
-        _descriptor_path(args[0])
-        if isinstance(args[0], int) and not isinstance(args[0], bool)
-        else _normalized_path(args[0], None)
-    )
+    target = args[0]
+    if isinstance(target, int) and not isinstance(target, bool):
+        if target < 0:
+            raise PermissionError("portable worker filesystem authority denied")
+        # Anonymous pipe descriptors (e.g. from approved subprocess pipes) have no filesystem
+        # backing path and cannot access files outside roots; named FIFOs remain bounded by roots.
+        if _is_anonymous_pipe(target):
+            return
+        path = _descriptor_path(target)
+    else:
+        path = _normalized_path(target, None)
     mode = args[1] if len(args) > 1 else "r"
     flags = args[2] if len(args) > 2 else 0
     writing = (
@@ -224,6 +298,20 @@ def _descriptor_path(raw: object) -> Path:
             pass
     for prefix in ("/proc/self/fd", "/dev/fd"):
         candidate = Path(prefix) / str(raw)
+        try:
+            target = os.readlink(candidate)
+        except OSError:
+            try:
+                resolved = Path(os.path.realpath(candidate))
+            except OSError:
+                continue
+            if resolved != candidate and resolved.is_absolute():
+                return resolved
+            continue
+        if target.startswith(("pipe:[", "socket:[")):
+            continue
+        if os.path.isabs(target):
+            return Path(target)
         try:
             resolved = Path(os.path.realpath(candidate))
         except OSError:

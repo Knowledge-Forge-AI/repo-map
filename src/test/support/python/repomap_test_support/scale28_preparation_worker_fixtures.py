@@ -11,6 +11,7 @@ import sys
 import time
 
 from scale28_preparation_values import ResourceBaseline
+from runner_coverage_execution import prepare_child_coverage_environment
 
 
 @dataclass(slots=True)
@@ -84,6 +85,7 @@ def exit_with_synthetic_descendant(specification) -> None:
         ],
         close_fds=True,
         stdout=subprocess.PIPE,
+        env=prepare_child_coverage_environment(family="unmeasured"),
     )
     assert descendant.stdout is not None
     ready = descendant.stdout.readline().decode("ascii").strip()

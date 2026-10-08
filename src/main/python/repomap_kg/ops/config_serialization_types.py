@@ -72,6 +72,9 @@ class OpsRuntimeConfigProtocol(Protocol):
     """Protocol for runtime configuration projection."""
 
     @property
+    def coordinator_mode(self) -> str: ...
+
+    @property
     def container_runtime(self) -> str | None: ...
 
     @property

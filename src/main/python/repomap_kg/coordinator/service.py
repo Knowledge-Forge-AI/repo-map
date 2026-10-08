@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from itertools import islice
 import os
 from pathlib import Path
+import re
 import secrets
 import threading
 
@@ -30,7 +32,7 @@ from repomap_kg.coordinator.transport import (
     UnixSocketService,
 )
 
-_HEALTH_SCHEMA_VERSION = 1
+_HEALTH_SCHEMA_VERSION = 2
 
 
 def default_transport_factory(platform_name: str | None = None) -> TransportFactory:
@@ -285,6 +287,7 @@ class CoordinatorService(ServiceHandlersMixin):
                     else "stopped"
                 },
                 "storage": {"status": storage_status},
+                "recovery_diagnostics": self._bounded_recovery_diagnostics(),
             }
             if self._desired_reconciler is not None:
                 try:
@@ -294,6 +297,34 @@ class CoordinatorService(ServiceHandlersMixin):
             else:
                 payload["polling"] = {"status": "not_configured"}
             return payload
+
+    def _bounded_recovery_diagnostics(self) -> list[dict[str, object]]:
+        raw = getattr(self._coordinator, "recovery_diagnostics", ())
+        result: list[dict[str, object]] = []
+        for item in islice(raw, 32):
+            seq = getattr(item, "sequence", None)
+            cat = getattr(item, "category", None) or getattr(item, "error_type", None)
+            summary = getattr(item, "summary", None) or getattr(item, "error_type", None)
+            if (
+                isinstance(seq, int)
+                and not isinstance(seq, bool)
+                and seq >= 0
+                and isinstance(cat, str)
+                and isinstance(summary, str)
+                and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", cat) is not None
+                and re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]{0,63}", summary) is not None
+            ):
+                result.append({
+                    "category": cat,
+                    "summary": summary,
+                    "sequence": seq,
+                })
+        return result
+
+    def acknowledge_recovery_diagnostics(self, through_sequence: int) -> None:
+        ack = getattr(self._coordinator, "acknowledge_recovery_diagnostics", None)
+        if ack is not None:
+            ack(through_sequence)
 
     def _run_claims(self) -> None:
         try:

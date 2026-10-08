@@ -7,6 +7,10 @@ from dataclasses import replace
 from collections.abc import Callable
 from types import ModuleType
 
+from repomap_kg.cli.storage_readback_edge_commands import (
+    _storage_readback_connection,
+)
+
 __all__ = ("dispatch_storage_edge_explanation_command",)
 
 
@@ -29,9 +33,11 @@ def dispatch_storage_edge_explanation_command(
             args.evidence_limit,
             args.evidence_offset,
         )
+        psql_args, password, root_path, identity = _storage_readback_connection(args, commands)
         record = commands.query_canonical_edge_explanation(
-            commands.psql_args_from_args(args),
-            root_path=args.root_path,
+            psql_args,
+            root_path=root_path,
+            **({"repository_identity": identity} if identity is not None else {}),
             source_key=args.source_key,
             kind=args.kind,
             target_key=args.target_key,
@@ -40,6 +46,7 @@ def dispatch_storage_edge_explanation_command(
             evidence_limit=evidence_limit + 1,
             evidence_offset=evidence_offset,
             psql_command=args.psql_command,
+            **({"password": password} if password is not None else {}),
         )
         evidence_page = commands.public_read_page(
             record.evidence,

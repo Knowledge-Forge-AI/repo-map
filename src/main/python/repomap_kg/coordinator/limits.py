@@ -3,6 +3,48 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, fields
+import math
+import time
+
+
+SUBMIT_ADMISSION_CEILING_SECONDS = 300.0
+SUBMIT_RESPONSE_SLACK_SECONDS = 1.0
+
+
+class AdmissionTimeout(ValueError):
+    """The current admission attempt must roll back without durable mutation."""
+
+
+def valid_admission_number(value: object) -> bool:
+    return (isinstance(value, (int, float)) and not isinstance(value, bool)
+            and abs(value) < 10**12 and math.isfinite(value))
+
+
+@dataclass(frozen=True)
+class AdmissionDeadline:
+    """Transient wall expiration plus a non-extending monotonic budget."""
+
+    expires_at: float
+    monotonic_end: float
+
+    @classmethod
+    def from_wire(cls, value: object) -> AdmissionDeadline:
+        if not valid_admission_number(value):
+            raise ValueError("invalid admission deadline")
+        assert isinstance(value, (int, float))
+        expiration = float(value)
+        remaining = expiration - time.time()
+        if remaining > SUBMIT_ADMISSION_CEILING_SECONDS:
+            raise ValueError("invalid admission deadline")
+        deadline = cls(expiration, time.monotonic() + remaining)
+        deadline.remaining()
+        return deadline
+
+    def remaining(self) -> float:
+        remaining = min(self.expires_at - time.time(), self.monotonic_end - time.monotonic())
+        if remaining <= 0:
+            raise AdmissionTimeout("admission_timeout")
+        return remaining
 
 
 def _is_positive_int(value: object) -> bool:
@@ -39,7 +81,8 @@ class CoordinatorLimits:
     graph_lease_duration_seconds: int = 60
     lease_renewal_interval_seconds: int = 10
     cancel_deadline_seconds: int = 10
-    process_deadline_seconds: int = 60
+    process_deadline_seconds: int = 600
+    refresh_attempt_deadline_seconds: int = 3600
     max_retry_attempts: int = 3
     max_retry_backoff_seconds: int = 300
     terminal_retention_seconds: int = 7 * 24 * 60 * 60
@@ -99,6 +142,10 @@ class CoordinatorLimits:
                 self.process_deadline_seconds >= self.cancel_deadline_seconds,
                 "process deadline cannot be below the cancel deadline",
             ),
+            (
+                self.refresh_attempt_deadline_seconds > self.process_deadline_seconds,
+                "refresh attempt deadline must be greater than the process deadline",
+            ),
         )
         for valid, message in relationships:
             if not valid:
@@ -122,7 +169,8 @@ HARD_MAX_LIMITS = CoordinatorLimits(
     graph_lease_duration_seconds=600,
     lease_renewal_interval_seconds=60,
     cancel_deadline_seconds=120,
-    process_deadline_seconds=600,
+    process_deadline_seconds=3600,
+    refresh_attempt_deadline_seconds=86400,
     max_retry_attempts=10,
     max_retry_backoff_seconds=3600,
     terminal_retention_seconds=90 * 24 * 60 * 60,

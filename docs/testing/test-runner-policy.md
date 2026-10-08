@@ -151,12 +151,14 @@ Install the test and SCALE operational-tooling extras before running the
 pytest-backed runner in a fresh environment:
 
 ```sh
-python3 -m pip install -e '.[test,scale-tools,static-analysis]'
+python3 -m pip install -e '.[test,scale-tools,static-analysis,postgres]'
 ```
 
 The `scale-tools` group owns the exact-pinned psutil and Docker SDK
 dependencies used by repository operational sampling; neither is a shipped
-`repomap_kg` dependency.
+`repomap_kg` dependency. The `postgres` extra supplies Psycopg, which test
+collection imports. It is the PostgreSQL Server Engine extra, not a base
+dependency.
 
 The public complete-population commands remain available for pipeline-owned
 qualification and explicitly authorized local diagnostics. With no selector

@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 from typing import Any
 from uuid import uuid4
 
@@ -17,6 +18,7 @@ from runner_integration_population import LegPartitionPytestPlugin
 from runner_coverage import ChildCoverageSession
 from staging_report_contract import (
     SCHEMA, POLICY, digest_partition, execution_succeeded, persist_staging_report,
+    StagingReportValidationError, validate_report,
 )
 from test_report_coverage import CoverageStatus, coverage_diagnostics
 from test_report import TestRecord
@@ -216,6 +218,12 @@ def execute_staging_decision_b(
         report["errors"].append(f"accounting: {type(error).__name__}")
     finally:
         try:
+            try:
+                validate_report(report)
+            except StagingReportValidationError as error:
+                diagnostic = f"report validation: {error}"[:512]
+                report["errors"].append(diagnostic)
+                print(diagnostic, file=sys.stderr)
             persist_staging_report(output, report)
             if args.report:
                 state = report["legs"]["M"]["measurement"]["state"]

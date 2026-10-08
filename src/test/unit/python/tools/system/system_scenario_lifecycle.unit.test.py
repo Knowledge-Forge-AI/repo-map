@@ -68,6 +68,8 @@ def test_durable_evidence_queries_use_their_authoritative_databases(tmp_path: Pa
 
         _control_job_evidence(tmp_path, plan, timer, "job-1")
         control_call = run_compose.call_args
+        from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
+        assert control_call.kwargs["timeout"] == SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
         assert control_call.args[1][control_call.args[1].index("--dbname") + 1] == "repomap_control"
         assert control_call.args[1][-2:] == ["--file", "-"]
         assert "WHERE j.job_id = :'job_id'" in control_call.kwargs["stdin_input"]
@@ -120,13 +122,16 @@ def test_step_2_and_3_coordinator_flow(tmp_path: Path) -> None:
         "job_id": "job-999", "graph_id": "fixture", "state": "claimed", "current_attempt": 1,
         "idempotency_digest": hashlib.sha256(b"sys0-idemp-deadbeef").hexdigest(),
         "coordinator_instance_id": "inst-1", "singleton_fencing_epoch": 10, "graph_lease_fencing_epoch": 20,
+        "source_generation": "sg1:source", "config_generation": "cg1:config",
+        "extractor_generation": "eg1:extractor", "canonicalizer_generation": "kg1:canonicalizer",
     }
     recovered_control = {
         "job_id": "job-999", "graph_id": "fixture", "state": "succeeded", "current_attempt": 2,
         "coordinator_instance_id": "inst-2", "singleton_fencing_epoch": 11, "graph_lease_fencing_epoch": None,
+        "attempt_history": [{"attempt": 1, "publication_state": "not_started", "instance_id": "inst-1", "singleton_epoch": 10}],
     }
     authority = {
-        "job_id": "job-999", "attempt": 2, "coordinator_instance_id": "inst-2",
+        "repository_id": 1, "job_id": "job-999", "attempt": 2, "coordinator_instance_id": "inst-2",
         "singleton_fencing_epoch": 11, "graph_lease_fencing_epoch": 21, "latest_run_id": 42,
         "execution_route": "portable-worker-v1", "snapshot_manifest_id": "snapmanifest1:" + "1" * 64,
         "extraction_receipt_id": "receipt1:" + "2" * 64, "publication_bundle_id": "bundle1:" + "3" * 64,
@@ -150,8 +155,13 @@ def test_step_2_and_3_coordinator_flow(tmp_path: Path) -> None:
 
         def compose_side_effect(compose_dir, args, *a, **kw):
             res = MagicMock(returncode=0, stdout="")
-            if "cat" in args and "/tmp/system_pause_trigger.ready" in args:
-                res.stdout = "job_id=job-999\nattempt=1\n"
+            if "execute_final_transaction(connection, handoff)" in kw.get("stdin_input", ""):
+                res.returncode = 1
+                res.stderr = "SCALE5 stale publication fence"
+            if "FROM graph_publication_authority AS gpa" in kw.get("stdin_input", ""):
+                res.stdout = json.dumps({**authority, "files_count": 1, "runs_count": 1})
+            elif any("system_pause_trigger.ready" in str(arg) for arg in args):
+                res.stdout = 'job_id=job-999\nattempt=1\nhandoff={"repository_id":1,"stage_id":"stage-old","run_id":1,"receipt":{"publication_job_id":"job-999","publication_attempt":1}}\n'
             elif "coordinator-job-status" in args:
                 state, attempt = ("succeeded", 2) if mock_replacement_readiness.called else ("claimed", 1)
                 res.stdout = json.dumps({"job": {"job_id": "job-999", "graph_id": "fixture", "state": state, "attempt_count": attempt}})
@@ -187,6 +197,8 @@ def test_step_2_and_3_coordinator_flow(tmp_path: Path) -> None:
         assert evidence["attempt_2"] == 2
         assert evidence["replacement_ready_instance_id"] == "inst-2"
         assert evidence["replacement_ready_singleton_fencing_epoch"] == 11
+        assert evidence["orphan_publication_fence_rejected"] is True
+        assert evidence["prior_attempt_reconciliation"]["publication_state"] == "not_started"
         readiness_args, readiness_kwargs = mock_replacement_readiness.call_args
         assert readiness_args == (tmp_path, plan, timer)
         assert readiness_kwargs["initial_instance_id"] == "inst-1"
@@ -252,3 +264,117 @@ def test_execute_all_scenarios_failure_duration(tmp_path: Path) -> None:
     assert results[0].duration_seconds >= 0.0
     assert results[1].status == "not_run"
 
+
+def test_marker_consumer_observes_marker_before_producer_timeout(tmp_path: Path) -> None:
+    from tools.system.scenario_publication import _wait_for_marker
+    timer = MonotonicTimer(total_budget_seconds=100.0, cleanup_reserve_seconds=20.0)
+    mock_compose = MagicMock(returncode=0, stdout="job_id=job-obs-1\nattempt=1\n")
+    runner = MagicMock(return_value=mock_compose)
+
+    job_id, attempt, handoff = _wait_for_marker(tmp_path, {}, timer, runner)
+    assert job_id == "job-obs-1"
+    assert attempt == 1
+    assert handoff == {}
+    assert runner.call_count == 1
+    call_kwargs = runner.call_args.kwargs
+    from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+    assert call_kwargs["timeout"] == SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+
+
+def test_missing_marker_times_out_before_producer_window_closes(tmp_path: Path) -> None:
+    from tools.system.scenario_publication import _wait_for_marker
+    timer = MonotonicTimer(total_budget_seconds=100.0, cleanup_reserve_seconds=20.0)
+    mock_compose = MagicMock(returncode=1, stdout="")
+    runner = MagicMock(return_value=mock_compose)
+
+    job_id, attempt, handoff = _wait_for_marker(tmp_path, {}, timer, runner)
+    assert job_id == ""
+    assert attempt is None
+    assert handoff == {}
+    from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+    call_kwargs = runner.call_args.kwargs
+    assert call_kwargs.get("timeout", 0.0) <= SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+
+
+def test_pause_window_contract_invariants() -> None:
+    from repomap_kg.runtime import system_test_pause as bounds
+    bounds.validate_pause_window_contract()
+    protected = (bounds.SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+                 + bounds.SYSTEM_TEST_STATUS_TIMEOUT_SECONDS
+                 + bounds.SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
+                 + 2 * bounds.SYSTEM_TEST_SUBMISSION_REAP_TIMEOUT_SECONDS
+                 + bounds.SYSTEM_TEST_INTERRUPTION_TIMEOUT_SECONDS
+                 + bounds.SYSTEM_TEST_PAUSE_SAFETY_MARGIN_SECONDS)
+    assert protected < bounds.SYSTEM_TEST_PRODUCER_PAUSE_SECONDS
+    for field in ("status_timeout", "control_readback_timeout", "submission_reap_timeout", "interruption_timeout"):
+        with pytest.raises(ValueError, match="Total window budget"):
+            bounds.validate_pause_window_contract(**{field: bounds.SYSTEM_TEST_PRODUCER_PAUSE_SECONDS})
+    with pytest.raises(ValueError, match="Total window budget"):
+        bounds.validate_pause_window_contract(producer_pause=protected)
+    with pytest.raises(ValueError, match="execution timeout must exceed"):
+        bounds.validate_pause_window_contract(consumer_deadline=25, consumer_exec_timeout=25)
+
+
+def test_pause_contract_refuses_before_launching_scenario(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from tools.system import scenario_publication
+
+    from repomap_kg.runtime import system_test_pause
+    monkeypatch.setattr(system_test_pause, "SYSTEM_TEST_PRODUCER_PAUSE_SECONDS", 1.0)
+    runner, popen = MagicMock(), MagicMock()
+    timer = MonotonicTimer(total_budget_seconds=100.0, cleanup_reserve_seconds=20.0)
+    with pytest.raises(ValueError, match="Total window budget"):
+        scenario_publication.step_2_durable_coordinator_execution(
+            tmp_path, tmp_path, MagicMock(), timer, run_compose=runner,
+            load_plan_env=MagicMock(), control_job_evidence=MagicMock(),
+            token_hex=MagicMock(), popen=popen,
+        )
+    runner.assert_not_called()
+    popen.assert_not_called()
+
+
+def test_producer_refuses_invalid_pause_contract_before_readiness(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from types import SimpleNamespace
+    from repomap_kg.coordinator import _refresh_execution
+
+    tmp_path.chmod(0o700)
+    trigger = tmp_path / "pause"
+    trigger.write_text("pause")
+    monkeypatch.setenv("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", str(trigger))
+    from repomap_kg.runtime import system_test_pause
+    monkeypatch.setattr(system_test_pause, "SYSTEM_TEST_PRODUCER_PAUSE_SECONDS", 1.0)
+    with pytest.raises(ValueError, match="Total window budget"):
+        _refresh_execution._run_system_test_pause(SimpleNamespace(job_id="job-1", attempt=1))
+    assert not Path(f"{trigger}.ready").exists()
+
+
+def test_exact_job_id_attempt_parsing_and_durable_row_fence_matching(tmp_path: Path) -> None:
+    from tools.system.scenario_publication import _wait_for_marker
+    timer = MonotonicTimer(total_budget_seconds=100.0, cleanup_reserve_seconds=20.0)
+
+    bad_marker = MagicMock(returncode=0, stdout="job_id=job-1\nattempt=not-an-int\n")
+    with pytest.raises(SystemTestError, match="invalid attempt"):
+        _wait_for_marker(tmp_path, {}, timer, MagicMock(return_value=bad_marker))
+
+    plan = MagicMock()
+    plan.env_file.exists.return_value = False
+    mismatched_control = {
+        "job_id": "job-999", "graph_id": "fixture", "state": "failed", "current_attempt": 1,
+        "idempotency_digest": hashlib.sha256(b"sys0-idemp-deadbeef").hexdigest(),
+    }
+    with patch("subprocess.Popen") as mock_popen, \
+         patch("tools.system.scenario._run_compose") as mock_compose, \
+         patch("tools.system.scenario.secrets.token_hex", return_value="deadbeef"), \
+         patch("tools.system.scenario._control_job_evidence", return_value=mismatched_control):
+        proc = MagicMock()
+        proc.poll.side_effect = [None, None, -15]
+        mock_popen.return_value = proc
+        def compose_side_effect(compose_dir, args, *a, **kw):
+            res = MagicMock(returncode=0, stdout="")
+            if any("system_pause_trigger.ready" in str(arg) for arg in args):
+                res.stdout = 'job_id=job-999\nattempt=1\nhandoff={"repository_id":1,"stage_id":"stage-old","run_id":1,"receipt":{"publication_job_id":"job-999","publication_attempt":1}}\n'
+            elif "coordinator-job-status" in args:
+                res.stdout = json.dumps({"job": {"job_id": "job-999", "graph_id": "fixture", "state": "claimed", "attempt_count": 1}})
+            return res
+        mock_compose.side_effect = compose_side_effect
+        with pytest.raises(SystemTestError, match="durable coordinator row did not match"):
+            step_2_durable_coordinator_execution(tmp_path, tmp_path / "home", plan, timer)

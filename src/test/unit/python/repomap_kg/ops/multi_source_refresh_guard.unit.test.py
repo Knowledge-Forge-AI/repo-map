@@ -1,10 +1,8 @@
 from pathlib import Path
 import shutil
 from types import SimpleNamespace
-from unittest.mock import patch
-
 from typing import TYPE_CHECKING, cast
-
+from unittest.mock import patch
 import pytest
 
 if TYPE_CHECKING:
@@ -24,8 +22,7 @@ from repomap_kg.server.ops import graph_context
 
 def _config_text(first_root: Path, second_root: Path) -> str:
     def binding(alias: str, root: Path) -> str:
-        return f"""
-[[graphs.source_bindings]]
+        return f"""[[graphs.source_bindings]]
 schema_version = 1
 binding_id = "{graph_source_binding_id('fixture-graph', alias)}"
 source_definition_id = "src1:{alias}"
@@ -42,19 +39,16 @@ resolution_policy = "isolated"
 """
 
     return f"""schema_version = 1
-
 [service]
 mode = "local"
 mcp_transport = "stdio"
 log_level = "info"
-
 [postgres]
 host = "127.0.0.1"
 port = 5432
 database = "repomap_fixture"
 user = "fixture"
 password_file = "fixture-password"
-
 [[graphs]]
 id = "fixture-graph"
 name = "Fixture Graph"
@@ -63,7 +57,6 @@ mcp_visible = true
 refresh_policy = "manual"
 {binding('root', first_root)}
 {binding('security', second_root)}
-
 [server_memory]
 enabled = false
 path = "disabled"
@@ -85,6 +78,14 @@ def _config(tmp_path: Path):
     path.write_text(_config_text(first, second), encoding="utf-8")
     path.chmod(0o600)
     return path, load_ops_config(path)
+
+
+def _resolver(tmp_path: Path):
+    path, config = _config(tmp_path)
+    psql = tmp_path / "psql"
+    psql.write_text("fixture", encoding="utf-8")
+    psql.chmod(0o700)
+    return ConfiguredRefreshResolver(path, psql), path, config
 
 
 def _request() -> dict[str, object]:
@@ -112,6 +113,11 @@ def test_direct_refresh_captures_all_bindings_before_one_database_call(tmp_path)
     discover.assert_not_called()
     publish.assert_called_once()
     assert result.result == "success"
+    # Status reads select the stored row by this configured name (the multi-source display token).
+    graph = config.graphs[0]
+    assert publish.call_args.kwargs["repository_name"] == graph.repository_name == "[multi-source]"
+    assert publish.call_args.kwargs["root_path"] == "graph:fixture-graph"
+    assert publish.call_args.kwargs["repository_identity"] == "repo1:fixture-graph"
     bundle = publish.call_args.args[1]
     raw_obs = bundle.families["raw_observations"]
     assert {
@@ -146,12 +152,35 @@ def test_preflight_and_refresh_enabled_use_complete_public_safe_capture(tmp_path
     assert payload["config_path"] == config.config_path
 
 
+def test_fractional_config_metadata_publishes_portably(tmp_path):
+    """Finite fractions cross the real worker boundary without value loss."""
+    _, config = _config(tmp_path)
+    (tmp_path / "private-first/settings.json").write_text(
+        '{"ratio": 1.25}\n', encoding="utf-8"
+    )
+    assert preflight_graph(config, "fixture-graph").result == "success"
+    with patch(
+        "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+        return_value=SimpleNamespace(repository_id=1, run_id=2, files=3),
+    ) as publish:
+        result = refresh_graph(config, "fixture-graph")
+    assert result.result == "success"
+    assert result.publication_state == "committed"
+    publish.assert_called_once()
+    bundle = publish.call_args.args[1]
+    summaries = [
+        row["payload_json"]["metadata"].get("value_summary")
+        for row in bundle.families["raw_observations"]
+    ]
+    assert {"numeric_type": "binary64", "hex": "0x1.4000000000000p+0"} in summaries
+    assert type(bundle).from_bytes(bundle.canonical_bytes()).canonical_bytes() == bundle.canonical_bytes()
+    payload = refresh_result_to_jsonable(config, (result,), command="refresh")
+    assert "private-first" not in str(payload)
+    assert "private-second" not in str(payload)
+
+
 def test_coordinator_resolution_uses_complete_candidate_generation(tmp_path):
-    path, _ = _config(tmp_path)
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    resolver = ConfiguredRefreshResolver(path, psql)
+    resolver, _, _ = _resolver(tmp_path)
     with patch("repomap_kg.coordinator.configured_refresh._source_token") as source:
         request = resolver.resolve_request(_request())
     source.assert_not_called()
@@ -160,11 +189,7 @@ def test_coordinator_resolution_uses_complete_candidate_generation(tmp_path):
 
 
 def test_coordinator_generation_scan_does_not_capture_semantics(tmp_path):
-    path, _ = _config(tmp_path)
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    resolver = ConfiguredRefreshResolver(path, psql)
+    resolver, _, _ = _resolver(tmp_path)
     with patch(
         "repomap_kg.graph.multi_source_pipeline.capture_multi_source_candidate",
         side_effect=AssertionError("coordinator performed semantic capture"),
@@ -176,20 +201,14 @@ def test_coordinator_generation_scan_does_not_capture_semantics(tmp_path):
 
 
 def test_worker_generation_validation_accepts_same_complete_candidate(tmp_path):
-    path, config = _config(tmp_path)
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    request = ConfiguredRefreshResolver(path, psql).resolve_request(_request())
+    resolver, _, config = _resolver(tmp_path)
+    request = resolver.resolve_request(_request())
     validate_configured_generations(config, cast("GenerationClaim", request))
 
 
 def test_worker_generation_validation_does_not_capture_semantics(tmp_path):
-    path, config = _config(tmp_path)
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    request = ConfiguredRefreshResolver(path, psql).resolve_request(_request())
+    resolver, _, config = _resolver(tmp_path)
+    request = resolver.resolve_request(_request())
     with patch(
         "repomap_kg.graph.multi_source_pipeline.capture_multi_source_candidate",
         side_effect=AssertionError("worker performed semantic capture"),
@@ -199,13 +218,9 @@ def test_worker_generation_validation_does_not_capture_semantics(tmp_path):
 
 
 def test_multi_source_scan_generation_matches_full_capture_inventory(tmp_path):
-    path, config = _config(tmp_path)
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    request = ConfiguredRefreshResolver(path, psql).resolve_request(_request())
+    resolver, _, config = _resolver(tmp_path)
+    request = resolver.resolve_request(_request())
     bundle = capture_multi_source_candidate(config.graphs[0])
-
     assert request.source_generation == source_generation(bundle.observations)
 
 
@@ -216,13 +231,9 @@ def test_multi_source_scan_generation_matches_full_capture_inventory(tmp_path):
 def test_multi_source_config_generation_binds_role_and_input_name(
     tmp_path, field, value
 ):
-    path, _ = _config(tmp_path)
+    resolver, path, _ = _resolver(tmp_path)
     original = path.read_text(encoding="utf-8")
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    baseline = ConfiguredRefreshResolver(path, psql).resolve_request(_request())
-
+    baseline = resolver.resolve_request(_request())
     path.write_text(
         original.replace(
             'alias = "root"\n',
@@ -232,18 +243,14 @@ def test_multi_source_config_generation_binds_role_and_input_name(
         encoding="utf-8",
     )
     path.chmod(0o600)
-    changed = ConfiguredRefreshResolver(path, psql).resolve_request(_request())
-
+    changed = resolver.resolve_request(_request())
     assert changed.config_generation != baseline.config_generation
 
 
 def test_multi_source_config_generation_ignores_physical_runtime_context(tmp_path):
-    path, _ = _config(tmp_path)
+    resolver, path, _ = _resolver(tmp_path)
     original = path.read_text(encoding="utf-8")
-    psql = tmp_path / "psql"
-    psql.write_text("fixture", encoding="utf-8")
-    psql.chmod(0o700)
-    baseline = ConfiguredRefreshResolver(path, psql).resolve_request(_request())
+    baseline = resolver.resolve_request(_request())
 
     relocated_first = tmp_path / "relocated-first"
     relocated_second = tmp_path / "relocated-second"

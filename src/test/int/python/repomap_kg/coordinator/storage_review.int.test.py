@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 from typing import cast
 
 import psycopg
 
 from repomap_kg.coordinator import JobRequest
+from repomap_kg.coordinator.configured_refresh import (
+    ConfiguredRefreshResolver, build_configured_refresh_coordinator,
+)
+from repomap_test_support.test_scratch import short_test_directory
 from repomap_kg.coordinator.limits import DEFAULT_LIMITS
 from repomap_kg.coordinator.storage import (
     ControlSchemaError,
@@ -17,6 +22,94 @@ from src.test.int.python.repomap_kg.coordinator.storage_review_fixtures import (
 
 
 class ControlStoreReviewIntegrationTests(StorageReviewIntegrationBase):
+    def test_configured_source_change_fails_durably_and_replay_keeps_original_identity(self):
+        self.store.initialize_schema()
+        with short_test_directory("r3-config-", "repository/main.py") as directory:
+            root = Path(directory)
+            repository = root / "repository"
+            repository.mkdir()
+            source = repository / "main.py"
+            source.write_text("def first(): return 1\n", encoding="utf-8")
+            config_path = root / "ops.toml"
+            config_text = f'''schema_version = 1
+[service]
+mode = "local"
+mcp_transport = "stdio"
+log_level = "info"
+[postgres]
+host = "{self.postgres.host}"
+port = {self.postgres.port}
+database = "repomap_test"
+user = "{self.postgres.user}"
+[[graphs]]
+id = "configured-review"
+name = "Configured review"
+root_path = "{repository}"
+repository_name = "configured-review"
+privacy = "public-dev"
+enabled = true
+mcp_visible = false
+extractor_profile = "default"
+refresh_policy = "manual"
+[server_memory]
+enabled = false
+path = "disabled"
+mode = "read_only"
+'''
+            config_path.write_text(config_text, encoding="utf-8")
+            resolver = ConfiguredRefreshResolver(
+                config_path, Path(self.postgres.psql_command),
+                postgres_user=self.postgres.user, postgres_password=self.postgres.password,
+            )
+            payload = {
+                "schema_version": 1, "job_kind": "refresh_graph",
+                "graph_id": "configured-review", "request_id": "configured-original",
+                "idempotency_key": "configured-original", "priority": "manual",
+                "operation_options": {"reason": "source-change"},
+            }
+            original = resolver.resolve_request(payload)
+            submitted = self.store.submit(original)
+            source.write_text("def replacement(): return 2\n", encoding="utf-8")
+            changed = resolver.resolve_request({
+                **payload, "request_id": "configured-new", "idempotency_key": "configured-new",
+            })
+            self.assertNotEqual(changed.source_generation, original.source_generation)
+            self.assertEqual(changed.config_generation, original.config_generation)
+            coordinator = build_configured_refresh_coordinator(
+                self.store, "configured-review-owner", resolver, root,
+            )
+            coordinator.startup(lambda: None)
+            try:
+                self.assertEqual(coordinator.run_once(), "failed")
+                status = self.store.status(submitted.job_id)
+                self.assertEqual(
+                    (status.state, status.publication_state, status.error_category, status.attempt),
+                    ("failed", "not_started", "generation_changed", 1),
+                )
+                replay = self.store.submit(original)
+                self.assertTrue(replay.replayed)
+                self.assertEqual((replay.job_id, replay.state), (submitted.job_id, "failed"))
+                successor = self.store.submit(changed)
+                self.assertFalse(successor.replayed)
+                self.assertEqual(coordinator.request_cancel(successor.job_id), "cancelled")
+                self.assertEqual(coordinator.run_once(), "idle")
+                config_path.write_text(config_text.replace("enabled = true", "enabled = false"), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "^configured graph is unavailable$"):
+                    resolver.resolve_request({**payload, "request_id": "disabled-request"})
+                with self._connect() as connection:
+                    rows = connection.execute(
+                        "SELECT state, source_generation, current_attempt FROM jobs ORDER BY submitted_at, job_id"
+                    ).fetchall()
+                    self.assertEqual(rows, [
+                        ("failed", original.source_generation, 1),
+                        ("cancelled", changed.source_generation, 0),
+                    ])
+                    self.assertEqual(connection.execute("SELECT count(*) FROM graph_leases").fetchone(), (0,))
+                    self.assertEqual(connection.execute("SELECT count(*) FROM job_attempts").fetchone(), (1,))
+                self.assertEqual(tuple(root.glob("refresh-*.json")), ())
+            finally:
+                coordinator.shutdown()
+
     def test_submit_requires_revalidated_job_request_and_safe_json(self):
         self.store.initialize_schema()
         valid = self._request()

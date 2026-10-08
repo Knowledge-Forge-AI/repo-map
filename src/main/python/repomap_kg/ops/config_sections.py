@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from repomap_kg.ops.config_helpers import (
     KNOWN_POSTGRES_FIELDS,
@@ -139,6 +139,15 @@ def parse_runtime_section(
         return OpsRuntimeConfig(), diagnostics
     section = require_mapping(payload, "runtime", diagnostics)
     diagnostics.extend(unknown_field_diagnostics(section, KNOWN_RUNTIME_FIELDS, "runtime"))
+    coordinator_mode: Literal["container", "native"] = "container"
+    selected_mode = section.get("coordinator_mode", "container")
+    if selected_mode == "native":
+        coordinator_mode = "native"
+    elif selected_mode != "container":
+        diagnostics.append(OpsConfigDiagnostic(
+            "error", "unsupported-coordinator-mode", "runtime.coordinator_mode",
+            "runtime.coordinator_mode must be container or native",
+        ))
     container_runtime = optional_text(section.get("container_runtime"))
     postgres_host_port = optional_int(section.get("postgres_host_port"))
     server_host_port = optional_int(section.get("server_host_port"))
@@ -222,6 +231,11 @@ def parse_runtime_section(
                 "runtime bind_host must be localhost-only",
             )
         )
+    if direct_host_port_enabled and runtime_postgres_bind_host != "127.0.0.1":
+        diagnostics.append(OpsConfigDiagnostic(
+            "error", "unsupported-runtime-bind-host", "runtime.postgres.bind_host",
+            "direct PostgreSQL exposure requires literal 127.0.0.1",
+        ))
     if runtime_postgres_bind_host not in ("127.0.0.1", "localhost", "::1"):
         diagnostics.append(
             OpsConfigDiagnostic(
@@ -233,6 +247,7 @@ def parse_runtime_section(
         )
     return (
         OpsRuntimeConfig(
+            coordinator_mode=coordinator_mode,
             container_runtime=container_runtime,
             postgres_host_port=postgres_host_port,
             server_host_port=server_host_port,

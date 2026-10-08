@@ -279,6 +279,7 @@ class ReportTestCase(unittest.TestCase):
             {
                 "REPOMAP_TEST_PG_CONTAINER_PORT": "old-port",
                 "REPOMAP_TEST_PG_CONTAINER_RUNTIME": "old-runtime",
+                "REPOMAP_TEST_RUNTIME_IMAGE": "sha256:" + "a" * 64,
             },
             clear=False,
         ):

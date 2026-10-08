@@ -13,7 +13,7 @@ _REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
 def test_scale_tools_extra_has_only_the_selected_exact_pins() -> None:
     metadata = tomllib.loads((_REPOSITORY_ROOT / 'pyproject.toml').read_text(encoding='utf-8'))
     assert metadata['project']['optional-dependencies']['scale-tools'] == ['psutil==7.2.2', 'docker==7.2.0']
-    assert metadata['project']['dependencies'] == ['psycopg[binary]==3.2.12', 'typing-extensions==4.16.0']
+    assert metadata['project']['dependencies'] == ['typing-extensions==4.16.0']
 
 def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
     package_path = Path(repomap_kg.__file__)

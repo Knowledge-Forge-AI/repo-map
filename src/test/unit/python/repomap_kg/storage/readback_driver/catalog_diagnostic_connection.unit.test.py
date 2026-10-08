@@ -100,12 +100,14 @@ def test_psycopg_diagnose_connection_params_and_clean_exit(
         psql_args=["-h", "127.0.0.1", "-p", "5432", "-U", "admin", "-d", "postgres"],
         target_database="target_db",
         timeout_seconds=2.0,
+        password="read-status-secret",
     )
     assert presence == "absent"
     assert captured_kwargs["host"] == "127.0.0.1"
     assert captured_kwargs["port"] == "5432"
     assert captured_kwargs["user"] == "admin"
     assert captured_kwargs["dbname"] == "postgres"
+    assert captured_kwargs["password"] == "read-status-secret"
     assert captured_kwargs["connect_timeout"] == "2"
     assert "-c default_transaction_read_only=on" in captured_kwargs["options"]
     assert "-c statement_timeout=2000" in captured_kwargs["options"]

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime.postgres_route import (
+    readback_postgres_authority,
+)
+
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypedDict
 
 from repomap_kg.ops.config_records import OpsConfig
 from repomap_kg.ops.report_records import OpsPsqlExecution
@@ -18,6 +22,7 @@ from repomap_kg.storage.readback_driver import (
     execute_json_readback_with_driver,
     selected_json_readback_driver,
 )
+from repomap_kg.storage.readback_credentials import psycopg_error_details
 
 OpsJsonReadbackMode = Literal["host_only", "host_then_container"]
 MISSING_DATABASE_MESSAGE = (
@@ -29,6 +34,13 @@ MISSING_DATABASE_MESSAGE = (
 
 class MissingDatabaseReadbackError(StorageSchemaError):
     """The selected server is reachable but the graph database is absent."""
+
+
+_psycopg_error_details = psycopg_error_details
+
+
+class _DiagnosticPasswordKwargs(TypedDict, total=False):
+    password: str | None
 
 
 @dataclass(frozen=True)
@@ -51,7 +63,12 @@ def execute_ops_json_readback(
     if mode not in ("host_only", "host_then_container"):
         raise StorageSchemaError(f"unsupported operational readback mode: {mode}")
 
-    psql_args = config.postgres.psql_args_for_database(database)
+    try:
+        authority = readback_postgres_authority(config)
+    except ValueError as error:
+        raise StorageSchemaError(str(error)) from None
+    psql_args = authority.postgres.psql_args_for_database(database)
+    password_kwargs = {"password": authority.password} if authority.password is not None else {}
     if psql_command is not None:
         try:
             return execute_json_readback_with_driver(
@@ -61,6 +78,7 @@ def execute_ops_json_readback(
                 psql_command=psql_command,
                 label=label,
                 expected_shape=expected_shape,
+                **password_kwargs,
             )
         except (OSError, StorageSchemaError) as error:
             raise _augment_host_error(
@@ -78,6 +96,7 @@ def execute_ops_json_readback(
             psql_command="psql",
             label=label,
             expected_shape=expected_shape,
+            **password_kwargs,
         )
     except (OSError, StorageSchemaError) as error:
         if driver == "psycopg":
@@ -121,10 +140,14 @@ def execute_ops_json_readback(
             return execute_json_readback_with_driver(
                 sql,
                 driver="psql",
-                psql_args=(*container_plan.execution.args_prefix, *psql_args),
+                psql_args=(
+                    *container_plan.execution.args_prefix,
+                    *authority.postgres.psql_args_for_database(database),
+                ),
                 psql_command=container_plan.execution.command,
                 label=label,
                 expected_shape=expected_shape,
+                **password_kwargs,
             )
         except (OSError, StorageSchemaError) as container_error:
             raise _augment_host_error(
@@ -236,20 +259,6 @@ def _psql_error_supports_container_fallback(error: BaseException) -> bool:
             "no such file or directory",
         )
     )
-
-
-def _psycopg_error_details(
-    error: BaseException,
-) -> tuple[str | None, bool]:
-    cause = error.__cause__
-    if cause is None:
-        return None, False
-    sqlstate = getattr(cause, "sqlstate", None)
-    is_operational = (
-        cause.__class__.__name__ == "OperationalError"
-        and cause.__class__.__module__.split(".", maxsplit=1)[0] == "psycopg"
-    )
-    return sqlstate if isinstance(sqlstate, str) else None, is_operational
 
 
 def _host_error_supports_container_fallback(
@@ -365,12 +374,15 @@ def _augment_host_error(
         and config.postgres.host
         and "," not in config.postgres.host
     ):
-        maintenance_args = config.postgres.psql_args_for_database(
+        authority = readback_postgres_authority(config)
+        maintenance_args = authority.postgres.psql_args_for_database(
             str(MAINTENANCE_DATABASE)
         )
+        maintenance_kwargs: _DiagnosticPasswordKwargs = {"password": authority.password} if authority.password is not None else {}
         presence = diagnose_psycopg_database_presence(
             psql_args=maintenance_args,
             target_database=database,
+            **maintenance_kwargs,
         )
         if presence == "absent":
             return _missing_database_error()

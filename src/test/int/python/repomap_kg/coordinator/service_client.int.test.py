@@ -60,7 +60,12 @@ class ServiceStore:
     def __init__(self) -> None:
         self.state = "queued"
 
-    def submit(self, request: JobRequest) -> SubmissionResult:
+    def submit(
+        self,
+        request: JobRequest,
+        *,
+        admission_deadline=None,
+    ) -> SubmissionResult:
         return SubmissionResult(
             job_id=request.request_id,
             state=self.state,
@@ -122,7 +127,7 @@ def _exercise_service_restart(runtime_directory):
     first_client = LocalCoordinatorClient(service.socket_path, service.token_path)
     first_health = first_client.health()
     assert first_health["status"] == "ready"
-    assert first_health["health_schema_version"] == 1
+    assert first_health["health_schema_version"] == 2
     assert first_health["transport"] == {"status": "ready"}
     assert first_client.submit(request()) == {
         "job_id": "job-service-1",
@@ -159,7 +164,7 @@ def _exercise_service_restart(runtime_directory):
         replacement = LocalCoordinatorClient(service.socket_path, service.token_path)
         replacement_health = replacement.health()
         assert replacement_health["status"] == "ready"
-        assert replacement_health["health_schema_version"] == 1
+        assert replacement_health["health_schema_version"] == 2
     finally:
         service.stop()
 

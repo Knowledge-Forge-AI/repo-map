@@ -68,6 +68,7 @@ def runtime_postgres_config_to_jsonable(
 def runtime_config_to_jsonable(config: OpsRuntimeConfig) -> dict[str, Any]:
     return {
         "containerized_target": True,
+        "coordinator_mode": config.coordinator_mode,
         "container_runtime": config.container_runtime,
         "postgres_host_port": config.postgres_host_port,
         "server_host_port": config.server_host_port,

@@ -17,28 +17,13 @@ def sample_claim() -> JobClaim:
 def test_record_publication_marker_new_marker_returns_true(
     sample_claim: JobClaim,
 ) -> None:
-    expected_values = (
-        "job-100",
-        1,
-        "graph-1",
-        "run-1",
-        "sg-1",
-        "cg-1",
-        "eg-1",
-        "kg-1",
-        "succeeded",
-    )
+    expected_values = ("job-100", 1, "graph-1", "run-1", "sg-1", "cg-1", "eg-1", "kg-1", "succeeded")
     cursor = ScriptedCursor(rowcounts=[1])
 
     inserted = maintenance.record_publication_marker(
-        connect_with(cursor),
-        sample_claim,
-        run_identity="run-1",
-        source_generation="sg-1",
-        config_generation="cg-1",
-        extractor_generation="eg-1",
-        canonicalizer_generation="kg-1",
-        outcome="succeeded",
+        connect_with(cursor), sample_claim, run_identity="run-1",
+        source_generation="sg-1", config_generation="cg-1",
+        extractor_generation="eg-1", canonicalizer_generation="kg-1", outcome="succeeded",
     )
 
     assert inserted is True
@@ -54,31 +39,14 @@ def test_record_publication_marker_new_marker_returns_true(
     assert cursor.connection.exits == [(None, None, None)]
 
 
-def test_record_publication_marker_same_marker_returns_false(
-    sample_claim: JobClaim,
-) -> None:
-    expected_values = (
-        "job-100",
-        1,
-        "graph-1",
-        "run-1",
-        "sg-1",
-        "cg-1",
-        "eg-1",
-        "kg-1",
-        "succeeded",
-    )
+def test_record_publication_marker_same_marker_returns_false(sample_claim: JobClaim) -> None:
+    expected_values = ("job-100", 1, "graph-1", "run-1", "sg-1", "cg-1", "eg-1", "kg-1", "succeeded")
     cursor = ScriptedCursor(rowcounts=[0], rows=[expected_values])
 
     inserted = maintenance.record_publication_marker(
-        connect_with(cursor),
-        sample_claim,
-        run_identity="run-1",
-        source_generation="sg-1",
-        config_generation="cg-1",
-        extractor_generation="eg-1",
-        canonicalizer_generation="kg-1",
-        outcome="succeeded",
+        connect_with(cursor), sample_claim, run_identity="run-1",
+        source_generation="sg-1", config_generation="cg-1",
+        extractor_generation="eg-1", canonicalizer_generation="kg-1", outcome="succeeded",
     )
 
     assert inserted is False
@@ -91,32 +59,15 @@ def test_record_publication_marker_same_marker_returns_false(
     assert cursor.connection.closed is True
 
 
-def test_record_publication_marker_conflict_raises_value_error(
-    sample_claim: JobClaim,
-) -> None:
-    conflicting_row = (
-        "job-100",
-        1,
-        "graph-1",
-        "run-CONFLICT",
-        "sg-1",
-        "cg-1",
-        "eg-1",
-        "kg-1",
-        "succeeded",
-    )
+def test_record_publication_marker_conflict_raises_value_error(sample_claim: JobClaim) -> None:
+    conflicting_row = ("job-100", 1, "graph-1", "run-CONFLICT", "sg-1", "cg-1", "eg-1", "kg-1", "succeeded")
     cursor = ScriptedCursor(rowcounts=[0], rows=[conflicting_row])
 
     with pytest.raises(ValueError, match="publication marker conflict"):
         maintenance.record_publication_marker(
-            connect_with(cursor),
-            sample_claim,
-            run_identity="run-1",
-            source_generation="sg-1",
-            config_generation="cg-1",
-            extractor_generation="eg-1",
-            canonicalizer_generation="kg-1",
-            outcome="succeeded",
+            connect_with(cursor), sample_claim, run_identity="run-1",
+            source_generation="sg-1", config_generation="cg-1",
+            extractor_generation="eg-1", canonicalizer_generation="kg-1", outcome="succeeded",
         )
 
     assert len(cursor.executions) == 2
@@ -128,21 +79,14 @@ def test_record_publication_marker_conflict_raises_value_error(
     assert cursor.connection.exits[0][0] is ValueError
 
 
-def test_record_publication_marker_exception_propagation_and_context_exit(
-    sample_claim: JobClaim,
-) -> None:
+def test_record_publication_marker_exception_propagation_and_context_exit(sample_claim: JobClaim) -> None:
     cursor = ScriptedCursor(execute_error=RuntimeError("database offline"))
 
     with pytest.raises(RuntimeError, match="database offline"):
         maintenance.record_publication_marker(
-            connect_with(cursor),
-            sample_claim,
-            run_identity="run-1",
-            source_generation="sg-1",
-            config_generation="cg-1",
-            extractor_generation="eg-1",
-            canonicalizer_generation="kg-1",
-            outcome="succeeded",
+            connect_with(cursor), sample_claim, run_identity="run-1",
+            source_generation="sg-1", config_generation="cg-1",
+            extractor_generation="eg-1", canonicalizer_generation="kg-1", outcome="succeeded",
         )
 
     assert cursor.closed is True
@@ -206,15 +150,11 @@ def test_cleanup_terminal_rejects_nonpositive_limit_before_connect(
 
 def test_cleanup_terminal_accepts_zero_minimum_age() -> None:
     cursor = ScriptedCursor(rows=[])
-
     deleted = maintenance.cleanup_terminal(
-        connect_with(cursor),
-        timedelta(0),
-        limit=5,
-        dry_run=True,
+        connect_with(cursor), timedelta(0), limit=5, dry_run=True,
     )
-
-    assert deleted == ()
+    assert deleted.deleted_job_ids == ()
+    assert deleted.residuals == ()
     assert len(cursor.executions) == 1
     assert cursor.executions[0][1] == (0.0, 5)
     assert cursor.closed is True
@@ -223,15 +163,11 @@ def test_cleanup_terminal_accepts_zero_minimum_age() -> None:
 def test_cleanup_terminal_dry_run_returns_candidate_ids_without_delete() -> None:
     candidate_rows = [("job-10",), ("job-20",), ("job-30",)]
     cursor = ScriptedCursor(rows=candidate_rows)
-
     deleted = maintenance.cleanup_terminal(
-        connect_with(cursor),
-        timedelta(hours=1),
-        limit=10,
-        dry_run=True,
+        connect_with(cursor), timedelta(hours=1), limit=10, dry_run=True,
     )
-
-    assert deleted == ("job-10", "job-20", "job-30")
+    assert deleted.deleted_job_ids == ("job-10", "job-20", "job-30")
+    assert deleted.residuals == ()
     assert len(cursor.executions) == 1
     statement, params = cursor.executions[0]
     assert "SELECT j.job_id FROM jobs AS j" in statement
@@ -251,7 +187,8 @@ def test_cleanup_terminal_empty_candidates_skips_delete() -> None:
         dry_run=False,
     )
 
-    assert deleted == ()
+    assert deleted.deleted_job_ids == ()
+    assert deleted.residuals == ()
     assert len(cursor.executions) == 1
     assert cursor.closed is True
     assert cursor.connection is not None
@@ -269,7 +206,8 @@ def test_cleanup_terminal_bounded_deletion_and_custody_order() -> None:
         dry_run=False,
     )
 
-    assert deleted == selected_ids
+    assert deleted.deleted_job_ids == selected_ids
+    assert deleted.residuals == ()
     assert len(cursor.executions) == 4
 
     # 1. Candidate query with all query constraints
@@ -360,4 +298,95 @@ def test_cleanup_terminal_delete_exception_propagation_and_context_exit() -> Non
     assert cursor.connection is not None
     assert cursor.connection.closed is True
     assert cursor.connection.exits[0][0] is RuntimeError
+
+
+class MultiQueryCursor(ScriptedCursor):
+    def __init__(self, query_results: list[list[object]]) -> None:
+        super().__init__()
+        self._query_results = list(query_results)
+
+    def fetchall(self) -> list[object]:
+        if self._query_results:
+            return self._query_results.pop(0)
+        return []
+
+
+def test_cleanup_terminal_retires_evidence_before_deleting_rows() -> None:
+    retired_claims: list[object] = []
+    cursor = MultiQueryCursor([
+        [("job-1",)],
+        [("job-1", 1, "graph-1", "inst-1", 1, "sg-1", "cg-1", "eg-1", "kg-1")],
+    ])
+    report = maintenance.cleanup_terminal(
+        connect_with(cursor), timedelta(days=1), limit=5, dry_run=False,
+        publication_retirer=retired_claims.append,
+    )
+    assert len(retired_claims) == 1
+    assert getattr(retired_claims[0], "job_id", None) == "job-1"
+    assert getattr(retired_claims[0], "attempt", None) == 1
+    assert report.deleted_job_ids == ("job-1",)
+    assert report.residuals == ()
+    assert report.residual_count == 0
+    assert len(cursor.executions) == 5
+    assert cursor.executions[2][1] == (["job-1"],)
+    assert cursor.executions[3][1] == (["job-1"],)
+    assert cursor.executions[4][1] == (["job-1"],)
+
+
+def test_cleanup_terminal_dry_run_never_invokes_retirer() -> None:
+    def fail_retirer(_claim: object) -> None:
+        raise AssertionError("retirer must not be invoked during dry run")
+
+    cursor = ScriptedCursor(rows=[("job-1",), ("job-2",)])
+    report = maintenance.cleanup_terminal(
+        connect_with(cursor), timedelta(days=1), limit=5, dry_run=True,
+        publication_retirer=fail_retirer,
+    )
+    assert report.deleted_job_ids == ("job-1", "job-2")
+    assert report.residuals == ()
+    assert len(cursor.executions) == 1
+
+
+def test_cleanup_terminal_retirement_failure_preserves_job_records_and_reports_residuals() -> None:
+    def failing_retirer(claim: object) -> None:
+        assert isinstance(claim, JobClaim)
+        raise ValueError("corrupted evidence payload")
+
+    cursor = MultiQueryCursor([
+        [("job-bad",)],
+        [("job-bad", 1, "graph-1", "inst-1", 1, "sg-1", "cg-1", "eg-1", "kg-1")],
+    ])
+    report = maintenance.cleanup_terminal(
+        connect_with(cursor), timedelta(days=1), limit=5, dry_run=False,
+        publication_retirer=failing_retirer,
+    )
+    assert report.deleted_job_ids == ()
+    assert report.residual_count == 1
+    assert report.residuals == ("job-bad:1:validation_error",)
+    assert len(cursor.executions) == 2
+
+
+def test_cleanup_terminal_scans_past_residuals_within_bound_with_limit_one() -> None:
+    def partial_retirer(claim: object) -> None:
+        if getattr(claim, "job_id", "") == "job-unsafe":
+            raise PermissionError("access denied")
+
+    cursor = MultiQueryCursor([
+        [("job-unsafe",), ("job-safe",)],
+        [
+            ("job-unsafe", 1, "graph-1", "inst-1", 1, "sg-1", "cg-1", "eg-1", "kg-1"),
+            ("job-safe", 1, "graph-1", "inst-1", 1, "sg-1", "cg-1", "eg-1", "kg-1"),
+        ],
+    ])
+    report = maintenance.cleanup_terminal(
+        connect_with(cursor), timedelta(days=1), limit=1, dry_run=False,
+        publication_retirer=partial_retirer,
+    )
+    assert report.deleted_job_ids == ("job-safe",)
+    assert report.residual_count == 1
+    assert report.residuals == ("job-unsafe:1:permission_denied",)
+    assert len(cursor.executions) == 5
+    assert cursor.executions[2][1] == (["job-safe"],)
+    assert cursor.executions[3][1] == (["job-safe"],)
+    assert cursor.executions[4][1] == (["job-safe"],)
 

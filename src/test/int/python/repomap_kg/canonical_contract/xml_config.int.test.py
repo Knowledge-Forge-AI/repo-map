@@ -362,7 +362,10 @@ class CanonicalXmlConfigIntegrationTests(unittest.TestCase):
 
         self.assertEqual(scalar_observations[0].metadata["format"], "plist-xml")
         self.assertEqual(paths["/MaxConnections"].metadata["value_summary"], 25)
-        self.assertEqual(paths["/Ratio"].metadata["value_summary"], 1.5)
+        self.assertEqual(
+            paths["/Ratio"].metadata["value_summary"],
+            {"numeric_type": "binary64", "hex": "0x1.8000000000000p+0"},
+        )
         self.assertEqual(paths["/Enabled"].metadata["value_type"], "boolean")
         self.assertEqual(paths["/Enabled"].metadata["value_summary"], True)
         self.assertEqual(paths["/Disabled"].metadata["value_summary"], False)

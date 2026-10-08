@@ -50,7 +50,6 @@ from repomap_test_support.build_profile_debt import (  # noqa: E402
 from repomap_test_support.resource_run_test_support import (  # noqa: E402
     preserve_resource_run_process_state,
 )
-
 # Reuses an inherited REPOMAP_TEST_RUN_ROOT when the runner already allocated
 # one, so a direct pytest invocation under the runner never creates a second
 # run root.
@@ -66,6 +65,31 @@ def isolate_test_resource_run_process_state():
     """Prevent allocating-owner unit seams from poisoning later tests."""
     with preserve_resource_run_process_state():
         yield
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    from repomap_test_support.test_scratch_cleanup import (
+        TestScratchCleanupError, clean_test_node_scratch, record_test_report,
+    )
+
+    outcome = yield
+    rep = outcome.get_result()
+    record_test_report(item, rep)
+    if rep.when == "teardown":
+        try:
+            clean_test_node_scratch(item, layout=_LAYOUT)
+        except TestScratchCleanupError as error:
+            rep.outcome = "failed"
+            rep.longrepr = f"Test scratch cleanup failed for {item.nodeid}: {error}"
+
+
+@pytest.fixture(autouse=True)
+def clean_test_scratch(request):
+    """Restore run-owned environment before the final teardown report."""
+    yield
+    _LAYOUT.apply()
+
 
 
 def pytest_runtest_setup(item):

@@ -69,9 +69,10 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
         )
         self.assert_read_only_payload(payload)
 
-    def test_live_ops3_mcp_graph_status_missing_database_error_is_safe(self):
+    def _live_ops3_graph_status(self, host_error: str) -> tuple[dict, str, list]:
         from repomap_kg.server.mcp import repomap_graph_status
 
+        container_probes: list[str] = []
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "home"
             home.mkdir()
@@ -84,22 +85,20 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
             )
             private_path = str(Path.home() / "private-live-ops3")
 
-            class ContainerStatus:
-                exists = True
-                owned = True
-                status = "running"
-                diagnostic = None
-
             def fake_run_psql(command, **kwargs):
                 if command[0] == "psql":
-                    raise StorageSchemaError(
-                        'could not translate host name "postgres" to address'
-                    )
+                    raise StorageSchemaError(host_error)
                 raise StorageSchemaError(
                     "psql failed: FATAL: database "
                     '"repomap_live_ops3" does not exist '
                     f"while reading {private_path} via docker exec psql"
                 )
+
+            def container_probe(name):
+                def _probe(*args, **kwargs):
+                    container_probes.append(name)
+                    raise AssertionError(f"host-only status reached {name}")
+                return _probe
 
             with (
                 patch.dict(
@@ -122,24 +121,51 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
                     return_value="psql",
                 ),
                 patch(
+                    "repomap_kg.ops.readback._resolve_container_readback_plan",
+                    side_effect=container_probe("container plan"),
+                ),
+                patch(
                     "repomap_kg.ops.readback.shutil.which",
-                    return_value="/usr/bin/docker",
+                    side_effect=container_probe("shutil.which"),
                     create=True,
                 ),
                 patch(
                     "repomap_kg.runtime.local.inspect_container",
-                    return_value=ContainerStatus(),
+                    side_effect=container_probe("inspect_container"),
                     create=True,
                 ),
             ):
                 payload = repomap_graph_status(graph_id="repo-map")
+        return payload, private_path, container_probes
+
+    def test_live_ops3_mcp_graph_status_missing_database_error_is_safe(self):
+        # READSTORE2: graph status is host-only. An unreachable container-internal
+        # host yields the bounded host reason; the container is never probed.
+        payload, private_path, probes = self._live_ops3_graph_status(
+            'could not translate host name "postgres" to address'
+        )
 
         message = payload["storage"]["error"]
-        self.assertIn("graph database is missing or not initialized", message)
+        self.assertIn('could not translate host name "postgres"', message)
+        self.assertNotIn("graph database is missing or not initialized", message)
         self.assertNotIn("no running RepoMap-owned Postgres container", message)
         self.assertNotIn("Postgres container", message)
         self.assertNotIn(private_path, message)
         self.assertNotIn("docker exec", message)
+        self.assertEqual(probes, [])
+        self.assert_read_only_payload(payload)
+
+    def test_live_ops3_mcp_graph_status_host_missing_database_maps_safely(self):
+        payload, private_path, probes = self._live_ops3_graph_status(
+            'psql failed: FATAL: database "repomap_live_ops3" does not exist'
+        )
+
+        message = payload["storage"]["error"]
+        self.assertIn("graph database is missing or not initialized", message)
+        self.assertNotIn("Postgres container", message)
+        self.assertNotIn(private_path, message)
+        self.assertNotIn("docker exec", message)
+        self.assertEqual(probes, [])
         self.assert_read_only_payload(payload)
 
     def test_mcp_smoke3_complete_with_finished_at_has_no_timestamp_warning(self):

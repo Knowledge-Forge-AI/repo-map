@@ -157,3 +157,210 @@ class StorageCanonicalEdgeExplanationIntegrationTests(unittest.TestCase):
             json.loads(missing_stdout)["result"],
             {"edge": None, "evidence": []},
         )
+
+    def test_polyglot_canonicalization_dispatch_and_edge_linking(self) -> None:
+        from repomap_kg.canonicalization.main import canonicalize_observations
+        from repomap_kg.observations.raw import RawObservation
+
+        observations = [
+            RawObservation(
+                kind="file",
+                source_id="src/app.py",
+                path="src/app.py",
+                confidence="manual",
+                extractor="fixture",
+                extractor_version="0.1.0",
+                metadata={"language": "python"},
+            ),
+            RawObservation(
+                kind="python.function",
+                source_id="src/app.py#func:build",
+                path="src/app.py",
+                start_line=1,
+                end_line=5,
+                name="build",
+                target="python.function:app:build",
+                confidence="extracted",
+                extractor="repo-python",
+                extractor_version="0.1.0",
+                metadata={"module": "app", "async": False, "decorators": []},
+            ),
+            RawObservation(
+                kind="python.class",
+                source_id="src/app.py#class:App",
+                path="src/app.py",
+                start_line=6,
+                end_line=20,
+                name="App",
+                target="python.class:app:App",
+                confidence="extracted",
+                extractor="repo-python",
+                extractor_version="0.1.0",
+                metadata={"module": "app", "bases": [], "decorators": []},
+            ),
+            RawObservation(
+                kind="file",
+                source_id="src/runner.rb",
+                path="src/runner.rb",
+                confidence="manual",
+                extractor="fixture",
+                extractor_version="0.1.0",
+                metadata={"language": "ruby"},
+            ),
+            RawObservation(
+                kind="ruby.class",
+                source_id="src/runner.rb#class:Runner",
+                path="src/runner.rb",
+                start_line=1,
+                end_line=10,
+                name="Runner",
+                target="ruby.class:Runner",
+                confidence="extracted",
+                extractor="repo-ruby",
+                extractor_version="0.1.0",
+                metadata={"module": "runner"},
+            ),
+            RawObservation(
+                kind="ruby.method",
+                source_id="src/runner.rb#method:run",
+                path="src/runner.rb",
+                start_line=3,
+                end_line=8,
+                name="run",
+                target="ruby.method:Runner:run",
+                confidence="extracted",
+                extractor="repo-ruby",
+                extractor_version="0.1.0",
+                metadata={"owner": "Runner", "owner_kind": "ruby.class"},
+            ),
+            RawObservation(
+                kind="file",
+                source_id="src/main.js",
+                path="src/main.js",
+                confidence="manual",
+                extractor="fixture",
+                extractor_version="0.1.0",
+                metadata={"language": "javascript"},
+            ),
+            RawObservation(
+                kind="js.function",
+                source_id="src/main.js#func:start",
+                path="src/main.js",
+                start_line=1,
+                end_line=5,
+                name="start",
+                confidence="extracted",
+                extractor="repo-js",
+                extractor_version="0.1.0",
+                metadata={"exported": True},
+            ),
+            RawObservation(
+                kind="js.class",
+                source_id="src/main.js#class:Client",
+                path="src/main.js",
+                start_line=6,
+                end_line=15,
+                name="Client",
+                confidence="extracted",
+                extractor="repo-js",
+                extractor_version="0.1.0",
+                metadata={"exported": True},
+            ),
+        ]
+
+        result = canonicalize_observations(observations)
+        self.assertTrue(result.ok)
+        payload = result.to_dict()
+
+        import repomap_kg.graph.keys as graph_keys
+
+        py_func_key = graph_keys.python_function_key("app", "build")
+        py_class_key = graph_keys.python_class_key("app", "App")
+        py_file_key = graph_keys.file_key("src/app.py")
+
+        rb_file_key = graph_keys.ruby_file_key("src/runner.rb")
+        rb_class_key = graph_keys.ruby_class_key("Runner")
+        rb_method_key = graph_keys.ruby_method_key("Runner", "run")
+
+        js_module_key = graph_keys.js_module_key("src/main.js")
+        js_func_key = graph_keys.js_function_key("src/main.js", "start")
+        js_class_key = graph_keys.js_class_key("src/main.js", "Client")
+
+        canonical_keys = {node["canonical_key"] for node in payload["nodes"]}
+        self.assertIn(py_func_key, canonical_keys)
+        self.assertIn(py_class_key, canonical_keys)
+        self.assertIn(rb_class_key, canonical_keys)
+        self.assertIn(rb_method_key, canonical_keys)
+        self.assertIn(js_func_key, canonical_keys)
+        self.assertIn(js_class_key, canonical_keys)
+
+        edge_triples = {
+            (edge["source_key"], edge["kind"], edge["target_key"])
+            for edge in payload["edges"]
+        }
+        self.assertIn((py_file_key, "defines", py_class_key), edge_triples)
+        self.assertIn((py_file_key, "defines", py_func_key), edge_triples)
+        self.assertIn((rb_file_key, "defines", rb_class_key), edge_triples)
+        self.assertIn((rb_class_key, "defines", rb_method_key), edge_triples)
+        self.assertIn((js_module_key, "defines", js_class_key), edge_triples)
+        self.assertIn((js_module_key, "defines", js_func_key), edge_triples)
+
+    def test_polyglot_canonicalization_explicit_source_key_overrides(self) -> None:
+        from repomap_kg.canonicalization.main import canonicalize_observations
+        from repomap_kg.observations.raw import RawObservation
+        import repomap_kg.graph.keys as graph_keys
+
+        rb_override_key = graph_keys.ruby_module_key("CustomRunnerModule")
+        valid_obs = [
+            RawObservation(
+                kind="ruby.class",
+                source_id="src/custom.rb#class:Runner",
+                path="src/custom.rb",
+                start_line=1,
+                end_line=10,
+                name="Runner",
+                target="ruby.class:Runner",
+                confidence="extracted",
+                extractor="repo-ruby",
+                extractor_version="0.1.0",
+                metadata={"source_key": rb_override_key},
+            ),
+        ]
+        valid_result = canonicalize_observations(valid_obs)
+        self.assertTrue(valid_result.ok)
+        valid_triples = {
+            (e["source_key"], e["kind"], e["target_key"])
+            for e in valid_result.to_dict()["edges"]
+        }
+        self.assertIn(
+            (rb_override_key, "defines", graph_keys.ruby_class_key("Runner")),
+            valid_triples,
+        )
+
+        invalid_obs = [
+            RawObservation(
+                kind="ruby.class",
+                source_id="src/bad.rb#class:Bad",
+                path="src/bad.rb",
+                start_line=1,
+                end_line=10,
+                name="Bad",
+                target="ruby.class:Bad",
+                confidence="extracted",
+                extractor="repo-ruby",
+                extractor_version="0.1.0",
+                metadata={"source_key": "disallowed.ns:foo"},
+            ),
+        ]
+        invalid_result = canonicalize_observations(invalid_obs)
+        self.assertFalse(invalid_result.ok)
+        invalid_payload = invalid_result.to_dict()
+        self.assertEqual(len(invalid_payload["edges"]), 0)
+        diagnostics = invalid_payload.get("diagnostics", [])
+        self.assertTrue(
+            any(
+                d.get("severity") == "error"
+                and d.get("category") == "invalid_canonical_key"
+                for d in diagnostics
+            )
+        )

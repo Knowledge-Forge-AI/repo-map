@@ -13,40 +13,28 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         config_path = self.write_ops_config(self.visible_ops_config())
         summary_record = self.synthetic_nix_summary()
 
+        # READSTORE3: the summary reads through the named investigation read
+        # store as the host readback authority; the retained ops-psql helper
+        # (with its container fallback) is never reached.
         with self.patch_ops_config(config_path):
             with patch(
                 "repomap_kg.server.ops.query_nix_summary",
                 return_value=summary_record,
-            ) as query:
-
-                def run_readback(
-                    config,
-                    database,
-                    storage_query,
-                    *,
-                    psql_command=None,
-                    **kwargs,
-                ):
-                    self.assertEqual(database, "repomap_repo_map")
-                    self.assertIs(storage_query, query)
-                    self.assertIsNone(psql_command)
-                    return storage_query(
-                        ["-d", database],
-                        psql_command="psql",
-                        **kwargs,
-                    )
-
-                with patch(
-                    "repomap_kg.server.ops.run_storage_readback_with_ops_psql",
-                    side_effect=run_readback,
-                ) as run_storage:
-                    payload = repomap_nix_summary(graph_id="repo-map")
+            ) as query, patch(
+                "repomap_kg.ops.refresh.run_storage_readback_with_ops_psql",
+                side_effect=AssertionError("retained ops-psql fallback reached"),
+            ) as run_storage:
+                payload = repomap_nix_summary(graph_id="repo-map")
 
         self.assertEqual(payload["summary_kind"], "nix")
         self.assert_public_graph_payload(payload["graph"])
         self.assert_read_only_payload(payload)
-        self.assertEqual(run_storage.call_count, 1)
+        self.assertEqual(run_storage.call_count, 0)
+        self.assertEqual(query.call_count, 1)
+        self.assertEqual(query.call_args.args[0][-2:], ["-d", "repomap_repo_map"])
+        self.assertEqual(query.call_args.kwargs["psql_command"], "psql")
         self.assertEqual(query.call_args.kwargs["root_path"], "/tmp/fixture")
+        self.assertEqual(query.call_args.kwargs.get("repository_identity"), "repo1:repo-map")
         summary = payload["summary"]
         self.assertEqual(
             {

@@ -1,5 +1,5 @@
-from pathlib import Path
 import os
+from pathlib import Path
 import threading
 from types import SimpleNamespace
 from typing import cast
@@ -8,11 +8,10 @@ from unittest.mock import patch
 import pytest
 
 from repomap_test_support.executable_authority import approved_psql
+from repomap_kg.coordinator import _publication_phase
 from repomap_kg.coordinator.configured_refresh import (
-    ConfiguredRefreshResolver,
-    _executable_search_path,
-    _postgres_password,
-    build_configured_refresh_coordinator,
+    ConfiguredRefreshResolver, _executable_search_path,
+    _postgres_password, build_configured_refresh_coordinator,
 )
 from repomap_kg.coordinator._refresh_contracts import RefreshSourceError
 from repomap_kg.coordinator.refresh_adapter import build_refresh_worker_runner
@@ -22,13 +21,9 @@ from repomap_kg.graph.multi_source_pipeline import MultiSourceCaptureError
 
 def request():
     return {
-        "schema_version": 1,
-        "job_kind": "refresh_graph",
-        "graph_id": "configured-refresh",
-        "request_id": "configured-request",
-        "idempotency_key": "configured-key",
-        "priority": "manual",
-        "operation_options": {"reason": "configured-pilot"},
+        "schema_version": 1, "job_kind": "refresh_graph", "graph_id": "configured-refresh",
+        "request_id": "configured-request", "idempotency_key": "configured-key",
+        "priority": "manual", "operation_options": {"reason": "configured-pilot"},
     }
 
 
@@ -102,8 +97,8 @@ def test_executable_search_path_excludes_unowned_directory(tmp_path, monkeypatch
 
     monkeypatch.setattr(Path, "stat", stat_with_unowned_directory)
     monkeypatch.setenv("PATH", "")
-
-    assert unowned not in _executable_search_path(unowned / "psql")
+    with pytest.raises(ValueError, match="executable search path is unavailable"):
+        _executable_search_path(unowned / "psql")
 
 
 def test_configured_publication_readback_uses_private_child_environment(
@@ -214,8 +209,9 @@ def test_configured_source_change_fails_before_capability_creation(
         extractor_generation=accepted.extractor_generation,
         canonicalizer_generation=accepted.canonicalizer_generation,
     )
+    limits = {"process_deadline_seconds": 20, "refresh_attempt_deadline_seconds": 120}
     runner = build_refresh_worker_runner(
-        resolver.resolve_authority, tmp_path, {}
+        resolver.resolve_authority, tmp_path, limits
     )
     terminal = runner(claim, threading.Event())
     assert terminal["publication_state"] == "not_started"
@@ -346,7 +342,6 @@ def test_postgres_password_resolution_and_file_guards(tmp_path, monkeypatch):
     monkeypatch.delenv("MISSING_ENV_TEST", raising=False)
     with pytest.raises(ValueError, match="postgres credential is unavailable"):
         _postgres_password(pw(pe="MISSING_ENV_TEST"), config_path)
-
     monkeypatch.setenv("LONG_ENV_TEST", "a" * 257)
     with pytest.raises(ValueError, match="postgres credential is unavailable"):
         _postgres_password(pw(pe="LONG_ENV_TEST"), config_path)
@@ -376,11 +371,18 @@ def test_build_configured_refresh_coordinator_wiring(tmp_path, monkeypatch):
     resolver = ConfiguredRefreshResolver(config_path, approved_psql(tmp_path))
     fake_store = SimpleNamespace()
     cap_dir = tmp_path / "cap"
-    cap_dir.mkdir()
+    cap_dir.mkdir(mode=0o700); cap_dir.chmod(0o700)
     coord = build_configured_refresh_coordinator(fake_store, "inst-alpha", resolver, cap_dir)
-    assert coord._instance_id == "inst-alpha"
-    assert coord._store is fake_store
-    assert coord._publication_reader == resolver.read_publication
+    assert coord._instance_id == "inst-alpha" and coord._store is fake_store
+    assert callable(coord._publication_reader)
+    setattr(resolver, "read_publication", lambda _c: None)
+    claim = SimpleNamespace(
+        job_id="job-t", attempt=1, graph_id="configured-refresh", instance_id="inst-alpha",
+        fencing_epoch=1, source_generation="sg1", config_generation="cg1", extractor_generation="eg1", canonicalizer_generation="kg1",
+    )
+    _publication_phase.initialize(cap_dir, claim)
+    assert coord._publication_reader(claim) is None
+    assert not _publication_phase._path(cap_dir, claim, "decision").exists()
 
 
 def test_polling_snapshot_cancellation_event(tmp_path, monkeypatch):
@@ -395,5 +397,4 @@ def test_polling_snapshot_cancellation_event(tmp_path, monkeypatch):
     cancel_ev = threading.Event()
     cancel_ev.set()
     snapshot = resolver.polling_snapshot("configured-refresh", cancel_event=cancel_ev)
-    assert snapshot.source.category == "cancelled"
-    assert snapshot.source.generation is None
+    assert (snapshot.source.category, snapshot.source.generation) == ("cancelled", None)

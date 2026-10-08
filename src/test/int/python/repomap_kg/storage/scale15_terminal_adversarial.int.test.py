@@ -4,6 +4,7 @@ from collections.abc import Callable
 from unittest.mock import patch
 
 import psycopg
+from psycopg.conninfo import make_conninfo
 import pytest
 
 from repomap_kg.observations import RawObservation
@@ -278,20 +279,33 @@ def test_fix4_actual_psycopg_success_and_transport_refusal() -> None:
             psql_command=postgres.psql_command,
         )
         assert result.publication_state is PublicationState.PUBLISHED
-        stopped_psql_args = tuple(postgres.psql_args)
+        authority = scale15_readback.read_run_authority(
+            postgres.psql_args,
+            expected.repository_name,
+            psql_command=postgres.psql_command,
+        )
+        canonical = scale15_readback.read_latest_receipt_bearing_publication(
+            postgres.psql_args,
+            psql_command=postgres.psql_command,
+        )
+        disposable = postgres.create_database("scale15_refused")
+        params = _psycopg_connection_params_from_psql_args(postgres.psql_args)
+        with psycopg.connect(make_conninfo(**params), autocommit=True) as connection:
+            connection.execute('DROP DATABASE "scale15_refused"')
+        refused_psql_args = tuple(disposable.psql_args)
         psql_command = postgres.psql_command
 
     with (
-        patch.object(scale15_readback, "read_run_authority", lambda *_a, **_k: object()),
+        patch.object(scale15_readback, "read_run_authority", return_value=authority),
         patch.object(
             scale15_readback,
             "read_latest_receipt_bearing_publication",
-            lambda *_a, **_k: object(),
+            return_value=canonical,
         ),
         pytest.raises(psycopg.OperationalError),
     ):
         read_scale15_terminal_state(
-            stopped_psql_args,
+            refused_psql_args,
             expected,
             psql_command=psql_command,
         )

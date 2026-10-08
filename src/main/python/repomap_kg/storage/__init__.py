@@ -52,6 +52,7 @@ from repomap_kg.storage.main import (
     SourceReferenceRecord as SourceReferenceRecord,
     SourceRunRecord as SourceRunRecord,
     SourceSummaryRecord as SourceSummaryRecord,
+    StorageCommitUnknownError as StorageCommitUnknownError,
     StorageSchemaError as StorageSchemaError,
     TerraformSummaryRecord as TerraformSummaryRecord,
     _applied_migrations as _applied_migrations,

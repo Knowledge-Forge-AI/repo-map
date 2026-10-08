@@ -81,6 +81,10 @@ class _TargetStore:
             "backup_verified": True,
         }
 
+    def upgrade_ledgered_schema(self, **kwargs) -> None:
+        self.events.append("upgrade-target")
+        assert kwargs == {"expected_manifest": ("exact-control-schema",), "backup_verified": True}
+
     def check_schema_version(self) -> int:
         return 1
 
@@ -300,3 +304,18 @@ def test_arch5a3_control_upgrade_guards_precede_authority_access(
             confirmed=confirmed,
             authority_factory=lambda home: pytest.fail("authority accessed"),
         )
+
+
+def test_known_older_control_ledger_uses_backup_verified_upgrade(tmp_path: Path) -> None:
+    events: list[str] = []
+    authority = _Authority(events, status="behind")
+    backup = SimpleNamespace(plan=SimpleNamespace(backup_path=tmp_path / "verified-backup"))
+    inspection = SimpleNamespace(checksum_verified=True, dump_summaries=(object(),), manifest={"restore_supported": True})
+    result = upgrade_coordinator_control(
+        tmp_path, backup_first=True, confirmed=True, timestamp="20261002T130000Z",
+        authority_factory=lambda home: authority, dump_function=lambda *a, **k: backup,
+        inspect_function=lambda *a, **k: inspection,
+    )
+    assert result["schema_before"] == "known-older-ledger"
+    assert "upgrade-target" in events and "adopt-target" not in events
+    assert events[-2:] == ["drop-reference", "maintenance-exit"]

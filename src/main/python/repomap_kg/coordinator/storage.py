@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager
 from datetime import timedelta
+from typing import Callable
 
 import psycopg
+
 
 from repomap_kg.coordinator import (
     _control_coalescing as coalescing, _control_listing as listing,
@@ -14,11 +16,15 @@ from repomap_kg.coordinator import (
     _control_schema as schema, _control_startup as startup,
     _control_state as state, _control_submission as submission,
 )
+from repomap_kg.coordinator._control_maintenance import CleanupReport
 from repomap_kg.coordinator._control_types import (
     ConnectionFactory, ControlSchemaError, ControlStoreError, JobClaim,
     JobListPage, JobStatus, SingletonActiveError, SubmissionResult,
 )
 from repomap_kg.coordinator.contracts import JobRequest
+from repomap_kg.coordinator._restart_fencing import _FencingStoreMixin
+from repomap_kg.coordinator._supervisor_fencing import earn_in_process_fencing_proof
+from repomap_kg.coordinator._publication_phase import WorkerFencingProof
 from repomap_kg.coordinator.limits import DEFAULT_LIMITS, HARD_MAX_LIMITS, CoordinatorLimits
 from repomap_kg.runtime import maintenance as runtime_maintenance
 
@@ -27,7 +33,7 @@ CONTROL_SCHEMA_VERSION = schema.CONTROL_SCHEMA_VERSION
 CONTROL_TABLES = schema.CONTROL_TABLES
 
 
-class ControlStore:
+class ControlStore(_FencingStoreMixin):
     """Transactional access to the dedicated coordinator control database."""
 
     def __init__(
@@ -39,6 +45,9 @@ class ControlStore:
         limits.validate(hard_maxima=HARD_MAX_LIMITS)
         self._connect = connection_factory
         self._limits = limits
+
+    def in_process_fencing_proof(self, result: object, capability: object) -> WorkerFencingProof:
+        return earn_in_process_fencing_proof(result, capability, self._connect)
 
     def initialize_schema(self, *, migration_sql: str | None = None) -> None:
         schema.initialize_schema(self._connect, migration_sql=migration_sql)
@@ -67,6 +76,11 @@ class ControlStore:
     def maintenance_activity(self) -> AbstractContextManager[None]:
         return runtime_maintenance.maintenance_activity(self._connect)
 
+    def upgrade_ledgered_schema(self, *, expected_manifest: tuple[str, ...], backup_verified: bool) -> None:
+        schema.upgrade_ledgered_schema(
+            self._connect, expected_manifest=expected_manifest, backup_verified=backup_verified,
+        )
+
     def maintenance_window(self) -> AbstractContextManager[None]:
         return runtime_maintenance.maintenance_window(self._connect)
 
@@ -92,9 +106,11 @@ class ControlStore:
         request: JobRequest,
         *,
         requester: str = "local",
+        admission_deadline: submission.AdmissionDeadline | None = None,
     ) -> SubmissionResult:
         return submission.submit(
-            self._connect, request, requester=requester, limits=self._limits
+            self._connect, request, requester=requester, limits=self._limits,
+            admission_deadline=admission_deadline,
         )
 
     def coalesce_automatic(
@@ -281,12 +297,15 @@ class ControlStore:
     def mark_reconciliation_required(
         self, claim: JobClaim, *, expected_state: str, category: str,
         diagnostic_summary: str | None = None,
+        publication_state: str = "commit_unknown",
     ) -> bool:
+        if publication_state not in {"not_started", "commit_unknown"}:
+            raise ValueError("invalid reconciliation publication state")
         return self.compare_and_set_state(
             claim.job_id,
             expected_state=expected_state, new_state="reconciliation_required",
             attempt=claim.attempt, instance_id=claim.instance_id,
-            fencing_epoch=claim.fencing_epoch, publication_state="commit_unknown",
+            fencing_epoch=claim.fencing_epoch, publication_state=publication_state,
             error_category=category, diagnostic_summary=diagnostic_summary,
         )
 
@@ -315,11 +334,13 @@ class ControlStore:
     def reconcile_publication(
         self, claim: JobClaim, *,
         reconciler_instance_id: str | None = None, reconciler_epoch: int | None = None,
+        unpublished_proved: bool = False,
     ) -> str:
         return reconciliation.reconcile_publication(
             self._connect, claim, max_attempts=self._limits.max_retry_attempts,
             reconciler_instance_id=reconciler_instance_id or claim.instance_id,
             reconciler_epoch=reconciler_epoch if reconciler_epoch is not None else claim.fencing_epoch,
+            unpublished_proved=unpublished_proved,
         )
 
     def schedule_retry(
@@ -333,36 +354,33 @@ class ControlStore:
         )
 
     def record_publication_marker(
-        self,
-        claim: JobClaim,
-        *,
-        run_identity: str,
-        source_generation: str,
-        config_generation: str,
-        extractor_generation: str,
-        canonicalizer_generation: str,
-        outcome: str,
+        self, claim: JobClaim, *, run_identity: str, source_generation: str,
+        config_generation: str, extractor_generation: str,
+        canonicalizer_generation: str, outcome: str,
     ) -> bool:
         return maintenance.record_publication_marker(
-            self._connect,
-            claim,
-            run_identity=run_identity,
-            source_generation=source_generation,
-            config_generation=config_generation,
+            self._connect, claim, run_identity=run_identity,
+            source_generation=source_generation, config_generation=config_generation,
             extractor_generation=extractor_generation,
-            canonicalizer_generation=canonicalizer_generation,
-            outcome=outcome,
+            canonicalizer_generation=canonicalizer_generation, outcome=outcome,
         )
 
     def cleanup_terminal(
-        self, minimum_age: timedelta, *, limit: int, dry_run: bool
-    ) -> tuple[str, ...]:
+        self,
+        minimum_age: timedelta,
+        *,
+        limit: int,
+        dry_run: bool,
+        publication_retirer: Callable[[object], object] | None = None,
+    ) -> CleanupReport:
         return maintenance.cleanup_terminal(
             self._connect,
             minimum_age,
             limit=limit,
             dry_run=dry_run,
+            publication_retirer=publication_retirer,
         )
+
 
     def status(self, job_id: str) -> JobStatus:
         return state.status(self._connect, job_id)

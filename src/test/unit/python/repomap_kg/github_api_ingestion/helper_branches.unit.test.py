@@ -159,3 +159,27 @@ class GitHubApiIngestionHelperBranchUnitTests(unittest.TestCase):
             with self.subTest(status=response.status_code, response_type=response.response_type):
                 with self.assertRaises(github.GitHubApiPolicyError):
                     github.validate_transport_response(config, request, response)
+
+
+def test_url_userinfo_redaction_preserves_authority_boundaries():
+    redacted = {"redacted": True, "redaction_reason": "sensitive_url", "literal_type": "string"}
+    sensitive = (
+        "https://fixture-user:fixture-password@example.invalid/path",
+        "http://fixture-user@example.invalid/path",
+        "HTTPS://fixture-user@example.invalid/path",
+        " https://fixture-user@example.invalid/path",
+        "https://fixture-user:fixture-password@[broken/path",
+        "https://fixture-user@/path",
+        "https://example.invalid/?token=fixture-token",
+    )
+    for value in sensitive:
+        actual = github.redact_github_value({"items": [{"html_url": value}]})
+        assert actual == {"items": [{"html_url": redacted}]}, "URL redaction boundary failed"
+    safe = (
+        "https://example.invalid/path", "https://example.invalid/@name",
+        "https://example.invalid/?contact=name@example.invalid",
+        "https://example.invalid/#name@example.invalid", "not a URL @ text",
+        "https://[broken/path", "https:///path@name", "",
+    )
+    for value in safe:
+        assert github.redact_github_value(value) == value

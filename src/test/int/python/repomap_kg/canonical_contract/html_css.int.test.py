@@ -114,9 +114,14 @@ class CanonicalHtmlCssIntegrationTests(unittest.TestCase):
 /* url("https://example.com/comment-secret.png") */
 @import "./reset.css";
 :root { --surface: #111a24; --api-token: "css-contract-secret"; }
-.report-header, .status-badge[data-status="pass"]:hover::before, #summary, main[role="main"] > .tree-grid .row + .row {
+.report-header, .status-badge[data-status="pass"]:hover::before, #summary, main[role="main"] > .tree-grid .row + .row,
+:not(.hidden), :is(h1, h2), :where(.note), .escaped\\:token {
   background-image: url("../../assets/panel.svg");
   mask-image: url(data:image/svg+xml;base64,SECRET_PAYLOAD);
+  border-image: url(panel-unquoted.svg);
+  content: "escaped \\" quote";
+  color: #f8fafc !important;
+  ; ;
 }
 @media (max-width: 720px) { .tree-grid { grid-template-columns: minmax(0, 1fr); } }
 @supports (overflow-wrap: anywhere) { .path-cell { overflow-wrap: anywhere; } }
@@ -139,11 +144,13 @@ class CanonicalHtmlCssIntegrationTests(unittest.TestCase):
         self.assertNotIn("SECRET_PAYLOAD", serialized)
         self.assertNotIn("comment-secret", serialized)
         self.assertTrue({"css.document", "css.rule", "css.selector", "css.declaration", "css.custom_property", "css.reference", "css.parse_error"}.issubset(kinds))
+        self.assertTrue(any(item.name == "color" and item.metadata.get("important") for item in observations if item.kind == "css.declaration"))
 
         ref_targets = {item.target for item in references}
         for t in (
             "file:tools/test/report/static/reset.css",
             "file:tools/test/assets/panel.svg",
+            "file:tools/test/report/static/panel-unquoted.svg",
             "external.url:https%3A%2F%2Fexample.com%2Freport.png",
             "unknown:file:repo-escaping-css-reference",
             "unknown:external.url:data-url-payload-redacted",

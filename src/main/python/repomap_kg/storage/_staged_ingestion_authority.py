@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 import hashlib
 import secrets
 
@@ -41,6 +42,8 @@ class IngestionAuthority:
     coordinator_instance_id: str | None = None
     singleton_fencing_epoch: int = 0
     graph_lease_fencing_epoch: int = 0
+    before_publication: Callable[[], None] | None = field(default=None, repr=False, compare=False)
+    process_deadline_seconds: int | None = None
 
     def owner(self, repository_id: int) -> StageOwner:
         """Return the validated stage owner for one graph repository."""

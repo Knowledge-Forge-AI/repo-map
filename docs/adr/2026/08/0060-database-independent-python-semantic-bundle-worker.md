@@ -1,5 +1,12 @@
 # ADR 0060: Database-Independent Python Semantic Bundle Worker
 
+> Post-promotion amendment (2026-09-24): [ADR 0071](../09/0071-post-promotion-local-server-cloud-architecture.md).
+> The implementation is now on private main. Qualification, activation and
+> promotion statements below describe their original checkpoints; this
+> amendment claims no new hosted acceptance. Implemented contracts remain
+> intact. ADR 0071 adds the target Local/Server/Cloud boundary without
+> granting the worker database or publication authority.
+
 ## Status
 
 Accepted architecture with the STR-WORK4-FIX3 local implementation complete.

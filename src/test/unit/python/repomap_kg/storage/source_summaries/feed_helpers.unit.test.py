@@ -6,16 +6,19 @@ from unittest.mock import patch
 
 from repomap_kg.storage import (
     build_ingested_source_query_sql,
+    build_source_feed_item_explanation_query_sql,
     build_source_feed_item_query_sql,
     build_source_reference_query_sql,
     build_source_run_query_sql,
     build_source_summary_query_sql,
     ingested_source_record_from_storage_payload,
     source_feed_item_record_from_storage_payload,
+    source_observations_cte,
     source_reference_record_from_storage_payload,
     source_run_record_from_storage_payload,
     source_summary_from_storage_payload,
     query_ingested_source_records,
+    query_source_feed_item_explanation,
     query_source_feed_item_records,
     query_source_reference_records,
     query_source_run_records,
@@ -318,3 +321,65 @@ class StorageSourceFeedHelperUnitTests(unittest.TestCase):
             sql = call.kwargs["input"]
             self.assertNotIn("INSERT ", sql.upper())
             self.assertNotIn("UPDATE ", sql.upper())
+
+    def test_source_builders_support_repository_identity_and_isolate_nested_leakage(self):
+        ident = "repo1:fixture"
+
+        cte_with_id = source_observations_cte("/tmp/fixture", repository_identity=ident)
+        self.assertIn(f"repository_identity = '{ident}'", cte_with_id)
+        self.assertIn("DESC NULLS LAST, id LIMIT 1", cte_with_id)
+
+        cte_no_id = source_observations_cte("/tmp/fixture", repository_identity=None)
+        self.assertIn("repositories.root_path = '/tmp/fixture'", cte_no_id)
+        self.assertIn("ORDER BY id LIMIT 1", cte_no_id)
+
+        builders = (
+            build_ingested_source_query_sql("/tmp/fixture", repository_identity=ident),
+            build_source_summary_query_sql("/tmp/fixture", source_id="src1", repository_identity=ident),
+            build_source_run_query_sql("/tmp/fixture", source_id="src1", repository_identity=ident),
+            build_source_feed_item_query_sql("/tmp/fixture", source_id="src1", repository_identity=ident),
+            build_source_reference_query_sql("/tmp/fixture", source_id="src1", repository_identity=ident),
+            build_source_feed_item_explanation_query_sql("/tmp/fixture", item_key="feed.item:1", repository_identity=ident),
+        )
+        for sql in builders:
+            self.assertIn(f"repository_identity = '{ident}'", sql)
+            self.assertIn("DESC NULLS LAST, id LIMIT 1", sql)
+
+        item_sql = build_source_feed_item_query_sql("/tmp/fixture", source_id="src1", repository_identity=ident)
+        self.assertIn("canonical_edges.repository_id = canonical_nodes.repository_id", item_sql)
+        self.assertIn("JOIN repo ON repo.id = canonical_nodes.repository_id", item_sql)
+        self.assertIn("canonical_evidence.repository_id = source_observations.repository_id", item_sql)
+
+        ref_sql = build_source_reference_query_sql("/tmp/fixture", source_id="src1", repository_identity=ident)
+        self.assertIn("JOIN repo ON repo.id = canonical_edges.repository_id", ref_sql)
+        self.assertIn("canonical_evidence.repository_id = canonical_edges.repository_id", ref_sql)
+
+        exp_sql = build_source_feed_item_explanation_query_sql("/tmp/fixture", item_key="feed.item:1", repository_identity=ident)
+        self.assertIn("JOIN repo ON repo.id = canonical_edges.repository_id", exp_sql)
+        self.assertIn("JOIN repo ON repo.id = canonical_nodes.repository_id", exp_sql)
+        self.assertIn("canonical_evidence.repository_id = repo.id", exp_sql)
+
+    def test_query_source_readers_forward_repository_identity(self):
+        sum_p = json.dumps({
+            "source_id": "s1", "source_type": "feed.rss", "display_name": "S1", "policy_status": "allowed",
+            "configured_url_summary": "http://x", "latest_source_run_id": "r1", "latest_artifact_id": "a1",
+            "latest_artifact_path": "p", "latest_acquired_at": "2026-06-30T12:00:00Z", "feed_documents": 1,
+            "feed_channels": 1, "feed_items": 1, "feed_authors": 0, "feed_categories": 0, "link_references": 0,
+            "enclosure_references": 0, "parse_errors": 0, "known_limitations": [],
+        }) + "\n"
+        payloads = ["[]\n", sum_p, "[]\n", "[]\n", "[]\n", "{}\n"]
+        with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql", PG_CONNECTOR_ENV: "psql"}):
+            with patch("repomap_kg.storage.subprocess.run") as run:
+                run.side_effect = [subprocess.CompletedProcess(["psql"], 0, stdout=p) for p in payloads]
+                query_ingested_source_records(["-d", "postgres"], root_path="/tmp/fixture", repository_identity="repo1:ident")
+                query_source_summary(["-d", "postgres"], root_path="/tmp/fixture", source_id="s1", repository_identity="repo1:ident")
+                query_source_run_records(["-d", "postgres"], root_path="/tmp/fixture", source_id="s1", repository_identity="repo1:ident")
+                query_source_feed_item_records(["-d", "postgres"], root_path="/tmp/fixture", source_id="s1", repository_identity="repo1:ident")
+                query_source_reference_records(["-d", "postgres"], root_path="/tmp/fixture", source_id="s1", repository_identity="repo1:ident")
+                query_source_feed_item_explanation(["-d", "postgres"], root_path="/tmp/fixture", item_key="feed.item:1", repository_identity="repo1:ident")
+
+        self.assertEqual(len(run.call_args_list), 6)
+        for call in run.call_args_list:
+            sql = call.kwargs["input"]
+            self.assertIn("repository_identity = 'repo1:ident'", sql)
+            self.assertIn("DESC NULLS LAST, id LIMIT 1", sql)

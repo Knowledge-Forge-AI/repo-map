@@ -20,6 +20,7 @@ def build_mcp_search_sql(
     sql_literal: Callable[[str], str],
     like_escape: Callable[[str], str],
     error_type: type[Exception],
+    repository_identity: str | None = None,
 ) -> str:
     """Build the bounded SQL statement for one MCP search target."""
 
@@ -30,6 +31,7 @@ def build_mcp_search_sql(
             kind=kind,
             limit=limit,
             offset=offset,
+            repository_identity=repository_identity,
         )
     if target == "files":
         return file_search_sql(
@@ -38,10 +40,12 @@ def build_mcp_search_sql(
             path=path,
             limit=limit,
             offset=offset,
+            repository_identity=repository_identity,
         )
     fetch_limit = limit + 1
     pattern = sql_literal("%" + like_escape(query) + "%")
-    root_filter = f"repositories.root_path = {sql_literal(root_path)}"
+    from repomap_kg.storage.graph_readback_sql import build_repository_filter_sql
+    root_filter = build_repository_filter_sql(root_path, repository_identity)
     if target == "observations":
         payload_field = ", raw_observations.payload_json AS payload" if include_raw else ""
         filters = [

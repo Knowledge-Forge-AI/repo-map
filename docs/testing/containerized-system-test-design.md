@@ -83,14 +83,34 @@ The system scenario executes 5 sequential phases under monotonic budget tracking
    - Stops the running coordinator container mid-execution.
    - Restarts the coordinator container from the same persisted database state and image.
    - Awaits job completion (`succeeded`) via `ops coordinator-job-wait` and verifies authoritative publication receipt via `ops refresh-status`.
-   - The system-only Compose override enables `_REPOMAP_SYSTEM_TEST_PAUSE_PATH`
-     with the one accepted value `/tmp/system_pause_trigger`. After configuration
-     and generation validation, the refresh worker creates the fixed readiness
-     marker without following a symlink, records the exact job and attempt, and
-     waits only while the fixed trigger exists, for at most 30 seconds. Other
-     values are ignored. Marker-write failure does not block production refresh,
-     and no public configuration or ordinary runtime default enables this bounded
-     test interruption hook.
+   - The system-only Compose override enables `_REPOMAP_SYSTEM_TEST_STAGED_PAUSE_PATH`.
+     Release-container authority (`/etc/repomap-release-container`) is required
+     for the fixed legacy path `/tmp/system_pause_trigger`; outside container authority,
+     only private owner-only 0700 custom paths are accepted for internal tests.
+     After the validated staging transaction commits and before publication-start
+     proof, the refresh worker creates the readiness marker without following a
+     symlink. It records the exact job, attempt, repository, stage, run, and receipt
+     handoff and the worker PID for diagnostics, and waits
+     only while the trigger exists, for at most 90 seconds.
+     The consumer performs a single in-container bounded wait/read (deadline 20s)
+     observing the ready marker before the producer pause window closes.
+     Shared named constants cover the consumer execution timeout (25s), the
+     post-marker coordinator status (5s), durable control-row readback (5s),
+     both child reap operations (3s each), coordinator interruption (10s), and
+     safety margin (10s). Their worst-case sum is 61s, strictly below the 90s
+     producer pause. The execution timeout also exceeds the 20s read deadline.
+     The consumer validates these named bounds before launching the pause scenario.
+     Both producer hooks and the consumer use the runtime-owned
+     `system_test_pause` contract. Each producer validates compatibility before
+     creating readiness and uses `SYSTEM_TEST_PRODUCER_PAUSE_SECONDS` for its
+     deadline; the staged hook has no separate pause duration.
+     The ready marker is unconditionally unlinked in a finally block on pause exit.
+     Marker-write failure does not block production refresh, and no public configuration
+     or ordinary runtime default enables this bounded test interruption hook.
+   - After replacement success on the same graph, the stale-authority probe resumes
+     the captured handoff through the final storage transaction. It requires the
+     exact stale-publication-fence refusal and unchanged durable authority and graph
+     counts after rollback.
 4. **Idempotency & Fencing (`idempotency_and_fencing`)**:
    - Resubmits the identical refresh request with same idempotency key.
    - Verifies the coordinator coalesces/replays the request (`replayed: True`), returning the identical job ID, with single publication preserved.

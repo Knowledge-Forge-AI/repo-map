@@ -23,9 +23,7 @@ def recorded_run_consistency_payload(
     latest_run_status: str | None,
     latest_run_finished_at: str | None,
 ) -> dict[str, Any]:
-    complete_without_finished_at = (
-        latest_run_status == "complete" and latest_run_finished_at is None
-    )
+    complete_without_finished_at = latest_run_status == "complete" and latest_run_finished_at is None
     if complete_without_finished_at:
         return {
             "complete_without_finished_at": True,
@@ -50,9 +48,7 @@ class OpsPsqlExecution:
     strategy: str = "host"
 
     def full_command(
-        self,
-        psql_args: Sequence[str],
-        tail_args: Sequence[str],
+        self, psql_args: Sequence[str], tail_args: Sequence[str],
     ) -> list[str]:
         return [self.command, *self.args_prefix, *psql_args, *tail_args]
 
@@ -81,6 +77,8 @@ class OpsRefreshGraphResult:
     warnings: tuple[Mapping[str, Any], ...] = ()
     diagnostics: tuple[Mapping[str, Any], ...] = ()
     error: str | None = None
+    publication_state: str = "not_started"
+    error_category: str | None = None
 
     def to_jsonable(self) -> dict[str, Any]:
         return {
@@ -93,6 +91,8 @@ class OpsRefreshGraphResult:
             "root_path_display": self.root_path_display,
             "root_path_expanded": self.root_path_expanded,
             "result": self.result,
+            "publication_state": self.publication_state,
+            "error_category": self.error_category,
             "started_at": self.started_at,
             "finished_at": self.finished_at,
             "repository_id": self.repository_id,
@@ -472,17 +472,17 @@ def _diagnostic(severity: str, code: str, path: str, message: str) -> Mapping[st
 
 def _redact_mapping(payload: Mapping[str, Any]) -> dict[str, Any]:
     return {
-        key: _redact_text(value) if isinstance(value, str) else value
-        for key, value in payload.items()
+        key: _redact_text(value) if isinstance(value, str) else value for key, value in payload.items()
     }
 
 
-def _redact_text(value: str | None) -> str:
+def redact_sensitive_text(value: str | None) -> str:
     if not value:
         return ""
-    redacted = redact_text(value)
     assignment = re.compile(
-        r"(?i)(password|passwd|secret|token|api[_-]?key|authorization)"
-        r"\s*[:=]\s*[^\s,;]+"
+        r"(?i)(password|passwd|secret|token|api[_-]?key|authorization)\s*[:=]\s*[^\s,;]+"
     )
-    return assignment.sub(lambda match: match.group(1) + "=" + "[REDACTED]", redacted)
+    return assignment.sub(lambda match: match.group(1) + "=" + "[REDACTED]", redact_text(value))
+
+
+_redact_text = redact_sensitive_text

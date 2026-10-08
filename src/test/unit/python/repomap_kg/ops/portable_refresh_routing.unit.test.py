@@ -14,6 +14,7 @@ from repomap_kg.ops.portable_refresh import (
     _private_directory,
     _prune_expired_terminal_attempts,
     execute_portable_refresh,
+    PortableRefreshError,
 )
 from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
 from repomap_kg.storage.main import LoadSummary
@@ -168,3 +169,168 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
             retention = json.loads(retained[0].read_text(encoding="utf-8"))
             assert retention["retention_class"] == "terminal-failed"
             assert isinstance(retention["expires_at_epoch"], int)
+
+    def test_parent_publication_executes_strictly_after_worker_and_outside_child_deadline(self):
+        """Assert call ordering within execute_portable_refresh where child worker completes before publication.
+
+        Note: This sequence holds within execute_portable_refresh, but does not isolate publication
+        from the outer coordinator worker process deadline in configured_refresh (see ADR 0073).
+        """
+        import repomap_kg.ops.portable_refresh as pr_module
+        call_order = []
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "repo"
+            root.mkdir()
+            (root / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
+            config = self.config_for_roots(root)
+
+            orig_run_portable = pr_module.run_portable_worker
+            def tracked_run_portable(*args, **kwargs):
+                call_order.append("child_worker_start")
+                res = orig_run_portable(*args, **kwargs)
+                call_order.append("child_worker_complete")
+                return res
+
+            def tracked_publish(*args, **kwargs):
+                call_order.append("parent_publish_start")
+                call_order.append("parent_publish_complete")
+                return LoadSummary(repository_id=7, run_id=11, files=1)
+
+            with (
+                patch("repomap_kg.ops.portable_refresh.run_portable_worker", side_effect=tracked_run_portable),
+                patch("repomap_kg.ops.portable_refresh.run_staged_portable_refresh", side_effect=tracked_publish),
+            ):
+                outcome = execute_portable_refresh(
+                    config,
+                    config.graphs[0],
+                    "repomap_repo_map",
+                    authority=None,
+                )
+
+        assert outcome.files == 1
+        assert call_order == [
+            "child_worker_start",
+            "child_worker_complete",
+            "parent_publish_start",
+            "parent_publish_complete",
+        ]
+
+    def test_leaf_worker_process_timeout_surfaces_as_worker_timeout(self):
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "repo"
+            root.mkdir()
+            (root / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
+            config = self.config_for_roots(root)
+
+            fake_worker = SimpleNamespace(
+                terminal={
+                    "status": "failed",
+                    "reason": "process_timeout",
+                    "summary": "synthetic process_timeout",
+                }
+            )
+            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
+                with self.assertRaises(PortableRefreshError) as ctx:
+                    execute_portable_refresh(
+                        config,
+                        config.graphs[0],
+                        "repomap_repo_map",
+                        authority=None,
+                    )
+                self.assertEqual(ctx.exception.category, "worker_timeout")
+                self.assertEqual(ctx.exception.publication_state, "not_started")
+
+    def test_leaf_worker_heartbeat_timeout_surfaces_as_worker_timeout(self):
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "repo"
+            root.mkdir()
+            (root / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
+            config = self.config_for_roots(root)
+
+            fake_worker = SimpleNamespace(
+                terminal={
+                    "status": "failed",
+                    "reason": "heartbeat_timeout",
+                    "summary": "synthetic heartbeat_timeout",
+                }
+            )
+            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
+                with self.assertRaises(PortableRefreshError) as ctx:
+                    execute_portable_refresh(
+                        config,
+                        config.graphs[0],
+                        "repomap_repo_map",
+                        authority=None,
+                    )
+                self.assertEqual(ctx.exception.category, "worker_timeout")
+                self.assertEqual(ctx.exception.publication_state, "not_started")
+
+    def test_refresh_graph_leaf_worker_timeout_records_not_started(self):
+        from types import SimpleNamespace
+        from repomap_kg.ops.refresh import refresh_graph
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "repo"
+            root.mkdir()
+            (root / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
+            config = self.config_for_roots(root)
+
+            fake_worker = SimpleNamespace(
+                terminal={
+                    "status": "failed",
+                    "reason": "process_timeout",
+                    "summary": "synthetic process_timeout",
+                }
+            )
+            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
+                report = refresh_graph(config, config.graphs[0].id)
+                self.assertEqual(report.result, "failure")
+                self.assertEqual(report.publication_state, "not_started")
+                self.assertEqual(report.error_category, "worker_timeout")
+
+    def test_execute_portable_refresh_passes_authority_leaf_deadline_to_portable_worker(self):
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "repo"
+            root.mkdir()
+            (root / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
+            config = self.config_for_roots(root)
+            graph = config.graphs[0]
+            scan = scan_multi_source_generations(graph)
+            authority = IngestionAuthority(
+                operation_id=OperationId("job-leaf-test"),
+                attempt=AttemptNumber(1),
+                execution_mode="coordinator",
+                source_generation=scan.source_generation,
+                config_generation=scan.config_generation,
+                extractor_generation=extractor_generation(graph),
+                canonicalizer_generation=canonicalizer_generation(),
+                job_id=JobId("job-leaf-test"),
+                coordinator_instance_id="coord-leaf",
+                singleton_fencing_epoch=1,
+                graph_lease_fencing_epoch=1,
+                process_deadline_seconds=42,
+            )
+            fake_worker = SimpleNamespace(
+                terminal={
+                    "status": "failed",
+                    "reason": "process_timeout",
+                    "summary": "synthetic process_timeout",
+                }
+            )
+            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker) as spy:
+                with self.assertRaises(PortableRefreshError):
+                    execute_portable_refresh(
+                        config,
+                        config.graphs[0],
+                        "repomap_repo_map",
+                        authority=authority,
+                    )
+                self.assertTrue(spy.called)
+                passed_limits = spy.call_args[0][2]
+                self.assertEqual(passed_limits.process_deadline_seconds, 42)

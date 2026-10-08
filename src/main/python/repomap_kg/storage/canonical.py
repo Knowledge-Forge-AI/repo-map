@@ -46,7 +46,9 @@ def query_canonical_node_records(
     graph_key_version: int = 1,
     limit: int | None = None,
     offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> tuple[CanonicalNodeRecord, ...]:
     payload = execute_json_readback(
         build_canonical_node_query_sql(
@@ -57,11 +59,13 @@ def query_canonical_node_records(
             graph_key_version=graph_key_version,
             limit=limit,
             offset=offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
         label="canonical node records",
         expected_shape="array",
+        **({"password": password} if password is not None else {}),
     )
     return tuple(canonical_node_record_from_storage_payload(item) for item in payload)
 
@@ -76,7 +80,9 @@ def query_canonical_edge_records(
     graph_key_version: int = 1,
     limit: int | None = None,
     offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> tuple[CanonicalEdgeRecord, ...]:
     payload = execute_json_readback(
         build_canonical_edge_query_sql(
@@ -87,11 +93,13 @@ def query_canonical_edge_records(
             graph_key_version=graph_key_version,
             limit=limit,
             offset=offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
         label="canonical edge records",
         expected_shape="array",
+        **({"password": password} if password is not None else {}),
     )
     return tuple(canonical_edge_record_from_storage_payload(item) for item in payload)
 
@@ -108,7 +116,9 @@ def query_canonical_neighborhood(
     node_offset: int = 0,
     edge_limit: int | None = None,
     edge_offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> CanonicalNeighborhoodRecord:
     if depth != 1:
         raise StorageSchemaError("storage neighborhood only supports depth 1")
@@ -122,11 +132,13 @@ def query_canonical_neighborhood(
             node_offset=node_offset,
             edge_limit=edge_limit,
             edge_offset=edge_offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
         label="canonical neighborhood",
         expected_shape="object",
+        **({"password": password} if password is not None else {}),
     )
     return canonical_neighborhood_from_storage_payload(payload)
 
@@ -142,7 +154,9 @@ def query_canonical_edge_explanation(
     graph_key_version: int = 1,
     evidence_limit: int | None = None,
     evidence_offset: int = 0,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> CanonicalEdgeExplanationRecord:
     payload = execute_json_readback(
         build_explain_canonical_edge_query_sql(
@@ -154,11 +168,13 @@ def query_canonical_edge_explanation(
             graph_key_version=graph_key_version,
             evidence_limit=evidence_limit,
             evidence_offset=evidence_offset,
+            repository_identity=repository_identity,
         ),
         psql_args=psql_args,
         psql_command=psql_command,
         label="canonical edge explanation",
         expected_shape="object",
+        **({"password": password} if password is not None else {}),
     )
     return canonical_edge_explanation_from_storage_payload(payload)
 
@@ -167,14 +183,19 @@ def query_canonical_storage_summary(
     psql_args: Sequence[str],
     *,
     root_path: str,
+    repository_identity: str | None = None,
     psql_command: str = "psql",
+    password: str | None = None,
 ) -> CanonicalStorageSummaryRecord:
     return canonical_storage_summary_from_payload(
         execute_json_readback(
-            build_canonical_storage_summary_query_sql(root_path),
+            build_canonical_storage_summary_query_sql(
+                root_path, repository_identity=repository_identity,
+            ),
             psql_args=psql_args,
             psql_command=psql_command,
             label="canonical storage summary",
             expected_shape="object",
+            **({"password": password} if password is not None else {}),
         )
     )

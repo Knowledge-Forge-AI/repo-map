@@ -146,6 +146,31 @@ a, b, {
         self.assertIsNone(_resolve_repo_path("styles/app.css", ""))
         self.assertEqual(_resolve_repo_path("styles/app.css", "./sub/./icon.svg"), "styles/sub/icon.svg")
 
+    def test_css_support_helpers_branches(self):
+        from repomap_kg.extractors.documents.css_support import (
+            _extract_url_values,
+            _is_dynamic_value,
+            _is_secret_name,
+            _selector_metadata,
+            _split_selectors,
+            _strip_comments,
+            _strip_css_string,
+        )
+
+        urls = _extract_url_values("url('images/bg.png') url(\"../fonts/font.woff\")")
+        self.assertEqual(len(urls), 2)
+        self.assertEqual(_strip_comments("/* comment */ body { color: red; }").strip(), "body { color: red; }")
+        self.assertEqual(_strip_css_string("'hello'"), "hello")
+        self.assertEqual(_strip_css_string('"world"'), "world")
+        self.assertEqual(_split_selectors("div.class, #id > a:hover"), ["div.class", "#id > a:hover"])
+        self.assertTrue(_is_dynamic_value("var(--main-bg)"))
+        self.assertFalse(_is_dynamic_value("#ffffff"))
+        meta = _selector_metadata(".my-class", rule_pointer="/rule:1", pointer="/rule:1/selector:1", selector_index=1)
+        self.assertEqual(meta["selector_kind"], "simple")
+        self.assertEqual(meta["classes"], ["my-class"])
+        self.assertTrue(_is_secret_name("--api-key"))
+        self.assertFalse(_is_secret_name("--main-color"))
+
 
 def _by_kind(observations):
     by_kind: dict[str, list] = {}

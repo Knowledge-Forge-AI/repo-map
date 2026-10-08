@@ -8,6 +8,7 @@ from collections.abc import Mapping
 from pathlib import Path
 import socket
 import stat
+import time
 
 from repomap_kg.coordinator.endpoint import (
     EndpointDescriptorError,
@@ -15,10 +16,15 @@ from repomap_kg.coordinator.endpoint import (
     load_endpoint_descriptor,
 )
 from repomap_kg.coordinator.transport import validate_public_result
+from repomap_kg.coordinator.limits import (
+    SUBMIT_ADMISSION_CEILING_SECONDS, SUBMIT_RESPONSE_SLACK_SECONDS,
+    valid_admission_number,
+)
 
 
 _MAX_FRAME_BYTES = 64 * 1024
 _ERROR_CATEGORIES = frozenset({
+    "admission_timeout",
     "frame_too_large",
     "incompatible_version",
     "internal",
@@ -45,7 +51,7 @@ class LocalCoordinatorClient:
         *,
         timeout_seconds: float = 5.0,
     ) -> None:
-        if timeout_seconds <= 0 or timeout_seconds > 60:
+        if not valid_admission_number(timeout_seconds) or not 0 < timeout_seconds <= 60:
             raise ValueError("client timeout is invalid")
         self._socket_path: Path | None = Path(socket_path)
         self._endpoint: LoopbackEndpointDescriptor | None = None
@@ -62,8 +68,17 @@ class LocalCoordinatorClient:
     def health(self) -> Mapping[str, object]:
         return self._request("health", {})
 
-    def submit(self, request: Mapping[str, object]) -> Mapping[str, object]:
-        return self._request("submit", {"request": dict(request)})
+    def submit(
+        self, request: Mapping[str, object], *, admission_budget_seconds: float = 5.0,
+    ) -> Mapping[str, object]:
+        if (not valid_admission_number(admission_budget_seconds)
+                or not 0 < admission_budget_seconds <= SUBMIT_ADMISSION_CEILING_SECONDS):
+            raise CoordinatorClientError("invalid_request")
+        end = time.monotonic() + admission_budget_seconds + SUBMIT_RESPONSE_SLACK_SECONDS
+        return self._request("submit", {
+            "request": dict(request),
+            "admission_deadline": time.time() + admission_budget_seconds,
+        }, monotonic_end=end)
 
     def status(self, job_id: str) -> Mapping[str, object]:
         return self._request("status", {"job_id": job_id})
@@ -89,7 +104,7 @@ class LocalCoordinatorClient:
         return self._request("list", payload)
 
     def _request(
-        self, operation: str, payload: Mapping[str, object]
+        self, operation: str, payload: Mapping[str, object], *, monotonic_end: float | None = None,
     ) -> Mapping[str, object]:
         try:
             frame = json.dumps(
@@ -106,19 +121,29 @@ class LocalCoordinatorClient:
             raise CoordinatorClientError("invalid_request") from None
         if len(frame) > _MAX_FRAME_BYTES:
             raise CoordinatorClientError("invalid_request")
+
+        def remaining() -> float:
+            if monotonic_end is None:
+                return self._timeout
+            budget = monotonic_end - time.monotonic()
+            if budget <= 0:
+                raise CoordinatorClientError("unavailable")
+            return budget
+
         try:
             if self._endpoint is not None:
                 connection = socket.create_connection(
                     (self._endpoint.host, self._endpoint.port),
-                    timeout=self._timeout,
+                    timeout=remaining(),
                 )
             else:
                 connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                connection.settimeout(self._timeout)
+                connection.settimeout(remaining())
                 connection.connect(str(self._socket_path))
             with connection:
-                connection.settimeout(self._timeout)
+                connection.settimeout(remaining())
                 connection.sendall(frame)
+                connection.settimeout(remaining())
                 response_frame = connection.makefile("rb").readline(
                     _MAX_FRAME_BYTES + 2
                 )

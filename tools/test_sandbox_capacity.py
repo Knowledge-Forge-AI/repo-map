@@ -99,35 +99,83 @@ def bind_backing_capacity(
                 ["docker", "inspect", container_id, "--format", "{{json .GraphDriver}}"]
             )
         )
-        upper = graph["Data"]["UpperDir"]
-        if (
-            driver != "overlay2"
-            or graph["Name"] != "overlay2"
-            or not isinstance(docker_root, str)
-            or not isinstance(upper, str)
-        ):
-            raise _outer_refuse("unsupported_backing_mapping")
-        relative = Path(upper).relative_to(Path(docker_root) / "overlay2")
-        if (
-            not Path(docker_root).is_absolute()
-            or len(relative.parts) != 2
-            or relative.parts[1] != "diff"
-            or any(part in {".", ".."} for part in Path(upper).parts)
-        ):
-            raise _outer_refuse("unsupported_backing_mapping")
-        evidence = _closed_json(
-            captured(
-                [
-                    "docker",
-                    "exec",
-                    container_id,
-                    "python3",
-                    "/workspace-ro/tools/test_sandbox_capacity.py",
-                    "probe",
-                ]
+        if driver == "overlay2":
+            if (
+                not isinstance(graph, dict)
+                or graph.get("Name") != "overlay2"
+                or not isinstance(docker_root, str)
+                or not isinstance(graph.get("Data"), dict)
+                or not isinstance(graph["Data"].get("UpperDir"), str)
+            ):
+                raise _outer_refuse("unsupported_backing_mapping")
+            upper = graph["Data"]["UpperDir"]
+            relative = Path(upper).relative_to(Path(docker_root) / "overlay2")
+            if (
+                not Path(docker_root).is_absolute()
+                or len(relative.parts) != 2
+                or relative.parts[1] != "diff"
+                or any(part in {".", ".."} for part in Path(upper).parts)
+            ):
+                raise _outer_refuse("unsupported_backing_mapping")
+            evidence = _closed_json(
+                captured(
+                    [
+                        "docker",
+                        "exec",
+                        container_id,
+                        "python3",
+                        "/workspace-ro/tools/test_sandbox_capacity.py",
+                        "probe",
+                    ]
+                )
             )
-        )
-        value = validate_probe(evidence, upper=upper)
+            value = validate_probe(evidence, upper=upper, driver="overlay2")
+        elif driver == "overlayfs":
+            if graph is not None or not isinstance(docker_root, str):
+                raise _outer_refuse("unsupported_backing_mapping")
+            driver_status = json.loads(
+                captured(["docker", "info", "--format", "{{json .DriverStatus}}"])
+            )
+            if not isinstance(driver_status, list) or not any(
+                isinstance(pair, (list, tuple))
+                and len(pair) >= 2
+                and pair[0] == "driver-type"
+                and "snapshotter" in str(pair[1])
+                for pair in driver_status
+            ):
+                raise _outer_refuse("unsupported_backing_mapping")
+            container_driver = json.loads(
+                captured(
+                    ["docker", "inspect", container_id, "--format", "{{json .Driver}}"]
+                )
+            )
+            if container_driver != "overlayfs":
+                raise _outer_refuse("unsupported_backing_mapping")
+            storage = json.loads(
+                captured(
+                    ["docker", "inspect", container_id, "--format", "{{json .Storage}}"]
+                )
+            )
+            rootfs = storage.get("RootFS") if isinstance(storage, dict) else None
+            snapshot = rootfs.get("Snapshot") if isinstance(rootfs, dict) else None
+            snapshot_name = snapshot.get("Name") if isinstance(snapshot, dict) else None
+            if snapshot_name != "overlayfs":
+                raise _outer_refuse("unsupported_backing_mapping")
+            evidence = _closed_json(
+                captured(
+                    [
+                        "docker",
+                        "exec",
+                        container_id,
+                        "python3",
+                        "/workspace-ro/tools/test_sandbox_capacity.py",
+                        "probe",
+                    ]
+                )
+            )
+            value = validate_probe(evidence, driver="overlayfs", docker_root=docker_root)
+        else:
+            raise _outer_refuse("unsupported_backing_mapping")
     except (ValueError, KeyError, TypeError) as error:
         raise _outer_refuse("unsupported_backing_mapping") from error
     binding = {"schema": SCHEMA, "token": token, "mount_sha256": value["mount_sha256"]}
@@ -207,7 +255,13 @@ def probe() -> dict[str, str | int]:
     }
 
 
-def validate_probe(value: object, *, upper: str) -> dict:
+def validate_probe(
+    value: object,
+    *,
+    upper: str | None = None,
+    driver: str = "overlay2",
+    docker_root: str | None = None,
+) -> dict:
     if not isinstance(value, dict) or set(value) != {
         "upper",
         "mount_sha256",
@@ -217,11 +271,30 @@ def validate_probe(value: object, *, upper: str) -> dict:
     }:
         raise _outer_refuse("malformed_backing_evidence")
     if (
-        value["upper"] != upper
-        or not isinstance(value["mount_sha256"], str)
+        not isinstance(value["mount_sha256"], str)
         or re.fullmatch(r"[0-9a-f]{64}", value["mount_sha256"]) is None
+        or not isinstance(value["upper"], str)
+        or not Path(value["upper"]).is_absolute()
+        or any(part in {".", ".."} for part in Path(value["upper"]).parts)
+        or "\\" in value["upper"]
     ):
         raise _outer_refuse("unbound_backing_evidence")
+    if driver == "overlay2":
+        if upper is None or value["upper"] != upper:
+            raise _outer_refuse("unbound_backing_evidence")
+    elif driver == "overlayfs":
+        upper_path = Path(value["upper"])
+        if docker_root is not None:
+            containerd_root = Path(docker_root) / "containerd"
+            if not upper_path.is_relative_to(containerd_root):
+                raise _outer_refuse("unbound_backing_evidence")
+        else:
+            if not ("containerd" in upper_path.parts and "snapshots" in upper_path.parts):
+                raise _outer_refuse("unbound_backing_evidence")
+        if upper is not None and value["upper"] != upper:
+            raise _outer_refuse("unbound_backing_evidence")
+    else:
+        raise _outer_refuse("unsupported_backing_mapping")
     free, total, percent = (
         value[key] for key in ("free_bytes", "total_bytes", "free_percent")
     )

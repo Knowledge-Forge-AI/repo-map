@@ -16,6 +16,7 @@ from typing import Protocol, TypeAlias
 from repomap_test_support.scale28_preparation_worker_fixtures import (
     prepare_synthetic_resources,
 )
+from runner_coverage_execution import prepare_child_coverage_environment
 from repomap_test_support.test_cov5k_r2_fix1_catalog import (
     CatalogEntry,
     ParameterTuple,
@@ -122,6 +123,7 @@ def _enact_forced_tail() -> tuple[str, int, int]:
         shell=False,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
+        env=prepare_child_coverage_environment(family="unmeasured"),
     )
     try:
         process.send_signal(signal.SIGTERM)

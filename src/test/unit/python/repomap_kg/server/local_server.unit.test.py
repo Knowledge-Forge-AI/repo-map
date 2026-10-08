@@ -1,5 +1,7 @@
 import io
 import json
+import os
+import sys
 import tempfile
 import unittest
 from dataclasses import replace
@@ -9,10 +11,8 @@ from unittest.mock import patch
 from repomap_kg.ops.config_loading import load_ops_config_home
 from repomap_kg.ops.config_records import OpsPostgresStatus
 from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.server.http import (
-    RepoMapLocalRequestHandler,
-    RepoMapLocalServer,
-)
+from repomap_kg.server.http import RepoMapLocalRequestHandler, RepoMapLocalServer, serve_local_http
+from repomap_test_support.cli_integration import OPS_CONFIG_TEMPLATE
 
 
 class _TestHandler(RepoMapLocalRequestHandler):
@@ -309,6 +309,77 @@ class LocalServerUnitTests(unittest.TestCase):
         self.assertEqual(calls[0][0], "init")
         self.assertEqual(calls[1][0], "serve_forever")
         self.assertEqual(calls[2][0], "server_close")
+
+    def test_serve_local_http_handles_sigterm_gracefully(self):
+        import signal
+        with tempfile.TemporaryDirectory() as tmpdir:
+            home = Path(tmpdir) / "repo-map-home"; home.mkdir()
+            (home / "repomap.rpl.toml").write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
+            calls: list[tuple[str, object]] = []
+
+            class FakeServer:
+                def __init__(self, address, repo_map_home):
+                    calls.append(("init", (address, repo_map_home)))
+
+                def serve_forever(self):
+                    calls.append(("serve_forever", None))
+                    os.kill(os.getpid(), signal.SIGTERM)
+
+                def server_close(self):
+                    calls.append(("server_close", None))
+
+            with patch("repomap_kg.server.http.RepoMapLocalServer", FakeServer):
+                result = serve_local_http(home, host="127.0.0.1", port=55882)
+
+        self.assertEqual(result, 0)
+        self.assertEqual(calls[0][0], "init")
+        self.assertEqual(calls[1][0], "serve_forever")
+        self.assertEqual(calls[2][0], "server_close")
+
+    def test_server_serve_http_child_coverage_settlement(self):
+        import coverage, socket, subprocess, time, urllib.request
+        from runner_coverage import ChildCoverageSession
+        repo_root = Path(__file__).resolve().parents[6]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            home = Path(tmpdir) / "repo-map-home"; home.mkdir()
+            (home / "repomap.rpl.toml").write_text(OPS_CONFIG_TEMPLATE, encoding="utf-8")
+            with socket.socket() as s:
+                s.bind(("127.0.0.1", 0)); port = s.getsockname()[1]
+            session = ChildCoverageSession(
+                coverage_module=coverage, scratch_dir=Path(tmpdir) / "session",
+                source_root=repo_root / "src" / "main" / "python", suite="staging",
+            )
+            with session:
+                runner = session.create_coverage(coverage); runner.start()
+                cmd = [sys.executable, "-m", "repomap_kg", "server", "serve",
+                       "--repo-map-home", str(home), "--host", "127.0.0.1", "--port", str(port)]
+                process = subprocess.Popen(
+                    cmd, cwd=repo_root, env=os.environ.copy(),
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                )
+                try:
+                    ready = False
+                    for _ in range(50):
+                        time.sleep(0.1)
+                        try:
+                            with urllib.request.urlopen(f"http://127.0.0.1:{port}/livez", timeout=1) as resp:
+                                if resp.status == 200: ready = True; break
+                        except Exception: pass
+                    self.assertTrue(ready, "server failed to become ready")
+                finally:
+                    process.terminate()
+                    try: process.wait(timeout=10)
+                    except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=5)
+                    runner.stop(); runner.save()
+
+                self.assertEqual(process.returncode, 0)
+                pid = process.pid
+                self.assertTrue((session.child_manifest_dir / f"{pid}.start").is_file())
+                self.assertTrue((session.child_manifest_dir / f"{pid}.exit").is_file())
+                self.assertEqual(list(session.child_manifest_dir.glob("unsettled*")), [])
+                combined = session.combine(runner)
+                self.assertIsNotNone(combined)
+                self.assertTrue(any("http.py" in f for f in combined.get_data().measured_files()))
 
     def call_handler(self, path: str, home: Path) -> tuple[int, dict[str, object]]:
         handler = self.new_handler(path, home)

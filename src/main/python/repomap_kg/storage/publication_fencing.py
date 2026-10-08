@@ -27,6 +27,7 @@ __all__ = (
     "PublicationHandoff",
     "PublicationReconciliationOutcome",
     "build_graph_publication_claim_statements",
+    "build_graph_publication_fence_statements",
     "build_publication_finalize_statements",
     "build_publication_prepare_statements",
     "build_publication_reconciliation_statements",
@@ -115,6 +116,31 @@ BEGIN
     {claim}
 END
 $arch1c_graph_claim$;""",
+    )
+
+
+def build_graph_publication_fence_statements(
+    owner: StageOwner,
+    *,
+    stage_id: str = "fence",
+) -> tuple[str, ...]:
+    """Advance or establish graph publication authority to fence prior owners."""
+
+    owner.validate()
+    if owner.execution_mode == "direct":
+        return ()
+    fence = _authority_upsert(
+        owner,
+        stage_id,
+        "NULL",
+        stale_message="SCALE5 stale publication fence",
+    )
+    return (
+        f"""DO $scale5_graph_fence$
+BEGIN
+    {fence}
+END
+$scale5_graph_fence$;""",
     )
 
 

@@ -14,6 +14,7 @@ TOOLS_CI = TOOLS_ROOT / "ci"
 if str(TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLS_ROOT))
 
+from ci.ci_topology import check_topology
 from ci.ci_topology_contracts import (
     MAIN_SYSTEM_GATE_WORKFLOW,
     STAGING_GATE_WORKFLOW,
@@ -26,9 +27,17 @@ from ci.workflow_model import Workflow, load_workflow
 WORKFLOWS_DIR = ROOT / ".github/workflows"
 STAGING_WORKFLOW_PATH = WORKFLOWS_DIR / STAGING_GATE_WORKFLOW
 MAIN_WORKFLOW_PATH = WORKFLOWS_DIR / MAIN_SYSTEM_GATE_WORKFLOW
+RELEASE_WORKFLOW_PATH = WORKFLOWS_DIR / "repomap-release-qualification.yml"
 
 
 def test_production_gate_workflows_satisfy_topology_contracts() -> None:
+    if not STAGING_WORKFLOW_PATH.exists():
+        assert check_topology(ROOT) == ()
+        release_wf = load_workflow(RELEASE_WORKFLOW_PATH)
+        assert _check_staging_gate(release_wf) == []
+        assert _check_main_system_gate(release_wf) == []
+        return
+
     staging_wf = load_workflow(STAGING_WORKFLOW_PATH)
     staging_violations = _check_staging_gate(staging_wf)
     assert staging_violations == [], f"staging gate violations: {staging_violations}"
@@ -36,6 +45,33 @@ def test_production_gate_workflows_satisfy_topology_contracts() -> None:
     main_wf = load_workflow(MAIN_WORKFLOW_PATH)
     main_violations = _check_main_system_gate(main_wf)
     assert main_violations == [], f"main system gate violations: {main_violations}"
+
+
+def test_retired_workflows_remain_absent() -> None:
+    if STAGING_WORKFLOW_PATH.exists():
+        pytest.skip("withheld in private workspace: standalone gate workflows present")
+    for retired in (
+        "repomap-main-source-policy.yml",
+        "repomap-main-system-gate.yml",
+        "repomap-staging-gate.yml",
+        "repomap-static-analysis.yml",
+        "repomap-unit-tests.yml",
+    ):
+        assert not (WORKFLOWS_DIR / retired).exists(), f"Retired workflow {retired} must not exist"
+
+
+def test_candidate_bindings_and_gate_request_present_in_release_workflow() -> None:
+    if not RELEASE_WORKFLOW_PATH.exists():
+        pytest.skip("withheld in private workspace: release-qualification workflow absent")
+    workflow = load_workflow(RELEASE_WORKFLOW_PATH)
+    commands = "\n".join(workflow.run_commands())
+    assert "git rev-parse HEAD" in commands
+    assert "git rev-parse 'HEAD^{tree}'" in commands
+    assert "git rev-parse 'HEAD^1'" in commands
+    assert "git rev-parse 'HEAD^2'" in commands
+    assert "export CANDIDATE_SHA CANDIDATE_TREE CANDIDATE_BASE_PARENT CANDIDATE_HEAD_PARENT" in commands
+    assert "repomap-ci-gate-request-v1" in commands
+    assert "gate-request.json" in commands
 
 
 @pytest.mark.parametrize(
@@ -48,6 +84,8 @@ def test_production_gate_workflows_satisfy_topology_contracts() -> None:
 def test_trusted_gate_copy_set_is_exact_in_both_workflows(
     workflow_path: Path, gate_name: str
 ) -> None:
+    if not workflow_path.exists():
+        pytest.skip(f"withheld in public projection: {gate_name} absent")
     workflow = load_workflow(workflow_path)
     steps = workflow.steps()
     preserve_step = next(
@@ -72,6 +110,8 @@ def test_trusted_gate_copy_set_is_exact_in_both_workflows(
     [STAGING_WORKFLOW_PATH, MAIN_WORKFLOW_PATH],
 )
 def test_trusted_copy_set_provenance_and_ordering(workflow_path: Path) -> None:
+    if not workflow_path.exists():
+        pytest.skip(f"withheld in public projection: {workflow_path.name} absent")
     workflow: Workflow = load_workflow(workflow_path)
     steps = workflow.steps()
 

@@ -205,7 +205,7 @@ class ControlStoreReviewLifecycleIntegrationTests(StorageReviewIntegrationBase):
             timedelta(seconds=0), limit=10, dry_run=False
         )
 
-        self.assertEqual(deleted, (deletable,))
+        self.assertEqual(deleted.deleted_job_ids, (deletable,))
         with self.assertRaises(KeyError):
             self.store.status(deletable)
         self.assertEqual(self.store.status(leased).state, "failed")
@@ -297,7 +297,7 @@ class ControlStoreReviewLifecycleIntegrationTests(StorageReviewIntegrationBase):
         self.assertEqual(self.store.reconcile_publication(claim), "reconciliation_required")
         self.assertEqual(self.store.cleanup_terminal(
             timedelta(seconds=0), limit=10, dry_run=False,
-        ), ())
+        ).deleted_job_ids, ())
         with self._connect() as connection, connection.cursor() as cursor:
             cursor.execute(
                 "SELECT is_current, finished_at IS NOT NULL, publication_state "
@@ -319,14 +319,14 @@ class ControlStoreReviewLifecycleIntegrationTests(StorageReviewIntegrationBase):
         ))
         self.assertEqual(self.store.cleanup_terminal(
             timedelta(seconds=0), limit=10, dry_run=False,
-        ), ())
+        ).deleted_job_ids, ())
         self.assertTrue(self.store.mark_attempt_terminated(
             claim, process_cleanup_proved=True,
         ))
         self.assertEqual(self.store.reconcile_publication(claim), "succeeded")
         self.assertEqual(self.store.cleanup_terminal(
             timedelta(seconds=0), limit=10, dry_run=False,
-        ), (claim.job_id,))
+        ).deleted_job_ids, (claim.job_id,))
         with self._connect() as connection, connection.cursor() as cursor:
             for table in ("jobs", "job_attempts", "synthetic_publication_markers", "graph_leases"):
                 cursor.execute(
@@ -338,4 +338,4 @@ class ControlStoreReviewLifecycleIntegrationTests(StorageReviewIntegrationBase):
                 self.assertEqual(cursor.fetchone(), (0,), table)
         self.assertEqual(self.store.cleanup_terminal(
             timedelta(seconds=0), limit=10, dry_run=False,
-        ), ())
+        ).deleted_job_ids, ())

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from contextlib import nullcontext
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -68,6 +69,19 @@ def run_selected_suites(
         suites = ("int",)
     else:
         suites = (args.suite,)
+    if "int" in suites and "REPOMAP_TEST_RUNTIME_IMAGE" not in os.environ:
+        if getattr(args, "smoke_image_reference", None):
+            os.environ["REPOMAP_TEST_RUNTIME_IMAGE"] = args.smoke_image_reference
+        elif docker_boundary is not None and resource_run is not None:
+            from repomap_test_support.resource_test_images import ensure_canonical_runtime_image
+
+            repo_root = Path(__file__).resolve().parents[1]
+            os.environ["REPOMAP_TEST_RUNTIME_IMAGE"] = ensure_canonical_runtime_image(
+                repo_root=repo_root,
+                resource_run=resource_run,
+                client=docker_boundary.client,
+                boundary=docker_boundary,
+            )
     prepare_go_test_environment_fn(args.suite)
     pytest_exit_code = run_pytest_suites_fn(args, suites, forwarded_pytest_args)
     if pytest_exit_code != 0:
@@ -104,6 +118,7 @@ def run_smoke_suite(
             client=docker_boundary.client,
             boundary=docker_boundary,
         )
+    os.environ["REPOMAP_TEST_RUNTIME_IMAGE"] = image_reference
     print()
     print("=== RepoMap container smoke suite ===", flush=True)
     config = SmokeConfig(
@@ -315,9 +330,7 @@ def run_pytest_suites(
 
     if pytest_exit_code != 0:
         return pytest_exit_code
-    if not coverage_ok:
-        return 1
-    if report_error is not None:
+    if not coverage_ok or report_error is not None:
         return 1
     return 0
 
@@ -327,17 +340,10 @@ def run_pytest(pytest_module, pytest_args: list[str], plugin) -> int:
 
 
 def run_pytest_with_coverage(
-    coverage_module,
-    pytest_module,
-    pytest_args,
-    plugin,
-    *,
-    scratch_dir: Path | None = None,
-    source_paths: Sequence[Path | str] = (),
-    session: ChildCoverageSession | None = None,
-    suite: str | None = None,
-    run_pytest_fn=run_pytest,
-    child_coverage_session_cls=ChildCoverageSession,
+    coverage_module, pytest_module, pytest_args, plugin, *,
+    scratch_dir: Path | None = None, source_paths: Sequence[Path | str] = (),
+    session: ChildCoverageSession | None = None, suite: str | None = None,
+    run_pytest_fn=run_pytest, child_coverage_session_cls=ChildCoverageSession,
     source_root: Path,
 ):
     active_suite = suite or getattr(plugin, "_suite", getattr(plugin, "suite", None)) or "inert"
@@ -353,17 +359,13 @@ def run_pytest_with_coverage(
             pytest_exit_code = int(run_pytest_fn(pytest_module, pytest_args, plugin))
         finally:
             coverage_runner = _finish_coverage_run(
-                coverage_runner,
-                session=None,
-                save=False,
+                coverage_runner, session=None, save=False,
             )
         return pytest_exit_code, coverage_runner
     if session is None:
         session = child_coverage_session_cls(
-            coverage_module=coverage_module,
-            scratch_dir=scratch_dir,
-            source_paths=source_paths,
-            suite=active_suite,
+            coverage_module=coverage_module, scratch_dir=scratch_dir,
+            source_paths=source_paths, suite=active_suite,
         )
     with session:
         coverage_runner = session.create_coverage(coverage_module)
@@ -375,20 +377,13 @@ def run_pytest_with_coverage(
                 pytest_exit_code = int(run_pytest_fn(pytest_module, pytest_args, plugin))
         finally:
             coverage_runner = _finish_coverage_run(
-                coverage_runner,
-                session=session,
-                save=True,
+                coverage_runner, session=session, save=True,
             )
     return pytest_exit_code, coverage_runner
 
 
 __all__ = (
-    "RecordingPytestPlugin",
-    "prepare_go_test_environment",
-    "pytest_environment_for",
-    "run_pytest",
-    "run_pytest_suites",
-    "run_pytest_with_coverage",
-    "run_selected_suites",
-    "run_smoke_suite",
+    "RecordingPytestPlugin", "prepare_go_test_environment", "pytest_environment_for",
+    "run_pytest", "run_pytest_suites", "run_pytest_with_coverage",
+    "run_selected_suites", "run_smoke_suite",
 )

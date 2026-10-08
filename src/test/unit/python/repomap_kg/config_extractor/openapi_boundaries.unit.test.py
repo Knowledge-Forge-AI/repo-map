@@ -4,6 +4,7 @@ import unittest
 from repomap_kg.extractors.config.generic import extract_config_file_observations
 from repomap_kg.extractors.config.openapi_helpers import (
     _is_openapi_document,
+    _is_url,
     _openapi_bounded_string,
     _openapi_oauth_flow_names,
     _openapi_pointer_is_redacted,
@@ -12,6 +13,7 @@ from repomap_kg.extractors.config.openapi_helpers import (
     _openapi_scope_names,
     _openapi_sensitive_key,
     _openapi_string_list,
+    _url_has_credentials,
 )
 
 
@@ -93,6 +95,12 @@ class ConfigExtractorOpenApiBoundariesUnitTests(unittest.TestCase):
         self.assertEqual(_openapi_reference_scope("https://example.com/pet.yaml"), "remote")
         self.assertEqual(_openapi_safe_string("safe"), "safe")
         self.assertIsNone(_openapi_safe_string(None))
+        self.assertIsNone(_openapi_safe_string("api_key"))
+        self.assertIsNone(_openapi_safe_string(123))
+        self.assertTrue(_is_url("https://example.com"))
+        self.assertFalse(_is_url("/local/path"))
+        self.assertTrue(_url_has_credentials("https://u:p@example.com"))
+        self.assertFalse(_url_has_credentials("https://example.com"))
         self.assertEqual(_openapi_string_list(["a", "b"]), ["a", "b"])
         self.assertEqual(_openapi_string_list(None), [])
         self.assertTrue(_openapi_sensitive_key("secret_token"))

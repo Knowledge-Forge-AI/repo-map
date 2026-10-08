@@ -11,7 +11,9 @@ from repomap_kg.graph.multi_source_pipeline import (
     scan_multi_source_generations,
 )
 from repomap_kg.ops import reports as _ops_reports
-from repomap_kg.ops.config import OpsConfig, graph_database
+from repomap_kg.ops.config import OpsConfig, OpsGraphConfig, graph_database
+from repomap_kg.ops.config_local import SQLITE_GRAPH_DATABASE_DISPLAY
+from repomap_kg.ops.graph_registry import GraphRegistryConfig
 from repomap_kg.ops.preflight import _scan_preflight_root
 from repomap_kg.ops.refresh_graphs import (
     _find_graph,
@@ -31,7 +33,14 @@ def _dispatch_preflight_safety_markers() -> Any:
     return getattr(facade, "_preflight_safety_markers", _preflight_safety_markers) if facade is not None else _preflight_safety_markers
 
 
-def preflight_graph(config: OpsConfig, graph_id: str) -> OpsRefreshPreflightResult:
+def _preflight_database(config: GraphRegistryConfig, graph: OpsGraphConfig) -> str:
+    """PostgreSQL keeps its database name; a SQLite Local graph shows only a display value."""
+    if isinstance(config, OpsConfig):
+        return graph_database(config, graph)
+    return SQLITE_GRAPH_DATABASE_DISPLAY
+
+
+def preflight_graph(config: GraphRegistryConfig, graph_id: str) -> OpsRefreshPreflightResult:
     graph = _find_graph(config, graph_id)
     if graph.refresh_unsupported_classification is not None:
         raise OpsRefreshError(graph.refresh_unsupported_classification)
@@ -51,7 +60,7 @@ def preflight_graph(config: OpsConfig, graph_id: str) -> OpsRefreshPreflightResu
         return OpsRefreshPreflightResult(
             graph_id=graph.id,
             repository_name=graph.repository_name,
-            database=graph_database(config, graph),
+            database=_preflight_database(config, graph),
             privacy=graph.privacy,
             enabled=graph.enabled,
             mcp_visible=graph.mcp_visible,
@@ -82,7 +91,7 @@ def preflight_graph(config: OpsConfig, graph_id: str) -> OpsRefreshPreflightResu
     return OpsRefreshPreflightResult(
         graph_id=graph.id,
         repository_name=graph.repository_name,
-        database=graph_database(config, graph),
+        database=_preflight_database(config, graph),
         privacy=graph.privacy,
         enabled=graph.enabled,
         mcp_visible=graph.mcp_visible,
@@ -99,7 +108,7 @@ def preflight_graph(config: OpsConfig, graph_id: str) -> OpsRefreshPreflightResu
 
 
 def preflight_to_jsonable(
-    config: OpsConfig,
+    config: GraphRegistryConfig,
     result: OpsRefreshPreflightResult,
 ) -> dict[str, Any]:
     return _ops_reports.preflight_to_jsonable(
@@ -110,7 +119,7 @@ def preflight_to_jsonable(
 
 
 def format_preflight_table(
-    config: OpsConfig,
+    config: GraphRegistryConfig,
     result: OpsRefreshPreflightResult,
 ) -> str:
     return _ops_reports.format_preflight_table(

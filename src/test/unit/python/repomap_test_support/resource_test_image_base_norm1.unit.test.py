@@ -150,3 +150,26 @@ def test_architecture_pair_refuses_cross_family_fuzzy_or_uppercase_values(
 ):
     with pytest.raises(ImageLifecycleError, match="architecture"):
         normalize_architecture_pair(image, server)
+
+
+@pytest.mark.parametrize(
+    "bad_image_id",
+    [
+        "not-an-exact-sha",
+        "sha256:" + "b" * 63,
+        "sha256:" + "B" * 64,
+        "sha512:" + "b" * 128,
+        "",
+    ],
+)
+def test_read_configured_base_aborts_when_base_engine_image_id_is_not_exact(bad_image_id: str):
+    image = SimpleNamespace(
+        id=bad_image_id,
+        attrs={"RepoDigests": [_CONFIGURED], "Architecture": "arm64"},
+    )
+    client = SimpleNamespace(
+        images=SimpleNamespace(get=lambda _ref: image),
+        info=lambda: {"Architecture": "arm64"},
+    )
+    with pytest.raises(ImageLifecycleError, match="configured base Engine image ID is not exact"):
+        read_configured_base(client, _CONFIGURED, allow_missing=False)

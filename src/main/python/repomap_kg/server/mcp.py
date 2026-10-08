@@ -11,7 +11,6 @@ import repomap_kg.server._mcp_dispatch as _mcp_dispatch
 import repomap_kg.server._mcp_projects as _mcp_projects
 import repomap_kg.server._mcp_sources as _mcp_sources
 import repomap_kg.server.mcp_canonical as _canonical_impl
-from repomap_kg import __version__
 from repomap_kg.graph.keys import GRAPH_KEY_VERSION
 from repomap_kg.server._mcp_dispatch import (
     MCP_PROTOCOL_VERSION as MCP_PROTOCOL_VERSION,
@@ -37,7 +36,15 @@ from repomap_kg.server._mcp_ops_tools import (
     repomap_server_memory_summary as repomap_server_memory_summary,
     repomap_terraform_summary as repomap_terraform_summary,
 )
+from repomap_kg.ops.config import OpsConfig
+from repomap_kg.server.canonical_read_store import (
+    CanonicalReadStore,
+    CanonicalStorageQueries,
+    PostgresCanonicalReadStore,
+)
+import repomap_kg.server.mcp_core as _mcp_core
 from repomap_kg.server.mcp_core import (
+    ConfiguredGraphTarget as ConfiguredGraphTarget,
     ENV_MCP_CONFIG as ENV_MCP_CONFIG,
     PROJECT_DATABASE_DISPLAY as PROJECT_DATABASE_DISPLAY,
     PROJECT_ROOT_DISPLAY as PROJECT_ROOT_DISPLAY,
@@ -46,7 +53,7 @@ from repomap_kg.server.mcp_core import (
     load_mcp_config as load_mcp_config,
     public_storage_error_message as public_storage_error_message,
     resolve_mcp_config_path as resolve_mcp_config_path,
-    storage_connection as storage_connection,
+    StorageConnection as StorageConnection,
     validate_canonical_edge_args as validate_canonical_edge_args,
     validate_canonical_limit as validate_canonical_limit,
     validate_canonical_neighborhood_args as validate_canonical_neighborhood_args,
@@ -56,6 +63,11 @@ from repomap_kg.server.mcp_core import (
     validate_read_schema_version as validate_read_schema_version,
 )
 from repomap_kg.server.mcp_schemas import tool_definitions as tool_definitions
+from repomap_kg.ops.config_local import LocalSqliteConfig
+from repomap_kg.server.mcp_core import GraphStoreBinding
+from repomap_kg.server.postgres_read_binding import postgres_graph_stores
+from repomap_kg.server.sqlite_read_binding import SqliteGraphStores
+from repomap_kg.server.source_read_store import PostgresSourceReadStore, SourceReadStore, SourceStorageQueries
 from repomap_kg.server.ops import (
     graph_payload as graph_payload,
     load_mcp_ops_config as load_mcp_ops_config,
@@ -89,6 +101,49 @@ from repomap_kg.storage import (
 )
 
 
+def canonical_storage_queries() -> CanonicalStorageQueries:
+    """Bind the facade's canonical query owners at call time for the seam."""
+    return CanonicalStorageQueries(
+        nodes=query_canonical_node_records, edges=query_canonical_edge_records,
+        edge_explanation=query_canonical_edge_explanation,
+        neighborhood=query_canonical_neighborhood, storage_summary=query_canonical_storage_summary,
+    )
+
+
+def source_storage_queries() -> SourceStorageQueries:
+    """Bind the facade's source query owners at call time for the seam."""
+    return SourceStorageQueries(
+        ingested_sources=query_ingested_source_records, summary=query_source_summary,
+        runs=query_source_run_records, feed_items=query_source_feed_item_records,
+        feed_item_explanation=query_source_feed_item_explanation,
+        references=query_source_reference_records,
+    )
+
+
+def graph_stores(config: OpsConfig | LocalSqliteConfig) -> GraphStoreBinding:
+    """Production configured-graph binding for the backend the home declares."""
+    if isinstance(config, LocalSqliteConfig):
+        return SqliteGraphStores(config)
+    return postgres_graph_stores(config, canonical_storage_queries(), source_storage_queries())
+
+
+def storage_connection(**arguments: Any) -> StorageConnection | ConfiguredGraphTarget:
+    """Resolve a tool target, binding configured graphs through ``graph_stores``."""
+    return _mcp_core.storage_connection(**arguments, graph_stores=graph_stores)
+
+
+def canonical_read_store(target: Any) -> CanonicalReadStore:
+    if isinstance(target, ConfiguredGraphTarget):
+        return target.stores.canonical_store(target.selection)
+    return PostgresCanonicalReadStore(target, canonical_storage_queries())
+
+
+def source_read_store(target: Any) -> SourceReadStore:
+    if isinstance(target, ConfiguredGraphTarget):
+        return target.stores.source_store(target.selection)
+    return PostgresSourceReadStore(target, source_storage_queries())
+
+
 def _canonical_tool_dependencies() -> _canonical_impl.CanonicalToolDependencies:
     return _canonical_impl.CanonicalToolDependencies(
         storage_connection=storage_connection,
@@ -99,10 +154,7 @@ def _canonical_tool_dependencies() -> _canonical_impl.CanonicalToolDependencies:
         validate_limit=validate_canonical_limit,
         validate_offset=validate_offset,
         validate_read_schema_version=validate_read_schema_version,
-        query_canonical_node_records=query_canonical_node_records,
-        query_canonical_edge_records=query_canonical_edge_records,
-        query_canonical_edge_explanation=query_canonical_edge_explanation,
-        query_canonical_neighborhood=query_canonical_neighborhood,
+        canonical_read_store=canonical_read_store,
         canonical_node_records_to_jsonable=canonical_node_records_to_jsonable,
         canonical_edge_records_to_jsonable=canonical_edge_records_to_jsonable,
         canonical_edge_explanation_to_jsonable=canonical_edge_explanation_to_jsonable,
@@ -133,17 +185,12 @@ def graph_registry_projects_hint() -> dict[str, Any]:
 
 def _source_tool_dependencies() -> _mcp_sources.SourceToolDependencies:
     return _mcp_sources.SourceToolDependencies(
+        source_read_store=source_read_store,
         storage_connection=storage_connection,
-        query_ingested_source_records=query_ingested_source_records,
         ingested_source_records_to_jsonable=ingested_source_records_to_jsonable,
-        query_source_summary=query_source_summary,
         source_summary_to_jsonable=source_summary_to_jsonable,
-        query_source_run_records=query_source_run_records,
         source_run_records_to_jsonable=source_run_records_to_jsonable,
-        query_source_feed_item_records=query_source_feed_item_records,
         source_feed_item_records_to_jsonable=source_feed_item_records_to_jsonable,
-        query_source_feed_item_explanation=query_source_feed_item_explanation,
-        query_source_reference_records=query_source_reference_records,
         source_reference_records_to_jsonable=source_reference_records_to_jsonable,
     )
 
@@ -158,40 +205,7 @@ def repomap_status(
     pg_user: str | None = None,
     psql_command: str | None = None,
 ) -> dict[str, Any]:
-    connection = storage_connection(
-        root_path=root_path,
-        project=project,
-        pg_database=pg_database,
-        pg_host=pg_host,
-        pg_port=pg_port,
-        pg_user=pg_user,
-        psql_command=psql_command,
-    )
-    summary = connection.query_storage(
-        query_canonical_storage_summary,
-        root_path=connection.root_path,
-    )
-    payload = {
-        "server": "repomap-kg",
-        "version": __version__,
-        "read_only": True,
-        "root_path": summary.root_path,
-        "repository_name": summary.repository_name,
-        "graph_key_version": GRAPH_KEY_VERSION,
-        "storage_model": "canonical",
-        "counts": {
-            "runs": summary.runs,
-            "files": summary.files,
-            "raw_observations": summary.raw_observations,
-            "canonical_nodes": summary.canonical_nodes,
-            "canonical_edges": summary.canonical_edges,
-            "canonical_evidence": summary.canonical_evidence,
-        },
-    }
-    payload["root_path"] = connection.root_path_display
-    if connection.project is not None:
-        payload["project"] = connection.project
-    return payload
+    return _canonical_impl.status_payload(**locals(), dependencies=_canonical_tool_dependencies())
 
 
 def repomap_canonical_nodes(
@@ -329,7 +343,6 @@ def repomap_source_references(
     limit: int = 50,
 ) -> list[dict[str, Any]]:
     return _mcp_sources.repomap_source_references(**locals(), dependencies=_source_tool_dependencies())
-
 
 
 def _resolve_tool(function_name: str) -> Any:

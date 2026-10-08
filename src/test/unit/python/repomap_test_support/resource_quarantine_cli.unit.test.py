@@ -180,6 +180,7 @@ def test_no_physical_deletion_or_arbitrary_path_entrypoint():
     assert set(actions) == {
         "inventory",
         "recover-index",
+        "recover-maintenance-owner",
         "compact",
         "quarantine",
         "delete-quarantine",
@@ -187,6 +188,10 @@ def test_no_physical_deletion_or_arbitrary_path_entrypoint():
         "restore",
         "operator-reclaim",
     }
+    with pytest.raises(SystemExit):
+        maintenance_tool.parser().parse_args(["recover-maintenance-owner", "/arbitrary/path"])
+    with pytest.raises(SystemExit):
+        maintenance_tool.parser().parse_args(["recover-maintenance-owner"])
     for forbidden in {"delete", "prune", "reclaim-all"}:
         assert forbidden not in actions
     with pytest.raises(SystemExit):

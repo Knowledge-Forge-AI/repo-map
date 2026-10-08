@@ -5,9 +5,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
+from typing import Any, cast
+from unittest.mock import patch
 
 from repomap_kg.coordinator import _portable_authority as pa
+from repomap_kg.coordinator.protocol import ProtocolSession
+from repomap_kg.coordinator.refresh_adapter import refresh_terminal
 
 
 class PortableAuthorityAuditUnitTests(unittest.TestCase):
@@ -129,6 +134,255 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             pa._validate_audit_event("os.symlink", ("one_arg",), self.read_roots, self.write_roots)
         pa._validate_audit_event("os.symlink", (str(src_ok), str(dst_ok)), self.read_roots, self.write_roots)
+
+    def test_subprocess_popen_allows_approved_go_helper_and_denies_others(self):
+        code_root = self.tmp / "code"
+        code_root.mkdir()
+        helper = code_root / "repomap-go-extract"
+        helper.touch(mode=0o755)
+        outside_helper = self.tmp / "repomap-go-extract"
+        outside_helper.touch(mode=0o755)
+
+        pa._validate_audit_event(
+            "subprocess.Popen", (str(helper),), self.read_roots, self.write_roots,
+            code_roots=(code_root,),
+        )
+        pa._validate_audit_event(
+            "subprocess.Popen", (None, [str(helper), "--root", "foo"]), self.read_roots, self.write_roots,
+            code_roots=(code_root,),
+        )
+
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "subprocess.Popen", (str(outside_helper),), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
+        bad_exe = code_root / "bash"
+        bad_exe.touch(mode=0o755)
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "subprocess.Popen", (str(bad_exe),), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
+    def test_posix_spawn_allows_approved_go_helper_and_denies_others(self):
+        code_root = self.tmp / "code"
+        code_root.mkdir()
+        helper = code_root / "repomap-go-extract"
+        helper.touch(mode=0o755)
+        outside_helper = self.tmp / "repomap-go-extract"
+        outside_helper.touch(mode=0o755)
+
+        pa._validate_audit_event(
+            "os.posix_spawn", (str(helper), [str(helper)], {}), self.read_roots, self.write_roots,
+            code_roots=(code_root,),
+        )
+        pa._validate_audit_event(
+            "os.posix_spawnp", (str(helper), [str(helper)], {}), self.read_roots, self.write_roots,
+            code_roots=(code_root,),
+        )
+
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "os.posix_spawn", (str(outside_helper), [str(outside_helper)], {}), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
+        bad_exe = code_root / "bash"
+        bad_exe.touch(mode=0o755)
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "os.posix_spawn", (str(bad_exe), [str(bad_exe)], {}), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
+        with self.assertRaisesRegex(PermissionError, "runtime authority denied"):
+            pa._validate_audit_event(
+                "os.exec", (str(helper), [str(helper)], {}), self.read_roots, self.write_roots,
+                code_roots=(code_root,),
+            )
+
+    def test_posix_spawn_allows_go_helper_from_repomap_go_helper_env(self):
+        outside_helper = self.tmp / "repomap-go-extract"
+        outside_helper.touch(mode=0o755)
+
+        with patch.dict(os.environ, {"REPOMAP_GO_HELPER": str(outside_helper)}):
+            pa._validate_audit_event(
+                "os.posix_spawn",
+                (str(outside_helper), [str(outside_helper)], {}),
+                self.read_roots,
+                self.write_roots,
+                code_roots=(),
+            )
+
+    def test_refresh_terminal_with_refresh_failed_diagnostic_round_trips_protocol(self):
+        cap = SimpleNamespace(
+            validate=lambda: None,
+            job_id="job-refresh-1",
+            attempt=2,
+            graph_id="synthetic-graph",
+            source_generation="sg1:test",
+            config_generation="cg1:test",
+            extractor_generation="eg1:test",
+            canonicalizer_generation="kg1:test",
+        )
+        result = SimpleNamespace(
+            result="failure",
+            publication_state="not_started",
+            diagnostics=[{"code": "refresh-failed"}],
+            started_at="2026-09-17T22:00:00Z",
+            finished_at="2026-09-17T22:00:01Z",
+            warnings=(),
+            error="portable worker did not complete",
+            error_category="worker_crash",
+        )
+        term = refresh_terminal(cast(Any, cap), result)
+        session = ProtocolSession({"job_id": "job-refresh-1", "attempt": 2})
+        session.accept_worker({
+            "schema_version": 1, "message_type": "worker_hello", "protocol_versions": [1],
+            "worker_generation": "worker-v1", "capabilities": ["refresh_graph"], "process_nonce": "nonce-test",
+        })
+        session.accept_coordinator({
+            "schema_version": 1, "message_type": "job_start", "job_id": "job-refresh-1",
+            "attempt": 2, "job_kind": "refresh_graph", "graph_id": "synthetic-graph",
+            "source_generation": "sg1:test", "config_generation": "cg1:test",
+        })
+        accepted = session.accept_worker(term)
+        self.assertEqual(accepted["status"], "failed")
+        self.assertEqual(accepted["publication_state"], "not_started")
+        self.assertIn("refresh-failed", cast(list, accepted["diagnostics"]))
+
+    def test_open_event_allows_anonymous_fifo_descriptor(self):
+        r_fd, w_fd = os.pipe()
+        try:
+            pa._validate_audit_event(
+                "open", (r_fd, "rb", -1), self.read_roots, self.write_roots
+            )
+            pa._validate_audit_event(
+                "open", (w_fd, "wb", -1), self.read_roots, self.write_roots
+            )
+        finally:
+            os.close(r_fd)
+            os.close(w_fd)
+
+    def test_open_event_validates_named_fifo_descriptor(self):
+        if not hasattr(os, "mkfifo"):
+            return
+        valid_fifo = self.write_root / "test.fifo"
+        os.mkfifo(str(valid_fifo))
+        fd_valid = os.open(str(valid_fifo), os.O_RDWR | os.O_NONBLOCK)
+        try:
+            pa._validate_audit_event(
+                "open", (fd_valid, "wb", -1), self.read_roots, self.write_roots
+            )
+        finally:
+            os.close(fd_valid)
+
+        denied_dir = self.tmp / "unauthorized"
+        denied_dir.mkdir()
+        denied_fifo = denied_dir / "unauthorized.fifo"
+        os.mkfifo(str(denied_fifo))
+        fd_denied = os.open(str(denied_fifo), os.O_RDWR | os.O_NONBLOCK)
+        try:
+            with self.assertRaisesRegex(PermissionError, "filesystem authority denied"):
+                pa._validate_audit_event("open", (fd_denied, "wb", -1), self.read_roots, self.write_roots)
+        finally:
+            os.close(fd_denied)
+
+    def test_open_event_denies_invalid_or_negative_descriptor(self):
+        with self.assertRaisesRegex(PermissionError, "filesystem authority denied"):
+            pa._validate_audit_event("open", (-1, "rb", -1), self.read_roots, self.write_roots)
+        with self.assertRaisesRegex(PermissionError, "filesystem authority denied"):
+            pa._validate_audit_event("open", (99999, "rb", -1), self.read_roots, self.write_roots)
+
+    def test_open_event_validates_regular_file_descriptor(self):
+        read_file = self.read_root / "sample.txt"
+        read_file.write_text("hello", encoding="utf-8")
+        fd = os.open(str(read_file), os.O_RDONLY)
+        try:
+            pa._validate_audit_event("open", (fd, "r"), self.read_roots, self.write_roots)
+            with self.assertRaises(PermissionError):
+                pa._validate_audit_event("open", (fd, "w"), self.read_roots, self.write_roots)
+        finally:
+            os.close(fd)
+
+    def test_subprocess_popen_with_pipes_and_approved_helper_succeeds(self):
+        import subprocess
+        import sys
+
+        tools_dir = Path(__file__).resolve().parents[6] / "tools"
+        if str(tools_dir) not in sys.path:
+            sys.path.insert(0, str(tools_dir))
+
+        from runner_coverage_execution import prepare_child_coverage_environment
+        from repomap_kg.extractors.languages.go_helper import (
+            HELPER_NAME,
+            platform_tag,
+            resolve_go_helper_command,
+        )
+
+        pkg_root = self.tmp / "pkg"
+        bin_dir = pkg_root / "_bin" / platform_tag()
+        bin_dir.mkdir(parents=True)
+        helper = bin_dir / HELPER_NAME
+        helper.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        helper.chmod(0o755)
+
+        resolved = resolve_go_helper_command(environment={}, package_root=pkg_root)
+        self.assertEqual(resolved, (str(helper.resolve()),))
+
+        script = (
+            "import os, sys, subprocess\n"
+            "from pathlib import Path\n"
+            "from repomap_kg.coordinator._portable_authority import install_portable_authority_guard\n"
+            "from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command\n"
+            f"pkg = Path({str(pkg_root)!r})\n"
+            f"install_portable_authority_guard(store_root=Path({str(self.write_root)!r}), "
+            f"workspace_root=Path({str(self.read_root)!r}), code_roots=[pkg])\n"
+            "cmd = resolve_go_helper_command(environment={}, package_root=pkg)\n"
+            "proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n"
+            "proc.communicate()\n"
+            "assert proc.returncode == 0\n"
+            "try:\n"
+            "    subprocess.Popen([sys.executable, '-c', 'pass'], stdin=subprocess.PIPE)\n"
+            "except PermissionError:\n"
+            "    pass\n"
+            "else:\n"
+            "    raise AssertionError('unauthorized executable was not denied')\n"
+        )
+        clean_paths = [p for p in sys.path if "coverage" not in Path(p).name]
+        env = prepare_child_coverage_environment(family="unmeasured", extra_env={"PYTHONPATH": os.pathsep.join(clean_paths)})
+        env.pop("REPOMAP_GO_HELPER", None)
+        result = subprocess.run(
+            [sys.executable, "-c", script], capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(result.returncode, 0, msg=f"Subprocess failed:\n{result.stderr}")
+
+    def test_go_helper_environment_override_precedence(self):
+        from repomap_kg.extractors.languages.go_helper import (
+            HELPER_NAME,
+            platform_tag,
+            resolve_go_helper_command,
+        )
+
+        pkg_root = self.tmp / "pkg_override"
+        bin_dir = pkg_root / "_bin" / platform_tag()
+        bin_dir.mkdir(parents=True)
+        (bin_dir / HELPER_NAME).write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        (bin_dir / HELPER_NAME).chmod(0o755)
+
+        override_dir = self.tmp / "custom_bin"
+        override_dir.mkdir(parents=True)
+        custom_helper = override_dir / "custom-helper"
+        custom_helper.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        custom_helper.chmod(0o755)
+
+        resolved = resolve_go_helper_command(
+            environment={"REPOMAP_GO_HELPER": str(custom_helper.resolve())},
+            package_root=pkg_root,
+        )
+        self.assertEqual(resolved, (str(custom_helper.resolve()),))
 
 
 if __name__ == "__main__":

@@ -239,6 +239,73 @@ class GraphKeysUnitTests(unittest.TestCase):
         with self.assertRaisesRegex(GraphKeyError, "segment"):
             tool_key("")
 
+    def test_key_boundaries_and_internal_coercion_helpers(self):
+        from typing import Any
+        from repomap_kg.graph.keys import (
+            _bounded_go_identity,
+            _bounded_go_path_identity,
+            _bounded_go_package_import_path,
+            _coerce_file_key,
+            _coerce_pointer,
+            _coerce_js_pointer,
+            _normalize_file_components,
+            _parse_file_segments,
+            _encode_segment,
+        )
+
+        with self.assertRaises(GraphKeyError):
+            _bounded_go_identity("", 10)
+        with self.assertRaises(GraphKeyError):
+            _bounded_go_identity("x" * 20, 10)
+
+        with self.assertRaises(GraphKeyError):
+            _bounded_go_path_identity("/bad")
+        with self.assertRaises(GraphKeyError):
+            _bounded_go_path_identity("foo/../bar")
+        self.assertEqual(_bounded_go_path_identity("github.com/pkg/mod"), "github.com/pkg/mod")
+
+        self.assertEqual(_bounded_go_package_import_path("repo-relative:."), "repo-relative:.")
+        self.assertEqual(_bounded_go_package_import_path("repo-relative:valid/subpkg"), "repo-relative:valid/subpkg")
+        with self.assertRaises(GraphKeyError):
+            _bounded_go_package_import_path("repo-relative:/bad")
+
+        with self.assertRaises(GraphKeyError):
+            _coerce_file_key("/abs/path")
+        self.assertEqual(_coerce_file_key(file_key("main.py")), "file:main.py")
+
+        with self.assertRaises(GraphKeyError):
+            _coerce_pointer("not-slash")
+        with self.assertRaises(GraphKeyError):
+            _coerce_pointer("")
+        self.assertEqual(_coerce_pointer("/valid/pointer"), "/valid/pointer")
+
+        with self.assertRaises(GraphKeyError):
+            _coerce_js_pointer("")
+        self.assertEqual(_coerce_js_pointer("ident"), "ident")
+
+        bad_file_path: Any = 123
+        with self.assertRaises(GraphKeyError):
+            _normalize_file_components(bad_file_path)
+        with self.assertRaises(GraphKeyError):
+            _normalize_file_components("")
+        with self.assertRaises(GraphKeyError):
+            _normalize_file_components("/abs")
+        with self.assertRaises(GraphKeyError):
+            _normalize_file_components("../escape")
+        self.assertEqual(_normalize_file_components("a/b/c"), ("a", "b", "c"))
+
+        with self.assertRaises(GraphKeyError):
+            _parse_file_segments("")
+        with self.assertRaises(GraphKeyError):
+            _parse_file_segments("a//b")
+        with self.assertRaises(GraphKeyError):
+            _parse_file_segments("a/./b")
+        with self.assertRaises(GraphKeyError):
+            _parse_file_segments("a/../b")
+
+        with self.assertRaises(GraphKeyError):
+            _encode_segment("")
+
 
 if __name__ == "__main__":
     unittest.main()

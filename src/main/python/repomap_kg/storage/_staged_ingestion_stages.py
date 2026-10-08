@@ -15,7 +15,10 @@ from psycopg.types.json import Jsonb
 from repomap_kg.observations.raw import RawObservation
 from repomap_kg.storage.authority import GraphRunId, StageId
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.errors import (
+    StorageCommitUnknownError,
+    StorageSchemaError,
+)
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.publication import RunPublicationReceipt
 from repomap_kg.storage.publication_fencing import PublicationHandoff
@@ -53,6 +56,7 @@ __all__ = (
     "_install_connection_signal_handlers",
     "_mark_prepared",
     "_populate_and_mark_stage",
+    "_refresh_canonical_edge_evidence_statistics",
     "_refresh_canonical_node_evidence_statistics",
     "_resolve_prepared_rows",
     "_restore_connection_signal_handlers",
@@ -203,6 +207,10 @@ def _refresh_canonical_node_evidence_statistics(connection: Any) -> None:
     connection.execute("ANALYZE stage_canonical_node_evidence")
 
 
+def _refresh_canonical_edge_evidence_statistics(connection: Any) -> None:
+    connection.execute("ANALYZE stage_canonical_edge_evidence")
+
+
 def _mark_prepared(connection: Any, stage_id: str, counts: Mapping[str, int]) -> None:
     cursor = connection.execute(
         "UPDATE ingestion_stages SET state = 'prepared', observed_row_counts = %s, updated_at = now() "
@@ -255,10 +263,12 @@ def _populate_and_mark_stage(
     )
     if staging_measurements is None:
         _refresh_canonical_node_evidence_statistics(connection)
+        _refresh_canonical_edge_evidence_statistics(connection)
     else:
         with staging_measurements.timed(StagingMeasurementCategory.STATISTICS):
             with staging_measurements.operation("statistics.canonical_node_evidence"):
                 _refresh_canonical_node_evidence_statistics(connection)
+                _refresh_canonical_edge_evidence_statistics(connection)
     _mark_prepared(connection, resolved_stage_id, prepared.row_counts)
     connection.commit()
 
@@ -344,7 +354,7 @@ def _handle_existing_stage_state(
                 files=prepared_files,
                 publication_receipt=receipt,
             )
-        raise StorageSchemaError("staged publication commit is unknown")
+        raise StorageCommitUnknownError("staged publication commit is unknown")
     if existing_state in {
         "loading",
         "prepared",

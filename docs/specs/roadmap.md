@@ -1,16 +1,43 @@
 # RepoMap Roadmap
 
-## Cloud-First And Multi-Source Migration Program
+## Post-Promotion Product Program
 
-[ADR 0057](../adr/2026/08/0057-cloud-first-multi-source-architecture-reconciliation.md)
-establishes cloud-first commercial delivery and immediate multi-source graph
-composition while preserving the current local PostgreSQL implementation as
-the as-built/reference, qualification, contributor/power-user, and possible
-private/self-hosted distribution. Acceptance of that ADR and this ordering is
-not authority to implement any successor.
+[ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
+owns the accepted Local/Server Engine/Cloud boundary and amends ADR 0057's
+cloud-first sequence. The accumulated implementation is on private main; the
+old promotion prerequisite is satisfied without claiming hosted qualification.
+Each step needs separate manager authority; this roadmap starts no successor.
 
-The ordered strangler program is (prefix abbreviations: `MS` = Multi-Source,
-`STR` = Strangler Seam, `CTRL` = Control Plane, `FED` = Federation):
+| Order | Slice | Dependencies and exit |
+|---|---|---|
+| 1 | Post-promotion architecture reconciliation | This docs-only decision set; dispatcher review and closeout |
+| 2 | DINAS multi-source product proof | **Product step 2: live DINAS multi-source captured-snapshot proof qualified; observed browser-ux source drift disclosed; current-worktree freshness not claimed** ([READBACK1 exit](../status/2026/09/28/00969-product1-qual12-readback1-exit.md); independently accepted and published to private main). QUAL1, QUAL2, and QUAL3 failed and did not publish private main; QUAL3 failed before collection because the selected ambient interpreter lacked `psutil`. HOST1's `blocked_or_failed_not_qualified` disposition is historical and unchanged. Snapshot correctness is not freshness |
+| 3 | Host-native MCP/read-store seam | **Manager-accepted 2026-09-29 for its specified scope** (recorded in [SQLITE-LOCAL1](../status/2026/09/29/00977-product3-sqlite-local1-exit.md)). [READSTORE1](../status/2026/09/28/00970-product2-host-mcp-readstore1-exit.md) routes the four canonical tools, and [READSTORE2](../status/2026/09/28/00971-product2-host-mcp-readstore2-exit.md) routes seven configured investigation tools (`repomap_graph_status`, `repomap_refresh_status`, the three searches, `repomap_project_summary`, `repomap_neighborhood`) through named PostgreSQL-backed read-store seams, and [READSTORE3](../status/2026/09/28/00972-product2-host-mcp-readstore3-exit.md) routes the remaining twelve database readers (five language summaries, six source/feed tools, legacy `repomap_status`). All 23 database reads are host-only and source-blind for configured graphs, with no container fallback; `repomap_list_graphs` and `repomap_projects` are configuration-only and the two server-memory tools read configured files. [RESOLVE1](../status/2026/09/29/00973-product2-host-mcp-resolve1-exit.md) separates logical graph selection (a neutral `GraphSelection` that does not require bound PostgreSQL connection authority) from the PostgreSQL store binding on every configured tool path and removes the two dormant MCP fallback readers; config parsing and the runtime remain PostgreSQL-only. [PREPARE1](../status/2026/09/29/00974-product2-host-mcp-native1-prepare1-exit.md) prepares, but does not perform, the native proof: a tested source-owned runner and operator kit ([runbook](../ops/host-mcp-native-qualification.md)), and [PREPARE2](../status/2026/09/29/00975-product2-host-mcp-native1-prepare2-exit.md) corrects its cleanup-entry interruption defect and adds a durable ownership record. The manager accepted the attended HOST1 native macOS checkout-console run of the PREPARE2 kit for its bounded claims. [FIX1](../status/2026/09/29/00976-product2-multisource-status-fix1-exit.md) attributes the observed multi-source status discrepancy (`repository_exists=false` for a populated graph) to the runner fixture, which stored the graph under a name that supported refresh never writes. It corrects the fixture and adds positive multi-source status coverage against stored facts; that coverage is Linux-harness only. The acceptance authority is the READSTORE1–3/RESOLVE1 implementation, the operator-run HOST1 Darwin/arm64 checkout-console evidence (`native1-20260929T160926Z-b26b0e40`) and FIX1's independently accepted attribution (no `src/main` bytes changed; its corrected-fixture execution is Linux evidence, not a second macOS run). It is not fully backend-neutral configuration, installed-wheel/store qualification or globally green CI; the 27-tool census stays 23 database readers, 2 configuration inventories and 2 memory-file readers. Pre-public-staging obligations: the inherited 42-module arch1d import SCC and the three scanner findings (S1 dynamic assignment in `sqlite_local_guard.py`, S2 dynamic assignment in `sqlite_local_guard.py`, and S3 typing correction in `graph_selection.unit.test.py:126`), all closed by [PRESTAGING-DEBT-CLOSE1](../status/2026/09/30/00988-product4-prestaging-debt-close1-exit.md). The READSTORE support fixture's multi-source name mismatch (FIX1 residual 2) remains an open test-support residual and is nonblocking for the first significant public-preview staging milestone (not fixed; reported for manager disposition) |
+| 4 | SQLite Local vertical slice + cross-backend parity | **Manager-accepted 2026-09-30** (recorded in [PRESTAGING-DEBT-CLOSE1](../status/2026/09/30/00988-product4-prestaging-debt-close1-exit.md)) on LOCAL1–LOCAL11 and the attended native macOS arm64 / Python 3.13.12 installed-wheel run of the reviewed LOCAL11 base wheel (no Psycopg installed). Windows-native Local mutation, locking, privacy and distribution are not qualified and are not part of this acceptance. [SQLITE-LOCAL1](../status/2026/09/29/00977-product3-sqlite-local1-exit.md) (accepted checkpoint; [ADR 0075](../adr/2026/09/0075-sqlite-local-first-slice.md)) delivers the first bounded Local loop: a `[storage] backend = "sqlite"` home with no PostgreSQL settings, explicit `ops sqlite-init`, Local `ops refresh-graph` through the unchanged portable semantic path into a parent-owned SQLite publisher, and read-only stdio MCP for nine tools (four canonical tools, graph and refresh status, project summary, node and file search), with same-input parity against PostgreSQL on tiny one-source and two-binding fixtures (containerized Linux evidence). [SQLITE-LOCAL2-RECOVERY-AUTHORITY1](../status/2026/09/29/00978-product3-sqlite-local2-recovery-authority1-exit.md) hardens its foundations: first-file backend authority across layered config, crash-safe no-clobber initialization, propagation of post-commit process-control exceptions, the `graph-database-read-only` refusal, and publisher-internal rollback integration evidence. [SQLITE-LOCAL3-ATTEMPT-RECONCILE1](../status/2026/09/29/00979-product3-sqlite-local3-attempt-reconcile1-exit.md) makes commit outcomes truthful (not-committed versus commit-unknown), reconciles retained Local attempts source-blind before new capture, preserves the original failure when rollback fails, bounds raw SQLite write errors, and adds the direct CLI backend-conflict proof. [SQLITE-LOCAL4-READ-PARITY1](../status/2026/09/29/00980-product3-sqlite-local4-read-parity1-exit.md) adds eight named SQLite readers (legacy `repomap_status`, observation search, the configured neighborhood, and the Python, Terraform, OpenAPI, JS-framework and Nix summaries), bringing SQLite Local to 17 of the 23 database-reading MCP tools, with same-input PostgreSQL parity, a crafted-corpus differential against the PostgreSQL query owners and source-blind stdio evidence (containerized Linux). [SQLITE-LOCAL5-SOURCE-FEED-PARITY1](../status/2026/09/29/00981-product3-sqlite-local5-source-feed-parity1-exit.md) adds the six source/feed readers, bringing SQLite Local database-read parity to 23 of 23 MCP database-reading tools. The evidence is same-input PostgreSQL parity over real offline feed publications (two generations), a comparison-only crafted differential and source-blind stdio (containerized Linux). Read parity does not complete the step. [SQLITE-LOCAL6-OPS-DRIVERFREE1](../status/2026/09/29/00982-product3-sqlite-local6-ops-driverfree1-exit.md) completes the ordinary Local operator workflow: `config-check` and `graphs` with a read-only, no-create `--check-db` readiness probe; `refresh-preflight`; and `refresh-enabled` over per-graph direct refreshes. It closes coordinator mode by a by-design refusal (direct serialized refresh is the Local baseline) and makes SQLite startup and `mcp serve` independent of the PostgreSQL driver at runtime (not packaging). [SQLITE-LOCAL7-BACKUP-DURABILITY1](../status/2026/09/29/00983-product3-sqlite-local7-backup-durability1-exit.md) adds a verified, publication-aware Local backup/export (`ops sqlite-backup`: an online SQLite-backup-API snapshot plus a path-free manifest bound to the exact accepted generation and bundle id), a no-clobber restore into an absent target (`ops sqlite-restore`), and file plus parent-directory fsync ordering for init, Local attempt records, backup and restore (containerized Linux evidence). [SQLITE-LOCAL8-MIGRATION1](../status/2026/09/30/00984-product3-sqlite-local8-migration1-exit.md) adds ordered, checksummed, backup-first forward migration authority through schema v2 (`ops sqlite-upgrade`; v2 adds an exact-path observation-search index with no result change), exact-behind/drift/future classification and historical-version backup/restore (containerized Linux evidence). [SQLITE-LOCAL9-STATE-HYGIENE1](../status/2026/09/30/00985-product3-sqlite-local9-state-hygiene1-exit.md) adds `ops sqlite-cleanup`, which is conservative and evidence-preserving. It is a dry run by default. With `--yes` it removes only expired terminal retained attempts (graph-local and LOCAL1/LOCAL2-era shared) and stale or partial orphan `.init-*`/`.restore-*` temporaries. Ambiguous shared reconciliation records and recoverable orphans are kept and reported, never guessed or adopted. It also establishes current `state/` directory durability for existing homes and adds the retention layout `state` name check (containerized Linux evidence). [SQLITE-LOCAL10-PORTABLE-LOCKING1](../status/2026/09/30/00986-product3-sqlite-local10-portable-locking1-exit.md) puts Local writer/maintenance locking behind one platform-neutral lock owner (POSIX `flock` with process-level evidence; a Windows `msvcrt` backend covered by deterministic contract tests only, not native evidence), requires a real, owner-controlled `state/` directory for every Local mutation, and corrects the recoverable-orphan instructions. [SQLITE-LOCAL11-PACKAGE-SPLIT1](../status/2026/09/30/00987-product3-sqlite-local11-package-split1-exit.md) makes the base distribution a genuine SQLite Local install without Psycopg (base dependency `typing-extensions==4.16.0`; `psycopg[binary]==3.2.12` moves to the explicit `postgres` extra that the Server image installs). It also builds reviewed wheel/sdist candidates: a clean containerized Linux base-wheel Local qualification with Psycopg absent, a Server/`postgres`-extra smoke and a byte-identical sdist-to-wheel rebuild. The attended native macOS installed-wheel proof then passed and was accepted. Outside this acceptance: native Windows/non-POSIX Local lock, store-privacy and durability qualification (required before any Windows distribution claim), macOS `F_FULLFSYNC` and any explicit destructive replacement/recovery policy. PRESTAGING-DEBT-CLOSE1 closes the inherited arch1d/scanner pre-staging debt (the 42-module import cycle and all three scanner findings: S1 and S2 dynamic assignments in `sqlite_local_guard.py`, and S3 typing correction in `graph_selection.unit.test.py:126`) |
+| 5 | First significant public-preview milestone | Manager acceptance of steps 2–4 (recorded); separately project the exact reviewed milestone to public staging and run approved hosted CI. Steps 2–4 are manager-accepted and the exact reviewed private milestone is ready for a separately authorized public-staging projection and hosted CI campaign. Not started |
+| 6 | PostgreSQL enhanced-intelligence proof | ADR 0051 D15 admission record; useful pgvector exact/HNSW hybrid discovery and named-workload JSONB disposition without changing canonical truth |
+| 7 | Rust extractor + extractor-quality/performance pilot | ADR 0050 parser-helper admission and retained Python semantics; implement Rust and decide from measured quality/performance whether to propose a broader campaign |
+| 8 | v0.1.0 release readiness | Multi-source proof, SQLite/Server boundaries, useful optional pgvector, JSONB disposition, Rust extraction, packaging/docs and hosted gates complete |
+
+Steps 6 and 7 may reorder or partially overlap with explicit dependencies;
+neither leaves the v0.1.0 prerequisite set. CLOUD-ALPHA6, CTRL-BAKEOFF7,
+CLOUD-HARDEN8 and FED-LATER9 are separately authorized future work outside this
+required sequence, not v0.1.0 prerequisites. Federation still requires accepted
+single-graph multi-source value and independent-authority contracts.
+
+Development continues on private main. Do not project every slice to public
+staging. Public main may receive v0.0.2 only after the reviewed milestone's
+staging candidate passes approved hosted gates and the manager separately
+authorizes promotion. Versions below v0.1.0 are GitHub-only public previews;
+v0.1.0 is the first package-manager target. Private development version metadata
+is unchanged. This phase performs no public publication.
+
+## Historical Multi-Source and Portable-Worker Foundations
+
+The following checkpoints explain the implemented foundation. Their pending
+qualification and successor-authority statements describe those checkpoints;
+they do not reinstate the satisfied private-main gate or supersede the program
+above. Historical status records remain unchanged.
 
 1. `CLOUD-MULTISOURCE0` — architecture and documentation reconciliation.
 2. `MS-ID1` — additive source definition, binding, immutable snapshot, and
@@ -67,26 +94,8 @@ The ordered strangler program is (prefix abbreviations: `MS` = Multi-Source,
    terminal reconciliation coordination was extracted without changing the existing
    supervisor import or behavior boundary, and the repository-wide file-length gate
    has zero failures. Hosted PR Fast, Staging Gate, main-source-policy, and Main
-   System Gate evidence remain pending. The accumulated branch must be promoted to
-   `main` before `CLOUD-ALPHA6` or later product development starts.
-7. `CLOUD-ALPHA6` — the smallest useful hosted single-tenant or
-   operator-tenant alpha.
-8. `CTRL-BAKEOFF7` — production-shaped comparison of retained Python, Go, and
-   managed-job control-plane shapes under identical semantic contracts.
-9. `CLOUD-HARDEN8` — multi-tenant authorization, quotas, billing,
-   retention/deletion, placement, and enterprise hardening.
-10. `FED-LATER9` — federation only after single-graph multi-source value and
-    independent-authority contracts are accepted.
-
-Local deterministic qualification owns semantic equivalence, identity,
-ambiguity, replay, failure, algorithmic cost, and regression evidence.
-Production selection requires cloud-shaped Linux-container, managed-network
-PostgreSQL, object-storage, concurrency, recovery, latency, resource, and cost
-evidence. Laptop measurements do not select the hosted control plane.
-
-This program precedes new late local-only stabilization that would deepen the
-single-root or physical database coupling. Existing accepted local maintenance
-and qualification work remains valid and separately authorized.
+   System Gate evidence remained pending at that checkpoint. The private-main
+   prerequisite is now satisfied; hosted acceptance is separate.
 
 ## Current Architecture Normalization Program
 
@@ -297,9 +306,9 @@ resumes. The governing decision and live phase sequence are recorded in
 
 [ADR 0056](../adr/2026/08/0056-reconciled-investigation-and-program-direction.md)
 accepts a product direction toward deterministic, publication-pinned,
-evidence-cited cross-artifact investigation. ADR 0057 amends its order: the
-cloud-first multi-source program above now owns the immediate identity,
-snapshot, worker, bundle, publisher, and cloud seams. This investigation
+evidence-cited cross-artifact investigation. ADRs 0057 and 0071 amend its order: the
+post-promotion product program above owns the immediate Local/Server boundary
+and builds on the implemented identity, snapshot, worker and publisher seams. This investigation
 program does not authorize implementation, graph refresh, benchmarking, or a
 successor phase.
 
@@ -418,5 +427,5 @@ mutable state. The repository-wide tracked-Python file-length gate now has zero
 failures. The durable result is
 [status 00833](../status/2026/09/02/00833-pylen-scale14-fix1-refactor-actual-refresh-supervisor-file-length-exit.md).
 Hosted PR Fast, Staging Gate, main-source-policy, and Main System Gate evidence
-remain pending; this branch must enter the promotion pipeline before
-`CLOUD-ALPHA6` or any later product architecture phase begins.
+were pending at that checkpoint. Private-main integration has since satisfied
+the old architecture-start prerequisite; hosted acceptance remains separate.

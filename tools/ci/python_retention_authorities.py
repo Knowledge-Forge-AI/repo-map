@@ -108,7 +108,12 @@ def validate_recovered_rules(repo_root: Path, records: Sequence[dict]) -> None:
                     try:
                         hist_data = json.loads(historical_path.read_text(encoding="utf-8"))
                         if revision in hist_data and "content" in hist_data[revision]:
-                            raw_bytes = hist_data[revision]["content"].encode("utf-8")
+                            hist_entry = hist_data[revision]
+                            content_bytes = hist_entry["content"].encode("utf-8")
+                            content_digest = hashlib.sha256(content_bytes).hexdigest()
+                            if content_digest != hist_entry.get("sha256"):
+                                raise RetentionAuthorityError("historical ownership manifest digest mismatch")
+                            raw_bytes = content_bytes
                     except (json.JSONDecodeError, OSError):
                         pass
             try:
@@ -223,13 +228,50 @@ def bind_inputs(repo_root: Path, inventory_path: Path, ratchet_path: Path) -> di
     for record in records:
         if not isinstance(record, dict) or not isinstance(record.get("status_path"), str):
             raise RetentionAuthorityError("malformed scope transition evidence reference")
-        status_target = repo_root / record["status_path"]
-        if status_target.is_file():
-            required.add(status_target)
-        elif (repo_root / "tools/ci/historical_ownership_manifests.json").is_file():
-            pass
+        status_path = record["status_path"]
+        if status_path.startswith("docs/status/"):
+            source_commit = record.get("source_commit")
+            source_manifest_sha256 = record.get("source_manifest_sha256")
+            if (
+                not isinstance(source_commit, str)
+                or len(source_commit) != 40
+                or any(c not in "0123456789abcdef" for c in source_commit)
+                or not isinstance(source_manifest_sha256, str)
+                or len(source_manifest_sha256) != 64
+                or any(c not in "0123456789abcdef" for c in source_manifest_sha256)
+            ):
+                raise RetentionAuthorityError(f"unsealed historical scope transition: {status_path}")
+            hist_path = repo_root / "tools/ci/historical_ownership_manifests.json"
+            if not hist_path.is_file():
+                raise RetentionAuthorityError("missing historical ownership manifests authority")
+            try:
+                hist_manifests = json.loads(hist_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as err:
+                raise RetentionAuthorityError("historical ownership manifests authority unreadable") from err
+            if source_commit not in hist_manifests:
+                raise RetentionAuthorityError(f"unknown historical source commit: {source_commit}")
+            hist_entry = hist_manifests[source_commit]
+            content = hist_entry.get("content")
+            if not isinstance(content, str):
+                raise RetentionAuthorityError(f"historical manifest content missing for {source_commit}")
+            computed_sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
+            if (
+                computed_sha != source_manifest_sha256
+                or computed_sha != hist_entry.get("sha256")
+                or computed_sha != record.get("old_ownership_manifest_sha256")
+            ):
+                raise RetentionAuthorityError(f"historical manifest digest mismatch for {source_commit}")
+            try:
+                parsed = json.loads(content)
+                if not isinstance(parsed, dict) or "entries" not in parsed:
+                    raise ValueError("invalid manifest structure")
+            except (json.JSONDecodeError, ValueError) as err:
+                raise RetentionAuthorityError(f"historical manifest content malformed for {source_commit}") from err
         else:
-            raise RetentionAuthorityError(f"required governing input unavailable: {status_target.name}")
+            status_target = repo_root / status_path
+            if not status_target.is_file():
+                raise RetentionAuthorityError(f"required governing input unavailable: {status_target.name}")
+            required.add(status_target)
     historical_manifests = repo_root / "tools/ci/historical_ownership_manifests.json"
     if historical_manifests.is_file():
         required.add(historical_manifests)

@@ -22,6 +22,17 @@ def render_compose_yaml(plan: LocalRuntimePlan) -> str:
             "    ports:\n"
             f'      - "{plan.postgres_bind_host}:{plan.postgres_host_port}:5432"\n'
         )
+    coordinator = _coordinator_service(plan, config_mounts, execution_mounts) if plan.coordinator_mode == "container" else ""
+    postgres_host_membership = "      - repomap-postgres-host\n" if plan.direct_db_host_port_enabled else ""
+    postgres_host_network = (
+        f"  repomap-postgres-host:\n    name: {plan.identity.network_name}-postgres-host\n"
+        f"    driver: bridge\n    internal: false\n    labels:\n{_labels(plan, 'postgres-host-network')}\n"
+        if plan.direct_db_host_port_enabled else ""
+    )
+    coordinator_volume = (
+        f"  coordinator-state:\n    labels:\n{_labels(plan, 'coordinator-state')}\n"
+        if plan.coordinator_mode == "container" else ""
+    )
     application = f"repomap-runtime:{plan.identity.home_hash}"
     return f"""\
 x-repomap-application: &repomap-application
@@ -44,7 +55,7 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     networks:
       - repomap-local
-    healthcheck:
+{postgres_host_membership}    healthcheck:
       test: ["CMD", "/usr/bin/pg_isready", "-U", "{plan.user}", "-d", "postgres"]
       interval: 2s
       timeout: 3s
@@ -153,41 +164,7 @@ services:
     labels:
 {_labels(plan, "mcp")}
 
-  coordinator:
-    <<: *repomap-application
-    depends_on:
-      init-upgrade:
-        condition: service_completed_successfully
-    environment:
-      REPOMAP_HOME: /repo-map-home
-      REPOMAP_READ_STATUS_PASSWORD: ${{REPOMAP_READ_STATUS_PASSWORD}}
-      REPOMAP_REFRESH_PUBLICATION_PASSWORD: ${{REPOMAP_REFRESH_PUBLICATION_PASSWORD}}
-      REPOMAP_COORDINATOR_CONTROL_PASSWORD: ${{REPOMAP_COORDINATOR_CONTROL_PASSWORD}}
-    read_only: true
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    tmpfs:
-      - /tmp:mode=1777
-    volumes:
-{config_mounts}\
-      - coordinator-state:/repo-map-home/coordinator
-{execution_mounts}\
-    networks:
-      - repomap-local
-    command: ["ops", "coordinator-serve", "--repo-map-home", "/repo-map-home", "--service-package-psql", "{PACKAGED_PSQL}", "--startup-wait-seconds", "{DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS}", "--json"]
-    healthcheck:
-      test: ["CMD", "python", "-m", "repomap_kg", "ops", "coordinator-health", "--repo-map-home", "/repo-map-home", "--json"]
-      interval: 5s
-      timeout: 3s
-      retries: 12
-      start_period: {DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS}s
-    restart: unless-stopped
-    labels:
-{_labels(plan, "coordinator")}
-
-  lifecycle-admin:
+{coordinator}  lifecycle-admin:
     <<: *repomap-application
     depends_on:
       init-upgrade:
@@ -233,10 +210,11 @@ networks:
     labels:
 {_labels(plan, "http-network")}
 
+{postgres_host_network}
 volumes:
-  coordinator-state:
+{coordinator_volume}  publication-state:
     labels:
-{_labels(plan, "coordinator-state")}
+{_labels(plan, "publication-state")}
   admin-state:
     labels:
 {_labels(plan, "admin-state")}
@@ -293,3 +271,42 @@ def _yaml(value: Path | str) -> str:
 
 
 __all__ = ["render_compose_yaml"]
+
+
+def _coordinator_service(plan: LocalRuntimePlan, config_mounts: str, execution_mounts: str) -> str:
+    return f"""  coordinator:
+    <<: *repomap-application
+    depends_on:
+      init-upgrade:
+        condition: service_completed_successfully
+    environment:
+      REPOMAP_HOME: /repo-map-home
+      REPOMAP_READ_STATUS_PASSWORD: ${{REPOMAP_READ_STATUS_PASSWORD}}
+      REPOMAP_REFRESH_PUBLICATION_PASSWORD: ${{REPOMAP_REFRESH_PUBLICATION_PASSWORD}}
+      REPOMAP_COORDINATOR_CONTROL_PASSWORD: ${{REPOMAP_COORDINATOR_CONTROL_PASSWORD}}
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:mode=1777
+    volumes:
+{config_mounts}\
+      - coordinator-state:/repo-map-home/coordinator
+      - publication-state:/repo-map-home/state
+{execution_mounts}\
+    networks:
+      - repomap-local
+    command: ["ops", "coordinator-serve", "--repo-map-home", "/repo-map-home", "--service-package-psql", "{PACKAGED_PSQL}", "--startup-wait-seconds", "{DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS}", "--json"]
+    healthcheck:
+      test: ["CMD", "python", "-m", "repomap_kg", "ops", "coordinator-health", "--repo-map-home", "/repo-map-home", "--json"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: {DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS}s
+    restart: unless-stopped
+    labels:
+{_labels(plan, "coordinator")}
+
+"""

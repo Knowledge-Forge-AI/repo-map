@@ -1,0 +1,25 @@
+{
+  "characterization": {
+    "coverage_location_classification": "site_packages",
+    "coverage_version": "7.15.4",
+    "hypothesis_verdict": "confirmed_a1_coverage_pth_installed_by_coverage_wheel",
+    "process_startup_origin": "coverage.control",
+    "process_startup_parameters": {
+      "force": "False",
+      "slug": "default"
+    },
+    "pth_byte_length": 205,
+    "pth_relative_location": "a1_coverage.pth",
+    "pth_safe_base64": "aW1wb3J0IHN5czsgZXhlYygnaW1wb3J0IG9zXG5cbmlmIG9zLmdldGVudigiQ09WRVJBR0VfUFJPQ0VTU19TVEFSVCIpIG9yIG9zLmdldGVudigiQ09WRVJBR0VfUFJPQ0VTU19DT05GSUciKTpcbiB0cnk6XG4gIGltcG9ydCBjb3ZlcmFnZVxuIGV4Y2VwdDpcbiAgcGFzc1xuIGVsc2U6XG4gIGNvdmVyYWdlLnByb2Nlc3Nfc3RhcnR1cChzbHVnPSJwdGgiKScpCg==",
+    "pth_sha256": "ef2ed06d19867ec669c09a804060666a9cd5e383af0a9d11aa2de79b77d448e8",
+    "python_version": "3.13.12",
+    "sitecustomize_origin": "absent",
+    "sitecustomize_present": false
+  },
+  "provenance": {
+    "dockerfile_sha256": "f73887ce64ce0bd64141e1b3ca06480bf5d1ec81b3ffd1f41b9d42ef733ad1a1",
+    "image_classification": "test_sandbox_monolithic_dind",
+    "lockfile_sha256": "f608765459c709b0736373f26cf81581ecb57265d31db1dfcf46ffc9e97c3fd0"
+  },
+  "schema": "repomap-coverage-runtime-evidence-v1"
+}

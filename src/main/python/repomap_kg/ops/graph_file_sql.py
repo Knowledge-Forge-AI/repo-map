@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from repomap_kg.graph.keys import GraphKeyError, file_key
+from repomap_kg.graph.keys import GraphKeyError, file_key, parse_key
 from repomap_kg.storage.errors import StorageSchemaError
 from repomap_kg.storage.sql_core import (
     canonical_file_path_prefix,
@@ -157,16 +157,34 @@ def validate_graph_file_query(
 
 def _filter_sql(filters: GraphFileFilters) -> list[str]:
     clauses: list[str] = []
+    # Only absent/empty metadata permits legacy identity matching. Multi-valued
+    # metadata uses its first value here and remains subject to record validation.
+    no_public_path = (
+        "(source_relative_path = '[]'::jsonb OR "
+        "source_relative_path = '[\"\"]'::jsonb)"
+    )
     if filters.path is not None:
         try:
-            clauses.append(f"canonical_key = {sql_literal(file_key(filters.path))}")
+            key = file_key(filters.path)
+            public_path = parse_key(key).path
+            assert public_path is not None
+            clauses.append(
+                f"(source_relative_path->>0 = {sql_literal(public_path)} OR "
+                f"({no_public_path} AND canonical_key = {sql_literal(key)}))"
+            )
         except GraphKeyError as error:
             raise StorageSchemaError("invalid canonical file path") from error
     if filters.path_prefix is not None:
         prefix = canonical_file_path_prefix(filters.path_prefix)
+        public_prefix = ""
+        if prefix != "file:":
+            public_path = parse_key(prefix[:-1]).path
+            assert public_path is not None
+            public_prefix = public_path + "/"
         clauses.append(
-            "canonical_key LIKE "
-            f"{sql_like_prefix_literal(prefix)} ESCAPE '\\'"
+            f"(source_relative_path->>0 LIKE {sql_like_prefix_literal(public_prefix)} ESCAPE '\\' "
+            f"OR ({no_public_path} AND canonical_key LIKE "
+            f"{sql_like_prefix_literal(prefix)} ESCAPE '\\'))"
         )
     for field, value in (("languages", filters.language), ("roles", filters.role)):
         if value is not None:

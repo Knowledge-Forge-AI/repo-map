@@ -17,6 +17,25 @@ STAGING_GATE_WORKFLOW = "repomap-staging-gate.yml"
 MAIN_SYSTEM_GATE_WORKFLOW = "repomap-main-system-gate.yml"
 MAIN_POLICY_WORKFLOW = "repomap-main-source-policy.yml"
 
+RELEASE_WORKFLOW = "repomap-release-qualification.yml"
+RETIRED_WORKFLOWS = frozenset({
+    "repomap-main-source-policy.yml",
+    "repomap-main-system-gate.yml",
+    "repomap-staging-gate.yml",
+    "repomap-static-analysis.yml",
+    "repomap-unit-tests.yml",
+})
+ALLOWED_WORKFLOWS = frozenset({RELEASE_WORKFLOW})
+REQUIRED_RELEASE_JOBS = (
+    "source-and-export-policy",
+    "pre-review-static",
+    "unit-tests",
+    "staging-integration-gate",
+    "main-system-gate",
+    "codeql",
+    "sbom-security",
+)
+
 STAGING_BRANCH = "staging"
 MAIN_BRANCH = "main"
 FEEDBACK_TYPES = ["opened", "reopened", "ready_for_review", "synchronize"]
@@ -125,6 +144,10 @@ class TopologyContractValues:
     trusted_gate_invocation: str
     protection_paths: tuple[str, ...]
     trusted_gate_copy_set: tuple[tuple[str, str], ...] = TRUSTED_GATE_COPY_SET
+    release_workflow: str = RELEASE_WORKFLOW
+    retired_workflows: frozenset[str] = RETIRED_WORKFLOWS
+    allowed_workflows: frozenset[str] = ALLOWED_WORKFLOWS
+    required_release_jobs: tuple[str, ...] = REQUIRED_RELEASE_JOBS
 
 
 DEFAULT_CONTRACTS = TopologyContractValues(

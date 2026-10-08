@@ -25,7 +25,8 @@ PUBLICATION_FAMILIES: tuple[StageFamily, ...] = (
     "canonical_node_evidence",
     "canonical_edge_evidence",
 )
-MAX_BUNDLE_BYTES = 64 * 1024 * 1024
+MAX_BUNDLE_BYTES = 512 * 1024 * 1024
+STREAMING_MAX_BUNDLE_BYTES = 1024 * 1024 * 1024
 MAX_BUNDLE_RECORDS = 1_000_000
 MAX_BUNDLE_LINE_BYTES = 1024 * 1024
 
@@ -302,8 +303,11 @@ def _family_frame_groups(families: Mapping[StageFamily, Sequence[Mapping[str, ob
 
 
 def _family_frames(families: Mapping[StageFamily, Sequence[Mapping[str, object]]]) -> list[bytes]:
-    groups = _family_frame_groups(families)
-    return [groups[family] for family in PUBLICATION_FAMILIES if groups[family]]
+    return [
+        canonical_json({"family": family, "frame": "record", "record": row})
+        for family in PUBLICATION_FAMILIES
+        for row in families[family]
+    ]
 
 
 def _validate_metadata(**values: object) -> None:

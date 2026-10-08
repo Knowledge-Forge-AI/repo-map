@@ -47,9 +47,13 @@ Hosted CI:
 ```
 
 For docs-only phases, use `not run; docs-only` for unit, int, staging, system,
-and compileall. For source/test phases, exact scoped unit and changed-boundary
-integration verification is the ordinary default. Keep each unselected entry
-truthful and specific, record pending pipeline gates, and never present scoped
+and compileall. Behavior-changing product slices require exact scoped unit and
+local containerized integration selectors with `--no-coverage`, updating both
+owners. Refused/unavailable required integration is a named gap that blocks
+completion absent explicit manager acceptance. SQLite uses temporary SQLite
+inside repository-owned container isolation, with PostgreSQL for parity only.
+Other source/test phases select evidence proportionate to their contract. Keep each unselected
+entry truthful and specific, record pending pipeline gates, and never present scoped
 evidence as whole-population qualification.
 
 Do not use vague subjects such as "Add docs" or "Update skills". The subject
@@ -75,19 +79,22 @@ Docs-only phase updates include ADRs, status audits, README examples, and
 skill docs. Run docs-only verification, and record
 unit/int/staging/system/compileall as not run because the change is docs-only.
 
-In public development, release records and changes are tracked in
-[CHANGELOG.md](../../../CHANGELOG.md) and `docs/releases/`. Internal historical
-status documents under `docs/status/` are withheld from the public repository.
-ADRs use the independent four-digit sequence under `docs/adr/YYYY/MM/`.
+Status docs remain in the complete historical archive under
+`docs/status/YYYY/MM/DD/`, where placement uses the introducing commit's
+local committer-date encoding and the five-digit sequence is global across
+the archive. New primary phase records must be exit reports, end in
+`-exit.md`, and have an H1 containing `Exit`; historical deviations are
+grandfathered but do not authorize new deviations. ADRs use the independent
+four-digit sequence under `docs/adr/YYYY/MM/`.
 
 Source-code phases add or change executable behavior. Use TDD, keep the slice
-bounded, document changes in release/changelog notes as appropriate, and run
-proportional local verification under `repo-map-testing-standards`, including
-affected tests, relevant compile/static checks, diff, and cached-diff checks.
-Hosted CI owns the routine promotion gates; a local staging or system gate
-remains available when the operator or accepted phase explicitly requires
-complete local evidence. Integration selections use RepoMap's containerized
-Postgres harness; do not fall back to host IPC or a developer's live database.
+bounded, add or update an exit status record, and run proportional local
+verification under `repo-map-testing-standards`, including affected tests,
+relevant compile/static checks, diff, and cached-diff checks. Hosted CI owns the
+routine promotion gates; a local staging or system gate remains available when
+the operator or accepted phase explicitly requires complete local evidence.
+Current PostgreSQL integration selections use RepoMap's containerized harness; do not
+fall back to host IPC or a developer's live database.
 
 Test harness phases may change `tools/run_tests.py`, test support packages,
 or temporary Postgres behavior. Keep operational cleanup conservative and
@@ -95,9 +102,9 @@ document what will not be touched, such as attached, other-user,
 live-cluster, semaphore, message-queue, or ambiguous IPC resources.
 
 Test report phases may use focused report-generator tests and targeted
-compileall when the slice is isolated to report rendering. Promote to full
-unit/int/staging/system verification when runner behavior or broader RepoMap
-behavior changes.
+compileall when the slice is isolated to report rendering. Broader behavior
+changes require affected scoped owners; complete unit/int/smoke/staging/system
+or combined runs require a current manager override with bounded execution count.
 
 Smoke-test phases document a reproducible manual or MCP check. If docs-only,
 run docs-only verification and record source tests as not run. Include the
@@ -106,7 +113,8 @@ classification.
 
 Extended-phase exit sub-phases close a larger phase after earlier
 implementation slices. Confirm what is already available, what remains
-unchanged, and which later phase has not started. These are often docs-only.
+unchanged, and which later phase has not started. These are often
+docs/status-only.
 
 ## Qualification Evidence Routing
 

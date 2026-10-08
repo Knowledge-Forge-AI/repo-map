@@ -8,6 +8,7 @@ import unittest
 
 from ci.public_export_policy import (
     check_candidate_identity,
+    check_fixture_integrity,
     check_promotion_policy,
     check_retention_independence,
     check_version_consistency,
@@ -43,13 +44,13 @@ class TestPublicExportPolicy(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
             pyproject = repo_root / "pyproject.toml"
-            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.1"\n')
+            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.2"\n')
 
             pkg_dir = repo_root / "src/main/python/repomap_kg"
             pkg_dir.mkdir(parents=True)
-            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.1"\n')
+            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.2"\n')
 
-            violations = check_version_consistency(repo_root, "0.0.1")
+            violations = check_version_consistency(repo_root, "0.0.2")
             self.assertEqual(violations, [])
 
     def test_version_consistency_detects_mismatch(self) -> None:
@@ -137,11 +138,11 @@ class TestPublicExportPolicy(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
             pyproject = repo_root / "pyproject.toml"
-            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.1"\n')
+            pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.2"\n')
 
             pkg_dir = repo_root / "src/main/python/repomap_kg"
             pkg_dir.mkdir(parents=True)
-            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.1"\n')
+            (pkg_dir / "__init__.py").write_text('__version__ = "0.0.2"\n')
 
             payload = {
                 "pull_request": {
@@ -157,7 +158,7 @@ class TestPublicExportPolicy(unittest.TestCase):
                 repo_root,
                 payload=payload,
                 repository="Knowledge-Forge-AI/repo-map",
-                expected_version="0.0.1",
+                expected_version="0.0.2",
             )
             self.assertEqual(violations, [])
 
@@ -179,6 +180,102 @@ class TestPublicExportPolicy(unittest.TestCase):
             (tools_ci / "historical_ownership_manifests.json").write_text("{}")
             violations = check_retention_independence(repo_root)
             self.assertEqual(violations, [])
+
+    def test_fixture_integrity_passes_on_repo(self) -> None:
+        repo_root = Path(__file__).resolve().parents[6]
+        violations = check_fixture_integrity(repo_root)
+        self.assertEqual(violations, [])
+
+    def test_fixture_integrity_detects_missing_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            tools_ci = repo_root / "tools/ci"
+            tools_ci.mkdir(parents=True)
+            violations = check_fixture_integrity(repo_root)
+            self.assertTrue(any("public fixture manifest missing" in v for v in violations))
+
+    def test_fixture_integrity_detects_missing_fixture(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            tools_ci = repo_root / "tools/ci"
+            tools_ci.mkdir(parents=True)
+            manifest = {
+                "schema": "repomap-public-fixture-manifest-v1",
+                "fixtures": [
+                    {
+                        "path": "src/test/fixtures/missing/file.js",
+                        "sha256": "0" * 64,
+                    }
+                ],
+            }
+            import json
+            (tools_ci / "public_fixture_manifest.json").write_text(json.dumps(manifest))
+            violations = check_fixture_integrity(repo_root)
+            self.assertTrue(any("required public fixture is missing" in v for v in violations))
+
+    def test_fixture_integrity_detects_hash_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            tools_ci = repo_root / "tools/ci"
+            tools_ci.mkdir(parents=True)
+            fixture = repo_root / "src/test/fixtures/corrupt/file.js"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("hello world")
+            manifest = {
+                "schema": "repomap-public-fixture-manifest-v1",
+                "fixtures": [
+                    {
+                        "path": "src/test/fixtures/corrupt/file.js",
+                        "sha256": "0" * 64,
+                    }
+                ],
+            }
+            import json
+            (tools_ci / "public_fixture_manifest.json").write_text(json.dumps(manifest))
+            violations = check_fixture_integrity(repo_root)
+            self.assertTrue(any("content hash mismatch" in v for v in violations))
+
+    def test_fixture_integrity_rejects_withheld_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            tools_ci = repo_root / "tools/ci"
+            tools_ci.mkdir(parents=True)
+            manifest = {
+                "schema": "repomap-public-fixture-manifest-v1",
+                "fixtures": [
+                    {
+                        "path": "docs/status/forbidden.md",
+                        "sha256": "0" * 64,
+                    }
+                ],
+            }
+            import json
+            (tools_ci / "public_fixture_manifest.json").write_text(json.dumps(manifest))
+            violations = check_fixture_integrity(repo_root)
+            self.assertTrue(any("references withheld path" in v for v in violations))
+
+    def test_fixture_integrity_detects_mode_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            tools_ci = repo_root / "tools/ci"
+            tools_ci.mkdir(parents=True)
+            fixture = repo_root / "src/test/fixtures/file.js"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("hello world")
+            manifest = {
+                "schema": "repomap-public-fixture-manifest-v1",
+                "fixtures": [
+                    {
+                        "path": "src/test/fixtures/file.js",
+                        "mode": "100755",
+                    }
+                ],
+            }
+            import json
+            (tools_ci / "public_fixture_manifest.json").write_text(json.dumps(manifest))
+            violations = check_fixture_integrity(repo_root)
+            self.assertTrue(any("mode mismatch" in v for v in violations))
+
 
 
 if __name__ == "__main__":

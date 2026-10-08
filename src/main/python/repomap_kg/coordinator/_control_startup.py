@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from typing import Any, Callable
+
 from psycopg.rows import dict_row
 
 from repomap_kg.coordinator._control_types import ConnectionFactory, JobClaim
+from repomap_kg.coordinator._publication_phase import WorkerFencingProof
+
 
 
 _ABANDONED_STATES = (
@@ -22,11 +26,11 @@ def recover_abandoned_attempts(
     fencing_epoch: int,
     limit: int,
 ) -> int:
-    """Fence and close attempts left by a superseded singleton owner.
+    """Classify abandoned attempts without asserting process or publication fencing.
 
-    The replacement singleton is the authority boundary. Safely unpublished
-    attempts remain retryable; every other publication state becomes
-    ``commit_unknown`` and therefore requires publication reconciliation.
+    A prior claimed/starting worker may still launch after its coordinator dies.
+    Every abandoned attempt therefore needs real publication reconciliation;
+    the completion timestamp below is classification metadata only.
     """
 
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
@@ -47,7 +51,7 @@ def recover_abandoned_attempts(
                 raise RuntimeError("replacement coordinator is not the live owner")
             cursor.execute(
                 """
-                SELECT j.job_id, j.current_attempt, j.publication_state
+                SELECT j.job_id, j.current_attempt, j.publication_state, j.state
                 FROM jobs AS j
                 JOIN job_attempts AS a
                   ON a.job_id = j.job_id AND a.attempt = j.current_attempt
@@ -62,10 +66,7 @@ def recover_abandoned_attempts(
             )
             rows = tuple(cursor.fetchall())
             for row in rows:
-                safely_unpublished = row["publication_state"] == "not_started"
-                publication_state = (
-                    "not_started" if safely_unpublished else "commit_unknown"
-                )
+                publication_state = "commit_unknown"
                 cursor.execute(
                     """
                     UPDATE jobs
@@ -83,6 +84,8 @@ def recover_abandoned_attempts(
                     """
                     UPDATE job_attempts
                     SET finished_at = COALESCE(finished_at, now()),
+                        supervisor_registration_digest = NULL,
+                        supervisor_registration_consumed = TRUE,
                         publication_state = %s,
                         result_category = 'publication_unknown'
                     WHERE job_id = %s AND attempt = %s AND is_current
@@ -109,7 +112,8 @@ def reconciliation_claims(
                        j.priority_class, j.source_generation,
                        j.config_generation, j.extractor_generation,
                        j.canonicalizer_generation,
-                       a.coordinator_instance_id, a.fencing_epoch
+                       a.coordinator_instance_id, a.fencing_epoch,
+                       a.graph_lease_fencing_epoch
                 FROM jobs AS j
                 JOIN job_attempts AS a
                   ON a.job_id = j.job_id AND a.attempt = j.current_attempt
@@ -131,6 +135,49 @@ def reconciliation_claims(
                     config_generation=row["config_generation"],
                     extractor_generation=row["extractor_generation"],
                     canonicalizer_generation=row["canonicalizer_generation"],
+                    graph_lease_fencing_epoch=row.get("graph_lease_fencing_epoch", 0),
                 )
                 for row in cursor.fetchall()
             )
+
+
+def prove_worker_fenced(
+    connect: ConnectionFactory,
+    claim: JobClaim,
+    *,
+    reconciler_instance_id: str,
+    reconciler_epoch: int,
+    fence_callback: Callable[..., Any] | None = None,
+) -> WorkerFencingProof | None:
+    """Produce authoritative proof that a prior attempt cannot publish."""
+    from repomap_kg.coordinator._restart_fencing import build_store_fencing_proof
+
+    return build_store_fencing_proof(
+        connect,
+        claim,
+        reconciler_instance_id=reconciler_instance_id,
+        reconciler_epoch=reconciler_epoch,
+        fence_callback=fence_callback,
+    )
+
+
+def close_unpublished_reconciliation(
+    connect: ConnectionFactory,
+    claim: JobClaim,
+    *,
+    reconciler_instance_id: str,
+    reconciler_epoch: int,
+    fence_callback: Callable[..., Any] | None,
+    file_closer: Callable[[JobClaim, WorkerFencingProof], bool] | None,
+) -> bool:
+    """Atomically validated store closure operation."""
+    from repomap_kg.coordinator._restart_fencing import execute_durable_closure
+
+    return execute_durable_closure(
+        connect,
+        claim,
+        reconciler_instance_id=reconciler_instance_id,
+        reconciler_epoch=reconciler_epoch,
+        fence_callback=fence_callback,
+        file_closer=file_closer,
+    )

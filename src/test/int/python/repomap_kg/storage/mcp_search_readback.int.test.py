@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import secrets
 import tempfile
 from pathlib import Path
 
@@ -30,18 +32,10 @@ def test_psycopg108_mcp_search_connector_pagination_raw_and_privacy_parity(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     require_postgres_binaries()
-    names = (
-        PG_CONNECTOR_ENV,
-        READBACK_DRIVER_ENV,
-        "REPOMAP_OPS_CONFIG",
-        "REPOMAP_PSQL_COMMAND",
-        "PGPASSWORD",
-        "PATH",
-        "PUBLIC_SAFE_PASSWORD",
-    )
-    previous = {name: (name in os.environ, os.environ.get(name)) for name in names}
+    previous = {name: (name in os.environ, os.environ.get(name)) for name in _ENV_NAMES}
     try:
         with temporary_postgres() as postgres, tempfile.TemporaryDirectory() as tmpdir:
+            assert postgres.password, "fixture declares no password authority"
             base = Path(tmpdir)
             apply_migrations(
                 default_rdbms_root(),
@@ -132,29 +126,90 @@ def test_psycopg108_mcp_search_connector_pagination_raw_and_privacy_parity(
                 {"public": expected, "private": private_payload},
                 sort_keys=True,
             )
-            for forbidden in (
-                "PUBLIC_SAFE_PASSWORD_VALUE",
-                "postgresql://",
-                "raw psycopg cause",
-                "PRIVATE_TOKEN",
-                str(config_path),
-            ):
-                assert forbidden not in serialized
+            # Labels only: a failing assertion never renders the fixture secret.
+            leaks = [
+                label
+                for label, value in (
+                    ("fixture password", postgres.password),
+                    ("dsn", "postgresql://"),
+                    ("raw cause", "raw psycopg cause"),
+                    ("private token", "PRIVATE_TOKEN"),
+                    ("config path", str(config_path)),
+                )
+                if value and value in serialized
+            ]
+            assert leaks == []
 
+            # Missing database: Psycopg search maps SQLSTATE 3D000, while the
+            # password-bearing psql driver reports its bounded generic label.
+            _select("psycopg", "psycopg", command=None, postgres=postgres)
+            with pytest.raises(RepoMapMcpError, match="missing or not initialized"):
+                repomap_search_files(graph_id="missing-database", query="README")
             _select(
                 "conflict-a",
                 "unsupported-value",
                 command=postgres.psql_command,
                 postgres=postgres,
             )
-            with pytest.raises(RepoMapMcpError, match="missing or not initialized"):
+            with pytest.raises(RepoMapMcpError) as missing_psql:
                 repomap_search_files(graph_id="missing-database", query="README")
+            assert str(missing_psql.value) == "psql readback failed for files MCP search"
     finally:
-        for name, (present, value) in previous.items():
-            if present and value is not None:
-                os.environ[name] = value
-            else:
-                os.environ.pop(name, None)
+        _restore_environment(previous)
+
+
+def test_psycopg108_mcp_search_refuses_wrong_declared_password(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A deliberately wrong declared password is refused, separately from the
+    valid-login matrix. The fixture psql wrapper substitutes the real fixture
+    credential, so only the Psycopg driver can exercise this refusal."""
+    require_postgres_binaries()
+    previous = {name: (name in os.environ, os.environ.get(name)) for name in _ENV_NAMES}
+    try:
+        with temporary_postgres() as postgres, tempfile.TemporaryDirectory() as tmpdir:
+            assert postgres.password, "fixture declares no password authority"
+            apply_migrations(
+                default_rdbms_root(),
+                postgres.psql_args,
+                psql_command=postgres.psql_command,
+            )
+            _seed(postgres)
+            config_path = _write_config(Path(tmpdir), postgres=postgres)
+            os.environ["REPOMAP_OPS_CONFIG"] = str(config_path)
+            _select("psycopg", "psycopg", command=None, postgres=postgres)
+            wrong = "wrong-" + secrets.token_hex(8)
+            os.environ["PUBLIC_SAFE_PASSWORD"] = wrong
+            with pytest.raises(RepoMapMcpError) as refused:
+                repomap_search_files(graph_id="public", query="README")
+            message = str(refused.value)
+            assert re.match(
+                r"psycopg (authentication|connection) failed for files MCP search", message
+            ), message
+            assert 0 < len(message) <= 300
+            assert wrong not in message and postgres.password not in message
+            print("WRONG_PASSWORD_REFUSAL=" + json.dumps(message))
+    finally:
+        _restore_environment(previous)
+
+
+_ENV_NAMES = (
+    PG_CONNECTOR_ENV,
+    READBACK_DRIVER_ENV,
+    "REPOMAP_OPS_CONFIG",
+    "REPOMAP_PSQL_COMMAND",
+    "PGPASSWORD",
+    "PATH",
+    "PUBLIC_SAFE_PASSWORD",
+)
+
+
+def _restore_environment(previous: dict[str, tuple[bool, str | None]]) -> None:
+    for name, (present, value) in previous.items():
+        if present and value is not None:
+            os.environ[name] = value
+        else:
+            os.environ.pop(name, None)
 
 
 def _public_payloads() -> dict[str, object]:
@@ -298,4 +353,8 @@ def _select(
             os.environ[name] = value
     if postgres.password:
         os.environ["PGPASSWORD"] = postgres.password
-    os.environ["PUBLIC_SAFE_PASSWORD"] = "PUBLIC_SAFE_PASSWORD_VALUE"
+    # The config declares password_env = "PUBLIC_SAFE_PASSWORD"; that declared
+    # authority must carry the fixture's own disposable credential. (A placeholder
+    # here authenticated psql only because the fixture wrapper overwrites
+    # PGPASSWORD, and made every Psycopg mode fail at connect.)
+    os.environ["PUBLIC_SAFE_PASSWORD"] = postgres.password

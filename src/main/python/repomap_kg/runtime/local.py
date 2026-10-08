@@ -2,6 +2,12 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime._container_inspection import inspect_container, inspect_compose_coordinator
+from repomap_kg.coordinator.deployment import CoordinatorDeploymentError, coordinator_startup_lock
+from repomap_kg.runtime.coordinator_transition import (
+    native_coordinator_state, native_transition_diagnostic, require_native_inactive,
+)
+
 import json
 import os as os
 import shutil
@@ -23,6 +29,9 @@ from repomap_kg.runtime.commands import (
     render_server_dockerfile as render_server_dockerfile,
 )
 from repomap_kg.runtime.database_role_contract import ensure_role_secrets
+from repomap_kg.runtime._home_authority import (
+    create_private_file, ensure_private_directory, validate_private_file,
+)
 from repomap_kg.runtime.plan import (
     DEFAULT_POSTGRES_HOST_PORT as DEFAULT_POSTGRES_HOST_PORT,
     DEFAULT_SERVER_HOST_PORT as DEFAULT_SERVER_HOST_PORT,
@@ -64,11 +73,19 @@ def setup_local_runtime(
             planned_command=("local", "setup", "--repo-map-home", str(home)),
         )
 
-    home.mkdir(parents=True, exist_ok=True)
-    for directory in (home / "runtime", home / "logs", home / "status"):
-        if not directory.exists():
-            directory.mkdir(parents=True)
-            created.append(directory)
+    try:
+        ensure_private_directory(home)
+        for directory in (home / "runtime", home / "logs", home / "status"):
+            if ensure_private_directory(directory):
+                created.append(directory)
+        env_file = home / LOCAL_RUNTIME_ENV_FILE
+        if env_file.exists() or env_file.is_symlink():
+            validate_private_file(env_file)
+    except (OSError, ValueError):
+        raise LocalRuntimeError((LocalRuntimeDiagnostic(
+            "error", "repo-map-home-unsafe", "REPOMAP_HOME",
+            "Local home and runtime authority must be owned ordinary private objects",
+        ),)) from None
     config_path = home / "repomap.rpl.toml"
     if not config_path.exists():
         config_path.write_text(default_repomap_rpl_toml(), encoding="utf-8")
@@ -80,8 +97,13 @@ def setup_local_runtime(
         ))
     env_file = home / LOCAL_RUNTIME_ENV_FILE
     if not env_file.exists():
-        env_file.write_text(default_env_text(identity.home_hash), encoding="utf-8")
-        env_file.chmod(0o600)
+        try:
+            create_private_file(env_file, default_env_text(identity.home_hash))
+        except ValueError:
+            raise LocalRuntimeError((LocalRuntimeDiagnostic(
+                "error", "generated-local-admin-credential-unsafe", "runtime.env",
+                "Generated local administrator credential could not be created privately",
+            ),)) from None
         created.append(env_file)
     else:
         added_role_secrets = ensure_role_secrets(env_file)
@@ -128,23 +150,28 @@ def up_local_runtime(
 ) -> LocalRuntimeResult:
     plan = build_local_runtime_plan(resolve_repo_map_home(repo_map_home))
     ensure_runtime_files_exist(plan)
-    check_runtime_ports_available(plan)
-    if not dry_run:
-        for path, text in render_local_runtime_files(plan).items():
-            if not path.exists() or path.read_text(encoding="utf-8") != text:
-                path.write_text(text, encoding="utf-8")
-    else:
-        for path, text in render_local_runtime_files(plan).items():
-            if path.exists() and path.read_text(encoding="utf-8") != text:
-                path.write_text(text, encoding="utf-8")
-    command = tuple(plan.compose_command("up", "-d", "--build"))
+    command = tuple(plan.compose_command("up", "-d", "--build", "--remove-orphans"))
     if dry_run:
-        return LocalRuntimeResult(
-            command="up",
-            result="dry_run",
-            plan=plan,
-            planned_command=command,
-        )
+        check_runtime_ports_available(plan)
+        return LocalRuntimeResult(command="up", result="dry_run", plan=plan, planned_command=command)
+    try:
+        with coordinator_startup_lock(plan.repo_map_home):
+            # Configuration may have changed while a competing startup held the lock.
+            plan = build_local_runtime_plan(plan.repo_map_home)
+            native = require_native_inactive(plan.repo_map_home) if plan.coordinator_mode == "container" else "unchecked"
+            return _start_local_runtime(plan, native)
+    except CoordinatorDeploymentError as error:
+        raise LocalRuntimeError((LocalRuntimeDiagnostic(
+            "error", str(error), "runtime.coordinator_mode", "Coordinator startup is busy or unsafe; retry after the current startup finishes.",
+        ),)) from None
+
+
+def _start_local_runtime(plan: LocalRuntimePlan, native: str) -> LocalRuntimeResult:
+    check_runtime_ports_available(plan)
+    for path, text in render_local_runtime_files(plan).items():
+        if not path.exists() or path.read_text(encoding="utf-8") != text:
+            path.write_text(text, encoding="utf-8")
+    command = tuple(plan.compose_command("up", "-d", "--build", "--remove-orphans"))
     runtime_path = shutil.which(plan.container_runtime)
     if runtime_path is None:
         raise LocalRuntimeError((
@@ -154,10 +181,29 @@ def up_local_runtime(
             ),
         ))
     _run_container_runtime(command)
+    postgres = inspect_container(plan, "postgres", plan.identity.postgres_container)
+    compose_state = inspect_compose_coordinator(plan)
+    orphan_unverified = plan.coordinator_mode == "native" and compose_state != "absent"
+    if not postgres.postgres_host_binding_valid or orphan_unverified:
+        diagnostics = [LocalRuntimeDiagnostic(
+            "error", "compose-coordinator-removal-unverified" if orphan_unverified else "postgres-host-binding-invalid", "runtime",
+            "Owned coordinator removal or PostgreSQL host publication could not be verified",
+        )]
+        try:
+            _run_container_runtime(tuple(plan.compose_command("down", "--remove-orphans")))
+        except (LocalRuntimeError, OSError):
+            diagnostics.append(LocalRuntimeDiagnostic(
+                "error", "runtime-cleanup-failed", "runtime",
+                "runtime teardown failed after publication verification",
+            ))
+        raise LocalRuntimeError(tuple(diagnostics))
     return LocalRuntimeResult(
         command="up",
         result="started",
         plan=plan,
+        containers={"postgres": postgres},
+        compose_coordinator_state=compose_state,
+        native_coordinator_state=native,
         planned_command=command,
         container_runtime_checked=True,
         container_runtime_available=True,
@@ -171,7 +217,7 @@ def down_local_runtime(
 ) -> LocalRuntimeResult:
     plan = build_local_runtime_plan(resolve_repo_map_home(repo_map_home))
     ensure_runtime_files_exist(plan)
-    command = tuple(plan.compose_command("down"))
+    command = tuple(plan.compose_command("down", "--remove-orphans"))
     if dry_run:
         return LocalRuntimeResult(
             command="down",
@@ -258,6 +304,12 @@ def query_local_runtime_status(
                         "container mode closes when stdin closes"
                     ),
                 ))
+    compose_state = inspect_compose_coordinator(plan) if check_containers and runtime_available else "unchecked"
+    native = native_coordinator_state(plan.repo_map_home) if check_containers else "unchecked"
+    if check_containers and plan.coordinator_mode == "container":
+        diagnostic = native_transition_diagnostic(native)
+        if diagnostic is not None:
+            diagnostics.append(diagnostic)
     server_c = containers.get("server")
     postgres_c = containers.get("postgres")
     running = bool(
@@ -277,6 +329,8 @@ def query_local_runtime_status(
         container_runtime_available=runtime_available,
         containers=containers,
         server_health=server_health,
+        compose_coordinator_state=compose_state,
+        native_coordinator_state=native,
     )
 
 
@@ -287,6 +341,10 @@ def check_runtime_ports_available(plan: LocalRuntimePlan) -> None:
         checks.append(("postgres", plan.postgres_bind_host, plan.postgres_host_port))
     for label, host, port in checks:
         if is_local_port_open(host, port):
+            name = plan.identity.server_container if label == "server" else plan.identity.postgres_container
+            observed = inspect_container(plan, label, name)
+            if observed.host_binding_valid:
+                continue
             diagnostics.append(LocalRuntimeDiagnostic(
                 "error", "port-conflict", f"{host}:{port}",
                 f"{label} host port {port} is already accepting local connections",
@@ -310,58 +368,6 @@ def inspect_local_runtime_containers(
         "postgres": inspect_container(plan, "postgres", plan.identity.postgres_container),
         "server": inspect_container(plan, "server", plan.identity.server_container),
     }
-
-
-def inspect_container(
-    plan: LocalRuntimePlan,
-    component: str,
-    name: str,
-) -> LocalContainerStatus:
-    completed = subprocess.run(
-        [plan.container_runtime, "inspect", name],
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    if completed.returncode != 0:
-        return LocalContainerStatus(
-            name=name,
-            component=component,
-            checked=True,
-            exists=False,
-            diagnostic=completed.stderr.strip() or "container not found",
-        )
-    try:
-        payload = json.loads(completed.stdout)
-        record = payload[0] if isinstance(payload, list) and payload else {}
-        labels = record.get("Config", {}).get("Labels", {}) or {}
-        state = record.get("State", {}) or {}
-        health = state.get("Health", {}) or {}
-    except (TypeError, ValueError) as error:
-        return LocalContainerStatus(
-            name=name,
-            component=component,
-            checked=True,
-            exists=True,
-            diagnostic=f"container inspect output was not understood: {error}",
-        )
-    owned = (
-        labels.get("org.repomap.runtime") == "true"
-        and labels.get("org.repomap.home_hash") == plan.identity.home_hash
-        and labels.get("org.repomap.component") == component
-    )
-    exit_code = state.get("ExitCode")
-    return LocalContainerStatus(
-        name=name,
-        component=component,
-        checked=True,
-        exists=True,
-        owned=owned,
-        status=str(state.get("Status") or "unknown"),
-        exit_code=exit_code if isinstance(exit_code, int) else None,
-        health=health.get("Status") if isinstance(health, dict) else None,
-    )
 
 
 def probe_server_health(plan: LocalRuntimePlan) -> LocalServerHealth:

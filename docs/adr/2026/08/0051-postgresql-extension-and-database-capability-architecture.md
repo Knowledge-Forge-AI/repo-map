@@ -1,5 +1,11 @@
 # ADR 0051: PostgreSQL Extension And Database-Capability Architecture
 
+> Post-promotion amendment (2026-09-24): [ADR 0071](../09/0071-post-promotion-local-server-cloud-architecture.md).
+> ADR 0071 meets only D14’s vector-product reconsideration precondition. It is
+> not a D15 admission record; step 6 must supply that record. pgvector remains
+> unadmitted and is intended as an optional enhanced Server capability, not
+> mandatory in every deployment.
+
 ## Status
 
 Accepted. Docs-only. This ADR decides architecture; it admits no extension,

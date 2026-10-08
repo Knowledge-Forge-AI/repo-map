@@ -4,7 +4,9 @@ import hashlib
 import json
 import re
 import uuid
+from contextlib import contextmanager
 
+from psycopg.errors import LockNotAvailable, QueryCanceled
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
@@ -13,7 +15,7 @@ from repomap_kg.coordinator._control_types import (
     SubmissionResult,
 )
 from repomap_kg.coordinator.contracts import JobRequest, normalize_request
-from repomap_kg.coordinator.limits import CoordinatorLimits
+from repomap_kg.coordinator.limits import AdmissionDeadline, AdmissionTimeout, CoordinatorLimits
 from repomap_kg.runtime.maintenance import require_transaction_admission
 
 
@@ -26,6 +28,7 @@ def submit(
     *,
     requester: str,
     limits: CoordinatorLimits,
+    admission_deadline: AdmissionDeadline | None = None,
 ) -> SubmissionResult:
     request = validate_request(request)
     requester = _safe_category(requester, "requester")
@@ -38,10 +41,12 @@ def submit(
     ).hexdigest()
     job_id = str(uuid.uuid4())
     priority_value = 100 if request.priority == "manual" else 50
-    with connect() as connection:
+    with _admission_transaction(connect, admission_deadline) as connection:
         require_transaction_admission(connection)
         with connection.cursor(row_factory=dict_row) as cursor:
             cursor.execute("LOCK TABLE jobs IN SHARE ROW EXCLUSIVE MODE")
+            if admission_deadline is not None:
+                admission_deadline.remaining()
             existing = _find_existing(
                 cursor, requester, request, idempotency_digest
             )
@@ -86,6 +91,31 @@ def submit(
             if inserted is None:
                 raise ValueError("failed to insert job")
             return SubmissionResult(inserted["job_id"], inserted["state"], False)
+
+
+@contextmanager
+def _admission_transaction(connect, deadline):
+    """Bound lock/query waits and roll back expiration before committing."""
+    try:
+        if deadline is not None:
+            deadline.remaining()
+        with connect() as connection:
+            if deadline is not None:
+                milliseconds = int(deadline.remaining() * 1000)
+                if milliseconds < 1:
+                    raise AdmissionTimeout("admission_timeout")
+                connection.execute(
+                    "SELECT set_config('lock_timeout', %s, true), "
+                    "set_config('statement_timeout', %s, true)",
+                    (str(milliseconds), str(milliseconds)),
+                )
+            yield connection
+            if deadline is not None:
+                deadline.remaining()
+    except (LockNotAvailable, QueryCanceled):
+        if deadline is not None:
+            raise AdmissionTimeout("admission_timeout") from None
+        raise
 
 
 def _find_existing(cursor, requester, request, digest):

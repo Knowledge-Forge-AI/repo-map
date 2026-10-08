@@ -60,6 +60,12 @@ class CoordinatorServiceOperations(_CoordinatorExecutionBase):
     def run(self, action: str) -> ServiceActionResult | str:
         if action not in _ACTIONS:
             raise ServicePackageError("service_action_unsupported")
+        if action in {"start", "restart", "upgrade"}:
+            from repomap_kg.coordinator.deployment import CoordinatorDeploymentError, require_native_mode
+            try:
+                require_native_mode(self.spec.repo_map_home)
+            except CoordinatorDeploymentError as error:
+                raise ServicePackageError(str(error)) from None
         if action == "render":
             return self._render().decode("utf-8")
         operation = getattr(self, f"_{action}")

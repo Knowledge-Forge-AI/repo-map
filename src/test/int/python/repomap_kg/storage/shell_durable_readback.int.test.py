@@ -12,6 +12,8 @@ Composes:
 from __future__ import annotations
 
 from dataclasses import replace
+import json
+import re
 from pathlib import Path
 import shutil
 import tempfile
@@ -21,6 +23,7 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 
 from repomap_kg.graph.discovery import classify_path
+from repomap_kg.canonicalization.main import canonicalize_observations
 from repomap_kg.graph.discovery_extractors import (
     extract_awk_file_observations_from_file,
     extract_bash_file_observations_from_file,
@@ -71,41 +74,27 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
         repo_dir = self.tmpdir / "repo"
         for sub in ("scripts", "tests", "bin"):
             (repo_dir / sub).mkdir(parents=True, exist_ok=True)
-
-        # 1. Author source fixtures across all six shell technologies
         (repo_dir / "scripts" / "deploy.sh").write_text(
-            "#!/usr/bin/env bash\nset -euo pipefail\nexport DEPLOY_ENV=\"production\"\n"
-            "source ./common.sh\nsource ../../escaping_target.sh\n"
-            "deploy_app() {\n    echo \"Starting deployment...\"\n}\ndeploy_app\n",
+            '#!/usr/bin/env bash\nset -euo pipefail\nexport DEPLOY_ENV="production"\nsource ./common.sh\nsource ../../escaping_target.sh\ndeploy_app() {\n    echo "Starting deployment..."\n}\ndeploy_app\n',
             encoding="utf-8",
         )
         (repo_dir / "scripts" / "common.sh").write_text(
             "#!/usr/bin/env bash\nexport LOG_LEVEL=\"info\"\n", encoding="utf-8"
         )
         (repo_dir / "scripts" / "parse.awk").write_text(
-            "function calculate_metric(count, scale) { return count * scale; }\n"
-            "BEGIN { FS=\",\"; ENVIRON[\"AWK_ENV\"]=\"active\"; system(\"date\"); }\n"
-            "{ metric = calculate_metric($1, 2.0); print $2, metric; }\n"
-            "END { print \"awk complete\"; }\n",
+            'function calculate_metric(count, scale) { return count * scale; }\nBEGIN { FS=","; ENVIRON["AWK_ENV"]="active"; system("date"); }\n{ metric = calculate_metric($1, 2.0); print $2, metric; }\nEND { print "awk complete"; }\n',
             encoding="utf-8",
         )
         (repo_dir / "scripts" / "env.zsh").write_text(
-            "#!/bin/zsh\nexport ZSH_PROFILE=\"release\"\nautoload -Uz compinit\ncompinit\n"
-            "setup_shell() {\n    echo \"zsh initialized\"\n}\nsetup_shell\n",
+            '#!/bin/zsh\nexport ZSH_PROFILE="release"\nautoload -Uz compinit\ncompinit\nsetup_shell() {\n    echo "zsh initialized"\n}\nsetup_shell\n',
             encoding="utf-8",
         )
         (repo_dir / "scripts" / "provision.ps1").write_text(
-            "param([string]$TargetCluster = \"cluster-a\", [int]$NodeCount = 2)\n"
-            "$env:INFRA_STAGE = \"staging\"\n"
-            "function Configure-Nodes { param([int]$Nodes) "
-            "Write-Output \"Configuring $Nodes nodes\" }\n"
-            "Configure-Nodes -Nodes $NodeCount\n",
+            'param([string]$TargetCluster = "cluster-a", [int]$NodeCount = 2)\n$env:INFRA_STAGE = "staging"\nfunction Configure-Nodes { param([int]$Nodes) Write-Output "Configuring $Nodes nodes" }\nConfigure-Nodes -Nodes $NodeCount\n',
             encoding="utf-8",
         )
         (repo_dir / "tests" / "suite.bats").write_text(
-            "#!/usr/bin/env bats\nsetup() { export BATS_TARGET=\"local\"; }\n"
-            "@test \"verify deployment environment\" {\n"
-            "    run bash -c 'echo $DEPLOY_ENV'\n    [ \"$status\" -eq 0 ]\n}\n",
+            '#!/usr/bin/env bats\nsetup() { export BATS_TARGET="local"; }\n@test "verify deployment environment" {\n    run bash -c \'echo $DEPLOY_ENV\'\n    [ "$status" -eq 0 ]\n}\n',
             encoding="utf-8",
         )
         (repo_dir / "tests" / "runner.zunit").write_text(
@@ -113,8 +102,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             encoding="utf-8",
         )
         (repo_dir / "bin" / "corrupt.bin").write_bytes(b"\x7fELF\x02\x01\x01\x00\xff\xfe\x00\x00")
-
-        # 2. Static extraction via specialized discovery extractors
         obs_bash = extract_bash_file_observations_from_file(repo_dir, "scripts/deploy.sh")
         obs_common = extract_bash_file_observations_from_file(repo_dir, "scripts/common.sh")
         obs_awk = extract_awk_file_observations_from_file(repo_dir, "scripts/parse.awk")
@@ -124,7 +111,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
         )
         obs_bats = extract_bats_file_observations_from_file(repo_dir, "tests/suite.bats")
         obs_zunit = extract_zunit_file_observations_from_file(repo_dir, "tests/runner.zunit")
-
         # Source boundaries: non-UTF8 binary returns () and escaping source has no target
         self.assertEqual(extract_shell_file_observations(repo_dir, "bin/corrupt.bin"), ())
         escape_sources = [
@@ -134,7 +120,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
         ]
         self.assertEqual(len(escape_sources), 1)
         self.assertIsNone(escape_sources[0].target)
-
         # Base file observations from discovery alongside specialized observations
         file_paths = (
             "scripts/deploy.sh",
@@ -149,7 +134,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             classify_path(repo_dir, repo_dir / path).to_observation()
             for path in file_paths
         ]
-
         all_observations: list[RawObservation] = [
             *base_file_obs,
             *obs_bash,
@@ -160,10 +144,31 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             *obs_bats,
             *obs_zunit,
         ]
+        # Send the maintained six-family corpora through one durable publication.
+        fixtures = Path(__file__).parents[4] / "fixtures"
+        fixture_markers: set[str] = set()
+        for folder, extractor in (
+            ("shell/bash", extract_bash_file_observations_from_file),
+            ("shell/zsh", extract_zsh_file_observations_from_file),
+            ("shell/bats", extract_bats_file_observations_from_file),
+            ("shell/zunit", extract_zunit_file_observations_from_file),
+            ("shell/awk", extract_awk_file_observations_from_file),
+            ("powershell", extract_powershell_file_observations_from_file),
+        ):
+            for original in sorted((fixtures / folder).rglob("*")):
+                if not original.is_file():
+                    continue
+                relative = "corpus/" + original.relative_to(fixtures).as_posix()
+                destination = repo_dir / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(original, destination)
+                fixture_markers.update(re.findall(r"FAKE_[A-Z_]+", original.read_text()))
+                all_observations.append(classify_path(repo_dir, destination).to_observation())
+                all_observations.extend(extractor(repo_dir, relative))
+        expected = canonicalize_observations(all_observations)
+        self.assertTrue(expected.ok, expected.diagnostics)
         self.assertGreater(len(all_observations), 20)
         repo_name, root_path = "fixture-shell-durable", str(repo_dir)
-
-        # 3. Disposable PostgreSQL publication
         with temporary_postgres() as postgres:
             apply_migrations(
                 default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command
@@ -178,8 +183,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             self.assertGreater(summary.run_id, 0)
             self.assertGreater(summary.repository_id, 0)
             self.assertGreaterEqual(summary.files, 7)
-
-            # 4. Storage summary readback
             storage_summary = query_canonical_storage_summary(
                 postgres.psql_args, root_path=root_path, psql_command=postgres.psql_command
             )
@@ -188,7 +191,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             self.assertEqual(storage_summary.repository_name, repo_name)
             self.assertGreaterEqual(storage_summary.files, 7)
 
-            # 5. Canonical nodes readback across all 6 shell ecosystems
             nodes = query_canonical_node_records(
                 postgres.psql_args, root_path=root_path, psql_command=postgres.psql_command
             )
@@ -219,7 +221,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             )
             self.assertTrue(all(not n.conflict for n in nodes))
 
-            # 6. Canonical edges readback & semantic relationship verification
             edges = query_canonical_edge_records(
                 postgres.psql_args, root_path=root_path, psql_command=postgres.psql_command
             )
@@ -275,13 +276,27 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
                 ("file:scripts/deploy.sh", "executes", "tool:echo"),
             }
             self.assertTrue(expected_edge_triples.issubset(edge_triples))
+            self.assertEqual(set(node_map), {node.canonical_key for node in expected.graph.nodes})
+            self.assertEqual(edge_triples, {(e.source_key, e.kind, e.target_key) for e in expected.graph.edges})
+            durable_payload = json.dumps([n.metadata for n in nodes] + [e.metadata for e in edges])
+            for marker in fixture_markers:
+                self.assertNotIn(marker, durable_payload)
+            shell_families = ("bash", "zsh", "powershell", "awk", "bats", "zunit")
+            family_edges = {family: [edge for edge in edges if edge.edge_kind == "defines" and edge.target_key.startswith(family + ".") and "corpus" in edge.target_key] for family in shell_families}
+            self.assertEqual({family: bool(candidates) for family, candidates in family_edges.items()}, dict.fromkeys(shell_families, True), f"shell family edge inventory must contain all six families: { {family: [edge.target_key for edge in candidates] for family, candidates in family_edges.items()} }")
+            for family, candidates in family_edges.items():
+                edge = sorted(candidates, key=lambda item: item.target_key)[0]
+                proof = query_canonical_edge_explanation(
+                    postgres.psql_args, root_path=root_path, source_key=edge.source_key,
+                    kind=edge.edge_kind, target_key=edge.target_key,
+                    identity_metadata_hash=edge.identity_metadata_hash, psql_command=postgres.psql_command,
+                )
+                self.assertTrue(proof.evidence, family)
+                self.assertTrue(all(item.path.startswith("corpus/") for item in proof.evidence))
             self.assertFalse(any("escaping_target.sh" in e.target_key for e in edges))
-
-            # 7. Canonical edge explanation with evidence link
-            sources_edge = next(
-                e for e in edges
-                if e.edge_kind == "sources" and e.target_key == "file:scripts/common.sh"
-            )
+            source_edge_candidates = [edge for edge in edges if edge.edge_kind == "sources" and edge.target_key == "file:scripts/common.sh"]
+            self.assertEqual(len(source_edge_candidates), 1, f"expected one deploy-to-common source edge: {[(edge.source_key, edge.target_key) for edge in source_edge_candidates]}")
+            sources_edge = source_edge_candidates[0]
             explanation = query_canonical_edge_explanation(
                 postgres.psql_args,
                 root_path=root_path,
@@ -296,8 +311,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             self.assertGreaterEqual(len(explanation.evidence), 1)
             self.assertEqual(explanation.evidence[0].path, "scripts/deploy.sh")
             self.assertEqual(explanation.evidence[0].extractor, "repo-bash")
-
-            # 8. Canonical neighborhood query
             center_key = "bash.script:file%3Ascripts%2Fdeploy.sh"
             neighborhood = query_canonical_neighborhood(
                 postgres.psql_args, root_path=root_path, node=center_key,
@@ -310,7 +323,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             self.assertIn("bash.function:file%3Ascripts%2Fdeploy.sh:deploy_app", neighbor_node_keys)
             self.assertIn("file:scripts/common.sh", neighbor_node_keys)
 
-            # 9. Relational integrity & durable table checks via psycopg
             params = _psycopg_connection_params_from_psql_args(postgres.psql_args)
             with psycopg.connect(make_conninfo(**params)) as conn:
                 run_row = conn.execute(
@@ -351,7 +363,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             assert run_pub is not None
             self.assertEqual(run_pub, latest_pub)
 
-            # 11. Deterministic idempotent replay
             replay_summary = run_staged_full_refresh(
                 postgres.psql_args, all_observations, repository_name=repo_name,
                 root_path=root_path, authority=authority,
@@ -359,7 +370,6 @@ class StorageShellDurableReadbackIntegrationTests(unittest.TestCase):
             self.assertEqual(replay_summary.run_id, summary.run_id)
             self.assertEqual(replay_summary.repository_id, summary.repository_id)
 
-            # 12. Multi-run attempt advancement and run identity tracking
             authority_attempt2 = replace(authority, attempt=AttemptNumber(2))
             summary2 = run_staged_full_refresh(
                 postgres.psql_args, all_observations, repository_name=repo_name,

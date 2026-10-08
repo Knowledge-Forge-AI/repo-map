@@ -153,8 +153,8 @@ def _categorize_flake_input_source(expression: str) -> str:
         or normalized.startswith("../")
     ):
         return "path"
-    if normalized.endswith((".tar.gz", ".tgz", ".tar.xz", ".zip")):
-        return "tarball"
     if "${" in normalized:
         return "dynamic"
+    if normalized.endswith((".tar.gz", ".tgz", ".tar.xz", ".zip")):
+        return "tarball"
     return "unknown"

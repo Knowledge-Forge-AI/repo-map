@@ -247,6 +247,9 @@ class UpgradeStore:
         if self.fail_adoption:
             raise RuntimeError("private adoption detail")
 
+    def upgrade_ledgered_schema(self, *, expected_manifest: tuple[str, ...], backup_verified: bool) -> None:
+        raise AssertionError("preledger fixture cannot perform a ledgered upgrade")
+
     def check_schema_version(self) -> int:
         return 1
 

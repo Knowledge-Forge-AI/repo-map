@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Sequence
+from typing import Any, Literal, Mapping, Sequence
 
 from repomap_kg.graph.multi_source import (
     MultiSourceIdentityError,
@@ -106,6 +106,7 @@ class OpsRuntimePostgresConfig:
 
 @dataclass(frozen=True)
 class OpsRuntimeConfig:
+    coordinator_mode: Literal["container", "native"] = "container"
     container_runtime: str | None = None
     postgres_host_port: int | None = None
     server_host_port: int | None = None

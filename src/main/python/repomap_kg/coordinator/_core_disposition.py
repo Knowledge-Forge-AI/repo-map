@@ -7,11 +7,14 @@ from datetime import timedelta
 import random
 import threading
 
+from repomap_kg.coordinator._control_maintenance import _sanitize_error_category
 from repomap_kg.coordinator._coordinator_protocols import (
     CoordinatorStore,
     PublicationReader,
+    PublicationRetirer,
     _Claim,
 )
+from repomap_kg.coordinator.limits import DEFAULT_LIMITS
 from repomap_kg.coordinator.semantics import RetryPolicy
 
 
@@ -21,7 +24,9 @@ class CoreDispositionMixin:
     _store: CoordinatorStore
     _instance_id: str
     _publication_reader: PublicationReader | None
+    _publication_retirer: PublicationRetirer | None
     _retry_policy: RetryPolicy
+    _residual_evidence: list[str]
 
     def _require_started(self) -> int:
         raise NotImplementedError
@@ -63,9 +68,37 @@ class CoreDispositionMixin:
         ):
             return "ownership_lost"
         self._release_terminal_lease(claim)
+        self._retire_evidence(claim)
         return "cancelled"
 
+    def _retire_evidence(self, claim: _Claim) -> None:
+        retirer = getattr(self, "_publication_retirer", None)
+        if retirer is None:
+            return
+        try:
+            retirer(claim)
+        except (OSError, ValueError) as err:
+            cat = _sanitize_error_category(err)
+            token = f"{claim.job_id}:{claim.attempt}:{cat}"
+            lock = getattr(self, "_lock", None)
+            if lock is not None:
+                with lock:
+                    residuals = getattr(self, "_residual_evidence", None)
+                    if (
+                        residuals is not None
+                        and len(residuals) < DEFAULT_LIMITS.max_array_items
+                    ):
+                        residuals.append(token)
+            else:
+                residuals = getattr(self, "_residual_evidence", None)
+                if (
+                    residuals is not None
+                    and len(residuals) < DEFAULT_LIMITS.max_array_items
+                ):
+                    residuals.append(token)
+
     def _release_terminal_lease(self, claim: _Claim) -> None:
+
         epoch = self._require_started()
         if not self._store.release_graph_lease(
             claim.graph_id,
@@ -103,12 +136,14 @@ class CoreDispositionMixin:
         return True
 
     def _reconcile_current(self, claim: _Claim) -> str:
+        unpublished_proved = False
         if self._publication_reader is not None:
             try:
                 marker = self._publication_reader(claim)
             except (OSError, RuntimeError, ValueError):
                 marker = None
             if marker is not None:
+                unpublished_proved = marker.get("publication_state") == "not_started"
                 try:
                     self._record_marker_if_available(claim, marker)
                 except ValueError:
@@ -117,6 +152,7 @@ class CoreDispositionMixin:
             claim,
             reconciler_instance_id=self._instance_id,
             reconciler_epoch=self._require_started(),
+            **({"unpublished_proved": True} if unpublished_proved else {}),
         )
 
     def _dispose_terminal(
@@ -149,7 +185,10 @@ class CoreDispositionMixin:
                     claim, process_cleanup_proved=True
                 ):
                     return "ownership_lost"
-                return self._reconcile_current(claim)
+                outcome = self._reconcile_current(claim)
+                if outcome in {"succeeded", "failed", "cancelled", "queued"}:
+                    self._retire_evidence(claim)
+                return outcome
             if not self._store.mark_reconciliation_required(
                 claim,
                 expected_state=expected,
@@ -161,7 +200,10 @@ class CoreDispositionMixin:
                 claim, process_cleanup_proved=True
             ):
                 return "ownership_lost"
-            return self._reconcile_current(claim)
+            outcome = self._reconcile_current(claim)
+            if outcome in {"succeeded", "failed", "cancelled", "queued"}:
+                self._retire_evidence(claim)
+            return outcome
         if not termination_proved:
             if not self._store.mark_reconciliation_required(
                 claim,
@@ -184,7 +226,10 @@ class CoreDispositionMixin:
             ):
                 return "ownership_lost"
             if termination_proved and self._publication_reader is not None:
-                return self._reconcile_current(claim)
+                outcome = self._reconcile_current(claim)
+                if outcome in {"succeeded", "failed", "cancelled", "queued"}:
+                    self._retire_evidence(claim)
+                return outcome
             return "reconciliation_required"
         if status == "failed" and publication in {"not_started", "rolled_back"}:
             category = str(terminal.get("error_category") or "permanent")
@@ -202,6 +247,7 @@ class CoreDispositionMixin:
                     diagnostic_summary=diagnostic_summary,
                 ):
                     self._release_terminal_lease(claim)
+                    self._retire_evidence(claim)
                     return "failed"
                 return "ownership_lost"
             if self._retry_policy.may_retry(claim.attempt, category, str(publication)):
@@ -215,6 +261,7 @@ class CoreDispositionMixin:
                     category=category,
                     diagnostic_summary=diagnostic_summary,
                 ):
+                    self._retire_evidence(claim)
                     return "queued"
             if self._transition(
                 claim,
@@ -225,6 +272,7 @@ class CoreDispositionMixin:
                 diagnostic_summary=diagnostic_summary,
             ):
                 self._release_terminal_lease(claim)
+                self._retire_evidence(claim)
                 return "failed"
             return "ownership_lost"
         if (
@@ -244,12 +292,19 @@ class CoreDispositionMixin:
                 error_category="cancelled",
             ):
                 self._release_terminal_lease(claim)
+                self._retire_evidence(claim)
                 return "cancelled"
             return "ownership_lost"
+        effective_diagnostic = diagnostic_summary
+        if supervised_category == "worker_crash" and effective_diagnostic is None:
+            effective_diagnostic = "worker_crash:unproved_termination"
+        publication_arg = "not_started" if publication == "not_started" else "commit_unknown"
         if not self._store.mark_reconciliation_required(
             claim,
             expected_state=expected,
             category=str(supervised_category),
+            diagnostic_summary=effective_diagnostic,
+            publication_state=publication_arg,
         ):
             return "ownership_lost"
         if termination_proved and not self._store.mark_attempt_terminated(
@@ -257,6 +312,10 @@ class CoreDispositionMixin:
             process_cleanup_proved=True,
             reconciler_instance_id=self._instance_id,
             reconciler_epoch=self._require_started(),
+            diagnostic_summary=effective_diagnostic,
         ):
             return "ownership_lost"
-        return self._reconcile_current(claim)
+        outcome = self._reconcile_current(claim)
+        if outcome in {"succeeded", "failed", "cancelled", "queued"}:
+            self._retire_evidence(claim)
+        return outcome

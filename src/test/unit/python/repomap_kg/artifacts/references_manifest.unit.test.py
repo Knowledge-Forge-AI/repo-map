@@ -160,6 +160,13 @@ def test_duplicate_paths_from_different_bindings_remain_distinct() -> None:
 def test_manifest_rejects_non_portable_paths(path: str) -> None:
     with pytest.raises(ValueError, match="artifact path"):
         ManifestArtifact(binding().binding_id, path, reference(), False)
+    payload = json.loads(manifest().canonical_bytes())
+    payload["entries"][0]["source_relative_path"] = path
+    with pytest.raises(ValueError, match="^manifest entry is invalid$") as refused:
+        PortableSnapshotManifest.from_bytes(
+            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+        )
+    assert str(refused.value.__cause__) == "artifact path is not portable"
 
 
 def test_manifest_rejects_duplicates_case_ambiguity_and_bounds() -> None:

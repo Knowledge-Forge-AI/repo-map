@@ -222,7 +222,7 @@ def run_lifecycle(
             _run_cli(
                 budget, home, "local", "setup", "--repo-map-home", str(home), "--json"
             )
-            home.chmod(0o700)
+            assert home.stat().st_mode & 0o777 == 0o700
             _write_fixture(target_fixture, "target")
             _write_fixture(control_fixture, "control")
             _write_config(home, config.pg_container_port, target_fixture, control_fixture)

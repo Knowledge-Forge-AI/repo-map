@@ -103,6 +103,8 @@ def _summary(value: Any) -> None:
         _int(summary[field], f"M summary.{field}", 0)
     if summary["covered_lines"] > summary["total_lines"] or summary["covered_branches"] > summary["total_branches"]:
         _bad("M coverage count exceeds denominator")
+    if not summary["total_lines"] or not summary["total_branches"]:
+        _bad("M coverage requires a non-empty measured population for lines and branches")
     line = _num(summary["line_percent"], "M summary.line_percent", 0.0, 100.0)
     branch = _num(summary["branch_percent"], "M summary.branch_percent", 0.0, 100.0)
     expected_line = 100 * summary["covered_lines"] / summary["total_lines"] if summary["total_lines"] else 0.0
@@ -129,7 +131,7 @@ def _summary(value: Any) -> None:
         for offset, field in enumerate(("line_percent", "branch_percent")):
             percent = _num(record[field], f"M summary.files[{index}].{field}", 0.0, 100.0)
             denominator, numerator = counts[offset * 2], counts[offset * 2 + 1]
-            expected = 100 * numerator / denominator if denominator else 0.0
+            expected = 100 * numerator / denominator if denominator else 100.0
             if not math.isclose(percent, expected, abs_tol=0.11):
                 _bad("M summary file percentage does not match counts")
         totals = [left + right for left, right in zip(totals, counts)]

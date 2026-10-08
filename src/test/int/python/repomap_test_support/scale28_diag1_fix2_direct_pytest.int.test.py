@@ -52,8 +52,10 @@ def _run_ids(scratch: Path) -> set[str]:
 def _run_direct_pytest(fixture: Path, scratch: Path, tmp_path: Path, *,
                        inherited_run_root: Path | None = None,
                        phase: str = "DIRECT-PYTEST-FIXTURE"):
+    from runner_coverage_execution import prepare_child_coverage_environment
+
     record = tmp_path / "record.json"
-    env = dict(os.environ)
+    env = prepare_child_coverage_environment(base_env=os.environ, family="unmeasured")
     env.pop(ENV_RUN_ROOT, None)
     env[ENV_SCRATCH_ROOT] = str(scratch)
     env[ENV_PROJECT] = "repo-map_dev"

@@ -240,3 +240,26 @@ class NixExtractorImportsAndPathsUnitTests(unittest.TestCase):
         self.assertEqual(resolve_repo_path("flake.nix", "${self}/bin/tool"), "bin/tool")
         self.assertIsNone(resolve_repo_path("flake.nix", "../outside.nix"))
         self.assertIsNone(resolve_repo_path("flake.nix", "pkgs.hello"))
+
+    def test_flake_input_url_interpolation_precedence_over_archive_suffix(self):
+        content = (
+            "{\n"
+            "  inputs = {\n"
+            '    static_tarball.url = "https://example.invalid/assets.tar.gz";\n'
+            '    dynamic_tarball.url = "https://example.invalid/${version}.tar.gz";\n'
+            "  };\n"
+            "}\n"
+        )
+        observations = extract_nix_file_observations(
+            "flake.nix",
+            content,
+            flake_ref="fixture",
+            include_input_references=True,
+        )
+        inputs_by_name = {
+            item.name: item.metadata["source_type"]
+            for item in observations
+            if item.kind == "nix.flake_input"
+        }
+        self.assertEqual(inputs_by_name.get("static_tarball"), "tarball")
+        self.assertEqual(inputs_by_name.get("dynamic_tarball"), "dynamic")

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime.postgres_route import PostgresRoute, effective_postgres_route, execution_postgres
+
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,6 +11,7 @@ import stat
 from threading import Event
 from typing import Mapping
 
+from repomap_kg.coordinator._configured_fencing import install_graph_publication_fence as _install_graph_publication_fence
 from repomap_kg.coordinator.contracts import JobRequest, normalize_request
 from repomap_kg.coordinator._refresh_contracts import RefreshSourceError
 from repomap_kg.coordinator.core import CoordinatorStore, SyntheticCoordinator
@@ -20,30 +23,21 @@ from repomap_kg.coordinator.refresh_adapter import (
 from repomap_kg.coordinator.startup_recovery import PublicationRouteChangedError
 from repomap_kg.ops.config import graph_database, load_ops_config
 from repomap_kg.ops.generations import (
-    canonicalizer_generation,
-    config_generation,
-    configured_graph,
-    extractor_generation,
+    canonicalizer_generation, config_generation, configured_graph, extractor_generation
 )
 from repomap_kg.ops.source_generation import (
-    DEFAULT_SOURCE_GENERATION_LIMITS,
-    SourceGenerationResult,
-    scan_source_generation,
+    DEFAULT_SOURCE_GENERATION_LIMITS, SourceGenerationResult, scan_source_generation
 )
 from repomap_kg.graph.multi_source_pipeline import (
-    MultiSourceCaptureError,
-    multi_source_config_generation,
-    scan_multi_source_generations,
+    MultiSourceCaptureError, multi_source_config_generation, scan_multi_source_generations
 )
 from repomap_kg.runtime.database_role_contract import project_database_role_config
-from repomap_kg.storage import (
-    read_latest_receipt_bearing_publication,
-    read_run_publication,
+from repomap_kg.coordinator._publication_phase import (
+    close_unpublished, retire_evidence
 )
+from repomap_kg.storage import read_latest_receipt_bearing_publication, read_run_publication
 from repomap_kg.coordinator.windows_security import (
-    WindowsSecurityError,
-    reject_reparse_path,
-    validate_owner_private_acl,
+    WindowsSecurityError, reject_reparse_path, validate_owner_private_acl
 )
 
 
@@ -94,6 +88,8 @@ class ConfiguredRefreshResolver:
             graph_id=snapshot.graph_id,
             config_path=self._config_path,
             psql_path=self._psql_path,
+            postgres_host=snapshot.route.host, postgres_port=snapshot.route.port,
+            postgres_route_kind=snapshot.route.kind,
             postgres_user=snapshot.postgres_user,
             postgres_password=snapshot.password,
             executable_search_path=_executable_search_path(self._psql_path),
@@ -148,9 +144,7 @@ class ConfiguredRefreshResolver:
             extractor_generation=extractor_generation(graph),
             canonicalizer_generation=canonicalizer_generation(),
             password=_postgres_password(authority_config, self._config_path),
-            psql_args=tuple(
-                authority_config.postgres.psql_args_for_database(database)
-            ),
+            psql_args=tuple(execution_postgres(authority_config).psql_args_for_database(database)),
         )
 
     def latest_publication(self, graph_id: str) -> Mapping[str, object] | None:
@@ -181,6 +175,8 @@ class ConfiguredRefreshResolver:
             ),
         )
         return None if record is None else record.marker()
+
+    install_graph_publication_fence = _install_graph_publication_fence
 
     def _snapshot(
         self, graph_id: object, *, discover_source: bool = True
@@ -227,11 +223,10 @@ class ConfiguredRefreshResolver:
             config_generation=graph_config_generation,
             extractor_generation=extractor_generation(graph),
             canonicalizer_generation=canonicalizer_generation(),
+            route=effective_postgres_route(authority_config),
             postgres_user=authority_config.postgres.user,
             password=_postgres_password(authority_config, self._config_path),
-            psql_args=tuple(
-                authority_config.postgres.psql_args_for_database(database)
-            ),
+            psql_args=tuple(execution_postgres(authority_config).psql_args_for_database(database)),
         )
 
     def _authority_config(self, config):
@@ -246,6 +241,7 @@ class ConfiguredRefreshResolver:
 
 @dataclass(frozen=True)
 class _ConfiguredSnapshot:
+    route: PostgresRoute
     graph_id: str
     source_generation: str
     config_generation: str
@@ -272,9 +268,7 @@ class ConfiguredPollingSnapshot:
 
 def _source_token(root: Path, exclude_paths: tuple[str, ...]) -> str:
     result = scan_source_generation(
-        root,
-        exclude_paths=exclude_paths,
-        limits=DEFAULT_SOURCE_GENERATION_LIMITS,
+        root, exclude_paths=exclude_paths, limits=DEFAULT_SOURCE_GENERATION_LIMITS
     )
     if result.generation is None:
         raise ValueError("configured graph source is unavailable")
@@ -290,18 +284,24 @@ def build_configured_refresh_coordinator(
     limits: CoordinatorLimits = DEFAULT_LIMITS,
 ) -> SyntheticCoordinator:
     """Compose the proven coordinator core with configured refresh adapters."""
-
+    fence_callback = lambda claim, **kwargs: resolver.install_graph_publication_fence(claim, **kwargs)
+    if hasattr(store, "set_durable_fence_callback"):
+        store.set_durable_fence_callback(fence_callback)
+    reader = lambda c: resolver.read_publication(c)
+    closer = lambda c, proof: close_unpublished(capability_directory, c, proof=proof)
     return SyntheticCoordinator(
         store,
         instance_id,
         build_refresh_worker_runner(
-            resolver.resolve_authority, capability_directory, limits
+            resolver.resolve_authority, capability_directory, limits,
+            fencing_prover=getattr(store, "in_process_fencing_proof", None),
+            launch_registrar=getattr(store, "register_supervisor_launch", None),
         ),
-        publication_reader=resolver.read_publication,
+        publication_reader=reader,
+        publication_closer=closer,
+        publication_retirer=lambda claim: retire_evidence(capability_directory, claim),
         max_workers=limits.max_running_workers,
     )
-
-
 def _postgres_password(config, config_path: Path) -> str:
     postgres = config.postgres
     if postgres.password is not None:
@@ -311,8 +311,7 @@ def _postgres_password(config, config_path: Path) -> str:
     elif postgres.password_file is not None:
         path = Path(postgres.password_file).expanduser()
         if not path.is_absolute():
-            base = config_path if config_path.is_dir() else config_path.parent
-            path = base / path
+            path = (config_path if config_path.is_dir() else config_path.parent) / path
         value = _read_private_password(path)
     else:
         value = ""
@@ -354,7 +353,7 @@ def _executable_search_path(psql_path: Path) -> tuple[Path, ...]:
     candidates.extend(Path(value) for value in os.environ.get("PATH", "").split(os.pathsep))
     paths = []
     for path in candidates:
-        if path in paths:
+        if not path.is_absolute() or path in paths:
             continue
         try:
             details = path.stat()

@@ -62,6 +62,69 @@ not a promise of path-free output. See the
 [field-by-mode contract](../../operator-local-refresh-output.md) before sharing
 any projection. A distinct explicitly selected shareable projection is deferred.
 
+## SQLite Local Homes (Step 4, First Slice)
+
+A home with `[storage] backend = "sqlite"` is a SQLite Local home: no
+`[postgres]`, `[runtime]`, credentials, `psql` or Docker. Its supported
+maintenance commands (all `--repo-map-home <home>`) are:
+
+- `ops config-check [--check-db]` and `ops graphs [--check-db]`: validation and
+  inventory; `--check-db` adds a read-only per-graph readiness state and never
+  creates a database;
+- `ops sqlite-init --graph <id>`: explicit creation at the current schema
+  (v2), never a reinitialization and never an upgrade of an older database;
+- `ops refresh-preflight --graph <id>`: source inspection only;
+- `ops refresh-graph --graph <id>`: direct mode only; `--mode coordinator` is
+  refused by design (`sqlite-local-refresh-rejects-coordinator-mode`);
+- `ops refresh-enabled`: every enabled graph in configuration order, each a
+  separate direct refresh;
+- `ops sqlite-backup --graph <id> --output <new-or-empty-dir>`: a verified
+  backup/export (`graph.sqlite3` plus a path-free `manifest.json` bound to the
+  exact accepted generation and bundle id), taken online under the publisher
+  lock; refuses while a refresh holds the graph;
+- `ops sqlite-restore --graph <id> --backup <dir>`: verifies the whole backup,
+  then restores only into an absent graph database; it never replaces an
+  existing one (that is a separate destructive recovery decision). A v1 backup
+  restores as v1 (`schema-behind`) and is not upgraded;
+- `ops sqlite-upgrade --graph <id> --backup-output <new-or-empty-dir>`: the
+  only schema migration. An exact older schema (`schema-behind` in
+  `--check-db`) is backed up and the backup verified before one transaction
+  moves it to v2; the accepted generation and bundle are unchanged. A current
+  database is `already-current` with no backup. There is no downgrade; restore
+  the backup to roll back. On `graph-migration-reconciliation-required`, rerun
+  the upgrade with a new empty `--backup-output` instead of restoring;
+- `ops sqlite-cleanup --graph <id> [--yes]`: a dry run by default. `--yes`
+  removes only expired terminal retained attempts (graph-local and pre-LOCAL3
+  shared) and stale or partial orphan `.init-*`/`.restore-*` temporaries, then
+  syncs `state/` and the home. Unsettled or record-less attempts and
+  recoverable orphans are kept and reported, and any unsafe item refuses the
+  whole run. There is no force mode.
+
+These run without the PostgreSQL driver installed and never read a source root
+for backup, restore, upgrade or cleanup. Other PostgreSQL-only `ops` commands (including the
+PostgreSQL `local db` backup commands) refuse the home with
+`sqlite-local-home-requires-local-command`. Never copy a live database file by
+hand; use `ops sqlite-backup`. See [SQLite Local](../../sqlite-local.md).
+
+## Setup-Owned Host Readback Authority
+
+With native local mode and direct host PostgreSQL exposure enabled, supported
+home-selected readbacks use `repomap_read_status` and its setup-owned private
+`runtime/.env` secret. This includes refresh status, graph summary, graph files,
+source edges and canonical edge explanations. No manual password export is needed;
+readback never creates or rewrites role secrets. Missing or unsafe authority refuses.
+
+For the exact setup-default connection, ambient `PGPASSWORD` and
+`REPOMAP_PG_PASSWORD` no longer select admin credentials for these readbacks.
+Explicit literal/password-file credentials and custom user/password-environment
+configurations retain their configured authority. Remote/custom connections are
+not projected to local runtime secrets.
+
+Use `storage edges --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --kind sources`
+and `storage explain-canonical-edge --repo-map-home "$REPOMAP_HOME" --graph <graph-id>`
+with the edge identity arguments. Graph selection uses the stable configured
+repository identity, including refresh publications whose root is `graph:<graph-id>`.
+
 ## Baselines And Drift Gates
 
 Use `ops baseline-save --graph <graph-id> --kind both --json` to record the

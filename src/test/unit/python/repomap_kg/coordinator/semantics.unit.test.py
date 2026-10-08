@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import random
-from typing import cast
+from typing import Any, cast
 
 import pytest
 
@@ -73,6 +73,36 @@ def test_reconciliation_never_guesses_from_process_exit(
     publication, marker, cancel_requested, expected
 ):
     assert reconcile_publication(publication, marker, cancel_requested) == expected
+
+
+@pytest.mark.parametrize("cancel", [False, True])
+@pytest.mark.parametrize(
+    "publication,marker,proof,without_cancel,with_cancel",
+    [
+        ("commit_unknown", "matching_committed", "unproved", "succeeded", "succeeded"),
+        ("not_started", "conflicting", "fenced_absence", "quarantined", "quarantined"),
+        ("not_started", "unknown", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("not_started", "absent", "unproved", "queued", "reconciliation_required"),
+        ("prepared", "absent", "unproved", "queued", "reconciliation_required"),
+        ("not_started", "absent", "fenced_absence", "queued", "cancelled"),
+        ("prepared", "absent", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("rolled_back", "absent", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("rolled_back", "absent", "unproved", "queued", "cancelled"),
+        ("commit_unknown", "absent", "fenced_absence", "reconciliation_required", "reconciliation_required"),
+        ("transaction_started", "absent", "unproved", "reconciliation_required", "reconciliation_required"),
+    ],
+)
+def test_reconciliation_requires_explicit_validated_absence(
+    publication, marker, proof, without_cancel, with_cancel, cancel,
+):
+    assert reconcile_publication(
+        publication, marker, cancel, absence_proof=proof,
+    ) == (with_cancel if cancel else without_cancel)
+
+
+def test_reconciliation_rejects_invalid_proof_state():
+    with pytest.raises(ValueError, match="absence proof"):
+        reconcile_publication("not_started", "absent", True, absence_proof=cast(Any, "invented"))
 
 
 def test_retry_policy_uses_bounded_exponential_full_jitter():

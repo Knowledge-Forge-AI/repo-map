@@ -231,3 +231,112 @@ def test_old_descendant_artifact_refuses_before_any_launch(tmp_path):
     with pytest.raises(RuntimeError, match="predates"):
         with observe_scale28_crash(tmp_path):
             pytest.fail("old artifact must refuse before launch")
+
+
+def test_sqlite_local_guard_abrupt_kill_settlement_produces_complete_receipt_and_clean_combine(tmp_path: Path) -> None:
+    """Prove _settle_terminal_receipt produces complete .exit, valid shard, and clean combine on SIGKILL."""
+    import sqlite3
+    from runner_coverage_execution import read_registered_children
+    from repomap_test_support.sqlite_local_fixtures import graph_toml, write_shell_source, write_sqlite_home
+    from repomap_test_support.sqlite_local_harness import LocalHarness, await_ready, kill_paused_child
+
+    source = write_shell_source(tmp_path / "sources" / "vault")
+    home = write_sqlite_home(tmp_path / "home", graph_toml("vault", source, privacy="private-ops"))
+    harness = LocalHarness(tmp_path / "harness_scratch", block_psycopg=True)
+    barrier = tmp_path / "barrier"
+    output = tmp_path / "killed_backup"
+    session = ChildCoverageSession(coverage_module=coverage, scratch_dir=tmp_path / "cov", suite="int")
+    try:
+        with session:
+            runner = session.create_coverage(coverage)
+            runner.start()
+            harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "vault")
+            child = harness.start(
+                "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", "vault", "--output", str(output),
+                extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
+                family="cli_module",
+            )
+            try:
+                await_ready(barrier, child)
+                kill_paused_child(child)
+            finally:
+                child.communicate()
+            runner.stop()
+            runner.save()
+
+            # 1. Terminal receipt is complete and bound to correct child identity
+            records = read_registered_children(session.child_manifest_dir, session.session_dir.name, "int")
+            assert int(str(child.pid)) in records
+            rec = records[int(str(child.pid))]
+            assert rec["exited"] is True
+            assert rec["launch_shape"] == "script:sqlite_local_guard.py"
+
+            exit_content = (session.child_manifest_dir / f"{child.pid}.exit").read_text(encoding="utf-8")
+            assert f"pid={child.pid}" in exit_content
+            assert "complete=1" in exit_content
+
+            # 2. Referenced coverage shard is valid and non-corrupt SQLite
+            shard_path = Path((session.child_manifest_dir / f"{child.pid}.shard").read_text(encoding="utf-8").strip())
+            assert shard_path.exists()
+            with sqlite3.connect(shard_path) as conn:
+                cur = conn.cursor()
+                cur.execute("PRAGMA integrity_check;")
+                res = cur.fetchone()[0]
+                assert res == "ok"
+
+            # 3. Coverage combine accepts the shard cleanly without measurement errors
+            combined = session.combine(runner)
+            assert not session.measurement_errors
+            assert not getattr(runner, "_instrumentation_error", None)
+            assert combined.get_data().measured_files()
+    finally:
+        session.cleanup()
+
+
+def test_abrupt_child_unexpectedly_released_invalidates_receipt_and_raises(tmp_path: Path) -> None:
+    """Prove an abrupt-registered child that is released instead of killed cannot be falsely finalized."""
+    from repomap_test_support.sqlite_local_fixtures import graph_toml, write_shell_source, write_sqlite_home
+    from repomap_test_support.sqlite_local_harness import LocalHarness, await_ready, release
+
+    source = write_shell_source(tmp_path / "sources" / "vault")
+    home = write_sqlite_home(tmp_path / "home", graph_toml("vault", source, privacy="private-ops"))
+    harness = LocalHarness(tmp_path / "harness_scratch", block_psycopg=True)
+    barrier = tmp_path / "barrier"
+    output = tmp_path / "released_backup"
+    session = ChildCoverageSession(coverage_module=coverage, scratch_dir=tmp_path / "cov", suite="int")
+    try:
+        with session:
+            runner = session.create_coverage(coverage)
+            runner.start()
+            harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "vault")
+            child = harness.start(
+                "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", "vault", "--output", str(output),
+                extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
+                family="cli_module",
+            )
+            try:
+                await_ready(barrier, child)
+                release(barrier)
+            finally:
+                _, stderr = child.communicate()
+            runner.stop()
+            runner.save()
+            assert child.returncode != 0
+            assert "guard: abrupt termination child was released instead of killed" in stderr
+
+            exit_file = session.child_manifest_dir / f"{child.pid}.exit"
+            assert exit_file.exists()
+            exit_content = exit_file.read_text(encoding="utf-8")
+            assert "complete=0" in exit_content
+    finally:
+        session.cleanup()
+
+
+def test_abrupt_settlement_error_propagates_attributable_diagnostic(tmp_path: Path) -> None:
+    """Prove a settlement error writes barrier/settlement_error and fails await_ready."""
+    from unittest.mock import MagicMock
+    from repomap_test_support.sqlite_local_harness import await_ready
+    barrier = tmp_path / "barrier"; barrier.mkdir()
+    (barrier / "settlement_error").write_text("OSError: disk full", encoding="utf-8")
+    with pytest.raises(AssertionError, match="paused writer settlement error: OSError: disk full"):
+        await_ready(barrier, MagicMock())

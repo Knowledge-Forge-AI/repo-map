@@ -131,6 +131,7 @@ def test_psycopg2_readback_driver_uses_existing_psql_path_without_psycopg_import
             "ON_ERROR_STOP=1",
         ],
         input_text=sql,
+        env=None,
     )
 def test_psycopg24_unset_driver_uses_psycopg_connector(monkeypatch) -> None:
     monkeypatch.delenv(READBACK_DRIVER_ENV, raising=False)

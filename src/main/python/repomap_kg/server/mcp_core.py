@@ -7,7 +7,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Callable, TypeVar
+from typing import Callable, Protocol
 
 from repomap_kg.server._mcp_core_validation import (
     RepoMapMcpError as RepoMapMcpError,
@@ -25,13 +25,12 @@ from repomap_kg.server._mcp_core_validation import (
     validate_read_schema_version as validate_read_schema_version,
     validate_source_id_arg as validate_source_id_arg,
 )
-from repomap_kg.server.ops import (
-    McpOpsError,
-    McpOpsGraphContext,
-    graph_context,
-    query_configured_storage,
-)
-from repomap_kg.ops.config import PRIVATE_PRIVACY
+from repomap_kg.server.canonical_read_store import CanonicalReadStore
+from repomap_kg.server.graph_selection import GraphSelection, select_graph
+from repomap_kg.server.ops import McpOpsError, load_mcp_ops_config
+from repomap_kg.server.source_read_store import SourceReadStore
+from repomap_kg.ops.config import OpsConfig
+from repomap_kg.ops.config_local import LocalSqliteConfig
 from repomap_kg.storage import StorageSchemaError
 from repomap_kg.storage.canonical_filters import (
     canonical_edge_filters_from_args as canonical_edge_filters_from_args,
@@ -51,7 +50,6 @@ PROJECT_ROOT_DISPLAY = "[project-root]"
 EXPLICIT_ROOT_DISPLAY = "[explicit-root]"
 PROJECT_DATABASE_DISPLAY = "[project-database]"
 _STORAGE_TOPOLOGY_HINT = " Direct DB host-port exposure is disabled"
-_StorageReadbackT = TypeVar("_StorageReadbackT")
 
 
 def default_mcp_config_path() -> Path:
@@ -77,7 +75,11 @@ class StorageConnection:
     pg_user: str | None = None
     psql_command: str = "psql"
     project: str | None = None
-    ops_context: McpOpsGraphContext | None = None
+
+    @property
+    def selection(self) -> None:
+        """Legacy and explicit connections carry no configured selection."""
+        return None
 
     def psql_args(self) -> list[str]:
         args: list[str] = []
@@ -90,22 +92,33 @@ class StorageConnection:
         args.extend(["-d", self.pg_database])
         return args
 
-    def query_storage(
-        self,
-        storage_query: Callable[..., _StorageReadbackT],
-        **query_kwargs: Any,
-    ) -> _StorageReadbackT:
-        if self.ops_context is not None:
-            return query_configured_storage(
-                self.ops_context,
-                storage_query,
-                **query_kwargs,
-            )
-        return storage_query(
-            self.psql_args(),
-            psql_command=self.psql_command,
-            **query_kwargs,
-        )
+
+class GraphStoreBinding(Protocol):
+    """Backend binding for configured canonical and source reads."""
+
+    def canonical_store(self, selection: GraphSelection) -> CanonicalReadStore: ...
+
+    def source_store(self, selection: GraphSelection) -> SourceReadStore: ...
+
+
+GraphStoresFactory = Callable[[OpsConfig | LocalSqliteConfig], GraphStoreBinding]
+
+
+@dataclass(frozen=True)
+class ConfiguredGraphTarget:
+    """Configured graph-registry target: neutral selection plus bound stores."""
+
+    selection: GraphSelection
+    stores: GraphStoreBinding
+    project: str
+
+    @property
+    def root_path(self) -> str:
+        return self.selection.root_path
+
+    @property
+    def root_path_display(self) -> str:
+        return PRIVATE_ROOT_DISPLAY if self.selection.private else GRAPH_ROOT_DISPLAY
 
 
 @dataclass(frozen=True)
@@ -192,7 +205,8 @@ def storage_connection(
     pg_port: str | int | None = None,
     pg_user: str | None = None,
     psql_command: str | None = None,
-) -> StorageConnection:
+    graph_stores: GraphStoresFactory,
+) -> StorageConnection | ConfiguredGraphTarget:
     config = load_mcp_config()
     explicit_values = {
         "root_path": root_path,
@@ -213,6 +227,7 @@ def storage_connection(
             return graph_registry_storage_connection(
                 project_name,
                 has_explicit_connection=has_explicit_connection,
+                graph_stores=graph_stores,
             )
         if has_explicit_connection and not config.allow_project_overrides:
             raise RepoMapMcpError(
@@ -254,7 +269,9 @@ def storage_connection(
         )
 
     if not has_explicit_connection and config.default_project is not None:
-        return storage_connection(project=config.default_project)
+        return storage_connection(
+            project=config.default_project, graph_stores=graph_stores
+        )
 
     root = require_non_blank(root_path, "root_path")
     database = require_non_blank(
@@ -281,14 +298,17 @@ def graph_registry_storage_connection(
     project_name: str,
     *,
     has_explicit_connection: bool,
-) -> StorageConnection:
+    graph_stores: GraphStoresFactory,
+) -> ConfiguredGraphTarget:
     if has_explicit_connection:
         raise RepoMapMcpError(
             "graph-registry project routing cannot be combined with explicit "
             "connection overrides"
         )
     try:
-        context = graph_context(project_name)
+        config = load_mcp_ops_config()
+        selection = select_graph(config, project_name)
+        stores = graph_stores(config)
     except McpOpsError as error:
         message = str(error)
         if message == f"unknown graph_id: {project_name}":
@@ -297,23 +317,7 @@ def graph_registry_storage_connection(
                 f"{project_name}"
             ) from error
         raise RepoMapMcpError(message) from error
-
-    command = context.psql_command or "psql"
-    validate_psql_command(command)
-    private = context.graph.privacy in PRIVATE_PRIVACY
-    return StorageConnection(
-        root_path=context.root_path,
-        pg_database=context.database,
-        root_path_display=(
-            PRIVATE_ROOT_DISPLAY if private else GRAPH_ROOT_DISPLAY
-        ),
-        pg_host=context.config.postgres.host,
-        pg_port=str(context.config.postgres.port),
-        pg_user=context.config.postgres.user,
-        psql_command=command,
-        project=project_name,
-        ops_context=context,
-    )
+    return ConfiguredGraphTarget(selection=selection, stores=stores, project=project_name)
 
 
 def validate_canonical_node_args(

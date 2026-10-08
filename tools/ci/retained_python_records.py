@@ -139,7 +139,7 @@ class ScopeChange(TypedDict):
     new: ScopeSelection | None
 
 
-class ScopeTransitionRecord(TypedDict):
+class ScopeTransitionRecord(TypedDict, total=False):
     old_ownership_manifest_sha256: str
     new_ownership_manifest_sha256: str
     old_selected_set_sha256: str
@@ -148,6 +148,8 @@ class ScopeTransitionRecord(TypedDict):
     phase: str
     status_path: str
     reason: str
+    source_commit: str
+    source_manifest_sha256: str
 
 
 class ScopeRegistry(TypedDict):
@@ -155,15 +157,14 @@ class ScopeRegistry(TypedDict):
     records: list[ScopeTransitionRecord]
 
 
-_BASELINE_FIELDS = {
-    "schema", "ownership", "tools", "selection",
-    "ruff", "mypy", "migration_direction_imports", "file_length",
-}
-_SCOPE_FIELDS = {
-    "old_ownership_manifest_sha256", "new_ownership_manifest_sha256",
-    "old_selected_set_sha256", "new_selected_set_sha256",
-    "changes", "phase", "status_path", "reason",
-}
+SCOPE_TRANSITIONS_SCHEMA_V1 = "repomap-retained-python-scope-transitions-v1"
+SCOPE_TRANSITIONS_SCHEMA_V2 = "repomap-retained-python-scope-transitions-v2"
+ACCEPTED_SCOPE_TRANSITIONS_SCHEMAS = frozenset({SCOPE_TRANSITIONS_SCHEMA_V1, SCOPE_TRANSITIONS_SCHEMA_V2})
+
+_BASELINE_FIELDS = {"schema", "ownership", "tools", "selection", "ruff", "mypy", "migration_direction_imports", "file_length"}
+_SCOPE_FIELDS_V1 = {"old_ownership_manifest_sha256", "new_ownership_manifest_sha256", "old_selected_set_sha256", "new_selected_set_sha256", "changes", "phase", "status_path", "reason"}
+_SCOPE_FIELDS_V2 = _SCOPE_FIELDS_V1 | {"source_commit", "source_manifest_sha256"}
+_SCOPE_FIELDS = _SCOPE_FIELDS_V1
 _SELECTION_FIELDS = {"module", "path", "ownership_class", "tier"}
 
 
@@ -295,18 +296,28 @@ def validate_baseline_records(
 
 
 def validate_scope_registry_records(
-    document: object, *, schema: str
+    document: object, *, schema: str | None = None
 ) -> tuple[ScopeTransitionRecord, ...]:
     """Validate scope-transition records without depending on lineage policy types."""
-    if (
-        not is_scope_registry(document)
-        or document.get("schema") != schema
-        or not isinstance(document.get("records"), list)
-    ):
+    if not is_scope_registry(document):
+        raise RecordValidationError("scope transition registry is invalid")
+    doc_schema = document.get("schema")
+    if (schema is not None and doc_schema != schema) or doc_schema not in ACCEPTED_SCOPE_TRANSITIONS_SCHEMAS:
         raise RecordValidationError("scope transition registry is invalid")
     records = document["records"]
+    if not isinstance(records, list):
+        raise RecordValidationError("scope transition registry is invalid")
     for raw in records:
-        if not isinstance(raw, dict) or set(raw) != _SCOPE_FIELDS:
+        if not isinstance(raw, dict):
+            raise RecordValidationError("scope transition record is invalid")
+        if doc_schema == SCOPE_TRANSITIONS_SCHEMA_V2:
+            if set(raw) != _SCOPE_FIELDS_V2:
+                raise RecordValidationError("scope transition record is invalid")
+            commit = raw.get("source_commit")
+            if not isinstance(commit, str) or len(commit) != 40 or not all(c in "0123456789abcdef" for c in commit):
+                raise RecordValidationError("scope transition source_commit is invalid")
+            _scope_digest(raw["source_manifest_sha256"], "source_manifest_sha256")
+        elif set(raw) != _SCOPE_FIELDS_V1:
             raise RecordValidationError("scope transition record is invalid")
         _scope_digest(raw["old_ownership_manifest_sha256"], "old_ownership_manifest_sha256")
         _scope_digest(raw["new_ownership_manifest_sha256"], "new_ownership_manifest_sha256")
@@ -318,8 +329,7 @@ def validate_scope_registry_records(
         status_path = raw["status_path"]
         valid_status = (
             (status_path.startswith("docs/status/") and status_path.endswith("-exit.md"))
-            or status_path.startswith("tools/ci/")
-            or status_path.startswith("docs/releases/")
+            or status_path.startswith(("tools/ci/", "docs/releases/"))
             or status_path == "CHANGELOG.md"
         )
         if not isinstance(status_path, str) or not is_repository_path(status_path) or not valid_status:
@@ -335,15 +345,7 @@ def validate_scope_registry_records(
                     continue
                 if not isinstance(selection, dict) or set(selection) != _SELECTION_FIELDS:
                     raise RecordValidationError("scope transition selection is invalid")
-                if any(
-                    not isinstance(value, str) or not value
-                    for value in (
-                        selection["module"],
-                        selection["path"],
-                        selection["ownership_class"],
-                        selection["tier"],
-                    )
-                ):
+                if any(not isinstance(v, str) or not v for v in (selection["module"], selection["path"], selection["ownership_class"], selection["tier"])):
                     raise RecordValidationError("scope transition selection is invalid")
                 if not is_repository_path(selection["path"]):
                     raise RecordValidationError("scope transition selection is invalid")

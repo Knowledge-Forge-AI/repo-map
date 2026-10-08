@@ -372,7 +372,10 @@ empty_inline:
         self.assertEqual(pointer_metadata["/scalars/enabled"]["value_summary"], False)
         self.assertNotIn("value_summary", pointer_metadata["/scalars/nothing"])
         self.assertEqual(pointer_metadata["/scalars/count"]["value_summary"], 42)
-        self.assertEqual(pointer_metadata["/scalars/ratio"]["value_summary"], -1.5)
+        self.assertEqual(
+            pointer_metadata["/scalars/ratio"]["value_summary"],
+            {"numeric_type": "binary64", "hex": "-0x1.8000000000000p+0"},
+        )
         self.assertEqual(pointer_metadata["/empty_inline/seq"]["item_count"], 0)
         self.assertEqual(pointer_metadata["/empty_inline/map"]["value_type"], "object")
 

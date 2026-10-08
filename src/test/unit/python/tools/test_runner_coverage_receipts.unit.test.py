@@ -367,3 +367,19 @@ def test_tracker_lookalike_and_spoofed_role_remain_strict(tmp_path):
     finally:
         session.cleanup()
 
+def test_read_registered_children_parses_victim_receipt(tmp_path):
+    manifest_dir = tmp_path / "manifest"
+    manifest_dir.mkdir()
+    (manifest_dir / "123.start").write_text(
+        "pid=123\ninvocation=inv-1\nsuite=int\nrole=intentional-victim\nowner=owner1\n",
+        encoding="utf-8",
+    )
+    (manifest_dir / "123.victim").write_text(
+        "pid=123\nowner=owner1\nbackend_disappeared=1\n",
+        encoding="utf-8",
+    )
+    records = read_registered_children(manifest_dir, "inv-1", "int")
+    assert 123 in records
+    assert records[123]["victim_receipt"] is not None
+    assert records[123]["victim_receipt"]["backend_disappeared"] == "1"
+

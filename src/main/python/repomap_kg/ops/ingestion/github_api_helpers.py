@@ -186,6 +186,11 @@ def is_secret_key(key: str) -> bool:
 
 
 def contains_sensitive_url_marker(value: str) -> bool:
+    # Inspect only HTTP(S) authority, including malformed host/port text.
+    # A lexical boundary avoids parser errors leaking credentialed bad URLs.
+    authority = re.match(r"https?://([^/?#]*)", value.lstrip(), re.IGNORECASE)
+    if authority is not None and "@" in authority.group(1):
+        return True
     return value.startswith("http") and any(
         marker.lower() in value.lower() for marker in SENSITIVE_URL_MARKERS
     )

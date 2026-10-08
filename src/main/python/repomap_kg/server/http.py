@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import signal
 import sys
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -329,6 +331,19 @@ def serve_local_http(
         raise LocalServerError(str(error)) from error
     home = resolve_repo_map_home(repo_map_home)
     server = RepoMapLocalServer((host, port), home)
+    original_sigterm = None
+    installed_sigterm = False
+    if threading.current_thread() is threading.main_thread():
+        def _sigterm_handler(signum: int, frame: Any) -> None:
+            raise KeyboardInterrupt()
+
+        try:
+            original_sigterm = signal.signal(signal.SIGTERM, _sigterm_handler)
+            installed_sigterm = True
+        except (ValueError, OSError):
+            original_sigterm = None
+            installed_sigterm = False
+
     print(
         f"RepoMap local server listening on {host}:{port}",
         file=sys.stderr,
@@ -339,5 +354,16 @@ def serve_local_http(
     except KeyboardInterrupt:
         return 0
     finally:
-        server.server_close()
+        if installed_sigterm:
+            try:
+                signal.signal(
+                    signal.SIGTERM,
+                    original_sigterm if original_sigterm is not None else signal.SIG_DFL,
+                )
+            except (ValueError, OSError):
+                pass
+        try:
+            server.server_close()
+        except KeyboardInterrupt:
+            pass
     return 0

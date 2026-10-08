@@ -159,8 +159,9 @@ def claim_once(
                 INSERT INTO job_attempts(
                     job_id, attempt, coordinator_instance_id, fencing_epoch,
                     source_generation, config_generation,
-                    extractor_generation, canonicalizer_generation
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    extractor_generation, canonicalizer_generation,
+                    graph_lease_fencing_epoch
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     job["job_id"],
@@ -171,14 +172,15 @@ def claim_once(
                     job["config_generation"],
                     job["extractor_generation"],
                     job["canonicalizer_generation"],
+                    graph_lease_fencing_epoch,
                 ),
             )
             cursor.execute(
                 """
                 INSERT INTO graph_leases(
                     graph_id, job_id, attempt, coordinator_instance_id,
-                    fencing_epoch, expires_at
-                ) VALUES (%s, %s, %s, %s, %s,
+                    fencing_epoch, graph_lease_fencing_epoch, expires_at
+                ) VALUES (%s, %s, %s, %s, %s, %s,
                           now() + make_interval(secs => %s))
                 """,
                 (
@@ -187,6 +189,7 @@ def claim_once(
                     attempt,
                     instance_id,
                     fencing_epoch,
+                    graph_lease_fencing_epoch,
                     lease_seconds,
                 ),
             )

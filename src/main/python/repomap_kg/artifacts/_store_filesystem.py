@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 import hashlib
-import io
 import os
 from pathlib import Path
 import stat
@@ -16,10 +15,14 @@ from repomap_kg.artifacts._store_common import (
     _NEUTRAL_OBJECT_PREFIX,
     ArtifactErrorCode,
     ArtifactIntegrityError,
-    _materialize,
     _max_bytes,
     _reference,
     _validate_requested_digest,
+)
+from repomap_kg.artifacts._store_stream import (
+    VerifyingArtifactStream,
+    compare_stream_collision,
+    verify_stream_path,
 )
 from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
 from repomap_kg.storage.staging_family_contracts import PrivacyClassification
@@ -186,23 +189,13 @@ class FileSystemArtifactStore:
         max_bytes: int | None = None,
     ) -> ArtifactReference:
         _validate_requested_digest(content_digest)
-        data, digest, length = _materialize(content, max_bytes)
-        if content_digest is not None and content_digest != digest:
-            raise ArtifactIntegrityError("artifact digest does not match supplied digest")
-        # Validate all metadata before making a filesystem mutation.
-        _reference(
-            digest,
-            length,
-            media_type,
-            record_format,
-            privacy,
-            ArtifactLocator("filesystem", f"objects/{digest[7:]}", None),
-        )
         self._ensure_directory(self.root, create=False, label="store root")
         self._ensure_directory(self._objects, create=False, label="object directory")
         self._ensure_directory(self._temporary, create=False, label="temporary directory")
-        target = self._objects / digest[7:]
+        bound = _max_bytes(max_bytes)
         temporary: Path | None = None
+        hasher = hashlib.sha256()
+        length = 0
         try:
             descriptor, temporary_name = tempfile.mkstemp(
                 prefix=".artifact-", suffix=".tmp", dir=self._temporary
@@ -210,19 +203,41 @@ class FileSystemArtifactStore:
             temporary = Path(temporary_name)
             os.fchmod(descriptor, 0o600)
             with os.fdopen(descriptor, "wb", closefd=True) as stream:
-                stream.write(data)
+                if isinstance(content, (bytes, bytearray, memoryview)):
+                    chunks: Iterable[bytes | bytearray | memoryview] = (content,)
+                elif isinstance(content, Iterable):
+                    chunks = content
+                else:
+                    raise ArtifactIntegrityError("artifact content must be bytes or iterable of bytes")
+                for chunk in chunks:
+                    if not isinstance(chunk, (bytes, bytearray, memoryview)):
+                        raise ArtifactIntegrityError("artifact content must be bytes or iterable of bytes")
+                    chunk_bytes = bytes(chunk)
+                    length += len(chunk_bytes)
+                    if length > bound:
+                        raise ArtifactIntegrityError(
+                            "artifact bounds exceeded", code=ArtifactErrorCode.ARTIFACT_BOUNDS
+                        )
+                    stream.write(chunk_bytes)
+                    hasher.update(chunk_bytes)
                 stream.flush()
                 os.fsync(stream.fileno())
+            digest = _DIGEST_PREFIX + hasher.hexdigest()
+            if content_digest is not None and content_digest != digest:
+                raise ArtifactIntegrityError("artifact digest does not match supplied digest")
+            _reference(
+                digest,
+                length,
+                media_type,
+                record_format,
+                privacy,
+                ArtifactLocator("filesystem", f"objects/{digest[7:]}", None),
+            )
+            target = self._objects / digest[7:]
             if target.exists() or target.is_symlink():
-                existing = self._read_path(
-                    target,
-                    digest=digest,
-                    length=length,
-                    max_bytes=length,
-                    expected_version=None,
+                compare_stream_collision(
+                    target, temporary, length, digest, owner_uid=self._owner_uid, private_details_fn=_private_details
                 )
-                if existing != data:
-                    raise ArtifactIntegrityError("content-address collision")
             else:
                 os.replace(temporary, target)
                 temporary = None
@@ -236,12 +251,17 @@ class FileSystemArtifactStore:
                 privacy,
                 ArtifactLocator("filesystem", f"objects/{digest[7:]}", _filesystem_version(details)),
             )
-            self._read_path(
+            verify_stream_path(
                 target,
                 digest=digest,
                 length=length,
-                max_bytes=max_bytes,
+                bound=bound,
                 expected_version=reference.store_version,
+                owner_uid=self._owner_uid,
+                private_details_fn=_private_details,
+                reference_factory=lambda d, l, v: _reference(
+                    d, l, media_type, record_format, privacy, ArtifactLocator("filesystem", f"objects/{d[7:]}", v)
+                ),
             )
             return reference
         except ArtifactIntegrityError:
@@ -284,7 +304,38 @@ class FileSystemArtifactStore:
     def open_stream(
         self, reference: ArtifactReference, max_bytes: int | None = None
     ) -> BinaryIO:
-        return io.BytesIO(self.read(reference, max_bytes))
+        if not isinstance(reference, ArtifactReference):
+            raise ArtifactIntegrityError("artifact reference is invalid")
+        self._expected_locator(reference)
+        path = self.object_path(reference)
+        bound = _max_bytes(max_bytes)
+        if reference.size_bytes > bound:
+            raise ArtifactIntegrityError(
+                "artifact bounds exceeded", code=ArtifactErrorCode.ARTIFACT_BOUNDS
+            )
+        before = _private_details(path, owner_uid=self._owner_uid)
+        flags = os.O_RDONLY
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        descriptor = os.open(path, flags)
+        try:
+            opened = os.fstat(descriptor)
+            if not _same_file(before, opened) or not stat.S_ISREG(opened.st_mode):
+                raise ArtifactIntegrityError("artifact changed during read")
+            raw = os.fdopen(descriptor, "rb", closefd=True)
+            return VerifyingArtifactStream(
+                raw,
+                reference=reference,
+                bound=bound,
+                before_stat=opened,
+                expected_version=reference.store_version,
+            )
+        except BaseException:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+            raise
 
     def verify(self, reference: ArtifactReference, max_bytes: int | None = None) -> bool:
         try:

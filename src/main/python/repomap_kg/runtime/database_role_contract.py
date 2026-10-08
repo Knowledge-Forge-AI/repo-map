@@ -10,6 +10,10 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 
 from repomap_kg.ops.config_records import OpsConfig
+from repomap_kg.runtime._home_authority import (
+    read_private_runtime_env,
+    validate_private_file,
+)
 
 
 READ_STATUS_ROLE = "repomap_read_status"
@@ -25,6 +29,7 @@ ROLE_PASSWORD_ENVS = (
     COORDINATOR_CONTROL_PASSWORD_ENV,
 )
 _ROLE_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,62}\Z")
+_ENV_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 
 
 @dataclass(frozen=True)
@@ -122,6 +127,82 @@ def read_role_secrets(env_file: Path) -> RoleSecrets:
     )
 
 
+def read_read_status_password(home: Path) -> str:
+    """Read the setup-owned read/status secret without changing runtime state."""
+
+    try:
+        text = read_private_runtime_env(home)
+        values: list[str] = []
+        for line in text.splitlines():
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                raise ValueError("malformed runtime credential authority")
+            key, value = line.split("=", 1)
+            if _ENV_NAME.fullmatch(key) is None:
+                raise ValueError("malformed runtime credential authority")
+            if key == READ_STATUS_PASSWORD_ENV:
+                values.append(value)
+        if len(values) != 1:
+            raise ValueError("read/status credential authority is ambiguous")
+        if not values[0].strip():
+            raise ValueError("read/status credential authority is empty")
+        return _validate_credential(values[0])
+    except (OSError, UnicodeError, ValueError):
+        raise ValueError("read/status credential unavailable or unsafe") from None
+
+
+def read_configured_postgres_password(config: OpsConfig) -> str | None:
+    """Resolve explicit PostgreSQL credential authority without environment mutation."""
+
+    postgres = config.postgres
+    try:
+        if postgres.password is not None:
+            return _validate_credential(postgres.password)
+        if postgres.password_env is not None:
+            if _ENV_NAME.fullmatch(postgres.password_env) is None:
+                raise ValueError("malformed configured password environment")
+            value = os.environ.get(postgres.password_env)
+            if value is None:
+                return None
+            return _validate_credential(value)
+        if postgres.password_file is not None:
+            path = Path(postgres.password_file).expanduser()
+            if not path.is_absolute():
+                base = Path(config.config_home or config.config_path)
+                path = base if base.is_dir() else base.parent
+                path /= postgres.password_file
+            return _read_private_credential_file(path)
+        return None
+    except (OSError, UnicodeError, ValueError):
+        raise ValueError("configured PostgreSQL credential unavailable or unsafe") from None
+
+
+def _validate_credential(value: str) -> str:
+    if (
+        not isinstance(value, str)
+        or not 1 <= len(value) <= 256
+        or any(character in value for character in ("\x00", "\r", "\n"))
+    ):
+        raise ValueError("database role credential is invalid")
+    return value
+
+
+def _read_private_credential_file(path: Path) -> str:
+    validate_private_file(path)
+    before = path.lstat()
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    with os.fdopen(os.open(path, flags), "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        validate_private_file(path, opened)
+        if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
+            raise ValueError("changed credential authority")
+        data = stream.read(4097)
+    if len(data) > 4096:
+        raise ValueError("oversized credential authority")
+    return _validate_credential(data.decode("utf-8").strip())
+
+
 def _env_values(text: str) -> dict[str, str]:
     return {
         key: value
@@ -163,6 +244,8 @@ __all__ = [
     "ROLE_PASSWORD_ENVS",
     "RoleSecrets",
     "ensure_role_secrets",
+    "read_configured_postgres_password",
+    "read_read_status_password",
     "project_database_role_config",
     "project_read_status_config",
     "read_role_secrets",

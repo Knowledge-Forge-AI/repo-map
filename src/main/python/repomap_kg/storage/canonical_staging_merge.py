@@ -4,14 +4,10 @@ from __future__ import annotations
 
 from repomap_kg.storage.sql_core import sql_literal
 from repomap_kg.storage.staging_duplicate_guard import identity_conflict_guard
-from repomap_kg.storage.staging_family_catalog import (
-    descriptors_for_merge_scope, merge_operations_for_scope,
-)
+from repomap_kg.storage.staging_family_catalog import descriptors_for_merge_scope, merge_operations_for_scope
 from repomap_kg.storage.staging_family_contracts import DuplicatePolicy, ValidationRule
 from repomap_kg.storage.staging_merge_operations import MergeOperation, MergeScope
-from repomap_kg.storage.staging_merge import (
-    MergeContext, build_source_index_merge_statements,
-)
+from repomap_kg.storage.staging_merge import MergeContext, build_source_index_merge_statements
 
 __all__ = ("build_canonical_merge_statements",)
 
@@ -84,14 +80,8 @@ $scale4$;"""
 def _canonical_nodes_merge(stage: str, run: str) -> str:
     return f"""WITH proposals AS (
     SELECT DISTINCT ON (s.graph_key_version, s.canonical_key)
-        header.repository_id,
-        s.graph_key_version,
-        s.canonical_key,
-        s.kind,
-        s.display_name,
-        s.metadata_json,
-        s.confidence,
-        s.conflict
+        header.repository_id, s.graph_key_version, s.canonical_key, s.kind,
+        s.display_name, s.metadata_json, s.confidence, s.conflict
     FROM stage_canonical_nodes s
     JOIN ingestion_stages header ON header.stage_id = s.stage_id
     WHERE s.stage_id = {stage}
@@ -117,21 +107,10 @@ ON CONFLICT (repository_id, graph_key_version, canonical_key) DO UPDATE SET
 def _canonical_evidence_merge(stage: str, repository: str, run: str) -> str:
     return f"""WITH proposals AS (
     SELECT DISTINCT ON (s.graph_key_version, s.evidence_key)
-        header.repository_id,
-        raw.id AS raw_observation_id,
-        s.graph_key_version,
-        s.evidence_key,
-        s.raw_observation_ordinal,
-        s.raw_schema_version,
-        s.raw_kind,
-        s.raw_source_id,
-        s.path,
-        s.start_line,
-        s.end_line,
-        s.extractor,
-        s.extractor_version,
-        s.confidence,
-        s.metadata_json
+        header.repository_id, raw.id AS raw_observation_id, s.graph_key_version,
+        s.evidence_key, s.raw_observation_ordinal, s.raw_schema_version,
+        s.raw_kind, s.raw_source_id, s.path, s.start_line, s.end_line,
+        s.extractor, s.extractor_version, s.confidence, s.metadata_json
     FROM stage_canonical_evidence s
     JOIN ingestion_stages header ON header.stage_id = s.stage_id
     JOIN raw_observations raw
@@ -203,16 +182,9 @@ def _canonical_edges_merge(stage: str, repository: str, run: str) -> str:
         s.graph_key_version, s.source_canonical_key, s.edge_kind,
         s.target_canonical_key, s.identity_metadata_hash
     )
-        header.repository_id,
-        s.graph_key_version,
-        s.source_canonical_key,
-        s.edge_kind,
-        s.target_canonical_key,
-        s.identity_metadata_json,
-        s.identity_metadata_hash,
-        s.metadata_json,
-        s.confidence,
-        s.conflict
+        header.repository_id, s.graph_key_version, s.source_canonical_key,
+        s.edge_kind, s.target_canonical_key, s.identity_metadata_json,
+        s.identity_metadata_hash, s.metadata_json, s.confidence, s.conflict
     FROM stage_canonical_edges s
     JOIN ingestion_stages header ON header.stage_id = s.stage_id
     JOIN canonical_nodes src
@@ -301,11 +273,7 @@ $scale4$;"""
 
 def _canonical_node_evidence_merge(stage: str, repository: str, run: str) -> str:
     return f"""WITH staged_links AS MATERIALIZED (
-    SELECT
-        s.graph_key_version,
-        s.canonical_key,
-        s.evidence_key,
-        s.link_kind
+    SELECT s.graph_key_version, s.canonical_key, s.evidence_key, s.link_kind
     FROM stage_canonical_node_evidence s
     WHERE s.stage_id = {stage}
     GROUP BY s.graph_key_version, s.canonical_key, s.evidence_key, s.link_kind
@@ -326,36 +294,58 @@ proposals AS (
      AND evidence.graph_key_version = s.graph_key_version
      AND evidence.evidence_key = s.evidence_key
 )
-INSERT INTO canonical_node_evidence(
-    canonical_node_id, canonical_evidence_id, link_kind
-)
+INSERT INTO canonical_node_evidence(canonical_node_id, canonical_evidence_id, link_kind)
 SELECT canonical_node_id, canonical_evidence_id, link_kind
 FROM proposals
 ON CONFLICT DO NOTHING;"""
 
 
-def _canonical_edge_evidence_reference_guard(
-    stage: str, repository: str, run: str
-) -> str:
+def _canonical_edge_evidence_reference_guard(stage: str, repository: str, run: str) -> str:
     return f"""DO $scale4$
 BEGIN
     IF EXISTS (
         SELECT 1
-        FROM stage_canonical_edge_evidence staged
-        LEFT JOIN canonical_edges edge
-          ON edge.repository_id = {repository}
-         AND edge.graph_key_version = staged.graph_key_version
+        FROM (
+            SELECT staged.graph_key_version, staged.source_canonical_key, staged.edge_kind,
+                   staged.target_canonical_key, staged.identity_metadata_hash
+            FROM stage_canonical_edge_evidence staged
+            WHERE staged.stage_id = {stage}
+        ) AS staged
+        FULL JOIN (
+            SELECT edge.graph_key_version, edge.source_canonical_key, edge.edge_kind,
+                   edge.target_canonical_key, edge.identity_metadata_hash
+            FROM canonical_edges edge
+            WHERE edge.repository_id = {repository}
+        ) AS edge
+          ON edge.graph_key_version = staged.graph_key_version
          AND edge.source_canonical_key = staged.source_canonical_key
          AND edge.edge_kind = staged.edge_kind
          AND edge.target_canonical_key = staged.target_canonical_key
          AND edge.identity_metadata_hash = staged.identity_metadata_hash
-        LEFT JOIN canonical_evidence evidence
-          ON evidence.repository_id = {repository}
-         AND evidence.run_id = {run}
-         AND evidence.graph_key_version = staged.graph_key_version
+        -- Keep the full join when final-transaction statistics are stale.
+        WHERE COALESCE(staged.source_canonical_key, '') <> ''
+          AND edge.source_canonical_key IS NULL
+    ) THEN
+        RAISE EXCEPTION 'SCALE4 canonical edge-evidence reference is missing';
+    END IF;
+    IF EXISTS (
+        SELECT 1
+        FROM (
+            SELECT staged.graph_key_version, staged.evidence_key
+            FROM stage_canonical_edge_evidence staged
+            WHERE staged.stage_id = {stage}
+        ) AS staged
+        FULL JOIN (
+            SELECT evidence.graph_key_version, evidence.evidence_key
+            FROM canonical_evidence evidence
+            WHERE evidence.repository_id = {repository}
+              AND evidence.run_id = {run}
+        ) AS evidence
+          ON evidence.graph_key_version = staged.graph_key_version
          AND evidence.evidence_key = staged.evidence_key
-        WHERE staged.stage_id = {stage}
-          AND (edge.id IS NULL OR evidence.id IS NULL)
+        -- Keep the full join when final-transaction statistics are stale.
+        WHERE COALESCE(staged.evidence_key, '') <> ''
+          AND evidence.evidence_key IS NULL
     ) THEN
         RAISE EXCEPTION 'SCALE4 canonical edge-evidence reference is missing';
     END IF;
@@ -364,36 +354,46 @@ $scale4$;"""
 
 
 def _canonical_edge_evidence_merge(stage: str, repository: str, run: str) -> str:
-    return f"""WITH proposals AS (
-    SELECT DISTINCT ON (
+    return f"""CREATE TEMP TABLE temp_canonical_edge_map ON COMMIT DROP AS
+SELECT edge.id AS canonical_edge_id, edge.graph_key_version, edge.source_canonical_key,
+       edge.edge_kind, edge.target_canonical_key, edge.identity_metadata_hash
+FROM canonical_edges edge WHERE edge.repository_id = {repository};
+
+CREATE TEMP TABLE temp_canonical_evidence_map ON COMMIT DROP AS
+SELECT evidence.id AS canonical_evidence_id, evidence.graph_key_version, evidence.evidence_key
+FROM canonical_evidence evidence WHERE evidence.repository_id = {repository} AND evidence.run_id = {run};
+
+ANALYZE pg_temp.temp_canonical_edge_map;
+ANALYZE pg_temp.temp_canonical_evidence_map;
+
+WITH staged_links AS MATERIALIZED (
+    SELECT
         s.graph_key_version, s.source_canonical_key, s.edge_kind,
         s.target_canonical_key, s.identity_metadata_hash,
         s.evidence_key, s.link_kind
-    )
-        edge.id AS canonical_edge_id,
-        evidence.id AS canonical_evidence_id,
-        s.link_kind
     FROM stage_canonical_edge_evidence s
-    JOIN canonical_edges edge
-      ON edge.repository_id = {repository}
-     AND edge.graph_key_version = s.graph_key_version
+    WHERE s.stage_id = {stage}
+    GROUP BY s.graph_key_version, s.source_canonical_key, s.edge_kind,
+             s.target_canonical_key, s.identity_metadata_hash,
+             s.evidence_key, s.link_kind
+),
+proposals AS (
+    SELECT edge.canonical_edge_id, evidence.canonical_evidence_id, s.link_kind
+    FROM staged_links s
+    JOIN pg_temp.temp_canonical_edge_map edge
+      ON edge.graph_key_version = s.graph_key_version
      AND edge.source_canonical_key = s.source_canonical_key
      AND edge.edge_kind = s.edge_kind
      AND edge.target_canonical_key = s.target_canonical_key
      AND edge.identity_metadata_hash = s.identity_metadata_hash
-    JOIN canonical_evidence evidence
-      ON evidence.repository_id = {repository}
-     AND evidence.run_id = {run}
-     AND evidence.graph_key_version = s.graph_key_version
+    JOIN pg_temp.temp_canonical_evidence_map evidence
+      ON evidence.graph_key_version = s.graph_key_version
      AND evidence.evidence_key = s.evidence_key
-    WHERE s.stage_id = {stage}
-    ORDER BY s.graph_key_version, s.source_canonical_key, s.edge_kind,
-             s.target_canonical_key, s.identity_metadata_hash,
-             s.evidence_key, s.link_kind, s.family_ordinal
 )
-INSERT INTO canonical_edge_evidence(
-    canonical_edge_id, canonical_evidence_id, link_kind
-)
+INSERT INTO canonical_edge_evidence(canonical_edge_id, canonical_evidence_id, link_kind)
 SELECT canonical_edge_id, canonical_evidence_id, link_kind
 FROM proposals
-ON CONFLICT DO NOTHING;"""
+ON CONFLICT DO NOTHING;
+
+DROP TABLE IF EXISTS pg_temp.temp_canonical_edge_map;
+DROP TABLE IF EXISTS pg_temp.temp_canonical_evidence_map;"""

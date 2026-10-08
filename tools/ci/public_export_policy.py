@@ -12,15 +12,17 @@ Enforces five core release conditions:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 from typing import Any, Mapping, Sequence
 
-DEFAULT_TARGET_VERSION = "0.0.1"
+DEFAULT_TARGET_VERSION = "0.0.2"
 WITHHELD_DIRECTORIES = ("docs/status", "docs/superpowers")
 
 
@@ -84,24 +86,15 @@ def check_version_consistency(
 
     if pyproject_version and pyproject_version != expected_version:
         violations.append(
-            f"pyproject.toml version {pyproject_version!r} does not match "
-            f"expected target version {expected_version!r}"
+            f"pyproject.toml version {pyproject_version!r} does not match expected target version {expected_version!r}"
         )
-
     if init_version and init_version != expected_version:
         violations.append(
-            f"repomap_kg.__version__ {init_version!r} does not match "
-            f"expected target version {expected_version!r}"
+            f"repomap_kg.__version__ {init_version!r} does not match expected target version {expected_version!r}"
         )
-
-    if (
-        pyproject_version
-        and init_version
-        and pyproject_version != init_version
-    ):
+    if pyproject_version and init_version and pyproject_version != init_version:
         violations.append(
-            f"version mismatch: pyproject.toml has {pyproject_version!r} "
-            f"while repomap_kg.__version__ has {init_version!r}"
+            f"version mismatch: pyproject.toml has {pyproject_version!r} while repomap_kg.__version__ has {init_version!r}"
         )
 
     return violations
@@ -126,17 +119,11 @@ def check_promotion_policy(
     head_repository = "" if head_repo is None else str(head_repo)
 
     if base_ref != "main":
-        violations.append(
-            f"policy applies only to pull requests targeting 'main', got base {base_ref!r}"
-        )
+        violations.append(f"policy applies only to pull requests targeting 'main', got base {base_ref!r}")
     if repository and head_repository != repository:
-        violations.append(
-            f"head must come from {repository!r}, got {head_repository!r}"
-        )
+        violations.append(f"head must come from {repository!r}, got {head_repository!r}")
     if head_ref != "staging":
-        violations.append(
-            f"only 'staging' may promote to 'main', got head {head_ref!r}"
-        )
+        violations.append(f"only 'staging' may promote to 'main', got head {head_ref!r}")
 
     return violations
 
@@ -179,23 +166,15 @@ def check_candidate_identity(
     if expected_tree:
         tree = _git("rev-parse", "HEAD^{tree}")
         if tree != expected_tree:
-            violations.append(
-                f"candidate tree {tree!r} does not match expected tree {expected_tree!r}"
-            )
-
+            violations.append(f"candidate tree {tree!r} does not match expected tree {expected_tree!r}")
     if base_sha:
         parent1 = _git("rev-parse", "HEAD^1")
         if parent1 != base_sha:
-            violations.append(
-                f"candidate base parent HEAD^1 {parent1!r} does not match expected base {base_sha!r}"
-            )
-
+            violations.append(f"candidate base parent HEAD^1 {parent1!r} does not match expected base {base_sha!r}")
     if head_sha:
         parent2 = _git("rev-parse", "HEAD^2")
         if parent2 != head_sha:
-            violations.append(
-                f"candidate head parent HEAD^2 {parent2!r} does not match expected head {head_sha!r}"
-            )
+            violations.append(f"candidate head parent HEAD^2 {parent2!r} does not match expected head {head_sha!r}")
 
     return violations
 
@@ -233,6 +212,82 @@ def check_retention_independence(repo_root: Path) -> list[str]:
     return violations
 
 
+def check_fixture_integrity(repo_root: Path) -> list[str]:
+    """Verify that required public fixtures exist, match hash/mode, and are not ignored by git."""
+    violations: list[str] = []
+    tools_ci = repo_root / "tools/ci"
+    manifest_path = tools_ci / "public_fixture_manifest.json"
+    if tools_ci.is_dir() and not manifest_path.is_file():
+        violations.append("public fixture manifest missing: tools/ci/public_fixture_manifest.json")
+        return violations
+    if not manifest_path.is_file():
+        return violations
+
+    try:
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception as error:
+        violations.append(f"failed to parse public fixture manifest: {error}")
+        return violations
+
+    fixtures = data.get("fixtures", [])
+    if not isinstance(fixtures, list) or not fixtures:
+        violations.append("public fixture manifest has no fixtures defined")
+        return violations
+
+    for fixture in fixtures:
+        rel_path = fixture.get("path", "")
+        if not rel_path:
+            violations.append("fixture entry missing path")
+            continue
+        for withheld in WITHHELD_DIRECTORIES:
+            if rel_path.startswith(withheld):
+                violations.append(f"fixture entry references withheld path: {rel_path}")
+
+        fixture_file = repo_root / rel_path
+        if not fixture_file.is_file():
+            violations.append(f"required public fixture is missing: {rel_path}")
+            continue
+
+        expected_sha256 = fixture.get("sha256")
+        if expected_sha256:
+            actual_sha256 = hashlib.sha256(fixture_file.read_bytes()).hexdigest()
+            if actual_sha256 != expected_sha256:
+                violations.append(
+                    f"fixture {rel_path} content hash mismatch: "
+                    f"expected {expected_sha256}, observed {actual_sha256}"
+                )
+
+        expected_mode = fixture.get("mode")
+        if expected_mode:
+            st = fixture_file.lstat()
+            actual_mode = "120000" if stat.S_ISLNK(st.st_mode) else ("100755" if (st.st_mode & 0o111) else "100644")
+            if actual_mode != expected_mode:
+                violations.append(
+                    f"fixture {rel_path} mode mismatch: expected {expected_mode}, observed {actual_mode}"
+                )
+
+        # Check that git does not ignore the fixture file
+        try:
+            result = subprocess.run(
+                ["git", "check-ignore", "-v", rel_path],
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if result.returncode == 0:
+                line = result.stdout.strip()
+                parts = line.split("\t", 1)
+                rule = parts[0] if parts else ""
+                rule_pattern = rule.split(":", 2)[-1] if ":" in rule else rule
+                if not rule_pattern.startswith("!"):
+                    violations.append(f"public fixture is ignored by git ({rule}): {rel_path}")
+        except (FileNotFoundError, OSError):
+            pass
+
+    return violations
+
+
 def evaluate_public_export(
     repo_root: Path,
     *,
@@ -249,6 +304,7 @@ def evaluate_public_export(
     violations.extend(check_withheld_paths(repo_root))
     violations.extend(check_version_consistency(repo_root, expected_version))
     violations.extend(check_retention_independence(repo_root))
+    violations.extend(check_fixture_integrity(repo_root))
 
     if payload is not None:
         violations.extend(check_promotion_policy(payload, repository))
@@ -276,7 +332,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--expected-version",
         default=DEFAULT_TARGET_VERSION,
-        help="expected semver version (default: 0.0.1)",
+        help="expected semver version (default: 0.0.2)",
     )
     parser.add_argument(
         "--event-path",

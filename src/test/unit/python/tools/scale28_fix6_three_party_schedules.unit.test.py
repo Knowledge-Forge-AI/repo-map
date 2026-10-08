@@ -6,6 +6,9 @@ from threading import Event, Thread
 import psycopg
 import pytest
 
+import scale28_backend_observer_session as observer_session
+from repomap_test_support.observer_schedule import ObserverSchedule
+
 from scale28_backend_observer_session import (
     BackendMonitorError,
     BackendObserverSession,
@@ -102,11 +105,14 @@ def _active_session(
     _THREE_PARTY_SCHEDULES,
 )
 def test_twenty_timer_request_operation_and_close_schedules(
+    monkeypatch: pytest.MonkeyPatch,
     settlement_order: str,
     request_outcome: str,
     close_start: str,
     close_mode: str,
 ) -> None:
+    schedule = ObserverSchedule()
+    monkeypatch.setattr(observer_session, "Timer", schedule.make_timer)
     connection = _BarrierConnection(request_outcome)
     session = _active_session(connection)
     operation_started = Event()
@@ -153,11 +159,14 @@ def test_twenty_timer_request_operation_and_close_schedules(
 
         if settlement_order == "operation_first":
             allow_operation_return.set()
-            assert operation_finished.wait(1.0)
+            schedule.wait_for_operation_return()
+            # run() still owns settlement until the request finishes.
+            assert operation_finished.is_set() is False
             assert session.snapshot().cancellation.request_in_flight is True
         else:
             connection.allow_cancel_return.set()
             assert connection.cancel_finished.wait(1.0)
+            schedule.wait_for_request_settlement()
             assert session.snapshot().operation_in_flight is True
 
         if close_start == "after_first_settlement":
@@ -178,10 +187,13 @@ def test_twenty_timer_request_operation_and_close_schedules(
         if settlement_order == "operation_first":
             connection.allow_cancel_return.set()
             assert connection.cancel_finished.wait(1.0)
+            schedule.wait_for_request_settlement()
         else:
             allow_operation_return.set()
             assert operation_finished.wait(1.0)
 
+        operation_thread.join(1.0)
+        assert operation_thread.is_alive() is False
         close_thread.join(1.0)
         assert close_thread.is_alive() is False
         if close_mode == "timeout_then_retry":

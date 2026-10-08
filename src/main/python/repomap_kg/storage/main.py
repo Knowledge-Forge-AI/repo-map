@@ -53,8 +53,12 @@ from repomap_kg.storage.read_pages import (
     public_read_page_to_jsonable as public_read_page_to_jsonable,
     validate_public_read_window as validate_public_read_window,
 )
+from repomap_kg.storage.errors import (
+    StorageCommitUnknownError as StorageCommitUnknownError,
+    StorageSchemaError as StorageSchemaError,
+)
 from repomap_kg.storage.repository_identity import (
-    StorageSchemaError as StorageSchemaError, annotations as annotations,
+    annotations as annotations,
     re as re,
     repository_identity_reconciliation_sql as repository_identity_reconciliation_sql,
     repository_identity_state_sql as repository_identity_state_sql,

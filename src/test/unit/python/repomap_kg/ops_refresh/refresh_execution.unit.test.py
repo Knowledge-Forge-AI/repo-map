@@ -1,7 +1,11 @@
+from dataclasses import replace
 import json
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+
+from repomap_kg.storage.staging_observability import StagingMeasurements
+from repomap_kg.storage.staging_phase_events import StagingPhaseEventCategory
 
 from repomap_test_support.ops_refresh import (
     OpsRefreshUnitTestCase,
@@ -327,3 +331,65 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
         rendered = json.dumps(payload, sort_keys=True)
         self.assertIn("[REDACTED]", rendered)
         self.assertNotIn("fake-secret", rendered)
+
+    def test_refresh_graph_cancellation_returns_rolled_back_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "repo"
+            root.mkdir()
+            config = self.config_for_roots(root)
+
+            with patch(
+                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                side_effect=KeyboardInterrupt(),
+            ):
+                result = refresh_graph(config, "repo-map")
+
+            self.assertEqual(result.result, "failure")
+            self.assertEqual(result.publication_state, "rolled_back")
+            self.assertEqual(result.error_category, "cancelled")
+            self.assertEqual(result.error, "refresh cancelled")
+            self.assertTrue(
+                any(d.get("code") == "refresh-failed" for d in result.diagnostics)
+            )
+
+            phase_events: list[object] = []
+            measurements = StagingMeasurements(
+                lambda _: None, phase_sink=phase_events.append
+            )
+            with patch(
+                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                side_effect=KeyboardInterrupt(),
+            ):
+                measured_result = refresh_graph(
+                    config, "repo-map", staging_measurements=measurements
+                )
+
+            self.assertEqual(measured_result.result, "failure")
+            self.assertEqual(measured_result.publication_state, "rolled_back")
+            self.assertEqual(measured_result.error_category, "cancelled")
+            self.assertTrue(
+                any(
+                    getattr(e, "event_category", None)
+                    == StagingPhaseEventCategory.CANCELLED
+                    for e in phase_events
+                )
+            )
+
+    def test_refresh_enabled_graphs_aborts_on_cancellation(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "repo"
+            root.mkdir()
+            base_config = self.config_for_roots(root)
+            g1 = base_config.graphs[0]
+            g2 = replace(g1, id="repo-map-2", database="db-repo-map-2")
+            config = replace(base_config, graphs=(g1, g2))
+
+            with patch(
+                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                side_effect=KeyboardInterrupt(),
+            ):
+                results = refresh_enabled_graphs(config)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].graph_id, "repo-map")
+        self.assertEqual(results[0].error_category, "cancelled")

@@ -348,6 +348,8 @@ def test_claim_and_lease_pilot_limits_have_fixed_defaults_and_hard_maxima() -> N
     assert (DEFAULT_LIMITS.manual_claim_burst, HARD_MAX_LIMITS.manual_claim_burst) == (3, 32)
     assert (DEFAULT_LIMITS.graph_lease_duration_seconds, HARD_MAX_LIMITS.graph_lease_duration_seconds) == (60, 600)
     assert (DEFAULT_LIMITS.lease_renewal_interval_seconds, HARD_MAX_LIMITS.lease_renewal_interval_seconds) == (10, 60)
+    assert (DEFAULT_LIMITS.process_deadline_seconds, HARD_MAX_LIMITS.process_deadline_seconds) == (600, 3600)
+    assert (DEFAULT_LIMITS.refresh_attempt_deadline_seconds, HARD_MAX_LIMITS.refresh_attempt_deadline_seconds) == (3600, 86400)
 
 
 @pytest.mark.parametrize(
@@ -357,6 +359,7 @@ def test_claim_and_lease_pilot_limits_have_fixed_defaults_and_hard_maxima() -> N
         {"max_in_flight_requests": 2}, {"max_protocol_line_bytes": 8 * 1024},
         {"max_retry_backoff_seconds": 1}, {"cleanup_batch_size": 300},
         {"claim_deadline_seconds": 5}, {"process_deadline_seconds": 5},
+        {"refresh_attempt_deadline_seconds": 500},
         {"lease_renewal_interval_seconds": 60},
     ],
 )
@@ -382,3 +385,14 @@ def test_every_limit_rejects_values_above_its_hard_maximum() -> None:
 
 def test_hard_maxima_cannot_be_weaker_than_source_defined_bounds() -> None:
     assert (HARD_MAX_LIMITS.max_protocol_line_bytes, HARD_MAX_LIMITS.max_diagnostic_bytes) == (1024 * 1024, 64 * 1024)
+
+
+def test_process_and_refresh_attempt_deadline_boundary_contract() -> None:
+    assert DEFAULT_LIMITS.process_deadline_seconds >= DEFAULT_LIMITS.cancel_deadline_seconds
+    assert DEFAULT_LIMITS.process_deadline_seconds == 600
+    assert HARD_MAX_LIMITS.process_deadline_seconds == 3600
+    assert DEFAULT_LIMITS.process_deadline_seconds <= HARD_MAX_LIMITS.process_deadline_seconds
+    assert DEFAULT_LIMITS.refresh_attempt_deadline_seconds > DEFAULT_LIMITS.process_deadline_seconds
+    assert DEFAULT_LIMITS.refresh_attempt_deadline_seconds == 3600
+    assert HARD_MAX_LIMITS.refresh_attempt_deadline_seconds == 86400
+    assert DEFAULT_LIMITS.refresh_attempt_deadline_seconds <= HARD_MAX_LIMITS.refresh_attempt_deadline_seconds

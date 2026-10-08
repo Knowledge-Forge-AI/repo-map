@@ -31,42 +31,80 @@ PRESERVED_WINDOWS_ARTIFACTS = (
 
 
 def test_repomap_static_analysis_workflow_contracts() -> None:
-    workflow = load_workflow(STATIC_WORKFLOW)
-    assert workflow.name == "repomap-static-analysis"
-    assert set(workflow.jobs) == {"repomap-static-analysis"}
-    job = workflow.jobs["repomap-static-analysis"]
-    assert job["runs-on"] == "ubuntu-latest"
-    assert job["timeout-minutes"] == 25
-    assert set(workflow.triggers) == {"pull_request", "workflow_dispatch"}
-    pull_request = workflow.triggers["pull_request"]
-    assert pull_request["branches"] == ["staging"]
-    assert sorted(pull_request["types"]) == [
-        "opened", "ready_for_review", "reopened", "synchronize"
-    ]
-    assert "src/main/go/**" in pull_request["paths"]
-    assert "docs/**" in pull_request["paths"]
-    assert workflow.permissions == {"contents": "read"}
-    assert workflow.document["concurrency"]["cancel-in-progress"] is True
+    if not STATIC_WORKFLOW.exists():
+        rel_workflow = ROOT / ".github/workflows/repomap-release-qualification.yml"
+        workflow = load_workflow(rel_workflow)
+        assert workflow.name == "repomap-release-qualification"
+        assert "pre-review-static" in workflow.jobs
+        job = workflow.jobs["pre-review-static"]
+        assert job["runs-on"] == "ubuntu-latest"
+        assert job["timeout-minutes"] == 40
+        assert job["needs"] == ["source-and-export-policy"]
+        pull_request = workflow.triggers["pull_request"]
+        assert pull_request["branches"] == ["main"]
+        assert sorted(pull_request["types"]) == [
+            "opened", "ready_for_review", "reopened", "synchronize"
+        ]
+        assert "paths" not in pull_request
+        assert workflow.permissions == {"contents": "read"}
+        assert workflow.document["concurrency"]["cancel-in-progress"] is True
 
-    for action in workflow.action_uses():
-        name, separator, sha = action.partition("@")
-        assert separator and re.fullmatch(r"[0-9a-f]{40}", sha), name
-    checkout = next(
-        step for step in workflow.steps()
-        if str(step.get("uses", "")).startswith("actions/checkout@")
-    )
-    assert checkout["with"]["fetch-depth"] == 0
-    assert checkout["with"]["persist-credentials"] is False
+        for action in workflow.action_uses():
+            name, separator, sha = action.partition("@")
+            assert separator and re.fullmatch(r"[0-9a-f]{40}", sha), name
+        checkout = next(
+            step for step in job["steps"]
+            if str(step.get("uses", "")).startswith("actions/checkout@")
+        )
+        assert checkout["with"]["fetch-depth"] == 0
+        assert checkout["with"]["persist-credentials"] is False
 
-    commands = "\n".join(workflow.run_commands())
-    assert commands.count("tools/ci/bootstrap_pre_review.py") == 1
-    assert commands.count("tools/ci/run_pre_review.py") == 1
-    assert 'pip install --editable ".[static-analysis]"' not in commands
-    assert '"${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python"' in commands
-    assert '--tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"' in commands
-    assert "continue-on-error" not in STATIC_WORKFLOW.read_text(encoding="utf-8")
-    for forbidden in ("docker", "postgres", "pytest", "run_tests.py", "--suite"):
-        assert forbidden not in commands.lower()
+        commands = "\n".join(str(s["run"]) for s in job["steps"] if "run" in s)
+        assert commands.count("tools/ci/bootstrap_pre_review.py") == 1
+        assert commands.count("tools/ci/run_pre_review.py") == 1
+        assert 'pip install --editable ".[static-analysis]"' not in commands
+        assert '"${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python"' in commands
+        assert '--tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"' in commands
+        assert "continue-on-error" not in rel_workflow.read_text(encoding="utf-8")
+        for forbidden in ("docker", "postgres", "pytest", "run_tests.py", "--suite"):
+            assert forbidden not in commands.lower()
+    else:
+        workflow = load_workflow(STATIC_WORKFLOW)
+        assert workflow.name == "repomap-static-analysis"
+        assert set(workflow.jobs) == {"repomap-static-analysis"}
+        job = workflow.jobs["repomap-static-analysis"]
+        assert job["runs-on"] == "ubuntu-latest"
+        assert job["timeout-minutes"] == 25
+        assert set(workflow.triggers) == {"pull_request", "workflow_dispatch"}
+        pull_request = workflow.triggers["pull_request"]
+        assert pull_request["branches"] == ["staging"]
+        assert sorted(pull_request["types"]) == [
+            "opened", "ready_for_review", "reopened", "synchronize"
+        ]
+        assert "src/main/go/**" in pull_request["paths"]
+        assert "docs/**" in pull_request["paths"]
+        assert workflow.permissions == {"contents": "read"}
+        assert workflow.document["concurrency"]["cancel-in-progress"] is True
+
+        for action in workflow.action_uses():
+            name, separator, sha = action.partition("@")
+            assert separator and re.fullmatch(r"[0-9a-f]{40}", sha), name
+        checkout = next(
+            step for step in workflow.steps()
+            if str(step.get("uses", "")).startswith("actions/checkout@")
+        )
+        assert checkout["with"]["fetch-depth"] == 0
+        assert checkout["with"]["persist-credentials"] is False
+
+        commands = "\n".join(workflow.run_commands())
+        assert commands.count("tools/ci/bootstrap_pre_review.py") == 1
+        assert commands.count("tools/ci/run_pre_review.py") == 1
+        assert 'pip install --editable ".[static-analysis]"' not in commands
+        assert '"${RUNNER_TEMP}/repomap-pre-review-tools/python/bin/python"' in commands
+        assert '--tool-root "${RUNNER_TEMP}/repomap-pre-review-tools"' in commands
+        assert "continue-on-error" not in STATIC_WORKFLOW.read_text(encoding="utf-8")
+        for forbidden in ("docker", "postgres", "pytest", "run_tests.py", "--suite"):
+            assert forbidden not in commands.lower()
 
     driver = (ROOT / "tools/ci/run_pre_review.py").read_text(encoding="utf-8")
     assert "from ci.pre_review_checks import" in driver

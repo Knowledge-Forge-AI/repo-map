@@ -5,8 +5,12 @@ from repomap_kg.extractors.config.generic import extract_config_file_observation
 from repomap_kg.extractors.config.terraform_hcl_helpers import (
     _terraform_hcl_bool_literal,
     _terraform_hcl_bounded_string,
+    _terraform_hcl_credentialed_url,
+    _terraform_hcl_delimiter_delta,
     _terraform_hcl_expression_kind,
     _terraform_hcl_literal_string,
+    _terraform_hcl_local_path_target,
+    _terraform_hcl_strip_comment,
 )
 
 
@@ -158,6 +162,20 @@ module "vpc_relative" {
         self.assertEqual(_terraform_hcl_expression_kind("aws_s3_bucket.app.id"), "traversal_reference")
         self.assertEqual(_terraform_hcl_expression_kind("null"), "literal_null")
         self.assertEqual(_terraform_hcl_expression_kind("[1, 2]"), "collection_shape")
+
+        self.assertEqual(_terraform_hcl_local_path_target("main.tf", "./modules/vpc"), "file:modules/vpc")
+        escaping_target = _terraform_hcl_local_path_target("main.tf", "../outside")
+        self.assertIsNotNone(escaping_target)
+        assert escaping_target is not None
+        self.assertIn("escaping", escaping_target)
+        self.assertIsNone(_terraform_hcl_local_path_target("main.tf", "https://example.com"))
+        self.assertIsNone(_terraform_hcl_local_path_target("main.tf", "git::https://example.com"))
+        self.assertIsNone(_terraform_hcl_local_path_target("main.tf", "/etc/passwd"))
+        self.assertEqual(_terraform_hcl_strip_comment("# comment\nval"), "")
+        self.assertTrue(_terraform_hcl_credentialed_url("https://u:p@github.com/repo.git"))
+        self.assertFalse(_terraform_hcl_credentialed_url("https://github.com/repo.git"))
+        self.assertEqual(_terraform_hcl_delimiter_delta("{ [ ] }", openings="{[", closings="}]"), 0)
+        self.assertEqual(_terraform_hcl_delimiter_delta("{", openings="{", closings="}"), 1)
 
 
 if __name__ == "__main__":

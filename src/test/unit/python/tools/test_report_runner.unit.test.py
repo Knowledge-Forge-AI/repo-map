@@ -248,7 +248,15 @@ class ReportGeneratorUnitTests(ReportTestCase):
         report_path = seen["report_path"]
         self.assertTrue(report_path.exists())
         report = json.loads(report_path.read_text(encoding="utf-8"))
-        self.assertEqual(report["errors"], ["accounting: PopulationDiscoveryError"])
+        self.assertEqual(report["errors"], [
+            "accounting: PopulationDiscoveryError",
+            "report validation: partition missing "
+            "['abrupt', 'collected', 'deferred', 'measured', 'required', 'sha256']",
+        ])
+        # Failed discovery preserves diagnostics, never a fabricated partition.
+        from staging_report_contract import StagingReportValidationError, validate_report
+        with self.assertRaisesRegex(StagingReportValidationError, "partition missing"):
+            validate_report(report)
         self.assertEqual(report["partition"], {})
         for leg in ("M", "A"):
             self.assertEqual(report["legs"][leg]["status"], "not_selected")
