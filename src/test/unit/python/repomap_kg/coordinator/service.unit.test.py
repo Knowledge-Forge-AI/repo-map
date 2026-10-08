@@ -6,8 +6,9 @@ import time
 import pytest
 
 from repomap_kg.coordinator._control_types import JobListPage
-from repomap_kg.coordinator.service import CoordinatorService
 from repomap_kg.coordinator.contracts import normalize_request
+from repomap_kg.coordinator.service import CoordinatorService
+from repomap_kg.coordinator.startup_recovery import RecoveryDiagnostic
 from repomap_kg.coordinator.transport import TransportError, validate_public_result
 
 
@@ -17,6 +18,7 @@ class FakeCoordinator:
         self.fail_start = fail_start
         self.run_entered = threading.Event()
         self.allow_run = threading.Event()
+        self.recovery_diagnostics: tuple[RecoveryDiagnostic, ...] = ()
 
     def startup(self, reconcile):
         self.events.append("coordinator_start")
@@ -45,6 +47,9 @@ class FakeCoordinator:
     def shutdown(self):
         self.events.append("coordinator_stop")
 
+    def acknowledge_recovery_diagnostics(self, through_sequence: int) -> None:
+        self.recovery_diagnostics = tuple(d for d in self.recovery_diagnostics if d.sequence > through_sequence)
+
 
 class FailingCoordinator(FakeCoordinator):
     def __init__(self, events):
@@ -63,7 +68,7 @@ class FakeStore:
     def maintenance_ready(self):
         return self.ready
 
-    def submit(self, request):
+    def submit(self, request, *, admission_deadline=None):
         return type("Submission", (), {"job_id": request.request_id, "state": "queued", "replayed": False})()
 
     def status(self, job_id):
@@ -116,12 +121,9 @@ def test_service_becomes_ready_only_after_recovery_and_cleans_credentials(tmp_pa
     events: list[str] = []
     coordinator = FakeCoordinator(events)
     service = CoordinatorService(
-        coordinator,
-        FakeStore(),
-        tmp_path,
+        coordinator, FakeStore(), tmp_path,
         transport_factory=lambda *_args, **_kwargs: FakeTransport(events),
-        idle_poll_seconds=0.01,
-        heartbeat_seconds=0.01,
+        idle_poll_seconds=0.01, heartbeat_seconds=0.01,
     )
 
     service.start(lambda: events.append("recover"))
@@ -152,10 +154,7 @@ def test_service_owns_optional_polling_lifecycle_and_health(tmp_path):
     coordinator.allow_run.set()
     polling = FakePolling(events)
     service = CoordinatorService(
-        coordinator,
-        FakeStore(),
-        tmp_path,
-        desired_reconciler=polling,
+        coordinator, FakeStore(), tmp_path, desired_reconciler=polling,
         transport_factory=lambda *_args, **_kwargs: FakeTransport(events),
     )
 
@@ -174,37 +173,50 @@ def test_service_health_is_versioned_bounded_and_operator_facing(tmp_path):
     coordinator = FakeCoordinator(events)
     coordinator.allow_run.set()
     service = CoordinatorService(
-        coordinator,
-        FakeStore(),
-        tmp_path,
+        coordinator, FakeStore(), tmp_path,
         transport_factory=lambda *_args, **_kwargs: FakeTransport(events),
+    )
+    assert service.health()["recovery_diagnostics"] == []
+    coordinator.recovery_diagnostics = (
+        RecoveryDiagnostic(1, "RuntimeError", category="unexpected_recovery_error", summary="RuntimeError"),
+        RecoveryDiagnostic(2, "ValueError", category="unexpected_recovery_error", summary="ValueError"),
     )
 
     service.start(lambda: None)
     try:
         payload = service.health()
-        assert payload["health_schema_version"] == 1
+        assert payload["health_schema_version"] == 2
         assert payload["status"] == "ready"
         assert set(payload) == {
-            "health_schema_version",
-            "status",
-            "service",
-            "ownership",
-            "queue",
-            "workers",
-            "publication",
-            "polling",
-            "transport",
-            "storage",
+            "health_schema_version", "status", "service", "ownership", "queue",
+            "workers", "publication", "polling", "transport", "storage",
+            "recovery_diagnostics",
         }
-        for section in (
-            "service", "ownership", "queue", "workers", "publication", "transport", "storage"
-        ):
-            section_payload = payload[section]
-            assert isinstance(section_payload, Mapping) and set(section_payload) == {"status"}
+        for section in ("service", "ownership", "queue", "workers", "publication", "transport", "storage"):
+            sec = payload[section]
+            assert isinstance(sec, Mapping)
+            assert set(sec) == {"status"}
         assert payload["polling"] == {"status": "not_configured"}
         assert payload["transport"] == {"status": "ready"}
         assert payload["ownership"] == {"status": "owned"}
+        expected = [
+            {"category": "unexpected_recovery_error", "summary": "RuntimeError", "sequence": 1},
+            {"category": "unexpected_recovery_error", "summary": "ValueError", "sequence": 2},
+        ]
+        assert payload["recovery_diagnostics"] == expected
+        assert service.health()["recovery_diagnostics"] == expected
+        coordinator.heartbeat()
+        assert service.health()["recovery_diagnostics"] == expected
+        service.acknowledge_recovery_diagnostics(1)
+        assert service.health()["recovery_diagnostics"] == [expected[1]]
+        service.acknowledge_recovery_diagnostics(2)
+        assert service.health()["recovery_diagnostics"] == []
+        coordinator.recovery_diagnostics = tuple(RecoveryDiagnostic(i, "Exception") for i in range(40))
+        diags = service.health()["recovery_diagnostics"]
+        assert isinstance(diags, list)
+        assert len(diags) == 32
+        assert isinstance(diags[0], dict)
+        assert diags[0]["sequence"] == 0
         assert validate_public_result(payload)
     finally:
         service.stop()
@@ -236,12 +248,8 @@ def test_service_reports_not_ready_while_control_maintenance_is_active(tmp_path)
 
 def test_service_rolls_back_owned_resources_when_startup_fails(tmp_path):
     service = CoordinatorService(
-        FakeCoordinator([], fail_start=True),
-        FakeStore(),
-        tmp_path,
-        transport_factory=lambda *_args, **_kwargs: pytest.fail(
-            "transport must not start"
-        ),
+        FakeCoordinator([], fail_start=True), FakeStore(), tmp_path,
+        transport_factory=lambda *_args, **_kwargs: pytest.fail("transport must not start"),
     )
     with pytest.raises(RuntimeError, match="startup failed"):
         service.start(lambda: None)
@@ -262,9 +270,7 @@ def test_service_replaces_only_safe_owned_stale_credentials(tmp_path):
     coordinator = FakeCoordinator([])
     coordinator.allow_run.set()
     service = CoordinatorService(
-        coordinator,
-        FakeStore(),
-        tmp_path,
+        coordinator, FakeStore(), tmp_path,
         transport_factory=lambda *_args, **_kwargs: FakeTransport([]),
     )
     service.start(lambda: None)
@@ -331,15 +337,13 @@ def test_service_uses_injected_authoritative_request_resolver(tmp_path):
     service.start(lambda: None)
     try:
         request = {
-            "schema_version": 1,
-            "job_kind": "refresh_graph",
-            "graph_id": "synthetic-service",
-            "request_id": "configured-request",
-            "idempotency_key": "configured-key",
-            "priority": "manual",
-            "operation_options": {"reason": "configured-pilot"},
+            "schema_version": 1, "job_kind": "refresh_graph", "graph_id": "synthetic-service",
+            "request_id": "configured-request", "idempotency_key": "configured-key",
+            "priority": "manual", "operation_options": {"reason": "configured-pilot"},
         }
-        assert service._submit({"request": request})["job_id"] == "configured-request"
+        assert service._submit(
+            {"request": request, "admission_deadline": time.time() + 60}
+        )["job_id"] == "configured-request"
         assert seen == [request]
     finally:
         service.stop()

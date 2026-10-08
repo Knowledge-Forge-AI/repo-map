@@ -84,6 +84,9 @@ def test_long_running_units_are_read_only_and_admin_mounts_are_one_shot_only() -
     assert "coordinator-state:/repo-map-home/coordinator" in coordinator
     assert "coordinator-state:/repo-map-home/coordinator" not in http
     assert "coordinator-state:/repo-map-home/coordinator" not in mcp
+    assert "publication-state:/repo-map-home/state" in coordinator
+    assert "publication-state:/repo-map-home/state" not in http
+    assert "publication-state:/repo-map-home/state" not in mcp
     assert "admin-state:/repo-map-admin" in init_upgrade
     assert "admin-state:/repo-map-admin" in lifecycle
     assert "runtime/.env" not in http
@@ -109,6 +112,7 @@ def test_release_image_prepares_owner_private_container_state_roots() -> None:
 
     assert "install -d -m 0700 /repo-map-home" in dockerfile
     assert "/repo-map-home/runtime /repo-map-home/coordinator /repo-map-admin" in dockerfile
+    assert "/repo-map-home/state" in dockerfile
 
 
 def test_ambient_database_user_does_not_override_config_authority(
@@ -128,9 +132,10 @@ def test_ambient_database_user_does_not_override_config_authority(
 def test_enabled_source_root_is_read_only_only_where_execution_requires_it() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         home = Path(tmpdir) / "home"
-        source = home / "source"
-        source.mkdir(parents=True)
         setup_local_runtime(home)
+        source = home / "source"
+        source.mkdir(mode=0o700, exist_ok=True)
+        source.chmod(0o700)
         config = home / "repomap.rpl.toml"
         config.write_text(
             config.read_text(encoding="utf-8")

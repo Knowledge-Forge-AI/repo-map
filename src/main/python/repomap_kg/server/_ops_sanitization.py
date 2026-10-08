@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any, Mapping
 
 from repomap_kg.ops.config import (
@@ -14,6 +13,7 @@ from repomap_kg.ops.config import (
     redact_text,
 )
 from repomap_kg.server._ops_records import McpOpsGraphContext
+from repomap_kg.server.graph_selection import config_locations, graph_path_markers
 
 MAX_STRING_LENGTH = 500
 PRIVATE_PATH_DISPLAY = "[private-path]"
@@ -123,25 +123,8 @@ def sanitize_text(value: str, *, private_markers: tuple[str, ...] = ()) -> str:
 
 
 def readback_path_markers(context: McpOpsGraphContext) -> tuple[str, ...]:
-    markers: set[str] = set()
-    values = [
-        context.graph.root_path,
-        context.graph.root_path_expanded,
-        context.config.config_path,
-        context.config.config_home,
-        *context.config.config_files,
-        str(Path.home()),
-        Path.home().name,
-    ]
-    if context.graph.privacy in PRIVATE_PRIVACY:
-        for binding in context.graph.effective_source_bindings:
-            values.extend((binding.root_path, binding.root_path_expanded))
-    for value in values:
-        if isinstance(value, str):
-            marker = value.strip()
-            if marker and marker not in {".", "/", "~", "[private-root]"}:
-                markers.add(marker)
-    return tuple(sorted(markers, key=len, reverse=True))
+    """PostgreSQL-context markers; identical to ``GraphSelection.path_markers``."""
+    return graph_path_markers(context.graph, config_locations(context.config))
 
 
 def sanitize_summary_jsonable(value: Any, graph: OpsGraphConfig) -> Any:

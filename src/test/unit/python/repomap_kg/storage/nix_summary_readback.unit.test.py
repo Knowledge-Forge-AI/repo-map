@@ -148,6 +148,56 @@ def test_psycopg62_query_nix_summary_has_no_direct_psql_calls() -> None:
     assert "parse_psql_json(" not in source
 
 
+def test_build_nix_summary_query_sql_with_identity() -> None:
+    sql = build_nix_summary_query_sql(
+        "/tmp/fixture",
+        repository_identity="repo1:fixture",
+    )
+    assert "repositories.id = (SELECT id FROM repositories WHERE" in sql
+    assert "repository_identity = 'repo1:fixture'" in sql
+    assert "ORDER BY (repository_identity = 'repo1:fixture') DESC NULLS LAST, id LIMIT 1" in sql
+    assert "'root_path', '[root-path]'" in sql
+
+
+def test_build_nix_summary_query_sql_without_identity() -> None:
+    sql_default = build_nix_summary_query_sql("/tmp/fixture")
+    sql_none = build_nix_summary_query_sql("/tmp/fixture", repository_identity=None)
+    assert sql_default == sql_none
+    assert "repositories.root_path = '/tmp/fixture'" in sql_default
+    assert "repository_identity" not in sql_default
+    assert "'root_path', '[root-path]'" in sql_default
+
+
+def test_build_nix_summary_query_sql_invalid_identity() -> None:
+    with pytest.raises(StorageSchemaError):
+        build_nix_summary_query_sql("/tmp/fixture", repository_identity="invalid spaces")
+    with pytest.raises(StorageSchemaError):
+        build_nix_summary_query_sql("/tmp/fixture", repository_identity="repo1:bad;semi")
+
+
+def test_query_nix_summary_forwards_identity() -> None:
+    payload = _nix_summary_payload()
+    with patch(
+        "repomap_kg.storage.summaries.execute_json_readback",
+        return_value=payload,
+    ) as execute_json_readback:
+        record = query_nix_summary(
+            ["-d", "postgres"],
+            root_path="/tmp/fixture",
+            repository_identity="repo1:fixture",
+        )
+    execute_json_readback.assert_called_once_with(
+        build_nix_summary_query_sql("/tmp/fixture", repository_identity="repo1:fixture"),
+        psql_args=["-d", "postgres"],
+        psql_command="psql",
+        label="nix summary",
+        expected_shape="object",
+    )
+    assert record.root_path == "[root-path]"
+
+
+
+
 def _nix_summary_payload(*, zeroed: bool = False) -> dict[str, object]:
     count = 0 if zeroed else 1
     payload: dict[str, object] = {

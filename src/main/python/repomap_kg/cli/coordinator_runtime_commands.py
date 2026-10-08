@@ -79,6 +79,7 @@ def dispatch_coordinator_runtime_command(
                 args.repo_map_home,
                 report_ready,
                 psql_path=args.service_package_psql,
+                **({"service_package": True} if args.service_package_environment else {}),
                 **(
                     {"startup_wait_seconds": args.startup_wait_seconds}
                     if args.startup_wait_seconds
@@ -87,6 +88,10 @@ def dispatch_coordinator_runtime_command(
             )
     except commands.CoordinatorModeError as error:
         print_error(error)
+        if args.service_package_environment and str(error) == "coordinator_service_requires_native_mode":
+            # A stale definition is intentionally quiescent, not a failed service
+            # to restart forever under launchd/systemd on-failure policies.
+            return 0
         return 1
     return 0
 

@@ -3,23 +3,57 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from collections import deque
 from datetime import timedelta
+import re
 import threading
 from typing import Callable, TypeVar
 
 _T = TypeVar("_T")
 
+from repomap_kg.coordinator._control_maintenance import CleanupReport
 from repomap_kg.coordinator._coordinator_protocols import (
     CoordinatorStore,
+    PublicationCloser,
     PublicationReader,
+    PublicationRetirer,
     WorkerRunner,
     _Claim,
 )
 from repomap_kg.coordinator._core_disposition import CoreDispositionMixin
+from repomap_kg.coordinator._transport_validation import (
+    sanitize_diagnostic_summary,
+    truncate_diagnostic_bytes,
+)
 from repomap_kg.coordinator.limits import DEFAULT_LIMITS
 from repomap_kg.coordinator.protocol import WorkerLaunchError
 from repomap_kg.coordinator.semantics import RetryPolicy
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryMixin
+from repomap_kg.coordinator.startup_recovery import RecoveryDiagnostic, StartupRecoveryMixin, _expected_refusal
+
+
+def _coordinator_exception_diagnostic(error: BaseException) -> str:
+    """Retain bounded provenance without invoking exception formatting hooks."""
+    prefix = "coordinator_exception:Exception"
+    try:
+        name = type.__getattribute__(type(error), "__name__")
+        if type(name) is not str or re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]{0,63}", name) is None:
+            name = "Exception"
+        prefix = "coordinator_exception:" + name
+        args = BaseException.__dict__["args"].__get__(error)
+        if len(args) != 1 or type(args[0]) is not str:
+            return prefix
+        message = args[0]
+        # The shared sanitizer does not safely redact all URL/user-info forms.
+        # Withhold those here without changing other producers or public policy.
+        if "://" in message or "@" in message:
+            return prefix
+        detail = sanitize_diagnostic_summary(message)
+        if not detail or detail == "diagnostic_withheld":
+            return prefix
+        return truncate_diagnostic_bytes(prefix + ":" + detail)
+    except Exception:
+        # Even a broken formatting dependency must not prevent reconciliation.
+        return prefix
 
 
 class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
@@ -34,6 +68,8 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         worker_runner: WorkerRunner,
         *,
         publication_reader: PublicationReader | None = None,
+        publication_retirer: PublicationRetirer | None = None,
+        publication_closer: PublicationCloser | None = None,
         max_workers: int = 1,
         singleton_ttl: timedelta | None = None,
         lease_ttl: timedelta | None = None,
@@ -48,6 +84,9 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         self._instance_id = instance_id
         self._worker_runner = worker_runner
         self._publication_reader = publication_reader
+        self._publication_retirer = publication_retirer
+        self._publication_closer = publication_closer
+        self._residual_evidence = []
         self._max_workers = max_workers
         default_ttl = timedelta(
             seconds=DEFAULT_LIMITS.graph_lease_duration_seconds
@@ -58,6 +97,9 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         self._active_workers = 0
         self._manual_claims = 0
         self._lock = threading.Lock()
+        self._recovery_diagnostics: deque[RecoveryDiagnostic] = deque(maxlen=32)
+        self._recovery_diagnostics_lock = threading.Lock()
+        self._recovery_diagnostic_sequence = 0
         self._executor = ThreadPoolExecutor(
             max_workers=max_workers,
             thread_name_prefix="synthetic-coordinator-worker",
@@ -144,11 +186,15 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
                     "error_category": "worker_launch",
                     "_termination_proved": True,
                 }
-            except Exception:
+            except Exception as error:
+                diagnostic = _coordinator_exception_diagnostic(error)
                 with self._lock:
                     expected = self._active_expected_state(claim, cancel_event)
                     if not self._store.mark_reconciliation_required(
-                        claim, expected_state=expected, category="worker_crash"
+                        claim,
+                        expected_state=expected,
+                        category="publication_unknown" if _expected_refusal(error) else "worker_crash",
+                        diagnostic_summary=diagnostic,
                     ):
                         return "ownership_lost"
                     return "reconciliation_required"
@@ -162,9 +208,13 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
 
     def heartbeat(self) -> bool:
         epoch = self._require_started()
-        return self._store.heartbeat_singleton(
+        renewed = self._store.heartbeat_singleton(
             self._instance_id, epoch, self._singleton_ttl
         )
+        report = self.startup_recovery_report
+        if renewed and getattr(report, "pending", False):
+            self._record_startup_recovery_report(self.recover_startup())
+        return renewed
 
     def request_cancel(self, job_id: str) -> str:
         self._require_started()
@@ -220,9 +270,43 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
             raise RuntimeError("coordinator is not started")
         return self._epoch
 
+    def cleanup_terminal(
+        self,
+        minimum_age: timedelta | None = None,
+        *,
+        limit: int | None = None,
+        dry_run: bool = False,
+    ) -> CleanupReport:
+        self._require_started()
+        effective_age = (
+            minimum_age
+            if minimum_age is not None
+            else timedelta(seconds=DEFAULT_LIMITS.terminal_retention_seconds)
+        )
+        effective_limit = (
+            limit if limit is not None else DEFAULT_LIMITS.cleanup_batch_size
+        )
+        report = self._store.cleanup_terminal(
+            effective_age,
+            limit=effective_limit,
+            dry_run=dry_run,
+            publication_retirer=self._publication_retirer,
+        )
+        if report.residuals:
+            with self._lock:
+                for token in report.residuals:
+                    if len(self._residual_evidence) < DEFAULT_LIMITS.max_array_items:
+                        self._residual_evidence.append(token)
+        return report
+
     def _worker_finished(self) -> None:
         with self._lock:
             self._active_workers -= 1
+
+    @property
+    def residual_evidence(self) -> tuple[str, ...]:
+        with self._lock:
+            return tuple(self._residual_evidence)
 
 
 __all__ = ["SyntheticCoordinator"]

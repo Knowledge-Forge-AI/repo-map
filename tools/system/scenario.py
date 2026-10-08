@@ -14,6 +14,7 @@ from typing import Any, Callable
 
 from repomap_kg.ops.resolved_config import control_database_for
 from repomap_kg.runtime.plan import LocalRuntimePlan
+from tools.system.scenario_restart_fence import control_evidence_sql
 from tools.system.config import (
     SYSTEM_CLEANUP_RESERVE_SECONDS,
     SYSTEM_TOTAL_BUDGET_SECONDS,
@@ -116,6 +117,7 @@ def _postgres_json(
     *,
     database: str,
     variables: dict[str, str] | None = None,
+    timeout: float = 30.0,
 ) -> dict[str, Any]:
     args = ["exec", "-T", "postgres", "psql", "-XAt", "-U", plan.user]
     for name, value in sorted((variables or {}).items()):
@@ -130,7 +132,7 @@ def _postgres_json(
         args,
         env=load_plan_env(plan),
         stdin_input=sql,
-        timeout=30.0,
+        timeout=timeout,
         timer=timer,
     )
     lines = [line for line in result.stdout.splitlines() if line.strip()]
@@ -149,19 +151,13 @@ def _control_job_evidence(
     timer: MonotonicTimer,
     job_id: str,
 ) -> dict[str, Any]:
-    sql = (
-        "SELECT json_build_object('job_id', j.job_id, 'graph_id', j.graph_id, "
-        "'idempotency_digest', j.idempotency_digest, 'state', j.state, "
-        "'current_attempt', j.current_attempt, 'coordinator_instance_id', a.coordinator_instance_id, "
-        "'singleton_fencing_epoch', a.fencing_epoch, 'graph_lease_fencing_epoch', gl.fencing_epoch) "
-        "FROM jobs AS j JOIN job_attempts AS a ON a.job_id = j.job_id AND a.attempt = j.current_attempt "
-        "LEFT JOIN graph_leases AS gl ON gl.job_id = a.job_id AND gl.attempt = a.attempt "
-        "WHERE j.job_id = :'job_id'"
-    )
+    from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
+    sql = control_evidence_sql()
     return _postgres_json(
         compose_dir, plan, timer, sql,
         database=str(control_database_for(plan.database)),
         variables={"job_id": job_id},
+        timeout=SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS,
     )
 
 
@@ -172,7 +168,7 @@ def _publication_authority_evidence(
     job_id: str,
 ) -> dict[str, Any]:
     sql = (
-        "SELECT json_build_object('job_id', gpa.job_id, 'attempt', gpa.attempt, "
+        "SELECT json_build_object('repository_id', gpa.repository_id, 'job_id', gpa.job_id, 'attempt', gpa.attempt, "
         "'coordinator_instance_id', gpa.coordinator_instance_id, "
         "'singleton_fencing_epoch', gpa.singleton_fencing_epoch, "
         "'graph_lease_fencing_epoch', gpa.graph_lease_fencing_epoch, "

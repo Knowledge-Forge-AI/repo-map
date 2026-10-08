@@ -11,6 +11,7 @@ from repomap_test_support.postgres_harness import (
 )
 
 from repomap_kg.ops.ingestion.github_api import (
+    GitHubApiPolicyError,
     GitHubTransportResponse,
     acquire_github_api_source,
 )
@@ -167,26 +168,19 @@ WHERE payload_json->'metadata' ? 'api_run_id';
         self.assertEqual(api_canonical_count, "0")
         self.assertEqual(github_canonical_count, "0")
         self.assertNotEqual(provenance_count, "0")
-        self.assertIn("api.response", raw_payload)
-        self.assertIn("github.repository", raw_payload)
-        self.assertIn("github.issue", raw_payload)
-        self.assertIn("github.pull_request", raw_payload)
-        self.assertIn("github.release", raw_payload)
-        self.assertIn("github.workflow_run", raw_payload)
-        self.assertIn("api_retention_policy", raw_payload)
-        self.assertIn("config.document", raw_payload)
+        for expected in (
+            "api.response", "github.repository", "github.issue", "github.pull_request",
+            "github.release", "github.workflow_run", "api_retention_policy", "config.document",
+        ):
+            self.assertIn(expected, raw_payload)
         self.assertNotIn(str(root), raw_payload)
-        self.assertNotIn("fixture-secret-value", raw_payload)
-        self.assertNotIn("fixture-github-token", raw_payload)
-        self.assertNotIn("fixture-private-key", raw_payload)
-        self.assertIn("fixture-secret-value", source_text)
         self.assertNotIn(str(root), stdout)
-        self.assertNotIn("fixture-secret-value", stdout)
-        self.assertNotIn("fixture-github-token", stdout)
-        self.assertNotIn("fixture-private-key", stdout)
-        self.assertNotIn("fixture-secret-value", manifest_text)
-        self.assertNotIn("fixture-github-token", manifest_text)
-        self.assertNotIn("fixture-private-key", manifest_text)
+        self.assertIn("fixture-secret-value", source_text)
+        for token in ("fixture-secret-value", "fixture-github-token", "fixture-private-key"):
+            self.assertNotIn(token, raw_payload)
+            self.assertNotIn(token, stdout)
+            self.assertNotIn(token, manifest_text)
+            self.assertNotIn(token, api_summary_stdout)
         self.assertEqual(api_summary_exit_code, 0, api_summary_stderr)
         self.assertEqual(api_summary.api_runs, 1)
         self.assertEqual(api_summary.sources, 1)
@@ -211,9 +205,6 @@ WHERE payload_json->'metadata' ? 'api_run_id';
         self.assertEqual(api_summary_payload["source_ids"], ["github-public-fixture"])
         self.assertEqual(api_summary_payload["methods"]["GET"], 5)
         self.assertNotIn(str(root), api_summary_stdout)
-        self.assertNotIn("fixture-secret-value", api_summary_stdout)
-        self.assertNotIn("fixture-github-token", api_summary_stdout)
-        self.assertNotIn("fixture-private-key", api_summary_stdout)
 
     def test_github_public_rest_plan_cli_and_mocked_acquire_load_storage(self):
         require_postgres_binaries()
@@ -354,14 +345,10 @@ WHERE kind LIKE 'github.%';
         self.assertEqual(kinds, {"config.document", "config.path", "file"})
         self.assertEqual(api_canonical_count, "0")
         self.assertEqual(github_canonical_count, "0")
-        self.assertIn('"transport": "github_public_rest"', raw_payload)
-        self.assertIn("api.response", raw_payload)
-        self.assertIn("github.repository", raw_payload)
-        self.assertIn("github.issue", raw_payload)
-        self.assertIn("body_sha256", raw_payload)
-        self.assertNotIn("public issue body should not be stored", raw_payload)
-        self.assertNotIn("fixture-token", raw_payload)
-        self.assertNotIn(str(root), raw_payload)
+        for item in ('"transport": "github_public_rest"', "api.response", "github.repository", "github.issue", "body_sha256"):
+            self.assertIn(item, raw_payload)
+        for forbidden in ("public issue body should not be stored", "fixture-token", str(root)):
+            self.assertNotIn(forbidden, raw_payload)
         self.assertIn('"transport": "github_public_rest"', manifest_text)
         self.assertIn('"x-ratelimit-remaining": "58"', manifest_text)
         self.assertNotIn("fixture-token", manifest_text)
@@ -373,3 +360,33 @@ WHERE kind LIKE 'github.%';
         self.assertTrue(api_summary.no_mutation)
         self.assertTrue(api_summary.no_credentials_resolved)
         self.assertTrue(api_summary.no_scheduler)
+
+    def test_github_offline_acquire_policy_refusal_preserves_prior_publication(self):
+        require_postgres_binaries()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            shutil.copytree(github_api_fixture_root() / "readonly_public_repo", root / "repo")
+            config_path = root / "repo" / "github-source.toml"
+            original = config_path.read_text(encoding="utf-8")
+            summary = acquire_github_api_source(config_path, root_path=root)
+            manifests = {p.relative_to(root): p.read_bytes() for p in root.rglob("manifest.json")}
+            self.assertTrue(manifests)
+            with temporary_postgres() as postgres:
+                apply_migrations(default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command)
+                published = publish_acquisition_summary(
+                    postgres, summary, repository_name="fixture-github", root_path=root,
+                )
+                before = query_api_summary(postgres.psql_args, root_path=str(root), psql_command=postgres.psql_command)
+                self.assertEqual(before.api_runs, 1)
+                config_path.write_text(original.replace("mutation_allowed = false", "mutation_allowed = true"), encoding="utf-8")
+                exit_code, _stdout, stderr = run_repo_map_in_process(
+                    "github", "acquire", "--config", str(config_path), "--root-path", str(root), "--json",
+                )
+                self.assertNotEqual(exit_code, 0)
+                self.assertIn("source.mutation_allowed must be false", stderr)
+                with self.assertRaisesRegex(GitHubApiPolicyError, "source.mutation_allowed must be false"):
+                    acquire_github_api_source(config_path, root_path=root)
+                self.assertEqual(query_api_summary(postgres.psql_args, root_path=str(root), psql_command=postgres.psql_command), before)
+                self.assertEqual(postgres.psql_scalar("SELECT count(*)::text FROM runs WHERE status = 'complete';"), "1")
+                self.assertEqual(postgres.psql_scalar("SELECT max(id)::text FROM runs;"), str(published.run_id))
+            self.assertEqual({p.relative_to(root): p.read_bytes() for p in root.rglob("manifest.json")}, manifests)

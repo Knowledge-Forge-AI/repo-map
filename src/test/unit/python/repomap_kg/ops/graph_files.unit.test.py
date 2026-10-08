@@ -1,6 +1,6 @@
 import unittest
 from types import SimpleNamespace
-from typing import cast
+from typing import Any, cast
 from unittest.mock import patch
 
 from repomap_kg.ops.config_records import OpsConfig
@@ -85,8 +85,71 @@ class GraphFileRecordUnitTests(unittest.TestCase):
         self.assertEqual(record.canonical_key, "file:docs/a%20b%25.md")
         self.assertEqual(record.path, "docs/a b%.md")
 
+    def test_missing_or_empty_public_path_preserves_legacy_projection(self):
+        metadata: dict[str, Any]
+        for metadata in ({}, {"source_relative_path": None},
+                         {"source_relative_path": []}, {"source_relative_path": ""}):
+            with self.subTest(metadata=metadata):
+                record = graph_file_record_from_payload(
+                    _payload(key="file:entry/a%20b.py", metadata=metadata)
+                )
+                self.assertEqual(record.path, "entry/a b.py")
+
+    def test_multi_valued_public_metadata_remains_ambiguous(self):
+        with self.assertRaisesRegex(ValueError, "source_relative_path is ambiguous"):
+            graph_file_record_from_payload(_payload(
+                metadata={"source_relative_path": ["first.py", "second.py"]}
+            ))
+
 
 class GraphFileSqlUnitTests(unittest.TestCase):
+    def test_exact_path_matches_public_metadata_with_guarded_legacy_fallback(self):
+        sql = build_graph_file_query_sql(
+            "fixture", filters=GraphFileFilters(path="./modules/default.nix"),
+            limit=1, offset=1,
+        )
+        self.assertIn("source_relative_path->>0 = 'modules/default.nix'", sql)
+        self.assertIn("OR ((source_relative_path = '[]'::jsonb OR "
+                      "source_relative_path = '[\"\"]'::jsonb) AND "
+                      "canonical_key = 'file:modules/default.nix'))", sql)
+        self.assertLess(sql.index("source_relative_path->>0 ="),
+                        sql.index("ORDER BY canonical_key LIMIT 2 OFFSET 1"))
+
+    def test_prefix_matches_public_metadata_with_guarded_legacy_fallback(self):
+        sql = build_graph_file_query_sql(
+            "fixture", filters=GraphFileFilters(path_prefix="modules\\"),
+            limit=2, offset=0,
+        )
+        self.assertIn("source_relative_path->>0 LIKE 'modules/%' ESCAPE '\\'", sql)
+        self.assertIn("OR ((source_relative_path = '[]'::jsonb OR "
+                      "source_relative_path = '[\"\"]'::jsonb) AND "
+                      "canonical_key LIKE 'file:modules/%' ESCAPE '\\'))", sql)
+
+    def test_public_paths_decode_keys_and_escape_sql_literals_and_patterns(self):
+        for field in ("path", "path_prefix"):
+            with self.subTest(field=field):
+                sql = build_graph_file_query_sql(
+                    "fixture", filters=GraphFileFilters(**{field: "a b%_é'\\x"}),
+                    limit=2, offset=0,
+                )
+                if field == "path":
+                    self.assertIn("source_relative_path->>0 = 'a b%_é''/x'", sql)
+                    self.assertIn("canonical_key = 'file:a%20b%25_%C3%A9%27/x'", sql)
+                else:
+                    self.assertIn("source_relative_path->>0 LIKE 'a b\\%\\_é''/x/%'", sql)
+                    self.assertIn("canonical_key LIKE 'file:a\\%20b\\%25\\_\\%C3\\%A9\\%27/x/%'", sql)
+
+    def test_root_prefixes_preserve_bounded_all_file_semantics(self):
+        for prefix in ("", ".", "./", "/"):
+            with self.subTest(prefix=prefix):
+                sql = build_graph_file_query_sql(
+                    "fixture", filters=GraphFileFilters(path_prefix=prefix),
+                    limit=1, offset=0,
+                )
+                self.assertIn("source_relative_path->>0 LIKE '%'", sql)
+                self.assertIn("canonical_key LIKE 'file:%'", sql)
+                self.assertIn("LIMIT 2 OFFSET 0", sql)
+
     def test_sql_reads_canonical_evidence_and_filters_before_pagination(self):
         sql = build_graph_file_query_sql(
             "stable-repository' OR TRUE --",
@@ -127,6 +190,10 @@ class GraphFileSqlUnitTests(unittest.TestCase):
     def test_sql_rejects_invalid_filters_and_pagination(self):
         cases = (
             (GraphFileFilters(path="a", path_prefix="a"), 50, 0),
+            (GraphFileFilters(path="/absolute"), 50, 0),
+            (GraphFileFilters(path="../escape"), 50, 0),
+            (GraphFileFilters(path_prefix="/absolute"), 50, 0),
+            (GraphFileFilters(path_prefix="../escape"), 50, 0),
             (GraphFileFilters(generated="invalid"), 50, 0),
             (GraphFileFilters(), 0, 0),
             (GraphFileFilters(), 201, 0),

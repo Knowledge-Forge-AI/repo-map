@@ -19,11 +19,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 for import_root in (
     REPO_ROOT / "src" / "main" / "python",
     REPO_ROOT / "src" / "test" / "support" / "python",
+    REPO_ROOT / "tools",
 ):
     import_root_text = str(import_root)
     if import_root_text not in sys.path:
         sys.path.insert(0, import_root_text)
 
+from runner_coverage_execution import prepare_child_coverage_environment
 from process_rss_monitor import ProcessRssMonitor
 from repomap_kg.graph.discovery import discover_observations
 from repomap_kg.ops.generations import source_generation
@@ -158,17 +160,21 @@ def _run_worker(
         policy.value,
         *arguments[1:],
     )
-    environment = dict(os.environ)
     python_paths = (
         REPO_ROOT / "src" / "main" / "python",
         REPO_ROOT / "src" / "test" / "support" / "python",
         REPO_ROOT / "tools",
     )
-    inherited_pythonpath = environment.get("PYTHONPATH")
+    inherited_pythonpath = os.environ.get("PYTHONPATH")
     pythonpath_entries = [*map(str, python_paths)]
     if inherited_pythonpath:
         pythonpath_entries.extend(inherited_pythonpath.split(os.pathsep))
-    environment["PYTHONPATH"] = os.pathsep.join(pythonpath_entries)
+    cleaned_pythonpath = os.pathsep.join(pythonpath_entries)
+    environment = prepare_child_coverage_environment(
+        base_env=os.environ,
+        family="scale18_worker",
+        extra_env={"PYTHONPATH": cleaned_pythonpath},
+    )
     process = subprocess.Popen(
         (sys.executable, str(Path(__file__).resolve()), *worker_arguments),
         cwd=REPO_ROOT,

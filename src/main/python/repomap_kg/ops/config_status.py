@@ -2,32 +2,28 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime.postgres_route import execution_postgres
+
 from typing import Any, Mapping
 
 from repomap_kg.ops.config_helpers import (
     REDACTED,
     bool_text,
     format_counts,
-    redact_text,
 )
 from repomap_kg.ops.config_records import (
-    PRIVATE_PRIVACY,
     PRIVATE_DATABASE_DISPLAY,
-    PRIVATE_PATH_DISPLAY,
-    PRIVATE_ROOT_DISPLAY,
     OpsConfig,
     OpsGraphConfig,
     OpsGraphStorageStatus,
     OpsPostgresStatus,
 )
+from repomap_kg.ops._registry_status import (
+    LOCAL_CONFIG_DISPLAY as LOCAL_CONFIG_DISPLAY,
+    config_status_base,
+    graph_registry_payload,
+)
 from repomap_kg.ops.resolved_config import resolve_ops_config
-
-
-LOCAL_CONFIG_DISPLAY = "[local-config]"
-
-
-def _local_config_display(value: str | None) -> str | None:
-    return LOCAL_CONFIG_DISPLAY if value else None
 
 
 def graph_database(config: OpsConfig, graph: OpsGraphConfig) -> str:
@@ -41,7 +37,7 @@ def graph_database_source(graph: OpsGraphConfig) -> str:
 
 
 def graph_psql_args(config: OpsConfig, graph: OpsGraphConfig) -> list[str]:
-    return config.postgres.psql_args_for_database(graph_database(config, graph))
+    return execution_postgres(config).psql_args_for_database(graph_database(config, graph))
 
 
 def ops_config_status_to_jsonable(
@@ -50,52 +46,11 @@ def ops_config_status_to_jsonable(
     postgres_status: OpsPostgresStatus | None = None,
 ) -> dict[str, Any]:
     db_status = postgres_status or OpsPostgresStatus.unchecked()
-    graph_count = len(config.graphs)
-    enabled_graphs = sum(1 for graph in config.graphs if graph.enabled)
-    private_enabled = sum(
-        1 for graph in config.graphs if graph.enabled and graph.privacy in PRIVATE_PRIVACY
-    )
-    return {
-        "config_path": _local_config_display(config.config_path),
-        "config_home": _local_config_display(config.config_home),
-        "config_files": list(config.config_files),
-        "valid": True,
-        "schema_version": config.schema_version,
-        "service": config.service.to_jsonable(),
-        "postgres": config.postgres.to_jsonable(),
-        "runtime": config.runtime.to_jsonable(),
-        "postgres_status": db_status.to_jsonable(),
-        "graphs": [graph.to_jsonable() for graph in config.graphs],
-        "graph_counts": {
-            "total": graph_count,
-            "enabled": enabled_graphs,
-            "private_enabled": private_enabled,
-        },
-        "server_memory": config.server_memory.to_jsonable(),
-        "sources": config.sources.to_jsonable(),
-        "diagnostics": [
-            diagnostic.to_jsonable() for diagnostic in config.diagnostics
-        ],
-        "compatibility": {
-            "legacy_json_mcp_config_supported": False,
-            "ops_json_config_removed": True,
-            "legacy_project_profile_toml_supported": True,
-            "legacy_source_toml_supported": True,
-            "json_extraction_preserved": True,
-            "json_source_artifacts_preserved": True,
-            "single_file_toml_config_deprecated": config.config_home is None,
-            "migration_required": True,
-        },
-        "safety": {
-            "local_only": True,
-            "no_public_tunnel": True,
-            "no_remote_postgres": True,
-            "no_destructive_operations": True,
-            "no_graph_refresh": True,
-            "no_server_memory_read": True,
-            "no_source_acquisition": True,
-        },
-    }
+    payload = config_status_base(config)
+    payload["postgres"] = config.postgres.to_jsonable()
+    payload["runtime"] = config.runtime.to_jsonable()
+    payload["postgres_status"] = db_status.to_jsonable()
+    return payload
 
 
 def ops_graph_registry_status_to_jsonable(
@@ -104,114 +59,23 @@ def ops_graph_registry_status_to_jsonable(
     graph_storage_status: Mapping[str, OpsGraphStorageStatus] | None = None,
 ) -> dict[str, Any]:
     storage_status = graph_storage_status or {}
-    db_checked = any(status.db_checked for status in storage_status.values())
-    warnings = [
-        diagnostic.to_jsonable()
-        for diagnostic in config.diagnostics
-        if diagnostic.severity == "warning"
-    ]
-    diagnostics = [diagnostic.to_jsonable() for diagnostic in config.diagnostics]
-    graphs: list[dict[str, Any]] = []
-    for index, graph in enumerate(config.graphs):
-        private = graph.privacy in PRIVATE_PRIVACY
-        graph_path = f"graphs[{index}]"
-        graph_warnings = [
-            diagnostic.to_jsonable()
-            for diagnostic in config.diagnostics
-            if diagnostic.severity == "warning" and diagnostic.path.startswith(graph_path)
-        ]
-        graph_status = storage_status.get(graph.id)
-        source_bindings = graph.effective_source_bindings
-        graphs.append(
-            {
-                "id": graph.id,
-                "name": redact_text(graph.name),
-                "repository_name": graph.repository_name_display,
-                "database": (
-                    PRIVATE_DATABASE_DISPLAY
-                    if private
-                    else graph_database(config, graph)
-                ),
-                "database_source": graph_database_source(graph),
-                "privacy": graph.privacy,
-                "enabled": graph.enabled,
-                "mcp_visible": graph.mcp_visible,
-                "extractor_profile": graph.extractor_profile,
-                "refresh_policy": graph.refresh_policy,
-                "refresh_policy_status": (
-                    "implemented"
-                    if graph.refresh_policy in ("manual", "polling", "continuous")
-                    else "deferred"
-                ),
-                "exclude_paths": [
-                    PRIVATE_PATH_DISPLAY if private else redact_text(exclude_path)
-                    for exclude_path in graph.exclude_paths
-                ],
-                "exclude_paths_count": len(graph.exclude_paths),
-                "exclude_paths_enforced": True,
-                "root_path_display": (
-                    PRIVATE_ROOT_DISPLAY if private else graph.root_path
-                ),
-                "root_path_expanded": (
-                    PRIVATE_ROOT_DISPLAY if private else graph.root_path_expanded
-                ),
-                "root_path_checked": False,
-                "private": private,
-                "source_binding_mode": graph.source_binding_mode,
-                "source_binding_count": len(source_bindings),
-                "source_bindings": [
-                    binding.to_jsonable(graph_privacy=graph.privacy)
-                    for binding in source_bindings
-                ],
-                "multi_source_refresh_supported": (
-                    graph.refresh_unsupported_classification is None
-                ),
-                "warnings": graph_warnings,
-                "storage_status": _graph_storage_status_to_jsonable(
-                    config,
-                    graph,
-                    graph_status,
-                    private=private,
-                ),
-            }
-        )
-    return {
-        "config_path": _local_config_display(config.config_path),
-        "config_home": _local_config_display(config.config_home),
-        "config_files": list(config.config_files),
-        "schema_version": config.schema_version,
-        "graph_count": len(config.graphs),
-        "enabled_graph_count": sum(1 for graph in config.graphs if graph.enabled),
-        "mcp_visible_graph_count": sum(
-            1 for graph in config.graphs if graph.mcp_visible
-        ),
-        "private_graph_count": sum(
-            1 for graph in config.graphs if graph.privacy in PRIVATE_PRIVACY
-        ),
-        "db_checked": db_checked,
-        "graphs": graphs,
-        "warnings": warnings,
-        "diagnostics": diagnostics,
-        "compatibility": {
-            "legacy_json_mcp_config_supported": False,
-            "ops_json_config_removed": True,
-            "legacy_project_profile_toml_supported": True,
-            "legacy_source_toml_supported": True,
-            "json_extraction_preserved": True,
-            "json_source_artifacts_preserved": True,
-            "single_file_toml_config_deprecated": config.config_home is None,
-            "migration_required": True,
-        },
-        "security": {
-            "private_roots_read": False,
-            "source_trees_mutated": False,
-            "destructive_db_actions": False,
-            "remote_exposure": False,
-            "server_memory_read": False,
-            "source_acquisition": False,
-            "graph_refresh": False,
-        },
-    }
+
+    def storage_fields(graph: OpsGraphConfig, private: bool) -> dict[str, Any]:
+        return {
+            "database": (
+                PRIVATE_DATABASE_DISPLAY if private else graph_database(config, graph)
+            ),
+            "database_source": graph_database_source(graph),
+            "storage_status": _graph_storage_status_to_jsonable(
+                config, graph, storage_status.get(graph.id), private=private
+            ),
+        }
+
+    return graph_registry_payload(
+        config,
+        storage_fields,
+        db_checked=any(status.db_checked for status in storage_status.values()),
+    )
 
 
 def _graph_storage_status_to_jsonable(

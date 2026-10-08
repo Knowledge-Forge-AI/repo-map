@@ -31,14 +31,15 @@ class RowSpool:
         cls,
         rows: Iterable[Mapping[str, object]],
         *,
+        dir: Path | str | None = None,
         artifact_observer: Callable[[int], None] | None = None,
         timing_observer: Callable[[int], None] | None = None,
         monotonic_ns: Callable[[], int] = time.monotonic_ns,
     ) -> RowSpool:
-        descriptor, raw_path = tempfile.mkstemp(
-            prefix="repomap-stage-rows-",
-            suffix=".jsonl",
-        )
+        if dir is not None:
+            descriptor, raw_path = tempfile.mkstemp(prefix="repomap-stage-rows-", suffix=".jsonl", dir=str(dir))
+        else:
+            descriptor, raw_path = tempfile.mkstemp(prefix="repomap-stage-rows-", suffix=".jsonl")
         path = Path(raw_path)
         count = 0
         byte_count = 0
@@ -110,3 +111,73 @@ class RowSpool:
 
     def __exit__(self, _exc_type: object, _exc: object, _traceback: object) -> None:
         self.close()
+
+
+class RowSpoolWriter:
+    """Incrementally write rows into a private JSONL spool file."""
+
+    def __init__(
+        self,
+        *,
+        dir: Path | str | None = None,
+        artifact_observer: Callable[[int], None] | None = None,
+    ) -> None:
+        if dir is not None:
+            Path(dir).mkdir(parents=True, exist_ok=True)
+            descriptor, raw_path = tempfile.mkstemp(prefix="repomap-stage-rows-", suffix=".jsonl", dir=str(dir))
+        else:
+            descriptor, raw_path = tempfile.mkstemp(prefix="repomap-stage-rows-", suffix=".jsonl")
+        self.path = Path(raw_path)
+        self._descriptor = descriptor
+        self._handle = os.fdopen(descriptor, "w", encoding="utf-8", newline="\n")
+        self._count = 0
+        self._byte_count = 0
+        self._artifact_observer = artifact_observer
+        self._finished = False
+
+    def write_row(self, row: Mapping[str, object]) -> None:
+        if self._finished:
+            raise RuntimeError("writer already finished")
+        if not isinstance(row, Mapping):
+            raise ValueError("staged row is invalid")
+        encoded = json.dumps(
+            dict(row),
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        projected_bytes = self._byte_count + len(encoded.encode("utf-8")) + 1
+        if self._artifact_observer is not None:
+            self._artifact_observer(projected_bytes)
+        self._handle.write(encoded)
+        self._handle.write("\n")
+        self._count += 1
+        self._byte_count = projected_bytes
+
+    def finish(self) -> RowSpool:
+        if self._finished:
+            raise RuntimeError("writer already finished")
+        self._handle.flush()
+        self._handle.close()
+        self._finished = True
+        stat = self.path.stat()
+        return RowSpool(self.path, self._count, self._byte_count, stat.st_blocks * 512)
+
+    def abort(self) -> None:
+        if not self._finished:
+            try:
+                self._handle.close()
+            except OSError:
+                pass
+            self._finished = True
+        self.path.unlink(missing_ok=True)
+
+    def __enter__(self) -> RowSpoolWriter:
+        return self
+
+    def __exit__(self, exc_type: object, _exc: object, _traceback: object) -> None:
+        if exc_type is not None:
+            self.abort()
+
+
+__all__ = ["RowSpool", "RowSpoolWriter"]

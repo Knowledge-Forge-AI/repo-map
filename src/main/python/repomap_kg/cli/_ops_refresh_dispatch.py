@@ -9,6 +9,7 @@ import json
 import sys
 from types import ModuleType
 
+from repomap_kg.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
 from repomap_kg.cli.staging_event_instrumentation import (
     staging_event_instrumentation,
 )
@@ -23,6 +24,10 @@ def dispatch_ops_refresh_command(
 ) -> int | None:
     if args.command != "ops":
         return None
+
+    sqlite_result = dispatch_ops_sqlite_command(args, print_cli_error)
+    if sqlite_result is not None:
+        return sqlite_result
 
     if args.ops_command == "config-check":
         try:

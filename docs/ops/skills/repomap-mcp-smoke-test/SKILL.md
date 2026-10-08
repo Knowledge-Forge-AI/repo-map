@@ -89,6 +89,40 @@ The smoke test passes only when all applicable checks succeed:
 - When ingested source data is expected, the source/feed tools return
   stored metadata without fetching anything.
 
+## Host-Native Console Qualification Runner
+
+Product step 3's native proof has its own source-owned runner and does not use
+an agent. The runner is `tools/host_mcp_native_qualify.py`, implemented by
+`tools/smoke/host_mcp_native*.py`; its runbook is
+`docs/ops/host-mcp-native-qualification.md`. Operators run it only from the
+extracted operator kit:
+
+- `--check` evaluates prerequisites and creates nothing;
+- `--execute`, on macOS only, creates a fresh run-owned PostgreSQL container
+  and a setup-owned home. It publishes a tiny non-QUAL12 fixture and removes
+  its source roots. It then launches the pinned checkout's own
+  `.venv/bin/repomap-kg mcp serve --repo-map-home <fresh-home>` directly, with
+  a from-scratch environment. It checks the unchanged catalog, the config
+  inventory, and positive oracle parity for the canonical, investigation and
+  source/feed read stores. Graph and refresh status for the multi-source and
+  single-root graphs must also match fixture-admin stored repository facts. It also checks exact refusals, EOF, restart,
+  unchanged state, write denial and a bounded outage. Finally it removes only
+  its own resources.
+
+Every outcome writes a redacted `evidence.zip` and `receipt.json` under
+`~/Documents/agent/outbox/repo-map_dev/<phase>/<run-id>/`. The receipt attests
+delivery only. Before the container exists, a secret-free `OWNER.json` there
+names the only container and work root to remove if no receipt follows. The
+first SIGINT, SIGTERM or SIGHUP during setup or the MCP sessions cancels the
+run (exit 130); a later signal, or one arriving during cleanup or evidence
+finalization, is recorded and deferred. See the runbook for the details. A completed run is `completed_pending_manager_review`, never
+qualification. A refused prerequisite is NOT RUN, never a failed test.
+
+The containerized integration owner
+`src/test/int/python/repomap_kg/cli/mcp_host_native_runner.int.test.py`
+exercises the same runner in the Linux harness. It proves fixture and protocol
+mechanics only, never native acceptance.
+
 ## Approval And Session Gotchas
 
 MCP-capable agents may require tool approval for local MCP calls. Prefer a

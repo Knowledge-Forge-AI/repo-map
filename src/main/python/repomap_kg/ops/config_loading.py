@@ -88,6 +88,7 @@ from repomap_kg.ops.config_status import (
     ops_config_status_to_jsonable as ops_config_status_to_jsonable,
     ops_graph_registry_status_to_jsonable as ops_graph_registry_status_to_jsonable,
 )
+from repomap_kg.ops.config_storage import refuse_sqlite_home as _refuse_sqlite_home
 from repomap_kg.ops.resolved_config import resolve_ops_config
 from repomap_kg.ops.config_loading_records import (
     SUPPORTED_SCHEMA_VERSION as SUPPORTED_SCHEMA_VERSION,
@@ -108,6 +109,22 @@ def resolve_repo_map_home(value: str | Path | None = None) -> Path:
 
 
 def load_ops_config_home(config_home: str | Path | None = None) -> OpsConfig:
+    home, merged_payload, config_files, diagnostics = _read_ops_config_home_payload(
+        config_home
+    )
+    return build_ops_config_from_payload(
+        merged_payload,
+        config_path=str(home),
+        config_home=str(home),
+        config_files=config_files,
+        diagnostics=diagnostics,
+    )
+
+
+def _read_ops_config_home_payload(
+    config_home: str | Path | None = None,
+) -> tuple[Path, dict[str, Any], tuple[str, ...], list[OpsConfigDiagnostic]]:
+    """Read and merge a home's config files without interpreting any backend."""
     home = resolve_repo_map_home(config_home)
     if not home.exists():
         raise OpsConfigError(
@@ -178,13 +195,7 @@ def load_ops_config_home(config_home: str | Path | None = None) -> OpsConfig:
 
     merged_payload, merge_diagnostics = merge_ops_config_payloads(file_payloads)
     diagnostics.extend(merge_diagnostics)
-    return build_ops_config_from_payload(
-        merged_payload,
-        config_path=str(home),
-        config_home=str(home),
-        config_files=tuple(path.name for path in ordered_files),
-        diagnostics=diagnostics,
-    )
+    return home, merged_payload, tuple(path.name for path in ordered_files), diagnostics
 
 
 def load_ops_config(config_path: str | Path) -> OpsConfig:
@@ -318,6 +329,7 @@ def build_ops_config_from_payload(
             ]
         )
 
+    _refuse_sqlite_home(payload.get("storage"), collected_diagnostics)
     service, service_diagnostics = parse_service_section(payload.get("service"))
     postgres, postgres_diagnostics = parse_postgres_section(payload.get("postgres"))
     runtime, runtime_diagnostics = parse_runtime_section(payload.get("runtime"))

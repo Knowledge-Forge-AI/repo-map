@@ -6,20 +6,22 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from repomap_kg.server.mcp_core import (
-    storage_connection as default_storage_connection,
     validate_feed_item_key,
     validate_limit,
     validate_optional_text_filter,
     validate_source_id_arg,
 )
+from repomap_kg.server.source_read_store import (
+    IngestedSourcesQuery,
+    SourceFeedItemExplanationQuery,
+    SourceFeedItemsQuery,
+    SourceReadStore,
+    SourceReferencesQuery,
+    SourceRunsQuery,
+    SourceSummaryQuery,
+)
 from repomap_kg.storage import (
     ingested_source_records_to_jsonable as default_ingested_source_records_to_jsonable,
-    query_ingested_source_records as default_query_ingested_source_records,
-    query_source_feed_item_explanation as default_query_source_feed_item_explanation,
-    query_source_feed_item_records as default_query_source_feed_item_records,
-    query_source_reference_records as default_query_source_reference_records,
-    query_source_run_records as default_query_source_run_records,
-    query_source_summary as default_query_source_summary,
     source_feed_item_records_to_jsonable as default_source_feed_item_records_to_jsonable,
     source_reference_records_to_jsonable as default_source_reference_records_to_jsonable,
     source_run_records_to_jsonable as default_source_run_records_to_jsonable,
@@ -29,17 +31,19 @@ from repomap_kg.storage import (
 
 @dataclass(frozen=True)
 class SourceToolDependencies:
-    storage_connection: Callable[..., Any] = default_storage_connection
-    query_ingested_source_records: Callable[..., Any] = default_query_ingested_source_records
+    """Connection resolution, the named source read store, and serializers.
+
+    ``storage_connection`` is the facade resolver that binds configured graphs;
+    ``source_read_store`` receives the resolved target only after argument
+    validation; the tools never pass SQL, callbacks, or credentials to it.
+    """
+
+    source_read_store: Callable[[Any], SourceReadStore]
+    storage_connection: Callable[..., Any]
     ingested_source_records_to_jsonable: Callable[..., Any] = default_ingested_source_records_to_jsonable
-    query_source_summary: Callable[..., Any] = default_query_source_summary
     source_summary_to_jsonable: Callable[..., Any] = default_source_summary_to_jsonable
-    query_source_run_records: Callable[..., Any] = default_query_source_run_records
     source_run_records_to_jsonable: Callable[..., Any] = default_source_run_records_to_jsonable
-    query_source_feed_item_records: Callable[..., Any] = default_query_source_feed_item_records
     source_feed_item_records_to_jsonable: Callable[..., Any] = default_source_feed_item_records_to_jsonable
-    query_source_feed_item_explanation: Callable[..., Any] = default_query_source_feed_item_explanation
-    query_source_reference_records: Callable[..., Any] = default_query_source_reference_records
     source_reference_records_to_jsonable: Callable[..., Any] = default_source_reference_records_to_jsonable
 
 
@@ -55,9 +59,9 @@ def repomap_ingested_sources(
     source_type: str | None = None,
     policy_status: str | None = None,
     limit: int = 50,
-    dependencies: SourceToolDependencies | None = None,
+    dependencies: SourceToolDependencies,
 ) -> list[dict[str, Any]]:
-    deps = dependencies or SourceToolDependencies()
+    deps = dependencies
     connection = deps.storage_connection(
         root_path=root_path,
         project=project,
@@ -69,13 +73,12 @@ def repomap_ingested_sources(
     )
     validate_optional_text_filter(source_type, "source_type")
     validate_optional_text_filter(policy_status, "policy_status")
-    records = connection.query_storage(
-        deps.query_ingested_source_records,
-        root_path=connection.root_path,
+    query = IngestedSourcesQuery(
         source_type=source_type,
         policy_status=policy_status,
         limit=validate_limit(limit),
     )
+    records = deps.source_read_store(connection).ingested_sources(query)
     return deps.ingested_source_records_to_jsonable(records)
 
 
@@ -89,9 +92,9 @@ def repomap_source_summary(
     pg_port: str | int | None = None,
     pg_user: str | None = None,
     psql_command: str | None = None,
-    dependencies: SourceToolDependencies | None = None,
+    dependencies: SourceToolDependencies,
 ) -> dict[str, Any]:
-    deps = dependencies or SourceToolDependencies()
+    deps = dependencies
     connection = deps.storage_connection(
         root_path=root_path,
         project=project,
@@ -101,13 +104,9 @@ def repomap_source_summary(
         pg_user=pg_user,
         psql_command=psql_command,
     )
-    valid_source_id = validate_source_id_arg(source_id)
+    query = SourceSummaryQuery(source_id=validate_source_id_arg(source_id))
     return deps.source_summary_to_jsonable(
-        connection.query_storage(
-            deps.query_source_summary,
-            root_path=connection.root_path,
-            source_id=valid_source_id,
-        )
+        deps.source_read_store(connection).source_summary(query)
     )
 
 
@@ -122,9 +121,9 @@ def repomap_source_runs(
     pg_user: str | None = None,
     psql_command: str | None = None,
     limit: int = 25,
-    dependencies: SourceToolDependencies | None = None,
+    dependencies: SourceToolDependencies,
 ) -> list[dict[str, Any]]:
-    deps = dependencies or SourceToolDependencies()
+    deps = dependencies
     connection = deps.storage_connection(
         root_path=root_path,
         project=project,
@@ -134,12 +133,11 @@ def repomap_source_runs(
         pg_user=pg_user,
         psql_command=psql_command,
     )
-    records = connection.query_storage(
-        deps.query_source_run_records,
-        root_path=connection.root_path,
+    query = SourceRunsQuery(
         source_id=validate_source_id_arg(source_id),
         limit=validate_limit(limit),
     )
+    records = deps.source_read_store(connection).source_runs(query)
     return deps.source_run_records_to_jsonable(records)
 
 
@@ -155,9 +153,9 @@ def repomap_source_feed_items(
     psql_command: str | None = None,
     source_run_id: str | None = None,
     limit: int = 50,
-    dependencies: SourceToolDependencies | None = None,
+    dependencies: SourceToolDependencies,
 ) -> list[dict[str, Any]]:
-    deps = dependencies or SourceToolDependencies()
+    deps = dependencies
     connection = deps.storage_connection(
         root_path=root_path,
         project=project,
@@ -168,13 +166,12 @@ def repomap_source_feed_items(
         psql_command=psql_command,
     )
     validate_optional_text_filter(source_run_id, "source_run_id")
-    records = connection.query_storage(
-        deps.query_source_feed_item_records,
-        root_path=connection.root_path,
+    query = SourceFeedItemsQuery(
         source_id=validate_source_id_arg(source_id),
         source_run_id=source_run_id,
         limit=validate_limit(limit),
     )
+    records = deps.source_read_store(connection).source_feed_items(query)
     return deps.source_feed_item_records_to_jsonable(records)
 
 
@@ -189,9 +186,9 @@ def repomap_explain_source_feed_item(
     pg_user: str | None = None,
     psql_command: str | None = None,
     source_id: str | None = None,
-    dependencies: SourceToolDependencies | None = None,
+    dependencies: SourceToolDependencies,
 ) -> dict[str, Any]:
-    deps = dependencies or SourceToolDependencies()
+    deps = dependencies
     connection = deps.storage_connection(
         root_path=root_path,
         project=project,
@@ -205,12 +202,10 @@ def repomap_explain_source_feed_item(
     validated_source_id = (
         validate_source_id_arg(source_id) if source_id is not None else None
     )
-    return connection.query_storage(
-        deps.query_source_feed_item_explanation,
-        root_path=connection.root_path,
-        item_key=item_key,
-        source_id=validated_source_id,
+    query = SourceFeedItemExplanationQuery(
+        item_key=item_key, source_id=validated_source_id
     )
+    return deps.source_read_store(connection).source_feed_item_explanation(query)
 
 
 def repomap_source_references(
@@ -226,9 +221,9 @@ def repomap_source_references(
     source_run_id: str | None = None,
     target_kind: str | None = None,
     limit: int = 50,
-    dependencies: SourceToolDependencies | None = None,
+    dependencies: SourceToolDependencies,
 ) -> list[dict[str, Any]]:
-    deps = dependencies or SourceToolDependencies()
+    deps = dependencies
     connection = deps.storage_connection(
         root_path=root_path,
         project=project,
@@ -240,12 +235,11 @@ def repomap_source_references(
     )
     validate_optional_text_filter(source_run_id, "source_run_id")
     validate_optional_text_filter(target_kind, "target_kind")
-    records = connection.query_storage(
-        deps.query_source_reference_records,
-        root_path=connection.root_path,
+    query = SourceReferencesQuery(
         source_id=validate_source_id_arg(source_id),
         source_run_id=source_run_id,
         target_kind=target_kind,
         limit=validate_limit(limit),
     )
+    records = deps.source_read_store(connection).source_references(query)
     return deps.source_reference_records_to_jsonable(records)

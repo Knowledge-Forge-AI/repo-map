@@ -310,6 +310,55 @@ def test_psycopg80_query_has_no_direct_psql_calls() -> None:
     assert "parse_psql_json(" not in source
 
 
+def test_build_python_summary_query_sql_with_identity() -> None:
+    sql = build_python_summary_query_sql(
+        "/tmp/fixture",
+        repository_identity="repo1:fixture",
+    )
+    assert "repositories.id = (SELECT id FROM repositories WHERE" in sql
+    assert "repository_identity = 'repo1:fixture'" in sql
+    assert "ORDER BY (repository_identity = 'repo1:fixture') DESC NULLS LAST, id LIMIT 1" in sql
+    assert "'root_path', '/tmp/fixture'" in sql
+
+
+def test_build_python_summary_query_sql_without_identity() -> None:
+    sql_default = build_python_summary_query_sql("/tmp/fixture")
+    sql_none = build_python_summary_query_sql("/tmp/fixture", repository_identity=None)
+    assert sql_default == sql_none
+    assert "repositories.root_path = '/tmp/fixture'" in sql_default
+    assert "repository_identity" not in sql_default
+
+
+def test_build_python_summary_query_sql_invalid_identity() -> None:
+    with pytest.raises(StorageSchemaError):
+        build_python_summary_query_sql("/tmp/fixture", repository_identity="invalid spaces")
+    with pytest.raises(StorageSchemaError):
+        build_python_summary_query_sql("/tmp/fixture", repository_identity="repo1:bad;semi")
+
+
+def test_query_python_summary_forwards_identity() -> None:
+    payload = _summary_payload()
+    with patch(
+        "repomap_kg.storage.summaries.execute_json_readback",
+        return_value=payload,
+    ) as execute_json_readback:
+        record = query_python_summary(
+            ["-d", "postgres"],
+            root_path="/tmp/fixture",
+            repository_identity="repo1:fixture",
+        )
+    execute_json_readback.assert_called_once_with(
+        build_python_summary_query_sql("/tmp/fixture", repository_identity="repo1:fixture"),
+        psql_args=["-d", "postgres"],
+        psql_command="psql",
+        label="python summary",
+        expected_shape="object",
+    )
+    assert record.root_path == "/tmp/psycopg80-public"
+
+
+
+
 def _summary_payload(
     *,
     root_path: str = "/tmp/psycopg80-public",

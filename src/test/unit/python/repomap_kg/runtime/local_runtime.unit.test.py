@@ -11,7 +11,7 @@ from repomap_kg.runtime.local import (
     render_server_dockerfile, resolve_runtime_source_root, setup_local_runtime,
     up_local_runtime, query_local_runtime_status,
 )
-from repomap_kg.runtime.plan import is_runtime_source_root
+from repomap_kg.runtime.plan import LocalContainerStatus, is_runtime_source_root
 
 
 class _FakeHttpResponse:
@@ -20,15 +20,17 @@ class _FakeHttpResponse:
     def read(self): return b"{\"status\":\"ok\",\"service\":\"repomap\"}"
 
 
-def _fake_docker_inspect(home_hash: str):
+def _fake_docker_inspect(home_hash: str, server_component: str = "http"):
     def fake_run(command, **kwargs):
+        if command[:3] == ["docker", "ps", "-aq"]:
+            return type("Completed", (), {"returncode": 0, "stdout": "", "stderr": ""})()
         if command[:2] == ["docker", "inspect"]:
             name = command[-1]
-            component = "server" if "server" in name else "postgres"
+            component = server_component if "server" in name else "postgres"
             data = [{
                 "Name": f"/{name}",
                 "Config": {"Labels": {"org.repomap.runtime": "true", "org.repomap.home_hash": home_hash, "org.repomap.component": component}},
-                "State": {"Status": "running", "ExitCode": 0, "Health": {"Status": "healthy"}},
+                "State": {"Status": "running", "ExitCode": 0, "Health": {"Status": "healthy"}}, "NetworkSettings": {"Ports": {"5432/tcp": None}},
             }]
             return type("Completed", (), {"returncode": 0, "stdout": json.dumps(data), "stderr": ""})()
         raise AssertionError(command)
@@ -44,10 +46,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             result = up_local_runtime(home, dry_run=True)
             payload = result.to_jsonable()
             rendered = json.dumps(payload, sort_keys=True)
-            self.assertEqual(payload["command"], "up")
-            self.assertEqual(payload["result"], "dry_run")
-            self.assertIn("runtime", payload)
-            self.assertIn("home_hash", payload["runtime"])
+            self.assertEqual((payload["command"], payload["result"]), ("up", "dry_run"))
+            self.assertIn("home_hash", payload.get("runtime", {}))
             for token in ("repo_map_home", "created_files", "planned_command"):
                 self.assertNotIn(token, payload)
             for token in (str(home), "docker compose", "pg_dump", "pg_restore", "psql", "POSTGRES_PASSWORD", "PGPASSWORD"):
@@ -55,14 +55,13 @@ class LocalRuntimeUnitTests(unittest.TestCase):
 
     def test_ref5_local_runtime_facade_reexports_split_helpers(self):
         from repomap_kg import local_runtime as facade
-        from repomap_kg.runtime import commands as local_runtime_cmds
-        from repomap_kg.runtime import plan as local_runtime_plan
-
-        self.assertIs(getattr(facade, "LocalRuntimePlan"), local_runtime_plan.LocalRuntimePlan)
-        self.assertIs(getattr(facade, "LocalRuntimeIdentity"), local_runtime_plan.LocalRuntimeIdentity)
-        self.assertIs(getattr(facade, "build_local_runtime_plan"), local_runtime_plan.build_local_runtime_plan)
-        self.assertIs(getattr(facade, "render_server_dockerfile"), local_runtime_cmds.render_server_dockerfile)
-        self.assertIs(getattr(facade, "format_local_runtime_table"), local_runtime_cmds.format_local_runtime_table)
+        from repomap_kg.runtime import commands as cmds, plan
+        for name, target in (
+            ("LocalRuntimePlan", plan.LocalRuntimePlan), ("LocalRuntimeIdentity", plan.LocalRuntimeIdentity),
+            ("build_local_runtime_plan", plan.build_local_runtime_plan), ("render_server_dockerfile", cmds.render_server_dockerfile),
+            ("format_local_runtime_table", cmds.format_local_runtime_table),
+        ):
+            self.assertIs(getattr(facade, name), target)
 
     def test_setup_creates_runtime_files_only_inside_repo_map_home(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -79,28 +78,26 @@ class LocalRuntimeUnitTests(unittest.TestCase):
                            "REPOMAP_REFRESH_PUBLICATION_PASSWORD=", "REPOMAP_COORDINATOR_CONTROL_PASSWORD="):
                 self.assertIn(secret, env_text)
             self.assertEqual(payload["runtime"]["postgres_host_port"], DEFAULT_POSTGRES_HOST_PORT)
-            self.assertFalse(payload["runtime"]["direct_db_host_port_enabled"])
-            self.assertFalse(payload["runtime"]["postgres_host_port_published"])
             self.assertEqual(payload["runtime"]["server_host_port"], DEFAULT_SERVER_HOST_PORT)
-            self.assertFalse(payload["runtime"]["containers_started"])
+            for f in ("direct_db_host_port_enabled", "postgres_host_port_published", "containers_started"):
+                self.assertFalse(payload["runtime"][f])
             config_text = (home / "repomap.rpl.toml").read_text(encoding="utf-8")
-            self.assertIn("[runtime.postgres]", config_text)
-            self.assertIn("direct_host_port_enabled = false", config_text)
+            for token in ("[runtime.postgres]", "direct_host_port_enabled = false"):
+                self.assertIn(token, config_text)
             compose_text = (home / "runtime" / "compose.yaml").read_text(encoding="utf-8")
             self.assertNotIn(f"127.0.0.1:{DEFAULT_POSTGRES_HOST_PORT}:5432", compose_text)
             self.assertIn("REPOMAP_PG_PASSWORD: ${REPOMAP_READ_STATUS_PASSWORD}", compose_text)
-            self.assertNotIn("POSTGRES_PASSWORD=", json.dumps(payload))
-            self.assertNotIn("PGPASSWORD=", json.dumps(payload))
+            for token in ("POSTGRES_PASSWORD=", "PGPASSWORD="):
+                self.assertNotIn(token, json.dumps(payload))
 
     def test_server_dockerfile_installs_declared_project_dependencies(self):
         dockerfile = render_server_dockerfile()
         for token in ("COPY pyproject.toml README.md ./", "COPY src/main/python ./src/main/python",
-                      "COPY src/main/resources ./src/main/resources", "--no-build-isolation .",
+                      "COPY src/main/resources ./src/main/resources", '--no-build-isolation ".[postgres]"',
                       'ENTRYPOINT ["python", "-m", "repomap_kg"]', 'CMD ["server", "serve"',
                       "REPOMAP_PACKAGED_PSQL=/usr/lib/postgresql/16/bin/psql"):
             self.assertIn(token, dockerfile)
-        self.assertNotIn("postgresql-client", dockerfile)
-        self.assertNotIn('CMD ["mcp", "serve"', dockerfile)
+        for token in ("postgresql-client", 'CMD ["mcp", "serve"'): self.assertNotIn(token, dockerfile)
 
     def test_generated_runtime_uses_long_running_server_mode(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -116,9 +113,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
     def test_compose_build_context_can_use_explicit_source_root(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             source_root = Path(tmpdir) / "source"
-            (source_root / "src" / "main" / "python" / "repomap_kg").mkdir(parents=True)
-            (source_root / "src" / "main" / "resources").mkdir(parents=True)
-            (source_root / "src" / "main" / "python" / "repomap_kg" / "__main__.py").write_text("", encoding="utf-8")
+            for d in ("src/main/python/repomap_kg", "src/main/resources"): (source_root / d).mkdir(parents=True)
+            (source_root / "src/main/python/repomap_kg/__main__.py").write_text("", encoding="utf-8")
             (source_root / "pyproject.toml").write_text("[build-system]\n", encoding="utf-8")
             (source_root / "README.md").write_text("# fixture\n", encoding="utf-8")
             home = Path(tmpdir) / "repo-map-home"
@@ -133,9 +129,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
     def test_runtime_source_root_requires_package_metadata(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             source_root = Path(tmpdir) / "source"
-            (source_root / "src" / "main" / "python" / "repomap_kg").mkdir(parents=True)
-            (source_root / "src" / "main" / "resources").mkdir(parents=True)
-            (source_root / "src" / "main" / "python" / "repomap_kg" / "__main__.py").write_text("", encoding="utf-8")
+            for d in ("src/main/python/repomap_kg", "src/main/resources"): (source_root / d).mkdir(parents=True)
+            (source_root / "src/main/python/repomap_kg/__main__.py").write_text("", encoding="utf-8")
             self.assertFalse(is_runtime_source_root(source_root))
             (source_root / "pyproject.toml").write_text("[build-system]\n", encoding="utf-8")
             self.assertFalse(is_runtime_source_root(source_root))
@@ -149,29 +144,29 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             payload = result.to_jsonable()
             self.assertEqual(payload["result"], "dry_run")
             self.assertFalse(home.exists())
-            self.assertEqual(payload["created_file_count"], 0)
-            self.assertEqual(result.created_files, ())
+            self.assertEqual((payload["created_file_count"], result.created_files), (0, ()))
             self.assertIn("setup-dry-run", [item["code"] for item in payload["diagnostics"]])
 
     def test_setup_does_not_overwrite_existing_config_or_secret(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             runtime = home / "runtime"
-            runtime.mkdir(parents=True)
+            home.mkdir(mode=0o700)
+            runtime.mkdir(mode=0o700)
             config, env_file = home / "repomap.rpl.toml", runtime / ".env"
             config.write_text("schema_version = 1\n# keep me\n", encoding="utf-8")
             env_file.write_text("POSTGRES_PASSWORD=keep-existing\n", encoding="utf-8")
+            env_file.chmod(0o600)
             result = setup_local_runtime(home)
             payload = result.to_jsonable()
-            self.assertNotIn(config, result.created_files)
-            self.assertNotIn(env_file, result.created_files)
-            self.assertIn("config-exists", [item["code"] for item in payload["diagnostics"]])
+            for f in (config, env_file): self.assertNotIn(f, result.created_files)
             self.assertEqual(config.read_text(encoding="utf-8"), "schema_version = 1\n# keep me\n")
             env_text = env_file.read_text(encoding="utf-8")
             for secret in ("POSTGRES_PASSWORD=keep-existing\n", "REPOMAP_READ_STATUS_PASSWORD=",
                            "REPOMAP_REFRESH_PUBLICATION_PASSWORD=", "REPOMAP_COORDINATOR_CONTROL_PASSWORD="):
                 self.assertIn(secret, env_text)
-            self.assertIn("env-role-secrets-added", [item["code"] for item in payload["diagnostics"]])
+            for code in ("config-exists", "env-role-secrets-added"):
+                self.assertIn(code, [item["code"] for item in payload["diagnostics"]])
             self.assertNotIn("keep-existing", json.dumps(payload))
 
     def test_status_reports_not_running_without_invoking_container_runtime(self):
@@ -184,11 +179,9 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             self.assertEqual(payload["result"], "not_running")
             self.assertFalse(payload["container_runtime_checked"])
             self.assertFalse(payload["graph_roots_read"] or payload["server_memory_read"])
-            self.assertIn("dbeaver", payload)
             self.assertFalse(payload["dbeaver"]["enabled"])
             self.assertIn("Direct DB access disabled", payload["dbeaver"]["message"])
-            self.assertNotIn("host", payload["dbeaver"])
-            self.assertNotIn("port", payload["dbeaver"])
+            for key in ("host", "port"): self.assertNotIn(key, payload["dbeaver"])
 
     def test_status_can_report_unavailable_container_runtime_without_failing(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -215,12 +208,27 @@ class LocalRuntimeUnitTests(unittest.TestCase):
                 status = query_local_runtime_status(home, check_containers=True)
         payload = status.to_jsonable()
         self.assertEqual(payload["result"], "running")
-        self.assertEqual(payload["containers"]["server"]["status"], "running")
-        self.assertEqual(payload["containers"]["postgres"]["status"], "running")
+        for name in ("server", "postgres"):
+            self.assertEqual(payload["containers"][name]["status"], "running")
         self.assertEqual(payload["server_health"]["status"], "ok")
         self.assertTrue(payload["server_health"]["checked"])
         self.assertTrue(payload["runtime"]["containers_started"])
         self.assertFalse(payload["graph_roots_read"] or payload["server_memory_read"])
+
+    def test_rendered_compose_server_labels_are_accepted_by_status(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            home = Path(tmpdir) / "repo-map-home"
+            setup_local_runtime(home)
+            server = (home / "runtime/compose.yaml").read_text().split("\n  http:\n", 1)[1].split("\n  mcp:\n", 1)[0]
+            labels = dict(line.strip().split(":", 1) for line in server.split("    labels:\n", 1)[1].splitlines())
+            inspect = _fake_docker_inspect(labels["org.repomap.home_hash"].strip().strip('"'), labels["org.repomap.component"].strip().strip('"'))
+            with (
+                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("repomap_kg.runtime.local.subprocess.run", side_effect=inspect),
+                patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
+            ):
+                status = query_local_runtime_status(home, check_containers=True)
+            self.assertEqual(status.to_jsonable()["result"], "running")
 
     def test_status_table_includes_container_and_server_health(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -238,6 +246,23 @@ class LocalRuntimeUnitTests(unittest.TestCase):
                       "server_health: status=ok reachable=true"):
             self.assertIn(token, table)
 
+    def test_status_rejects_wrong_home_or_service_labels(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            home = Path(tmpdir) / "repo-map-home"
+            setup_local_runtime(home)
+            home_hash = LocalRuntimeIdentity.from_home(home).home_hash
+            for observed_home, service in (("unrelated", "http"), (home_hash, "coordinator")):
+                with (
+                    self.subTest(home_matches=observed_home == home_hash, service=service),
+                    patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                    patch("repomap_kg.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(observed_home, service)),
+                    patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
+                ):
+                    status = query_local_runtime_status(home, check_containers=True)
+                    self.assertEqual(status.result, "not_running")
+                    assert status.containers is not None
+                    self.assertFalse(status.containers["server"].owned)
+
     def test_up_dry_run_renders_compose_command_without_starting_containers(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
@@ -245,14 +270,11 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             self.write_runtime_server_port(home, 55981)
             result = up_local_runtime(home, dry_run=True)
         payload = result.to_jsonable()
-        self.assertEqual(payload["command"], "up")
-        self.assertEqual(payload["result"], "dry_run")
-        self.assertFalse(payload["runtime"]["containers_started"])
-        for token in ("compose", "up", "--build"):
-            self.assertIn(token, result.planned_command)
-        self.assertFalse(payload["source_trees_mutated"])
-        self.assertFalse(payload["graph_roots_read"] or payload["server_memory_read"])
-        self.assertFalse(payload["runtime"]["postgres_host_port_published"])
+        self.assertEqual((payload["command"], payload["result"]), ("up", "dry_run"))
+        for token in ("compose", "up", "--build"): self.assertIn(token, result.planned_command)
+        for cond in (payload["runtime"]["containers_started"], payload["source_trees_mutated"],
+                     payload["graph_roots_read"], payload["server_memory_read"], payload["runtime"]["postgres_host_port_published"]):
+            self.assertFalse(cond)
 
     def test_up_dry_run_reflects_enabled_direct_db_port_mapping(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -265,31 +287,28 @@ class LocalRuntimeUnitTests(unittest.TestCase):
                 result = up_local_runtime(home, dry_run=True)
             payload = result.to_jsonable()
             self.assertTrue(payload["runtime"]["direct_db_host_port_enabled"])
-            self.assertTrue(payload["runtime"]["postgres_host_port_published"])
+            self.assertFalse(payload["runtime"]["postgres_host_port_published"])
             self.assertEqual(payload["runtime"]["postgres_bind_host"], "127.0.0.1")
-            self.assertIn(f"127.0.0.1:{DEFAULT_POSTGRES_HOST_PORT}:5432", (home / "runtime" / "compose.yaml").read_text(encoding="utf-8"))
+            self.assertNotIn(f"127.0.0.1:{DEFAULT_POSTGRES_HOST_PORT}:5432", (home / "runtime" / "compose.yaml").read_text(encoding="utf-8"))
             self.assertTrue(payload["dbeaver"]["enabled"])
-            self.assertEqual(payload["dbeaver"]["host"], "127.0.0.1")
-            self.assertEqual(payload["dbeaver"]["port"], DEFAULT_POSTGRES_HOST_PORT)
-            self.assertEqual(payload["dbeaver"]["password"], "[REDACTED: see runtime/.env]")
+            self.assertEqual((payload["dbeaver"]["host"], payload["dbeaver"]["port"], payload["dbeaver"]["password"]),
+                             ("127.0.0.1", DEFAULT_POSTGRES_HOST_PORT, "[REDACTED: see runtime/.env]"))
 
     def test_up_non_dry_run_invokes_compose_without_host_postgres(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             setup_local_runtime(home)
             self.write_runtime_server_port(home, 55983)
-            with patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"):
-                with patch("repomap_kg.runtime.local.subprocess.run") as run:
-                    result = up_local_runtime(home)
+            with patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"), patch("repomap_kg.runtime.local.subprocess.run") as run, patch("repomap_kg.runtime.local.inspect_container", return_value=LocalContainerStatus("postgres", "postgres", postgres_host_binding_valid=True)):
+                result = up_local_runtime(home)
         payload = result.to_jsonable()
         self.assertEqual(payload["result"], "started")
         self.assertTrue(payload["container_runtime_checked"] and payload["container_runtime_available"])
-        command = run.call_args.args[0]
+        command = run.call_args_list[0].args[0]
         self.assertEqual(command[0:2], ("docker", "compose"))
         self.assertIn("--build", command)
         self.assertNotIn("psql", command)
-        self.assertEqual(run.call_args.kwargs["stdout"], subprocess.DEVNULL)
-        self.assertEqual(run.call_args.kwargs["stderr"], subprocess.DEVNULL)
+        for s in ("stdout", "stderr"): self.assertEqual(run.call_args_list[0].kwargs[s], subprocess.DEVNULL)
 
     def test_up_runtime_failure_is_bounded_and_private_safe(self):
         private_value = "/private/source-derived/runtime-detail"
@@ -325,17 +344,15 @@ class LocalRuntimeUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             setup_local_runtime(home)
-            with patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"):
-                with patch("repomap_kg.runtime.local.subprocess.run") as run:
-                    result = down_local_runtime(home)
+            with patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"), patch("repomap_kg.runtime.local.subprocess.run") as run:
+                result = down_local_runtime(home)
         payload = result.to_jsonable()
         self.assertEqual(payload["result"], "stopped")
         command = run.call_args.args[0]
         self.assertEqual(command[0:2], ("docker", "compose"))
         self.assertIn("down", command)
         self.assertNotIn("-v", command)
-        self.assertEqual(run.call_args.kwargs["stdout"], subprocess.DEVNULL)
-        self.assertEqual(run.call_args.kwargs["stderr"], subprocess.DEVNULL)
+        for s in ("stdout", "stderr"): self.assertEqual(run.call_args.kwargs[s], subprocess.DEVNULL)
         self.assertFalse(payload["persistent_volume_deleted"])
 
     def test_up_rejects_missing_runtime_files(self):
@@ -362,7 +379,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             setup_local_runtime(home)
             config = home / "repomap.rpl.toml"
             config.write_text(config.read_text(encoding="utf-8").replace(f"postgres_host_port = {DEFAULT_POSTGRES_HOST_PORT}", "postgres_host_port = 55433"), encoding="utf-8")
-            with patch("repomap_kg.runtime.local.is_local_port_open", return_value=True):
+            with patch("repomap_kg.runtime.local.is_local_port_open", return_value=True), patch("repomap_kg.runtime.local.inspect_container", return_value=LocalContainerStatus("server", "server")):
                 with self.assertRaises(LocalRuntimeError) as error:
                     up_local_runtime(home, dry_run=True)
             self.assertIn("port-conflict", [item.code for item in error.exception.diagnostics])
@@ -381,7 +398,3 @@ class LocalRuntimeUnitTests(unittest.TestCase):
     def write_runtime_server_port(self, home: Path, port: int) -> None:
         config = home / "repomap.rpl.toml"
         config.write_text(config.read_text(encoding="utf-8").replace(f"server_host_port = {DEFAULT_SERVER_HOST_PORT}", f"server_host_port = {port}"), encoding="utf-8")
-
-
-if __name__ == "__main__":
-    unittest.main()

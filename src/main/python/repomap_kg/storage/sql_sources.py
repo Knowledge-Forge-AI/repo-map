@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from repomap_kg.storage.graph_readback_sql import build_repository_select_sql
 from repomap_kg.storage.sql_core import positive_limit, sql_literal
 
 __all__ = (
@@ -21,18 +22,16 @@ def build_ingested_source_query_sql(
     source_type: str | None = None,
     policy_status: str | None = None,
     limit: int = 50,
+    repository_identity: str | None = None,
 ) -> str:
     filters = ["source_observations.metadata_json->>'source_id_configured' IS NOT NULL"]
     if source_type is not None:
         filters.append(f"source_observations.source_type = {sql_literal(source_type)}")
     if policy_status is not None:
-        filters.append(
-            "source_observations.source_policy_status = "
-            f"{sql_literal(policy_status)}"
-        )
+        filters.append(f"source_observations.source_policy_status = {sql_literal(policy_status)}")
     where_sql = " AND ".join(filters)
     return (
-        f"{source_observations_cte(root_path)} "
+        f"{source_observations_cte(root_path, repository_identity=repository_identity)} "
         "SELECT COALESCE(json_agg(json_build_object("
         "'source_id', source_id_configured, 'source_type', source_type, "
         "'display_name', display_name, 'policy_status', source_policy_status, "
@@ -50,18 +49,25 @@ def build_ingested_source_query_sql(
         "COUNT(DISTINCT canonical_nodes.canonical_key) FILTER (WHERE canonical_nodes.kind = 'feed.item') AS canonical_feed_item_count "
         "FROM source_observations "
         "LEFT JOIN canonical_evidence ON canonical_evidence.raw_observation_id = source_observations.id "
+        "AND canonical_evidence.repository_id = source_observations.repository_id "
         "LEFT JOIN canonical_node_evidence ON canonical_node_evidence.canonical_evidence_id = canonical_evidence.id "
         "LEFT JOIN canonical_nodes ON canonical_nodes.id = canonical_node_evidence.canonical_node_id "
+        "AND canonical_nodes.repository_id = source_observations.repository_id "
         f"WHERE {where_sql} "
         f"GROUP BY source_id_configured ORDER BY source_id_configured LIMIT {positive_limit(limit)}"
         ") source_rows;"
     )
 
 
-def build_source_summary_query_sql(root_path: str, *, source_id: str) -> str:
+def build_source_summary_query_sql(
+    root_path: str,
+    *,
+    source_id: str,
+    repository_identity: str | None = None,
+) -> str:
     source_filter = f"source_id_configured = {sql_literal(source_id)}"
     return (
-        f"{source_observations_cte(root_path)} "
+        f"{source_observations_cte(root_path, repository_identity=repository_identity)} "
         "SELECT COALESCE(("
         "SELECT json_build_object("
         "'source_id', source_id_configured, 'source_type', MIN(source_type), "
@@ -84,10 +90,13 @@ def build_source_summary_query_sql(root_path: str, *, source_id: str) -> str:
         "'known_limitations', json_build_array('source metadata is inferred from RSS2 evidence')"
         ") FROM source_observations "
         "LEFT JOIN canonical_evidence ON canonical_evidence.raw_observation_id = source_observations.id "
+        "AND canonical_evidence.repository_id = source_observations.repository_id "
         "LEFT JOIN canonical_node_evidence ON canonical_node_evidence.canonical_evidence_id = canonical_evidence.id "
         "LEFT JOIN canonical_nodes ON canonical_nodes.id = canonical_node_evidence.canonical_node_id "
+        "AND canonical_nodes.repository_id = source_observations.repository_id "
         "LEFT JOIN canonical_edge_evidence ON canonical_edge_evidence.canonical_evidence_id = canonical_evidence.id "
         "LEFT JOIN canonical_edges ON canonical_edges.id = canonical_edge_evidence.canonical_edge_id "
+        "AND canonical_edges.repository_id = source_observations.repository_id "
         f"WHERE {source_filter} GROUP BY source_id_configured"
         "), json_build_object("
         f"'source_id', {sql_literal(source_id)}, 'source_type', null, 'display_name', null, "
@@ -105,31 +114,23 @@ def build_source_run_query_sql(
     *,
     source_id: str,
     limit: int = 25,
+    repository_identity: str | None = None,
 ) -> str:
     return (
-        f"{source_observations_cte(root_path)} "
+        f"{source_observations_cte(root_path, repository_identity=repository_identity)} "
         "SELECT COALESCE(json_agg(json_build_object("
-        "'source_run_id', source_run_id, "
-        "'acquired_at', source_acquired_at, "
-        "'artifact_id', source_artifact_id, "
-        "'artifact_path', source_artifact_path, "
-        "'artifact_byte_length', source_artifact_bytes, "
-        "'artifact_sha256', source_artifact_sha256, "
-        "'http_status', acquisition_http_status, "
-        "'content_type', acquisition_content_type, "
-        "'observation_count', observation_count, "
-        "'status_summary', status_summary"
+        "'source_run_id', source_run_id, 'acquired_at', source_acquired_at, "
+        "'artifact_id', source_artifact_id, 'artifact_path', source_artifact_path, "
+        "'artifact_byte_length', source_artifact_bytes, 'artifact_sha256', source_artifact_sha256, "
+        "'http_status', acquisition_http_status, 'content_type', acquisition_content_type, "
+        "'observation_count', observation_count, 'status_summary', status_summary"
         ") ORDER BY source_acquired_at DESC NULLS LAST, source_run_id DESC), "
         "'[]'::json)::text FROM ("
         "SELECT source_run_id, "
-        "MAX(source_acquired_at) AS source_acquired_at, "
-        "MAX(source_artifact_id) AS source_artifact_id, "
-        "MAX(source_artifact_path) AS source_artifact_path, "
-        "MAX(source_artifact_bytes) AS source_artifact_bytes, "
-        "MAX(source_artifact_sha256) AS source_artifact_sha256, "
-        "MAX(acquisition_http_status) AS acquisition_http_status, "
-        "MAX(acquisition_content_type) AS acquisition_content_type, "
-        "COUNT(*) AS observation_count, "
+        "MAX(source_acquired_at) AS source_acquired_at, MAX(source_artifact_id) AS source_artifact_id, "
+        "MAX(source_artifact_path) AS source_artifact_path, MAX(source_artifact_bytes) AS source_artifact_bytes, "
+        "MAX(source_artifact_sha256) AS source_artifact_sha256, MAX(acquisition_http_status) AS acquisition_http_status, "
+        "MAX(acquisition_content_type) AS acquisition_content_type, COUNT(*) AS observation_count, "
         "CASE WHEN COUNT(*) FILTER (WHERE kind = 'feed.parse_error') > 0 "
         "THEN 'parse_errors' ELSE 'ok' END AS status_summary "
         "FROM source_observations "
@@ -148,13 +149,14 @@ def build_source_feed_item_query_sql(
     source_id: str,
     source_run_id: str | None = None,
     limit: int = 50,
+    repository_identity: str | None = None,
 ) -> str:
     filters = [f"source_id_configured = {sql_literal(source_id)}"]
     if source_run_id is not None:
         filters.append(f"source_run_id = {sql_literal(source_run_id)}")
     where_sql = " AND ".join(filters)
     return (
-        f"{source_observations_cte(root_path)} "
+        f"{source_observations_cte(root_path, repository_identity=repository_identity)} "
         "SELECT COALESCE(json_agg(item_rows.payload "
         "ORDER BY item_rows.published_at DESC NULLS LAST, item_rows.item_key), "
         "'[]'::json)::text "
@@ -162,21 +164,16 @@ def build_source_feed_item_query_sql(
         "SELECT canonical_nodes.canonical_key AS item_key, "
         "canonical_nodes.metadata_json->>'published_at' AS published_at, "
         "json_build_object("
-        "'item_key', canonical_nodes.canonical_key, "
-        "'title', canonical_nodes.metadata_json->>'title', "
-        "'published_at', canonical_nodes.metadata_json->>'published_at', "
-        "'updated_at', canonical_nodes.metadata_json->>'updated_at', "
-        "'identity_source', canonical_nodes.metadata_json->>'identity_source', "
-        "'identity_strength', canonical_nodes.metadata_json->>'identity_strength', "
+        "'item_key', canonical_nodes.canonical_key, 'title', canonical_nodes.metadata_json->>'title', "
+        "'published_at', canonical_nodes.metadata_json->>'published_at', 'updated_at', canonical_nodes.metadata_json->>'updated_at', "
+        "'identity_source', canonical_nodes.metadata_json->>'identity_source', 'identity_strength', canonical_nodes.metadata_json->>'identity_strength', "
         "'duplicate_identity', COALESCE((canonical_nodes.metadata_json->>'duplicate_identity')::boolean, false), "
-        "'link_targets', COALESCE(link_targets.targets, '[]'::json), "
-        "'authors', COALESCE(authors.names, '[]'::json), "
-        "'categories', COALESCE(categories.names, '[]'::json), "
-        "'source_run_id', source_rows.source_run_id, "
-        "'artifact_id', source_rows.source_artifact_id, "
-        "'artifact_path', source_rows.source_artifact_path"
+        "'link_targets', COALESCE(link_targets.targets, '[]'::json), 'authors', COALESCE(authors.names, '[]'::json), "
+        "'categories', COALESCE(categories.names, '[]'::json), 'source_run_id', source_rows.source_run_id, "
+        "'artifact_id', source_rows.source_artifact_id, 'artifact_path', source_rows.source_artifact_path"
         ") AS payload "
         "FROM canonical_nodes "
+        "JOIN repo ON repo.id = canonical_nodes.repository_id "
         "JOIN ("
         "SELECT canonical_node_evidence.canonical_node_id, "
         "MAX(source_observations.source_run_id) AS source_run_id, "
@@ -185,6 +182,7 @@ def build_source_feed_item_query_sql(
         "FROM source_observations "
         "JOIN canonical_evidence "
         "ON canonical_evidence.raw_observation_id = source_observations.id "
+        "AND canonical_evidence.repository_id = source_observations.repository_id "
         "JOIN canonical_node_evidence "
         "ON canonical_node_evidence.canonical_evidence_id = canonical_evidence.id "
         f"WHERE {where_sql} "
@@ -193,7 +191,8 @@ def build_source_feed_item_query_sql(
         "LEFT JOIN LATERAL ("
         "SELECT json_agg(DISTINCT canonical_edges.target_canonical_key) AS targets "
         "FROM canonical_edges "
-        "WHERE canonical_edges.source_canonical_key = canonical_nodes.canonical_key "
+        "WHERE canonical_edges.repository_id = canonical_nodes.repository_id "
+        "AND canonical_edges.source_canonical_key = canonical_nodes.canonical_key "
         "AND canonical_edges.edge_kind = 'references' "
         "AND canonical_edges.metadata_json->>'scope' IN ('link', 'enclosure')"
         ") link_targets ON true "
@@ -203,7 +202,8 @@ def build_source_feed_item_query_sql(
         "JOIN canonical_nodes target_nodes "
         "ON target_nodes.canonical_key = canonical_edges.target_canonical_key "
         "AND target_nodes.repository_id = canonical_edges.repository_id "
-        "WHERE canonical_edges.source_canonical_key = canonical_nodes.canonical_key "
+        "WHERE canonical_edges.repository_id = canonical_nodes.repository_id "
+        "AND canonical_edges.source_canonical_key = canonical_nodes.canonical_key "
         "AND canonical_edges.edge_kind = 'references' "
         "AND target_nodes.kind = 'feed.author'"
         ") authors ON true "
@@ -213,7 +213,8 @@ def build_source_feed_item_query_sql(
         "JOIN canonical_nodes target_nodes "
         "ON target_nodes.canonical_key = canonical_edges.target_canonical_key "
         "AND target_nodes.repository_id = canonical_edges.repository_id "
-        "WHERE canonical_edges.source_canonical_key = canonical_nodes.canonical_key "
+        "WHERE canonical_edges.repository_id = canonical_nodes.repository_id "
+        "AND canonical_edges.source_canonical_key = canonical_nodes.canonical_key "
         "AND canonical_edges.edge_kind = 'references' "
         "AND target_nodes.kind = 'feed.category'"
         ") categories ON true "
@@ -232,18 +233,16 @@ def build_source_reference_query_sql(
     source_run_id: str | None = None,
     target_kind: str | None = None,
     limit: int = 50,
+    repository_identity: str | None = None,
 ) -> str:
     filters = [f"source_id_configured = {sql_literal(source_id)}"]
     if source_run_id is not None:
         filters.append(f"source_run_id = {sql_literal(source_run_id)}")
     if target_kind is not None:
-        filters.append(
-            "split_part(canonical_edges.target_canonical_key, ':', 1) = "
-            f"{sql_literal(target_kind)}"
-        )
+        filters.append(f"split_part(canonical_edges.target_canonical_key, ':', 1) = {sql_literal(target_kind)}")
     where_sql = " AND ".join(filters)
     return (
-        f"{source_observations_cte(root_path)} "
+        f"{source_observations_cte(root_path, repository_identity=repository_identity)} "
         "SELECT COALESCE(json_agg(reference_rows.payload "
         "ORDER BY reference_rows.source_item_key, reference_rows.target_key), "
         "'[]'::json)::text "
@@ -251,21 +250,19 @@ def build_source_reference_query_sql(
         "SELECT canonical_edges.source_canonical_key AS source_item_key, "
         "canonical_edges.target_canonical_key AS target_key, "
         "json_build_object("
-        "'source_item_key', canonical_edges.source_canonical_key, "
-        "'relation', canonical_edges.edge_kind, "
-        "'target_key', canonical_edges.target_canonical_key, "
-        "'target_display', canonical_edges.metadata_json->>'raw_target_summary', "
+        "'source_item_key', canonical_edges.source_canonical_key, 'relation', canonical_edges.edge_kind, "
+        "'target_key', canonical_edges.target_canonical_key, 'target_display', canonical_edges.metadata_json->>'raw_target_summary', "
         "'not_fetched', COALESCE((canonical_edges.metadata_json->>'not_fetched')::boolean, true), "
-        "'media_type', canonical_edges.metadata_json->>'mime_type', "
-        "'source_run_id', source_observations.source_run_id, "
-        "'artifact_id', source_observations.source_artifact_id, "
-        "'artifact_path', source_observations.source_artifact_path"
+        "'media_type', canonical_edges.metadata_json->>'mime_type', 'source_run_id', source_observations.source_run_id, "
+        "'artifact_id', source_observations.source_artifact_id, 'artifact_path', source_observations.source_artifact_path"
         ") AS payload "
         "FROM canonical_edges "
+        "JOIN repo ON repo.id = canonical_edges.repository_id "
         "JOIN canonical_edge_evidence "
         "ON canonical_edge_evidence.canonical_edge_id = canonical_edges.id "
         "JOIN canonical_evidence "
         "ON canonical_evidence.id = canonical_edge_evidence.canonical_evidence_id "
+        "AND canonical_evidence.repository_id = canonical_edges.repository_id "
         "JOIN source_observations "
         "ON source_observations.id = canonical_evidence.raw_observation_id "
         "WHERE canonical_edges.edge_kind = 'references' "
@@ -283,6 +280,7 @@ def build_source_feed_item_explanation_query_sql(
     *,
     item_key: str,
     source_id: str | None = None,
+    repository_identity: str | None = None,
 ) -> str:
     filters = [f"canonical_nodes.canonical_key = {sql_literal(item_key)}"]
     source_summary_filter = "source_id_configured IS NOT NULL"
@@ -291,7 +289,7 @@ def build_source_feed_item_explanation_query_sql(
         source_summary_filter += f" AND source_id_configured = {sql_literal(source_id)}"
     where_sql = " AND ".join(filters)
     return (
-        f"{source_observations_cte(root_path)} "
+        f"{source_observations_cte(root_path, repository_identity=repository_identity)} "
         "SELECT json_build_object("
         "'item', ("
         "SELECT json_build_object("
@@ -303,10 +301,12 @@ def build_source_feed_item_explanation_query_sql(
         "'conflict', canonical_nodes.conflict, "
         "'metadata', canonical_nodes.metadata_json"
         ") FROM canonical_nodes "
+        "JOIN repo ON repo.id = canonical_nodes.repository_id "
         "JOIN canonical_node_evidence "
         "ON canonical_node_evidence.canonical_node_id = canonical_nodes.id "
         "JOIN canonical_evidence "
         "ON canonical_evidence.id = canonical_node_evidence.canonical_evidence_id "
+        "AND canonical_evidence.repository_id = repo.id "
         "JOIN source_observations "
         "ON source_observations.id = canonical_evidence.raw_observation_id "
         f"WHERE {where_sql} "
@@ -314,12 +314,9 @@ def build_source_feed_item_explanation_query_sql(
         "), "
         "'source', ("
         "SELECT json_build_object("
-        "'source_id', source_id_configured, "
-        "'source_type', MIN(source_type), "
-        "'policy_status', MIN(source_policy_status), "
-        "'source_run_id', MAX(source_run_id), "
-        "'artifact_id', MAX(source_artifact_id), "
-        "'artifact_path', MAX(source_artifact_path), "
+        "'source_id', source_id_configured, 'source_type', MIN(source_type), "
+        "'policy_status', MIN(source_policy_status), 'source_run_id', MAX(source_run_id), "
+        "'artifact_id', MAX(source_artifact_id), 'artifact_path', MAX(source_artifact_path), "
         "'acquired_at', MAX(source_acquired_at)"
         ") FROM source_observations "
         f"WHERE {source_summary_filter} "
@@ -329,22 +326,19 @@ def build_source_feed_item_explanation_query_sql(
         "), "
         "'evidence', COALESCE(("
         "SELECT json_agg(json_build_object("
-        "'evidence_key', canonical_evidence.evidence_key, "
-        "'raw_kind', canonical_evidence.raw_kind, "
-        "'raw_source_id', canonical_evidence.raw_source_id, "
-        "'path', canonical_evidence.path, "
-        "'start_line', canonical_evidence.start_line, "
-        "'end_line', canonical_evidence.end_line, "
-        "'extractor', canonical_evidence.extractor, "
-        "'extractor_version', canonical_evidence.extractor_version, "
-        "'confidence', canonical_evidence.confidence, "
-        "'metadata', canonical_evidence.metadata_json"
+        "'evidence_key', canonical_evidence.evidence_key, 'raw_kind', canonical_evidence.raw_kind, "
+        "'raw_source_id', canonical_evidence.raw_source_id, 'path', canonical_evidence.path, "
+        "'start_line', canonical_evidence.start_line, 'end_line', canonical_evidence.end_line, "
+        "'extractor', canonical_evidence.extractor, 'extractor_version', canonical_evidence.extractor_version, "
+        "'confidence', canonical_evidence.confidence, 'metadata', canonical_evidence.metadata_json"
         ") ORDER BY canonical_evidence.raw_observation_ordinal) "
         "FROM canonical_nodes "
+        "JOIN repo ON repo.id = canonical_nodes.repository_id "
         "JOIN canonical_node_evidence "
         "ON canonical_node_evidence.canonical_node_id = canonical_nodes.id "
         "JOIN canonical_evidence "
         "ON canonical_evidence.id = canonical_node_evidence.canonical_evidence_id "
+        "AND canonical_evidence.repository_id = repo.id "
         "JOIN source_observations "
         "ON source_observations.id = canonical_evidence.raw_observation_id "
         f"WHERE {where_sql} "
@@ -355,6 +349,7 @@ def build_source_feed_item_explanation_query_sql(
         "'metadata', canonical_edges.metadata_json"
         ") ORDER BY canonical_edges.target_canonical_key) "
         "FROM canonical_edges "
+        "JOIN repo ON repo.id = canonical_edges.repository_id "
         f"WHERE canonical_edges.source_canonical_key = {sql_literal(item_key)} "
         "AND canonical_edges.edge_kind = 'references' "
         "), '[]'::json), "
@@ -363,11 +358,13 @@ def build_source_feed_item_explanation_query_sql(
     )
 
 
-def source_observations_cte(root_path: str) -> str:
+def source_observations_cte(
+    root_path: str,
+    repository_identity: str | None = None,
+) -> str:
+    repo_select = build_repository_select_sql(root_path, repository_identity)
     return (
-        "WITH repo AS ("
-        f"SELECT id FROM repositories WHERE repositories.root_path = {sql_literal(root_path)}"
-        "), source_observations AS ("
+        f"WITH repo AS ({repo_select}), source_observations AS ("
         "SELECT raw_observations.*, "
         "raw_observations.payload_json->'metadata' AS metadata_json, "
         "raw_observations.payload_json->'metadata'->>'source_id_configured' AS source_id_configured, "

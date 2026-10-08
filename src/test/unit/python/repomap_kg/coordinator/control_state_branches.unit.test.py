@@ -388,6 +388,7 @@ def test_status_maps_the_durable_row() -> None:
         "progress_completed": 3,
         "progress_total": 9,
         "error_category": None,
+        "diagnostic_summary": None,
     }
 
     observed = state.status(connect(Cursor(rows=(row,))), "job-1")

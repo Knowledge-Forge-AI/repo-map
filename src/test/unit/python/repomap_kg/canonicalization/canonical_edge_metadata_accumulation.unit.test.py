@@ -146,6 +146,21 @@ class CanonicalEdgeMetadataAccumulationUnitTests(unittest.TestCase):
             "549f2d3170d7ab695c26df18e2d17e5fb3c025f1b7ecb060e64bc0c6660f5e0b",
         )
 
+    def test_metadata_helpers_accumulation_and_extraction(self):
+        from typing import Any
+        from repomap_kg.canonicalization.metadata_helpers import (
+            _append_metadata_text,
+            _metadata_text,
+        )
+
+        summary: dict[str, Any] = {}
+        _append_metadata_text(summary, {"k": "v"}, "k", "out")
+        self.assertEqual(summary.get("out"), ["v"])
+        _append_metadata_text(summary, {"k": 123}, "k", "out_none")
+        self.assertNotIn("out_none", summary)
+        self.assertEqual(_metadata_text({"name": "hello"}, "name"), "hello")
+        self.assertIsNone(_metadata_text({"name": 123}, "name"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -71,8 +71,7 @@ class ControlStartupRecoveryUnitTests(unittest.TestCase):
         exec_calls = cursor.execute.call_args_list
         # Check job updates
         pub_states = [call[0][1][0] for call in exec_calls if len(call[0]) > 1 and len(call[0][1]) == 3]
-        self.assertIn("not_started", pub_states)
-        self.assertIn("commit_unknown", pub_states)
+        self.assertEqual(set(pub_states), {"commit_unknown"})
 
     def test_raises_when_job_fencing_update_fails(self):
         cursor = MagicMock()
@@ -137,6 +136,7 @@ class ReconciliationClaimsUnitTests(unittest.TestCase):
                 "canonicalizer_generation": "kg1",
                 "coordinator_instance_id": "inst-1",
                 "fencing_epoch": 2,
+                "graph_lease_fencing_epoch": 91,
             }
         ]
 
@@ -147,6 +147,7 @@ class ReconciliationClaimsUnitTests(unittest.TestCase):
         self.assertIsInstance(claims[0], JobClaim)
         self.assertEqual(claims[0].job_id, "job-10")
         self.assertEqual(claims[0].fencing_epoch, 2)
+        self.assertEqual(claims[0].graph_lease_fencing_epoch, 91)
 
 
 if __name__ == "__main__":

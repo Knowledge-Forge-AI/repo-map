@@ -5043,8 +5043,8 @@ separate future mandates.
 LOCAL0 assessment note: a new local-operations epic begins with six dedicated,
 manual, initially MCP-hidden graph identities and an untracked late-sorting
 operations overlay. The current CLI, lifecycle, baseline/drift, MCP, privacy,
-source-protection, and test surfaces are inventoried in the historical
-LOCAL0 assessment (withheld from public export). The exact
+source-protection, and test surfaces are inventoried in
+`docs/status/2026/07/12/00470-local0-local-operations-assessment.md`. The exact
 remaining legacy-default storage commands are `storage files`,
 `storage entrypoints`, and `storage file-nodes`; each receives a separate
 assessment, implementation, and parity sequence after two clean lifecycle/API
@@ -5919,8 +5919,8 @@ passing container smoke, compileall, file-length, and diff checks, with no
 dependency metadata changes. The default PostgreSQL test listener was preserved
 and no configured private graph was accessed.
 
-Future watcher acceleration, Windows native background packaging, SQLite/Desktop
-or cloud architecture, incremental graph updates, remote workers,
+Future watcher acceleration, Windows native background packaging, Local SQLite
+(now governed by ADR 0071), desktop GUI or cloud implementation, incremental graph updates, remote workers,
 multi-coordinator scaling, and high-scale ingestion are separate future epics.
 The ASYNC architecture is closed; no deferred feature is implemented by this
 closure record.

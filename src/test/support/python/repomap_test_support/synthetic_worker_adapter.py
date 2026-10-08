@@ -38,6 +38,7 @@ def run_synthetic_worker(
     repo_root = Path(__file__).resolve().parents[5]
     python_path = os.pathsep.join(
         (
+            str(repo_root / "tools"),
             str(repo_root / "src/main/python"),
             str(repo_root / "src/test/support/python"),
         )

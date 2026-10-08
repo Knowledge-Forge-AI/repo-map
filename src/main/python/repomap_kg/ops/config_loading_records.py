@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Mapping, Sequence
 
 from repomap_kg.ops.config_helpers import OpsConfigDiagnostic as OpsConfigDiagnostic
+from repomap_kg.ops.config_storage import merge_storage_declarations
 
 
 SUPPORTED_SCHEMA_VERSION = 1
@@ -29,6 +30,10 @@ def merge_ops_config_payloads(
     source_order: dict[str, list[str]] = {"feed": [], "github": [], "api": []}
     source_sources: dict[str, dict[str, str]] = {"feed": {}, "github": {}, "api": {}}
 
+    storage, storage_diagnostics = merge_storage_declarations(file_payloads)
+    if storage is not None:
+        merged["storage"] = storage
+    diagnostics.extend(storage_diagnostics)
     for source, payload in file_payloads:
         for section_name in ("service", "postgres", "runtime", "server_memory"):
             section = payload.get(section_name)

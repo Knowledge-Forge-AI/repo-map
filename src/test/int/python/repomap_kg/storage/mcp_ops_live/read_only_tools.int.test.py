@@ -201,6 +201,7 @@ class StorageMcpReadOnlyToolsIntegrationTests(unittest.TestCase):
                 ),
                 output_stream=stdio_output,
             )
+            self._assert_configured_portable_readback(postgres, status, modules, imports)
 
         self.assertEqual(load_exit_code, 0, load_stderr)
         self.assertTrue(status["read_only"])
@@ -282,3 +283,84 @@ class StorageMcpReadOnlyToolsIntegrationTests(unittest.TestCase):
         self.assertEqual(len(stdio_lines), 2)
         self.assertEqual(json.loads(stdio_lines[0])["result"]["tools"][0]["name"], "repomap_status")
         self.assertEqual(json.loads(stdio_lines[1])["error"]["code"], -32700)
+
+    def _assert_configured_portable_readback(self, postgres, status, modules, imports):
+        """Exercise real configured routing after publication and relocation."""
+        from repomap_kg.server.mcp import (
+            repomap_canonical_edges,
+            repomap_canonical_neighborhood,
+            repomap_canonical_nodes,
+            repomap_explain_canonical_edge,
+            repomap_status,
+        )
+
+        postgres.psql_scalar(
+            "UPDATE repositories SET repository_identity = 'repo1:fixture', "
+            "root_path = 'graph:fixture', name = 'current-fixture' "
+            "WHERE root_path = '/tmp/fixture' RETURNING id;"
+        )
+        postgres.psql_scalar(
+            "INSERT INTO repositories (name, root_path) "
+            "VALUES ('legacy-fixture', '/tmp/fixture') RETURNING id;"
+        )
+        with tempfile.TemporaryDirectory() as config_dir:
+            legacy_path = Path(config_dir) / "legacy.json"
+            legacy_path.write_text('{"projects": {}}', encoding="utf-8")
+            ops_path = Path(config_dir) / "ops.toml"
+            for configured_root in ("/tmp/fixture", "/tmp/relocated-fixture"):
+                ops_path.write_text(
+                    f'''schema_version = 1
+[service]
+mode = "local"
+mcp_transport = "stdio"
+log_level = "info"
+[postgres]
+host = "{postgres.socket_dir}"
+port = {postgres.port}
+database = "{postgres.database}"
+user = "{postgres.user}"
+password_env = "REPOMAP_PG_PASSWORD"
+[[graphs]]
+id = "fixture"
+name = "Fixture"
+root_path = "{configured_root}"
+repository_name = "fixture"
+privacy = "public-dev"
+enabled = true
+mcp_visible = true
+extractor_profile = "default"
+refresh_policy = "manual"
+[server_memory]
+enabled = false
+path = "{config_dir}/memory.jsonl"
+mode = "read_only"
+''', encoding="utf-8",
+                )
+                with self.subTest(configured_root=configured_root), patch.dict(
+                    "os.environ",
+                    {"REPOMAP_MCP_CONFIG": str(legacy_path),
+                     "REPOMAP_OPS_CONFIG": str(ops_path),
+                     "REPOMAP_PSQL_COMMAND": postgres.psql_command},
+                ):
+                    current = repomap_status(project="fixture")
+                    self.assertEqual(current["counts"], status["counts"])
+                    self.assertEqual(current["repository_name"], "current-fixture")
+                    self.assertEqual(current["root_path"], "[graph-root]")
+                    nodes = repomap_canonical_nodes(project="fixture", kind="python.module")
+                    assert isinstance(nodes, dict)
+                    self.assertEqual(nodes["items"], modules)
+                    edges = repomap_canonical_edges(
+                        project="fixture", kind="imports", source_key="python.module:pkg.app",
+                    )
+                    assert isinstance(edges, dict)
+                    self.assertEqual(edges["items"], imports)
+                    explanation = repomap_explain_canonical_edge(
+                        project="fixture", source_key="python.module:pkg.app",
+                        kind="imports", target_key="python.module:pkg.lib.helper",
+                        identity_metadata={},
+                    )["result"]
+                    self.assertEqual(len(explanation["evidence"]), 1)
+                    neighborhood = repomap_canonical_neighborhood(
+                        project="fixture", node="python.module:pkg.app", direction="out",
+                    )["result"]
+                    self.assertEqual(len(neighborhood["edges"]), len(imports))

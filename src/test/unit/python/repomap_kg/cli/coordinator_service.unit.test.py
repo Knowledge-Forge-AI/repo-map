@@ -152,7 +152,8 @@ def test_service_errors_are_bounded_and_path_sanitized():
 def test_packaged_foreground_scrubs_ambient_authority_before_start():
     observed = {}
 
-    def serve(_home, callback, *, psql_path):
+    def serve(_home, callback, *, psql_path, service_package):
+        assert service_package is True
         observed["environment"] = dict(os.environ)
         observed["psql_path"] = psql_path
         callback(
@@ -356,3 +357,10 @@ def test_coordinator_connection_failure_does_not_invoke_service_packaging():
                 ]
             )
     service_action.assert_not_called()
+
+
+def test_stale_packaged_mode_refusal_exits_without_restart_failure(capsys):
+    from repomap_kg.coordinator.local_mode import CoordinatorModeError
+    with patch("repomap_kg.cli.apply_service_environment"), patch("repomap_kg.cli.serve_configured_coordinator", side_effect=CoordinatorModeError("coordinator_service_requires_native_mode")):
+        assert main(["ops", "coordinator-serve", "--repo-map-home", "/placeholder/home", "--service-package-environment", "--service-package-psql", "/placeholder/psql"]) == 0
+    assert "coordinator_service_requires_native_mode" in capsys.readouterr().err

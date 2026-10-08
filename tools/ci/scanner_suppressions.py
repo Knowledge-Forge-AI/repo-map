@@ -46,39 +46,30 @@ class Directive:
     line: int
     fingerprint: str
     scope: tuple[str, ...]
+    target: str = ""
+    occurrence: int = 1
 
     @classmethod
     def create(
-        cls,
-        kind: str,
-        path: str,
-        line: int,
-        scope: Iterable[str],
+        cls, kind: str, path: str, line: int, scope: Iterable[str], *, target: str = "", occurrence: int = 1
     ) -> Directive:
-        normalized_scope = tuple(sorted(set(scope))) or ("*",)
-        material = "\0".join((kind, path, str(line), ",".join(normalized_scope)))
-        return cls(
-            kind=kind,
-            path=path,
-            line=line,
-            fingerprint=hashlib.sha256(material.encode("utf-8")).hexdigest(),
-            scope=normalized_scope,
-        )
+        norm_scope = tuple(sorted(set(scope))) or ("*",)
+        norm_tgt = re.sub(r"\s+", " ", target).strip()
+        mat = "\0".join((kind, path, norm_tgt, str(occurrence), ",".join(norm_scope)))
+        fp = hashlib.sha256(mat.encode("utf-8")).hexdigest()
+        return cls(kind, path, line, fp, norm_scope, norm_tgt, occurrence)
 
     @classmethod
     def from_jsonable(cls, item: object) -> Directive:
         if not isinstance(item, dict):
             raise ValueError("suppression baseline record must be an object")
-        if not isinstance(item.get("justification"), str) or not item[
-            "justification"
-        ].strip():
+        if not isinstance(item.get("justification"), str) or not item["justification"].strip():
             raise ValueError("suppression baseline record requires justification")
         try:
             record = cls.create(
-                str(item["kind"]),
-                str(item["path"]),
-                int(item["line"]),
-                tuple(str(value) for value in item["scope"]),
+                str(item["kind"]), str(item["path"]), int(item["line"]),
+                tuple(str(v) for v in item["scope"]),
+                target=str(item.get("target", "")), occurrence=int(item.get("occurrence", 1)),
             )
         except (KeyError, TypeError, ValueError) as error:
             raise ValueError("suppression baseline record is invalid") from error
@@ -88,11 +79,9 @@ class Directive:
 
     def to_jsonable(self) -> dict[str, object]:
         return {
-            "fingerprint": self.fingerprint,
-            "kind": self.kind,
-            "line": self.line,
-            "path": self.path,
-            "scope": list(self.scope),
+            "fingerprint": self.fingerprint, "kind": self.kind, "line": self.line,
+            "occurrence": self.occurrence, "path": self.path, "scope": list(self.scope),
+            "target": self.target,
         }
 
 
@@ -247,6 +236,23 @@ def _scope(kind: str, match: re.Match[str]) -> tuple[str, ...]:
     return tuple(SCOPE_TOKEN.findall(captured or "")) or ("*",)
 
 
+def _extract_target(lines: list[str], line_num: int, comment: str) -> str:
+    if not (1 <= line_num <= len(lines)):
+        return ""
+    line = lines[line_num - 1]
+    c_idx = line.find(comment)
+    prefix = line[:c_idx].strip() if c_idx >= 0 else line.strip()
+    if prefix:
+        return re.sub(r"\s+", " ", prefix).strip()
+    for idx in range(line_num, min(line_num + 10, len(lines))):
+        cand = lines[idx].strip()
+        if not cand or cand.startswith(("#", "//", "--", "/*", "*")):
+            continue
+        m = re.search(r"(#|//|--)", cand)
+        return re.sub(r"\s+", " ", cand[:m.start()].strip() if m else cand).strip()
+    return ""
+
+
 def scan_paths(paths: Iterable[Path], *, root: Path = ROOT) -> tuple[Directive, ...]:
     records = []
     for path in sorted(paths):
@@ -255,65 +261,96 @@ def scan_paths(paths: Iterable[Path], *, root: Path = ROOT) -> tuple[Directive, 
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError, ValueError):
             continue
+        lines = text.splitlines()
+        file_records: list[tuple[int, str, re.Match[str], str]] = []
         for line, comment in _comments(path, text):
             for kind, pattern in DIRECTIVES:
                 match = pattern.search(comment)
                 if match is not None:
-                    records.append(
-                        Directive.create(kind, relative, line, _scope(kind, match))
-                    )
+                    file_records.append((line, kind, match, _extract_target(lines, line, comment)))
+        file_records.sort(key=lambda item: item[0])
+        occ_counts: dict[tuple[str, str], int] = {}
+        for line, kind, match, target in file_records:
+            occ_key = (kind, target)
+            occ_counts[occ_key] = occ_counts.get(occ_key, 0) + 1
+            records.append(Directive.create(
+                kind, relative, line, _scope(kind, match), target=target, occurrence=occ_counts[occ_key],
+            ))
     return tuple(sorted(records, key=lambda item: (item.path, item.line, item.kind)))
-
-
-def _by_location(records: Iterable[Directive]) -> dict[tuple[str, str, int], Directive]:
-    indexed = {}
-    for record in records:
-        key = (record.kind, record.path, record.line)
-        if key in indexed:
-            raise ValueError("duplicate suppression directive location")
-        indexed[key] = record
-    return indexed
 
 
 def _adds_scope(previous: tuple[str, ...], current: tuple[str, ...]) -> bool:
     if current == previous or "*" in previous:
         return False
-    if "*" in current:
-        return True
-    return bool(set(current) - set(previous))
+    return True if "*" in current else bool(set(current) - set(previous))
 
 
 def classify(
     current: Iterable[Directive],
     baseline: Iterable[Directive],
 ) -> InventoryDelta:
-    current_by_location = _by_location(current)
-    baseline_by_location = _by_location(baseline)
-    added: list[Directive] = []
-    broadened: list[Directive] = []
-    removed: list[Directive] = []
-    unchanged: list[Directive] = []
-    locations = set(current_by_location) | set(baseline_by_location)
-    for location in sorted(locations, key=lambda item: (item[1], item[2], item[0])):
-        now = current_by_location.get(location)
-        before = baseline_by_location.get(location)
-        if before is None:
-            if now is not None:
-                added.append(now)
-        elif now is None:
-            removed.append(before)
-        elif now.scope == before.scope:
-            unchanged.append(now)
-        elif _adds_scope(before.scope, now.scope):
-            broadened.append(now)
+    current_list, baseline_list = list(current), list(baseline)
+    added, broadened, removed, unchanged = [], [], [], []
+    matched_cur, matched_base = set(), set()
+
+    def _record_match(c: Directive, b: Directive, c_idx: int, b_idx: int) -> None:
+        matched_cur.add(c_idx)
+        matched_base.add(b_idx)
+        if c.scope == b.scope:
+            unchanged.append(c)
+        elif _adds_scope(b.scope, c.scope):
+            broadened.append(c)
         else:
-            removed.append(before)
-    return InventoryDelta(
-        added=tuple(added),
-        broadened=tuple(broadened),
-        removed=tuple(removed),
-        unchanged=tuple(unchanged),
-    )
+            removed.append(b)
+
+    # Pass 1: exact location match (path, kind, line, [target], occurrence)
+    base_by_loc: dict[tuple[str, str, int, int], list[int]] = {}
+    seen_base_keys: set[tuple[str, str, int, str, int]] = set()
+    for idx, b in enumerate(baseline_list):
+        base_key = (b.path, b.kind, b.line, b.target, b.occurrence)
+        if base_key in seen_base_keys:
+            raise ValueError("duplicate suppression directive location in baseline")
+        seen_base_keys.add(base_key)
+        base_by_loc.setdefault((b.path, b.kind, b.line, b.occurrence), []).append(idx)
+
+    for c_idx, c in enumerate(current_list):
+        candidates = base_by_loc.get((c.path, c.kind, c.line, c.occurrence), [])
+        matched_b_idx: int | None = None
+        for b_idx in candidates:
+            if b_idx not in matched_base:
+                b = baseline_list[b_idx]
+                if not b.target or b.target == c.target:
+                    matched_b_idx = b_idx
+                    break
+        if matched_b_idx is not None:
+            _record_match(c, baseline_list[matched_b_idx], c_idx, matched_b_idx)
+
+    # Pass 2: relocation match on (path, kind, target, occurrence)
+    base_by_target: dict[tuple[str, str, str, int], int] = {}
+    for b_idx, b in enumerate(baseline_list):
+        if b_idx not in matched_base and b.target:
+            tgt_key = (b.path, b.kind, b.target, b.occurrence)
+            if tgt_key in base_by_target:
+                raise ValueError("duplicate suppression directive target in baseline")
+            base_by_target[tgt_key] = b_idx
+
+    for c_idx, c in enumerate(current_list):
+        if c_idx not in matched_cur and c.target:
+            tgt_key = (c.path, c.kind, c.target, c.occurrence)
+            if tgt_key in base_by_target:
+                b_idx = base_by_target.pop(tgt_key)
+                _record_match(c, baseline_list[b_idx], c_idx, b_idx)
+
+    # Pass 3: remaining unmatched
+    for c_idx, c in enumerate(current_list):
+        if c_idx not in matched_cur:
+            added.append(c)
+    for b_idx, b in enumerate(baseline_list):
+        if b_idx not in matched_base:
+            removed.append(b)
+
+    _sort = lambda items: tuple(sorted(items, key=lambda it: (it.path, it.line, it.kind)))
+    return InventoryDelta(_sort(added), _sort(broadened), _sort(removed), _sort(unchanged))
 
 
 def load_baseline(path: Path = BASELINE_PATH) -> tuple[Directive, ...]:
@@ -337,9 +374,7 @@ def _document(
     }
     if delta is not None:
         for name in ("added", "broadened", "removed", "unchanged"):
-            document[name] = [
-                record.to_jsonable() for record in getattr(delta, name)
-            ]
+            document[name] = [record.to_jsonable() for record in getattr(delta, name)]
         document["blocking"] = delta.blocking
     return document
 

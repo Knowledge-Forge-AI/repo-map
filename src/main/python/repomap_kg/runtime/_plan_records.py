@@ -11,7 +11,7 @@ from typing import Any, Sequence
 from repomap_kg.ops.config_loading import OpsConfig
 from repomap_kg.ops.resolved_config import resolve_ops_config
 
-DEFAULT_POSTGRES_HOST_PORT = 55432
+from repomap_kg.runtime.postgres_route import DEFAULT_POSTGRES_HOST_PORT
 DEFAULT_SERVER_HOST_PORT = 55880
 DEFAULT_BIND_HOST = "127.0.0.1"
 DEFAULT_CONTAINER_RUNTIME = "docker"
@@ -113,6 +113,10 @@ class LocalContainerStatus:
     exit_code: int | None = None
     health: str | None = None
     diagnostic: str | None = None
+    postgres_host_port_checked: bool = False
+    postgres_host_port_published: bool = False
+    postgres_host_binding_valid: bool = False
+    host_binding_valid: bool = False
 
     def to_jsonable(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -169,6 +173,10 @@ class LocalRuntimePlan:
     server_host_port: int
     database: str
     user: str
+
+    @property
+    def coordinator_mode(self) -> str:
+        return self.config.runtime.coordinator_mode if self.config is not None else "container"
 
     @property
     def owned_databases(self) -> tuple[str, ...]:
@@ -247,6 +255,7 @@ class LocalRuntimePlan:
 
     def runtime_jsonable(self, *, files_rendered: bool, containers_started: bool) -> dict[str, Any]:
         return {
+            "coordinator_mode": self.coordinator_mode,
             "container_runtime": self.container_runtime,
             "containerized_target": True,
             "runtime_files_rendered": files_rendered,
@@ -254,7 +263,8 @@ class LocalRuntimePlan:
             "postgres_host_port": self.postgres_host_port,
             "postgres_bind_host": self.postgres_bind_host,
             "direct_db_host_port_enabled": self.direct_db_host_port_enabled,
-            "postgres_host_port_published": self.direct_db_host_port_enabled,
+            "postgres_host_port_checked": False,
+            "postgres_host_port_published": False,
             "postgres_internal_host": "postgres",
             "postgres_internal_port": 5432,
             "server_host_port": self.server_host_port,
@@ -288,6 +298,8 @@ class LocalRuntimeResult:
     persistent_volume_deleted: bool = False
     containers: dict[str, LocalContainerStatus] | None = None
     server_health: LocalServerHealth | None = None
+    compose_coordinator_state: str = "unchecked"
+    native_coordinator_state: str = "unchecked"
 
     def to_jsonable(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -327,6 +339,12 @@ class LocalRuntimeResult:
                 "remote_postgres": False,
             },
         }
+        postgres = (self.containers or {}).get("postgres")
+        payload["runtime"]["compose_coordinator_state"] = self.compose_coordinator_state
+        payload["runtime"]["native_coordinator_state"] = self.native_coordinator_state
+        if postgres is not None:
+            payload["runtime"]["postgres_host_port_checked"] = postgres.postgres_host_port_checked
+            payload["runtime"]["postgres_host_port_published"] = postgres.postgres_host_port_published
         return payload
 
 

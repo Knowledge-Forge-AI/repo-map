@@ -30,6 +30,21 @@ expanded root while retaining only authorized logical IDs, aliases, and roles.
 
 ## Version 1 Envelope
 
+Configured graph search, project summary, graph neighborhood, and language summaries
+select the current repository by stable graph identity, with a bounded
+identity-NULL legacy-root fallback. Selection precedes content filtering; empty
+current data does not enable fallback. Requested-root presentation and existing
+privacy sanitization are preserved. See
+[ADR 0068](../adr/2026/09/0068-configured-graph-readback-identity.md) for precedence
+and compatibility details.
+
+The same identity guarantee covers configured `project=<graph_id>` routing
+for status, canonical tools, and all six ingested-source readers. Nested feed
+metadata and references remain within the selected repository when keys collide.
+Status reports the selected repository name while keeping the existing root
+display marker. Explicit connections and legacy project configurations retain
+root-only compatibility; public tool names and argument schemas are unchanged.
+
 Canonical node and edge JSON results use this shape by default:
 
 ```json

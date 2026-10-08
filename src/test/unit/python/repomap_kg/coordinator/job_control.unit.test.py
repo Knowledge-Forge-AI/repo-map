@@ -41,6 +41,7 @@ def test_coordinator_health_reads_one_bounded_projection_without_mutation(tmp_pa
     assert result["command"] == "coordinator-health"
     assert result["result"] == "ready"
     assert require_mapping(result["health"])["health_schema_version"] == 1
+    assert "recovery_diagnostics" not in require_mapping(result["health"])
     assert client.calls == [("health",)]
     table = format_coordinator_health_table(result)
     assert "service | ready" in table
@@ -185,6 +186,90 @@ def test_coordinator_health_degraded_and_invalid_projections(tmp_path):
         client = FakeClient(health=bad_val)
         with pytest.raises(CoordinatorModeError, match="coordinator_response_invalid"):
             coordinator_health(tmp_path, client_factory=_factory(client))
+
+
+def test_coordinator_health_handles_empty_and_non_empty_recovery_diagnostics(tmp_path):
+    base_health = {
+        "health_schema_version": 2,
+        "status": "ready",
+        "service": {"status": "ready"},
+        "ownership": {"status": "owned"},
+        "queue": {"status": "not_reported"},
+        "workers": {"status": "not_reported"},
+        "publication": {"status": "not_reported"},
+        "polling": {"status": "not_configured"},
+        "transport": {"status": "ready"},
+        "storage": {"status": "ready"},
+        "recovery_diagnostics": [
+            {
+                "category": "unexpected_recovery_error",
+                "summary": "RuntimeError",
+                "sequence": 1,
+            }
+        ],
+    }
+    client = FakeClient(health=base_health)
+    res = coordinator_health(tmp_path, client_factory=_factory(client))
+    assert res["result"] == "ready"
+    health_payload = res["health"]
+    assert isinstance(health_payload, dict)
+    assert health_payload["recovery_diagnostics"] == [
+        {
+            "category": "unexpected_recovery_error",
+            "summary": "RuntimeError",
+            "sequence": 1,
+        }
+    ]
+    table = format_coordinator_health_table(res)
+    assert "recovery_diagnostic | 1 | unexpected_recovery_error | RuntimeError" in table
+
+    # Empty diagnostics
+    empty_health = {**base_health, "recovery_diagnostics": []}
+    client_empty = FakeClient(health=empty_health)
+    res_empty = coordinator_health(tmp_path, client_factory=_factory(client_empty))
+    res_empty_health = res_empty["health"]
+    assert isinstance(res_empty_health, dict)
+    assert res_empty_health["recovery_diagnostics"] == []
+
+    # Invalid diagnostics
+    for bad_diag in (
+        None,
+        "not_a_list",
+        [{"category": "c", "summary": "s", "sequence": 1} for _ in range(33)],
+        ["not_a_dict"],
+        [{"category": "c", "summary": "s"}],
+        [{"category": "c", "sequence": 1}],
+        [{"summary": "s", "sequence": 1}],
+        [{"category": "c", "summary": "s", "sequence": -1}],
+        [{"category": "c", "summary": "s", "sequence": True}],
+        [{"category": "bad/slash", "summary": "s", "sequence": 1}],
+        [{"category": "c", "summary": "secret://pw", "sequence": 1}],
+        [{"category": "c", "summary": "s", "sequence": 1, "extra": 1}],
+    ):
+        bad_client = FakeClient(health={**base_health, "recovery_diagnostics": bad_diag})
+        with pytest.raises(CoordinatorModeError, match="coordinator_response_invalid"):
+            coordinator_health(tmp_path, client_factory=_factory(bad_client))
+
+
+def test_health_versions_bind_exact_shapes_and_preserve_v1_readback(tmp_path):
+    old = dict(require_mapping(FakeClient().health()))
+    assert old["health_schema_version"] == 1
+    assert "recovery_diagnostics" not in old
+    v2 = {**old, "health_schema_version": 2, "recovery_diagnostics": []}
+    for supported in (old, v2):
+        client = FakeClient(health=supported)
+        result = coordinator_health(tmp_path, client_factory=_factory(client))
+        assert result["health"] == supported
+        assert client.calls == [("health",)]
+        assert f"health_schema_version | {supported['health_schema_version']}" in format_coordinator_health_table(result)
+    for invalid in (
+        {**old, "recovery_diagnostics": []},
+        {**old, "health_schema_version": 2},
+        {**v2, "unknown": 1},
+        *({**old, "health_schema_version": version} for version in (True, False, 1.0, 2.0, "1", 0, 3, None)),
+    ):
+        with pytest.raises(CoordinatorModeError, match="coordinator_response_invalid"):
+            coordinator_health(tmp_path, client_factory=_factory(FakeClient(health=invalid)))
 
 
 def test_job_listing_cursor_and_structure_validation_refusal(tmp_path):

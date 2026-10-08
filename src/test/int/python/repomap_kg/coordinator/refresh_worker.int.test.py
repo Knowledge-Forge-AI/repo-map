@@ -9,6 +9,7 @@ from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.test_scratch import short_test_directory
 from repomap_kg.ops.config import load_ops_config
 from repomap_kg.ops.refresh import refresh_graph
+from repomap_kg.runtime.postgres_route import effective_postgres_route
 from repomap_kg.graph.multi_source_pipeline import scan_multi_source_generations
 from repomap_kg.ops.generations import (
     canonicalizer_generation,
@@ -46,7 +47,7 @@ def search_path():
 
 def worker_limits():
     return {
-        "process_deadline_seconds": 10, "heartbeat_seconds": 10, "hello_deadline_seconds": 2,
+        "process_deadline_seconds": 10, "refresh_attempt_deadline_seconds": 30, "heartbeat_seconds": 10, "hello_deadline_seconds": 2,
         "cancellation_after_seconds": 1, "cancel_deadline_seconds": 1,
         "process_termination_grace_seconds": 1, "max_diagnostic_bytes": 4096,
         "max_protocol_line_bytes": 1024 * 1024, "max_array_items": 32,
@@ -232,6 +233,8 @@ mode = "read_only"
                 encoding="utf-8",
             )
             loaded_config = load_ops_config(config_path)
+            route = effective_postgres_route(loaded_config)
+            assert (route.host, route.port, route.kind) == (postgres.host, postgres.port, "configured")
             configured = configured_graph(loaded_config, "synthetic-refresh")
             scan = scan_multi_source_generations(configured)
             publication_source = scan.source_generation
@@ -245,7 +248,7 @@ mode = "read_only"
                 graph_id="synthetic-refresh",
                 config_path=config_path,
                 psql_path=Path(postgres.psql_command),
-                postgres_user=postgres.user,
+                postgres_user=postgres.user, postgres_host=route.host, postgres_port=route.port, postgres_route_kind=route.kind,
                 postgres_password=postgres.password,
                 executable_search_path=search_path(),
                 source_generation=publication_source,
@@ -314,7 +317,7 @@ mode = "read_only"
                 graph_id="synthetic-refresh",
                 config_path=config_path,
                 psql_path=Path(postgres.psql_command),
-                postgres_user=postgres.user,
+                postgres_user=postgres.user, postgres_host=route.host, postgres_port=route.port, postgres_route_kind=route.kind,
                 postgres_password=postgres.password,
                 executable_search_path=search_path(),
                 source_generation=publication_source,

@@ -10,7 +10,10 @@ from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTO
 from repomap_kg.storage.staging_merge import MergeContext
 from repomap_kg.storage.staging_ownership import StageOwner
 
+SENTINEL_STAGE_ID = "fence"
+
 __all__ = (
+    "SENTINEL_STAGE_ID",
     "build_authority_check_sql",
     "build_authority_upsert_sql",
     "build_completeness_predicate_sql",
@@ -88,7 +91,9 @@ def build_finalize_sql(
     run = str(context.run_id)
     receipt_map = receipt.to_mapping()
     matching = build_receipt_predicate_sql(receipt)["matching"]
-    authority = build_authority_upsert_sql(owner, context.stage_id, run)
+    authority = build_authority_upsert_sql(
+        owner, context.stage_id, run, allow_sentinel_handoff=True
+    )
     return f"""DO $scale5_publish$
 BEGIN
     UPDATE runs
@@ -168,9 +173,40 @@ def build_authority_upsert_sql(
     run: str,
     *,
     stale_message: str = "SCALE5 stale publication fence",
+    allow_sentinel_handoff: bool = False,
 ) -> str:
     if owner.execution_mode == "direct":
         return "-- direct mode authority is supplied by its explicit local adapter"
+    if allow_sentinel_handoff:
+        sentinel_literal = sql_literal(SENTINEL_STAGE_ID)
+        stage_run_clause = f"""(
+        (
+            graph_publication_authority.last_stage_id = {sentinel_literal}
+            AND graph_publication_authority.last_run_id IS NULL
+            AND EXCLUDED.last_stage_id <> {sentinel_literal}
+            AND EXCLUDED.last_run_id IS NOT NULL
+        ) OR (
+            graph_publication_authority.last_stage_id = EXCLUDED.last_stage_id
+            AND (
+                EXCLUDED.last_stage_id <> {sentinel_literal}
+                OR EXCLUDED.last_run_id IS NULL
+            )
+            AND (
+                graph_publication_authority.last_run_id IS NULL
+                OR graph_publication_authority.last_run_id = EXCLUDED.last_run_id
+            )
+        )
+    )"""
+    else:
+        stage_run_clause = f"""graph_publication_authority.last_stage_id = EXCLUDED.last_stage_id
+    AND (
+        EXCLUDED.last_stage_id <> {sql_literal(SENTINEL_STAGE_ID)}
+        OR EXCLUDED.last_run_id IS NULL
+    )
+    AND (
+        graph_publication_authority.last_run_id IS NULL
+        OR graph_publication_authority.last_run_id = EXCLUDED.last_run_id
+    )"""
     return f"""INSERT INTO graph_publication_authority(
     repository_id, singleton_fencing_epoch, graph_lease_fencing_epoch,
     job_id, attempt, coordinator_instance_id, source_generation,
@@ -199,7 +235,10 @@ ON CONFLICT (repository_id) DO UPDATE SET
     updated_at = now()
 WHERE (
     graph_publication_authority.singleton_fencing_epoch
-        <= EXCLUDED.singleton_fencing_epoch
+        < EXCLUDED.singleton_fencing_epoch
+) OR (
+    graph_publication_authority.singleton_fencing_epoch
+        = EXCLUDED.singleton_fencing_epoch
     AND graph_publication_authority.graph_lease_fencing_epoch
         < EXCLUDED.graph_lease_fencing_epoch
 ) OR (
@@ -219,7 +258,7 @@ WHERE (
         = EXCLUDED.extractor_generation
     AND graph_publication_authority.canonicalizer_generation
         = EXCLUDED.canonicalizer_generation
-    AND graph_publication_authority.last_stage_id = EXCLUDED.last_stage_id
+    AND {stage_run_clause}
 );
 IF NOT FOUND THEN
     RAISE EXCEPTION {sql_literal(stale_message)};
@@ -234,8 +273,13 @@ def build_authority_check_sql(owner: StageOwner) -> str:
     IF EXISTS (
         SELECT 1 FROM graph_publication_authority
         WHERE repository_id = {owner.repository_id}
-          AND (singleton_fencing_epoch > {owner.singleton_fencing_epoch}
-               OR graph_lease_fencing_epoch > {owner.graph_lease_fencing_epoch})
+          AND (
+              singleton_fencing_epoch > {owner.singleton_fencing_epoch}
+              OR (
+                  singleton_fencing_epoch = {owner.singleton_fencing_epoch}
+                  AND graph_lease_fencing_epoch > {owner.graph_lease_fencing_epoch}
+              )
+          )
     ) THEN
         RAISE EXCEPTION 'SCALE5 stale publication fence';
     END IF;"""

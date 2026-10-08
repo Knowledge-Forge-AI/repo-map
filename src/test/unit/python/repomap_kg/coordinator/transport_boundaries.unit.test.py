@@ -104,7 +104,8 @@ class ValidOperationPayloadUnitTests(unittest.TestCase):
         self.assertFalse(validation._valid_operation_payload("health", {"extra": 1}))
 
     def test_submit_payload(self):
-        self.assertTrue(validation._valid_operation_payload("submit", {"request": {}}))
+        payload = {"request": {}, "admission_deadline": time.time() + 60}
+        self.assertTrue(validation._valid_operation_payload("submit", payload))
         self.assertFalse(validation._valid_operation_payload("submit", {"request": "not-dict"}))
         self.assertFalse(validation._valid_operation_payload("submit", {}))
         self.assertFalse(validation._valid_operation_payload("submit", {"request": {}, "extra": 1}))

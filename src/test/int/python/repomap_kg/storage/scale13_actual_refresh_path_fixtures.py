@@ -154,7 +154,7 @@ def _actual_refresh_argv(
         "--cancel-code",
         test_control_code,
         "--wait-seconds",
-        "3",
+        "15",
         *readiness_arguments,
         "--",
         *arguments[3:],

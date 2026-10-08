@@ -1,9 +1,14 @@
+import json
 import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 
 from repomap_kg.ops.direct_publication import publish_observation_generation
 from repomap_kg.storage import LoadSummary
+from repomap_kg.graph.multi_source import graph_source_binding_id
+from repomap_kg.ops.config import load_ops_config
+from repomap_kg.ops.graph_files import GraphFileFilters, query_graph_files
+from repomap_test_support.cli_in_process import run_repo_map_in_process
 
 
 def publish_acquisition_summary(
@@ -218,3 +223,66 @@ def api_fixture_root() -> Path:
 
 def github_api_fixture_root() -> Path:
     return test_fixture_root() / "github_api"
+
+
+def assert_public_path_readback(config_path, psql_command, roots):
+    """Check the public graph-files contract on a published source fixture."""
+    config = load_ops_config(config_path)
+    if len(roots) == 2:
+        _assert_public_path_filters(config, psql_command)
+        _assert_public_path_cli(config_path, psql_command, roots)
+        return
+    for filters in (GraphFileFilters(path="modules/default.nix"),
+                    GraphFileFilters(path_prefix="modules/")):
+        page = query_graph_files(config, "fixture-graph", filters=filters,
+                                 psql_command=psql_command)
+        assert [(row.canonical_key, row.path) for row in page.records] == [
+            ("file:root/modules/default.nix", "modules/default.nix")
+        ]
+
+
+def _assert_public_path_filters(config, psql_command):
+    keys = ["file:composition/modules/default.nix", "file:entry/modules/default.nix"]
+    for filters in (GraphFileFilters(path="modules/default.nix"),
+                    GraphFileFilters(path_prefix="modules/")):
+        page = query_graph_files(config, "fixture-graph", filters=filters,
+                                 psql_command=psql_command)
+        assert [row.canonical_key for row in page.records] == keys
+        assert {row.path for row in page.records} == {"modules/default.nix"}
+        assert {row.binding_alias for row in page.records} == {"entry", "composition"}
+        assert {row.binding_id for row in page.records} == {
+            graph_source_binding_id("fixture-graph", alias)
+            for alias in ("entry", "composition")
+        }
+        assert all(row.snapshot_id and row.candidate_id for row in page.records)
+        for offset in range(3):
+            part = query_graph_files(config, "fixture-graph", filters=filters,
+                                     limit=1, offset=offset, psql_command=psql_command)
+            assert [row.canonical_key for row in part.records] == keys[offset:offset + 1]
+            assert part.has_more is (offset == 0)
+    for filters in (GraphFileFilters(path="entry/modules/default.nix"),
+                    GraphFileFilters(path_prefix="entry/modules/")):
+        page = query_graph_files(config, "fixture-graph", filters=filters,
+                                 psql_command=psql_command)
+        # Metadata-less referenced nodes may expose an alias-prefixed public path.
+        assert not set(keys).intersection(row.canonical_key for row in page.records)
+
+
+def _assert_public_path_cli(config_path, psql_command, roots):
+    for path, expected_count in (("modules/default.nix", 2), ("absent.nix", 0)):
+        code, stdout, stderr = run_repo_map_in_process(
+            "ops", "graph-files", "--config", str(config_path),
+            "--graph", "fixture-graph", "--psql-command", psql_command,
+            "--path", path, "--json",
+        )
+        assert code == 0, stderr
+        payload = json.loads(stdout)
+        assert payload["result"] == "success" and payload["schema_version"] == 1
+        records = payload["files"]
+        assert len(records) == expected_count
+        assert payload["pagination"]["has_more"] is False
+        if records:
+            assert {row["path"] for row in records} == {path}
+            assert {row["source_binding"]["alias"] for row in records} == {"entry", "composition"}
+            assert len({row["canonical_key"] for row in records}) == 2
+        assert all(str(root) not in stdout + stderr for root in roots)

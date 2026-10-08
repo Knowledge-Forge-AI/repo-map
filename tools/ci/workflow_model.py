@@ -283,6 +283,28 @@ class Workflow:
             str(step["uses"]) for step in self.steps() if step.get("uses") is not None
         )
 
+    def job_steps(self, job_name: str) -> tuple[dict[str, Any], ...]:
+        job = self.jobs.get(job_name)
+        if not isinstance(job, dict):
+            return ()
+        return tuple(
+            step for step in (job.get("steps") or ()) if isinstance(step, dict)
+        )
+
+    def job_run_commands(self, job_name: str) -> tuple[str, ...]:
+        return tuple(
+            str(step["run"])
+            for step in self.job_steps(job_name)
+            if step.get("run") is not None
+        )
+
+    def job_action_uses(self, job_name: str) -> tuple[str, ...]:
+        return tuple(
+            str(step["uses"])
+            for step in self.job_steps(job_name)
+            if step.get("uses") is not None
+        )
+
 
 def load_workflow(path: Path) -> Workflow:
     """Load and structurally parse one workflow file."""

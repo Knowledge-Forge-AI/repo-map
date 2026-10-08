@@ -17,6 +17,7 @@ from repomap_kg.coordinator.protocol import (
 from repomap_test_support.synthetic_worker_contracts import (
     ALLOWED_SYNTHETIC_WORKER_MODES,
 )
+from runner_coverage_execution import prepare_child_coverage_environment
 
 
 _JOB_CONTEXT = {
@@ -116,7 +117,8 @@ def run_mode(mode: str, identity: dict[str, object]) -> int:
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         subprocess.Popen(
             [sys.executable, "-c", "import time; time.sleep(30)"],
-            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=None)
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=None,
+            env=prepare_child_coverage_environment(family="unmeasured"))
         while True:
             time.sleep(0.02)
     raise AssertionError("unreachable allowlisted worker mode")

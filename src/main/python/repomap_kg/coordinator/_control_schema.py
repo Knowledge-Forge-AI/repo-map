@@ -195,6 +195,28 @@ def default_control_rdbms_root() -> Path:
     return default_rdbms_root().parent / "coordinator-rdbms"
 
 
+def upgrade_ledgered_schema(
+    connect: ConnectionFactory, *, expected_manifest: tuple[str, ...], backup_verified: bool,
+) -> None:
+    """Apply only the missing suffix of an exact known migration ledger."""
+    if not backup_verified:
+        raise ControlSchemaError("verified backup is required for control upgrade")
+    with connect() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("LOCK TABLE repomap_control_schema_migrations IN ACCESS EXCLUSIVE MODE")
+        readiness = control_schema_readiness_connection(connection)
+        if readiness.status is not ControlSchemaStatus.BEHIND:
+            raise ControlSchemaError("control schema is not an exact known older ledger")
+        migrations = discover_control_migrations()
+        with connection.cursor() as cursor:
+            for migration in migrations[readiness.applied_count:]:
+                cursor.execute(migration.path.read_text(encoding="utf-8"))
+                cursor.execute(_ledger_insert_statement(migration))
+        if (not control_schema_readiness_connection(connection).ready
+                or control_schema_manifest_connection(connection) != expected_manifest):
+            raise ControlSchemaError("upgraded control schema is not exact-current")
+
+
 def discover_control_migrations(
     rdbms_root: Path | str | None = None,
 ) -> tuple[Migration, ...]:

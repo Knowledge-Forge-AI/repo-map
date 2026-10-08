@@ -1,5 +1,7 @@
 from __future__ import annotations
+from pathlib import Path
 import pytest
+from repomap_test_support.resource_test_image_records import read_project_runtime_dependencies
 from repomap_test_support.resource_test_images import (
     DEPLOYMENT_IMAGE_PREFIX,
     RUNTIME_MATERIALIZATION_PROOF_RECIPE_SCHEMA,
@@ -19,6 +21,8 @@ from src.test.unit.python.repomap_test_support.resource_test_images_fixtures imp
     BASE_REFERENCE,
     BASE_CANONICAL_REFERENCE,
 )
+
+REPO_ROOT = Path(__file__).resolve().parents[5]
 
 
 def test_runtime_fingerprint_ignores_candidate_source_and_changes_on_inputs():
@@ -79,6 +83,40 @@ dynamic = ["dependencies"]
     )
 
     with pytest.raises(ImageLifecycleError, match="dynamic project dependencies"):
+        manager.runtime_identity()
+
+
+_SPLIT_PROJECT = """[project]
+name = "fixture"
+version = "0.1"
+dependencies = ["typing-extensions==4.16.0"]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]==3.2.12"]
+"""
+
+
+def test_postgres_extra_layout_keeps_the_runtime_identity(tmp_path):
+    legacy, _legacy_client = _manager(tmp_path)
+    split_root = tmp_path / "split"
+    split_root.mkdir()
+    split, _split_client = _manager(split_root)
+    split.repo_root.joinpath("pyproject.toml").write_text(_SPLIT_PROJECT, encoding="utf-8")
+    expected = ("psycopg[binary]==3.2.12", "typing-extensions==4.16.0")
+
+    assert split.runtime_identity().fingerprint == legacy.runtime_identity().fingerprint
+    assert split.runtime_identity().fields["project_runtime_dependencies"] == expected
+    assert read_project_runtime_dependencies(REPO_ROOT, "3.2.12") == expected
+
+
+def test_psycopg_missing_from_base_and_postgres_extra_fails_closed(tmp_path):
+    manager, _client = _manager(tmp_path)
+    manager.repo_root.joinpath("pyproject.toml").write_text(
+        _SPLIT_PROJECT.replace('postgres = ["psycopg[binary]==3.2.12"]', "test = []"),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ImageLifecycleError, match="Psycopg release input"):
         manager.runtime_identity()
 
 

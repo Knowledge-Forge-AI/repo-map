@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime.postgres_route import execution_postgres
+
 from collections.abc import Iterator
 from contextlib import AbstractContextManager, ExitStack, contextmanager
 from pathlib import Path
@@ -10,8 +12,8 @@ from typing import Protocol, runtime_checkable
 import psycopg
 from psycopg import sql
 
-from repomap_kg.coordinator._refresh_capability_io import validate_config_file
-from repomap_kg.coordinator.configured_refresh import _postgres_password
+from repomap_kg.coordinator._refresh_capability_io import validate_private_directory
+from repomap_kg.coordinator._local_admin_credentials import local_admin_password
 from repomap_kg.coordinator.storage import ControlStore
 from repomap_kg.ops.config import load_ops_config_home
 from repomap_kg.ops.resolved_config import control_database_for, resolve_ops_config
@@ -103,14 +105,21 @@ class LocalControlAuthority:
             raise ValueError("database capability is invalid")
         self._home = home
         self._capability = capability
-        validate_config_file(home)
+        try:
+            validate_private_directory(home)
+        except ValueError:
+            raise CoordinatorControlError("repo-map-home-unsafe") from None
         config = load_ops_config_home(home)
-        self._host = config.postgres.host
-        self._port = config.postgres.port
+        endpoint = execution_postgres(config)
+        self._host = endpoint.host
+        self._port = endpoint.port
         self._owner_user = config.postgres.user
-        self._admin_password = (
-            _postgres_password(config, home) if capability == "lifecycle" else None
-        )
+        try:
+            self._admin_password = (
+                local_admin_password(config, home) if capability == "lifecycle" else None
+            )
+        except ValueError:
+            raise CoordinatorControlError("local-admin-credential-unavailable-or-unsafe") from None
         self._role_secrets = (
             read_role_secrets(home / "runtime" / ".env")
             if capability == "coordinator"

@@ -6,7 +6,9 @@ from dataclasses import dataclass
 import threading
 from typing import Callable
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from repomap_kg.artifacts._bundle_stream_encode import StreamingBundleDescriptor, StreamingBundleEncoder
+from repomap_kg.artifacts._canonical import CanonicalEncodingError
+from repomap_kg.artifacts.bundle import PublicationBundle
 from repomap_kg.artifacts.manifest import PortableSnapshotManifest
 from repomap_kg.artifacts.receipt import ExtractionReceipt
 from repomap_kg.artifacts.references import ArtifactReference
@@ -44,7 +46,7 @@ class PortableExecutionResult:
     candidate_id: str
     receipt: ExtractionReceipt
     receipt_reference: ArtifactReference
-    bundle: PublicationBundle
+    bundle: PublicationBundle | StreamingBundleDescriptor
     bundle_reference: ArtifactReference
     materialized_bytes: int
 
@@ -139,49 +141,49 @@ def execute_portable_extraction(
                 stage_id="stage-unassigned",
             )
             try:
-                families = {
-                    family: tuple(dict(row) for row in prepared.family_rows[family])
-                    for family in PUBLICATION_FAMILIES
-                }
+                _cancelled(cancel_event)
+                emit_progress("storage_prepare", manifest.total_files, manifest.total_files)
+                _cancelled(cancel_event)
+                encoder = StreamingBundleEncoder(
+                    request_id=capability.job_id, job_id=capability.job_id,
+                    attempt=capability.attempt, graph_id=manifest.graph_id,
+                    candidate_id=semantic.candidate.candidate_id,
+                    snapshot_manifest_id=manifest.manifest_id,
+                    snapshot_vector=manifest.snapshot_vector,
+                    source_generation=manifest.source_generation,
+                    config_generation=manifest.config_generation,
+                    extractor_generation=manifest.extractor_generation,
+                    canonicalizer_generation=manifest.canonicalizer_generation,
+                    extractor_capability_identity=manifest.extractor_capability_identity,
+                    resolver_identity=manifest.resolver_identity,
+                    canonicalizer_identity=manifest.canonicalizer_identity,
+                    semantic_contract_identity=manifest.semantic_contract_identity,
+                    quality_rule_identity=manifest.quality_rule_identity,
+                    privacy=manifest.effective_privacy,
+                    family_rows=prepared.family_rows,
+                    row_stage_contract="stage-unassigned-v1",
+                    max_bundle_bytes=capability.max_bundle_bytes,
+                    spool_dir=capability.workspace_root,
+                    cancel_event=cancel_event,
+                    checkpoint=lambda: _checkpoint("during_bundle", cancel_event, checkpoint),
+                )
+                try:
+                    bundle_reference = store.put(
+                        encoder.stream_chunks(),
+                        media_type="application/x-repomap-publication-bundle-v1+jsonl",
+                        record_format="canonical-jsonl-v1",
+                        privacy=manifest.effective_privacy,
+                    )
+                    bundle = encoder.descriptor()
+                except PortableExecutionError:
+                    raise
+                except ArtifactIntegrityError as error:
+                    raise PortableExecutionError(_artifact_error_category(error)) from error
+                except (ValueError, CanonicalEncodingError) as error:
+                    raise PortableExecutionError("contract_validation") from error
+                _checkpoint("after_bundle", cancel_event, checkpoint)
             finally:
                 prepared.close()
-            _cancelled(cancel_event)
-            emit_progress("storage_prepare", manifest.total_files, manifest.total_files)
-            _cancelled(cancel_event)
-            bundle = PublicationBundle.create(
-                request_id=capability.job_id,
-                job_id=capability.job_id,
-                attempt=capability.attempt,
-                graph_id=manifest.graph_id,
-                candidate_id=semantic.candidate.candidate_id,
-                snapshot_manifest_id=manifest.manifest_id,
-                snapshot_vector=manifest.snapshot_vector,
-                source_generation=manifest.source_generation,
-                config_generation=manifest.config_generation,
-                extractor_generation=manifest.extractor_generation,
-                canonicalizer_generation=manifest.canonicalizer_generation,
-                extractor_capability_identity=manifest.extractor_capability_identity,
-                resolver_identity=manifest.resolver_identity,
-                canonicalizer_identity=manifest.canonicalizer_identity,
-                semantic_contract_identity=manifest.semantic_contract_identity,
-                quality_rule_identity=manifest.quality_rule_identity,
-                privacy=manifest.effective_privacy,
-                families=families,
-                row_stage_contract="stage-unassigned-v1",
-            )
-            bundle_bytes = bundle.canonical_bytes()
-            if len(bundle_bytes) > capability.max_bundle_bytes:
-                raise PortableExecutionError("contract_validation")
-            _checkpoint("after_bundle", cancel_event, checkpoint)
-            try:
-                bundle_reference = store.put(
-                    bundle_bytes,
-                    media_type="application/x-repomap-publication-bundle-v1+jsonl",
-                    record_format="canonical-jsonl-v1",
-                    privacy=manifest.effective_privacy,
-                )
-            except ArtifactIntegrityError as error:
-                raise PortableExecutionError(_artifact_error_category(error)) from error
             _cancelled(cancel_event)
             receipt = ExtractionReceipt.create(
                 request_id=capability.job_id,
@@ -201,13 +203,11 @@ def execute_portable_extraction(
                 canonicalizer_identity=manifest.canonicalizer_identity,
                 semantic_contract_identity=manifest.semantic_contract_identity,
                 quality_rule_identity=manifest.quality_rule_identity,
-                outcome="completed",
-                cancellation="not-requested",
+                outcome="completed", cancellation="not-requested",
                 bundle_reference=bundle_reference,
                 bundle_id=bundle.bundle_id,
                 family_counts=bundle.family_counts,
-                diagnostic_category=None,
-                diagnostic_summary=(),
+                diagnostic_category=None, diagnostic_summary=(),
                 producer_identity=PRODUCER_IDENTITY,
                 attestation_class="untrusted-self-assertion",
             )

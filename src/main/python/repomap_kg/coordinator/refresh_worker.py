@@ -6,6 +6,7 @@ import argparse
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+import os
 import sys
 import threading
 
@@ -25,9 +26,16 @@ from repomap_kg.coordinator.refresh_adapter import (
     refresh_terminal,
 )
 
+from repomap_kg.ops.report_records import redact_sensitive_text
+from repomap_kg.coordinator._transport_validation import sanitize_diagnostic_summary
+
 _PUBLIC_CONFIGURATION_DIAGNOSTICS = frozenset(
     {"multi-source-refresh-unsupported", "source-binding-refresh-unsupported"}
 )
+
+
+class _RefreshCancelled(Exception):
+    """Cancellation applied before the publication gate opened."""
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -36,34 +44,89 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--job-id", required=True)
     parser.add_argument("--attempt", required=True, type=int)
     args = parser.parse_args(argv)
+
     try:
-        capability = load_refresh_capability(Path(args.capability))
-        if capability.job_id != args.job_id or capability.attempt != args.attempt:
-            raise ValueError("invalid refresh capability")
-        identity = {"job_id": capability.job_id, "attempt": capability.attempt}
-        session = ProtocolSession(identity)
-        hello = {
-            "schema_version": 1,
-            "message_type": "worker_hello",
-            "protocol_versions": [1],
-            "worker_generation": "refresh-adapter-v1",
-            "capabilities": ["refresh_graph"],
-            "process_nonce": "refresh-worker-v1",
-        }
-        session.accept_worker(hello)
-        _write(hello)
-        frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
-        start = session.accept_coordinator(decode_jsonl(frame))
-        if any(
-            start[field] != expected
-            for field, expected in (
-                ("graph_id", capability.graph_id),
-                ("source_generation", capability.source_generation),
-                ("config_generation", capability.config_generation),
-            )
-        ):
-            raise ProtocolError("identity_mismatch")
+        try:
+            capability = load_refresh_capability(Path(args.capability))
+            if capability.job_id != args.job_id or capability.attempt != args.attempt:
+                raise ValueError("invalid refresh capability")
+        except (OSError, TypeError, ValueError) as error:
+            safe_error = redact_sensitive_text(str(error))[:256]
+            sys.stderr.write(f"refresh-failure:capability-error:{safe_error}\n")
+            sys.stderr.flush()
+            return 2
+
+        try:
+            identity = {"job_id": capability.job_id, "attempt": capability.attempt}
+            session = ProtocolSession(identity)
+            hello = {
+                "schema_version": 1,
+                "message_type": "worker_hello",
+                "protocol_versions": [1],
+                "worker_generation": "refresh-adapter-v1",
+                "capabilities": ["refresh_graph"],
+                "process_nonce": "refresh-worker-v1",
+            }
+            session.accept_worker(hello)
+            _write(hello)
+            frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
+            start = session.accept_coordinator(decode_jsonl(frame))
+            if any(
+                start[field] != expected
+                for field, expected in (
+                    ("graph_id", capability.graph_id),
+                    ("source_generation", capability.source_generation),
+                    ("config_generation", capability.config_generation),
+                )
+            ):
+                raise ProtocolError("identity_mismatch")
+        except ProtocolError as error:
+            safe_error = redact_sensitive_text(str(error))[:256]
+            sys.stderr.write(f"refresh-failure:protocol-error:{safe_error}\n")
+            sys.stderr.flush()
+            return 2
+
+        # Keep using the same buffer: job_start may have prefetched the cancel
+        # in the parent's single flushed batch. Reads at safe points are bounded
+        # and nonblocking; publication itself does not consume cancellation.
+        os.set_blocking(sys.stdin.fileno(), False)
         protocol_lock = threading.Lock()
+        cancellation_requested = False
+        publication_started = False
+        protocol_failed = False
+
+        def consume_cancellation(*, committed: bool = False) -> None:
+            nonlocal cancellation_requested, protocol_failed
+            with protocol_lock:
+                # At most one cancel is valid. A second pending frame is an
+                # ordering error, so malformed/duplicate input fails closed.
+                for _ in range(2):
+                    frame = sys.stdin.buffer.readline(MAX_JSONL_LINE_BYTES + 1)
+                    if not frame:
+                        return
+                    try:
+                        session.accept_coordinator(decode_jsonl(frame))
+                    except ProtocolError:
+                        protocol_failed = True
+                        raise
+                    cancellation_requested = True
+                    acknowledgement = {
+                        "schema_version": 1, "message_type": "cancel_ack",
+                        **identity,
+                        "status": "already-complete" if committed else (
+                            "deferred" if publication_started else "accepted"
+                        ),
+                    }
+                    session.accept_worker(acknowledgement)
+                    _write(acknowledgement)
+
+        def before_publication() -> None:
+            nonlocal publication_started
+            consume_cancellation()
+            if cancellation_requested:
+                raise _RefreshCancelled()
+            _publication_phase.before_publication(Path(args.capability).parent, capability)
+            publication_started = True
 
         def emit_heartbeat() -> None:
             heartbeat = {
@@ -77,13 +140,23 @@ def main(argv: list[str] | None = None) -> int:
                 _write(heartbeat)
 
         try:
+            from repomap_kg.coordinator import _publication_phase
+
+            consume_cancellation()
+            if cancellation_requested:
+                raise _RefreshCancelled()
             refresh_result = _run_with_heartbeats(
-                lambda: execute_refresh(capability),
+                lambda: execute_refresh(
+                    capability,
+                    before_publication=before_publication,
+                ),
                 emit_heartbeat,
             )
             if getattr(refresh_result, "result", None) != "success":
                 _write_failure_categories(refresh_result)
             terminal = refresh_terminal(capability, refresh_result)
+        except _RefreshCancelled:
+            terminal = _exception_terminal(capability, identity, started=False)
         except RefreshGenerationChangedError:
             terminal = _exception_terminal(
                 capability, identity, started=False, category="generation_changed"
@@ -99,28 +172,37 @@ def main(argv: list[str] | None = None) -> int:
                 started=False,
                 diagnostic=str(error),
             )
+        except ProtocolError:
+            raise
         except (OSError, TypeError, ValueError) as error:
-            from repomap_kg.ops.reports import _redact_text
-
-            safe_error = _redact_text(str(error))[:256]
+            safe_error = sanitize_diagnostic_summary(str(error)) or "worker-error"
             sys.stderr.write(f"refresh-failure:worker-error:{safe_error}\n")
             sys.stderr.flush()
             terminal = _exception_terminal(capability, identity, started=True)
+        # Storage may wrap the pre-publication callback's exception. Invalid
+        # input still fails the protocol, rather than becoming cancellation.
+        if protocol_failed:
+            raise ProtocolError("invalid_frame")
+        committed = terminal.get("publication_state") == "committed"
+        consume_cancellation(committed=committed)
+        if cancellation_requested:
+            if committed:
+                diagnostics = terminal.get("diagnostics")
+                terminal["diagnostics"] = [
+                    *(diagnostics[:31] if isinstance(diagnostics, list) else []),
+                    "cancellation_not_applied",
+                ]
+            elif not publication_started:
+                terminal.update(
+                    message_type="result", status="cancelled",
+                    publication_state="not_started", latest_run_identity=None,
+                    error_category=None,
+                )
         with protocol_lock:
             session.accept_worker(terminal)
             _write(terminal)
         return 0
-    except Exception as error:
-        from repomap_kg.ops.reports import _redact_text
-
-        category = "worker-error"
-        if isinstance(error, ProtocolError):
-            category = "protocol-error"
-        elif isinstance(error, (ValueError, OSError)) and "capability" in str(error).lower():
-            category = "capability-error"
-        safe_msg = _redact_text(str(error))[:256]
-        sys.stderr.write(f"refresh-failure:{category}:{safe_msg}\n")
-        sys.stderr.flush()
+    except (OSError, TypeError, ValueError, ProtocolError):
         return 2
 
 
@@ -209,8 +291,6 @@ def _exception_terminal(
 
 
 def _write_failure_categories(result: object) -> None:
-    from repomap_kg.ops.reports import _redact_text
-
     categories = []
     for diagnostic in getattr(result, "diagnostics", ()):
         if isinstance(diagnostic, dict) and isinstance(diagnostic.get("code"), str):
@@ -226,7 +306,7 @@ def _write_failure_categories(result: object) -> None:
         categories.append("authorization-failed")
     else:
         categories.append("unclassified")
-    safe_error = _redact_text(str(getattr(result, "error", "")))[:512]
+    safe_error = redact_sensitive_text(str(getattr(result, "error", "")))[:512]
     sys.stderr.write(
         "refresh-failure:" + ",".join(categories[:8]) + ":" + safe_error + "\n"
     )

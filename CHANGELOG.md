@@ -12,6 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `main` represents released public versions.
 - Public `staging` is the prospective next-version branch; release promotions to `main` are squash merges where each resulting commit represents one version release.
 
+## [0.0.2] - Unreleased
+
+### Added
+- Consolidated single release qualification workflow model (`repomap-release-qualification.yml`) with closed CI topology verification.
+- Schema v2 for retained Python ratchet scope transitions with cryptographically sealed provenance.
+- Persistent typed failure summaries across coordinator reconciliation and crash handling.
+
+### Changed
+- Promoted public development line to version 0.0.2.
+- Hardened CI topology contracts to prevent split-brain workflows and disallow workflow dispatch or path filtering.
+
 ## [0.0.1] - 2026-09-15
 
 Initial public source preview of RepoMap.

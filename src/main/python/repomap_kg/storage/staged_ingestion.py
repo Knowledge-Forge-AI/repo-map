@@ -4,78 +4,61 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
-from typing import Any
-
 import signal as signal
+from typing import Any
 
 import psycopg
 
+from repomap_kg.artifacts._bundle_stream_parse import ValidatedBundleDescriptor
 from repomap_kg.artifacts.bundle import PublicationBundle
 from repomap_kg.observations.raw import RawObservation
 from repomap_kg.runtime.maintenance import maintenance_activity
 from repomap_kg.storage._staged_ingestion_authority import (
-    IngestionAuthority,
-    new_direct_authority,
-    stage_id_for_authority,
+    IngestionAuthority, new_direct_authority, stage_id_for_authority,
 )
 from repomap_kg.storage._staged_ingestion_stages import (
-    _DEFAULT_STAGE_TTL,
-    _copy_families as _copy_families,
-    _create_run as _create_run,
-    _create_stage as _create_stage,
-    _ensure_repository as _ensure_repository,
-    _handle_existing_stage_state,
-    _handle_refresh_failure,
+    _DEFAULT_STAGE_TTL, _copy_families as _copy_families, _create_run as _create_run,
+    _create_stage as _create_stage, _ensure_repository as _ensure_repository,
+    _handle_existing_stage_state, _handle_refresh_failure,
     _install_connection_signal_handlers as _install_connection_signal_handlers,
     _mark_prepared as _mark_prepared,
-    _refresh_canonical_node_evidence_statistics as _refresh_canonical_node_evidence_statistics,
-    _resolve_prepared_rows,
-    _restore_connection_signal_handlers as _restore_connection_signal_handlers,
+    _refresh_canonical_edge_evidence_statistics,
+    _refresh_canonical_node_evidence_statistics,
+    _resolve_prepared_rows, _restore_connection_signal_handlers as _restore_connection_signal_handlers,
+)
+from repomap_kg.storage._staged_publication_pause import (
+    _run_system_test_publication_pause,
+    _run_system_test_post_publication_pause as _run_system_test_post_publication_pause,
 )
 from repomap_kg.storage.authority import StageId
 from repomap_kg.storage.backend_ownership import ConnectionRole
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.errors import StorageCommitUnknownError, StorageSchemaError
 from repomap_kg.storage.main import LoadSummary
 from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
-from repomap_kg.storage.publication import (
-    PortablePublicationBinding,
-    RunPublicationReceipt,
-)
-from repomap_kg.storage.publication_fencing import (
-    PublicationHandoff,
-    build_graph_publication_claim_statements,
-)
+from repomap_kg.storage.publication import PortablePublicationBinding, RunPublicationReceipt
+from repomap_kg.storage.publication_fencing import PublicationHandoff, build_graph_publication_claim_statements
 from repomap_kg.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args as _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_connection_telemetry import (
-    close_owned_connection,
-    open_owned_connection,
-)
+from repomap_kg.storage.staged_connection_telemetry import close_owned_connection, open_owned_connection
 from repomap_kg.storage.staged_publication import (
-    _execute,
-    execute_final_transaction as execute_final_transaction,
-    existing_stage_state,
-    mark_failed_before_publication,
-    reconcile_commit_unknown,
+    _execute, execute_final_transaction as execute_final_transaction,
+    existing_stage_state, mark_failed_before_publication, reconcile_commit_unknown,
 )
 from repomap_kg.storage.staged_rows import PreparedStageRows, build_staged_rows
 from repomap_kg.storage.staged_validation import (
-    mark_validated as mark_validated,
-    mark_validating as mark_validating,
+    mark_validated as mark_validated, mark_validating as mark_validating,
     validate_stage as validate_stage,
 )
 from repomap_kg.storage.staging_copy import copy_stage_rows as copy_stage_rows
 from repomap_kg.storage.staging_merge import MergeContext
 from repomap_kg.storage.staging_observability import (
-    StagingMeasurementCategory,
-    StagingMeasurements,
+    StagingMeasurementCategory, StagingMeasurements,
 )
 from repomap_kg.storage.staging_ownership import StageOwner
 from repomap_kg.storage.staging_resource_observability import (
-    capture_staging_resources,
-    emit_staging_resource_measurements,
+    capture_staging_resources, emit_staging_resource_measurements,
 )
 
 __all__ = (
@@ -86,7 +69,6 @@ __all__ = (
     "run_staged_portable_refresh",
     "stage_id_for_authority",
 )
-
 
 
 def _admit_and_run(
@@ -154,7 +136,7 @@ def run_staged_full_refresh(
 
 def run_staged_portable_refresh(
     psql_args: Sequence[str],
-    bundle: PublicationBundle,
+    bundle: PublicationBundle | ValidatedBundleDescriptor | None = None,
     *,
     repository_name: str,
     root_path: str,
@@ -164,6 +146,7 @@ def run_staged_portable_refresh(
     connect: Callable[..., Any] | None = None,
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
+    prepared_override: PreparedStageRows | None = None,
 ) -> LoadSummary:
     """Publish one validated current bundle through the existing sole writer."""
     stage_id = stage_id_for_authority(authority)
@@ -174,7 +157,14 @@ def run_staged_portable_refresh(
         or portable_binding.graph_lease_fencing_epoch != authority.graph_lease_fencing_epoch
     ):
         raise StorageSchemaError("portable publication authority mismatch")
-    prepared = prepare_portable_bundle_rows(bundle, stage_id=stage_id)
+    if prepared_override is not None:
+        prepared = prepared_override
+    elif isinstance(bundle, ValidatedBundleDescriptor):
+        prepared = bundle.to_prepared_stage_rows()
+    elif isinstance(bundle, PublicationBundle):
+        prepared = prepare_portable_bundle_rows(bundle, stage_id=stage_id)
+    else:
+        raise ValueError("either bundle or prepared_override is required")
     receipt = RunPublicationReceipt(
         authority.receipt().attempt,
         authority.receipt().generations,
@@ -186,23 +176,17 @@ def run_staged_portable_refresh(
             authority,
             backend_telemetry,
             lambda: _run_staged_full_refresh_admitted(
-                psql_args,
-                (),
-                repository_name=repository_name,
-                root_path=root_path,
-                authority=authority,
-                repository_identity=repository_identity,
-                stage_id=stage_id,
-                connect=connect,
-                backend_telemetry=backend_telemetry,
-                staging_measurements=staging_measurements,
-                prepared_override=prepared,
+                psql_args, (), repository_name=repository_name, root_path=root_path,
+                authority=authority, repository_identity=repository_identity, stage_id=stage_id,
+                connect=connect, backend_telemetry=backend_telemetry,
+                staging_measurements=staging_measurements, prepared_override=prepared,
                 receipt_override=receipt,
             ),
         )
-    except BaseException:
+    finally:
         prepared.close()
-        raise
+
+
 
 
 def _run_staged_full_refresh_admitted(
@@ -260,6 +244,7 @@ def _run_staged_full_refresh_admitted(
     repository_id: int | None = None
     run_id: int | None = None
     stage_committed = False
+    transaction_committed = False
     owner: StageOwner | None = None
     try:
         repository_id = _ensure_repository(connection, repository_name, root_path, repository_identity)
@@ -295,10 +280,12 @@ def _run_staged_full_refresh_admitted(
         _copy_families(connection, prepared, resolved_stage_id, staging_measurements=staging_measurements)
         if staging_measurements is None:
             _refresh_canonical_node_evidence_statistics(connection)
+            _refresh_canonical_edge_evidence_statistics(connection)
         else:
             with staging_measurements.timed(StagingMeasurementCategory.STATISTICS):
                 with staging_measurements.operation("statistics.canonical_node_evidence"):
                     _refresh_canonical_node_evidence_statistics(connection)
+                    _refresh_canonical_edge_evidence_statistics(connection)
         _mark_prepared(connection, resolved_stage_id, prepared.row_counts)
         connection.commit()
         if staging_measurements is None:
@@ -313,9 +300,12 @@ def _run_staged_full_refresh_admitted(
                 mark_validated(connection, resolved_stage_id)
             with staging_measurements.phase("staging.pre_final_commit"):
                 connection.commit()
-
         handoff = PublicationHandoff(MergeContext(resolved_stage_id, owner, run_id), receipt).validate()
         try:
+            _run_system_test_publication_pause(handoff)
+            if authority.before_publication is not None:
+                authority.before_publication()
+            _run_system_test_post_publication_pause()
             execute_final_transaction(connection, handoff, staging_measurements=staging_measurements)
         except (Exception, KeyboardInterrupt):
             connection.rollback()
@@ -328,6 +318,7 @@ def _run_staged_full_refresh_admitted(
             else:
                 with staging_measurements.operation("transaction.commit"):
                     connection.commit()
+            transaction_committed = True
         except (Exception, KeyboardInterrupt) as error:
             _restore_connection_signal_handlers(signal_handlers)
             signal_handlers = {}
@@ -342,7 +333,7 @@ def _run_staged_full_refresh_admitted(
                     files=prepared.files,
                     publication_receipt=handoff.receipt,
                 )
-            raise StorageSchemaError("staged publication commit is unknown") from error
+            raise StorageCommitUnknownError("staged publication commit is unknown") from error
         if staging_measurements is not None and resources_before is not None:
             emit_staging_resource_measurements(
                 staging_measurements, resources_before, capture_staging_resources(connection)
@@ -354,6 +345,8 @@ def _run_staged_full_refresh_admitted(
             publication_receipt=handoff.receipt,
         )
     except (Exception, KeyboardInterrupt) as error:
+        if transaction_committed:
+            raise StorageCommitUnknownError("post-transaction failure occurred after publication commit") from error
         _handle_refresh_failure(
             connection,
             error,

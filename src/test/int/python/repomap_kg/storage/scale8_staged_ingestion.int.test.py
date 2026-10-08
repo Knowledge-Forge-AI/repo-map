@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from dataclasses import replace
+import pytest
+from repomap_kg.storage.staged_rows import build_staged_rows
+from repomap_kg.storage.structural_digest import digest_prepared_stage_rows
 
 import psycopg
 from psycopg.conninfo import make_conninfo
@@ -356,3 +360,41 @@ def test_staged_refresh_replays_an_exact_published_attempt() -> None:
     assert second.run_id == first.run_id
     assert second.publication_receipt == first.publication_receipt
     assert (run_count, stage_count) == (1, 1)
+
+def test_prepared_corpus_digest_spills_reorders_and_recovers_after_cancellation():
+    observations = tuple(replace(
+        _observations()[0], path=f"src/module_{i:05}.py", source_id=f"src/module_{i:05}.py",
+        metadata={**_observations()[0].metadata, "description": "module documentation " * 64},
+    ) for i in range(5000))
+    prepared = build_staged_rows(observations, repository_name="digest-corpus", stage_id="digest-stage")
+    artifacts: list[tuple[int, int]] = []
+    def observe(total_bytes: int, artifact_count: int) -> None:
+        artifacts.append((total_bytes, artifact_count))
+    def spill_milestone() -> tuple[int, int] | None:
+        return next(((total_bytes, artifact_count) for total_bytes, artifact_count in artifacts
+                     if total_bytes > 0 and artifact_count >= 3), None)
+    try:
+        expected = digest_prepared_stage_rows(prepared, artifact_observer=observe)
+        # Count, including a possible empty output, proves two completed runs; positive bytes prove nonempty.
+        assert spill_milestone() is not None
+        assert artifacts[-1] == (0, 0)
+        reversed_rows = {family: tuple(reversed(tuple(rows))) for family, rows in prepared.family_rows.items()}
+        assert digest_prepared_stage_rows(replace(prepared, family_rows=reversed_rows)) == expected
+        artifacts.clear()
+        cancelled_at: tuple[int, int] | None = None
+        def cancel_after_spill() -> None:
+            nonlocal cancelled_at
+            if (milestone := spill_milestone()) is not None:
+                cancelled_at = milestone
+                raise RuntimeError("fixture cancellation after spill")
+        with pytest.raises(RuntimeError, match="fixture cancellation after spill"):
+            digest_prepared_stage_rows(
+                prepared, cancellation_check=cancel_after_spill,
+                artifact_observer=observe,
+            )
+        assert cancelled_at is not None
+        assert cancelled_at[0] > 0 and cancelled_at[1] >= 3
+        assert artifacts[-1] == (0, 0)
+        assert digest_prepared_stage_rows(prepared) == expected
+    finally:
+        prepared.close()

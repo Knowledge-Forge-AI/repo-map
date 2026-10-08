@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from repomap_kg.runtime.postgres_route import execution_postgres
+
 import sys
 from collections.abc import Callable, Sequence
 from typing import Any, TypeVar
@@ -61,7 +63,7 @@ def _run_ops_psql(
     psql_command: str | None,
     input_text: str,
 ) -> Any:
-    psql_args = config.postgres.psql_args_for_database(database)
+    psql_args = execution_postgres(config).psql_args_for_database(database)
     executions = _ops_psql_executions(config, psql_command)
     run_psql_fn = _dispatch_run_psql()
     for execution in executions:
@@ -81,7 +83,7 @@ def _run_ops_psql(
             try:
                 return run_psql_fn(
                     container_execution.full_command(
-                        psql_args,
+                        config.postgres.psql_args_for_database(database),
                         _ops_psql_tail_args(),
                     ),
                     input_text=input_text,
@@ -106,7 +108,7 @@ def _load_file_observations_with_ops_psql(
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
 ) -> LoadSummary:
-    psql_args = config.postgres.psql_args_for_database(database)
+    psql_args = execution_postgres(config).psql_args_for_database(database)
     if ingestion_mode != "staged":
         raise ValueError("refresh ingestion mode is invalid")
     if staged_authority is None:
@@ -136,7 +138,7 @@ def run_storage_readback_with_ops_psql(
     psql_command: str | None,
     **query_kwargs: Any,
 ) -> _StorageReadbackT:
-    psql_args = config.postgres.psql_args_for_database(database)
+    psql_args = execution_postgres(config).psql_args_for_database(database)
     executions = _ops_psql_executions(config, psql_command)
     for execution in executions:
         try:
@@ -155,7 +157,7 @@ def run_storage_readback_with_ops_psql(
                 raise _augment_psql_error(config, error) from error
             try:
                 return storage_query(
-                    [*container_execution.args_prefix, *psql_args],
+                    [*container_execution.args_prefix, *config.postgres.psql_args_for_database(database)],
                     psql_command=container_execution.command,
                     **query_kwargs,
                 )

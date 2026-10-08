@@ -294,8 +294,24 @@ def settle_operation(
 ) -> None:
     if timer is not None:
         timer.cancel()
-        timer.join(timeout=max(0.0, deadline - session._now()))
+        request_timeout = (
+            session._deadline_policy.request_terminal_timeout_seconds
+        )
+        timer.join(timeout=max(request_timeout, deadline - session._now()))
     with session._condition:
+        request_deadline = (
+            session._now()
+            + session._deadline_policy.request_terminal_timeout_seconds
+        )
+        while session._cancellation_state.request_in_flight:
+            remaining = request_deadline - session._now()
+            if remaining <= 0:
+                if not session._cancellation_state.request_settlement_limitation:
+                    session._cancellation_state = (
+                        session._cancellation_state.record_request_settlement_limitation()
+                    )
+                break
+            session._condition.wait(remaining)
         session._classify_operation_settlement_locked()
         session._operation_in_flight = False
         session._active_operation = None

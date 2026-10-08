@@ -35,6 +35,8 @@ class _UpgradeStore(Protocol):
 
     def schema_manifest(self) -> tuple[str, ...]: ...
 
+    def upgrade_ledgered_schema(self, *, expected_manifest: tuple[str, ...], backup_verified: bool) -> None: ...
+
     def adopt_preledger_schema(
         self,
         *,
@@ -206,8 +208,9 @@ def _upgrade_coordinator_control_owned(
         if not authority.database_exists():
             raise RuntimeError("control database is absent")
         target_store = authority.control_store()
-        if target_store.schema_readiness().status.value != "preledger":
-            raise RuntimeError("control schema is not pre-ledger")
+        schema_before = target_store.schema_readiness().status.value
+        if schema_before not in {"preledger", "behind"}:
+            raise RuntimeError("control schema is not a supported upgrade input")
 
         upgrade_timestamp = timestamp or timestamp_utc()
         reference_database = _reference_database_name(upgrade_timestamp)
@@ -235,7 +238,9 @@ def _upgrade_coordinator_control_owned(
             reference_created = True
             reference_store = authority.control_store_for(reference_database)
             reference_store.initialize_schema()
-            target_store.adopt_preledger_schema(
+            upgrade = (target_store.upgrade_ledgered_schema if schema_before == "behind"
+                       else target_store.adopt_preledger_schema)
+            upgrade(
                 expected_manifest=reference_store.schema_manifest(),
                 backup_verified=True,
             )
@@ -250,7 +255,7 @@ def _upgrade_coordinator_control_owned(
         return {
             "command": "coordinator-control-upgrade",
             "result": "ready",
-            "schema_before": "supported-preledger",
+            "schema_before": "supported-preledger" if schema_before == "preledger" else "known-older-ledger",
             "schema_version": version,
             "backup_verified": True,
             "rollback_available": True,

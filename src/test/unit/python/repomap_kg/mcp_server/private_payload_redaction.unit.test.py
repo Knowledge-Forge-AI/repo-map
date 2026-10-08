@@ -29,7 +29,7 @@ def _mixed_multi_source_ops_config() -> str:
 
 class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
     def test_mcp_multi_source_storage_routes_to_logical_graph_root(self):
-        from repomap_kg.server.mcp_core import storage_connection
+        from repomap_kg.server.mcp import storage_connection
 
         config_path = self.write_ops_config(_mixed_multi_source_ops_config())
 
@@ -41,10 +41,8 @@ class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(connection.project, "mixed")
 
     def test_mcp_private_markers_include_all_multi_source_binding_roots(self):
-        from repomap_kg.server.mcp_core import (
-            private_storage_payload,
-            storage_connection,
-        )
+        from repomap_kg.server.mcp import storage_connection
+        from repomap_kg.server.mcp_core import private_storage_payload
         from repomap_kg.server.ops import graph_context, readback_path_markers
 
         config_path = self.write_ops_config(_mixed_multi_source_ops_config())
@@ -53,6 +51,9 @@ class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
             context = graph_context("mixed")
             connection = storage_connection(project="mixed")
             markers = readback_path_markers(context)
+            selection = connection.selection
+            assert selection is not None
+            self.assertEqual(set(selection.path_markers), set(markers))
             bindings = context.graph.effective_source_bindings
             for binding in bindings:
                 self.assertIn(binding.root_path, markers)

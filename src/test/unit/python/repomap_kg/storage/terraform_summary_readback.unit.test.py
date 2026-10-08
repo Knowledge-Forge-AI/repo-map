@@ -93,7 +93,16 @@ SAFETY_KEYS = (
 )
 
 
-def test_psycopg77_query_terraform_summary_uses_object_readback_adapter() -> None:
+@pytest.mark.parametrize(
+    ("root", "psql_args", "command", "identity", "omit_defaults"),
+    (("/tmp/psycopg77-public", ["-h", "/tmp/postgres", "-d", "postgres"], "custom-psql", None, False),
+     ("/tmp/fixture", ["-d", "postgres"], "psql", "repo1:fixture", False),
+     ("/tmp/fixture", ["-d", "postgres"], "psql", None, True)),
+)
+def test_psycopg77_query_terraform_summary_uses_object_readback_adapter(
+    root: str, psql_args: list[str], command: str, identity: str | None,
+    omit_defaults: bool,
+) -> None:
     payload = _summary_payload()
 
     with (
@@ -110,16 +119,20 @@ def test_psycopg77_query_terraform_summary_uses_object_readback_adapter() -> Non
             side_effect=AssertionError("terraform summary must use the adapter"),
         ),
     ):
-        record = query_terraform_summary(
-            ["-h", "/tmp/postgres", "-d", "postgres"],
-            root_path="/tmp/psycopg77-public",
-            psql_command="custom-psql",
-        )
+        if omit_defaults:
+            record = query_terraform_summary(psql_args, root_path=root)
+        else:
+            record = query_terraform_summary(
+                psql_args, root_path=root,
+                psql_command=command, repository_identity=identity,
+            )
 
     execute_json_readback.assert_called_once_with(
-        build_terraform_summary_query_sql("/tmp/psycopg77-public"),
-        psql_args=["-h", "/tmp/postgres", "-d", "postgres"],
-        psql_command="custom-psql",
+        build_terraform_summary_query_sql(
+            root, repository_identity=identity,
+        ),
+        psql_args=psql_args,
+        psql_command=command,
         label="terraform summary",
         expected_shape="object",
     )
@@ -212,45 +225,25 @@ def test_psycopg77_required_count_map_failures_are_bounded(
         terraform_summary_from_storage_payload(payload)
 
 
-def _pop_tfvars_files(payload: dict[str, object]) -> None:
-    tfvars = payload["tfvars"]
-    assert isinstance(tfvars, dict)
-    tfvars.pop("files")
-
-
-def _update_tfvars_variables(payload: dict[str, object]) -> None:
-    tfvars = payload["tfvars"]
-    assert isinstance(tfvars, dict)
-    tfvars.update(variables=None)
-
-
-def _pop_tfvars_literal(payload: dict[str, object]) -> None:
-    tfvars = payload["tfvars"]
-    assert isinstance(tfvars, dict)
-    tfvars.pop("literal_values_exposed")
-
-
-def _update_tfvars_literal(payload: dict[str, object]) -> None:
-    tfvars = payload["tfvars"]
-    assert isinstance(tfvars, dict)
-    tfvars.update(literal_values_exposed="false")
-
-
 @pytest.mark.parametrize(
-    ("mutate", "field_name"),
+    ("field_name", "remove", "invalid"),
     (
-        (_pop_tfvars_files, "files"),
-        (_update_tfvars_variables, "variables"),
-        (_pop_tfvars_literal, "literal_values_exposed"),
-        (_update_tfvars_literal, "literal_values_exposed"),
+        ("files", True, None),
+        ("variables", False, None),
+        ("literal_values_exposed", True, None),
+        ("literal_values_exposed", False, "false"),
     ),
 )
 def test_psycopg77_tfvars_failures_use_nested_field_labels(
-    mutate: Callable[[dict[str, object]], None],
-    field_name: str,
+    field_name: str, remove: bool, invalid: object,
 ) -> None:
     payload = _summary_payload()
-    mutate(payload)
+    tfvars = payload["tfvars"]
+    assert isinstance(tfvars, dict)
+    if remove:
+        tfvars.pop(field_name)
+    else:
+        tfvars[field_name] = invalid
 
     with pytest.raises(StorageSchemaError, match=rf": {field_name}$"):
         terraform_summary_from_storage_payload(payload)
@@ -351,6 +344,32 @@ def test_psycopg77_query_has_no_direct_psql_calls() -> None:
 
     assert "run_psql(" not in source
     assert "parse_psql_json(" not in source
+
+
+def test_build_terraform_summary_query_sql_with_identity() -> None:
+    sql = build_terraform_summary_query_sql(
+        "/tmp/fixture",
+        repository_identity="repo1:fixture",
+    )
+    assert "repositories.id = (SELECT id FROM repositories WHERE" in sql
+    assert "repository_identity = 'repo1:fixture'" in sql
+    assert "ORDER BY (repository_identity = 'repo1:fixture') DESC NULLS LAST, id LIMIT 1" in sql
+    assert "'root_path', '/tmp/fixture'" in sql
+
+
+def test_build_terraform_summary_query_sql_without_identity() -> None:
+    sql_default = build_terraform_summary_query_sql("/tmp/fixture")
+    sql_none = build_terraform_summary_query_sql("/tmp/fixture", repository_identity=None)
+    assert sql_default == sql_none
+    assert "repositories.root_path = '/tmp/fixture'" in sql_default
+    assert "repository_identity" not in sql_default
+
+
+def test_build_terraform_summary_query_sql_invalid_identity() -> None:
+    with pytest.raises(StorageSchemaError):
+        build_terraform_summary_query_sql("/tmp/fixture", repository_identity="invalid spaces")
+    with pytest.raises(StorageSchemaError):
+        build_terraform_summary_query_sql("/tmp/fixture", repository_identity="repo1:bad;semi")
 
 
 def _summary_payload(

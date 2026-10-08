@@ -91,15 +91,35 @@ def reconcile_publication(
     publication_state: str,
     marker: Literal["matching_committed", "absent", "conflicting", "unknown"],
     cancel_requested: bool,
+    *,
+    absence_proof: Literal["unproved", "fenced_absence"] = "unproved",
 ) -> str:
+    """Model validated publication evidence, without issuing fencing authority.
+
+    ``fenced_absence`` represents successful durable and file-gate closure:
+    both job and attempt must be not_started. ``rolled_back`` represents an
+    already validated rollback with neither side uncertain. Callers still own
+    currency, receipt identity, lease and one-shot proof checks; this pure
+    decision cannot authorize a store mutation. Non-cancellation retry policy
+    is unchanged and does not model attempt exhaustion.
+    """
+    if absence_proof not in {"unproved", "fenced_absence"}:
+        raise ValueError("invalid absence proof state")
     if marker == "matching_committed":
         return "succeeded"
     if marker == "conflicting":
         return "quarantined"
+    if absence_proof == "fenced_absence" and publication_state != "not_started":
+        return "reconciliation_required"
     if marker == "unknown" or publication_state in {"transaction_started", "commit_unknown"}:
         return "reconciliation_required"
     if marker == "absent" and publication_state in {"not_started", "prepared", "rolled_back"}:
-        return "cancelled" if cancel_requested else "queued"
+        if not cancel_requested:
+            return "queued"
+        if publication_state == "rolled_back" or (
+            publication_state == "not_started" and absence_proof == "fenced_absence"
+        ):
+            return "cancelled"
     return "reconciliation_required"
 
 

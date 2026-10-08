@@ -251,13 +251,17 @@ def test_psycopg104_graph_summary_connector_cli_baseline_drift_and_privacy_parit
                 },
                 sort_keys=True,
             )
-            for forbidden in (
-                "PUBLIC_SAFE_PASSWORD_VALUE",
+            forbidden_strings = [
                 "postgresql://",
                 "raw psycopg cause",
                 "PRIVATE_TOKEN",
                 "private-source-content",
-            ):
+            ]
+            if postgres.password:
+                forbidden_strings.append(postgres.password)
+            else:
+                forbidden_strings.append("PUBLIC_SAFE_PASSWORD_VALUE")
+            for forbidden in forbidden_strings:
                 assert forbidden not in serialized
     finally:
         for name, (present, value) in previous.items():
@@ -378,17 +382,13 @@ def _select(connector: str | None, driver: str | None, *, postgres) -> None:
             os.environ.pop(name, None)
         else:
             os.environ[name] = value
+    pw = postgres.password or "PUBLIC_SAFE_PASSWORD_VALUE"
+    os.environ["PUBLIC_SAFE_PASSWORD"] = pw
     if postgres.password:
         os.environ["PGPASSWORD"] = postgres.password
-    os.environ["PUBLIC_SAFE_PASSWORD"] = "PUBLIC_SAFE_PASSWORD_VALUE"
 
 
-def _run_cli(
-    home: Path,
-    command: str,
-    *,
-    psql_command: str | None = None,
-):
+def _run_cli(home: Path, command: str, *, psql_command: str | None = None):
     args = ["ops", command, "--repo-map-home", str(home), "--graph", "public", "--json"]
     if psql_command is not None:
         args.extend(("--psql-command", psql_command))

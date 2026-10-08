@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from types import SimpleNamespace
+from pathlib import Path
+import tempfile
 from typing import cast
 from unittest.mock import patch
 
-from repomap_kg.ops.config import OpsConfig
+from repomap_kg.ops.config import load_ops_config_home
 from repomap_kg.ops.refresh import _load_file_observations_with_ops_psql
+from repomap_kg.runtime.local import setup_local_runtime
 from repomap_kg.storage import LoadSummary
 from repomap_kg.storage.authority import AttemptNumber, OperationId
 from repomap_kg.storage.backend_telemetry import BackendTelemetry
@@ -26,32 +28,28 @@ def _authority() -> IngestionAuthority:
 
 def test_staged_loader_forwards_opt_in_backend_telemetry() -> None:
     telemetry = cast(BackendTelemetry, object())
-    config = cast(
-        OpsConfig,
-        SimpleNamespace(
-            postgres=SimpleNamespace(
-                psql_args_for_database=lambda _database: ["-d", "fixture"]
+    with tempfile.TemporaryDirectory() as td:
+        home = Path(td)
+        setup_local_runtime(home)
+        config = load_ops_config_home(home)
+
+        with patch(
+            "repomap_kg.ops.refresh.run_staged_full_refresh",
+            return_value=LoadSummary(repository_id=1, run_id=2, files=3),
+        ) as load:
+            result = _load_file_observations_with_ops_psql(
+                config,
+                "fixture",
+                (),
+                repository_name="fixture",
+                root_path="fixture-root",
+                repository_identity="repo1:fixture",
+                psql_command=None,
+                ingestion_mode="staged",
+                staged_authority=_authority(),
+                backend_telemetry=telemetry,
             )
-        ),
-    )
 
-    with patch(
-        "repomap_kg.ops.refresh.run_staged_full_refresh",
-        return_value=LoadSummary(repository_id=1, run_id=2, files=3),
-    ) as load:
-        result = _load_file_observations_with_ops_psql(
-            config,
-            "fixture",
-            (),
-            repository_name="fixture",
-            root_path="fixture-root",
-            repository_identity="repo1:fixture",
-            psql_command=None,
-            ingestion_mode="staged",
-            staged_authority=_authority(),
-            backend_telemetry=telemetry,
-        )
-
-    assert result.files == 3
-    assert load.call_args.kwargs["backend_telemetry"] is telemetry
-    assert load.call_args.kwargs["repository_identity"] == "repo1:fixture"
+        assert result.files == 3
+        assert load.call_args.kwargs["backend_telemetry"] is telemetry
+        assert load.call_args.kwargs["repository_identity"] == "repo1:fixture"

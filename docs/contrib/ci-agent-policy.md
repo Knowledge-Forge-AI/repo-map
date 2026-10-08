@@ -115,17 +115,30 @@ operator use, but agents must never manually duplicate an automatically
 triggered PR Fast run. Read-only inspection of a bounded set of runs does not
 authorize a rerun, cancellation, dispatch, or other mutation.
 
+## Product milestone publication
+
+[ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
+keeps development on private main. Public staging receives separately authorized
+significant reviewed milestones, not every slice. The approved hosted campaign
+must pass before a separately manager-authorized public-main v0.0.2 promotion.
+Pre-v0.1.0 previews are GitHub-only; v0.1.0 targets package managers. This policy
+does not itself grant any remote action or alter workflow triggers.
+
 ## Scoped Local Testing And Pipeline Ownership
 
 Ordinary agents use exact scoped unit selectors and changed-file static checks
-for local phase verification. A local integration selector is an optional,
-current-prompt-owned diagnostic, not an ordinary phase-closing requirement.
+for local phase verification. Behavior-changing product dispatches also require
+exact local containerized integration selectors for the changed boundary and
+unit/integration owner updates in the same slice. Required refusal/unavailability
+leaves a named gap blocking completion absent explicit manager acceptance.
+SQLite-only boundaries use temporary SQLite within repository-owned container
+isolation; PostgreSQL is needed for parity, not for SQLite itself.
 Every such selector is automatically dispatched into the host-disposable
-RepoMap sandbox and retains the containerized Postgres harness. Scoped commands
+RepoMap sandbox; current PostgreSQL owners retain its Postgres harness. Scoped commands
 use `--no-coverage`; they make no whole-population coverage claim and do not
 weaken a threshold.
 
-Complete local unit, integration, staging, or system execution requires an
+Complete local unit, integration, smoke, staging, system, or combined execution requires an
 explicit current prompt-owned override naming the suites, reason, exact
 candidate boundary, and maximum executions. Agents and reviewers may identify
 missing exact owners or request an override but cannot grant one. Generic

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -8,6 +9,7 @@ import pytest
 from repomap_kg.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
+    execute_json_readback_with_driver,
 )
 from repomap_kg.storage.canonical import (
     query_canonical_edge_explanation,
@@ -25,6 +27,69 @@ from repomap_kg.storage.sql import (
 
 def _completed(stdout: str) -> SimpleNamespace:
     return SimpleNamespace(stdout=stdout)
+
+
+def test_psql_readback_uses_private_child_password_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import repomap_kg.storage.readback_driver as readback_driver
+
+    captured: dict[str, object] = {}
+
+    def fake_run_psql(command, *, input_text, env):
+        captured.update(command=command, input_text=input_text, env=env)
+        return _completed('{"ok": true}\n')
+
+    monkeypatch.setenv("PGPASSWORD", "ambient-admin")
+    monkeypatch.setenv("REPOMAP_PG_PASSWORD", "ambient-admin")
+    monkeypatch.setattr(readback_driver, "run_psql", fake_run_psql)
+
+    payload = execute_json_readback_with_driver(
+        "SELECT 1",
+        driver="psql",
+        psql_args=["-h", "127.0.0.1", "-p", "5432", "-U", "reader", "-d", "graph"],
+        psql_command="psql",
+        label="synthetic readback",
+        expected_shape="object",
+        password="read-status-secret",
+    )
+
+    child_env = captured["env"]
+    assert payload == {"ok": True}
+    assert isinstance(child_env, dict)
+    assert child_env["PGPASSWORD"] == "read-status-secret"
+    assert "REPOMAP_PG_PASSWORD" not in child_env
+    assert os.environ["PGPASSWORD"] == "ambient-admin"
+
+
+def test_psycopg_readback_passes_password_only_to_connection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import psycopg
+
+    fake = _FakePsycopg(row=('{"ok": true}',))
+    monkeypatch.setattr(psycopg, "connect", fake.connect)
+
+    payload = execute_json_readback_with_driver(
+        "SELECT 1",
+        driver="psycopg",
+        psql_args=["-h", "127.0.0.1", "-p", "5432", "-U", "reader", "-d", "graph"],
+        psql_command="psql",
+        label="synthetic readback",
+        expected_shape="object",
+        password="read-status-secret",
+    )
+
+    assert payload == {"ok": True}
+    assert fake.connect_calls == [
+        {
+            "host": "127.0.0.1",
+            "port": "5432",
+            "user": "reader",
+            "dbname": "graph",
+            "password": "read-status-secret",
+        }
+    ]
 
 
 @pytest.fixture(autouse=True)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 from pathlib import PurePosixPath
 from typing import Any
@@ -77,7 +78,11 @@ def _safe_value_summary(value: Any) -> Any:
         if len(value) <= 120 and all(character.isprintable() for character in value):
             return value
         return f"<string:{len(value)}>"
-    if isinstance(value, (int, float, bool)) or value is None:
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            return {"numeric_type": "binary64", "refusal": "non-finite"}
+        return {"numeric_type": "binary64", "hex": value.hex()}
+    if isinstance(value, (int, bool)) or value is None:
         return value
     return None
 
@@ -128,7 +133,12 @@ def _stable_array_members(value: list[Any]) -> tuple[_StableArrayMember, ...]:
         summary = _safe_value_summary(stable_value)
         if summary is None or isinstance(summary, bool):
             return ()
-        segment = str(summary)
+        if isinstance(stable_value, float):
+            if not math.isfinite(stable_value):
+                return ()
+            segment = "binary64:" + stable_value.hex()
+        else:
+            segment = str(summary)
         if segment in seen:
             return ()
         seen.add(segment)

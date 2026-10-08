@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 
 import pytest
+from psycopg import OperationalError
 
 from repomap_kg.storage.backend_observer import (
     BackendObservationError,
@@ -102,6 +103,34 @@ class _SourceConnection:
 
     def close(self) -> None:
         self.closed = True
+
+
+@pytest.mark.parametrize("closed_before, closes_during", [(True, False), (False, True), (False, False)])
+def test_source_inspection_normalizes_only_unavailable_connections(
+    closed_before: bool, closes_during: bool,
+) -> None:
+    class Source:
+        closed = closed_before
+        inspections = 0
+
+        @property
+        def info(self):
+            self.inspections += 1
+            self.closed = self.closed or closes_during
+            raise OperationalError("synthetic inspection failure")
+
+    identity = BackendIdentity(951, _start(2))
+    connection = _ObserverConnection(identity, [])
+    observer = BackendOwnershipObserver()
+    observer.register_connection(connection)
+    source = Source()
+    expected = BackendObservationError if closed_before or closes_during else OperationalError
+    with pytest.raises(expected) as refused:
+        observer.event_sink(connection)(_event(TelemetryEventKind.CONNECTION_READY), source)
+    if expected is BackendObservationError:
+        assert str(refused.value) == "source connection is unavailable"
+    assert source.inspections == (0 if closed_before else 1)
+    assert observer.owned_backends == ()
 
 
 def test_owner_sink_binds_ready_identity_while_source_is_live() -> None:

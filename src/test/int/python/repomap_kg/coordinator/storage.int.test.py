@@ -210,44 +210,53 @@ class ControlStoreIntegrationTests(unittest.TestCase):
         )
 
     def test_singleton_takeover_recovers_safely_unpublished_attempt(self):
-        self.store.initialize_schema()
-        epoch_one = self.store.acquire_singleton("instance-a", timedelta(seconds=30))
-        submitted = self.store.submit(self._request())
-        claim = self._claim("instance-a", epoch_one)
-        self.assertEqual(claim.job_id, submitted.job_id)
+        from pathlib import Path
+        from repomap_kg.coordinator import _publication_phase as phase
+        from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
+        from repomap_test_support.startup_recovery_scenarios import _make_refresh_fixture, _refresh_harness, _req_norm, _run_real_refresh_attempt
 
-        with self._connect() as connection:
-            connection.execute("UPDATE coordinator_instances SET expires_at = now() - interval '1 second'")
-        epoch_two = self.store.acquire_singleton("instance-b", timedelta(seconds=30))
-
-        self.assertEqual(self.store.recover_abandoned_attempts("instance-b", epoch_two, 1000), 1)
-        recovered = self.store.reconciliation_claims(1000)
-        self.assertEqual(len(recovered), 1)
-        self.assertEqual(
-            (recovered[0].job_id, recovered[0].attempt, recovered[0].instance_id, recovered[0].fencing_epoch),
-            (claim.job_id, claim.attempt, claim.instance_id, claim.fencing_epoch),
-        )
-        self.assertEqual(
-            self.store.reconcile_publication(
-                claim,
-                reconciler_instance_id="instance-b",
-                reconciler_epoch=epoch_two,
-            ),
-            "queued",
-        )
-        status = self.store.status(submitted.job_id)
-        self.assertEqual((status.state, status.attempt), ("queued", 1))
-        with self._connect() as connection:
-            attempt = connection.execute(
-                "SELECT is_current, finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s AND attempt = 1",
-                (submitted.job_id,),
-            ).fetchone()
-            lease_count = connection.execute(
-                "SELECT count(*) FROM graph_leases WHERE job_id = %s",
-                (submitted.job_id,),
-            ).fetchone()[0]
-        self.assertEqual(attempt, (False, True))
-        self.assertEqual(lease_count, 0)
+        # Graph migrations require their own database, separate from control tables.
+        with _refresh_harness() as (store, root, connect, postgres, graph_db):
+            config, sg, cg, eg, kg = _make_refresh_fixture(postgres, root, graph_db)
+            epoch_one = store.acquire_singleton("instance-a", timedelta(seconds=300))
+            submitted = store.submit(_req_norm("takeover", sg, cg, eg, kg))
+            claim = store.claim_next("instance-a", epoch_one, timedelta(seconds=30))
+            assert claim is not None
+            self.assertEqual(claim.job_id, submitted.job_id)
+            for before, after in (("claimed", "starting"), ("starting", "running")):
+                self.assertTrue(store.compare_and_set_state(claim.job_id, expected_state=before, new_state=after,
+                    attempt=claim.attempt, instance_id=claim.instance_id, fencing_epoch=claim.fencing_epoch))
+            result = _run_real_refresh_attempt(postgres, root, claim, config, sg, cg, eg, kg,
+                pause_env_var="_REPOMAP_SYSTEM_TEST_PAUSE_PATH", pause_path=root / "pause",
+                launch_registrar=store.register_supervisor_launch)
+            self.assertTrue(result["_termination_proved"])
+            self.assertEqual(result["publication_state"], "commit_unknown")
+            with connect() as connection:
+                connection.execute("UPDATE coordinator_instances SET expires_at = now() - interval '1 second'")
+                connection.execute("UPDATE graph_leases SET expires_at = now() - interval '1 second'")
+            epoch_two = store.acquire_singleton("instance-b", timedelta(seconds=300))
+            self.assertEqual(store.recover_abandoned_attempts("instance-b", epoch_two, 1000), 1)
+            self.assertEqual(store.reconciliation_claims(1000), (claim,))
+            self.assertEqual(store.reconcile_publication(claim, reconciler_instance_id="instance-b",
+                reconciler_epoch=epoch_two), "reconciliation_required")
+            with connect() as connection:
+                self.assertEqual(connection.execute("SELECT count(*) FROM graph_leases WHERE job_id = %s", (claim.job_id,)).fetchone(), (1,))
+            resolver = ConfiguredRefreshResolver(config, Path(postgres.psql_command))
+            store.set_durable_fence_callback(resolver.install_graph_publication_fence)
+            self.assertTrue(store.close_unpublished_reconciliation(claim, reconciler_instance_id="instance-b",
+                reconciler_epoch=epoch_two, file_closer=lambda c, proof: phase.close_unpublished(root, c, proof=proof)))
+            self.assertEqual(store.reconcile_publication(claim, reconciler_instance_id="instance-b",
+                reconciler_epoch=epoch_two, unpublished_proved=True), "queued")
+            status = store.status(submitted.job_id)
+            self.assertEqual((status.state, status.attempt), ("queued", 1))
+            with connect() as connection:
+                attempt = connection.execute(
+                    "SELECT is_current, finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s AND attempt = 1", (submitted.job_id,),
+                ).fetchone()
+                lease_count = connection.execute("SELECT count(*) FROM graph_leases WHERE job_id = %s", (submitted.job_id,)).fetchone()[0]
+            self.assertEqual(attempt, (False, True))
+            self.assertEqual(lease_count, 0)
+            self.assertTrue(store.stop_singleton("instance-b", epoch_two))
 
     def test_fenced_heartbeat_progress_cancellation_and_reconciliation(self):
         self.store.initialize_schema()
@@ -321,7 +330,7 @@ class ControlStoreIntegrationTests(unittest.TestCase):
             )
         )
         dry_run = self.store.cleanup_terminal(timedelta(seconds=0), limit=10, dry_run=True)
-        self.assertEqual(dry_run, (submitted.job_id,))
+        self.assertEqual(dry_run.deleted_job_ids, (submitted.job_id,))
         self.assertEqual(self.store.status(submitted.job_id).state, "succeeded")
 
     def test_safe_retry_closes_attempt_and_releases_matching_lease(self):

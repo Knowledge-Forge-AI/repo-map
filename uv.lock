@@ -682,11 +682,13 @@ name = "repomap-kg"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "psycopg", extra = ["binary"] },
     { name = "typing-extensions" },
 ]
 
 [package.optional-dependencies]
+postgres = [
+    { name = "psycopg", extra = ["binary"] },
+]
 scale-tools = [
     { name = "docker" },
     { name = "psutil" },
@@ -710,7 +712,7 @@ requires-dist = [
     { name = "docker", marker = "extra == 'scale-tools'", specifier = "==7.2.0" },
     { name = "mypy", marker = "extra == 'static-analysis'", specifier = "==2.1.0" },
     { name = "psutil", marker = "extra == 'scale-tools'", specifier = "==7.2.2" },
-    { name = "psycopg", extras = ["binary"], specifier = "==3.2.12" },
+    { name = "psycopg", extras = ["binary"], marker = "extra == 'postgres'", specifier = "==3.2.12" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
     { name = "pytest-xdist", marker = "extra == 'test'", specifier = ">=3" },
     { name = "ruff", marker = "extra == 'static-analysis'", specifier = "==0.16.2" },
@@ -719,7 +721,7 @@ requires-dist = [
     { name = "types-requests", marker = "extra == 'static-analysis'", specifier = "==2.33.0.20260518" },
     { name = "typing-extensions", specifier = "==4.16.0" },
 ]
-provides-extras = ["test", "scale-tools", "static-analysis"]
+provides-extras = ["test", "scale-tools", "static-analysis", "postgres"]
 
 [[package]]
 name = "requests"

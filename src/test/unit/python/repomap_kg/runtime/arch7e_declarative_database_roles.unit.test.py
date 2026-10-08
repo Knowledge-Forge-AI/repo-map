@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
+from repomap_kg.ops.config_records import OpsConfig
 from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority
 from repomap_kg.runtime.backup import init_database_from_source
 from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
@@ -135,6 +136,7 @@ def test_read_only_services_project_the_parsed_config_onto_read_role(
         {"REPOMAP_READ_STATUS_PASSWORD": "read-secret"},
     ):
         mcp_config = load_mcp_ops_config(config_path)
+        assert isinstance(mcp_config, OpsConfig), "a PostgreSQL home loads OpsConfig"
 
     assert diagnostic_count == 0
     assert truncated is False
@@ -162,6 +164,7 @@ def test_explicit_empty_mcp_read_secret_does_not_restore_admin_config(
         {"REPOMAP_READ_STATUS_PASSWORD": ""},
     ):
         config = load_mcp_ops_config(config_path)
+        assert isinstance(config, OpsConfig), "a PostgreSQL home loads OpsConfig"
 
     assert config.postgres.user == READ_STATUS_ROLE
     assert config.postgres.password_env == "REPOMAP_READ_STATUS_PASSWORD"
@@ -179,7 +182,7 @@ def test_coordinator_authority_never_loads_admin_secret_and_routes_exact_roles(
 
     with (
         patch(
-            "repomap_kg.coordinator._lifecycle_authority._postgres_password",
+            "repomap_kg.coordinator._lifecycle_authority.local_admin_password",
             side_effect=AssertionError("administrator secret must not be loaded"),
         ),
         patch("repomap_kg.coordinator.local_lifecycle.psycopg.connect") as connect,

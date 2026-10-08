@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass, field
+import hashlib
 import multiprocessing
 from multiprocessing.connection import Connection
+import os
+from pathlib import Path
 from threading import Lock
 import time
 
@@ -18,6 +23,7 @@ from repomap_test_support.test_cov5g_r1_containment import (
 from repomap_test_support.test_cov5k_r2_observer_protocol import (
     ADR_0046_EXPECTATIONS,
 )
+from runner_coverage_execution import prepare_child_coverage_environment
 from scale28_backend_observer_session import (
     BackendObserverSession,
     ObserverFailureBoundary,
@@ -216,21 +222,69 @@ def wait_for_backend_count(
     return False
 
 
+@contextmanager
+def _scoped_environment(target_env: Mapping[str, str]) -> Iterator[None]:
+    saved = dict(os.environ)
+    try:
+        os.environ.clear()
+        os.environ.update(target_env)
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(saved)
+
+
+def _cooperative_worker_target(
+    channel: Connection,
+    stop: multiprocessing.synchronize.Event,
+) -> None:
+    """Cooperative child process target for isolation testing."""
+    channel.send("ready")
+    channel.close()
+
+
 def run_process_case(
     configuration: ChildConfiguration,
     admin: psycopg.Connection,
 ) -> ProcessFeasibilityResult:
     """Run one spawn-safe parent-owned feasibility case."""
 
+    action = configuration.case.parent_action
+    is_victim = action is not ParentAction.COOPERATIVE_STOP
+
+    # Ensure multiprocessing resource tracker is running under ambient parent
+    # coverage environment before any scoped environment or role marker is set.
     context = multiprocessing.get_context("spawn")
-    parent_channel, child_channel = context.Pipe(duplex=True)
-    stop = context.Event()
-    process = context.Process(
-        target=process_child_main,
-        args=(configuration, child_channel, stop),
-        name="cov5g-r1-contained-observer",
-    )
-    process.start()
+    context.Event()
+
+    if is_victim:
+        parent_channel, child_channel = context.Pipe(duplex=True)
+        stop = context.Event()
+        process = context.Process(
+            target=process_child_main,
+            args=(configuration, child_channel, stop),
+            name="cov5g-r1-contained-observer",
+        )
+        prev_role = os.environ.get("COVERAGE_CHILD_LAUNCH_ROLE")
+        try:
+            os.environ["COVERAGE_CHILD_LAUNCH_ROLE"] = "intentional-victim"
+            process.start()
+        finally:
+            if prev_role is not None:
+                os.environ["COVERAGE_CHILD_LAUNCH_ROLE"] = prev_role
+            else:
+                os.environ.pop("COVERAGE_CHILD_LAUNCH_ROLE", None)
+    else:
+        target_env = prepare_child_coverage_environment(family="unmeasured")
+        with _scoped_environment(target_env):
+            parent_channel, child_channel = context.Pipe(duplex=True)
+            stop = context.Event()
+            process = context.Process(
+                target=process_child_main,
+                args=(configuration, child_channel, stop),
+                name="cov5g-r1-contained-observer",
+            )
+            process.start()
     child_channel.close()
     ready = False
     request_started = False
@@ -254,7 +308,6 @@ def run_process_case(
             message = parent_channel.recv()
             request_started |= message == "request_started"
             descendant_refused |= message == "live_descendant"
-        action = configuration.case.parent_action
         if action is ParentAction.COOPERATIVE_STOP:
             process.join(3.0)
             cooperative = process.exitcode == 0
@@ -283,6 +336,43 @@ def run_process_case(
             process.terminate()
             process.join(3.0)
         parent_channel.close()
+
+    process_cleaned = 1 if (process.is_alive() is False) else 0
+    desc_closed = 1 if parent_channel.closed else 0
+    backend_dis = 1 if disappeared else 0
+
+    if (
+        is_victim
+        and forced
+        and disappeared
+        and parent_channel.closed
+        and (process.is_alive() is False)
+    ):
+        manifest_dir = os.environ.get("COVERAGE_CHILD_MANIFEST_DIR")
+        if manifest_dir and os.path.isdir(manifest_dir):
+            pytest_current = os.environ.get("PYTEST_CURRENT_TEST", "")
+            owner = (
+                hashlib.sha256(pytest_current.encode()).hexdigest()
+                if pytest_current
+                else ""
+            )
+            invocation = os.environ.get("COVERAGE_SESSION_INVOCATION_ID", "")
+            suite = os.environ.get("COVERAGE_SESSION_SUITE", "")
+            victim_path = Path(manifest_dir) / f"{process.pid}.victim"
+            victim_content = (
+                f"pid={process.pid}\n"
+                f"ppid={os.getpid()}\n"
+                f"invocation={invocation}\n"
+                f"suite={suite}\n"
+                f"owner={owner}\n"
+                f"case_id={configuration.case.case_id}\n"
+                f"parent_action={action.name}\n"
+                f"exitcode={process.exitcode}\n"
+                f"backend_disappeared={backend_dis}\n"
+                f"descriptor_closed={desc_closed}\n"
+                f"process_cleaned={process_cleaned}\n"
+            )
+            victim_path.write_text(victim_content, encoding="utf-8")
     return ProcessFeasibilityResult(
         case_id=configuration.case.case_id,
         child_started=ready,

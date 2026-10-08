@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
+from pathlib import Path
 from typing import Mapping
 
 from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
@@ -13,62 +13,13 @@ from repomap_kg.artifacts.store import ArtifactStore
 from repomap_kg.storage.staging_family_rows import StageFamily
 
 
-@dataclass(frozen=True)
-class PublicationExpectation:
-    request_id: str
-    job_id: str
-    attempt: int
-    graph_id: str
-    candidate_id: str
-    snapshot_manifest_id: str
-    snapshot_vector: tuple[tuple[str, int, str], ...]
-    source_generation: str
-    config_generation: str
-    extractor_generation: str
-    canonicalizer_generation: str
-    extractor_capability_identity: str
-    resolver_identity: str
-    canonicalizer_identity: str
-    semantic_contract_identity: str
-    quality_rule_identity: str
-    mutating_owner_count: int
-    contract_version: str = "1.0"
-    worker_capability_identity: str = "cap1:portable-worker-v1"
-    expected_privacy: str | None = None
-
-    @classmethod
-    def from_bundle(
-        cls,
-        bundle: PublicationBundle,
-        *,
-        mutating_owner_count: int,
-        contract_version: str = "1.0",
-        worker_capability_identity: str = "cap1:portable-worker-v1",
-        expected_privacy: str | None = None,
-    ) -> "PublicationExpectation":
-        return cls(
-            bundle.request_id, bundle.job_id, bundle.attempt, bundle.graph_id,
-            bundle.candidate_id, bundle.snapshot_manifest_id,
-            bundle.snapshot_vector, bundle.source_generation,
-            bundle.config_generation, bundle.extractor_generation,
-            bundle.canonicalizer_generation,
-            bundle.extractor_capability_identity, bundle.resolver_identity,
-            bundle.canonicalizer_identity, bundle.semantic_contract_identity,
-            bundle.quality_rule_identity, mutating_owner_count,
-            contract_version=contract_version,
-            worker_capability_identity=worker_capability_identity,
-            expected_privacy=expected_privacy or bundle.privacy.value,
-        )
-
-
-@dataclass(frozen=True)
-class BundleValidationResult:
-    bundle_id: str
-    receipt_id: str
-    byte_integrity_valid: bool
-    semantic_authority_valid: bool
-    idempotent_replay: bool
-    mutated: bool = False
+from repomap_kg.artifacts._bundle_stream import (
+    BundleValidationResult,
+    PublicationExpectation,
+    STREAMING_MAX_BUNDLE_BYTES,
+    StreamingBundleParser,
+    ValidatedBundleDescriptor,
+)
 
 
 class PublisherBundleValidator:
@@ -130,6 +81,39 @@ class PublisherBundleValidator:
             semantic_authority_valid=True,
             idempotent_replay=replay,
         )
+
+    def validate_bundle_stream(
+        self,
+        *,
+        store: ArtifactStore,
+        bundle_reference: ArtifactReference,
+        receipt_reference: ArtifactReference,
+        expectation: PublicationExpectation,
+        stage_id: str | None = None,
+        spool_dir: Path | str | None = None,
+        max_bundle_bytes: int = STREAMING_MAX_BUNDLE_BYTES,
+    ) -> ValidatedBundleDescriptor:
+        receipt_bytes = store.read(receipt_reference)
+        if receipt_reference.content_digest != _sha256(receipt_bytes):
+            raise ValueError("receipt byte integrity failed")
+        receipt = ExtractionReceipt.from_bytes(receipt_bytes)
+
+        key = (receipt.job_id, receipt.attempt)
+        prior = self._attempts.get(key)
+
+        parser = StreamingBundleParser(spool_dir=spool_dir, max_bundle_bytes=max_bundle_bytes)
+        with store.open_stream(bundle_reference, max_bytes=max_bundle_bytes) as stream:
+            descriptor = parser.parse_and_validate(
+                stream, expectation, receipt, stage_id=stage_id, prior_attempt=prior
+            )
+
+        identity = (receipt.receipt_id, descriptor.bundle_id, "completed")
+        try:
+            self._record_attempt(key, identity)
+        except Exception:
+            descriptor.close()
+            raise
+        return descriptor
 
     def _record_attempt(
         self,

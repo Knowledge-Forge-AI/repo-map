@@ -14,17 +14,23 @@ This document does not authorize production implementation, package changes,
 schema changes, runtime changes, deployment changes, or a new supported
 transport. Any change identified here requires a separately accepted phase.
 
-This document is intentionally distinct from the long-term product direction.
-[ADR 0057](../adr/2026/08/0057-cloud-first-multi-source-architecture-reconciliation.md)
-establishes a cloud-first commercial destination, immediate multi-source graph
-composition, and deployment-neutral target contracts. MS-ID1 implements the
-additive identity/configuration foundation and MS-FLAKE2 adds the first local
-vertical-slice candidate described below. The local
-PostgreSQL system remains the current as-built authority, reference and
-qualification implementation, contributor/power-user distribution, and
-possible private/self-hosted deployment.
+[ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
+separates implemented PostgreSQL behavior from the accepted target surfaces.
 
-The architecture is local-first. RepoMap statically extracts observations from
+| Boundary | Current implementation | Accepted target |
+|---|---|---|
+| Graph storage | PostgreSQL reference/self-hosted path | SQLite Local plus PostgreSQL Server/Cloud, one accepted authority per graph view |
+| Semantics | Python, explicit multi-source bindings, portable worker and validated bundles | Shared identities, meaning, privacy, evidence and publication lineage across backends |
+| MCP | Read-only PostgreSQL-backed reference path; twenty-three database-reading tools (canonical plus legacy status, twelve configured investigation including five language summaries, six ingested-source reads) read through host-only named read-store seams, two tools are configuration-only, and two read configured server-memory files | Host-native, source-blind Local read-store seam with PostgreSQL parity |
+| Enhanced intelligence | Core search; no admitted pgvector capability | Useful optional Server pgvector before v0.1.0, separately admitted; named-workload JSONB |
+| Delivery | Private-main development; hosted qualification is separately evidenced | Significant public-staging milestones, GitHub-only v0.0.2 preview, first package-manager target v0.1.0 |
+
+SQLite publication, Cloud control-plane service and Rust extraction are not
+implemented by the architecture decision. Headless Local does not require a GUI.
+
+As built, the architecture is a local-first, single-host containerized
+PostgreSQL reference system; this is not the target SQLite-backed RepoMap Local
+surface described above. RepoMap statically extracts observations from
 configured source roots, canonicalizes those observations, publishes graph
 state to exactly owned PostgreSQL databases, and exposes bounded readback
 through its CLI and read-only MCP server. Canonical lists and embedded
@@ -379,8 +385,9 @@ flowchart TB
 `src/main/python/repomap_kg/runtime/commands.py::render_compose_yaml` creates
 the current two-service topology. Its RepoMap service runs `server serve`, and
 `src/main/python/repomap_kg/server/http.py::RepoMapLocalRequestHandler`
-implements `GET /livez`, `GET /healthz`, `GET /readyz`, and `GET /status`. It
-has no MCP request method.
+implements `GET /livez`, `GET /healthz`, `GET /readyz`, and `GET /status`. On the
+main thread, `serve_local_http` handles `SIGTERM` gracefully by closing the server
+and exiting 0. It has no MCP request method.
 `src/main/python/repomap_kg/server/mcp.py::serve_stdio` is the implemented MCP
 transport.
 
@@ -819,6 +826,136 @@ MCP dispatch is read-only. It may inspect configured and stored state, but it
 does not refresh graphs, initialize or migrate databases, restore or drop
 databases, install services, or mutate source roots.
 
+`repomap_canonical_nodes`, `repomap_canonical_edges`,
+`repomap_explain_canonical_edge`, and `repomap_canonical_neighborhood` read
+through the named canonical read-store seam in
+`src/main/python/repomap_kg/server/canonical_read_store.py`. The payload
+functions in `server/mcp_canonical.py` resolve the graph, apply visibility,
+and validate arguments first. They then hand typed query records (validated
+filters plus a `limit + 1` fetch window) to `CanonicalReadStore`. The seam
+exposes no SQL, callback, or command argument. Its only production adapter,
+`PostgresCanonicalReadStore`, delegates to the maintained
+`storage/canonical.py` query owners. For configured graphs it resolves
+`runtime/postgres_route.py::readback_postgres_authority`, which is the owner
+the storage CLI already uses. A setup-owned `--repo-map-home` home therefore
+reads as `repomap_read_status` with an in-memory credential; custom configs
+keep their configured credential. The adapter never uses the `docker` or
+`podman exec psql` fallback. The graph resolution and visibility refusals in
+`server/mcp_core.py::storage_connection` stay PostgreSQL-typed and outside
+the seam. A later SQLite adapter must address that rather than assume
+backend-neutral resolution.
+Evidence: `src/test/unit/python/repomap_kg/mcp_server/canonical_read_store.unit.test.py`
+and `src/test/int/python/repomap_kg/cli/mcp_host_native_read_store.int.test.py`;
+see `docs/status/2026/09/28/00970-product2-host-mcp-readstore1-exit.md`.
+
+Seven configured-graph investigation tools read through the named
+investigation read-store seam in
+`src/main/python/repomap_kg/server/investigation_read_store.py`:
+`repomap_graph_status`, `repomap_refresh_status`, `repomap_search_nodes`,
+`repomap_search_files`, `repomap_search_observations`,
+`repomap_project_summary` and `repomap_neighborhood`. The payload owners in
+`server/ops.py`, `server/_ops_search.py` and `server/_ops_summaries.py` keep
+graph visibility, validation, serialization, redaction and paging. They pass
+a graph id and frozen query records (`GraphRefreshStatusQuery`,
+`GraphSearchQuery`, `ProjectSummaryQuery`, `ConfiguredNeighborhoodQuery`) to
+`InvestigationReadStore`. Its only adapter, `PostgresInvestigationReadStore`,
+re-resolves the graph inside the adapter and delegates to the maintained owners
+bound at call time through the `server/ops.py` facade:
+
+- `ops/_refresh_queries.py::query_refresh_status` with
+  `readback_mode="host_only"` and exactly the visible graph ids;
+- the MCP search SQL owner through `execute_ops_json_readback` in `host_only`
+  mode;
+- `query_canonical_storage_summary` and `query_canonical_neighborhood`
+  through `canonical_read_store.read_configured_graph`, the same
+  `readback_postgres_authority` helper the canonical seam uses.
+
+READSTORE3 finishes the remaining twelve database readers on the same seams:
+
+- the five language/framework summaries call
+  `InvestigationReadStore.language_summary(LanguageSummaryQuery)`, which
+  selects one of a closed set of five maintained owners and reads through
+  `read_configured_graph`;
+- the six ingested-source/feed tools pass named request records
+  (`IngestedSourcesQuery`, `SourceSummaryQuery`, `SourceRunsQuery`,
+  `SourceFeedItemsQuery`, `SourceFeedItemExplanationQuery`,
+  `SourceReferencesQuery`) to `SourceReadStore` in
+  `src/main/python/repomap_kg/server/source_read_store.py`, whose only adapter
+  delegates to the maintained `storage/source_readback.py` owners;
+- legacy `repomap_status` calls
+  `CanonicalReadStore.canonical_storage_summary()`; its payload is unchanged.
+
+The source and status adapters share
+`canonical_read_store.read_storage_connection`: legacy JSON projects and
+explicit `pg_*` connections keep their ambient libpq call unchanged, and
+configured graph-registry connections (a `ConfiguredPostgresConnection`) read
+through `read_configured_graph`.
+
+RESOLVE1 separates logical graph selection from backend binding on every
+configured tool path:
+
+- `src/main/python/repomap_kg/server/graph_selection.py` owns the public
+  selection refusals (`checked_graph`, `visible_graphs`, `McpOpsError`) and the
+  frozen `GraphSelection` record. It holds only the maintained graph record and
+  the config file locations used as private path markers; identity, root,
+  privacy and markers are derived from them. It does not require bound
+  PostgreSQL connection authority: it holds no endpoint, user, password, psql
+  command or `OpsConfig` (the maintained graph record may still name the
+  configured database), and its static import closure
+  reaches no `server`, `runtime`, `storage`, readback or refresh module;
+- `ops.configured_graph` (investigation tools) and
+  `mcp_core.storage_connection` (canonical and source tools; it returns a
+  `ConfiguredGraphTarget`) select first, then call the facade factory
+  `ops.investigation_stores(config)` or `mcp.graph_stores(config)`;
+- `src/main/python/repomap_kg/server/postgres_read_binding.py` is the only
+  production binding. It alone selects the psql command, names the database
+  (`graph_database`, also the redacted `database` display label), builds
+  `McpOpsGraphContext` and constructs the three read stores. Credentials and
+  driver choice stay in `read_configured_graph` and the investigation owners.
+
+The refusal order is unchanged: parse, selection, psql-command check, argument
+validation, read. Unit owners inject fake bindings for all 23 tools with
+PostgreSQL tripwires armed; that injection is test-only.
+
+None of the twenty-three seam tools uses the `docker`/`podman exec psql`
+fallback for configured graphs. The CLI default (`host_then_container`) is
+unchanged in `ops.refresh`. RESOLVE1 removed the dormant
+`mcp_core.StorageConnection.query_storage` and
+`server/ops.py::query_configured_storage`, and a unit guard keeps every
+`server` module free of the retained fallback names. `repomap_list_graphs`
+and `repomap_projects` read configuration only, with no backend binding. The
+two server-memory tools read files through the memory bridge. Still
+PostgreSQL-specific:
+
+- config parsing: `load_ops_config` requires `[postgres]` and derives every
+  graph's database while loading, and the factories receive that whole
+  credential-bearing `OpsConfig`;
+- `McpOpsGraphContext` and `graph_context`, a compatibility constructor that no
+  configured tool path uses;
+- the investigation query records and adapter, which re-resolve by graph id;
+- `OpsRefreshGraphStatus` grouping and its database display;
+- the LIKE/`ESCAPE` search semantics;
+- legacy `StorageConnection`, JSON projects and explicit `pg_*` arguments;
+- the `list_graphs` database display.
+
+The server package still imports its PostgreSQL implementation; this is not a
+driver-free packaging claim. No `sqlite` option exists, and a future SQLite
+configuration is Step 4 (historical READSTORE2 record: SQLite Local homes exist
+since LOCAL1, and SQLite startup is Psycopg-free since LOCAL6; see "SQLite Local
+first slice" below). Evidence:
+`src/test/unit/python/repomap_kg/mcp_server/investigation_read_store.unit.test.py`,
+`src/test/unit/python/repomap_kg/mcp_server/investigation_read_store_adapter.unit.test.py`
+and the extended stdio owner above; see
+`docs/status/2026/09/28/00971-product2-host-mcp-readstore2-exit.md`. READSTORE3
+evidence: `src/test/unit/python/repomap_kg/mcp_server/domain_read_store.unit.test.py`,
+`src/test/unit/python/repomap_kg/mcp_server/domain_read_store_adapter.unit.test.py`
+and `src/test/int/python/repomap_kg/cli/mcp_host_native_domain_read_store.int.test.py`;
+see `docs/status/2026/09/28/00972-product2-host-mcp-readstore3-exit.md`.
+RESOLVE1 evidence:
+`src/test/unit/python/repomap_kg/mcp_server/graph_selection.unit.test.py` and
+`src/test/unit/python/repomap_kg/mcp_server/postgres_read_binding.unit.test.py`;
+see `docs/status/2026/09/29/00973-product2-host-mcp-resolve1-exit.md`.
+
 ### Read-only MCP flow
 
 ```mermaid
@@ -957,6 +1094,26 @@ control role for its durable store and passes the refresh role through its
 private worker capability. It does not load the lifecycle-administrator secret
 or receive maintenance-database authority.
 
+The local-home authority repair candidate makes fresh `local setup` homes
+owner-private at creation (POSIX `0700`) and creates runtime credentials
+privately (`0600`). Existing homes are validated without automatic permission
+repair; unsafe ownership, type, or permissions are refused. Dry-run does not
+create or chmod the home. Windows uses reparse rejection and private ACL helpers.
+
+Host `LocalControlAuthority` lifecycle consumers select literal password,
+explicit private password file, then a present named process environment value.
+Only a config-home-backed `local-native` route requesting
+`REPOMAP_PG_PASSWORD` may read that exact key from its private `runtime/.env`
+when the variable is absent. Duplicates, empty or oversized values, unsafe files,
+custom references, container-internal routes, and direct exposure disabled
+cannot use this fallback. No environment variables are exported.
+This lifecycle precedence intentionally differs from the unchanged configured
+refresh resolver's literal → environment → file ordering when both references
+are configured. Coordinator role credentials remain independent.
+See the [repair candidate exit](../status/2026/09/27/00960-product1-local-home-authority-fix1-exit.md)
+for qualification limits. Product step 2's captured-snapshot proof is recorded
+in the [READBACK1 exit](../status/2026/09/28/00969-product1-qual12-readback1-exit.md).
+
 Fresh database creation uses bare `CREATE DATABASE` and inherits template
 encoding/collation; Compose declares no initdb locale/encoding. Text-key and
 path ordering queries do not consistently declare a collation, so public order
@@ -1076,8 +1233,15 @@ and leaves ordinary CLI startup fail-fast.
 
 ## Platform and service packaging
 
-The Python distribution requires Python 3.12 or newer and pins
-`psycopg[binary]==3.2.12` plus its exact `typing-extensions` closure. ARCH7F
+The Python distribution requires Python 3.12 or newer. Since LOCAL11 its base
+dependency set is only `typing-extensions==4.16.0`: the base wheel is the
+SQLite Local install and carries no PostgreSQL driver. The `postgres` extra
+pins `psycopg[binary]==3.2.12` for the PostgreSQL Server Engine, and the
+generated Server image installs `".[postgres]"`. The manager accepted an
+attended native macOS arm64 / Python 3.13.12 run of the reviewed LOCAL11 base
+wheel in a fresh virtual environment without Psycopg (PRESTAGING-DEBT-CLOSE1,
+`docs/status/2026/09/30/00988-product4-prestaging-debt-close1-exit.md`).
+Windows-native Local mutation and distribution remain unqualified. ARCH7F
 packages graph and coordinator-control migration resources as installed wheel
 data and resolves them from the distribution data root outside a checkout.
 The generated Linux runtime image uses digest-pinned official PostgreSQL 16.14
@@ -1284,3 +1448,302 @@ The worker still produces untrusted candidate evidence only. It has no graph,
 control database, registry, lifecycle, or publication authority, and the audit
 hook is not an OS sandbox. Production refresh and staged PostgreSQL publication
 routes remain unchanged.
+
+## Multi-Source Production Pipeline and Scale Bounds (Product Step 2 Captured-Snapshot Proof)
+
+**Product step 2: live DINAS multi-source captured-snapshot proof qualified;
+observed browser-ux source drift disclosed; current-worktree freshness not claimed.**
+See the [READBACK1 exit](../status/2026/09/28/00969-product1-qual12-readback1-exit.md).
+It is subject to independent review and APGR private-main finalization.
+
+The committed publication is bound to one job and one attempt: job
+`bc33eb04-…`, attempt 1, run 1, candidate `cand1:962ae344…0620`. The capture is
+authoritative for that publication:
+
+- The sealed manifest holds 10 bindings and 2,218 files.
+- Snapshot ids, the source generation and the candidate recompute from the
+  sealed manifest and the retained configuration.
+- The receipt, the stream-validated bundle, the run, the stage, the
+  publication authority and the job fences agree.
+
+The captured vector equals the pre-submission external sample. A later
+`browser-ux_dinas` change is disclosed freshness information. Each binding was
+stable across one sealing bracket bound to the job fence. This is not a
+single-instant snapshot of all repositories.
+
+QUAL1, QUAL2 and QUAL3 failed and did not publish private main. HOST1's
+historical `blocked_or_failed_not_qualified` disposition is unchanged
+(ADRs 0071–0073). The implementation and reviewed D2/D3 architecture remain
+documented below. D2 and D3 were not re-measured live.
+
+1. **Multi-Source Configuration and Topology**:
+   Explicit multi-source graph definitions bind multiple local checkouts into a
+   single unified graph. Root paths are disambiguated with binding aliases (e.g.,
+   `binding_alias/relpath`), guaranteeing deterministic canonical file identities
+   across multiple repositories.
+2. **D1 Bounded Streaming Publication Pipeline**:
+   Historical large-bundle measurements motivated bounded streaming. QUAL1/QUAL2
+   observations do not qualify the current live corpus.
+   READBACK1 measured the committed DINAS bundle at 797,627,437 bytes. That is
+   above the 512 MiB non-streaming ceiling and within the 1 GiB streaming
+   ceiling.
+   The pipeline streams generation and
+   validation via `StreamingBundleEncoder` with disk-backed external merge sorting
+   (`BoundedExternalRowSorter`), single-pass `StreamingBundleParser` with disk-backed
+   link validation (`DiskFamilyLinkValidator`), and direct stage row spooling
+   (`RowSpoolWriter`), operating within a 1 GiB streaming limit (`STREAMING_MAX_BUNDLE_BYTES`).
+3. **D2 Decoupled Supervisor Watchdog Architecture**:
+   The supervisor attempt watchdog (`refresh_attempt_deadline_seconds`, default 3600s,
+   max 86400s) supervises the complete coordinator refresh lifecycle (preflight,
+   discovery, sealing, worker extraction, streaming validation, staged PostgreSQL
+   publication), while the leaf worker watchdog (`process_deadline_seconds`, default 600s,
+   max 3600s) supervises only the inner worker extraction subprocess.
+4. **D3 Statistics-Independent Target Mapping (Variant F)**:
+   Canonical staging merge statements for `canonical_edge_evidence` use session-local
+   temporary maps (`pg_temp.temp_canonical_edge_map`, `pg_temp.temp_canonical_evidence_map`)
+   with explicit `ANALYZE`, fail-closed duplicate table checks, and standard unprivileged
+   publication role (`repomap_refresh_publication`), eliminating pathological planner
+   nested-loop degradation.
+5. **Durable Control State and Fencing**:
+   Coordinator refresh state is durable in the control database with attempt-bound
+   tokens, fencing epochs, generation tokens, and fail-closed publication-phase evidence
+   retirement.
+
+Target boundaries from ADR 0071 remain distinct: SQLite Local (Step 4) is
+manager-accepted with a first bounded slice (below), and enhanced intelligence pgvector
+(Step 6) remains pending a separate manager-authorized phase.
+
+Product step 3 is manager-accepted (2026-09-29) for its specified scope,
+recorded in `docs/status/2026/09/29/00977-product3-sqlite-local1-exit.md`; the
+acceptance is not fully backend-neutral configuration, installed-wheel/store
+qualification or globally green CI. Three slices route all twenty-three
+database-reading MCP tools through host-only read-store seams: the four
+canonical tools
+(`docs/status/2026/09/28/00970-product2-host-mcp-readstore1-exit.md`), the
+seven configured investigation tools
+(`docs/status/2026/09/28/00971-product2-host-mcp-readstore2-exit.md`), and the
+five language summaries, six source/feed tools and legacy `repomap_status`
+(`docs/status/2026/09/28/00972-product2-host-mcp-readstore3-exit.md`). The
+census is 23 database reads + 2 configuration inventories + 2 server-memory
+file reads = 27 tools. RESOLVE1
+(`docs/status/2026/09/29/00973-product2-host-mcp-resolve1-exit.md`) makes
+the MCP logical graph selection and store binding backend-neutral; config
+parsing and the runtime remain PostgreSQL-only. PREPARE1
+(`docs/status/2026/09/29/00974-product2-host-mcp-native1-prepare1-exit.md`)
+adds the source-owned native qualification runner and operator kit
+(`tools/smoke/host_mcp_native*.py`, runbook
+`docs/ops/host-mcp-native-qualification.md`); it prepares, and does not
+perform, the native run. PREPARE2
+(`docs/status/2026/09/29/00975-product2-host-mcp-native1-prepare2-exit.md`)
+corrects the runner's interruption handling, so a signal during cleanup or
+finalization can no longer skip cleanup or evidence. It also writes a durable
+ownership record before the container starts. The manager accepted the
+attended HOST1 macOS checkout-console run of that kit for its bounded claims.
+FIX1 (`docs/status/2026/09/29/00976-product2-multisource-status-fix1-exit.md`)
+attributes HOST1's `repository_exists=false` for the populated multi-source
+graph to the runner fixture and corrects it. The fixture now publishes under
+the tuple that supported refresh writes, and the runner compares multi-source
+and single-root status with stored repository facts. That status coverage is
+Linux-harness only. The manager accepted that attribution and closed step 3.
+
+Status selection is retained for pre-identity restore compatibility:
+
+- Refresh status, graph summary, storage status, and baselines and drift
+  select the stored repository by the configured `repository_name`. For a
+  multi-binding graph that is the `[multi-source]` token, which supported
+  refresh persists.
+- Configured graph reads select by `repo1:<graph_id>` identity (ADR 0068).
+- A row stored under another name is therefore status-invisible until a
+  supported refresh rewrites the name.
+
+Pre-staging static debt, closed by PRESTAGING-DEBT-CLOSE1
+(`docs/status/2026/09/30/00988-product4-prestaging-debt-close1-exit.md`):
+
+- the scanner-suppression findings, the former
+  `graph_selection.unit.test.py:126` directive and two in
+  `sqlite_local_guard.py`, removed by behavior-neutral source corrections;
+- the inherited arch1d 42-module production import SCC, removed by three
+  function-local import re-points onto lower owners. The gate is unchanged:
+  no accepted transitional component and no graph exclusion.
+
+The READSTORE support fixture's multi-source name mismatch (FIX1 residual 2)
+remains an open test-support residual. It is not in the manager's two-item
+pre-staging gate and is reported for manager disposition. Product step 4 is
+manager-accepted. Public staging is a separately authorized next milestone.
+
+### SQLite Local first slice (step 4, manager-accepted)
+
+REPOMAP-PRODUCT3-SQLITE-LOCAL1 (ADR 0075,
+`docs/status/2026/09/29/00977-product3-sqlite-local1-exit.md`) adds the first
+operational Local path; the operator reference is `docs/ops/sqlite-local.md`.
+
+- A home selects its backend with `[storage] backend = "sqlite"`; an absent
+  table keeps PostgreSQL. `ops.config_local.LocalSqliteConfig` carries the
+  neutral registry fields and no PostgreSQL or runtime settings; the
+  PostgreSQL loaders refuse a SQLite home
+  (`sqlite-local-home-requires-local-command`) before deriving any
+  PostgreSQL value. In a layered home, the first file in load order fixes the
+  backend: its `[storage]` table, or PostgreSQL when that table is absent. A
+  later file may only omit `[storage]` or repeat the same backend. Anything
+  else, including a later file without `[storage]` that carries PostgreSQL-only
+  sections, is `storage-backend-conflict`
+  (`ops.config_storage.merge_storage_declarations`; LOCAL2, status 00978).
+- Each graph owns `<home>/state/sqlite-local/graphs/<graph_id>.sqlite3`
+  (schema v1, WAL, `synchronous=FULL`), created only by `ops sqlite-init`.
+  The database is built in a sibling `.init-*` temporary file and installed
+  with a no-clobber hard link. It is never installed by `rename`/`replace`,
+  and an existing target is never replaced.
+- `ops refresh-graph` on a SQLite home runs the unchanged portable capture and
+  parent validation (`ops.portable_refresh` helpers shared with the PostgreSQL
+  route) and publishes through `storage.sqlite_local.publisher` in one
+  `BEGIN IMMEDIATE` transaction fenced on the accepted generation.
+  Process-control exceptions around `COMMIT` always propagate and never become
+  success; a committed generation is never rolled back.
+- Every publisher failure is either not-committed or commit-unknown. Once
+  `COMMIT` was attempted, only a clean readback of this exact bundle, job and
+  attempt at the expected next generation is success. A failing cleanup
+  `ROLLBACK` never hides the original error. Raw `sqlite3` write errors become
+  bounded codes via `connection.classify_write_error` (LOCAL3, status 00979).
+- Local attempts use the shared owner-only portable retention record in a
+  per-graph directory, `state/portable-publication/sqlite-local/<graph_id>/attempts/`.
+  The record is armed with its publication identity before the publisher is
+  entered. It is settled failed only on positive not-committed proof.
+- Under the publisher lock, before any source check or capture, each refresh
+  reconciles an armed, unsettled attempt against the accepted marker:
+  - an already-accepted attempt is settled and replayed without sources or a
+    new generation;
+  - an uncommitted one is settled failed;
+  - anything ambiguous refuses with `graph-publication-reconciliation-required`.
+- `mcp serve` binds a SQLite home through `server.sqlite_read_binding`. All
+  23 database-reading tools read the accepted generation read-only (`mode=ro`,
+  one snapshot per operation) through named SQLite query owners:
+  - LOCAL4 added legacy `repomap_status`, observation search, the configured
+    neighborhood and the five language summaries.
+  - LOCAL5 (status 00981) added the six source/feed tools. They are served by
+    `SqliteSourceReadStore` over `storage.sqlite_local.source_queries` and
+    `source_feed_queries`, which reconstruct the PostgreSQL source/feed
+    projections from the publication's raw source metadata and canonical
+    feed graph. No schema or second source authority is added, and the reads
+    are source-blind.
+
+  A write through a read-only connection is `graph-database-read-only`. The
+  PostgreSQL catalog, schemas and binding are unchanged.
+- LOCAL6 (status 00982) completes the ordinary Local operator workflow in the
+  one SQLite command router (`cli._ops_sqlite_dispatch`):
+  - `ops config-check`/`graphs` share the PostgreSQL envelope
+    (`ops._registry_status`) through `ops.local_ops_status`. They add only
+    `storage`/`storage_status`, and `--check-db` uses the read-only, no-create
+    `ops.local_readiness` probe.
+  - `ops refresh-preflight` reuses the maintained preflight owner.
+  - `ops refresh-enabled` (`ops.local_refresh_enabled`) runs
+    `refresh_local_graph` per enabled graph in configuration order.
+  - `refresh-graph --mode coordinator` is a final by-design refusal; direct
+    serialized refresh is the Local baseline.
+  - `cli.main` routes these before the PostgreSQL dispatcher loads, and the CLI
+    facade resolves PostgreSQL-implementation names on access
+    (`cli._postgres_facade`). SQLite commands and `mcp serve` therefore start
+    without importing Psycopg. This is not a packaging claim: the distribution
+    still declares Psycopg.
+- LOCAL7 (status 00983) adds publication-aware backup/export and no-clobber
+  restore to the same router (`ops.local_backup`):
+  - `ops sqlite-backup` snapshots one graph under its publisher lock with
+    SQLite's online backup API (`storage.sqlite_local.backup`) into a
+    two-file directory whose manifest (`storage.sqlite_local.backup_manifest`)
+    binds the exact accepted generation, bundle id, schema and database
+    SHA-256, and carries no path or payload. It is also the Local export
+    format.
+  - `ops sqlite-restore` (`storage.sqlite_local.restore`) verifies the whole
+    artifact before touching the store and installs only into an absent
+    target by hard link, then reads the publication back.
+  - `storage.sqlite_local.durability` fsyncs completed files and their
+    directories for init, Local attempt-record replacement, backup and
+    restore, with bounded `local-durability-*` refusals; the PostgreSQL
+    retention default is unchanged.
+- LOCAL8 (status 00984) adds the first forward schema migration:
+  - `storage.sqlite_local.migrations` is the ordered, checksummed catalog
+    (v1 unchanged; v2 adds `idx_raw_observations_path_run` for exact-path
+    observation search) and classifies files as empty, exact-current,
+    exact-behind, drift, unsupported or unrecognized from the ledger,
+    `user_version` and physical schema digest together. Fresh init applies the
+    whole catalog.
+  - Readers, the writer, refresh and init stay exact-current only;
+    `--check-db` readiness reports `schema-behind`.
+  - `ops sqlite-upgrade` (`ops.local_backup`, `storage.sqlite_local.upgrade`)
+    writes and verifies a LOCAL7 backup of the unchanged database under the
+    publisher lock, then applies the pending migrations, ledger rows and
+    `user_version` in one transaction and confirms exact v2 with the accepted
+    publication unchanged. Commit outcome reuses the LOCAL3 publisher tags;
+    an unconfirmed commit is `graph-migration-reconciliation-required` and a
+    rerun reconciles.
+  - Backup and restore carry the exact schema version; a v1 backup restores as
+    v1 and is never migrated by restore.
+- LOCAL9 (status 00985) adds conservative state hygiene:
+  - `ops sqlite-cleanup` (`ops.local_cleanup`) is a dry run by default. With
+    `--yes`, under the publisher lock, it removes expired terminal retained
+    attempts from the graph's namespace and the pre-LOCAL3 shared directory
+    (`ops._portable_retention.classify_retained_attempts`), and stale or
+    partial orphan init/restore temporaries (`storage.sqlite_local.orphans`).
+    It keeps unsettled, record-less, recoverable and unrecognized items, and
+    refuses the whole run on any unsafe item.
+  - It then fsyncs `state/` and the home: current durability, not
+    retroactive.
+  - The Local retention guard now name-checks `state` and refuses symlinks
+    below the resolved publication root.
+- LOCAL10 (status 00986) makes Local writer/maintenance locking
+  platform-neutral:
+  - `storage.sqlite_local.locking` is the one graph lock owner:
+    `hold_graph_lock` for the six mutation owners (through
+    `connection.publisher_lock`) and `probe_graph_lock` for the cleanup dry
+    run (never creates the lock file). POSIX uses `flock`, Windows
+    `msvcrt.locking` (contract-tested only), anything else refuses
+    `local-locking-unavailable`. No Local module imports `fcntl`.
+  - `ops.local_state_layout` requires a real, owner-controlled `state/` tree
+    before any Local mutation (`local-state-layout-invalid`); read paths do
+    not check it.
+  - Cleanup without a graph store takes no lock and never inspects orphans
+    that appear during the run.
+
+  Step 4 is manager-accepted.
+
+### Opt-in native coordinator and direct PostgreSQL exposure
+
+Local runtime coordinator selection is closed: `runtime.coordinator_mode` is
+`container` by default, or `native` to omit only the Compose coordinator and its
+private coordinator-state volume. Release initialization and other services
+remain in the supported topology.
+
+Owned local up/down use Compose `--remove-orphans` so switching an existing home
+to native mode removes the prior Compose coordinator. Native startup success
+requires observed coordinator absence. Re-up may reuse only exactly observed
+owned service bindings. Container startup refuses before Compose launch when the
+home's authenticated native endpoint is active or cannot be safely classified.
+It never auto-stops the native service. Checked runtime JSON reports selected
+mode and bounded Compose/native observations; dry-run remains read-only.
+
+Packaged native launches require current native mode before singleton ownership,
+with mode rechecked under a per-home startup lock shared with local up. An old
+service definition in container mode exits quiescently, avoiding on-failure
+restart loops. Service start/restart/upgrade refuse early; stop/uninstall remain
+available. Explicit foreground launch retains its development contract, and the
+database singleton remains the ownership backstop for foreground/container
+restarts. Restore native mode and use supported start then stop to recover safe
+stale endpoint artifacts; unsafe artifacts require operator repair.
+
+PostgreSQL always joins `repomap-local` with `internal: true`. Direct exposure
+is disabled by default. When enabled, PostgreSQL alone additionally joins a
+runtime-owned non-internal bridge, `repomap-postgres-host`, and binds exactly
+`127.0.0.1:<host_port>:5432`. No other service joins that bridge, and it is
+separate from `repomap-http`. This opt-in local development/native-runtime
+capability gives PostgreSQL external bridge connectivity while enabled;
+loopback publication does not imply an egress restriction. Enabled exposure
+rejects DNS names, IPv6, and public binds. Disabled configurations retain the
+existing broader loopback compatibility.
+
+Runtime JSON separates requested direct exposure from checked/published
+observation. Setup, dry-run, and unchecked status report no publication proof.
+After Compose startup, owned PostgreSQL state and Engine `5432/tcp` bindings
+must match exactly; mismatch triggers supported Compose down and a bounded
+error. Checked status reports observed truth without retaining raw Engine
+payloads. Native and container execution select their PostgreSQL route at
+connection boundaries without changing loaded configuration or generations.
+Live proof for this repair is Docker-only; Podman live parity is not claimed.
