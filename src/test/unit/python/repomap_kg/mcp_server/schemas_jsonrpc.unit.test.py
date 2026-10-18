@@ -42,6 +42,10 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
                 "repomap_refresh_status",
                 "repomap_server_memory_summary",
                 "repomap_server_memory_search",
+                "repomap_similar_nodes",
+                "repomap_embedding_profiles",
+                "repomap_node_locations",
+                "repomap_navigation_search",
             ],
         )
         serialized = json.dumps(tool_definitions(), sort_keys=True)

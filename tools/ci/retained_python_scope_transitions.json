@@ -3854,6 +3854,172 @@
       "source_commit": "c55910c65963afcb9fab13f159ae5ba64c57da21",
       "source_manifest_sha256": "14bcaf3fba2d3ad5e5f0a03e48c98ed2005211978cb45793a11d49f69d34713b",
       "status_path": "tools/ci/repair10-retention-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.server._mcp_locations",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/_mcp_locations.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.server._mcp_navigation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/_mcp_navigation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.server._mcp_neighborhood",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/_mcp_neighborhood.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.server._mcp_similar",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/_mcp_similar.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.server._navigation_groups",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/_navigation_groups.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.navigation_search",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/navigation_search.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.node_locations",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/node_locations.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_candidate_import",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_candidate_import.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_candidate_readback",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_candidate_readback.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_candidate_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_candidate_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_candidates",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_candidates.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_seed",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_seed.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_seed_readback",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_seed_readback.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.semantic_seed_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/semantic_seed_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.navigation_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/navigation_queries.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.neighborhood_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/neighborhood_queries.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.storage.sqlite_local.node_location_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/storage/sqlite_local/node_location_queries.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "000657c6c98af5e2417fa0b6f581067632a89d0fe0ebcb130bca12edd5042b6c",
+      "new_selected_set_sha256": "aafee861366359479c574d08406572620786b8afe16d8fcd9bc2edefa12b2136",
+      "old_ownership_manifest_sha256": "32d7af46121ffdcb5031cf72a1d755b29a66d01bebfdc27fbce48429dc9f093c",
+      "old_selected_set_sha256": "06ddb1b1e89cad723f8b53501c43f774cc0f7435cd0a40bb4c9cb70e0bb24b4e",
+      "phase": "REPOMAP-PRODUCT6-NAVIGATION27-PUBLIC-PROJECTION-FIX1",
+      "reason": "Public navigation import closure: exactly 17 maintained module additions; zero new allowed debt. All existing public v2 authority records, findings, tools and thresholds remain unchanged.",
+      "source_commit": "1adfc7a15e830c8709f76f4e61abb9e24a8c0b17",
+      "source_manifest_sha256": "32d7af46121ffdcb5031cf72a1d755b29a66d01bebfdc27fbce48429dc9f093c",
+      "status_path": "tools/ci/nav27-navigation-projection-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

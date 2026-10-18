@@ -375,6 +375,8 @@ def neighborhood_payload(
     node: str,
     direction: str = "both",
     depth: int = 1,
+    node_limit: Any = ...,
+    edge_limit: Any = ...,
     config_path: str | os.PathLike[str] | None = None,
 ) -> dict[str, Any]:
     return _ops_summaries_impl.neighborhood_payload(
@@ -382,6 +384,8 @@ def neighborhood_payload(
         node=node,
         direction=direction,
         depth=depth,
+        node_limit=node_limit,
+        edge_limit=edge_limit,
         config_path=config_path,
         dependencies=_ops_summary_dependencies(),
     )

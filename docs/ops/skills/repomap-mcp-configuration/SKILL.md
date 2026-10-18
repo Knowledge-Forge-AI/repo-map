@@ -61,7 +61,8 @@ users or credentials, and `--config <file>`, keep their own configured
 credential. For the home's default file loaded through `--config`, that is the
 admin `REPOMAP_PG_PASSWORD` if it is exported. Prefer `--repo-map-home`.
 
-Twenty-three database-reading tools use host-only named read-store seams:
+Twenty-three baseline database-reading tools and one optional PostgreSQL tool
+use host-only named read-store seams:
 
 - canonical seam: `repomap_canonical_nodes`, `repomap_canonical_edges`,
   `repomap_explain_canonical_edge`, `repomap_canonical_neighborhood`, and the
@@ -73,6 +74,12 @@ Twenty-three database-reading tools use host-only named read-store seams:
   language/framework summaries (`repomap_python_summary`,
   `repomap_terraform_summary`, `repomap_openapi_summary`,
   `repomap_js_framework_summary`, `repomap_nix_summary`);
+- optional investigation seam: `repomap_similar_nodes` and
+  `repomap_embedding_profiles`, disabled by default. Discovery reads eligible
+  immutable tuple metadata; seed queries require an explicit returned tuple.
+  Both require a configured public graph with an accepted portable publication
+  and separately observed pgvector 0.8.7 / enrichment schema availability.
+  Selection never enables configuration or installs optional objects;
 - source seam: `repomap_ingested_sources`, `repomap_source_summary`,
   `repomap_source_runs`, `repomap_source_feed_items`,
   `repomap_explain_source_feed_item`, `repomap_source_references`.
@@ -137,6 +144,8 @@ graph is read from its own accepted database under
 `<home>/state/sqlite-local/graphs/`, opened read-only per tool call. The server
 never creates, initializes or refreshes that database; use `ops sqlite-init`
 and `ops refresh-graph` first. See [SQLite Local](../../sqlite-local.md).
+The optional similarity tool remains advertised on SQLite and returns explicit
+`sqlite_unsupported` when selected (`disabled` otherwise), without opening storage.
 
 ## Two Configuration Surfaces
 

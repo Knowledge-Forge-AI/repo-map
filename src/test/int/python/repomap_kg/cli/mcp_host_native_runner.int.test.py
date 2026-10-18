@@ -142,7 +142,7 @@ def test_runner_exercises_fixture_and_stdio_mechanics_in_the_linux_harness(
     assert console.native_refusal(Path("/checkout")) is not None, "the harness console must not pass as native"
 
     for required in ("route_agrees", "only_setup_fetch", "sources_absent_before_mcp", "session_main",
-                     "session_restart", "session_outage", "chain_catalog_is_27_tools", "chain_catalog_sha256_pinned",
+                     "session_restart", "session_outage", "chain_catalog_is_31_tools", "chain_catalog_sha256_pinned",
                      "chain_files_are_source_qualified", "write_denied_host-multi", "write_denied_host-feed",
                      "read_role_backends_ended_main", "read_role_backends_ended_restart", "restart_fresh_process",
                      "state_unchanged", "sources_still_absent", "outage_still_in_effect", "no_shim_invocations",

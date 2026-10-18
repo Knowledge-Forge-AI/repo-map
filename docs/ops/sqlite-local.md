@@ -297,8 +297,8 @@ own mode: RepoMap neither changes nor checks it, so make it private yourself
   `sqlite` (`application_id`, `user_version`, `schema_name`,
   `schema_checksum`; see below), `publication` (`accepted`, `generation`, `run_id`,
   `publication_bundle_id`, `publication_job_id`, `publication_attempt`,
-  `privacy`; all `null` when unpublished) and `database` (`file`, `bytes`,
-  `sha256`).
+  `privacy`; when unpublished, `accepted` is `false` and the other publication
+  fields are `null`) and `database` (`file`, `bytes`, `sha256`).
 
 `sqlite.user_version` is the backed-up database's exact schema version (1 or 2)
 and `schema_name`/`schema_checksum` identify that version's *head migration*
@@ -307,11 +307,13 @@ database itself must hold exactly that catalog prefix (ledger, `user_version`
 and physical schema). A backup of a v1 database, including every backup made
 before LOCAL8, is a v1 backup.
 
-`manifest.json` is written last and marks the backup complete. It contains no
-source root, home, backup or other path, no environment value and no graph
-content, so it can be shared apart from its graph and publication ids. The
-database holds the graph's accepted content and keeps the graph's privacy
-classification; treat it like the live database.
+`manifest.json` is linked after `graph.sqlite3`. Its presence alone does not
+establish a valid backup or a successful command: restore's verifier checks the
+whole artifact as described below. The manifest contains no source root, home,
+backup or other path, no environment value and no graph content, so it can be
+shared apart from its graph and publication ids. The database holds the graph's
+accepted content and keeps the graph's privacy classification; treat it like the
+live database.
 
 `sqlite-backup` JSON: `command`, `storage_backend`, `result = "created"`,
 `graph_id`, `schema_version`, `accepted_publication`, `accepted_generation`,
@@ -328,9 +330,25 @@ Backup rules:
   partial, is never replaced; choose another directory.
 - A graph whose publisher lock is held (a refresh or init is running) refuses
   immediately with `graph-publication-in-progress`; rerun when it finishes.
-- A failure or interrupt removes what this attempt created. Only a killed
-  process can leave a partial directory; it has no `manifest.json`, restore
-  refuses it as `sqlite-backup-incomplete`, and it can be deleted by hand.
+- On a failure or catchable interrupt, cleanup is best-effort and limited to
+  this attempt's names. Final names are removed only if they still identify
+  this attempt's inodes; directory removal is attempted only if this attempt
+  created it. Cleanup errors are suppressed, so leftovers can remain.
+- Abrupt termination can bypass cleanup, including after manifest linking.
+  Before its temporary name is removed, both `manifest.json` and that temporary
+  name can remain. After removal, a valid artifact can remain without the command
+  reporting success. Final directory sync must succeed before the backup operation
+  returns success.
+
+Possible artifact states follow from the write order and verifier, rather than
+executed crash tests for every interruption point:
+
+| Artifact state | Restore verifier result |
+| --- | --- |
+| Directory absent or unreadable | `sqlite-backup-artifact-invalid: unreadable` |
+| Readable real directory without `manifest.json` | `sqlite-backup-incomplete: no completed manifest` |
+| Manifest present, but the names are not exactly `graph.sqlite3` and `manifest.json` | `sqlite-backup-artifact-invalid: unexpected-entry` |
+| Exactly the two expected files | Remaining manifest and database checks below must pass; valid bytes alone do not prove the command reported success or completed its final sync. |
 
 Restore rules:
 
@@ -655,8 +673,8 @@ until a publication route carries acquisition metadata; see ADR 0075.
 | `sqlite-local-home-required` | `sqlite-init`, `sqlite-backup`, `sqlite-restore`, `sqlite-upgrade` and `sqlite-cleanup` need a SQLite home |
 | `sqlite-cleanup-layout-invalid` | A level of `state/`, `state/portable-publication/...` or `state/sqlite-local/graphs` is a symlink or not a directory you own; nothing was read or changed (the same rule as `local-state-layout-invalid`) |
 | `sqlite-backup-output-invalid`, `sqlite-backup-output-forbidden`, `sqlite-backup-target-exists` | The backup output is not a new or empty directory with an existing parent, is inside the home state or a source root, or already holds files; nothing was written |
-| `sqlite-backup-incomplete` | The backup directory has no `manifest.json` (an interrupted backup); nothing was restored |
-| `sqlite-backup-artifact-invalid: <reason>` | The backup failed verification (`unexpected-entry`, `manifest-invalid`, `format-unsupported`, `schema-unsupported`, `graph-mismatch`, `database-length-mismatch`, `database-digest-mismatch`, `publication-mismatch`, `database-changed-during-restore`, `schema-mismatch` or a database code); nothing was restored |
+| `sqlite-backup-incomplete` | A readable real directory has no `manifest.json` (`no completed manifest`); this does not establish how the artifact arose; nothing was restored |
+| `sqlite-backup-artifact-invalid: <reason>` | Restore verifies first: a non-directory is `not-a-directory`; an absent path or other directory stat/list failure is `unreadable`. For a readable directory, missing `manifest.json` is incomplete (above); with a manifest present, names other than exactly `graph.sqlite3` and `manifest.json` yield `unexpected-entry`. Later verifier reasons include, for example, `manifest-unreadable`, `manifest-invalid`, `format-unsupported`, `schema-unsupported`, `graph-mismatch`, `database-unreadable`, `database-length-mismatch`, `database-digest-mismatch`, `schema-mismatch`, `publication-mismatch` or a database code. During the later copy check, `database-changed-during-restore` refuses installation; nothing was restored |
 | `sqlite-restore-target-exists` | The graph already has a database (or leftover sidecars); restore never replaces it |
 | `sqlite-restore-readback-mismatch` | The installed database did not read back as the backup's publication; not success (report it) |
 | `sqlite-backup-io-failed: <errno>`, `sqlite-restore-io-failed: <errno>`, `sqlite-upgrade-io-failed: <errno>`, `sqlite-cleanup-io-failed: <errno>` | A filesystem operation failed (for example `EACCES`) |

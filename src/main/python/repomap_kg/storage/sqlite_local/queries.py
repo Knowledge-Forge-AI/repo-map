@@ -237,6 +237,30 @@ def canonical_edge_explanation(
     )
 
 
+def _incident_selects(direction: str) -> tuple[str, str]:
+    """Select incident IDs/neighbor keys before canonical ordering.
+
+    UNION deduplicates the same edge ID in both branches (including self-loops),
+    while retaining parallel edges with different identities. The incoming hint
+    prevents an order-driven graph-version scan of the source-prefix index.
+    """
+    ids = []
+    keys = []
+    for side, neighbor in (("source", "target"), ("target", "source")):
+        if direction == "out" and side == "target":
+            continue
+        if direction == "in" and side == "source":
+            continue
+        index = " INDEXED BY idx_canonical_edges_target" if side == "target" else ""
+        scope = (
+            f"FROM canonical_edges{index} WHERE graph_key_version = :version "
+            f"AND {side}_canonical_key = :node"
+        )
+        ids.append(f"SELECT id {scope}")
+        keys.append(f"SELECT {neighbor}_canonical_key AS canonical_key {scope}")
+    return " UNION ".join(ids), " UNION ".join(keys)
+
+
 def canonical_neighborhood(
     connection: sqlite3.Connection,
     *,
@@ -248,6 +272,7 @@ def canonical_neighborhood(
     node_offset: int,
     edge_limit: int | None,
     edge_offset: int,
+    incident_selective: bool = False,
 ) -> CanonicalNeighborhoodRecord:
     if depth != 1:
         raise StorageSchemaError("storage neighborhood only supports depth 1")
@@ -273,6 +298,14 @@ def canonical_neighborhood(
         edge_filter = (
             f"canonical_edges.graph_key_version = :version AND ({' OR '.join(sides)})"
         )
+        neighbor_keys = (
+            f"SELECT source_canonical_key AS canonical_key "
+            f"FROM canonical_edges WHERE {edge_filter} UNION SELECT target_canonical_key "
+            f"FROM canonical_edges WHERE {edge_filter}"
+        )
+        if incident_selective:
+            incident_ids, neighbor_keys = _incident_selects(direction)
+            edge_filter = f"canonical_edges.id IN ({incident_ids})"
         params = {"version": graph_key_version, "node": node}
         edges = [
             _edge_payload(row)
@@ -285,12 +318,10 @@ def canonical_neighborhood(
         nodes = [
             node_payload(row)
             for row in connection.execute(
-                f"WITH neighbor_keys AS (SELECT source_canonical_key AS canonical_key "
-                f"FROM canonical_edges WHERE {edge_filter} UNION SELECT target_canonical_key "
-                f"FROM canonical_edges WHERE {edge_filter}) "
-                f"SELECT {_NODE} FROM canonical_nodes JOIN neighbor_keys "
-                "ON neighbor_keys.canonical_key = canonical_nodes.canonical_key "
+                f"WITH neighbor_keys AS ({neighbor_keys}) "
+                f"SELECT {_NODE} FROM canonical_nodes "
                 "WHERE canonical_nodes.graph_key_version = :version "
+                "AND canonical_nodes.canonical_key IN (SELECT canonical_key FROM neighbor_keys) "
                 "AND canonical_nodes.canonical_key <> :node "
                 "ORDER BY canonical_nodes.canonical_key LIMIT :limit OFFSET :offset",
                 {**params, "limit": node_window[0], "offset": node_window[1]},

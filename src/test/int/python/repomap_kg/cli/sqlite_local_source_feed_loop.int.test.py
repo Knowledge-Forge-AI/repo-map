@@ -205,7 +205,7 @@ def test_sqlite_local_source_feed_tools_read_source_blind_over_stdio(tmp_path: P
     first = harness.mcp(home, requests)
     assert first[1]["result"]["protocolVersion"] == "2024-11-05"
     listed = first[2]["result"]["tools"]
-    assert listed == tool_definitions() and len(listed) == 27, len(listed)
+    assert listed == tool_definitions() and len(listed) == 31, len(listed)
     assert SOURCE_TOOLS <= {entry["name"] for entry in listed}
     _assert_session(first, runs, 1, item_key)
 

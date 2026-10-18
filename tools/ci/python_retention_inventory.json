@@ -644,6 +644,316 @@
       "root": "test_owners"
     },
     {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-int-python-repomap_kg-storage-navigation_search.int.test.py",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/navigation_search.int.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-int-python-repomap_kg-storage-node_locations.int.test.py",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/node_locations.int.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-navigation_pushdown_fixtures.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/navigation_pushdown_fixtures.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-navigation_search_fixtures.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/navigation_search_fixtures.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-node_location_fixtures.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/node_location_fixtures.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-portable_handoff_fixtures.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/portable_handoff_fixtures.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-related_context_fixtures.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/related_context_fixtures.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-semantic_candidate_fixtures.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/semantic_candidate_fixtures.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_support",
+      "id": "nav26.public-projection.src-test-support-python-repomap_test_support-semantic_candidate_publication.py",
+      "members": [
+        "src/test/support/python/repomap_test_support/semantic_candidate_publication.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_support"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-bounded_neighborhood.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/bounded_neighborhood.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-compact_node_locations.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/compact_node_locations.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-direct_source_locations.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/direct_source_locations.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-embedding_profiles.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/embedding_profiles.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-navigation_scope_pushdown.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/navigation_scope_pushdown.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-navigation_search.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/navigation_search.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-node_locations.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/node_locations.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-search_surface.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/search_surface.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-semantic_candidate_store.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/semantic_candidate_store.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-similar_nodes.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/similar_nodes.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-embedding_profiles.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/embedding_profiles.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-semantic_candidate_readback.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/semantic_candidate_readback.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-semantic_candidates.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/semantic_candidates.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-semantic_seed.unit.test.py",
+      "members": [
+        "src/test/unit/python/repomap_kg/storage/semantic_seed.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-tools-portable_handoff.unit.test.py",
+      "members": [
+        "src/test/unit/python/tools/portable_handoff.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-tools-related_source_context.unit.test.py",
+      "members": [
+        "src/test/unit/python/tools/related_source_context.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav26.public-projection.src-test-unit-python-tools-source_navigation_consumer.unit.test.py",
+      "members": [
+        "src/test/unit/python/tools/source_navigation_consumer.unit.test.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_tooling",
+      "id": "nav26.public-projection.tools-portable_handoff.py",
+      "members": [
+        "tools/portable_handoff.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "tools"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_tooling",
+      "id": "nav26.public-projection.tools-related_source_context.py",
+      "members": [
+        "tools/related_source_context.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "tools"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_tooling",
+      "id": "nav26.public-projection.tools-source_navigation_consumer.py",
+      "members": [
+        "tools/source_navigation_consumer.py"
+      ],
+      "rationale": "New cumulative product-navigation projection owner; existing clean profile applies, admission requires current check evidence.",
+      "root": "tools"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav27.public-projection.graph_selection_refusals.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/mcp_server/graph_selection_refusals.unit.test.py"
+      ],
+      "rationale": "NAV27 behavior-preserving decomposition of src/test/unit/python/repomap_kg/mcp_server/graph_selection.unit.test.py; preserves moved assertions under the unchanged clean test-owner profile.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "pending",
+      "governing_profile": "clean_test_owners",
+      "id": "nav27.public-projection.related_source_context_limits.unit.test",
+      "members": [
+        "src/test/unit/python/tools/related_source_context_limits.unit.test.py"
+      ],
+      "rationale": "NAV27 behavior-preserving decomposition of src/test/unit/python/tools/related_source_context.unit.test.py; preserves moved assertions under the unchanged clean test-owner profile.",
+      "root": "test_owners"
+    },
+    {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
@@ -27284,6 +27594,33 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/_mcp_locations.py",
+      "rationale": "SOURCE-LOCATOR1 bounded stored-source callable, SQLite fixture or guarded stdio owner; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/_mcp_navigation.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/_mcp_neighborhood.py",
+      "rationale": "NAVIGATION20 opt-in bounded SQLite neighborhood, query probes and public privacy/default compatibility.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/server/_mcp_ops_tools.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
       "root": "product",
@@ -27302,8 +27639,26 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/_mcp_similar.py",
+      "rationale": "PG-INTELLIGENCE2 bounded stored-seed query, optional test population or execution evidence owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/server/_mcp_sources.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/server/_navigation_groups.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -27929,6 +28284,24 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/navigation_search.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/node_locations.py",
+      "rationale": "SOURCE-LOCATOR1 bounded stored-source callable, SQLite fixture or guarded stdio owner; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -28051,6 +28424,69 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/storage/run_authority.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_candidate_import.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_candidate_readback.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_candidate_sql.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_candidates.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_seed.py",
+      "rationale": "PG-INTELLIGENCE2 bounded stored-seed query, optional test population or execution evidence owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_seed_readback.py",
+      "rationale": "PG-INTELLIGENCE2 bounded stored-seed query, optional test population or execution evidence owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/semantic_seed_sql.py",
+      "rationale": "PG-INTELLIGENCE2 bounded stored-seed query, optional test population or execution evidence owner.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -28244,11 +28680,38 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/navigation_queries.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/neighborhood_queries.py",
+      "rationale": "NAVIGATION20 opt-in bounded SQLite neighborhood, query probes and public privacy/default compatibility.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/storage/sqlite_local/nix_summary_queries.py",
       "rationale": "Product3 SQLite Local Nix summary read.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/storage/sqlite_local/node_location_queries.py",
+      "rationale": "SOURCE-LOCATOR1 bounded stored-source callable, SQLite fixture or guarded stdio owner; zero new quality debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -30938,8 +31401,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/navigation_search.int.test.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/nix_summary_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/node_locations.int.test.py",
+      "rationale": "SOURCE-LOCATOR1 bounded stored-source callable, SQLite fixture or guarded stdio owner; zero new quality debt.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -32243,8 +32724,35 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/navigation_pushdown_fixtures.py",
+      "rationale": "SCOPE-PUSHDOWN1 source admission fixtures and production-cap callable contracts; zero new quality debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/navigation_search_fixtures.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/nix_extractor.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/node_location_fixtures.py",
+      "rationale": "SOURCE-LOCATOR1 bounded stored-source callable, SQLite fixture or guarded stdio owner; zero new quality debt.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -32477,6 +32985,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/portable_handoff_fixtures.py",
+      "rationale": "PORTABLE-HANDOFF1 optional selected-source record, local recheck and focused public fixtures; zero new quality debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/portable_publication_fixtures.py",
       "rationale": "Portable publication fixture ownership or recovery assertions decomposed from the existing portable publication integration owner; same PostgreSQL authority and container admission.",
       "root": "test_support",
@@ -32596,6 +33113,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/publication_fixtures.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/related_context_fixtures.py",
+      "rationale": "RELATED-CONTEXT1 optional one-hop caller composition and focused static-extraction fixture evidence; no runtime or quality-policy change.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -33820,6 +34346,24 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/schema_history.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/semantic_candidate_fixtures.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/semantic_candidate_publication.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -37445,6 +37989,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/bounded_neighborhood.unit.test.py",
+      "rationale": "NAVIGATION20 opt-in bounded SQLite neighborhood, query probes and public privacy/default compatibility.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/canonical_pagination.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -37472,8 +38025,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/compact_node_locations.unit.test.py",
+      "rationale": "CONSUMER1 compact locator and optional consumer closure; includes the accepted DIRECT-SOURCE1 test owner. No new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/config_and_summaries.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/direct_source_locations.unit.test.py",
+      "rationale": "CONSUMER1 compact locator and optional consumer closure; includes the accepted DIRECT-SOURCE1 test owner. No new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -37499,8 +38070,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/embedding_profiles.unit.test.py",
+      "rationale": "PG-INTELLIGENCE3 publication-bound identity readback and negative-path owner; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/graph_selection.unit.test.py",
       "rationale": "First-party unit test owner for neutral graph selection and injected fake-store routing of all database-reading tools.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/graph_selection_refusals.unit.test.py",
+      "rationale": "NAV27 behavior-preserving decomposition of src/test/unit/python/repomap_kg/mcp_server/graph_selection.unit.test.py; preserves moved assertions under the unchanged clean test-owner profile.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -37598,8 +38187,35 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/navigation_scope_pushdown.unit.test.py",
+      "rationale": "SCOPE-PUSHDOWN1 source admission fixtures and production-cap callable contracts; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/navigation_search.unit.test.py",
+      "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/nix_and_project_summaries.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/node_locations.unit.test.py",
+      "rationale": "SOURCE-LOCATOR1 bounded stored-source callable, SQLite fixture or guarded stdio owner; zero new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -37672,6 +38288,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/mcp_server/schemas_jsonrpc.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/search_surface.unit.test.py",
+      "rationale": "SEARCH-SURFACE1 real static Python publication and public callable search-field regression. No new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/semantic_candidate_store.unit.test.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/mcp_server/similar_nodes.unit.test.py",
+      "rationale": "PG-INTELLIGENCE2 bounded stored-seed query, optional test population or execution evidence owner.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -38858,6 +39501,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/embedding_profiles.unit.test.py",
+      "rationale": "PG-INTELLIGENCE3 publication-bound identity readback and negative-path owner; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/general1_staged_ingestion_contracts.unit.test.py",
       "rationale": "RECOVER2 public behavioral coverage for deterministic extraction, CLI, artifact, coordinator or staged-storage contracts.",
       "root": "test_owners",
@@ -39436,6 +40088,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/scale9j_backend_transport_hardening.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/semantic_candidate_readback.unit.test.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/semantic_candidates.unit.test.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/semantic_seed.unit.test.py",
+      "rationale": "PG-INTELLIGENCE2 bounded stored-seed query, optional test population or execution evidence owner.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -42017,6 +42696,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/portable_handoff.unit.test.py",
+      "rationale": "PORTABLE-HANDOFF1 optional selected-source record, local recheck and focused public fixtures; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/related_source_context.unit.test.py",
+      "rationale": "RELATED-CONTEXT1 optional one-hop caller composition and focused static-extraction fixture evidence; no runtime or quality-policy change.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/related_source_context_limits.unit.test.py",
+      "rationale": "NAV27 behavior-preserving decomposition of src/test/unit/python/tools/related_source_context.unit.test.py; preserves moved assertions under the unchanged clean test-owner profile.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/repomap_ci2a_r1_runner.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -42748,6 +43454,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/smoke/lifecycle.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/source_navigation_consumer.unit.test.py",
+      "rationale": "CONSUMER1 compact locator and optional consumer closure; includes the accepted DIRECT-SOURCE1 test owner. No new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -44240,8 +44955,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/portable_handoff.py",
+      "rationale": "PORTABLE-HANDOFF1 optional selected-source record, local recheck and focused public fixtures; zero new quality debt.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/process_rss_monitor.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/related_source_context.py",
+      "rationale": "RELATED-CONTEXT1 optional one-hop caller composition and focused static-extraction fixture evidence; no runtime or quality-policy change.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -45250,6 +45983,15 @@
       "maintained_executable": true,
       "path": "tools/smoke/lifecycle_reporting.py",
       "rationale": "REVISE32 cohesive decomposition of tools/smoke/lifecycle.py; same maintained responsibility and quality profile.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/source_navigation_consumer.py",
+      "rationale": "CONSUMER1 compact locator and optional consumer closure; includes the accepted DIRECT-SOURCE1 test owner. No new quality debt.",
       "root": "tools",
       "status": "active_tool"
     },

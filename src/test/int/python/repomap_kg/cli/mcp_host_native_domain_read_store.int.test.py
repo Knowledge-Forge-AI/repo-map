@@ -43,7 +43,7 @@ from repomap_test_support.host_mcp_stdio import (
 )
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
-CATALOG_SHA256 = "c38abd4f5e4da60a3ad3031e4476ff0c0e95552fc7dff149f6a920120a232dde"  # unchanged 27 tools
+CATALOG_SHA256 = "c487dc30ffa570f6ec80af68fabbb15d5b96bdb273e5fc375676c7174321189d"  # 31 read tools
 CANARY_KEY = "REPOMAP_ENV_CANARY_PASSWORD_PROBE"
 BAD_ITEM = "python.module:not-a-feed-item"
 
@@ -78,6 +78,10 @@ def _run_proof(tmp_path: Path, postgres, feed_db) -> None:
     plan = build_domain_plan(publication)
     item_key = plan.chain["item_key"]
     feed = {"project": "host-feed", "source_id": "example-rss-feed"}
+    node_id = postgres.psql_scalar(
+        "SELECT canonical_key FROM canonical_nodes ORDER BY id LIMIT 1;"
+    )
+    assert node_id, "host-mixed publication must provide at least one canonical node"
     refusals: dict[int, tuple[str, dict[str, object], str]] = {
         900: ("repomap_source_summary", {**feed, "project": "no-such-graph"},
               "unknown legacy MCP project or graph-registry graph_id: no-such-graph"),
@@ -96,19 +100,45 @@ def _run_proof(tmp_path: Path, postgres, feed_db) -> None:
         911: ("repomap_ingested_sources", {"project": "host-absent"},
               "psycopg readback failed for ingested source records"),
         912: ("repomap_status", {"project": "host-absent"}, "psycopg readback failed for canonical storage summary"),
+        920: ("repomap_neighborhood",
+              {"graph_id": "host-mixed", "node": node_id, "node_limit": 10, "edge_limit": 10},
+              "bounded neighborhood is supported only by SQLite Local"),
     }
     requests = [initialize_request(1), tools_list_request(2),
                 *(tool_request(mid, name, args) for mid, (name, args) in plan.requests.items()),
-                *(tool_request(mid, name, args) for mid, (name, args, _text) in refusals.items())]
+                *(tool_request(mid, name, args) for mid, (name, args, _text) in refusals.items()),
+                tool_request(921, "repomap_neighborhood", {"graph_id": "host-mixed", "node": node_id})]
     session = harness.run(requests)
     assert session.returncode == 0, session.stderr
     assert forbidden_env_keys(session.observed_env_keys) == (), session.observed_env_keys
     assert session.result(1)["protocolVersion"] == "2024-11-05"
     listed = {tool["name"]: tool for tool in session.result(2)["tools"]}
-    assert listed == {tool["name"]: tool for tool in tool_definitions()} and len(listed) == 27
+    assert listed == {tool["name"]: tool for tool in tool_definitions()} and len(listed) == 31
     proof = verify_domain_plan(plan, session.structured)
     for message_id, (_name, _args, text) in refusals.items():
         assert session.refusal(message_id) == text, message_id
+
+    bounded_refusal = session.refusal(920)
+    assert bounded_refusal == "bounded neighborhood is supported only by SQLite Local"
+    bounded_raw = json.dumps(session.result(920))
+    for forbidden in (
+        publication.secrets.read_status,
+        str(postgres.port),
+        postgres.database,
+        str(publication.home),
+        publication.roots["host-mixed"],
+        str(tmp_path),
+    ):
+        assert forbidden not in bounded_refusal
+        assert forbidden not in bounded_raw
+    assert domain_snapshot(publication) == before
+
+    unbounded = session.structured(921)
+    assert unbounded["server"] == "repomap-kg"
+    assert unbounded["read_only"] is True
+    assert unbounded["graph"]["graph_id"] == "host-mixed"
+    assert unbounded["result"]["center"]["canonical_key"] == node_id
+    assert unbounded["depth"] == 1
 
     assert_least_privilege(postgres, publication.secrets.read_status)
     assert_least_privilege(feed_db, publication.secrets.read_status)

@@ -836,7 +836,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "32d7af46121ffdcb5031cf72a1d755b29a66d01bebfdc27fbce48429dc9f093c"
+    "sha256": "000657c6c98af5e2417fa0b6f581067632a89d0fe0ebcb130bca12edd5042b6c"
   },
   "ruff": {
     "findings": [
@@ -16924,6 +16924,24 @@
         "tier": "T1-future"
       },
       {
+        "module": "repomap_kg.server._mcp_locations",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/_mcp_locations.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.server._mcp_navigation",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/_mcp_navigation.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.server._mcp_neighborhood",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/_mcp_neighborhood.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "repomap_kg.server._mcp_ops_tools",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/server/_mcp_ops_tools.py",
@@ -16936,9 +16954,21 @@
         "tier": "T1-future"
       },
       {
+        "module": "repomap_kg.server._mcp_similar",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/_mcp_similar.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "repomap_kg.server._mcp_sources",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/server/_mcp_sources.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.server._navigation_groups",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/_navigation_groups.py",
         "tier": "T1-future"
       },
       {
@@ -17356,6 +17386,18 @@
         "tier": "T1-future"
       },
       {
+        "module": "repomap_kg.storage.navigation_search",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/navigation_search.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.node_locations",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/node_locations.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "repomap_kg.storage.portable_ingestion",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/storage/portable_ingestion.py",
@@ -17437,6 +17479,48 @@
         "module": "repomap_kg.storage.run_authority",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/storage/run_authority.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_candidate_import",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_candidate_import.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_candidate_readback",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_candidate_readback.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_candidate_sql",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_candidate_sql.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_candidates",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_candidates.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_seed",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_seed.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_seed_readback",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_seed_readback.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.semantic_seed_sql",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/semantic_seed_sql.py",
         "tier": "T1-future"
       },
       {
@@ -17566,9 +17650,27 @@
         "tier": "T1-future"
       },
       {
+        "module": "repomap_kg.storage.sqlite_local.navigation_queries",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/sqlite_local/navigation_queries.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.sqlite_local.neighborhood_queries",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/sqlite_local/neighborhood_queries.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "repomap_kg.storage.sqlite_local.nix_summary_queries",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/storage/sqlite_local/nix_summary_queries.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.storage.sqlite_local.node_location_queries",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/storage/sqlite_local/node_location_queries.py",
         "tier": "T1-future"
       },
       {

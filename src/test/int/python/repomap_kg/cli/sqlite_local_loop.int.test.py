@@ -1,32 +1,16 @@
-"""User-invocable SQLite Local loop: init -> refresh -> stdio MCP (REPOMAP-PRODUCT3-SQLITE-LOCAL1).
+"""SQLite Local init -> refresh -> stdio MCP (REPOMAP-PRODUCT3-SQLITE-LOCAL1).
 
-Every SQLite child runs through the guarded launcher: no PostgreSQL
-environment, recording shims for PostgreSQL/container/service executables,
-and denial of any socket connection, forbidden spawn or psycopg connect. A
-one-source shell graph and a two-binding Nix graph with overlapping
-source-relative file names are indexed through the real portable semantic
-path, their source roots are removed, and the 23 database-reading tools read
-the accepted generation over real stdio MCP serialization. The one-source graph
-is a small polyglot tree (shell, Python, Terraform, OpenAPI, Express/Jest and
-a flake) so every summary family and the configured neighborhood return
-nonempty results (LOCAL4); it has no feed source, so the six source/feed tools
-return the empty source contract (LOCAL5; ``sqlite_local_source_feed_loop``
-proves them over real feed publications).
-
-This is containerized integration evidence (Linux sandbox), not a new macOS
-host qualification.
-
-LOCAL3 adds three direct CLI proofs through the same guarded children:
-
-* a real publisher write error (a competing writer holds the database) returns
-  exactly ``ERROR: graph-database-busy``, keeps the accepted generation and
-  settles the attempt failed;
-* an unreadable database or a conflicting retained identity refuses with
-  ``graph-publication-reconciliation-required`` and preserves the pending
-  attempt;
-* an implicit-PostgreSQL home with a later SQLite overlay makes ``ops
-  sqlite-init`` and ``ops refresh-graph`` exit 1 with ``storage-backend-conflict``
-  before any store, attempt, capture, worker or PostgreSQL connection.
+Guarded children have no PostgreSQL environment, record forbidden service spawns,
+and deny sockets/psycopg. Portable extraction indexes polyglot and overlapping Nix
+graphs. After source removal, the 23 database-reading tools read over stdio,
+including LOCAL4 summaries and NAVIGATION20 windows. The six LOCAL5 feed tools
+return empty contracts; sqlite_local_source_feed_loop proves feed publications.
+These are Linux container integration proofs, not new macOS host qualification.
+LOCAL3 CLI refusals: a competing writer returns ``ERROR: graph-database-busy``,
+preserves the accepted generation and settles failed; unreadable/conflicting
+identity returns ``graph-publication-reconciliation-required`` and preserves the
+pending attempt; implicit PostgreSQL plus SQLite overlay returns
+``storage-backend-conflict`` before store, attempt, capture, worker or PG open.
 """
 
 from __future__ import annotations
@@ -129,6 +113,8 @@ def _plan(base: int, graph: str, query: str, file_query: str) -> list[dict[str, 
           for index, family in enumerate(SUMMARIES)),
         tool(base + 20, "repomap_search_observations",
              {"graph_id": graph, "query": "flake.nix", "kind": "file", "include_raw": True}),
+        tool(base + 21, "repomap_neighborhood",
+             {"graph_id": graph, "node": CENTERS[graph], "node_limit": 1, "edge_limit": 1}),
     ]
 
 
@@ -142,6 +128,19 @@ def _assert_new_reads(responses: dict[int, dict[str, Any]], base: int, graph: st
     assert first["results"][0]["ordinal"] != second["results"][0]["ordinal"] and "payload" not in first["results"][0]
     around = structured(responses, base + 14)["result"]
     assert around["center"]["canonical_key"] == CENTERS[graph] and around["edges"], around
+    bounded = structured(responses, base + 21)["result"]
+    assert bounded["center"] == around["center"] and "bounds" in bounded and "bounds" not in around
+    assert bounded["nodes"] == around["nodes"][:1] and len(bounded["edges"]) == min(1, len(around["edges"]))
+    visible = {CENTERS[graph], *(node["canonical_key"] for node in bounded["nodes"])}
+    for original, edge in zip(around["edges"], bounded["edges"]):
+        assert edge == {key: value if key not in {"source_key", "target_key"} or value in visible
+                        else "[REDACTED]" for key, value in original.items()}
+    for name in ("nodes", "edges"):
+        count = min(1, len(around[name]))
+        more = len(around[name]) > count
+        assert len(bounded[name]) == count
+        assert bounded["bounds"][name] == dict(requested_limit=1, returned_count=count,
+            has_more=more, completeness="truncated" if more else "complete")
     summaries = {family: structured(responses, base + 15 + index)["summary"]
                  for index, family in enumerate(SUMMARIES)}
     nix = summaries["nix"]
@@ -195,7 +194,7 @@ def test_sqlite_local_loop_indexes_and_serves_database_tools_without_postgres(tm
     first = harness.mcp(home, requests)
 
     assert first[1]["result"]["protocolVersion"] == "2024-11-05"
-    assert first[2]["result"]["tools"] == tool_definitions() and len(first[2]["result"]["tools"]) == 27
+    assert first[2]["result"]["tools"] == tool_definitions() and len(first[2]["result"]["tools"]) == 31
     statuses = {row["graph_id"]: row for row in structured(first, 3)["graphs"]}
     assert set(statuses) == {ONE, MULTI, ABSENT}, statuses.keys()
     assert statuses[ABSENT]["error"] == "graph-database-not-initialized"
@@ -254,7 +253,7 @@ def test_sqlite_local_loop_indexes_and_serves_database_tools_without_postgres(tm
     assert explained["result"]["edge"]["source_key"] == edge["source_key"]
     assert explained["result"]["evidence"] and explained["collections"]["evidence"]["limit"] == 1, explained
     assert structured(second, 3)["result"]["center"]["canonical_key"] == edge["source_key"]
-    for mid in range(101, 121):  # restart after EOF: identical reads of the same generation
+    for mid in range(101, 122):  # restart after EOF: identical reads of the same generation
         assert structured(second, mid) == structured(first, mid), mid
 
     after = {graph: (_digest(path), _dump(path)) for graph, path in databases.items()}

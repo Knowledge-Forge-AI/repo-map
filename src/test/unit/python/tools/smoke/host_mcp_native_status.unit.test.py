@@ -19,9 +19,19 @@ from repomap_kg.ops import portable_refresh
 from repomap_kg.ops.config import load_ops_config_home
 from repomap_kg.ops.refresh import refresh_graph
 from smoke import host_mcp_native_fixture as fixture
-from smoke.host_mcp_native_checks import NativePlan, status_checks
+from smoke.host_mcp_native_checks import CATALOG_SHA256, NativePlan, catalog_digest, status_checks
+from repomap_kg.server.mcp import tool_definitions
 
 MULTI, FEED = "host-multi", "host-feed"
+
+
+def test_native_smoke_catalog_pin_covers_the_optional_read_tool() -> None:
+    tools = tool_definitions()
+    assert len(tools) == 31
+    assert catalog_digest(tools) == CATALOG_SHA256
+    assert sum(tool["name"] == "repomap_similar_nodes" for tool in tools) == 1
+    assert sum(tool["name"] == "repomap_embedding_profiles" for tool in tools) == 1
+    assert sum(tool["name"] == "repomap_node_locations" for tool in tools) == 1
 
 
 def _databases() -> dict[str, Any]:

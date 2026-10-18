@@ -1,5 +1,9 @@
 import json
+import copy
+from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 from repomap_kg.storage import (
     CanonicalNeighborhoodRecord,
@@ -9,6 +13,105 @@ from repomap_kg.storage import (
 )
 
 from repomap_test_support.mcp_server import McpServerTestSupport
+
+
+@pytest.mark.parametrize("center,direction,expected", [
+    ("python.module:pkg.alpha", "out", "imports"),
+    ("python.module:pkg.beta", "in", "imports"),
+    ("python.module:pkg.alpha", "both", "imports"),
+    ("doc.page:file%3Aroot%2Fdocs%2Fstart.md", "out", "links_to"),
+])
+def test_public_neighborhood_real_endpoints_and_unchanged_sanitization(
+    tmp_path, monkeypatch, center, direction, expected,
+):
+    from repomap_kg.server import mcp, ops, _ops_summaries
+    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from repomap_test_support.related_context_fixtures import (
+        EXPECTED_IMPORTS, EXPECTED_LINKS, GRAPH, related_home,
+    )
+
+    home, _, _ = related_home(tmp_path)
+    monkeypatch.setenv("REPOMAP_HOME", str(home))
+    monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
+    selection = ops.configured_graph(GRAPH).selection
+    markers = selection.path_markers
+    args = dict(graph_id=GRAPH, node=center, direction=direction, depth=1)
+    original = _ops_summaries.canonical_neighborhood_to_jsonable
+    raw = []
+
+    def capture(record):
+        result = original(record)
+        # Disclosed fixture mutation verifies nested fields stay under normal policy.
+        result["center"]["metadata"] = {
+            "source_key": center, "token": "synthetic-secret",
+            "path": str(home), "url": "https://u:p@example.invalid/data",
+            "source_id": "fixture/source", "long": "x" * 600,
+            "graph_root": selection.graph.root_path_expanded,
+            "config": selection.config_locations[0], "username": Path.home().name,
+        }
+        result["edges"][0]["identity_metadata"]["target_key"] = center
+        raw.append(copy.deepcopy(result))
+        return result
+
+    monkeypatch.setattr(_ops_summaries, "canonical_neighborhood_to_jsonable", capture)
+    reply = mcp.handle_tool_call("repomap_neighborhood", args)
+    rpc = mcp.handle_jsonrpc_message(dict(jsonrpc="2.0", id=1, method="tools/call",
+        params=dict(name="repomap_neighborhood", arguments=args)))
+    assert rpc is not None
+    assert rpc["result"] == reply
+    payload = reply["structuredContent"]
+    assert json.loads(reply["content"][0]["text"]) == payload
+    relations = {(e["source_key"], e["edge_kind"], e["target_key"])
+                 for e in payload["result"]["edges"] if e["edge_kind"] == expected}
+    assert relations == (EXPECTED_IMPORTS if expected == "imports" else EXPECTED_LINKS)
+    visible = {n["canonical_key"] for n in payload["result"]["nodes"]} | {center}
+    assert all(s in visible and t in visible for s, _, t in relations)
+    baseline = sanitize_jsonable(raw[0], private_markers=markers)
+    withheld = copy.deepcopy(payload["result"])
+    for edge in withheld["edges"]:
+        edge["source_key"] = edge["target_key"] = "[REDACTED]"
+    assert withheld == baseline
+    assert all(payload["result"]["center"]["metadata"][field] == "[private-path]"
+               for field in ("path", "graph_root", "config", "username"))
+    assert payload["graph"]["private"] is False
+    assert payload["graph"]["database"] == "[graph-database]"
+    assert payload["graph"]["root_path_display"] == "[graph-root]"
+    assert "synthetic-secret" not in json.dumps(payload)
+
+
+@pytest.mark.parametrize("privacy", ["public-dev", "private-ops"])
+@pytest.mark.parametrize("tool", ["repomap_canonical_edges", "repomap_canonical_neighborhood"])
+@pytest.mark.parametrize("schema", [0, 1])
+def test_legacy_canonical_routes_preserve_existing_endpoint_policy(
+    tmp_path, monkeypatch, privacy, tool, schema,
+):
+    from repomap_kg.server import mcp, _ops_summaries
+    from repomap_test_support.related_context_fixtures import (
+        EXPECTED_IMPORTS, GRAPH, MODULE, related_home,
+    )
+
+    home, _, _ = related_home(tmp_path)
+    config = home / "repomap.rp.toml"
+    config.write_text(config.read_text().replace('privacy = "public-dev"', f'privacy = "{privacy}"'))
+    monkeypatch.setenv("REPOMAP_HOME", str(home))
+    monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
+    def refuse_restoration(*args, **kwargs):
+        pytest.fail("Legacy canonical tools must not use selected-graph endpoint restoration")
+    monkeypatch.setattr(_ops_summaries, "_preserve_visible_endpoints", refuse_restoration)
+    args = dict(project=GRAPH, result_schema_version=schema)
+    args.update(dict(kind="imports") if tool.endswith("edges") else dict(node=MODULE, direction="out"))
+    reply = mcp.handle_tool_call(tool, args)
+    rpc = mcp.handle_jsonrpc_message(dict(jsonrpc="2.0", id=1, method="tools/call",
+        params=dict(name=tool, arguments=args)))
+    assert rpc is not None and rpc["result"] == reply
+    payload = reply["structuredContent"]
+    assert json.loads(reply["content"][0]["text"]) == payload
+    result = payload["result"] if schema and tool.endswith("neighborhood") else payload
+    edges = (payload["items"] if schema else payload) if tool.endswith("edges") else result["edges"]
+    # Legacy canonical identity fields were already public, including private selections.
+    assert {(e["source_key"], e["edge_kind"], e["target_key"]) for e in edges} == EXPECTED_IMPORTS
+    assert all(e["metadata"] == {"imported_modules": ["pkg.beta"], "resolutions": ["local"]}
+               for e in edges)
 
 
 def _mixed_multi_source_ops_config() -> str:

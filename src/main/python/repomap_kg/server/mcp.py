@@ -1,7 +1,6 @@
 """Minimal read-only MCP server for RepoMap canonical readback."""
 
 from __future__ import annotations
-
 # Same-name aliases are facade compatibility re-exports pinned by the ops helper-branch tests.
 import os as os
 import sys as sys
@@ -10,6 +9,7 @@ from typing import Any, TextIO
 import repomap_kg.server._mcp_dispatch as _mcp_dispatch
 import repomap_kg.server._mcp_projects as _mcp_projects
 import repomap_kg.server._mcp_sources as _mcp_sources
+from repomap_kg.server._mcp_navigation import repomap_navigation_search as repomap_navigation_search
 import repomap_kg.server.mcp_canonical as _canonical_impl
 from repomap_kg.graph.keys import GRAPH_KEY_VERSION
 from repomap_kg.server._mcp_dispatch import (
@@ -36,6 +36,11 @@ from repomap_kg.server._mcp_ops_tools import (
     repomap_server_memory_summary as repomap_server_memory_summary,
     repomap_terraform_summary as repomap_terraform_summary,
 )
+from repomap_kg.server._mcp_similar import (
+    embedding_profiles_payload as embedding_profiles_payload, repomap_embedding_profiles as repomap_embedding_profiles,
+    repomap_similar_nodes as repomap_similar_nodes,
+    similar_nodes_payload as similar_nodes_payload,
+)
 from repomap_kg.ops.config import OpsConfig
 from repomap_kg.server.canonical_read_store import (
     CanonicalReadStore,
@@ -44,7 +49,7 @@ from repomap_kg.server.canonical_read_store import (
 )
 import repomap_kg.server.mcp_core as _mcp_core
 from repomap_kg.server.mcp_core import (
-    ConfiguredGraphTarget as ConfiguredGraphTarget,
+    ConfiguredGraphTarget as ConfiguredGraphTarget, GraphStoreBinding,
     ENV_MCP_CONFIG as ENV_MCP_CONFIG,
     PROJECT_DATABASE_DISPLAY as PROJECT_DATABASE_DISPLAY,
     PROJECT_ROOT_DISPLAY as PROJECT_ROOT_DISPLAY,
@@ -63,8 +68,8 @@ from repomap_kg.server.mcp_core import (
     validate_read_schema_version as validate_read_schema_version,
 )
 from repomap_kg.server.mcp_schemas import tool_definitions as tool_definitions
+from repomap_kg.server._mcp_locations import repomap_node_locations as repomap_node_locations
 from repomap_kg.ops.config_local import LocalSqliteConfig
-from repomap_kg.server.mcp_core import GraphStoreBinding
 from repomap_kg.server.postgres_read_binding import postgres_graph_stores
 from repomap_kg.server.sqlite_read_binding import SqliteGraphStores
 from repomap_kg.server.source_read_store import PostgresSourceReadStore, SourceReadStore, SourceStorageQueries

@@ -1,21 +1,7 @@
-"""SQLite Local binding for configured-graph MCP read stores.
+"""SQLite configured-graph reads in one committed snapshot per operation.
 
-The backend for a neutral ``GraphSelection`` whose home declares
-``[storage] backend = "sqlite"``. Graph selection and its public refusals
-have already happened; each store operation opens the graph's existing
-database read-only for exactly one operation (one committed snapshot) and
-closes it before returning. Nothing here creates, initializes, migrates,
-extracts, publishes, starts a service or falls back to PostgreSQL.
-
-Matrix (LOCAL5): all 23 database-reading tools. The four canonical tools,
-legacy status, graph status, refresh status, project summary,
-node/file/observation search, the configured neighborhood, the five
-language/framework summaries and the six source/feed tools. Source/feed reads
-reconstruct their facts from the accepted publication
-(``storage.sqlite_local.source_queries`` and ``source_feed_queries``); they
-never fetch, inspect a source root or acquire an artifact. The two
-configuration inventories and the two server-memory readers do not read a
-graph database.
+Read-only snapshots never initialize, publish, acquire source content or fall
+back to PostgreSQL. Config/server-memory readers do not read a graph DB.
 """
 
 from __future__ import annotations
@@ -40,7 +26,10 @@ from repomap_kg.server.canonical_read_store import (
     CanonicalNeighborhoodQuery,
     CanonicalNodeQuery,
 )
-from repomap_kg.server.graph_selection import GraphSelection
+from repomap_kg.server.graph_selection import GraphSelection, select_graph
+from repomap_kg.storage.semantic_candidates import CandidateQuery, CandidateResult, unavailable
+from repomap_kg.storage.semantic_candidates import EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable
+from repomap_kg.storage.semantic_seed import SimilarNodesQuery
 from repomap_kg.server.investigation_read_store import (
     ConfiguredNeighborhoodQuery,
     GraphRefreshStatusQuery,
@@ -64,9 +53,14 @@ from repomap_kg.storage.canonical_readback_rows import (
     CanonicalNodeRecord,
 )
 from repomap_kg.storage.errors import StorageSchemaError
+from repomap_kg.storage.node_locations import NodeLocationsQuery
+from repomap_kg.storage.navigation_search import NavigationSearchQuery
+from repomap_kg.storage.sqlite_local.navigation_queries import navigation_candidates
+from repomap_kg.storage.sqlite_local.neighborhood_queries import configured_neighborhood
 from repomap_kg.storage.sqlite_local import (
     api_summary_queries,
     investigation_queries,
+    node_location_queries,
     nix_summary_queries,
     queries,
     source_feed_queries,
@@ -94,6 +88,8 @@ SQLITE_STORAGE_LABEL = "[sqlite-local]"
 SQLITE_DATABASE_SOURCE = "sqlite-graph-file"
 
 SUPPORTED_TOOLS = (
+    "repomap_navigation_search",
+    "repomap_node_locations",
     "repomap_canonical_nodes",
     "repomap_canonical_edges",
     "repomap_explain_canonical_edge",
@@ -118,6 +114,9 @@ SUPPORTED_TOOLS = (
     "repomap_explain_source_feed_item",
     "repomap_source_references",
 )
+
+# Advertised across backends, but explicitly unavailable on SQLite without IO.
+OPTIONAL_POSTGRES_TOOLS = ("repomap_similar_nodes", "repomap_embedding_profiles")
 
 
 # Closed family set; each value is a named SQLite summary operation.
@@ -240,6 +239,33 @@ class SqliteSourceReadStore:
 class SqliteInvestigationReadStore:
     config: LocalSqliteConfig
 
+    def navigation_search(self, graph_id: str, query: NavigationSearchQuery) -> dict[str, Any]:
+        from repomap_kg.server._navigation_groups import source_scope_admission
+        selection = select_graph(self.config, graph_id)
+        query.validate()
+        with read_transaction(_database(self.config, selection.graph), local_graph_binding(selection.graph)) as connection:
+            return navigation_candidates(connection, query,
+                                         admits_location=source_scope_admission(query, selection.path_markers))
+
+    def node_locations(self, graph_id: str, query: NodeLocationsQuery) -> dict[str, Any]:
+        graph = checked_graph(self.config, graph_id)
+        return node_location_queries.read_node_locations(
+            _database(self.config, graph), local_graph_binding(graph), query)
+
+    def embedding_profiles(self, graph_id: str, query: EmbeddingProfilesQuery) -> EmbeddingProfilesResult:
+        checked_graph(self.config, graph_id)
+        query.validate()
+        return profiles_unavailable("sqlite_unsupported" if query.selected else "disabled")
+
+    def similar_nodes(self, graph_id: str, query: SimilarNodesQuery) -> CandidateResult:
+        checked_graph(self.config, graph_id)
+        query.validate()
+        return unavailable("sqlite_unsupported" if query.selected else "disabled")
+
+    def semantic_candidates(self, graph_id: str, query: CandidateQuery) -> CandidateResult:
+        checked_graph(self.config, graph_id)
+        return unavailable("sqlite_unsupported" if query.selected else "disabled")
+
     def refresh_statuses(
         self, query: GraphRefreshStatusQuery
     ) -> Mapping[str, OpsRefreshGraphStatus]:
@@ -307,19 +333,18 @@ class SqliteInvestigationReadStore:
 
     def configured_neighborhood(
         self, query: ConfiguredNeighborhoodQuery
-    ) -> CanonicalNeighborhoodRecord:
-        """Unbounded depth-1 neighborhood, exactly the PostgreSQL configured call."""
+    ) -> CanonicalNeighborhoodRecord | dict[str, Any]:
+        """Read opt-in incident-selective windows and probes in this transaction."""
         graph = checked_graph(self.config, query.graph_id)
         if query.direction not in {"both", "in", "out"}:
-            # The PostgreSQL SQL builder's refusal, raised before any open.
             raise StorageSchemaError("neighborhood direction must be one of both, in, out")
         with read_transaction(
             _database(self.config, graph), local_graph_binding(graph)
         ) as connection:
-            return queries.canonical_neighborhood(
+            return configured_neighborhood(
                 connection, node=query.node, direction=query.direction, depth=query.depth,
                 graph_key_version=query.graph_key_version,
-                node_limit=None, node_offset=0, edge_limit=None, edge_offset=0,
+                node_limit=query.node_limit, edge_limit=query.edge_limit,
             )
 
     def language_summary(self, query: LanguageSummaryQuery) -> Any:
@@ -363,6 +388,7 @@ class SqliteGraphStores:
 
 
 __all__ = (
+    "OPTIONAL_POSTGRES_TOOLS",
     "SQLITE_DATABASE_SOURCE",
     "SQLITE_STORAGE_LABEL",
     "SUPPORTED_TOOLS",

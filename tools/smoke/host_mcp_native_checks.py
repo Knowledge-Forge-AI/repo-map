@@ -53,7 +53,7 @@ from repomap_test_support.host_mcp_stdio import initialize_request, tool_request
 from .host_mcp_native_fixture import FEED_SOURCE_ID, VISIBLE_GRAPHS, NativeFixture, stored_repository_facts
 from .host_mcp_native_launch import Expectation
 
-CATALOG_SHA256 = "c38abd4f5e4da60a3ad3031e4476ff0c0e95552fc7dff149f6a920120a232dde"  # unchanged 27 tools
+CATALOG_SHA256 = "c487dc30ffa570f6ec80af68fabbb15d5b96bdb273e5fc375676c7174321189d"  # 31 read tools
 BAD_ITEM = "python.module:not-a-feed-item"
 HIDDEN = "graph 'host-hidden' is not MCP-visible"
 RESTART_IDS = (20, 33, 45)  # one canonical, investigation and source/feed read
@@ -254,7 +254,7 @@ def _family_checks(plan: NativePlan, responses: dict[int, dict[str, Any]]) -> di
         files = json.dumps(payload(31)["results"])
         neighborhood = payload(25)["result"]
         return {
-            "catalog_is_27_tools": len(tools) == 27,
+            "catalog_is_31_tools": len(tools) == 31,
             "catalog_sha256_pinned": plan.chain["catalog_sha256"] == CATALOG_SHA256,
             "edges_contain_chained_edge": edge in [_edge_identity(item) for item in payload(21)["items"]],
             "explanation_is_chained_edge": _edge_identity(payload(23)["result"]["edge"]) == edge,

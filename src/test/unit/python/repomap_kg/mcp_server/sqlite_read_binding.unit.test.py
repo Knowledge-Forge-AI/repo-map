@@ -1,6 +1,6 @@
 """SQLite Local MCP routing: selection first, SQLite reads, bounded refusals.
 
-A SQLite Local home routes all 23 database-reading tools to real read-only
+A SQLite Local home routes all 24 database-reading tools to real read-only
 SQLite queries with every PostgreSQL binding tripwire armed, including the six
 source/feed tools over a real offline feed publication (LOCAL5); logical
 selection refusals and argument validation keep the PostgreSQL texts and
@@ -27,6 +27,7 @@ from repomap_kg.server.postgres_read_binding import PostgresGraphStores, Postgre
 from repomap_kg.server.source_read_store import PostgresSourceReadStore
 from repomap_kg.server.sqlite_read_binding import (
     SUPPORTED_TOOLS,
+    OPTIONAL_POSTGRES_TOOLS,
     SqliteGraphStores,
     SqliteInvestigationStores,
     SqliteSourceReadStore,
@@ -126,13 +127,15 @@ SUMMARIES = ("python", "terraform", "openapi", "js_framework", "nix")
 
 
 def test_matrix_covers_every_graph_reading_tool() -> None:
-    assert len(SUPPORTED_TOOLS) == len(set(SUPPORTED_TOOLS)) == 23
+    assert len(SUPPORTED_TOOLS) == len(set(SUPPORTED_TOOLS)) == 25
     assert set(SOURCE_ARGUMENTS) <= set(SUPPORTED_TOOLS)
     catalog = {tool["name"] for tool in mcp.tool_definitions()}
     configuration = {"repomap_list_graphs", "repomap_projects"}
     server_memory = {"repomap_server_memory_summary", "repomap_server_memory_search"}
-    assert len(catalog) == 27
-    assert catalog == set(SUPPORTED_TOOLS) | configuration | server_memory
+    assert set(OPTIONAL_POSTGRES_TOOLS) == {"repomap_similar_nodes", "repomap_embedding_profiles"}
+    assert not set(OPTIONAL_POSTGRES_TOOLS) & set(SUPPORTED_TOOLS)
+    assert len(catalog) == 31
+    assert catalog == set(SUPPORTED_TOOLS) | set(OPTIONAL_POSTGRES_TOOLS) | configuration | server_memory
     assert not set(SUPPORTED_TOOLS) & (configuration | server_memory)
 
 

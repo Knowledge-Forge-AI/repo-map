@@ -19,6 +19,8 @@ from repomap_kg.storage import StorageSchemaError
 MCP_PROTOCOL_VERSION = "2024-11-05"
 
 TOOL_FUNCTIONS: dict[str, str] = {
+    "repomap_navigation_search": "repomap_navigation_search",
+    "repomap_node_locations": "repomap_node_locations",
     "repomap_projects": "repomap_projects",
     "repomap_status": "repomap_status",
     "repomap_canonical_nodes": "repomap_canonical_nodes",
@@ -46,6 +48,8 @@ TOOL_FUNCTIONS: dict[str, str] = {
     "repomap_refresh_status": "repomap_refresh_status",
     "repomap_server_memory_summary": "repomap_server_memory_summary",
     "repomap_server_memory_search": "repomap_server_memory_search",
+    "repomap_similar_nodes": "repomap_similar_nodes",
+    "repomap_embedding_profiles": "repomap_embedding_profiles",
 }
 
 

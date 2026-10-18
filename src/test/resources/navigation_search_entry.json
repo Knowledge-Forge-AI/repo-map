@@ -1,0 +1,3670 @@
+{
+  "cases": [
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "root"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "root",
+        "read_only": true,
+        "result_count": 4,
+        "results": [
+          {
+            "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/docs/guide.md",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "doc.page",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "doc_path": "docs/guide.md",
+              "doc_role": "markdown",
+              "frontmatter_present": false
+            }
+          },
+          {
+            "canonical_key": "file:root/alternate/service.py",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/alternate/service.py",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "file",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_role": "source",
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "alternate/service.py"
+            }
+          },
+          {
+            "canonical_key": "file:root/docs/guide.md",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/docs/guide.md",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "file",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_role": "source",
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "docs/guide.md"
+            }
+          },
+          {
+            "canonical_key": "file:root/src/service.py",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/src/service.py",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "file",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_role": "source",
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "src/service.py"
+            }
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 4,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "root"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": true,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "root",
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "canonical_key": "file:root/alternate/service.py",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/alternate/service.py",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "file",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_role": "source",
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "alternate/service.py"
+            }
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 2,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "root"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "root",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "root"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "root",
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/docs/guide.md",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "doc.page",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "doc_path": "docs/guide.md",
+              "doc_role": "markdown",
+              "frontmatter_present": false
+            }
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "sample.service"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "sample.service",
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "canonical_key": "python.function:sample.service:serve",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "serve",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "python.function",
+            "last_seen_run_id": 1,
+            "metadata": {}
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "sample.service"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "sample.service",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "sample.service"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "sample.service",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "sample.service"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "sample.service",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "%"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "%",
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/docs/guide.md",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "doc.page",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "doc_path": "docs/guide.md",
+              "doc_role": "markdown",
+              "frontmatter_present": false
+            }
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "%"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "%",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "%"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "%",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "%"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "%",
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+            "confidence": "extracted",
+            "conflict": false,
+            "display_name": "root/docs/guide.md",
+            "first_seen_run_id": 1,
+            "graph_key_version": 1,
+            "kind": "doc.page",
+            "last_seen_run_id": 1,
+            "metadata": {
+              "doc_path": "docs/guide.md",
+              "doc_role": "markdown",
+              "frontmatter_present": false
+            }
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "_"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "_",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "_"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "_",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "_"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "_",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "_"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "_",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "\\"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "\\",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "\\"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "\\",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "\\"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "\\",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "\\"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "\\",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "café"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "café",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "café"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "café",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "café"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "café",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "café"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "café",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "missing"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "missing",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "missing"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "missing",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 1,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "missing"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": null,
+        "limit": 100,
+        "offset": 500,
+        "path": null,
+        "query": "missing",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 500,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "missing"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": false,
+        "kind": "doc.page",
+        "limit": 20,
+        "offset": 0,
+        "path": null,
+        "query": "missing",
+        "read_only": true,
+        "result_count": 0,
+        "results": [],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "nodes",
+        "total": 0,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": " "
+      },
+      "error": "query is required",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": " "
+      },
+      "error": "query is required",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": " "
+      },
+      "error": "query is required",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": " "
+      },
+      "error": "query is required",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "error": "query must be at most 200 characters",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "error": "query must be at most 200 characters",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 100,
+        "offset": 500,
+        "query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "error": "query must be at most 200 characters",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "kind": "doc.page",
+        "query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "error": "query must be at most 200 characters",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "root"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": true,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "root",
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "executable": false,
+            "generated": false,
+            "language": "unknown",
+            "path": "root/docs/guide.md",
+            "role": "unknown"
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "files",
+        "total": 2,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_files"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 1,
+        "offset": 1,
+        "query": "root"
+      },
+      "payload": {
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "has_more": true,
+        "kind": null,
+        "limit": 1,
+        "offset": 1,
+        "path": null,
+        "query": "root",
+        "raw_payload_policy": {
+          "include_raw": false,
+          "metadata_included": true,
+          "metadata_semantics": "include_raw controls the full raw payload field only; metadata remains included",
+          "payload_included": false
+        },
+        "read_only": true,
+        "result_count": 1,
+        "results": [
+          {
+            "kind": "file",
+            "metadata": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "binding_role": "source",
+              "graph_id": "locator",
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "snapshot_manifest_digest": "manifest1:3d5570155ba0f772e597a564ec275f967fdc08008c8da5520648742dd2840188",
+              "source_relative_path": "docs/guide.md"
+            },
+            "ordinal": 1,
+            "path": "root/docs/guide.md",
+            "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:docs/guide.md#file"
+          }
+        ],
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "target": "observations",
+        "total": 2,
+        "version": "0.0.2"
+      },
+      "tool": "repomap_search_observations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "full",
+        "evidence_role": "all",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "multiple_stored_locations",
+        "canonical_key": "python.function:sample.service:serve",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "confidence": "extracted",
+            "end_line": 15,
+            "evidence_key": "[REDACTED]",
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/src/service.py",
+            "path_namespace": "graph_source_relative",
+            "path_status": "available",
+            "publication": {
+              "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+              "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+            },
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 3,
+              "payload_hash": "0ec39ee11b02c7200082b8a5082d34d91dde09c892062bc6f49f0984ee5aec7e",
+              "run_id": 1,
+              "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:src/service.py#serve",
+              "status": "available"
+            },
+            "run_id": 1,
+            "source": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "src/service.py"
+            },
+            "start_line": 5
+          },
+          {
+            "basis": "canonical_node_evidence",
+            "confidence": "extracted",
+            "end_line": 23,
+            "evidence_key": "[REDACTED]",
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/alternate/service.py",
+            "path_namespace": "graph_source_relative",
+            "path_status": "available",
+            "publication": {
+              "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+              "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+            },
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 4,
+              "payload_hash": "08c921ff459c7db588e6fa9883f596c2819d3fffd603e89511254f80562f125b",
+              "run_id": 1,
+              "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:alternate/service.py#serve",
+              "status": "available"
+            },
+            "run_id": 1,
+            "source": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "alternate/service.py"
+            },
+            "start_line": 20
+          }
+        ],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "all",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "multiple_stored_locations",
+        "bindings": [
+          {
+            "binding_alias": "root",
+            "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+            "binding_revision": 1,
+            "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260"
+          }
+        ],
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "all",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "binding": 0,
+            "confidence": "extracted",
+            "end_line": 15,
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/src/service.py",
+            "path_status": "available",
+            "publication": 0,
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 3,
+              "status": "available"
+            },
+            "run_id": 1,
+            "source_relative_path": "src/service.py",
+            "start_line": 5
+          },
+          {
+            "basis": "canonical_node_evidence",
+            "binding": 0,
+            "confidence": "extracted",
+            "end_line": 23,
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/alternate/service.py",
+            "path_status": "available",
+            "publication": 0,
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 4,
+              "status": "available"
+            },
+            "run_id": 1,
+            "source_relative_path": "alternate/service.py",
+            "start_line": 20
+          }
+        ],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [
+          {
+            "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+            "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+          }
+        ],
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "full",
+        "evidence_role": "direct",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "multiple_stored_locations",
+        "canonical_key": "python.function:sample.service:serve",
+        "evidence_role": "direct",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "confidence": "extracted",
+            "end_line": 15,
+            "evidence_key": "[REDACTED]",
+            "evidence_role": "direct",
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/src/service.py",
+            "path_namespace": "graph_source_relative",
+            "path_status": "available",
+            "publication": {
+              "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+              "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+            },
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 3,
+              "payload_hash": "0ec39ee11b02c7200082b8a5082d34d91dde09c892062bc6f49f0984ee5aec7e",
+              "run_id": 1,
+              "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:src/service.py#serve",
+              "status": "available"
+            },
+            "run_id": 1,
+            "source": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "src/service.py"
+            },
+            "start_line": 5
+          },
+          {
+            "basis": "canonical_node_evidence",
+            "confidence": "extracted",
+            "end_line": 23,
+            "evidence_key": "[REDACTED]",
+            "evidence_role": "direct",
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/alternate/service.py",
+            "path_namespace": "graph_source_relative",
+            "path_status": "available",
+            "publication": {
+              "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+              "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+            },
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 4,
+              "payload_hash": "08c921ff459c7db588e6fa9883f596c2819d3fffd603e89511254f80562f125b",
+              "run_id": 1,
+              "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:alternate/service.py#serve",
+              "status": "available"
+            },
+            "run_id": 1,
+            "source": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "alternate/service.py"
+            },
+            "start_line": 20
+          }
+        ],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "direct",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "multiple_stored_locations",
+        "bindings": [
+          {
+            "binding_alias": "root",
+            "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+            "binding_revision": 1,
+            "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260"
+          }
+        ],
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "direct",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "binding": 0,
+            "confidence": "extracted",
+            "end_line": 15,
+            "evidence_role": "direct",
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/src/service.py",
+            "path_status": "available",
+            "publication": 0,
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 3,
+              "status": "available"
+            },
+            "run_id": 1,
+            "source_relative_path": "src/service.py",
+            "start_line": 5
+          },
+          {
+            "basis": "canonical_node_evidence",
+            "binding": 0,
+            "confidence": "extracted",
+            "end_line": 23,
+            "evidence_role": "direct",
+            "extractor": "fixture",
+            "extractor_version": "1",
+            "link_kind": "observed",
+            "path": "root/alternate/service.py",
+            "path_status": "available",
+            "publication": 0,
+            "publication_relation": "accepted_run",
+            "range_status": "stored",
+            "raw_observation": {
+              "kind": "python.function",
+              "ordinal": 4,
+              "status": "available"
+            },
+            "run_id": 1,
+            "source_relative_path": "alternate/service.py",
+            "start_line": 20
+          }
+        ],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [
+          {
+            "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+            "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+          }
+        ],
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "full",
+        "evidence_role": "reference",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "unavailable",
+        "canonical_key": "python.function:sample.service:serve",
+        "evidence_role": "reference",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "no_usable_location",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "reference",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "unavailable",
+        "bindings": [],
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "reference",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "no_usable_location",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "full",
+        "evidence_role": "unknown",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "unavailable",
+        "canonical_key": "python.function:sample.service:serve",
+        "evidence_role": "unknown",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "no_usable_location",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "unknown",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "unavailable",
+        "bindings": [],
+        "canonical_key": "python.function:sample.service:serve",
+        "detail": "compact",
+        "evidence_role": "unknown",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": null,
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "no_usable_location",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "full",
+        "evidence_role": "all",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "single_stored_location",
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "confidence": "extracted",
+            "end_line": null,
+            "evidence_key": "[REDACTED]",
+            "extractor": "repo-markdown",
+            "extractor_version": "0.0.2",
+            "link_kind": "observed",
+            "path": "root/docs/guide.md",
+            "path_namespace": "graph_source_relative",
+            "path_status": "available",
+            "publication": {
+              "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+              "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+            },
+            "publication_relation": "accepted_run",
+            "range_status": "missing_or_invalid",
+            "raw_observation": {
+              "kind": "markdown.document",
+              "ordinal": 5,
+              "payload_hash": "27c886cbffd648aba3283f48c141f747390aeffb27ec82320ea0e67e378fff00",
+              "run_id": 1,
+              "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:docs/guide.md#markdown-document",
+              "status": "available"
+            },
+            "run_id": 1,
+            "source": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "docs/guide.md"
+            },
+            "start_line": null
+          }
+        ],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "all",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "single_stored_location",
+        "bindings": [
+          {
+            "binding_alias": "root",
+            "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+            "binding_revision": 1,
+            "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260"
+          }
+        ],
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "all",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "binding": 0,
+            "confidence": "extracted",
+            "end_line": null,
+            "extractor": "repo-markdown",
+            "extractor_version": "0.0.2",
+            "link_kind": "observed",
+            "path": "root/docs/guide.md",
+            "path_status": "available",
+            "publication": 0,
+            "publication_relation": "accepted_run",
+            "range_status": "missing_or_invalid",
+            "raw_observation": {
+              "kind": "markdown.document",
+              "ordinal": 5,
+              "status": "available"
+            },
+            "run_id": 1,
+            "source_relative_path": "docs/guide.md",
+            "start_line": null
+          }
+        ],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [
+          {
+            "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+            "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+          }
+        ],
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "full",
+        "evidence_role": "direct",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "single_stored_location",
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "evidence_role": "direct",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "confidence": "extracted",
+            "end_line": null,
+            "evidence_key": "[REDACTED]",
+            "evidence_role": "direct",
+            "extractor": "repo-markdown",
+            "extractor_version": "0.0.2",
+            "link_kind": "observed",
+            "path": "root/docs/guide.md",
+            "path_namespace": "graph_source_relative",
+            "path_status": "available",
+            "publication": {
+              "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+              "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+            },
+            "publication_relation": "accepted_run",
+            "range_status": "missing_or_invalid",
+            "raw_observation": {
+              "kind": "markdown.document",
+              "ordinal": 5,
+              "payload_hash": "27c886cbffd648aba3283f48c141f747390aeffb27ec82320ea0e67e378fff00",
+              "run_id": 1,
+              "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:docs/guide.md#markdown-document",
+              "status": "available"
+            },
+            "run_id": 1,
+            "source": {
+              "binding_alias": "root",
+              "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+              "binding_revision": 1,
+              "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260",
+              "source_relative_path": "docs/guide.md"
+            },
+            "start_line": null
+          }
+        ],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "evidence_role": "unknown",
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "direct",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "single_stored_location",
+        "bindings": [
+          {
+            "binding_alias": "root",
+            "binding_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2",
+            "binding_revision": 1,
+            "snapshot_id": "snap1:3b913fe3146ade295b26da6928e34edcbd795a03bc30dad54fc56d78e0b2b260"
+          }
+        ],
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "direct",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [
+          {
+            "basis": "canonical_node_evidence",
+            "binding": 0,
+            "confidence": "extracted",
+            "end_line": null,
+            "evidence_role": "direct",
+            "extractor": "repo-markdown",
+            "extractor_version": "0.0.2",
+            "link_kind": "observed",
+            "path": "root/docs/guide.md",
+            "path_status": "available",
+            "publication": 0,
+            "publication_relation": "accepted_run",
+            "range_status": "missing_or_invalid",
+            "raw_observation": {
+              "kind": "markdown.document",
+              "ordinal": 5,
+              "status": "available"
+            },
+            "run_id": 1,
+            "source_relative_path": "docs/guide.md",
+            "start_line": null
+          }
+        ],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "evidence_role": "unknown",
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [
+          {
+            "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
+            "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
+            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
+          }
+        ],
+        "read_only": true,
+        "reason": null,
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "located",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "full",
+        "evidence_role": "reference",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "metadata_only",
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "evidence_role": "reference",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "evidence_role": "unknown",
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "metadata_only",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "metadata_only",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "reference",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "metadata_only",
+        "bindings": [],
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "reference",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "evidence_role": "unknown",
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "metadata_only",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "metadata_only",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "full",
+        "evidence_role": "unknown",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "metadata_only",
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "evidence_role": "unknown",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "evidence_role": "unknown",
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "metadata_only",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "metadata_only",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "unknown",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "accepted_publication": {
+          "generation": 1,
+          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "run_id": 1
+        },
+        "ambiguity": "metadata_only",
+        "bindings": [],
+        "canonical_key": "doc.page:file%3Aroot%2Fdocs%2Fguide.md",
+        "detail": "compact",
+        "evidence_role": "unknown",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": 1,
+        "location_scope": "accepted_run",
+        "locations": [],
+        "metadata_location": {
+          "basis": "node_metadata.doc_path",
+          "binding_status": "unavailable",
+          "end_line": null,
+          "evidence_role": "unknown",
+          "node_last_seen_run_id": 1,
+          "path": "docs/guide.md",
+          "path_namespace": "source_relative",
+          "path_status": "available",
+          "range_status": "missing_or_invalid",
+          "start_line": null
+        },
+        "node_first_seen_run_id": 1,
+        "node_last_seen_run_id": 1,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "metadata_only",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "metadata_only",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "full",
+        "evidence_role": "all",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "canonical_key": "absent",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "all",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "bindings": [],
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "all",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "full",
+        "evidence_role": "direct",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "canonical_key": "absent",
+        "evidence_role": "direct",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "direct",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "bindings": [],
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "direct",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "full",
+        "evidence_role": "reference",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "canonical_key": "absent",
+        "evidence_role": "reference",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "reference",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "bindings": [],
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "reference",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "full",
+        "evidence_role": "unknown",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "canonical_key": "absent",
+        "evidence_role": "unknown",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "database": "[graph-database]",
+          "database_source": "sqlite-graph-file",
+          "enabled": true,
+          "graph_id": "locator",
+          "mcp_visible": true,
+          "name": "locator",
+          "privacy": "public-dev",
+          "private": false,
+          "refresh_policy": "manual",
+          "refresh_policy_status": "implemented",
+          "repository_name": "locator",
+          "root_path_checked": false,
+          "root_path_display": "[graph-root]",
+          "root_path_expanded": "[graph-root]",
+          "warnings": []
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "safety": {
+          "no_destructive_db_actions": true,
+          "no_discovery": true,
+          "no_refresh": true,
+          "no_remote_exposure": true,
+          "no_server_memory_read": true,
+          "no_source_acquisition": true,
+          "no_source_mutation": true,
+          "no_source_tree_reads": true,
+          "read_only": true
+        },
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "unknown",
+        "graph_id": "locator"
+      },
+      "payload": {
+        "ambiguity": "unavailable",
+        "bindings": [],
+        "canonical_key": "absent",
+        "detail": "compact",
+        "evidence_role": "unknown",
+        "fallback": "native_search",
+        "freshness": "unverified",
+        "graph": {
+          "graph_id": "locator",
+          "repository_name": "locator"
+        },
+        "graph_key_version": 1,
+        "has_more": false,
+        "historical_has_more": false,
+        "historical_locations": [],
+        "limit": 10,
+        "location_run_id": null,
+        "location_scope": "unavailable",
+        "locations": [],
+        "metadata_location": null,
+        "path_namespace": "graph_source_relative",
+        "publications": [],
+        "read_only": true,
+        "reason": "node_not_found",
+        "repository_identity": "repo1:locator",
+        "schema_version": 1,
+        "server": "repomap-kg",
+        "status": "unavailable",
+        "version": "0.0.2"
+      },
+      "tool": "repomap_node_locations"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": 0,
+        "query": "root"
+      },
+      "error": "limit must be a positive integer",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "offset": -1,
+        "query": "root"
+      },
+      "error": "offset must be a non-negative integer",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "limit": "bad",
+        "query": "root"
+      },
+      "error": "limit must be a positive integer",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "locator",
+        "query": null
+      },
+      "error": "query is required",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    },
+    {
+      "arguments": {
+        "graph_id": "hidden",
+        "query": "root"
+      },
+      "error": "graph 'hidden' is not MCP-visible",
+      "error_type": "RepoMapMcpError",
+      "tool": "repomap_search_nodes"
+    }
+  ],
+  "fixture": "locator_home",
+  "schema": "repomap.scoped-search-entry-compatibility-v1"
+}

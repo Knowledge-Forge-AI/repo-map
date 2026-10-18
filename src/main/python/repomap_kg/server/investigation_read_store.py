@@ -21,6 +21,10 @@ same twelve operations from one SQLite Local graph file through named SQLite
 query owners. Construction performs no IO. The PostgreSQL query-owner records
 below remain PostgreSQL-typed: database naming and the search semantics are
 not neutral.
+
+Explicitly selected candidate reads serve the experimental public-safe pgvector
+contract (ADR 0077). ``similar_nodes`` resolves a stored seed for the public MCP
+entry. SQLite reports this optional capability unavailable.
 """
 
 from __future__ import annotations
@@ -42,6 +46,14 @@ from repomap_kg.storage.rows import (
     CanonicalNeighborhoodRecord,
     CanonicalStorageSummaryRecord,
 )
+from repomap_kg.storage.semantic_candidates import CandidateQuery, CandidateResult, unavailable
+from repomap_kg.storage.semantic_candidate_readback import query_semantic_candidates
+from repomap_kg.storage.semantic_seed import SimilarNodesQuery
+from repomap_kg.storage.node_locations import NodeLocationsQuery, unavailable as locations_unavailable
+from repomap_kg.storage.navigation_search import NavigationSearchQuery, unavailable as navigation_unavailable
+from repomap_kg.storage.semantic_seed_readback import query_similar_nodes
+from repomap_kg.storage.semantic_candidates import EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable
+from repomap_kg.storage.semantic_candidate_readback import query_embedding_profiles
 
 __all__ = (
     "ConfiguredInvestigationGraph",
@@ -108,6 +120,8 @@ class ConfiguredNeighborhoodQuery:
     direction: str
     depth: int
     graph_key_version: int
+    node_limit: int | None = None
+    edge_limit: int | None = None
 
 
 @dataclass(frozen=True)
@@ -127,13 +141,23 @@ class InvestigationReadStore(Protocol):
 
     def search(self, query: GraphSearchQuery) -> GraphSearchResult: ...
 
+    def node_locations(self, graph_id: str, query: NodeLocationsQuery) -> dict[str, Any]: ...
+
+    def navigation_search(self, graph_id: str, query: NavigationSearchQuery) -> dict[str, Any]: ...
+
+    def semantic_candidates(self, graph_id: str, query: CandidateQuery) -> CandidateResult: ...
+
+    def similar_nodes(self, graph_id: str, query: SimilarNodesQuery) -> CandidateResult: ...
+
+    def embedding_profiles(self, graph_id: str, query: EmbeddingProfilesQuery) -> EmbeddingProfilesResult: ...
+
     def project_summary(
         self, query: ProjectSummaryQuery
     ) -> CanonicalStorageSummaryRecord: ...
 
     def configured_neighborhood(
         self, query: ConfiguredNeighborhoodQuery
-    ) -> CanonicalNeighborhoodRecord: ...
+    ) -> CanonicalNeighborhoodRecord | dict[str, Any]: ...
 
     def language_summary(self, query: LanguageSummaryQuery) -> Any: ...
 
@@ -186,6 +210,58 @@ class PostgresInvestigationReadStore:
     psql_command: str | None
     queries: InvestigationStorageQueries
 
+    def navigation_search(self, graph_id: str, query: NavigationSearchQuery) -> dict[str, Any]:
+        self._context(graph_id)
+        query.validate()
+        return navigation_unavailable("backend_unsupported")
+
+    def node_locations(self, graph_id: str, query: NodeLocationsQuery) -> dict[str, Any]:
+        self._context(graph_id)
+        query.validate()
+        return locations_unavailable("backend_unsupported")
+
+    def embedding_profiles(self, graph_id: str, query: EmbeddingProfilesQuery) -> EmbeddingProfilesResult:
+        context = self._context(graph_id)
+        query.validate()
+        if query.selected is False:
+            return profiles_unavailable("disabled")
+        graph = context.graph
+        if graph.privacy != "public-dev" or any(
+            binding.privacy != "public-dev" for binding in graph.effective_source_bindings
+        ):
+            return profiles_unavailable("private_graph_unsupported")
+        return read_configured_graph(context, query_embedding_profiles,
+            root_path=context.root_path, query=query)
+
+    def similar_nodes(self, graph_id: str, query: SimilarNodesQuery) -> CandidateResult:
+        context = self._context(graph_id)
+        query.validate()
+        if query.selected is False:
+            return unavailable("disabled")
+        graph = context.graph
+        if graph.privacy != "public-dev" or any(
+            binding.privacy != "public-dev" for binding in graph.effective_source_bindings
+        ):
+            return unavailable("private_graph_unsupported")
+        return read_configured_graph(context, query_similar_nodes,
+            root_path=context.root_path, query=query)
+
+    def semantic_candidates(self, graph_id: str, query: CandidateQuery) -> CandidateResult:
+        """Explicit opt-in read-store surface; ordinary searches are unchanged."""
+        context = self._context(graph_id)
+        if query.selected is False:
+            return unavailable("disabled")
+        graph = context.graph
+        if graph.privacy != "public-dev" or any(
+            binding.privacy != "public-dev" for binding in graph.effective_source_bindings
+        ):
+            return unavailable("private_graph_unsupported")
+        if query.publication.repository_identity != context.repository_identity:
+            return unavailable("graph_scope_mismatch")
+        return read_configured_graph(
+            context, query_semantic_candidates, root_path=context.root_path, query=query
+        )
+
     def refresh_statuses(
         self, query: GraphRefreshStatusQuery
     ) -> Mapping[str, OpsRefreshGraphStatus]:
@@ -237,6 +313,8 @@ class PostgresInvestigationReadStore:
         self, query: ConfiguredNeighborhoodQuery
     ) -> CanonicalNeighborhoodRecord:
         context = self._context(query.graph_id)
+        if query.node_limit is not None or query.edge_limit is not None:
+            raise McpOpsError("bounded neighborhood is supported only by SQLite Local")
         return read_configured_graph(
             context,
             self.queries.neighborhood,

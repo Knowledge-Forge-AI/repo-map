@@ -242,6 +242,8 @@ class StorageMcpReadOnlyToolsIntegrationTests(unittest.TestCase):
             "repomap_python_summary", "repomap_terraform_summary", "repomap_openapi_summary",
             "repomap_js_framework_summary", "repomap_nix_summary", "repomap_refresh_status",
             "repomap_server_memory_summary", "repomap_server_memory_search",
+            "repomap_similar_nodes", "repomap_embedding_profiles",
+            "repomap_node_locations", "repomap_navigation_search",
         ]
         self.assertEqual([tool["name"] for tool in tools_response["result"]["tools"]], expected_tools)
         self.assertEqual(projects_payload["default_project"], "fixture")

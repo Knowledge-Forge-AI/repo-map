@@ -110,7 +110,7 @@ def _run_proof(tmp_path: Path, postgres, multi_db) -> None:
     assert session.result(1)["protocolVersion"] == "2024-11-05"
     listed = {tool["name"]: tool for tool in session.result(2)["tools"]}
     advertised = {tool["name"]: tool for tool in tool_definitions()}
-    assert listed == advertised and set(SEAM_TOOLS + INVESTIGATION_TOOLS) <= set(listed) and len(listed) == 27
+    assert listed == advertised and set(SEAM_TOOLS + INVESTIGATION_TOOLS) <= set(listed) and len(listed) == 31
     for message_id, value in expected.items():
         assert session.structured(message_id) == value, message_id
     for message_id, (_name, _args, text) in refusals.items():

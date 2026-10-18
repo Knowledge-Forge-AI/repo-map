@@ -504,6 +504,17 @@ PostgreSQL or container path) and driver-free.
   only this attempt's names (final names only while they are still this
   attempt's inodes) and an output directory it created; a partial directory is
   never replaced by a later backup.
+<!-- NAVIGATION10-BACKUP-CONSISTENCY1:BEGIN -->
+
+**Clarification (2026-10-15, NAVIGATION10-BACKUP-CONSISTENCY1):** The cleanup
+wording above overstated the implemented guarantee. Cleanup after a failure or
+catchable interrupt is best-effort: errors are suppressed, so attempt-owned
+names or a directory created by the attempt can remain. Final names are removed
+only while they still identify the attempt's inodes; abrupt termination can
+bypass cleanup. See the maintained
+[backup rules](../../../ops/sqlite-local.md#backup-export-and-restore).
+
+<!-- NAVIGATION10-BACKUP-CONSISTENCY1:END -->
 - **Restore** validates completely before the store is touched: the directory
   holds exactly the two files (no manifest: `sqlite-backup-incomplete`), the
   manifest parses strictly with a supported format and schema and names the

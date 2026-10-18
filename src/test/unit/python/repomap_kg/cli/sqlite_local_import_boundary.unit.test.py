@@ -186,3 +186,27 @@ def test_facade_names_resolve_to_their_source_objects(monkeypatch: pytest.Monkey
     monkeypatch.undo()
     restored: object = cli.refresh_graph
     assert restored is ops_refresh.refresh_graph, "a facade patch leaked past undo"
+
+
+def test_navigation_search_over_existing_driver_free_stdio_path(tmp_path: Path) -> None:
+    from repomap_test_support.navigation_search_fixtures import BINDING, GRAPH, navigation_home
+    from repomap_test_support.sqlite_local_harness import structured
+
+    home, _ = navigation_home(tmp_path)
+    harness = LocalHarness(tmp_path / "navigation-stdio", block_psycopg=True)
+    args = {"graph_id": GRAPH, "query": "beacon", "scope": "docs",
+            "grouping": "source_document", "limit": 1}
+    responses = harness.mcp(home, [initialize(), tool(2, "repomap_navigation_search", args),
+                                   tool(3, "repomap_navigation_search", {**args, "offset": 1}),
+                                   {"jsonrpc": "2.0", "id": 4, "method": "tools/list"},
+                                   tool(5, "repomap_navigation_search", {**args, "source_binding_id": BINDING,
+                                                                       "source_path_prefix": "docs/beta.md"})])
+    first, second = structured(responses, 2), structured(responses, 3)
+    assert first["schema"] == "repomap.navigation_search" and first["has_more"]
+    assert first["results"][0]["destination"] != second["results"][0]["destination"]
+    assert any(row["name"] == "repomap_navigation_search" for row in responses[4]["result"]["tools"])
+    scoped = structured(responses, 5)
+    assert scoped["status"] == "ok" and scoped["scan"]["nodes"] == 1
+    assert scoped["results"][0]["destination"]["source_relative_path"] == "docs/beta.md"
+    assert harness.forbidden_events() == [] and harness.shim_invocations() == ""
+    assert not harness.imported_modules() & POSTGRES_IMPLEMENTATION

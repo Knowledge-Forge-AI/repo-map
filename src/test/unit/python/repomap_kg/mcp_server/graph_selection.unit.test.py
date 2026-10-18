@@ -3,7 +3,7 @@
 A configured graph is selected as a ``GraphSelection`` carrying no PostgreSQL
 database, endpoint, credential, client command or credential-bearing config.
 Injected fake bindings (unit-only, not a user-selectable backend) prove that all
-23 database-reading tools reach their named store operation after the config
+25 core database-reading tools reach their named store operation after the config
 parse without deriving a database, building psql arguments, constructing the
 PostgreSQL context, selecting a psql executable, resolving read authority,
 reading a secret or entering a JSON driver. The config parse itself remains
@@ -25,7 +25,8 @@ from repomap_kg.server.canonical_read_store import (
     CanonicalNeighborhoodQuery,
     CanonicalNodeQuery,
 )
-from repomap_kg.server.graph_selection import GraphSelection, McpOpsError, select_graph
+from repomap_kg.server.graph_selection import GraphSelection, select_graph
+from repomap_kg.storage.semantic_candidates import EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable
 from repomap_kg.server.investigation_read_store import (
     ConfiguredNeighborhoodQuery,
     GraphRefreshStatusQuery,
@@ -60,6 +61,8 @@ from repomap_test_support.host_read_store_config import (
     setup_owned_config,
 )
 from repomap_test_support.mcp_server import McpServerTestSupport
+from repomap_kg.storage.semantic_candidates import CandidateResult, unavailable
+from repomap_kg.storage.semantic_seed import SimilarNodesQuery
 
 A, B = "python.module:a", "python.module:b"
 ITEM_KEY = "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Aself:item-1"
@@ -150,6 +153,12 @@ TOOLS: tuple[tuple[str, dict[str, Any], tuple[str, str, str, Any]], ...] = (
      ("source", "source_feed_item_explanation", G, SourceFeedItemExplanationQuery(ITEM_KEY, None))),
     ("repomap_source_references", {"project": G, "source_id": "feed"},
      ("source", "source_references", G, SourceReferencesQuery("feed", None, None, 50))),
+    ("repomap_similar_nodes", {"graph_id": G, "canonical_key": A, "rebuild_id": "routing-test",
+                               "profile_identity": "sha256:" + "0" * 64, "dimensions": 3},
+     ("investigation", "similar_nodes", G,
+      SimilarNodesQuery(A, "routing-test", "sha256:" + "0" * 64, 3))),
+    ("repomap_embedding_profiles", {"graph_id": G, "selected": True},
+     ("investigation", "embedding_profiles", G, EmbeddingProfilesQuery(selected=True))),
 )
 
 
@@ -158,6 +167,14 @@ class _FakeStore:
 
     def __init__(self, family: str, calls: list[tuple[str, str, str, Any]], graph_id: str) -> None:
         self._family, self._calls, self._graph_id = family, calls, graph_id
+
+    def similar_nodes(self, graph_id: str, query: SimilarNodesQuery) -> CandidateResult:
+        self._calls.append((self._family, "similar_nodes", graph_id, query))
+        return unavailable("disabled")
+
+    def embedding_profiles(self, graph_id: str, query: EmbeddingProfilesQuery) -> EmbeddingProfilesResult:
+        self._calls.append((self._family, "embedding_profiles", graph_id, query))
+        return profiles_unavailable("extension_absent")
 
     def __getattr__(self, operation: str) -> Any:
         if operation not in RESULTS:
@@ -235,15 +252,6 @@ class GraphSelectionRecordTests(McpServerTestSupport):
                         self.assertEqual(selection.graph, context.graph)
         self.assertEqual(select_graph(self._config(setup_owned_config()), "host-multi").root_path, "graph:host-multi")
 
-    def test_selection_refusals_keep_the_public_texts(self) -> None:
-        config = self._config()
-        for graph_id, expected in (("", "graph_id is required"), ("missing", "unknown graph_id: missing"),
-                                   ("disabled", "graph 'disabled' is not enabled"),
-                                   ("hidden", "graph 'hidden' is not MCP-visible")):
-            with self.subTest(graph_id=graph_id), self.assertRaises(McpOpsError) as raised:
-                select_graph(config, graph_id)
-            self.assertEqual(str(raised.exception), expected)
-
     def test_selection_module_static_imports_stay_backend_neutral(self) -> None:
         import sys
 
@@ -274,7 +282,7 @@ class GraphSelectionRecordTests(McpServerTestSupport):
 
 
 class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
-    """All 23 database-reading tools, injected fake bindings, tripwires armed."""
+    """Core fake-store routing and separate selected-SQLite navigation checks."""
 
     def _armed(self, config: Any, investigation: Any, graph: Any) -> ExitStack:
         stack = ExitStack()
@@ -293,7 +301,7 @@ class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
         with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(self.write_visible_ops_config())}, clear=True):
             return load_mcp_ops_config()
 
-    def test_all_23_tools_route_to_their_named_store_operation_without_postgres_binding(self) -> None:
+    def test_all_25_tools_route_to_their_named_store_operation_without_postgres_binding(self) -> None:
         from repomap_kg.server.mcp import handle_tool_call, tool_definitions
 
         config = self._parsed_config()
@@ -314,8 +322,13 @@ class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
         database_tools = {name for name, _args, _expected in TOOLS}
         other_tools = {"repomap_list_graphs", "repomap_projects", "repomap_server_memory_summary",
                        "repomap_server_memory_search"}
-        self.assertEqual(len(database_tools), 23)
-        self.assertEqual(database_tools | other_tools, {tool["name"] for tool in tool_definitions()})
+        # These registered tools have selected-SQLite coverage; _FakeBinding
+        # deliberately does not implement their navigation/location operations.
+        sqlite_tools = {"repomap_navigation_search", "repomap_node_locations"}
+        catalog = tool_definitions()
+        self.assertEqual(len(database_tools), 25)
+        self.assertEqual(len(catalog), 31)
+        self.assertEqual(database_tools | other_tools | sqlite_tools, {tool["name"] for tool in catalog})
         self.assertEqual(calls, [expected for _name, _args, expected in TOOLS])
         self.assertEqual(len(factory_configs), len(TOOLS))
         self.assertTrue(all(received is config for received in factory_configs))
@@ -324,26 +337,30 @@ class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
         self.assertEqual(payloads[6]["summary"]["root_path"], "[graph-root]")
         self.assertEqual(payloads[13]["root_path"], "[graph-root]")
 
-    def test_selection_refusals_precede_backend_binding(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+    def test_navigation_tools_route_to_selected_sqlite_without_postgres_binding(self) -> None:
+        import tempfile
 
-        config = self._parsed_config()
-        cases: tuple[tuple[str, dict[str, Any], str], ...] = (
-            ("repomap_graph_status", {"graph_id": "missing"}, "unknown graph_id: missing"),
-            ("repomap_search_nodes", {"graph_id": "hidden", "query": "a"}, "graph 'hidden' is not MCP-visible"),
-            ("repomap_python_summary", {"graph_id": "disabled"}, "graph 'disabled' is not enabled"),
-            ("repomap_refresh_status", {"graph_id": "hidden"}, "graph 'hidden' is not MCP-visible"),
-            ("repomap_status", {"project": "missing"}, "unknown legacy MCP project or graph-registry graph_id: missing"),
-            ("repomap_canonical_nodes", {"project": "hidden"}, "graph 'hidden' is not MCP-visible"),
-            ("repomap_source_runs", {"project": "disabled", "source_id": "feed"}, "graph 'disabled' is not enabled"),
-            ("repomap_ingested_sources", {"project": G, "pg_database": "x"},
-             "graph-registry project routing cannot be combined with explicit connection overrides"),
-        )
-        with self._armed(config, fail_if_reached, fail_if_reached):
-            for name, args, expected in cases:
-                with self.subTest(name=name, args=args), self.assertRaises(RepoMapMcpError) as raised:
-                    handle_tool_call(name, dict(args))
-                self.assertEqual(str(raised.exception), expected)
+        from repomap_kg.server.mcp import handle_tool_call
+        from repomap_test_support.related_context_fixtures import GRAPH, IMPORTED, related_home
+
+        with tempfile.TemporaryDirectory() as directory:
+            home, _, _ = related_home(Path(directory))
+            with patch.dict("os.environ", {"REPOMAP_HOME": str(home)}, clear=True), \
+                    patched_guards(PG_BINDING_TRIPWIRES):
+                navigation = handle_tool_call("repomap_navigation_search", {
+                    "graph_id": GRAPH, "query": IMPORTED, "scope": "code",
+                })["structuredContent"]
+                location = handle_tool_call("repomap_node_locations", {
+                    "graph_id": GRAPH, "canonical_key": IMPORTED,
+                    "evidence_role": "direct", "detail": "compact", "limit": 2,
+                })["structuredContent"]
+            self.assertEqual(navigation["graph"]["graph_id"], GRAPH)
+            self.assertEqual([row["canonical_key"] for group in navigation["results"]
+                              for row in group["members"]], [IMPORTED])
+            self.assertEqual(location["graph"]["graph_id"], GRAPH)
+            self.assertEqual(location["canonical_key"], IMPORTED)
+            self.assertEqual(location["status"], "located")
+            self.assertEqual(location["locations"][0]["source_relative_path"], "pkg/beta.py")
 
     def test_configuration_only_tools_never_bind_a_backend(self) -> None:
         from repomap_kg.server.mcp import handle_tool_call

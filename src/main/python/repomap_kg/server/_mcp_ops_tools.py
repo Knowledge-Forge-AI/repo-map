@@ -111,6 +111,8 @@ def repomap_neighborhood(
     node: str,
     direction: str = "both",
     depth: int = 1,
+    node_limit: Any = ...,
+    edge_limit: Any = ...,
 ) -> dict[str, Any]:
     return ops_payload(
         neighborhood_payload,
@@ -118,6 +120,8 @@ def repomap_neighborhood(
         node=node,
         direction=direction,
         depth=depth,
+        node_limit=node_limit,
+        edge_limit=edge_limit,
     )
 
 

@@ -2407,6 +2407,33 @@
       "architecture_box": "go_query_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "SOURCE-LOCATOR1 bounded stored-source read owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.server._mcp_locations",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "SCOPED-SEARCH1 opt-in bounded literal navigation; retained Python under existing quality enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.server._mcp_navigation",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "NAVIGATION20 opt-in bounded SQLite neighborhood under existing zero-new-debt retained Python enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.server._mcp_neighborhood",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_query_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.server._mcp_ops_tools under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "repomap_kg.server._mcp_ops_tools",
@@ -2425,9 +2452,27 @@
       "architecture_box": "go_query_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "Read-only stored-seed MCP adapter; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.server._mcp_similar",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_query_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.server._mcp_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "repomap_kg.server._mcp_sources",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "SCOPED-SEARCH1 opt-in bounded literal navigation; retained Python under existing quality enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.server._navigation_groups",
       "ownership_class": "python_retained"
     },
     {
@@ -3055,6 +3100,24 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "SCOPED-SEARCH1 opt-in bounded literal navigation; retained Python under existing quality enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.navigation_search",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "SOURCE-LOCATOR1 bounded stored-source read owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.node_locations",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.storage.portable_ingestion under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "repomap_kg.storage.portable_ingestion",
@@ -3175,6 +3238,69 @@
       "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
       "match": "exact",
       "module_prefix": "repomap_kg.storage.run_authority",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-bound optional Server candidate query/import owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_candidate_import",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-bound optional Server candidate query/import owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_candidate_readback",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-bound optional Server candidate query/import owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_candidate_sql",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-bound optional Server candidate query/import owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_candidates",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-fenced stored-seed optional Server read owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_seed",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-fenced stored-seed optional Server read owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_seed_readback",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Publication-fenced stored-seed optional Server read owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.semantic_seed_sql",
       "ownership_class": "python_retained"
     },
     {
@@ -3370,9 +3496,36 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "SCOPED-SEARCH1 opt-in bounded literal navigation; retained Python under existing quality enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.sqlite_local.navigation_queries",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "NAVIGATION20 opt-in bounded SQLite neighborhood under existing zero-new-debt retained Python enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.sqlite_local.neighborhood_queries",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "SQLite Local Nix summary read; admitted with zero new quality debt.",
       "match": "exact",
       "module_prefix": "repomap_kg.storage.sqlite_local.nix_summary_queries",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "SOURCE-LOCATOR1 bounded stored-source read owner; retained Python with zero new quality debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.storage.sqlite_local.node_location_queries",
       "ownership_class": "python_retained"
     },
     {

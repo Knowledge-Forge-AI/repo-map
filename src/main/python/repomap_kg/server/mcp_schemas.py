@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from typing import Any
+from repomap_kg.server._mcp_similar import embedding_profiles_tool_definition
+from repomap_kg.server._mcp_locations import node_locations_tool_definition
+from repomap_kg.server._mcp_navigation import navigation_tool_definition
+from repomap_kg.server._mcp_neighborhood import neighborhood_properties
 
 
 def tool_definitions() -> list[dict[str, Any]]:
@@ -38,11 +42,7 @@ def tool_definitions() -> list[dict[str, Any]]:
                     "default": 50,
                 },
                 "offset": {"type": "integer", "minimum": 0, "default": 0},
-                "result_schema_version": {
-                    "type": "integer",
-                    "enum": [0, 1],
-                    "default": 1,
-                },
+                "result_schema_version": {"type": "integer", "enum": [0, 1], "default": 1},
             },
         ),
         tool_definition(
@@ -208,7 +208,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         ops_tool_definition(
             "repomap_search_nodes",
-            "Search stored canonical nodes for one MCP-visible graph.",
+            "For one MCP-visible graph, search stored canonical key, kind and display name, with optional exact kind. Empty means no indexed match, not source absence. Use bounded native literal-text search in the caller's workspace/subtree for content; verify known locations with zero graph calls.",
             {
                 "graph_id": {"type": "string"},
                 "query": {"type": "string"},
@@ -220,7 +220,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         ops_tool_definition(
             "repomap_search_observations",
-            "Search stored raw observations for one MCP-visible graph.",
+            "For one MCP-visible graph, search retained observation kind, source ID, path and serialized payload text, with optional exact kind/path. include_raw controls output only. Empty means no stored-field match. Use bounded native literal-text search for arbitrary workspace source text.",
             {
                 "graph_id": {"type": "string"},
                 "query": {"type": "string"},
@@ -241,7 +241,7 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         ops_tool_definition(
             "repomap_search_files",
-            "Search stored file records for one MCP-visible graph.",
+            "For one MCP-visible graph, search stored file path, language and role, with optional exact path. Empty means no stored-field match. File bodies are not searched; use bounded native literal-text search for workspace content.",
             {
                 "graph_id": {"type": "string"},
                 "query": {"type": "string"},
@@ -253,17 +253,13 @@ def tool_definitions() -> list[dict[str, Any]]:
         ),
         ops_tool_definition(
             "repomap_neighborhood",
-            "Read a bounded canonical neighborhood for one MCP-visible graph.",
-            {
-                "graph_id": {"type": "string"},
-                "node": {"type": "string"},
-                "direction": {
-                    "type": "string",
-                    "enum": ["both", "in", "out"],
-                    "default": "both",
-                },
-                "depth": {"type": "integer", "default": 1},
-            },
+            "Read a one-hop canonical neighborhood for one MCP-visible graph. "
+            "SQLite opt-in node_limit/edge_limit (1-100) independently bound returned sets "
+            "with completeness probes; omitted dimensions remain unbounded. "
+            "Nodes sort by canonical key; edges by source, kind, target, identity hash. "
+            "PostgreSQL refuses bounded requests. Read-only and source-blind; "
+            "completeness does not establish source freshness or later shared snapshots.",
+            neighborhood_properties(),
             required=("graph_id", "node"),
         ),
         ops_tool_definition(
@@ -324,6 +320,27 @@ def tool_definitions() -> list[dict[str, Any]]:
             },
             required=("query",),
         ),
+        ops_tool_definition(
+            "repomap_similar_nodes",
+            "Read stored similar nodes for one canonical node in an MCP-visible graph.",
+            {
+                "graph_id": {"type": "string"},
+                "canonical_key": {"type": "string"},
+                "rebuild_id": {"type": "string"},
+                "profile_identity": {"type": "string"},
+                "dimensions": {"type": "integer"},
+                "selected": {"type": "boolean", "default": False},
+                "limit": {"type": "integer", "default": 20},
+                "evidence_limit": {"type": "integer", "default": 5},
+                "source_binding_id": {"type": "string"},
+                "kind": {"type": "string"},
+                "path": {"type": "string"},
+            },
+            required=("graph_id", "canonical_key", "rebuild_id", "profile_identity", "dimensions"),
+        ),
+        embedding_profiles_tool_definition(),
+        node_locations_tool_definition(),
+        navigation_tool_definition(),
     ]
 
 

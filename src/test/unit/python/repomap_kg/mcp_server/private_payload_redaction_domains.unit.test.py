@@ -1,5 +1,8 @@
 import json
+import copy
 from unittest.mock import patch
+
+import pytest
 
 from repomap_kg.storage import (
     CanonicalNeighborhoodRecord,
@@ -11,6 +14,195 @@ from repomap_kg.storage import (
 )
 
 from repomap_test_support.mcp_server import McpServerTestSupport
+
+
+@pytest.fixture
+def endpoint_home(tmp_path, monkeypatch):
+    from repomap_test_support.related_context_fixtures import related_home
+
+    home, _, _ = related_home(tmp_path)
+    monkeypatch.setenv("REPOMAP_HOME", str(home))
+    monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
+    return home
+
+
+def _endpoint_node(key):
+    return dict(canonical_key=key, graph_key_version=1)
+
+
+def _endpoint_fixture():
+    """Synthetic negative/privacy mutations, never claimed as stored relations."""
+    return dict(center=_endpoint_node("python.module:a"),
+        nodes=[_endpoint_node("python.module:b")],
+        edges=[dict(source_key="python.module:a", target_key="python.module:b",
+                    graph_key_version=1, edge_kind="imports", metadata={}, identity_metadata={})])
+
+
+def _endpoint_call(monkeypatch, payload):
+    from repomap_kg.server import mcp, _ops_summaries
+
+    monkeypatch.setattr(_ops_summaries, "canonical_neighborhood_to_jsonable",
+                        lambda record: copy.deepcopy(payload))
+    reply = mcp.handle_tool_call("repomap_neighborhood",
+        dict(graph_id="related", node="python.module:pkg.alpha", direction="out"))
+    assert json.loads(reply["content"][0]["text"]) == reply["structuredContent"]
+    return reply["structuredContent"]["result"]
+
+
+@pytest.mark.parametrize("field,value", [
+    ("privacy", "private-ops"), ("privacy", "unknown"), ("privacy", None),
+    ("private", True), ("private", None), ("mcp_visible", False),
+    ("mcp_visible", None), ("enabled", False), ("enabled", None),
+    ("graph_id", "another-graph"),
+])
+def test_neighborhood_noneligible_public_facts_keep_exact_redaction(
+    endpoint_home, monkeypatch, field, value,
+):
+    from repomap_kg.server import ops
+    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+
+    original = ops.graph_payload
+    def facts(*args, **kwargs):
+        public = original(*args, **kwargs)
+        if value is None:
+            public.pop(field, None)
+        else:
+            public[field] = value
+        return public
+    monkeypatch.setattr(ops, "graph_payload", facts)
+    raw = _endpoint_fixture()
+    assert _endpoint_call(monkeypatch, raw) == sanitize_jsonable(raw)
+
+
+@pytest.mark.parametrize("privacy", ["private-ops", "private-config", "sensitive-local"])
+def test_neighborhood_actual_private_selection_keeps_endpoints_withheld(
+    endpoint_home, monkeypatch, privacy,
+):
+    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+
+    config = endpoint_home / "repomap.rp.toml"
+    config.write_text(config.read_text().replace('privacy = "public-dev"', f'privacy = "{privacy}"'))
+    raw = _endpoint_fixture()
+    assert _endpoint_call(monkeypatch, raw) == sanitize_jsonable(raw)
+
+
+def test_neighborhood_private_source_binding_refuses_public_graph_projection(endpoint_home, monkeypatch):
+    from dataclasses import replace
+    from repomap_kg.server import ops
+    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+
+    original = ops.configured_graph
+    def selected(*args, **kwargs):
+        target = original(*args, **kwargs)
+        graph = target.selection.graph
+        binding = replace(graph.effective_source_bindings[0], privacy="private-ops")
+        graph = replace(graph, source_bindings=(binding,), explicit_source_bindings=True)
+        return replace(target, selection=replace(target.selection, graph=graph))
+    monkeypatch.setattr(ops, "configured_graph", selected)
+    raw = _endpoint_fixture()
+    assert _endpoint_call(monkeypatch, raw) == sanitize_jsonable(raw)
+
+
+@pytest.mark.parametrize("field", ["source_key", "target_key"])
+@pytest.mark.parametrize("candidate", [
+    "python.module:unseen", "[REDACTED]", "[private-path]", "[graph-root]",
+    "python.module:x...[truncated]", None, 4, {"canonical_key": "python.module:b"},
+    "/synthetic/private/file", "file:///synthetic/private/file", "https://example.invalid/path",
+    "mailto:synthetic@example.invalid", "C:\\synthetic\\private", "python.module:a/b",
+    "python.module:token=synthetic-secret", "python.module:" + "x" * 600,
+    "unlisted.namespace:visible", "doc.page:file%3aroot%2fdocs%2fguide.md",
+])
+def test_neighborhood_placeholder_unsafe_mutated_and_unseen_endpoint_refusal(
+    endpoint_home, monkeypatch, candidate, field,
+):
+    raw = _endpoint_fixture()
+    known = "target_key" if field == "source_key" else "source_key"
+    expected = raw["edges"][0][known]
+    raw["edges"][0][field] = candidate
+    if candidate != "python.module:unseen":
+        raw["nodes"].append(_endpoint_node(candidate))
+    result = _endpoint_call(monkeypatch, raw)
+    assert result["edges"][0][known] == expected
+    assert result["edges"][0][field] == "[REDACTED]"
+
+
+@pytest.mark.parametrize("change", ["center", "nodes", "edges", "missing-field", "version"])
+def test_neighborhood_malformed_and_short_windows_refuse_without_guessing(
+    endpoint_home, monkeypatch, change,
+):
+    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+
+    raw = _endpoint_fixture()
+    if change in {"center", "nodes", "edges"}:
+        raw[change] = None if change != "edges" else [None, raw["edges"][0]]
+    elif change == "missing-field":
+        del raw["edges"][0]["target_key"]
+    else:
+        raw["edges"][0]["graph_key_version"] = 2
+    result = _endpoint_call(monkeypatch, raw)
+    expected = sanitize_jsonable(raw)
+    if change == "missing-field":
+        expected["edges"][0]["source_key"] = "python.module:a"
+    assert result == expected
+    # A short backend window proves the center endpoint independently of its absent peer.
+    raw = _endpoint_fixture()
+    raw["nodes"] = []
+    result = _endpoint_call(monkeypatch, raw)
+    assert result["edges"][0]["source_key"] == "python.module:a"
+    assert result["edges"][0]["target_key"] == "[REDACTED]"
+
+
+def test_neighborhood_own_record_alignment_self_loops_and_nested_redaction(endpoint_home, monkeypatch):
+    from repomap_kg.server import _ops_summaries
+    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+
+    raw = _endpoint_fixture()
+    edge = raw["edges"][0]
+    edge["metadata"] = {"source_key": "python.module:a", "target_key": "python.module:b"}
+    raw["edges"] += [dict(edge, source_key="python.module:b", target_key="python.module:a"),
+                     dict(edge, target_key="python.module:a")]
+    original = copy.deepcopy(raw)
+    result = _endpoint_call(monkeypatch, raw)
+    assert [(e["source_key"], e["target_key"]) for e in result["edges"]] == [
+        ("python.module:a", "python.module:b"), ("python.module:b", "python.module:a"),
+        ("python.module:a", "python.module:a")]
+    assert all(e["metadata"] == {"source_key": "[REDACTED]", "target_key": "[REDACTED]"}
+               for e in result["edges"])
+    assert raw == original
+    # Disclosed projection mutations check observable reordering/length drift.
+    raw["edges"][0]["edge_kind"] = "first"
+    for mode in ("reverse", "short"):
+        def altered(value, **kwargs):
+            public = sanitize_jsonable(value, **kwargs)
+            if isinstance(public, dict) and "edges" in public:
+                public["edges"] = (public["edges"][::-1] if mode == "reverse" else public["edges"][:1])
+            return public
+        monkeypatch.setattr(_ops_summaries, "sanitize_jsonable", altered)
+        assert _endpoint_call(monkeypatch, raw) == altered(raw)
+
+
+def test_neighborhood_key_versions_and_responses_are_never_joined(endpoint_home, monkeypatch):
+    raw = _endpoint_fixture()
+    raw["nodes"][0]["graph_key_version"] = 2
+    assert _endpoint_call(monkeypatch, raw)["edges"][0]["target_key"] == "[REDACTED]"
+    raw["nodes"] = []
+    assert _endpoint_call(monkeypatch, raw)["edges"][0]["target_key"] == "[REDACTED]"
+    raw = _endpoint_fixture()
+    raw["edges"][0]["target_key"] = "python.module:B"
+    assert _endpoint_call(monkeypatch, raw)["edges"][0]["target_key"] == "[REDACTED]"
+
+
+def test_neighborhood_sanitizer_changed_identity_stays_withheld(endpoint_home, monkeypatch):
+    from pathlib import Path
+
+    raw = _endpoint_fixture()
+    candidate = "python.module:" + Path.home().name
+    raw["nodes"][0]["canonical_key"] = candidate
+    raw["edges"][0]["target_key"] = candidate
+    result = _endpoint_call(monkeypatch, raw)
+    assert result["nodes"][0]["canonical_key"] == "[private-path]"
+    assert result["edges"][0]["source_key"] == "python.module:a"
+    assert result["edges"][0]["target_key"] == "[REDACTED]"
 
 
 def _make_record(cls, **kwargs):
