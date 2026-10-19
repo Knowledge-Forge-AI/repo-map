@@ -978,6 +978,20 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "navigation28-ci-repair3.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/sqlite_backup_artifact_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_backup_install_recovery.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_orphan_preservation.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_publication_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_stored_payload_boundaries.int.test.py"
+      ],
+      "rationale": "Bounded persisted SQLite artifact, publication, readback and recovery integration contracts; zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
       "members": [
@@ -32068,6 +32082,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_backup_artifact_boundaries.int.test.py",
+      "rationale": "NAVIGATION28 CI repair persisted SQLite boundary integration contract owner.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_backup_install_recovery.int.test.py",
+      "rationale": "NAVIGATION28 CI repair persisted SQLite boundary integration contract owner.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/sqlite_canonical_query_boundaries.int.test.py",
       "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
       "root": "test_owners",
@@ -32106,6 +32138,33 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/sqlite_local_source_differential.int.test.py",
       "rationale": "First-party int test owner for same-input SQLite Local source/feed reads versus the PostgreSQL source query owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_orphan_preservation.int.test.py",
+      "rationale": "NAVIGATION28 CI repair persisted SQLite boundary integration contract owner.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_publication_boundaries.int.test.py",
+      "rationale": "NAVIGATION28 CI repair persisted SQLite boundary integration contract owner.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_stored_payload_boundaries.int.test.py",
+      "rationale": "NAVIGATION28 CI repair persisted SQLite boundary integration contract owner.",
       "root": "test_owners",
       "status": "active_int_test"
     },

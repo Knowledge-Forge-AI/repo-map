@@ -5,10 +5,12 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
 from repomap_kg.storage.node_locations import NodeLocationsQuery
+from repomap_kg.storage.sqlite_local.connection import read_transaction
 from repomap_kg.storage.sqlite_local.node_location_queries import node_locations
 from repomap_test_support.node_location_fixtures import (
     DOC,
@@ -16,6 +18,7 @@ from repomap_test_support.node_location_fixtures import (
     SYMBOL,
     locator_home,
 )
+from repomap_test_support.sqlite_local_fixtures import local_binding
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, refusal, structured, tool
 
 
@@ -166,3 +169,21 @@ def test_node_locations_publication_absent_refusal(tmp_path: Path) -> None:
     assert mcp_result["status"] == "unavailable"
     assert mcp_result["reason"] == "publication_absent"
     assert harness.forbidden_events() == [] and harness.shim_invocations() == ""
+
+
+def test_persisted_node_without_evidence_has_no_invented_location(tmp_path: Path) -> None:
+    _home, database = locator_home(tmp_path)
+    with closing(sqlite3.connect(database, autocommit=True)) as writer:
+        removed = writer.execute(
+            "DELETE FROM canonical_node_evidence WHERE canonical_node_id = "
+            "(SELECT id FROM canonical_nodes WHERE canonical_key = ?)", (SYMBOL,),
+        ).rowcount
+    assert removed > 0
+    before = hashlib.sha256(database.read_bytes()).hexdigest()
+    with read_transaction(database, local_binding(GRAPH)) as reader:
+        result = node_locations(reader, NodeLocationsQuery(canonical_key=SYMBOL, evidence_role="all"))
+    assert result["status"] == "ok" and result["accepted_publication"]["generation"] == 1
+    assert result["locations"] == result["historical_locations"] == []
+    assert result["location_run_id"] is None and result["location_scope"] == "unavailable"
+    assert result["has_more"] is result["historical_has_more"] is False
+    assert hashlib.sha256(database.read_bytes()).hexdigest() == before

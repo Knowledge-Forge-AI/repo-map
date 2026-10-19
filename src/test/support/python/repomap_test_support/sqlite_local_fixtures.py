@@ -8,6 +8,7 @@ PostgreSQL connection.
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -110,6 +111,29 @@ def generation_bundle(generation: int) -> PublicationBundle:
     )
 
 
+def published_sqlite_database(root: Path, *, generations: int = 1) -> Path:
+    """A real current store with the maintained portable publication corpus."""
+    from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
+    from repomap_kg.storage.sqlite_local.publisher import publish_generation
+
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    path = root / "portable-fixture.sqlite3"
+    initialize_graph_database(path, local_binding(), applied_at="2026-10-18T00:00:00Z")
+    for generation in range(1, generations + 1):
+        bundle = generation_bundle(generation)
+        publish_generation(path, publication_for(bundle), bundle.families, expected_generation=generation - 1)
+    return path
+
+
+def sqlite_logical_dump(path: Path) -> str:
+    """Read every persisted table, including any still-WAL-resident commit."""
+    connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
+    try:
+        return "\n".join(connection.iterdump())
+    finally:
+        connection.close()
+
+
 __all__ = (
     "MEMORY_TOML",
     "SERVICE_TOML",
@@ -120,6 +144,8 @@ __all__ = (
     "local_binding",
     "multi_graph_toml",
     "publication_for",
+    "published_sqlite_database",
+    "sqlite_logical_dump",
     "sqlite_home_toml",
     "write_shell_source",
     "write_sqlite_home",

@@ -4,11 +4,29 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
+from repomap_kg.storage.navigation_search import NavigationSearchQuery
+from repomap_kg.storage.sqlite_local.navigation_queries import navigation_candidates
+
 from repomap_test_support.navigation_search_fixtures import BETA_DOC, BINDING, GRAPH, navigation_home
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, refusal, structured, tool
+
+
+def test_scoped_storage_search_without_an_admission_predicate_refuses(tmp_path: Path) -> None:
+    _home, database = navigation_home(tmp_path)
+    before = hashlib.sha256(database.read_bytes()).hexdigest()
+    with closing(sqlite3.connect(database)) as reader:
+        result = navigation_candidates(reader, NavigationSearchQuery("beacon", source_binding_id=BINDING))
+        assert result["status"] == "unavailable"
+        assert result["reason"] == "source_scope_predicate_unavailable"
+        assert result["nodes"] == [] and result["scan"]["complete"] is False
+        # A later unscoped read still works on this same connection.
+        unscoped = navigation_candidates(reader, NavigationSearchQuery("beacon"))
+        assert unscoped["status"] == "ok" and unscoped["nodes"]
+    assert hashlib.sha256(database.read_bytes()).hexdigest() == before
 
 
 def test_sqlite_embedding_profiles_and_similar_nodes_disabled_refusals(tmp_path: Path) -> None:
