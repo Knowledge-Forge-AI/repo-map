@@ -8,7 +8,7 @@ The fixture source is read as text only and must never be executed.
 from __future__ import annotations
 
 from pathlib import Path
-import runpy
+import source_navigation_consumer as consumer_module
 import sqlite3
 from typing import Any
 
@@ -100,7 +100,7 @@ def test_same_spelling_as_real_indexed_subject_hits_and_consumer_verifies(
     navigation = call("repomap_navigation_search", query=name, scope="code")
     assert navigation["status"] == "ok" and navigation["scan"]["complete"] is True
     assert [member["canonical_key"] for group in navigation["results"] for member in group["members"]] == [key]
-    navigate = runpy.run_path(str(Path(__file__).resolve().parents[6] / "tools/source_navigation_consumer.py"))["navigate"]
+    navigate = vars(consumer_module)["navigate"]
     result = navigate(graph_id=GRAPH, repository_identity="repo1:navigation", bindings={BINDING: source.parents[1]},
                       query=name, tool_call=mcp.handle_tool_call, source_check=lambda selected: selected == text)
     assert result["branch"] == "search_locator" and result["outcome"] == "verified"

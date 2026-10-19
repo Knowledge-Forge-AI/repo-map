@@ -644,7 +644,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-int-python-repomap_kg-storage-navigation_search.int.test.py",
       "members": [
@@ -654,7 +654,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-int-python-repomap_kg-storage-node_locations.int.test.py",
       "members": [
@@ -664,7 +664,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-navigation_pushdown_fixtures.py",
       "members": [
@@ -674,7 +674,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-navigation_search_fixtures.py",
       "members": [
@@ -684,7 +684,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-node_location_fixtures.py",
       "members": [
@@ -694,7 +694,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-portable_handoff_fixtures.py",
       "members": [
@@ -704,7 +704,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-related_context_fixtures.py",
       "members": [
@@ -714,7 +714,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-semantic_candidate_fixtures.py",
       "members": [
@@ -724,7 +724,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_support",
       "id": "nav26.public-projection.src-test-support-python-repomap_test_support-semantic_candidate_publication.py",
       "members": [
@@ -734,7 +734,7 @@
       "root": "test_support"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-bounded_neighborhood.unit.test.py",
       "members": [
@@ -744,7 +744,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-compact_node_locations.unit.test.py",
       "members": [
@@ -754,7 +754,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-direct_source_locations.unit.test.py",
       "members": [
@@ -764,7 +764,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-embedding_profiles.unit.test.py",
       "members": [
@@ -774,7 +774,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-navigation_scope_pushdown.unit.test.py",
       "members": [
@@ -784,7 +784,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-navigation_search.unit.test.py",
       "members": [
@@ -794,7 +794,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-node_locations.unit.test.py",
       "members": [
@@ -804,7 +804,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-search_surface.unit.test.py",
       "members": [
@@ -814,7 +814,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-semantic_candidate_store.unit.test.py",
       "members": [
@@ -824,7 +824,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-mcp_server-similar_nodes.unit.test.py",
       "members": [
@@ -834,7 +834,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-embedding_profiles.unit.test.py",
       "members": [
@@ -844,7 +844,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-semantic_candidate_readback.unit.test.py",
       "members": [
@@ -854,7 +854,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-semantic_candidates.unit.test.py",
       "members": [
@@ -864,7 +864,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-repomap_kg-storage-semantic_seed.unit.test.py",
       "members": [
@@ -874,7 +874,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-tools-portable_handoff.unit.test.py",
       "members": [
@@ -884,7 +884,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-tools-related_source_context.unit.test.py",
       "members": [
@@ -894,7 +894,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav26.public-projection.src-test-unit-python-tools-source_navigation_consumer.unit.test.py",
       "members": [
@@ -904,7 +904,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "nav26.public-projection.tools-portable_handoff.py",
       "members": [
@@ -914,7 +914,7 @@
       "root": "tools"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "nav26.public-projection.tools-related_source_context.py",
       "members": [
@@ -924,7 +924,7 @@
       "root": "tools"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "nav26.public-projection.tools-source_navigation_consumer.py",
       "members": [
@@ -934,7 +934,7 @@
       "root": "tools"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav27.public-projection.graph_selection_refusals.unit.test",
       "members": [
@@ -944,7 +944,7 @@
       "root": "test_owners"
     },
     {
-      "admission": "pending",
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "nav27.public-projection.related_source_context_limits.unit.test",
       "members": [
@@ -952,6 +952,29 @@
       ],
       "rationale": "NAV27 behavior-preserving decomposition of src/test/unit/python/tools/related_source_context.unit.test.py; preserves moved assertions under the unchanged clean test-owner profile.",
       "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "navigation28-ci-repair2.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/navigation_boundary_contracts.int.test.py",
+        "src/test/int/python/repomap_kg/storage/node_location_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_canonical_query_boundaries.int.test.py",
+        "src/test/unit/python/tools/ci/retained_python_projection.unit.test.py"
+      ],
+      "rationale": "Zero-debt projection proof and public CI repair additions; preserve all existing cohort memberships.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "navigation28-ci-repair2.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/retained_projection_fixture.py"
+      ],
+      "rationale": "Zero-debt projection proof and public CI repair additions; preserve all existing cohort memberships.",
+      "root": "test_support"
     },
     {
       "admission": "admitted",
@@ -13655,9 +13678,14 @@
       "members": [
         "tools/ci/retained_python_comparison.py",
         "tools/ci/retained_python_contract.py",
+        "tools/ci/retained_python_git.py",
+        "tools/ci/retained_python_projection_evidence.py",
+        "tools/ci/retained_python_projection_history.py",
+        "tools/ci/retained_python_projection_proofs.py",
         "tools/ci/retained_python_ratchet_lineage.py",
         "tools/ci/retained_python_ratchets.py",
-        "tools/ci/retained_python_records.py"
+        "tools/ci/retained_python_records.py",
+        "tools/ci/retained_python_selection.py"
       ],
       "rationale": "retained_python responsibility in tools/ci; includes the declared module family independent of current quality findings.",
       "root": "tools"
@@ -31401,6 +31429,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/navigation_boundary_contracts.int.test.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/navigation_search.int.test.py",
       "rationale": "SCOPED-SEARCH1 bounded literal navigation, real extraction fixtures and callable/stdio ownership.",
       "root": "test_owners",
@@ -31412,6 +31449,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/nix_summary_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/node_location_boundaries.int.test.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -32015,6 +32061,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/source_warc_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_canonical_query_boundaries.int.test.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -34004,6 +34059,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/resource_validation.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/retained_projection_fixture.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -42471,6 +42535,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/retained_python_projection.unit.test.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/retained_python_ratchets.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -44811,6 +44884,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/ci/retained_python_git.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/retained_python_projection_evidence.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/retained_python_projection_history.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/retained_python_projection_proofs.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/ci/retained_python_ratchet_lineage.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -44831,6 +44940,15 @@
       "maintained_executable": true,
       "path": "tools/ci/retained_python_records.py",
       "rationale": "REVISE13 cohesive extraction from tools/ci/retained_python_ratchets.py; inherited language-confidence and complete profile obligations preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/retained_python_selection.py",
+      "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
       "root": "tools",
       "status": "active_tool"
     },

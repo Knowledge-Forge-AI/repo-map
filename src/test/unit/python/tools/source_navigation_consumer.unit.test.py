@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-import runpy
+import source_navigation_consumer as consumer_module
 import sqlite3
 import subprocess
 from pathlib import Path
@@ -20,7 +20,8 @@ from repomap_test_support.node_location_fixtures import (
 from repomap_test_support.host_read_store_config import NO_FALLBACK_GUARDS, patched_guards, setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import generation_bundle, publication_for
 
-navigate = runpy.run_path(str(Path(__file__).resolve().parents[5] / "tools/source_navigation_consumer.py"))["navigate"]
+assert Path(consumer_module.__file__).resolve() == Path(__file__).resolve().parents[5] / "tools/source_navigation_consumer.py"
+navigate = vars(consumer_module)["navigate"]
 
 
 @pytest.fixture

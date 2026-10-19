@@ -31,6 +31,7 @@ from repomap_kg.storage import (
 )
 from repomap_kg.storage.readback_driver import execute_json_readback
 from repomap_test_support.host_mcp_publication import HostPublication, cli, jsonable
+from repomap_test_support.mcp_response_assertions import structural_difference
 
 SEARCH_TOOLS = {"nodes": "repomap_search_nodes", "files": "repomap_search_files",
                 "observations": "repomap_search_observations"}
@@ -126,7 +127,8 @@ def _advisory_b(plan: InvestigationPlan, pub: HostPublication, edges: list[dict[
 
 def verify_plan(plan: InvestigationPlan, structured: Callable[[int], Any]) -> dict[str, Any]:
     for mid, project, expected in plan.checks:
-        assert jsonable(project(structured(mid))) == expected, mid
+        actual = jsonable(project(structured(mid)))
+        assert actual == expected, (mid, structural_difference(actual, expected))
     by_id = {mid: structured(mid) for mid in plan.requests}
     for mid in (301, 320, 321, 322, 323, 310, 311, 312, 313, 316, 317, 330, 331):
         assert _nonempty(mid, by_id[mid]), mid
@@ -142,8 +144,12 @@ def verify_plan(plan: InvestigationPlan, structured: Callable[[int], Any]) -> di
     assert any(row["canonical_key"] == plan.chain["key"] for row in by_id[310]["results"])
     assert edge in [_edge_identity(item) for item in by_id[330]["items"]]
     assert _edge_identity(by_id[331]["result"]["edge"]) == edge
-    # The configured neighborhood sanitizer redacts ``*_key`` edge fields (existing
-    # behavior), so the chained edge is matched by center, kind, identity hash and target.
+    # Both public-dev fixtures must exercise endpoint preservation, not just redaction.
+    for mid in (322, 323):
+        result = by_id[mid]["result"]
+        visible = {row["canonical_key"] for row in [result["center"], *result["nodes"]] if row is not None}
+        assert any(link[field] in visible for link in result["edges"]
+                   for field in ("source_key", "target_key")), mid
     neighborhood = by_id[322]["result"]
     assert neighborhood["center"]["canonical_key"] == edge[0]
     assert (edge[1], plan.chain["hash"]) in [(e["edge_kind"], e["identity_metadata_hash"]) for e in neighborhood["edges"]]
@@ -208,11 +214,24 @@ def _summary(pub: HostPublication, context: McpOpsGraphContext, gid: str) -> dic
 
 
 def _neighborhood(pub: HostPublication, context: McpOpsGraphContext, gid: str, node: str) -> Any:
+    """Independent SQL/serialization oracle for the public-dev fixture responses."""
+    assert context.graph.privacy == "public-dev"
     database = pub.databases[gid]
     record = query_canonical_neighborhood(
         database.psql_args, root_path=pub.roots[gid], node=node, direction="both", depth=1,
         graph_key_version=GRAPH_KEY_VERSION, repository_identity=f"repo1:{gid}", psql_command=database.psql_command)
-    return sanitize_jsonable(canonical_neighborhood_to_jsonable(record), private_markers=readback_path_markers(context))
+    raw = canonical_neighborhood_to_jsonable(record)
+    result = sanitize_jsonable(raw, private_markers=readback_path_markers(context))
+    # Restore an endpoint iff its raw key is already disclosed unchanged in this
+    # response. Every other field retains the independent serializer/sanitizer value.
+    visible = {original["canonical_key"] for original, public in zip(
+        [raw["center"], *raw["nodes"]], [result["center"], *result["nodes"]])
+        if original is not None and public["canonical_key"] == original["canonical_key"]}
+    for original, public in zip(raw["edges"], result["edges"]):
+        for endpoint_field in ("source_key", "target_key"):
+            if original[endpoint_field] in visible:
+                public[endpoint_field] = original[endpoint_field]
+    return result
 
 
 def _search_projection(payload: dict[str, Any]) -> dict[str, Any]:

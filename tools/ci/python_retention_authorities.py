@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 from typing import Mapping, Sequence
 
+from ci.retained_python_projection_history import projection_governing_paths
 from ci.python_type_ownership import (
     OwnershipManifest, OwnershipRule, load_manifest, module_name_for_path, resolve_rule,
 )
@@ -204,6 +205,7 @@ def bind_inputs(repo_root: Path, inventory_path: Path, ratchet_path: Path) -> di
     required.update((repo_root / "tools/ci").glob("python_*.py"))
     required.update((repo_root / "tools/ci").glob("retained_python_*.py"))
     required.update(repo_root / "tools/ci" / name for name in CHECKERS)
+    required.update(projection_governing_paths(repo_root))
     fixture_document = read_document(repo_root / "tools/ci/python_fixture_authority.json")
     fixture_entries = fixture_document.get("entries")
     if not isinstance(fixture_entries, list):

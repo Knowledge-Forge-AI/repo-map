@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import copy
 import json
-import runpy
+import related_source_context as context_module
+import source_navigation_consumer as consumer_module
 import sys
 from pathlib import Path
 from typing import Any
@@ -20,7 +21,8 @@ from repomap_test_support.related_context_fixtures import (
 )
 
 ROOT = Path(__file__).resolve().parents[5]
-API = runpy.run_path(str(ROOT / "tools/related_source_context.py"))
+assert Path(context_module.__file__).resolve() == ROOT / "tools/related_source_context.py"
+API = vars(context_module)
 inspect = API["inspect_related"]
 project = API["project_neighborhood"]
 expand = API["expand_selected"]
@@ -79,7 +81,7 @@ def test_real_extractors_independent_oracle_and_routed_selected_source(environme
     assert expanded["graph_calls"] == 2 and expanded["locations"][0]["lookup"] == "returned"
     lead = calls.calls[-1]["response"]["structuredContent"]
     # Separate accepted reader operation over an explicit binding mapping.
-    old = runpy.run_path(str(ROOT / "tools/source_navigation_consumer.py"))
+    old = vars(consumer_module)
     direct = old["_direct_location"](lead, GRAPH, GUIDE, REPOSITORY)
     assert direct is not None and direct["binding_id"] == BINDING
     trace: list[dict[str, Any]] = []
@@ -142,7 +144,7 @@ def test_real_python_composition_and_separate_known_location_source_read(environ
         graph_id=GRAPH, canonical_key=IMPORTED, evidence_role="direct", detail="compact", limit=2)
     for event in calls.calls:
         assert json.loads(event["response"]["content"][0]["text"]) == event["response"]["structuredContent"]
-    consumer = runpy.run_path(str(ROOT / "tools/source_navigation_consumer.py"))
+    consumer = vars(consumer_module)
     lead = calls.calls[-1]["response"]["structuredContent"]
     handoff = consumer["_direct_location"](lead, GRAPH, IMPORTED, REPOSITORY)
     assert handoff is not None and handoff["binding_id"] == BINDING
@@ -199,7 +201,10 @@ def test_pure_projection_export_and_helper_absence_have_no_io():
     assert reply == original and "$(touch NEVER)" in API["export"](captured)
     # Also check the standalone import with no already imported runtime to mask it.
     with patch.dict(sys.modules, {name: None for name in sys.modules if name.startswith("repomap_kg")}):
-        assert runpy.run_path(str(ROOT / "tools/related_source_context.py"))["MAX_VIEW_BYTES"] == 65_536
+        with pytest.MonkeyPatch.context() as isolated:
+            isolated.delitem(sys.modules, "related_source_context", raising=False)
+            import related_source_context as standalone
+            assert standalone.MAX_VIEW_BYTES == 65_536
 
 
 def test_self_loop_multiple_edges_and_identity_metadata_are_not_collapsed():

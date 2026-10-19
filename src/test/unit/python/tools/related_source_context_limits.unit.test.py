@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import copy
-import runpy
+import related_source_context as context_module
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -14,7 +14,8 @@ from repomap_test_support.related_context_fixtures import (
 )
 
 ROOT = Path(__file__).resolve().parents[5]
-API = runpy.run_path(str(ROOT / "tools/related_source_context.py"))
+assert Path(context_module.__file__).resolve() == ROOT / "tools/related_source_context.py"
+API = vars(context_module)
 inspect = API["inspect_related"]
 project = API["project_neighborhood"]
 expand = API["expand_selected"]

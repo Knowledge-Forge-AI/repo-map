@@ -6,9 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
-import os
 from pathlib import Path
-import subprocess
 import sys
 from typing import Callable, Mapping, Sequence
 
@@ -18,6 +16,7 @@ if __package__ in (None, ""):
         sys.path.insert(0, str(tools_root))
 
 from ci.retained_python_contract import (
+    LineagePolicyError,
     RatchetContractError,
     validate_baseline,
 )
@@ -41,6 +40,17 @@ from ci.retained_python_records import (
     validate_scope_registry_records,
 )
 
+from ci.retained_python_projection_proofs import load_projection_proofs
+from ci.retained_python_selection import selection_digest as selection_digest
+from ci.retained_python_git import (
+    git_required as _git_required,
+    blob as _blob,
+    commit_authority as _commit_authority,
+    parents as _parents,
+    is_ancestor as _is_ancestor,
+    change_commits as _change_commits,
+)
+
 
 TRUSTED_GENESIS_BASELINE_SHA256 = "f891e37dd72e54cdcd9aa72a9544aa8df83e46a5ea436eb08dd5822709bfdf18"
 PUBLIC_GENESIS_BASELINE_SHA256 = "e6a4830df94a210d83da9e37bce147eb3891d74a7868e50cfc1c648d858475f4"
@@ -51,9 +61,6 @@ DEFAULT_SCOPE_TRANSITIONS = Path("tools/ci/retained_python_scope_transitions.jso
 
 _selection_delta = selection_delta
 
-
-class LineagePolicyError(RatchetContractError):
-    """A candidate attempted a forbidden baseline or scope transition."""
 
 
 @dataclass(frozen=True)
@@ -67,13 +74,6 @@ class LineageAudit:
 def document_sha256(document: Mapping[str, object]) -> str:
     return hashlib.sha256(render_document(document).encode()).hexdigest()
 
-
-def selection_digest(document: BaselineDocument) -> str:
-    modules = document["selection"]["modules"]
-    encoded = json.dumps(
-        modules, ensure_ascii=False, separators=(",", ":"), sort_keys=True
-    ).encode()
-    return hashlib.sha256(encoded).hexdigest()
 
 
 _record_key = scope_record_key
@@ -152,43 +152,8 @@ def audit_transition(
     return key
 
 
-def _git(
-    repo_root: Path, args: Sequence[str], *, text: bool = True
-) -> subprocess.CompletedProcess:
-    completed = subprocess.run(
-        ["git", *args],
-        cwd=repo_root,
-        env=os.environ | {"GIT_NO_REPLACE_OBJECTS": "1"},
-        check=False,
-        capture_output=True,
-        text=text,
-        timeout=60,
-    )
-    return completed
 
 
-def _git_required(repo_root: Path, *args: str) -> str:
-    completed = _git(repo_root, args)
-    if completed.returncode != 0:
-        raise RatchetContractError("Git history inspection failed")
-    return completed.stdout.strip()
-
-
-def _blob(repo_root: Path, commit: str, path: str) -> bytes | None:
-    listed = _git(repo_root, ("ls-tree", "-z", commit, "--", path), text=False)
-    if listed.returncode != 0:
-        raise RatchetContractError("Git tree inspection failed")
-    if not listed.stdout:
-        return None
-    shown = _git(repo_root, ("show", f"{commit}:{path}"), text=False)
-    if shown.returncode != 0:
-        raise RatchetContractError("Git blob inspection failed")
-    return shown.stdout
-
-
-def _commit_authority(repo_root: Path, commit: str, path: str) -> str | None:
-    blob = _blob(repo_root, commit, path)
-    return blob.decode("utf-8") if blob is not None else None
 
 
 def _document(blob: bytes | None, label: str) -> BaselineDocument | None:
@@ -213,16 +178,6 @@ def _registry(blob: bytes | None) -> ScopeRegistry:
     return document
 
 
-def _parents(repo_root: Path, commit: str) -> tuple[str, ...]:
-    output = _git_required(repo_root, "show", "-s", "--format=%P", commit)
-    return tuple(output.split()) if output else ()
-
-
-def _is_ancestor(repo_root: Path, ancestor: str, descendant: str) -> bool:
-    completed = _git(repo_root, ("merge-base", "--is-ancestor", ancestor, descendant))
-    if completed.returncode not in {0, 1}:
-        raise RatchetContractError("Git ancestry inspection failed")
-    return completed.returncode == 0
 
 
 def _is_redundant_ancestor_merge_parent(
@@ -248,12 +203,6 @@ def _is_redundant_ancestor_merge_parent(
         return True
     return False
 
-
-def _change_commits(repo_root: Path, path: str) -> tuple[str, ...]:
-    output = _git_required(
-        repo_root, "log", "--format=%H", "--full-history", "--reverse", "HEAD", "--", path
-    )
-    return tuple(output.splitlines()) if output else ()
 
 
 def _read_worktree_registry(repo_root: Path, path: str) -> ScopeRegistry:
@@ -320,6 +269,8 @@ def audit_candidate_lineage(
     ):
         raise RatchetContractError("baseline genesis digest is untrusted")
 
+    proofs = load_projection_proofs(repo_root, head=head, genesis=genesis,
+                                    baseline=baseline, scopes=scopes, audit=audit_transition)
     used: set[tuple[str, str, str, str]] = set()
     committed_transitions = 0
     for commit in commits:
@@ -352,9 +303,7 @@ def audit_candidate_lineage(
                 continue
             registry = _registry(_blob(repo_root, commit, scopes))
             committed_authority = lambda path: _commit_authority(repo_root, commit, path)
-            record = audit_transition(prior, current, registry, committed_authority)
-            if record is not None:
-                used.add(record)
+            used.update(proofs.authorize(commit, parent, prior, current, registry, committed_authority))
             committed_transitions += 1
 
     for commit in _change_commits(repo_root, scopes):
@@ -381,11 +330,12 @@ def audit_candidate_lineage(
             if (repo_root / path).is_file()
             else None
         )
-        record = audit_transition(
+        record = proofs.direct(
             head_document, candidate, candidate_registry, candidate_authority
         )
         if record is not None:
             used.add(record)
+    proofs.finish()
     genesis_registry = _registry(_blob(repo_root, genesis, scopes))
     genesis_keys = {_record_key(record) for record in validate_scope_registry(genesis_registry)}
     candidate_keys = {_record_key(record) for record in validate_scope_registry(candidate_registry)}

@@ -184,3 +184,30 @@ def truncate_text(value: str) -> str:
     if len(value) <= MAX_STRING_LENGTH:
         return value
     return value[: MAX_STRING_LENGTH - 15] + "...[truncated]"
+
+
+def _relative_path(value: Any, markers: tuple[str, ...]) -> str | None:
+    if (not isinstance(value, str) or not value or len(value) > MAX_STRING_LENGTH
+            or value.startswith(("/", "~")) or ":" in value or "\\" in value
+            or any(part in {"", ".", ".."} for part in value.split("/"))
+            or any(ord(char) < 32 or ord(char) == 127 for char in value)):
+        return None
+    if sanitize_jsonable(value, private_markers=markers) != value:
+        return None
+    return value
+
+
+def _public_location(row: dict[str, Any], markers: tuple[str, ...]) -> dict[str, Any]:
+    path = _relative_path(row.get("path"), markers)
+    start, end = row.get("start_line"), row.get("end_line")
+    valid_range = type(start) is int and type(end) is int and 1 <= start <= end
+    result = sanitize_jsonable(row, private_markers=markers)
+    result.update(path=path, start_line=start if valid_range else None,
+                  end_line=end if valid_range else None,
+                  path_status="available" if path else "missing_or_withheld",
+                  range_status="stored" if valid_range else "missing_or_invalid")
+    if "source" in result and "source_relative_path" in row.get("source", {}):
+        result["source"]["source_relative_path"] = _relative_path(
+            row["source"]["source_relative_path"], markers
+        )
+    return result

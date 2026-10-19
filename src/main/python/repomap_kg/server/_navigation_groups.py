@@ -5,8 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from repomap_kg.server._mcp_locations import _public_location, _relative_path
-from repomap_kg.server._ops_sanitization import sanitize_jsonable
+from repomap_kg.server._ops_sanitization import _public_location, _relative_path, sanitize_jsonable
 from repomap_kg.storage.navigation_search import DOC_KINDS, HINT_LIMIT, NavigationSearchQuery
 
 

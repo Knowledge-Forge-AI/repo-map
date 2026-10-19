@@ -5,7 +5,9 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-import runpy
+import sys
+import portable_handoff as handoff_module
+import source_navigation_consumer as consumer_module
 import subprocess
 from pathlib import Path
 from unittest.mock import patch
@@ -17,7 +19,8 @@ from repomap_test_support.portable_handoff_fixtures import (
 )
 
 ROOT = Path(__file__).resolve().parents[5]
-API = runpy.run_path(str(ROOT / "tools/portable_handoff.py"))
+assert Path(handoff_module.__file__).resolve() == ROOT / "tools/portable_handoff.py"
+API = vars(handoff_module)
 export, load, render, recheck = (API[name] for name in ("export", "load", "render", "recheck"))
 HandoffError = API["HandoffError"]
 
@@ -71,7 +74,7 @@ def test_h03_h04_h07_actual_routed_locator_native_relocation_and_consumer(tmp_pa
                          (ref["repository_identity"], ref["root"]["origin"], ref["root"]["key"]): relocated}, lambda ref, text: bool(text))
         assert [row["outcome"] for row in checks] == ["matching", "matching"]
         assert record["references"][1]["range"] is None and checks[1]["inspected_range"] == [1, 1]
-        navigate = runpy.run_path(str(ROOT / "tools/source_navigation_consumer.py"))["navigate"]
+        navigate = vars(consumer_module)["navigate"]
         # Existing consumer's caller-local mapping slot; no stored binding invented for native evidence.
         consumer = navigate(graph_id="absent", repository_identity="repo1:public-fixture",
                             bindings={"local-slot": relocated}, tool_call=mcp.handle_tool_call,
@@ -273,7 +276,7 @@ assert api['recheck'](r,['native'],{('repo1:public-fixture','caller_mapping','ch
 assert not any(k.startswith('repomap_kg') for k in sys.modules)
 assert not (workspace/'NEVER_EXECUTE').exists()
 '''
-    subprocess.run([__import__('sys').executable, "-I", "-S", "-B", "-c", script,
+    subprocess.run([sys.executable, "-I", "-S", "-B", "-c", script,
                     str(ROOT / "tools/portable_handoff.py"),
                     str(ROOT / "src/test/support/python/repomap_test_support/portable_handoff_fixtures.py"),
                     str(tmp_path / "isolated")], check=True, capture_output=True, text=True)

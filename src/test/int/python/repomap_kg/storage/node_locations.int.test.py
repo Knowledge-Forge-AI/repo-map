@@ -6,6 +6,9 @@ import hashlib
 import json
 import sqlite3
 from pathlib import Path
+from typing import Any
+
+import pytest
 
 from repomap_test_support.node_location_fixtures import (
     DOC, GRAPH, SYMBOL, locator_home, publish_locator_generation,
@@ -129,4 +132,47 @@ def test_compact_source_locations_over_guarded_sqlite_stdio(tmp_path: Path) -> N
     assert responses[4]["result"]["structuredContent"] == json.loads(responses[4]["result"]["content"][0]["text"])
     assert hashlib.sha256(database.read_bytes()).hexdigest() == before
     assert not (tmp_path / "never-created-source").exists()
+    assert harness.forbidden_events() == [] and harness.shim_invocations() == ""
+
+
+@pytest.mark.parametrize("limit", [1, 100])
+def test_withheld_location_windows_do_not_become_handoff_targets(tmp_path: Path, limit: int) -> None:
+    home, database = locator_home(tmp_path)
+    with sqlite3.connect(database) as connection:
+        connection.execute("UPDATE canonical_evidence SET path = '/withheld/service.py'")
+    before = hashlib.sha256(database.read_bytes()).hexdigest()
+    harness = LocalHarness(tmp_path / "harness", block_psycopg=True)
+    args = {"graph_id": GRAPH, "canonical_key": SYMBOL, "limit": limit, "evidence_role": "direct"}
+    requests = [initialize(), tool(2, "repomap_node_locations", args),
+                tool(3, "repomap_node_locations", {**args, "detail": "compact"})]
+    responses = harness.mcp(home, requests)
+    full, compact = structured(responses, 2), structured(responses, 3)
+    more = limit == 1
+    assert full["status"] == ("incomplete" if more else "unavailable")
+    assert full["reason"] == ("no_usable_location_in_window" if more else "no_usable_location")
+    assert full["has_more"] is compact["has_more"] is more
+    assert full["locations"] and all(row["path"] is None for row in full["locations"])
+    assert all(row["path_status"] == "missing_or_withheld" for row in compact["locations"])
+    assert compact["status"] == full["status"] and compact["reason"] == full["reason"]
+    assert "/withheld/service.py" not in json.dumps(responses)
+    assert responses == harness.mcp(home, requests)
+    assert hashlib.sha256(database.read_bytes()).hexdigest() == before
+    assert not (tmp_path / "never-created-source").exists()
+    assert harness.forbidden_events() == [] and harness.shim_invocations() == ""
+
+
+def test_location_validation_refusals_preserve_following_reads(tmp_path: Path) -> None:
+    home, database = locator_home(tmp_path)
+    before = hashlib.sha256(database.read_bytes()).hexdigest()
+    harness = LocalHarness(tmp_path / "harness", block_psycopg=True)
+    args = {"graph_id": GRAPH, "canonical_key": SYMBOL}
+    invalid: list[tuple[dict[str, Any], str]] = [({"canonical_key": ""}, "canonical_key"), ({"limit": True}, "limit"),
+               ({"evidence_role": "unsupported"}, "evidence_role")]
+    responses = harness.mcp(home, [initialize(),
+        *(tool(mid, "repomap_node_locations", {**args, **options})
+          for mid, (options, _) in enumerate(invalid, 2)), tool(10, "repomap_node_locations", args)])
+    for mid, (_, message) in enumerate(invalid, 2):
+        assert message in refusal(responses, mid)
+    assert structured(responses, 10)["status"] == "located"
+    assert hashlib.sha256(database.read_bytes()).hexdigest() == before
     assert harness.forbidden_events() == [] and harness.shim_invocations() == ""

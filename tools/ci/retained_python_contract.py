@@ -42,6 +42,10 @@ class RatchetContractError(RuntimeError):
     """A tool, baseline, path, or output violated the ratchet contract."""
 
 
+class LineagePolicyError(RatchetContractError):
+    """A candidate attempted a forbidden baseline or scope transition."""
+
+
 def validate_baseline(document: object) -> None:
     expected_tools = {
         **EXPECTED_TOOLS,
@@ -66,6 +70,7 @@ __all__ = [
     "EXPECTED_MYPY_CONFIG",
     "EXPECTED_TOOLS",
     "RatchetContractError",
+    "LineagePolicyError",
     "RETAINED_CLASSES",
     "RETAINED_TIERS",
     "RESULT_SCHEMA",

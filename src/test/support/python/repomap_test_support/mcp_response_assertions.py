@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from typing import TypeAlias, TypeGuard, TypedDict
+from typing import Any, TypeAlias, TypeGuard, TypedDict
 from unittest import TestCase
 
 
@@ -23,6 +23,38 @@ McpRun: TypeAlias = Callable[
     [list[dict[str, object]], dict[str, str] | None],
     list[McpResponse],
 ]
+
+
+def structural_difference(actual: Any, expected: Any) -> list[str]:
+    """Bound differences; disclose fixed schema names, never dynamic keys or values."""
+    differences: list[str] = []
+    schema_fields = {"center", "nodes", "edges", "canonical_key", "graph_key_version",
+                     "source_key", "target_key", "edge_kind", "identity_metadata_hash"}
+
+    def visit(left: Any, right: Any, path: str) -> None:
+        if len(differences) >= 20:
+            return
+        if type(left) is not type(right):
+            differences.append(f"{path}: type {type(left).__name__} != {type(right).__name__}")
+        elif isinstance(left, dict):
+            for index, key in enumerate(sorted(left.keys() | right.keys())):
+                label = key if key in schema_fields else f"<field:{index}>"
+                if key not in left or key not in right:
+                    if len(differences) < 20:
+                        differences.append(f"{path}.{label}: missing from {'actual' if key not in left else 'expected'}")
+                else:
+                    visit(left[key], right[key], f"{path}.{label}")
+        elif isinstance(left, list):
+            if len(left) != len(right):
+                differences.append(f"{path}: length {len(left)} != {len(right)}")
+            for index, (a, b) in enumerate(zip(left, right)):
+                visit(a, b, f"{path}[{index}]")
+        elif left != right:
+            # Values may contain fixture paths: retain structure without payloads.
+            differences.append(f"{path}: unequal {type(left).__name__} values")
+
+    visit(actual, expected, "$")
+    return differences
 
 
 def _is_json_value(value: object) -> bool:
@@ -214,6 +246,7 @@ __all__ = [
     "McpResponse",
     "McpRun",
     "assert_mcp_page",
+    "structural_difference",
     "is_json_object",
     "is_mcp_response",
     "json_bool_field",

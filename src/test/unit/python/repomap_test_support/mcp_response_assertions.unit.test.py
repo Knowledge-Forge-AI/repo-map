@@ -20,10 +20,37 @@ from repomap_test_support.mcp_response_assertions import (
     response_error_text,
     response_result,
     response_structured_content,
+    structural_difference,
 )
 
 
 class McpResponseAssertionsUnitTests(unittest.TestCase):
+    def test_investigation_differences_withhold_dynamic_map_keys(self) -> None:
+        private_key = "/synthetic-private/fixture.py"
+        nested = structural_difference({"nodes": {private_key: "changed"}}, {"nodes": {private_key: "original"}})
+        missing = structural_difference({private_key: True}, {})
+        self.assertEqual(nested, ["$.nodes.<field:0>: unequal str values"])
+        self.assertEqual(missing, ["$.<field:0>: missing from expected"])
+        self.assertNotIn(private_key, str(nested + missing))
+
+    def test_investigation_differences_are_bounded_and_omit_values(self) -> None:
+        actual = {"edges": [{"source_key": "file:root/a.py", "target_key": "file:root/b.py"}],
+                  "extra": True, "typed": True}
+        expected = {"edges": [{"source_key": "[REDACTED]", "target_key": "[REDACTED]"}],
+                    "missing": None, "typed": 1}
+        difference = structural_difference(actual, expected)
+        self.assertEqual(difference, [
+            "$.edges[0].source_key: unequal str values",
+            "$.edges[0].target_key: unequal str values",
+            "$.<field:1>: missing from expected", "$.<field:2>: missing from actual",
+            "$.<field:3>: type bool != int",
+        ])
+        self.assertNotIn("root/a.py", str(difference))
+        self.assertEqual(structural_difference(actual, actual), [])
+        self.assertEqual(structural_difference([1], [1, 2]), ["$: length 1 != 2"])
+        self.assertEqual(len(structural_difference(list(range(100)), [-1] * 100)), 20)
+        self.assertEqual(len(structural_difference({str(i): i for i in range(100)}, {})), 20)
+
     def test_response_helpers_narrow_nested_json_shapes(self) -> None:
         response = require_mcp_response(
             {
