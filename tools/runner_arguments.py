@@ -231,6 +231,37 @@ def validate_sandbox_admission_options(
         validate_runner_options_fn(args, ("system",))
 
 
+def validate_pgvector_forwarded_selections(
+    args,
+    forwarded_pytest_args: Sequence[str],
+    *,
+    build_pytest_args_fn=None,
+    test_roots: Mapping[str, Path] | None = None,
+    repo_root: Path | None = None,
+) -> None:
+    """Validate pgvector selection before dispatch without changing facade callbacks."""
+    if getattr(args, "pg_test_profile", "core") != "pgvector":
+        return
+    from runner_sandbox import validate_sandbox_profile_options
+    validate_sandbox_profile_options(args, forwarded_pytest_args)
+    if getattr(args, "pg_test_profile", "core") == "pgvector":
+        resolved_repo_root = repo_root or Path(__file__).resolve().parents[1]
+        resolved_test_roots = test_roots or {
+            "unit": resolved_repo_root / "src" / "test" / "unit" / "python",
+            "int": resolved_repo_root / "src" / "test" / "int" / "python",
+        }
+        if build_pytest_args_fn is not None:
+            build_pytest_args_fn(("int",), list(forwarded_pytest_args), jobs=args.jobs)
+        else:
+            build_pytest_args(
+                ("int",),
+                list(forwarded_pytest_args),
+                test_roots=resolved_test_roots,
+                repo_root=resolved_repo_root,
+                jobs=args.jobs,
+            )
+
+
 def parallel_jobs_enabled(jobs: str) -> bool:
     return normalize_jobs(jobs) != "1"
 

@@ -28,7 +28,7 @@ from repomap_kg.storage.semantic_seed_readback import query_seed_candidates, que
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.semantic_candidate_fixtures import PROFILE
 from repomap_test_support.semantic_candidate_restore import (
-    teardown_optional_schema_without_cascade,
+    optional_sql_fixture_cleanup,
 )
 from repomap_test_support.semantic_seed_publication import (
     SEED_KEY,
@@ -76,7 +76,12 @@ def test_seed_public_entry_boundary() -> None:
             f"CREATE ROLE {READER} NOLOGIN; CREATE ROLE {WRITER} NOLOGIN; "
             "CREATE SCHEMA repomap_vector; CREATE EXTENSION vector WITH SCHEMA repomap_vector VERSION '0.8.7';",
         )
-        try:
+        with optional_sql_fixture_cleanup(
+            postgres,
+            reader=READER,
+            writer=WRITER,
+            execute_fn=_execute,
+        ):
             _execute(postgres, candidate_schema_sql(read_principal=READER, enrichment_principal=WRITER))
 
             context = publish_portable_seed_graph(
@@ -222,6 +227,3 @@ def test_seed_public_entry_boundary() -> None:
             edges_after = postgres.psql_scalar("SELECT count(*) FROM canonical_edges;")
             assert len(canonical_after) == len(canonical_before)
             assert edges_after == edges_before
-        finally:
-            teardown_optional_schema_without_cascade(postgres, reader=READER, writer=WRITER)
-            _execute(postgres, f"DROP OWNED BY {READER}, {WRITER}; DROP ROLE IF EXISTS {READER}; DROP ROLE IF EXISTS {WRITER};")

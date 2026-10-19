@@ -18,7 +18,9 @@ from repomap_kg.storage.semantic_candidate_import import candidate_schema_sql
 from repomap_kg.storage.semantic_candidates import EmbeddingProfile
 from repomap_kg.storage.sql_core import sql_literal
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
-from repomap_test_support.semantic_candidate_restore import teardown_optional_schema_without_cascade
+from repomap_test_support.semantic_candidate_restore import (
+    optional_sql_fixture_cleanup,
+)
 from repomap_test_support.semantic_seed_publication import (
     SEED_KEY, import_seed_embeddings, publish_portable_seed_graph,
     run_mcp_stdio_requests, write_seed_mcp_config,
@@ -66,7 +68,12 @@ def test_profile_discovery_publication_and_stdio_boundary():
         execute(postgres, f"CREATE ROLE {READER} NOLOGIN; CREATE ROLE {WRITER} NOLOGIN; "
                 "CREATE SCHEMA repomap_vector; "
                 "CREATE EXTENSION vector WITH SCHEMA repomap_vector VERSION '0.8.7';")
-        try:
+        with optional_sql_fixture_cleanup(
+            postgres,
+            reader=READER,
+            writer=WRITER,
+            execute_fn=execute,
+        ):
             execute(postgres, candidate_schema_sql(read_principal=READER, enrichment_principal=WRITER))
             context = publish_portable_seed_graph(postgres, root, graph_id=GRAPH,
                 repository_name="profile-repository", repository_identity=REPOSITORY)
@@ -237,6 +244,3 @@ def test_profile_discovery_publication_and_stdio_boundary():
             publish_portable_seed_graph(postgres, empty_root, graph_id="unimported-profile",
                 repository_name="unimported-profile-repository", repository_identity="repo1:unimported-profile")
             assert discover(postgres, repository="repo1:unimported-profile").reason == "no_import"
-        finally:
-            teardown_optional_schema_without_cascade(postgres, reader=READER, writer=WRITER)
-            execute(postgres, f"DROP OWNED BY {READER}, {WRITER}; DROP ROLE {READER}; DROP ROLE {WRITER};")

@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 import subprocess
 import tarfile
-from typing import Callable
+from collections.abc import Callable, Sequence
 import urllib.request
 import uuid
 
@@ -103,13 +103,18 @@ def forward_profile_into_sandbox(argv: list[str], profile: str) -> list[str]:
     return [*argv[:index], "--pg-test-profile", validated, *argv[index:]]
 
 
-def validate_sandbox_profile_options(args) -> None:
+def validate_sandbox_profile_options(
+    args,
+    forwarded_pytest_args: Sequence[str] | None = None,
+) -> None:
     if getattr(args, "pg_test_profile", CORE_PROFILE) != PGVECTOR_PROFILE:
         return
     if args.suite != "int" or not getattr(args, "no_coverage", False):
         raise RuntimeError("--pg-test-profile pgvector requires scoped int --no-coverage")
     if getattr(args, "pg_container_runtime", "docker") != "docker":
         raise RuntimeError("--pg-test-profile pgvector requires --pg-container-runtime docker")
+    if forwarded_pytest_args is not None and not list(forwarded_pytest_args):
+        raise RuntimeError("canonical pgvector profile requires scoped test selector(s) after '--'")
 
 
 def _verify_source_archive(payload: bytes, facts: dict[str, object]) -> None:

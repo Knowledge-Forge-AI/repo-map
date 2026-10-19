@@ -121,6 +121,9 @@ def run_test_runner(argv: list[str] | None, *, dependencies: RunnerDependencies)
 
     try:
         dependencies.validate_sandbox_admission_options(args)
+        _runner_arguments.validate_pgvector_forwarded_selections(
+            args, forwarded_pytest_args, repo_root=dependencies.repo_root,
+        )
     except RuntimeError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2

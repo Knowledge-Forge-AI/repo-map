@@ -281,9 +281,20 @@ with supporting public projection verification recorded in
 [`tools/ci/nav30-optional-runtime-exit.md`](../../../../tools/ci/nav30-optional-runtime-exit.md).
 Private experiment companion wrappers remain excluded. Hosted CI continues to
 run only the default `core` profile (executing the unmarked absence owner and
-deselecting the three `requires_pgvector` nodes). Disposable test execution
+deselecting optional `requires_pgvector` nodes). Disposable test execution
 proves synthetic mechanics, reader/enrichment privilege boundaries and
 disposable same-cluster logical restore (with pre-installed extension and
 lifecycle restore privileges, not D9 production restore certification) only;
 semantic retrieval quality remains `utility_not_measured`, and D15
 production extension admission remains refused.
+
+## NAVIGATION32 test-harness maintenance
+
+[NAVIGATION32](../../../../tools/ci/nav32-pgvector-preflight-teardown.md)
+moves existing selector refusals ahead of outer sandbox dispatch and
+preserves primary optional SQL fixture failures when owned cleanup also
+fails. Its focused regression adds a fourth optional integration node.
+Core production defaults, canonical graph semantics, dependencies and
+D15 admission are unchanged. The same-cluster lifecycle-superuser restore
+fixture remains a synthetic mechanics proof; D9 production restore and
+learned retrieval usefulness remain unqualified.

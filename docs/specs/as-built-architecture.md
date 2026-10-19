@@ -2,7 +2,7 @@
 
 Status: current normalized architecture index
 
-Evidence baseline: ARCH-CLOSE over the accepted ARCH8 implementation
+Evidence baseline: ARCH-CLOSE, with subsequent Local/Server and navigation updates noted below
 
 ## Purpose and boundary
 
@@ -15,28 +15,29 @@ schema changes, runtime changes, deployment changes, or a new supported
 transport. Any change identified here requires a separately accepted phase.
 
 [ADR 0071](../adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
-separates implemented PostgreSQL behavior from the accepted target surfaces.
+owns the accepted Local/Server Engine/Cloud boundaries. SQLite Local and the
+PostgreSQL Server Engine are implemented; managed Cloud remains a target.
 
 | Boundary | Current implementation | Accepted target |
 |---|---|---|
-| Graph storage | PostgreSQL reference/self-hosted path | SQLite Local plus PostgreSQL Server/Cloud, one accepted authority per graph view |
+| Graph storage | SQLite Local and PostgreSQL reference/server path | SQLite Local plus PostgreSQL Server/Cloud, one accepted authority per graph view |
 | Semantics | Python, explicit multi-source bindings, portable worker and validated bundles | Shared identities, meaning, privacy, evidence and publication lineage across backends |
-| MCP | Read-only PostgreSQL-backed reference path; twenty-three database-reading tools (canonical plus legacy status, twelve configured investigation including five language summaries, six ingested-source reads) read through host-only named read-store seams, two tools are configuration-only, and two read configured server-memory files | Host-native, source-blind Local read-store seam with PostgreSQL parity |
-| Enhanced intelligence | Core search; no admitted pgvector capability | Useful optional Server pgvector before v0.1.0, separately admitted; named-workload JSONB |
+| MCP | Read-only catalog: 25 ordinary database readers, 2 optional PostgreSQL readers, 2 configuration inventories and 2 memory-file readers; availability follows each tool's backend/capability contract | Host-native, source-blind Local read-store seam with PostgreSQL parity |
+| Enhanced intelligence | Core search; experimental publication-bound pgvector readers and disposable SQL/stdio fixtures; D15 refused | Useful optional Server pgvector before v0.1.0, separately admitted; named-workload JSONB |
 | Delivery | Private-main development; hosted qualification is separately evidenced | Significant public-staging milestones, GitHub-only v0.0.2 preview, first package-manager target v0.1.0 |
 
-SQLite publication, Cloud control-plane service and Rust extraction are not
-implemented by the architecture decision. Headless Local does not require a GUI.
+SQLite Local and host-native MCP have manager acceptance for their recorded
+bounded scopes. Managed Cloud and Rust extraction remain future work.
+Headless Local does not require a GUI.
 
-As built, the architecture is a local-first, single-host containerized
-PostgreSQL reference system; this is not the target SQLite-backed RepoMap Local
-surface described above. RepoMap statically extracts observations from
+The containerized PostgreSQL system remains the reference implementation alongside
+SQLite Local. RepoMap statically extracts observations from
 configured source roots, canonicalizes those observations, publishes graph
-state to exactly owned PostgreSQL databases, and exposes bounded readback
+state to exactly owned SQLite or PostgreSQL stores, and exposes bounded readback
 through its CLI and read-only MCP server. Canonical lists and embedded
 neighborhood/evidence collections have deterministic limits and continuation
 contracts. Direct refresh is the default execution mode. An explicit
-local coordinator mode adds durable request state, bounded worker processes,
+PostgreSQL coordinator mode adds durable request state, bounded worker processes,
 publication fencing, and recovery without replacing direct mode.
 
 Each legacy configured graph still resolves one source root and one dedicated
@@ -1510,8 +1511,15 @@ documented below. D2 and D3 were not re-measured live.
    retirement.
 
 Target boundaries from ADR 0071 remain distinct: SQLite Local (Step 4) is
-manager-accepted with a first bounded slice (below), and enhanced intelligence pgvector
-(Step 6) remains pending a separate manager-authorized phase.
+manager-accepted. PostgreSQL enhanced intelligence (Step 6) is in progress.
+[NAVIGATION30](../../tools/ci/nav30-optional-runtime-exit.md) projects the
+verified disposable PostgreSQL 16 / pgvector 0.8.7 test runtime and synthetic
+SQL/stdio fixtures. [NAVIGATION32](../../tools/ci/nav32-pgvector-preflight-teardown.md)
+hardens early selector admission and owned SQL fixture teardown. Neither
+establishes learned usefulness or D15 production admission. The historical
+step-3 acceptance census below describes that earlier boundary; the current
+read-only MCP catalog contains 31 tools: 25 ordinary database readers,
+2 optional PostgreSQL readers, 2 configuration inventories and 2 memory-file readers.
 
 Product step 3 is manager-accepted (2026-09-29) for its specified scope,
 recorded in `docs/status/2026/09/29/00977-product3-sqlite-local1-exit.md`; the

@@ -27,9 +27,18 @@ from repomap_test_support.postgres_logical_backup import (
     dump_plain_database,
     restore_plain_database,
 )
+from repomap_test_support.semantic_candidate_cleanup import (
+    ENRICHMENT_CLEANUP_SQL as ENRICHMENT_CLEANUP_SQL,
+    KNOWN_CLEANUP_STEPS as KNOWN_CLEANUP_STEPS,
+    VECTOR_CLEANUP_SQL as VECTOR_CLEANUP_SQL,
+    cleanup_optional_sql_fixture as cleanup_optional_sql_fixture,
+    format_optional_cleanup_diagnostic as format_optional_cleanup_diagnostic,
+    optional_database_cleanup as optional_database_cleanup,
+    optional_sql_fixture_cleanup as optional_sql_fixture_cleanup,
+    teardown_optional_schema_without_cascade as teardown_optional_schema_without_cascade,
+)
 
 PGVECTOR_VERSION = "0.8.7"
-
 
 
 def execute_sql(postgres: Any, sql: str, *, role: str | None = None) -> None:
@@ -315,17 +324,3 @@ def execute_candidate_dump_restore(
     assert restored_db.psql_scalar("SELECT current_user;") != restore_role
 
     return restored_db
-
-
-def teardown_optional_schema_without_cascade(
-    postgres: Any, *, reader: str, writer: str
-) -> None:
-    """Drop exact known optional objects without CASCADE."""
-    execute_sql(
-        postgres,
-        "DROP TABLE IF EXISTS repomap_enrichment.embeddings; "
-        "DROP TABLE IF EXISTS repomap_enrichment.rebuilds; "
-        "DROP SCHEMA IF EXISTS repomap_enrichment; "
-        "DROP EXTENSION IF EXISTS vector; "
-        "DROP SCHEMA IF EXISTS repomap_vector;",
-    )

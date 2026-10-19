@@ -1371,6 +1371,28 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation32.pgvector_preflight_teardown1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_test_support/pgvector_admission.int.test.py",
+        "src/test/unit/python/repomap_kg/storage/semantic_candidate_cleanup.unit.test.py",
+        "src/test/unit/python/tools/pgvector_host_admission.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION32-PGVECTOR-PREFLIGHT-TEARDOWN1 host pgvector admission and optional SQL fixture cleanup exception preservation test owners; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation32.pgvector_preflight_teardown1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/semantic_candidate_cleanup.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION32-PGVECTOR-PREFLIGHT-TEARDOWN1 failure-preserving optional SQL fixture cleanup support module; strict zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -32383,6 +32405,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_test_support/pgvector_admission.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION32-PGVECTOR-PREFLIGHT-TEARDOWN1 subprocess host-admission refusal and dispatch boundary owner; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_test_support/resource_deletion_gc.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -34545,6 +34576,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/schema_history.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/semantic_candidate_cleanup.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION32-PGVECTOR-PREFLIGHT-TEARDOWN1 failure-preserving optional SQL fixture cleanup support module; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -40312,6 +40352,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/semantic_candidate_cleanup.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION32-PGVECTOR-PREFLIGHT-TEARDOWN1 failure-preserving optional SQL fixture cleanup and diagnostic redaction unit owner; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/semantic_candidate_readback.unit.test.py",
       "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
       "root": "test_owners",
@@ -42924,6 +42973,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/perf_base1_contracts.unit.test.py",
       "rationale": "Focused performance reporting and spool replay contracts.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/pgvector_host_admission.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION32-PGVECTOR-PREFLIGHT-TEARDOWN1 host-side pgvector selector admission before sandbox dispatch unit owner; zero new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

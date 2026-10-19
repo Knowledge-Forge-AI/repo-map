@@ -28,6 +28,8 @@ from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, c
 from repomap_test_support.semantic_candidate_publication import candidate_bundle
 from repomap_test_support.semantic_candidate_restore import (
     execute_candidate_dump_restore,
+    optional_database_cleanup,
+    optional_sql_fixture_cleanup,
     record_optional_schema_state,
     teardown_optional_schema_without_cascade,
     verify_reader_privilege_refusals,
@@ -119,7 +121,17 @@ def test_selected_candidate_capability_boundary() -> None:
         assert available == "1", "exact boundary requires an admitted pgvector 0.8.7 test image"
         _execute(postgres, f"CREATE ROLE {READER} NOLOGIN; CREATE ROLE {WRITER} NOLOGIN; "
             "CREATE SCHEMA repomap_vector; CREATE EXTENSION vector WITH SCHEMA repomap_vector VERSION '0.8.7';")
-        try:
+        with optional_sql_fixture_cleanup(
+            postgres,
+            reader=READER,
+            writer=WRITER,
+            extra_roles=("candidate_fixture_restorer",),
+            execute_fn=_execute,
+            canonical_nodes_fn=lambda: query_canonical_node_records(
+                postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command
+            ),
+            expected_canonical_count=3,
+        ):
             _execute(postgres, candidate_schema_sql(read_principal=READER, enrichment_principal=WRITER))
             publication = _publish(postgres)
             query = replace(candidate_query(), publication=publication)
@@ -148,7 +160,11 @@ def test_selected_candidate_capability_boundary() -> None:
                     writer=WRITER,
                     restore_role="candidate_fixture_restorer",
                 )
-                try:
+                with optional_database_cleanup(
+                    postgres,
+                    database_name="repomap_test_candidates_restored",
+                    execute_fn=_execute,
+                ):
                     # Prove saved original owners, restored ACLs, and principal are preserved
                     verify_restored_acl_and_principal(restored_db, expected=original_state, reader=READER, writer=WRITER)
 
@@ -164,14 +180,13 @@ def test_selected_candidate_capability_boundary() -> None:
                     restored_before_nodes = query_canonical_node_records(
                         restored_db.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=restored_db.psql_command
                     )
-                    teardown_optional_schema_without_cascade(restored_db, reader=READER, writer=WRITER)
+                    teardown_optional_schema_without_cascade(
+                        restored_db, reader=READER, writer=WRITER, execute_fn=_execute
+                    )
                     restored_after_nodes = query_canonical_node_records(
                         restored_db.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=restored_db.psql_command
                     )
                     assert restored_after_nodes == restored_before_nodes and len(restored_after_nodes) == 3
-                finally:
-                    # Clean up the second disposable database
-                    _execute(postgres, "DROP DATABASE IF EXISTS repomap_test_candidates_restored;")
 
             before = postgres.psql_scalar("SELECT count(*) FROM canonical_edges")
             found = _read(postgres, query)
@@ -221,17 +236,70 @@ def test_selected_candidate_capability_boundary() -> None:
             assert successor is not None
             assert _read(postgres, replace(query, publication=CandidatePublication(REPOSITORY, successor))).reason == "enrichment_unavailable"
             print("pgvector-boundary: extension_present; exact-boundary-executed=true")
+
+
+@pytest.mark.requires_pgvector
+def test_primary_failure_survives_optional_sql_cleanup_failure() -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        available = postgres.psql_scalar(
+            "SELECT count(*) FROM pg_available_extension_versions WHERE name = 'vector' AND version = '0.8.7'"
+        )
+        apply_migrations(default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command)
+        assert available == "1", "exact boundary requires an admitted pgvector 0.8.7 test image"
+        _execute(
+            postgres,
+            f"CREATE ROLE {READER} NOLOGIN; CREATE ROLE {WRITER} NOLOGIN; "
+            "CREATE SCHEMA repomap_vector; CREATE EXTENSION vector WITH SCHEMA repomap_vector VERSION '0.8.7';",
+        )
+        _publish(postgres)
+        before_nodes = query_canonical_node_records(
+            postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command
+        )
+        primary_sql_error: StorageSchemaError | None = None
+        try:
+            with pytest.raises(StorageSchemaError) as exc_info:
+                with optional_sql_fixture_cleanup(
+                    postgres,
+                    reader=READER,
+                    writer=WRITER,
+                    extra_roles=("candidate_fixture_restorer",),
+                    execute_fn=_execute,
+                    canonical_nodes_fn=lambda: query_canonical_node_records(
+                        postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command
+                    ),
+                    expected_canonical_count=3,
+                ):
+                    _execute(postgres, candidate_schema_sql(read_principal=READER, enrichment_principal=WRITER))
+                    _execute(postgres, "CREATE TABLE repomap_enrichment.cleanup_blocker (id integer);")
+                    try:
+                        _execute(
+                            postgres,
+                            "SELECT * FROM repomap_enrichment.nonexistent_primary_failure_relation;",
+                            role=READER,
+                        )
+                    except StorageSchemaError as body_error:
+                        primary_sql_error = body_error
+                        raise
+            assert primary_sql_error is not None
+            assert exc_info.value is primary_sql_error
+            notes = getattr(exc_info.value, "__notes__", [])
+            assert notes == [
+                "optional SQL fixture cleanup failed: step=enrichment_schema; error_type=StorageSchemaError; detail=<redacted>"
+            ]
+            assert "cleanup_blocker" not in notes[0]
+            assert "DROP SCHEMA" not in notes[0]
+            assert postgres.psql_scalar("SELECT count(*) FROM pg_extension WHERE extname = 'vector'") == "0"
+            assert postgres.psql_scalar(
+                f"SELECT count(*) FROM pg_roles WHERE rolname IN ('{READER}', '{WRITER}')"
+            ) == "0"
+            after_nodes = query_canonical_node_records(
+                postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command
+            )
+            assert after_nodes == before_nodes and len(after_nodes) == 3
         finally:
-            # Exact fixture objects only; no foreign extension adoption or cascade.
-            canonical_before_teardown = query_canonical_node_records(
-                postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command
+            _execute(
+                postgres,
+                "DROP TABLE IF EXISTS repomap_enrichment.cleanup_blocker; "
+                "DROP SCHEMA IF EXISTS repomap_enrichment;",
             )
-            _execute(postgres, "DROP TABLE IF EXISTS repomap_enrichment.embeddings; "
-                "DROP TABLE IF EXISTS repomap_enrichment.rebuilds; DROP SCHEMA IF EXISTS repomap_enrichment; "
-                "DROP EXTENSION IF EXISTS vector; DROP SCHEMA IF EXISTS repomap_vector; "
-                f"DROP OWNED BY {READER}, {WRITER}; DROP ROLE IF EXISTS {READER}; DROP ROLE IF EXISTS {WRITER}; "
-                "DROP ROLE IF EXISTS candidate_fixture_restorer;")
-            canonical_after_teardown = query_canonical_node_records(
-                postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command
-            )
-            assert canonical_after_teardown == canonical_before_teardown and len(canonical_after_teardown) == 3
