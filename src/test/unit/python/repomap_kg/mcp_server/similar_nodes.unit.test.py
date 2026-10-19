@@ -2,24 +2,25 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+from dataclasses import replace
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
 from repomap_kg.ops.config_local import LocalSqliteConfig
 from repomap_kg.server._mcp_dispatch import TOOL_FUNCTIONS
-from repomap_kg.server._mcp_similar import (
-    SimilarNodesQuery,
-    similar_nodes_payload,
-)
+from repomap_kg.server._mcp_similar import SimilarNodesQuery, similar_nodes_payload
 from repomap_kg.server.mcp import (
-    handle_jsonrpc_message,
-    handle_tool_call,
+    handle_jsonrpc_message, handle_tool_call,
     repomap_similar_nodes as facade_similar_nodes,
     similar_nodes_payload as facade_similar_nodes_payload,
 )
 from repomap_kg.server.sqlite_read_binding import SqliteInvestigationStores
-from repomap_kg.storage.semantic_candidates import CandidateResult
+from repomap_kg.storage.semantic_candidate_readback import candidate_provenance
+from repomap_kg.storage.semantic_candidates import CandidateResult, EmbeddingProfilesResult, validated_profile_entry
 from repomap_test_support.mcp_server import McpServerTestSupport
+from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, SNAPSHOT, candidate_query
 
 
 class SimilarNodesUnitTest(McpServerTestSupport):
@@ -312,3 +313,87 @@ class SimilarNodesUnitTest(McpServerTestSupport):
             self.assertEqual(facade_payload["status"], "capability_unavailable")
 
         self.assertEqual(TOOL_FUNCTIONS["repomap_similar_nodes"], "repomap_similar_nodes")
+
+    def _fixture_results(self, profile: Any = None) -> tuple[EmbeddingProfilesResult, CandidateResult]:
+        prof = replace(PROFILE, generator="synthetic-fixture-author") if profile is None else profile
+        pub = candidate_query().publication.validate()
+        gens = replace(pub.publication.receipt.generations, source_generation="sg1:" + "a" * 64,
+                       config_generation="cg1:" + "b" * 64, extractor_generation="eg1:" + "c" * 64,
+                       canonicalizer_generation="kg1:" + "d" * 64)
+        pub = replace(pub, publication=replace(pub.publication, receipt=replace(pub.publication.receipt, generations=gens))).validate()
+        scope = [{"source_binding_id": BINDING, "snapshot_id": SNAPSHOT}]
+        entry = validated_profile_entry({"rebuild_id": "fixture", "profile_identity": prof.identity,
+                                         **prof.__dict__, "row_count": 5, "source_scope": scope}, pub)
+        prof_prov = {"receipt_identity": pub.receipt_identity, "publication": pub.publication.receipt.public_mapping(),
+                     "generations": dict(zip(gens.field_names(), gens.values(), strict=True)), "privacy_class": "public",
+                     "pgvector_version": "0.8.7", "snapshot_contract": "receipt-fenced metadata and source evidence in one SQL statement"}
+        seed = {"canonical_key": "file:tools/runner_arguments.py", "source_binding_id": BINDING, "snapshot_id": SNAPSHOT}
+        sim_prov = {**candidate_provenance(pub, prof, "fixture"), "seed": seed,
+                    "snapshot_contract": "receipt-fenced seed and candidates in one SQL statement"}
+        cands = ({"canonical_key": "file:tools/runner_arguments.py", "display_name": "runner_arguments.py",
+                  "source_binding_id": BINDING, "snapshot_id": SNAPSHOT, "input_digest": "sha256:" + "1" * 64,
+                  "distance": 0.0, "evidence": [{"evidence_key": "evidence:1:tools/runner_arguments.py:1-5:src:s1", "path": "tools/runner_arguments.py", "raw_kind": "file", "extractor": "src"}]},
+                 {"canonical_key": "file:src/app/test_service.py", "display_name": "test_service.py",
+                  "source_binding_id": BINDING, "snapshot_id": SNAPSHOT, "input_digest": "sha256:" + "2" * 64,
+                  "distance": 0.5, "evidence": [{"evidence_key": "evidence:2:src/app/test_service.py:1-5:test:s1", "path": "src/app/test_service.py", "raw_kind": "file", "extractor": "test"}]})
+        return EmbeddingProfilesResult("ok", profiles=(entry,), provenance=prof_prov), CandidateResult("ok", None, cands, sim_prov)
+
+    def test_similar_nodes_refuses_private_paths_and_provenance_usernames(self) -> None:
+        _, clean = self._fixture_results()
+        assert clean.provenance is not None
+        home, digest = Path("/private/fixture-home/privateuser"), "a" * 64
+        bad_cand = ({**clean.candidates[0], "evidence": [{"evidence_key": "evidence:1:a.py:1-2:src:s1", "path": f"{home}/secret.py"}]},)
+        bad_ev_key = ({**clean.candidates[0], "evidence": [{"evidence_key": f"evidence:1:{home}/secret.py:1-2:src:s1", "path": "src/a.py"}]},)
+        bad_ev_url = ({**clean.candidates[0], "evidence": [{"evidence_key": "https://u:p@example.com/a", "path": "src/a.py"}]},)
+        long_key = ({**clean.candidates[0], "canonical_key": "file:" + "x" * 500},)
+        cases: list[tuple[str, str, CandidateResult]] = [
+            ("cand-path", "privateuser", replace(clean, candidates=bad_cand)),
+            ("ev-key-path", "privateuser", replace(clean, candidates=bad_ev_key)),
+            ("ev-key-url", "privateuser", replace(clean, candidates=bad_ev_url)),
+            ("long-key", "privateuser", replace(clean, candidates=long_key)),
+            ("seed-path", "privateuser", replace(clean, provenance={**clean.provenance, "seed": {**clean.provenance["seed"], "canonical_key": f"file:{home}/a.py"}})),
+            ("prof-path", "privateuser", replace(clean, provenance={**clean.provenance, "profile": {**clean.provenance["profile"], "model": f"{home}/m"}})),
+            ("model-user", "privateuser", self._fixture_results(replace(PROFILE, model="fixture-privateuser-model"))[1]),
+            ("gen-user", "privateuser", self._fixture_results(replace(PROFILE, generator="privateuser:" + digest))[1]),
+            ("mver-user", "privateuser", self._fixture_results(replace(PROFILE, model_version="privateuser"))[1]),
+            ("gver-user", "privateuser", self._fixture_results(replace(PROFILE, generator_version="privateuser"))[1]),
+            ("nested-user", "privateuser", replace(clean, provenance={**clean.provenance, "nested": [{"claim": "privateuser"}]})),
+            ("bad-prof-id", "privateuser", replace(clean, provenance={**clean.provenance, "profile_identity": "privateuser:" + digest})),
+            ("bad-bind-id", "privateuser", replace(clean, provenance={**clean.provenance, "seed": {**clean.provenance["seed"], "source_binding_id": "privateuser:" + digest}})),
+            ("bad-snap-id", "privateuser", replace(clean, provenance={**clean.provenance, "seed": {**clean.provenance["seed"], "snapshot_id": "privateuser:" + digest}})),
+            ("bad-metric", "privateuser", replace(clean, provenance={**clean.provenance, "profile": {**clean.provenance["profile"], "metric": "privateuser"}})),
+            ("bad-search", "privateuser", replace(clean, provenance={**clean.provenance, "search": "privateuser"})),
+            ("bad-val", "privateuser", replace(clean, provenance={**clean.provenance, "input_digest_validation": "privateuser"})),
+            ("bad-contract", "privateuser", replace(clean, provenance={**clean.provenance, "snapshot_contract": "privateuser"})),
+            ("model-sha256", "sha256", replace(clean, provenance={**clean.provenance, "profile": {**clean.provenance["profile"], "model": "sha256:" + digest}})),
+            ("nested-bind1", "bind1", replace(clean, provenance={**clean.provenance, "nested": {"source_binding_id": "bind1:" + digest}})),
+        ]
+        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.similar_nodes"
+        for label, user, candidate_res in cases:
+            frozen = deepcopy((candidate_res.candidates, candidate_res.provenance))
+            with self.subTest(case=label), self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config()), patch(owner, return_value=candidate_res), patch("pathlib.Path.home", return_value=Path("/private/fixture-home") / user):
+                payload = self._call_tool(self._valid_args(selected=True))["result"]["structuredContent"]
+                self.assertEqual((payload["status"], payload["reason"], payload["candidates"], payload["provenance"], (candidate_res.candidates, candidate_res.provenance)), ("capability_unavailable", "privacy_refused", [], None, frozen))
+
+    def test_similar_nodes_preserves_candidate_paths_and_agrees_with_discovery(self) -> None:
+        prof_res, sim_res = self._fixture_results()
+        expected_cands, expected_prov = deepcopy(list(sim_res.candidates)), deepcopy(sim_res.provenance)
+        expected_ev = [ev["evidence_key"] for cand in expected_cands for ev in cand["evidence"]]
+        prof_owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        sim_owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.similar_nodes"
+        usernames = (prof_res.profiles[0]["profile_identity"].split(":")[1], "sha256", "snapmanifest1", "receipt1",
+                     "bundle1", "cand1", "bind1", "snap1", "sg1", "cg1", "eg1", "kg1", "cosine", "exact", "public",
+                     "canonical", "node", "l2", "unit", "enrichment_principal_assertion", "receipt", "fenced",
+                     "seed", "candidates", "runner", "src", "app", "test", "3" * 64, "4" * 64, "a" * 64)
+        for user in usernames:
+            with self.subTest(user=user), self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config()), patch(prof_owner, return_value=prof_res), patch(sim_owner, return_value=sim_res), patch("pathlib.Path.home", return_value=Path("/private/fixture-home") / user):
+                disc = self._call_rpc("tools/call", {"name": "repomap_embedding_profiles", "arguments": {"graph_id": "repo-map", "selected": True}})["result"]["structuredContent"]
+                chosen = disc["profiles"][0]
+                sim = self._call_tool(self._valid_args(canonical_key="file:tools/runner_arguments.py", rebuild_id=chosen["rebuild_id"], profile_identity=chosen["profile_identity"], dimensions=chosen["dimensions"], selected=True))["result"]["structuredContent"]
+                ev_keys = [ev["evidence_key"] for cand in sim["candidates"] for ev in cand["evidence"]]
+                self.assertEqual((disc["status"], sim["status"], sim["candidates"], sim["provenance"], sim["provenance"]["profile_identity"], ev_keys, list(sim_res.candidates), sim_res.provenance), ("ok", "ok", expected_cands, expected_prov, chosen["profile_identity"], expected_ev, expected_cands, expected_prov))
+        priv_prof, priv_sim = self._fixture_results(replace(PROFILE, model="fixture-privateuser-model"))
+        with self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config()), patch(prof_owner, return_value=priv_prof), patch(sim_owner, return_value=priv_sim), patch("pathlib.Path.home", return_value=Path("/private/fixture-home/privateuser")):
+            disc_ref = self._call_rpc("tools/call", {"name": "repomap_embedding_profiles", "arguments": {"graph_id": "repo-map", "selected": True}})["result"]["structuredContent"]
+            sim_ref = self._call_tool(self._valid_args(selected=True))["result"]["structuredContent"]
+        self.assertEqual((disc_ref["reason"], sim_ref["reason"]), ("privacy_refused", "privacy_refused"))

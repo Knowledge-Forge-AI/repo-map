@@ -91,17 +91,35 @@ falls back to a historical publication.
 No vector, source content, enrichment principal or private runtime identifier is
 returned. At most 500 imported node/source records per rebuild remains partial
 coverage, and synthetic fixtures establish no semantic usefulness.
-Metadata requiring redaction refuses as `privacy_refused`, preserving tuple
-identity. Full private paths remain substring markers. Local usernames are
-matched as metadata tokens, avoiding false refusal from substrings in opaque
-digests or fixed protocol text.
+Metadata requiring redaction refuses as `privacy_refused` in both profile
+discovery and explicitly selected `repomap_similar_nodes` results, returning
+unavailable with no profiles, candidates or provenance rather than rewriting
+tuple or digest-bearing values in place. Whole-payload sanitizer equality
+refuses whenever `sanitize_jsonable` would alter any field via full
+private-path substring markers, secret-key or credentialed-URL/text redaction,
+or `>500`-character string truncation (so clean `canonical_key`, `path` or
+`evidence_key` strings longer than 500 characters also refuse even where
+query/import validation permits up to 4,096 characters). At the exact
+structured path `candidates[].evidence[].evidence_key`, screening bypasses only
+generic `"key"` field-name suffix redaction while still sanitizing the string
+value for private paths, secret/credentialed-URL text and `>500`-character
+truncation. Local usernames are matched as word-bounded metadata tokens across
+`profiles` and `provenance` metadata only—never `candidates` graph content or
+evidence, and explicitly ratifying an unconditional skip of caller-echoed graph
+content at `provenance.seed.canonical_key` (which remains subject to
+whole-payload path, secret-text and length sanitization)—with exact
+structured-path exemptions only for validated opaque identity grammars and
+exact fixed protocol strings so discovery and selected similar-node reads agree
+on the same clean tuple.
 
 Real pgvector qualification requires a separately admitted disposable PostgreSQL
 16 / pgvector 0.8.7 environment and portable seed fixtures, including stdio MCP
-under a SELECT-only principal, current/stale/foreign publications and explicit
-tuple comparison. This public navigation projection includes read contracts and
-unit owners; optional image provisioning and pgvector integration owners are
-outside its scope. No production extension installation is admitted here.
+under a SELECT-only principal, current/stale/foreign publications, explicit
+tuple comparison, and privacy refusal for both discovery and explicitly selected
+`repomap_similar_nodes` tuples. This public navigation projection includes read
+contracts and unit owners; optional image provisioning and pgvector integration
+owners are outside its scope. No production extension installation is admitted
+here.
 
 This record uses ADR 0051's dimensions and exception gate. Pending evidence is
 an admission refusal, not implicit discretion to enable production.

@@ -100,8 +100,16 @@ Ordinary core graph readiness and queries do not depend on these optional facts.
 Discovery reports a malformed or missing latest portable receipt as
 `publication_unaccepted`, with no historical fallback. The existing seed query
 retains its bounded storage error for malformed receipt data. Privacy refusal
-also returns no tuples: full private paths remain substring markers, while local
-usernames are checked as metadata tokens, excluding opaque digest collisions.
+also returns no tuples, candidates or provenance in both discovery and
+explicitly selected `repomap_similar_nodes` reads: whole-payload sanitizer
+equality refuses on full private-path substring markers, secret-key or
+credentialed-URL/text redaction, and `>500`-character string truncation (even
+where query/import validation allows up to 4,096 characters), while
+`candidates[].evidence[].evidence_key` bypasses only generic `"key"` field-name
+redaction and still sanitizes its value; local usernames are checked as
+provenance/profile metadata tokens (never candidate graph content, evidence
+paths or caller-echoed `provenance.seed.canonical_key`), excluding validated
+opaque digest and fixed-protocol collisions at exact structured paths.
 
 ## Selecting A Project Or Graph
 
