@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import signal
 import subprocess
@@ -20,6 +21,10 @@ except ImportError:
     INNER_DOCKER_HOST = "unix:///run/repomap-docker.sock"
     OWNER_PATH = Path("/run/repomap-test-sandbox-owner")
     INNER_TEST_SCRATCH_ROOT = Path("/sandbox-scratch/test-scratch")
+
+from runner_sandbox import (
+    _materialize_inner_pgvector_if_requested as _materialize_inner_pgvector_if_requested,
+)
 
 START_PATH = Path("/sandbox-scratch/start-tests")
 INFRASTRUCTURE_PROBE_FLAG = "--repomap-sandbox-infrastructure-probe"
@@ -93,6 +98,7 @@ def _test_command(test_argv: list[str]) -> tuple[str, ...]:
     return ("python3", "/workspace/tools/run_tests.py", *test_argv)
 
 
+
 def main(argv: list[str] | None = None) -> int:
     docker_group, test_argv = _arguments(list(sys.argv[1:] if argv is None else argv))
     dockerd = subprocess.Popen(
@@ -109,6 +115,7 @@ def main(argv: list[str] | None = None) -> int:
         stderr=subprocess.DEVNULL,
     )
     test_process: subprocess.Popen[bytes] | None = None
+    primary: BaseException | None = None
 
     def terminate(_signum, _frame) -> None:
         if test_process is not None and test_process.poll() is None:
@@ -121,26 +128,45 @@ def main(argv: list[str] | None = None) -> int:
             if dockerd.poll() is not None:
                 raise RuntimeError("inner Docker daemon exited before test release")
             time.sleep(0.05)
+        inner_env = _test_environment()
+        _materialize_inner_pgvector_if_requested(test_argv, inner_env)
         test_process = subprocess.Popen(
             _test_command(test_argv),
             cwd="/workspace",
-            env=_test_environment(),
+            env=inner_env,
         )
         return test_process.wait()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as error:
+        primary = error
         return 130
+    except BaseException as error:
+        primary = error
+        raise
     finally:
         signal.signal(signal.SIGTERM, previous_sigterm)
-        if test_process is not None and test_process.poll() is None:
-            test_process.kill()
-            test_process.wait()
-        if dockerd.poll() is None:
-            dockerd.terminate()
+        cleanup_errors: list[BaseException] = []
+        for process in (test_process, dockerd):
+            if process is None or process.poll() is not None:
+                continue
             try:
-                dockerd.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                dockerd.kill()
-                dockerd.wait()
+                if process is test_process:
+                    process.kill()
+                else:
+                    process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=5)
+            except BaseException as cleanup_error:
+                cleanup_errors.append(cleanup_error)
+                print(json.dumps({"event": "repomap-sandbox-entrypoint-cleanup-v1",
+                                  "stage": "entrypoint_cleanup", "status": "failed",
+                                  "error_type": type(cleanup_error).__name__}), flush=True)
+        if cleanup_errors:
+            if primary is None:
+                raise cleanup_errors[0]
+            primary.add_note("sandbox process cleanup also failed; see entrypoint diagnostics")
 
 
 if __name__ == "__main__":

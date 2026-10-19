@@ -63,6 +63,12 @@ def add_runner_arguments(
         help="container runtime for temporary Postgres",
     )
     parser.add_argument(
+        "--pg-test-profile",
+        choices=("core", "pgvector"),
+        default="core",
+        help="disposable Postgres test profile (default core)",
+    )
+    parser.add_argument(
         "--smoke-timeout",
         default=900,
         type=int,
@@ -199,6 +205,11 @@ def validate_runner_options(
             "MCP-RUNTIME3 Postgres harness and integration database state remain "
             "serial-only in TEST-INFRA3"
         )
+    pg_profile = getattr(args, "pg_test_profile", "core")
+    if pg_profile == "pgvector" and (tuple(suites) != ("int",) or args.suite != "int" or not args.no_coverage):
+        raise RuntimeError(
+            "--pg-test-profile pgvector requires scoped int --no-coverage"
+        )
 
 
 def validate_sandbox_admission_options(
@@ -212,6 +223,8 @@ def validate_sandbox_admission_options(
         raise RuntimeError(
             "integration sandbox execution requires --pg-container-runtime docker"
         )
+    from runner_sandbox import validate_sandbox_profile_options
+    validate_sandbox_profile_options(args)
     if args.suite in {"int", "staging"}:
         validate_runner_options_fn(args, ("int",))
     elif args.suite == "system":

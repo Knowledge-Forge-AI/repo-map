@@ -156,6 +156,24 @@ python3 tools/run_tests.py --suite int --no-coverage \
   src/test/int/python/<owner>.int.test.py::test_exact_boundary
 ```
 
+The optional experimental PostgreSQL population uses `--pg-test-profile pgvector`
+only with scoped `--suite int --no-coverage` selectors. The ordinary profile
+remains `core` with its existing image pin. The `requires_pgvector` marker is
+registered by the runner; core collection reports marked owners as deselected,
+while the selected population fails readiness unless exact pgvector 0.8.7 is
+available. A deselected or uncollected presence owner is not executed evidence.
+The canonical inner sandbox verifies source SHA-256, pinned base identity,
+server/pg_config ABI and platform before materializing one disposable image;
+after removing build dependencies and committing, it validates that exact image
+in a temporary PostgreSQL cluster as the postgres OS user, with network disabled
+and tmpfs data. Bounded readiness and `psql -X -v ON_ERROR_STOP=1` must prove
+`LOAD '$libdir/vector'`, extension creation, actual version 0.8.7, PostgreSQL
+major 16 and self/orthogonal cosine distances 0/1. Standalone `ldd` is not an
+acceptance gate for a backend module. Server diagnostics and exact cleanup are
+retained on failure; publication to tests follows successful smoke and cleanup.
+It reports setup separately from pytest and consumes the exact Engine image ID.
+This test authorization does not admit the extension to production.
+
 Multiple exact selectors remain ordered after `--`. A pathless `-k` may be
 used for exploration but is not preferred final evidence; pair any retained
 `-k` with an exact path and `--no-coverage`. Scoped runs make no

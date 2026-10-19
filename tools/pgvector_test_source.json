@@ -1,0 +1,23 @@
+{
+  "version": "0.8.7",
+  "tag": "v0.8.7",
+  "commit": "f37c13f68b57d2c3472b2214fbcff699d6d34876",
+  "tree": "5f55adf757f4b0d510bf53877e7a295870d657dd",
+  "author": "Andrew Kane <andrew@ankane.org>",
+  "committer": "Andrew Kane <andrew@ankane.org>",
+  "committed_at": "2026-10-01T17:26:23Z",
+  "message": "Version bump to 0.8.7 [skip ci]",
+  "archive_url": "https://github.com/pgvector/pgvector/archive/refs/tags/v0.8.7.tar.gz",
+  "archive_sha256": "cac0b10c360f05b2d521200105ba3697e773d4cd3731f5a915a7e37ebe0bea85",
+  "archive_bytes": 133025,
+  "license": "PostgreSQL",
+  "license_url": "https://github.com/pgvector/pgvector/blob/v0.8.7/LICENSE",
+  "fixes": [
+    "Fixed buffer overflow with IVFFlat index build (CVE-2026-103484, issue #1036)",
+    "Fixed error with avg aggregate when no matching rows"
+  ],
+  "postgres_abi": "16",
+  "test_postgres_base_image": "postgres:16-alpine@sha256:e013e867e712fec275706a6c51c966f0bb0c93cfa8f51000f85a15f9865a28cb",
+  "production_postgres_base_image": "postgres:16-bookworm@sha256:92620daddcd947f8d5ab5ba66e848702fe443d87fed30c4cea8e389fd78dfc55",
+  "pgvector_test_image": "repomap-test-postgres:16-pgvector087-v1"
+}

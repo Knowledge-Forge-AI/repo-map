@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
@@ -29,9 +30,25 @@ from repomap_test_support.postgres_container_config import (
     safe_run_id_text as safe_run_id_text,
 )
 from repomap_test_support.postgres_harness_readiness import poll_container_readiness
+from repomap_test_support.pgvector_profile import (
+    PGVECTOR_PROFILE,
+    current_pg_test_profile,
+    pgvector_probe_image_id,
+    resolve_pg_image,
+    verify_pgvector_readiness,
+)
 from repomap_test_support.resource_docker import ownership_labels
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_run import active_resource_run
+
+
+@dataclass(frozen=True)
+class PgvectorContainerConfig(PostgresContainerConfig):
+    profile: str = PGVECTOR_PROFILE
+
+
+class _ContainerCommandError(RuntimeError):
+    returncode: int | None = None
 
 
 def _set_active_postgres_session(session: PostgresContainerSession) -> None:
@@ -56,6 +73,15 @@ class PostgresContainerHarness:
         sleeper: Callable[[float], None] = time.sleep,
     ):
         self.config = config
+        self.profile = getattr(config, "profile", None) or current_pg_test_profile()
+        if self.profile == PGVECTOR_PROFILE:
+            self.image = resolve_pg_image(self.profile, default_image=TEST_POSTGRES_IMAGE)
+            if config.image not in (TEST_POSTGRES_IMAGE, self.image):
+                raise RuntimeError("optional test profile cannot adopt a foreign image")
+        elif getattr(config, "image", None) and config.image != TEST_POSTGRES_IMAGE:
+            self.image = config.image
+        else:
+            self.image = TEST_POSTGRES_IMAGE
         self.runner = runner
         self.port_open = port_open or is_local_port_open
         self.sleeper = sleeper
@@ -95,6 +121,8 @@ class PostgresContainerHarness:
                     retained=False,
                 )
             )
+        if self.profile == PGVECTOR_PROFILE:
+            labels["org.repomap.test.profile"] = PGVECTOR_PROFILE
         return labels
 
     def start_command(self) -> list[str]:
@@ -120,7 +148,7 @@ class PostgresContainerHarness:
                 f"{self.config.bind_host}:{self.config.host_port}:5432",
                 "--tmpfs",
                 "/var/lib/postgresql/data",
-                self.config.image,
+                self.image,
             ]
         )
         return command
@@ -165,6 +193,34 @@ class PostgresContainerHarness:
             sleeper=self.sleeper,
             logs_provider=self.container_logs,
         )
+        if self.profile == PGVECTOR_PROFILE:
+            self._verify_pgvector_readiness()
+
+    def _verify_pgvector_readiness(self) -> None:
+        returncode = None
+        count = "unavailable"
+
+        def query_scalar(sql: str) -> str:
+            nonlocal returncode, count
+            result = self.run_psql(sql, scalar_output=True)
+            returncode = result.returncode
+            stdout = result.stdout or ""
+            count = stdout.strip() if re.fullmatch(r"[01]\r?\n?", stdout) else "invalid"
+            return stdout
+
+        try:
+            verify_pgvector_readiness(query_scalar)
+        except RuntimeError as error:
+            if isinstance(error, _ContainerCommandError):
+                returncode = error.returncode
+            container_image = pgvector_probe_image_id(self._docker_client, self.container_id)
+            diagnostic = (
+                f"profile={self.profile} resolved_image_id={self.image} "
+                f"container_image_id={container_image} "
+                f"query_returncode={returncode if returncode is not None else 'unavailable'} "
+                f"catalog_count={count}"
+            )
+            raise RuntimeError(f"{error}; pgvector readiness probe: {diagnostic}") from error
 
     def reset_database(self):
         sql = f"""
@@ -175,7 +231,7 @@ GRANT ALL ON SCHEMA public TO public;
 """
         self.run_psql(sql)
 
-    def run_psql(self, sql: str) -> subprocess.CompletedProcess[str]:
+    def run_psql(self, sql: str, *, scalar_output: bool = False) -> subprocess.CompletedProcess[str]:
         command = [
             self.config.runtime,
             "exec",
@@ -195,6 +251,8 @@ GRANT ALL ON SCHEMA public TO public;
             "-v",
             "ON_ERROR_STOP=1",
         ]
+        if scalar_output:
+            command.extend(["-X", "-A", "-t"])
         return self._run_checked(
             command,
             input_text=sql,
@@ -265,17 +323,19 @@ GRANT ALL ON SCHEMA public TO public;
                 timeout=timeout,
             )
         except (FileNotFoundError, OSError, subprocess.SubprocessError) as error:
-            raise RuntimeError(
+            raise _ContainerCommandError(
                 f"container command failed: {redacted_command(command)}: {error}"
             ) from error
         if result.returncode != 0:
             details = bounded_text(
                 redact_secret_text((result.stderr or result.stdout or "").strip())
             )
-            raise RuntimeError(
+            command_error = _ContainerCommandError(
                 f"container command failed: {redacted_command(command)}"
                 + (f": {details}" if details else "")
             )
+            command_error.returncode = result.returncode
+            raise command_error
         return result
 
 

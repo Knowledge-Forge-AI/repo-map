@@ -992,6 +992,46 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "navigation30-optional-runtime.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/embedding_profiles.int.test.py",
+        "src/test/int/python/repomap_kg/storage/semantic_candidates.int.test.py",
+        "src/test/int/python/repomap_kg/storage/semantic_seed.int.test.py",
+        "src/test/unit/python/repomap_kg/storage/semantic_seed_publication.unit.test.py",
+        "src/test/unit/python/tools/pgvector_materializer.unit.test.py",
+        "src/test/unit/python/tools/pgvector_profile.unit.test.py"
+      ],
+      "rationale": "NAVIGATION30 optional pgvector test runtime and integration owner projection; zero-debt strict cohort admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "navigation30-optional-runtime.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/pgvector_profile.py",
+        "src/test/support/python/repomap_test_support/semantic_candidate_restore.py",
+        "src/test/support/python/repomap_test_support/semantic_seed_publication.py"
+      ],
+      "rationale": "NAVIGATION30 optional pgvector test support projection; zero-debt strict cohort admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "navigation30-optional-runtime.tools",
+      "members": [
+        "tools/runner_command.py",
+        "tools/runner_pgvector_profile.py",
+        "tools/runner_sandbox.py",
+        "tools/runner_sandbox_assets.py"
+      ],
+      "rationale": "NAVIGATION30 optional pgvector runner and disposable sandbox materialization projection; zero-debt strict cohort admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
       "members": [
@@ -31290,6 +31330,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/embedding_profiles.int.test.py",
+      "rationale": "PG-INTELLIGENCE3 publication-bound identity readback and negative-path owner; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/file_readback_cli/files_entrypoints.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -31976,6 +32025,24 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/sealed_refresh_publication.int.test.py",
       "rationale": "REPAIR6 sealed-capability worker publication owner; immediate zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/semantic_candidates.int.test.py",
+      "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/semantic_seed.int.test.py",
+      "rationale": "PG-INTELLIGENCE2 publication-bound stored-seed similarity query and negative-path integration owner; zero new quality debt.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -33074,6 +33141,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/performance_baseline_values.py",
       "rationale": "REVISE30 responsibility helper; original owner and enforcement lineage retained.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/pgvector_profile.py",
+      "rationale": "Optional pgvector pytest profile plugin registering the requires_pgvector marker and default core deselection hook; zero new quality debt.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -34487,6 +34563,24 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/semantic_candidate_publication.py",
       "rationale": "Publication-bound optional exact candidate retrieval contract; no new lint, type or length debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/semantic_candidate_restore.py",
+      "rationale": "Shared pgvector integration support for publication-bound candidate fixtures, role/privilege setup and disposable same-cluster logical restore; zero new quality debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/semantic_seed_publication.py",
+      "rationale": "Shared pgvector integration support for stored-seed publication receipts, stale/foreign rebuild fixtures and MCP stdio readback helpers; zero new quality debt.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -40245,6 +40339,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/semantic_seed_publication.unit.test.py",
+      "rationale": "Unit regression owner for stored-seed publication receipt validation, privacy redaction refusal and candidate query boundaries; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/source_summaries/bulk_api_queries.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -42828,6 +42931,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/pgvector_materializer.unit.test.py",
+      "rationale": "Materialization repair regression owner for verified binary transfer, stage diagnostics and original-error preservation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/pgvector_profile.unit.test.py",
+      "rationale": "Unit regression owner for --pg-test-profile option validation, runner command formatting and requires_pgvector marker deselection; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/portable_handoff.unit.test.py",
       "rationale": "PORTABLE-HANDOFF1 optional selected-source record, local recheck and focused public fixtures; zero new quality debt.",
       "root": "test_owners",
@@ -45213,6 +45334,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/runner_command.py",
+      "rationale": "Canonical test-runner command formatting and dry-run display helper exercised by pgvector profile unit owners; zero new quality debt.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/runner_coverage.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -45366,6 +45496,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/runner_pgvector_profile.py",
+      "rationale": "Runner profile contract and pinned pgvector 0.8.7 test-source manifest loader for optional integration runs; zero new quality debt.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/runner_portable_coverage.py",
       "rationale": "REVISE41 closed retention or runner measurement contract; immediate governance.",
       "root": "tools",
@@ -45377,6 +45516,24 @@
       "maintained_executable": true,
       "path": "tools/runner_portable_diagnostics.py",
       "rationale": "Runner portable diagnostics extraction and primary outcome preservation; immediate clean tooling governance.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_sandbox.py",
+      "rationale": "Disposable inner-sandbox pgvector 0.8.7 image materializer, smoke verifier and fail-closed container cleanup helper; zero new quality debt.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_sandbox_assets.py",
+      "rationale": "Sandbox asset transfer and SHA-256 verification helper for disposable pgvector 0.8.7 source archive materialization; zero new quality debt.",
       "root": "tools",
       "status": "active_tool"
     },

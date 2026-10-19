@@ -145,7 +145,8 @@ class PostgresContainerDatabase:
         command = [
             self.psql_command,
             *self.psql_args,
-            "-At",
+            "-X",
+            "-qAt",
             "-v",
             "ON_ERROR_STOP=1",
         ]
@@ -231,6 +232,8 @@ env["PGPASSWORD"] = {password!r}
     "-i",
     "-e",
     "PGPASSWORD",
+    "-e",
+    "PGOPTIONS",
     {container_name!r},
     "psql",
     *normalized,

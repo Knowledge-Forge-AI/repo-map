@@ -116,10 +116,12 @@ Real pgvector qualification requires a separately admitted disposable PostgreSQL
 16 / pgvector 0.8.7 environment and portable seed fixtures, including stdio MCP
 under a SELECT-only principal, current/stale/foreign publications, explicit
 tuple comparison, and privacy refusal for both discovery and explicitly selected
-`repomap_similar_nodes` tuples. This public navigation projection includes read
-contracts and unit owners; optional image provisioning and pgvector integration
-owners are outside its scope. No production extension installation is admitted
-here.
+`repomap_similar_nodes` tuples. The initial NAVIGATION28 public projection
+landed the read contracts and synthetic unit owners first; NAVIGATION30 projects
+the canonical `--pg-test-profile pgvector` runner profile, disposable 0.8.7
+image materialization, and the three integration owners while keeping private
+experiment companions excluded and admitting no production extension
+installation.
 
 This record uses ADR 0051's dimensions and exception gate. Pending evidence is
 an admission refusal, not implicit discretion to enable production.
@@ -262,9 +264,26 @@ intelligence value remain in progress.
 
 ## Public projection evidence boundary
 
-The public navigation projection retains the read-only MCP catalog, its direct
-semantic query dependencies and synthetic unit owners. Optional pgvector image
-provisioning, experiment companions, vector publication/restore integration
-owners and runner changes are not included. Their absence is not an executed
-vector proof or D15 admission. Real SQL, seed, privilege and restore behavior
-requires separately recorded runtime qualification of the exact candidate.
+The initial NAVIGATION28 public navigation projection retained the read-only MCP
+catalog, its direct semantic query dependencies and synthetic unit owners while
+leaving optional pgvector image provisioning, experiment companions, vector
+publication/restore integration owners and runner changes outside that first
+milestone.
+
+NAVIGATION30 supersedes that initial optional-runtime omission by projecting the
+canonical `--pg-test-profile pgvector` runner profile, verified disposable
+pgvector `0.8.7` image materialization ([`tools/pgvector_test_source.json`](../../../../tools/pgvector_test_source.json)),
+shared publication/restore test-support helpers, and the three integration
+owners ([`semantic_candidates.int.test.py`](../../../../src/test/int/python/repomap_kg/storage/semantic_candidates.int.test.py),
+[`semantic_seed.int.test.py`](../../../../src/test/int/python/repomap_kg/storage/semantic_seed.int.test.py),
+and [`embedding_profiles.int.test.py`](../../../../src/test/int/python/repomap_kg/storage/embedding_profiles.int.test.py)),
+with supporting public projection verification recorded in
+[`tools/ci/nav30-optional-runtime-exit.md`](../../../../tools/ci/nav30-optional-runtime-exit.md).
+Private experiment companion wrappers remain excluded. Hosted CI continues to
+run only the default `core` profile (executing the unmarked absence owner and
+deselecting the three `requires_pgvector` nodes). Disposable test execution
+proves synthetic mechanics, reader/enrichment privilege boundaries and
+disposable same-cluster logical restore (with pre-installed extension and
+lifecycle restore privileges, not D9 production restore certification) only;
+semantic retrieval quality remains `utility_not_measured`, and D15
+production extension admission remains refused.

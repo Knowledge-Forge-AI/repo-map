@@ -54,6 +54,18 @@ def pytest_environment_for(suites: tuple[str, ...], args):
             "REPOMAP_TEST_PG_CONTAINER_RUNTIME": args.pg_container_runtime,
             "REPOMAP_TEST_PG_CONTAINER_PORT": str(args.pg_container_port),
         }
+    pg_profile = getattr(args, "pg_test_profile", "core") or "core"
+    from runner_pgvector_profile import validate_profile_choice
+    validated_profile = validate_profile_choice(pg_profile)
+    updates["REPOMAP_TEST_PG_PROFILE"] = validated_profile
+
+    plugin_module = "repomap_test_support.pgvector_profile"
+    existing_plugins = [
+        p.strip() for p in os.environ.get("PYTEST_PLUGINS", "").split(",") if p.strip()
+    ]
+    if plugin_module not in existing_plugins:
+        existing_plugins.append(plugin_module)
+    updates["PYTEST_PLUGINS"] = ",".join(existing_plugins)
     previous = {key: os.environ.get(key) for key in updates}
     os.environ.update(updates)
     try:
