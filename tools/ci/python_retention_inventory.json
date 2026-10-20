@@ -1409,6 +1409,28 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation35.bounded_inventory1.test_owners",
+      "members": [
+        "src/test/int/python/tools/retrieval_inventory_metadata.int.test.py",
+        "src/test/unit/python/tools/retrieval_inventory_metadata.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 unit and loopback integration test owners for bounded A/B metadata transport, validation, refusal and non-execution contracts; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation35.bounded_inventory1.tools",
+      "members": [
+        "tools/_retrieval_inventory_transport.py",
+        "tools/retrieval_inventory_metadata.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 stdlib-only contributor tool and transport helper for auditable bounded A/B inventory metadata validation and fetch; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -29559,6 +29581,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/navigation33_store_stream_and_sealing.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/navigation33_streaming_bundle_validation.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/artifacts/run25_manifest_recovery.int.test.py",
       "rationale": "First-party integration test owner for Run 25 manifest recovery.",
       "root": "test_owners",
@@ -30252,6 +30292,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_control_polling_service.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_protocol_transport.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_worker_disposition.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/packaged_refresh_authority.int.test.py",
       "rationale": "First-party int test owner for packaged refresh capability authority.",
       "root": "test_owners",
@@ -30720,6 +30787,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/navigation33_portable_retention_and_local_ops.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/ops/operational_json_readback.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -30884,6 +30960,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/slice9_coordinated_backup_restore.int.test.py",
       "rationale": "First-party integration test owner for Slice 9 complete coordinated backup and restore sets.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/service_package/navigation33_service_package_contracts.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -32585,6 +32670,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/tools/go_helper_batch_protocol.int.test.py",
       "rationale": "REVISE33 native batch protocol and canonicalization integration scenario, authored/static.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_inventory_metadata.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 loopback HTTP integration owner for bounded A/B metadata transport, streaming byte/entry cap refusals, chunked framing, redirect refusal and CLI dry-plan/execute paths.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -43095,6 +43189,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_inventory_metadata.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 unit owner for fixed A/B metadata transport, identity-chain verification and sanitization, streaming byte/entry caps, JSON/tree validation and non-claim invariants.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/sandbox_hosted_test_fixtures.py",
       "rationale": "REVISE33 responsibility decomposition under original cohort and unchanged profile.",
       "root": "test_owners",
@@ -44391,6 +44494,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/_retrieval_inventory_transport.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 stdlib-only bounded HTTP metadata transport, streaming byte/entry guard, strict JSON parser and public-safe diagnostic helper.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/actual_refresh_child_bootstrap.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -45347,6 +45459,15 @@
       "maintained_executable": true,
       "path": "tools/related_source_context.py",
       "rationale": "RELATED-CONTEXT1 optional one-hop caller composition and focused static-extraction fixture evidence; no runtime or quality-policy change.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_inventory_metadata.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 stdlib-only contributor CLI, identity-chain verifier and tree manifest classifier for fixed A/B inventory metadata preparation.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -46744,69 +46865,6 @@
       "rationale": "REVISE32 cohesive decomposition of tools/run_windows_async15_tests.py; same maintained responsibility and quality profile.",
       "root": "tools",
       "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/artifacts/navigation33_store_stream_and_sealing.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/artifacts/navigation33_streaming_bundle_validation.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_control_polling_service.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_protocol_transport.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_worker_disposition.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/ops/navigation33_portable_retention_and_local_ops.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/service_package/navigation33_service_package_contracts.int.test.py",
-      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
-      "root": "test_owners",
-      "status": "active_int_test"
     }
   ],
   "historical_revise10_counts": {
