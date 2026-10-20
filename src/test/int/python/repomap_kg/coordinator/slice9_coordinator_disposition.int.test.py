@@ -353,7 +353,7 @@ class Slice9CoordinatorDispositionIntegrationTests(unittest.TestCase):
         coord2.shutdown()
 
         class _StatuslessStore(_FencedCoordinatorStore):
-            status = None  # type: ignore[assignment]
+            status: Any = None
 
         store3 = _StatuslessStore()
         store3.claim = JobClaim(job_id="job_a08_nostatus", graph_id="graph_a08", attempt=1, instance_id="inst_1", fencing_epoch=1)
