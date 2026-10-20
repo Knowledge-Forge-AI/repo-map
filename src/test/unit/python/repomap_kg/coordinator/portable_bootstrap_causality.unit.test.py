@@ -12,6 +12,7 @@ import unittest
 
 from repomap_kg.artifacts.store import FileSystemArtifactStore
 from repomap_kg.coordinator import _portable_authority as pa
+from repomap_kg.coordinator.protocol import SyntheticWorkerResult
 from repomap_kg.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.run25_portable_workflows import (
     WorkerLaunchSpec,
@@ -134,34 +135,131 @@ class PortableBootstrapCausalityUnitTests(unittest.TestCase):
         self.assertIn("PermissionError", proc.stderr)
         self.assertIn("portable worker import authority denied", proc.stderr)
 
+    @staticmethod
+    def _build_authority_supervision_script(violation_stmt: str) -> str:
+        return f"""
+import json, sys, types
+from pathlib import Path
+repo_root = Path(sys.argv[3])
+pkg_root = repo_root / "src" / "main" / "python" / "repomap_kg"
+for pkg_name, pkg_path in (
+    ("repomap_kg", pkg_root),
+    ("repomap_kg.coordinator", pkg_root / "coordinator"),
+):
+    if pkg_name not in sys.modules:
+        mod = types.ModuleType(pkg_name)
+        mod.__path__ = [str(pkg_path)]
+        sys.modules[pkg_name] = mod
+from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
+install_portable_authority_guard(
+    store_root=Path(sys.argv[1]),
+    workspace_root=Path(sys.argv[2]),
+    code_roots=[repo_root],
+)
+print(
+    json.dumps(
+        dict(
+            schema_version=1,
+            message_type="worker_hello",
+            protocol_versions=[1],
+            capabilities=["refresh_graph"],
+            worker_generation="wg1:fixture",
+            process_nonce="nonce",
+        )
+    ),
+    flush=True,
+)
+start = json.loads(sys.stdin.readline())
+print(
+    json.dumps(
+        dict(
+            schema_version=1,
+            message_type="heartbeat",
+            job_id=start["job_id"],
+            attempt=start["attempt"],
+            heartbeat_at="2026-09-20T12:00:00.100000Z",
+        )
+    ),
+    flush=True,
+)
+try:
+    {violation_stmt}
+except PermissionError:
+    terminal = dict(
+        start,
+        message_type="error",
+        status="failed",
+        error_category="authorization",
+        publication_state="not_started",
+        retryable=False,
+        latest_run_identity=None,
+        phase="complete",
+        started_at="2026-09-20T12:00:00.000000Z",
+        finished_at="2026-09-20T12:01:00.000000Z",
+        extractor_generation="eg1:fixture",
+        canonicalizer_generation="kg1:fixture",
+        files=0,
+        observations=0,
+        canonical_nodes=0,
+        canonical_edges=0,
+        warnings=[],
+        diagnostics=[],
+    )
+    print(json.dumps(terminal), flush=True)
+    sys.stdin.readline()
+else:
+    sys.stderr.write("authority guard did not raise PermissionError\\n")
+    sys.stderr.flush()
+    raise SystemExit(3)
+"""
+
+    def _assert_genuine_authorization_terminal(
+        self, result: SyntheticWorkerResult
+    ) -> None:
+        diag = (
+            f"terminal={result.terminal}, "
+            f"returncode={result.returncode}, "
+            f"hello_to={result.hello_timed_out}, "
+            f"hb_to={result.heartbeat_timed_out}, "
+            f"proc_to={result.process_timed_out}, "
+            f"terminated={result.terminated}, "
+            f"killed={result.killed}, "
+            f"cleanup_error={result.cleanup_error!r}, "
+            f"stderr={result.stderr!r}"
+        )
+        self.assertIsNone(result.protocol_error, diag)
+        self.assertEqual(result.returncode, 0, diag)
+        self.assertTrue(result.waited, diag)
+        self.assertTrue(result.process_group_cleaned, diag)
+        self.assertFalse(result.terminated, diag)
+        self.assertFalse(result.killed, diag)
+        self.assertIsNone(result.cleanup_error, diag)
+        self.assertFalse(result.hello_timed_out, diag)
+        self.assertFalse(result.heartbeat_timed_out, diag)
+        self.assertFalse(result.process_timed_out, diag)
+        self.assertFalse(result.synthesized_terminal, diag)
+        terminal = result.terminal
+        self.assertEqual(terminal["message_type"], "error")
+        self.assertEqual(terminal["status"], "failed")
+        self.assertEqual(terminal["error_category"], "authorization")
+        self.assertEqual(terminal["publication_state"], "not_started")
+
     def test_supervision_reaping_and_authorization_terminal_on_denied_imports(self) -> None:
         clean_pp = build_clean_explicit_pythonpath(self.repo_root)
         env = prepare_child_coverage_environment(
-            family="unmeasured", extra_env={"PYTHONPATH": clean_pp}
+            family="unmeasured",
+            extra_env={"PYTHONPATH": clean_pp, "PYTHONNOUSERSITE": "1"},
         )
         limits = build_run25_worker_limits()
         for target in ("psycopg", "sqlite3"):
             with self.subTest(target=target):
-                script = f"""
-import sys, json
-from pathlib import Path
-from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
-install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Path(sys.argv[2]), code_roots=[Path(sys.argv[3])])
-print(json.dumps(dict(schema_version=1, message_type="worker_hello", protocol_versions=[1], capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="nonce")), flush=True)
-start = json.loads(sys.stdin.readline())
-try:
-    __import__({target!r})
-except PermissionError:
-    terminal = dict(start, message_type="error", status="failed", error_category="authorization",
-        publication_state="not_started", retryable=False, latest_run_identity=None, phase="complete",
-        started_at="2026-09-20T12:00:00.000000Z", finished_at="2026-09-20T12:01:00.000000Z",
-        extractor_generation="eg1:fixture", canonicalizer_generation="kg1:fixture",
-        files=0, observations=0, canonical_nodes=0, canonical_edges=0, warnings=[], diagnostics=[])
-    print(json.dumps(terminal), flush=True)
-"""
+                script = self._build_authority_supervision_script(
+                    f"assert {target!r} not in sys.modules; __import__({target!r})"
+                )
                 spec = WorkerLaunchSpec(
                     argv=(
                         sys.executable,
+                        "-S",
                         "-c",
                         script,
                         str(self.write_root),
@@ -173,43 +271,23 @@ except PermissionError:
                 )
                 identity = {"job_id": f"job-causality-{target}", "attempt": 1}
                 result = run_worker_spec(spec, identity, limits)
-                self.assertIsNone(result.protocol_error)
-                self.assertTrue(result.waited)
-                self.assertTrue(result.process_group_cleaned)
-                self.assertFalse(result.synthesized_terminal)
-                self.assertEqual(result.terminal["message_type"], "error")
-                self.assertEqual(result.terminal["status"], "failed")
-                self.assertEqual(result.terminal["error_category"], "authorization")
-                self.assertEqual(result.terminal["publication_state"], "not_started")
+                self._assert_genuine_authorization_terminal(result)
 
     def test_supervision_reaping_and_authorization_terminal_on_filesystem_violation(self) -> None:
         clean_pp = build_clean_explicit_pythonpath(self.repo_root)
         env = prepare_child_coverage_environment(
-            family="unmeasured", extra_env={"PYTHONPATH": clean_pp}
+            family="unmeasured",
+            extra_env={"PYTHONPATH": clean_pp, "PYTHONNOUSERSITE": "1"},
         )
         limits = build_run25_worker_limits()
         target_forbidden = self.read_root / "forbidden_write.txt"
-        script = """
-import sys, json
-from pathlib import Path
-from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
-install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Path(sys.argv[2]), code_roots=[Path(sys.argv[3])])
-print(json.dumps(dict(schema_version=1, message_type="worker_hello", protocol_versions=[1], capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="nonce")), flush=True)
-start = json.loads(sys.stdin.readline())
-try:
-    with open(sys.argv[4], 'w') as f:
-        f.write('bad')
-except PermissionError:
-    terminal = dict(start, message_type="error", status="failed", error_category="authorization",
-        publication_state="not_started", retryable=False, latest_run_identity=None, phase="complete",
-        started_at="2026-09-20T12:00:00.000000Z", finished_at="2026-09-20T12:01:00.000000Z",
-        extractor_generation="eg1:fixture", canonicalizer_generation="kg1:fixture",
-        files=0, observations=0, canonical_nodes=0, canonical_edges=0, warnings=[], diagnostics=[])
-    print(json.dumps(terminal), flush=True)
-"""
+        script = self._build_authority_supervision_script(
+            "open(sys.argv[4], 'w', encoding='utf-8').close()"
+        )
         spec = WorkerLaunchSpec(
             argv=(
                 sys.executable,
+                "-S",
                 "-c",
                 script,
                 str(self.write_root),
@@ -222,14 +300,7 @@ except PermissionError:
         )
         identity = {"job_id": "job-causality-fs", "attempt": 1}
         result = run_worker_spec(spec, identity, limits)
-        self.assertIsNone(result.protocol_error)
-        self.assertTrue(result.waited)
-        self.assertTrue(result.process_group_cleaned)
-        self.assertFalse(result.synthesized_terminal)
-        self.assertEqual(result.terminal["message_type"], "error")
-        self.assertEqual(result.terminal["status"], "failed")
-        self.assertEqual(result.terminal["error_category"], "authorization")
-        self.assertEqual(result.terminal["publication_state"], "not_started")
+        self._assert_genuine_authorization_terminal(result)
 
     def test_run25_support_helpers(self) -> None:
         limits = build_run25_worker_limits()

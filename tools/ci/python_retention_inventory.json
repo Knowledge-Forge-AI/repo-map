@@ -1393,6 +1393,22 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation33.ci51_repair1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/artifacts/navigation33_store_stream_and_sealing.int.test.py",
+        "src/test/int/python/repomap_kg/artifacts/navigation33_streaming_bundle_validation.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/navigation33_control_polling_service.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/navigation33_protocol_transport.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/navigation33_worker_disposition.int.test.py",
+        "src/test/int/python/repomap_kg/ops/navigation33_portable_retention_and_local_ops.int.test.py",
+        "src/test/int/python/repomap_kg/service_package/navigation33_service_package_contracts.int.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION33-CI51-REPAIR1 portable worker disposition, coordinator protocol/transport/polling/service, artifact streaming/store/sealing, ops retention/local, and service package integration test owners; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -46728,6 +46744,69 @@
       "rationale": "REVISE32 cohesive decomposition of tools/run_windows_async15_tests.py; same maintained responsibility and quality profile.",
       "root": "tools",
       "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/navigation33_store_stream_and_sealing.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/navigation33_streaming_bundle_validation.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_control_polling_service.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_protocol_transport.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/navigation33_worker_disposition.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/navigation33_portable_retention_and_local_ops.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/service_package/navigation33_service_package_contracts.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
     }
   ],
   "historical_revise10_counts": {

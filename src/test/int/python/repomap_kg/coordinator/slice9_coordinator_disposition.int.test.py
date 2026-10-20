@@ -42,6 +42,7 @@ class _FencedCoordinatorStore:
         self.epoch_map: dict[str, int] = {}
         self.fail_transitions = False
         self.fail_reconciliation = False
+        self.rejected_transitions: set[tuple[str, str]] = set()
 
     def acquire_singleton(self, instance_id: str, ttl: timedelta) -> int:
         del instance_id, ttl
@@ -89,7 +90,7 @@ class _FencedCoordinatorStore:
         new_state: str,
         **kwargs: Any,
     ) -> bool:
-        if self.fail_transitions:
+        if self.fail_transitions or (expected_state, new_state) in self.rejected_transitions:
             return False
         if expected_state == "claimed" and self.state_map.get(job_id) == "cancel_requested":
             return False
@@ -329,6 +330,41 @@ class Slice9CoordinatorDispositionIntegrationTests(unittest.TestCase):
         self.assertEqual(store.state_map["job_a07"], "cancelled")
         self.assertGreaterEqual(len(store.released_leases), 1)
         coordinator.shutdown()
+
+    def test_s9_a08_coordinator_prestart_and_active_cancel_edge_transitions(self) -> None:
+        """Prestart cancel and active status-less stores preserve ownership-loss and reconciliation."""
+        for rejected in (("cancel_requested", "cancelling"), ("cancelling", "cancelled")):
+            store = _FencedCoordinatorStore()
+            store.claim = JobClaim(job_id="job_a08", graph_id="graph_a08", attempt=1, instance_id="inst_1", fencing_epoch=1)
+            store.state_map["job_a08"] = "cancel_requested"
+            store.rejected_transitions.add(rejected)
+            coordinator = _make_coordinator(store, "inst_1", lambda _c, _e: {"status": "succeeded"})
+            coordinator.startup(lambda: None)
+            self.assertEqual(coordinator.run_once(), "ownership_lost")
+            coordinator.shutdown()
+
+        store2 = _FencedCoordinatorStore()
+        store2.claim = JobClaim(job_id="job_a08_start", graph_id="graph_a08", attempt=1, instance_id="inst_1", fencing_epoch=1)
+        store2.rejected_transitions.add(("starting", "running"))
+        coord2 = _make_coordinator(store2, "inst_1", lambda _c, _e: {"status": "succeeded"})
+        coord2.startup(lambda: None)
+        self.assertEqual(coord2.run_once(), "reconciliation_required")
+        self.assertEqual(coord2.request_cancel("job_a08_start"), "cancel_requested")
+        coord2.shutdown()
+
+        class _StatuslessStore(_FencedCoordinatorStore):
+            status = None  # type: ignore[assignment]
+
+        store3 = _StatuslessStore()
+        store3.claim = JobClaim(job_id="job_a08_nostatus", graph_id="graph_a08", attempt=1, instance_id="inst_1", fencing_epoch=1)
+        store3.state_map["job_a08_nostatus"] = "cancel_requested"
+        coord3 = _make_coordinator(store3, "inst_1", lambda _c, _e: {"status": "succeeded"})
+        coord3.startup(lambda: None)
+        self.assertEqual(coord3.run_once(), "ownership_lost")
+        store3.claim = JobClaim(job_id="job_a08_run", graph_id="graph_a08", attempt=1, instance_id="inst_1", fencing_epoch=1)
+        store3.state_map["job_a08_run"] = "claimed"
+        self.assertEqual(coord3.run_once(), "reconciliation_required")
+        coord3.shutdown()
 
 
 if __name__ == "__main__":

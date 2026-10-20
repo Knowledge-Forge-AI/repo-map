@@ -96,7 +96,7 @@ class SyntheticCoordinator(StartupRecoveryMixin, CoreDispositionMixin):
         self._epoch: int | None = None
         self._active_workers = 0
         self._manual_claims = 0
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._recovery_diagnostics: deque[RecoveryDiagnostic] = deque(maxlen=32)
         self._recovery_diagnostics_lock = threading.Lock()
         self._recovery_diagnostic_sequence = 0

@@ -67,7 +67,8 @@ def test_workflow_authority_guard_denial_and_supervision_reaping(
     repo_root = Path(__file__).resolve().parents[6]
     clean_pp = build_clean_explicit_pythonpath(repo_root)
     env = prepare_child_coverage_environment(
-        family="unmeasured", extra_env={"PYTHONPATH": clean_pp}
+        family="unmeasured",
+        extra_env={"PYTHONPATH": clean_pp, "PYTHONNOUSERSITE": "1"},
     )
     store_dir = tmp_path / "store"
     store_dir.mkdir(mode=0o700)
@@ -77,14 +78,20 @@ def test_workflow_authority_guard_denial_and_supervision_reaping(
     workspace_dir.chmod(0o700)
 
     script = f"""
-import sys, json
+import json, sys, types
 from pathlib import Path
+repo_root = Path(sys.argv[3])
+pkg_root = repo_root / "src" / "main" / "python" / "repomap_kg"
+for name, path in (("repomap_kg", pkg_root), ("repomap_kg.coordinator", pkg_root / "coordinator")):
+    if name not in sys.modules:
+        mod = types.ModuleType(name); mod.__path__ = [str(path)]; sys.modules[name] = mod
 from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
-install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Path(sys.argv[2]), code_roots=[Path(sys.argv[3])])
+install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Path(sys.argv[2]), code_roots=[repo_root])
 print(json.dumps(dict(schema_version=1, message_type="worker_hello", protocol_versions=[1], capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="nonce")), flush=True)
 start = json.loads(sys.stdin.readline())
+print(json.dumps(dict(schema_version=1, message_type="heartbeat", job_id=start["job_id"], attempt=start["attempt"], heartbeat_at="2026-09-20T12:00:00.100000Z")), flush=True)
 try:
-    __import__({target!r})
+    assert {target!r} not in sys.modules; __import__({target!r})
 except PermissionError:
     terminal = dict(start, message_type="error", status="failed", error_category="authorization",
         publication_state="not_started", retryable=False, latest_run_identity=None, phase="complete",
@@ -92,10 +99,12 @@ except PermissionError:
         extractor_generation="eg1:fixture", canonicalizer_generation="kg1:fixture",
         files=0, observations=0, canonical_nodes=0, canonical_edges=0, warnings=[], diagnostics=[])
     print(json.dumps(terminal), flush=True)
+    sys.stdin.readline()
 """
     spec = WorkerLaunchSpec(
         argv=(
             sys.executable,
+            "-S",
             "-c",
             script,
             str(store_dir),
@@ -108,10 +117,16 @@ except PermissionError:
     identity = {"job_id": f"job-r25-wf-auth-{target}", "attempt": 1}
     result = run_worker_spec(spec, identity, RUN25_MANDATORY_LIMITS)
 
-    assert result.protocol_error is None
+    _assert_valid_terminal_result(result)
+    assert result.returncode == 0
     assert result.waited is True
     assert result.process_group_cleaned is True
-    assert result.synthesized_terminal is False
+    assert result.terminated is False
+    assert result.killed is False
+    assert result.cleanup_error is None
+    assert result.hello_timed_out is False
+    assert result.heartbeat_timed_out is False
+    assert result.process_timed_out is False
     assert result.terminal["message_type"] == "error"
     assert result.terminal["status"] == "failed"
     assert result.terminal["error_category"] == "authorization"

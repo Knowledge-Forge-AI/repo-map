@@ -5,6 +5,11 @@ import tempfile
 from typing import Any
 import unittest
 
+from repomap_kg.service_package._operations_execution import _return_code
+from repomap_kg.service_package.api import (
+    format_service_action_table,
+    run_coordinator_service_action,
+)
 from repomap_kg.service_package.contract import build_service_package_spec
 from repomap_kg.service_package.operations import (
     CoordinatorServiceOperations,
@@ -219,6 +224,86 @@ class Slice9ServiceOperationsIntegrationTests(unittest.TestCase):
                 with self.assertRaises(ServicePackageError) as ctx:
                     ops.run("validate")
                 self.assertIn("service_definition_unsafe", str(ctx.exception))
+
+    def test_s9_c15_operations_idempotent_states_execution_helpers_and_api(self) -> None:
+        """Operations handle idempotent start/stop/uninstall/upgrade, probe errors, and API table formatting."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            with controlled_service_authority(root / "exec-auth"):
+                ops, adapter, runner = self._build_ops(root)
+
+                # Uninstall when parent directory does not exist
+                res_uninst = self._run_action(ops, "uninstall")
+                self.assertFalse(res_uninst.installed)
+                self.assertIn("action=uninstall", format_service_action_table(res_uninst))
+
+                # _return_code branches
+                self.assertEqual(_return_code(type("R", (), {"returncode": 0})()), 0)
+                with self.assertRaises(TypeError):
+                    _return_code("bad")
+
+                # Install, then start when already active & enabled
+                ops.run("install")
+                runner.calls.clear()
+                runner.responses[adapter.active_probe_argv()].append(0)
+                runner.responses[adapter.enabled_probe_argv()].append(0)
+                res_start_already = self._run_action(ops, "start")
+                self.assertTrue(res_start_already.active)
+                self.assertFalse(res_start_already.changed)
+
+                # Start failure when already enabled
+                runner.responses[adapter.active_probe_argv()].append(3)
+                runner.responses[adapter.enabled_probe_argv()].append(0)
+                runner.responses[adapter.start_commands()[0]].append(1)
+                with self.assertRaises(ServicePackageError) as ctx:
+                    ops.run("start")
+                self.assertIn("service_start_failed", str(ctx.exception))
+
+                # Stop when already inactive & disabled
+                runner.responses[adapter.active_probe_argv()].append(3)
+                runner.responses[adapter.enabled_probe_argv()].append(1)
+                res_stop_already = self._run_action(ops, "stop")
+                self.assertFalse(res_stop_already.active)
+                self.assertFalse(res_stop_already.changed)
+
+                # Upgrade success when active & enabled and inactive & disabled
+                runner.responses[adapter.active_probe_argv()].append(0)
+                runner.responses[adapter.enabled_probe_argv()].append(0)
+                res_upg = self._run_action(ops, "upgrade")
+                self.assertTrue(res_upg.installed)
+                runner.responses[adapter.active_probe_argv()].append(3)
+                runner.responses[adapter.enabled_probe_argv()].append(1)
+                res_upg_inactive = self._run_action(ops, "upgrade")
+                self.assertFalse(res_upg_inactive.active)
+
+                # _restore_native_state with active=False, enabled=False
+                ops._restore_native_state(False, False)
+
+                # _require_native_manager non-zero & _probe unexpected return code
+                runner.responses[adapter.manager_probe_argv()].append(2)
+                with self.assertRaises(ServicePackageError) as ctx:
+                    ops._require_native_manager()
+                self.assertIn("native_service_manager_unavailable", str(ctx.exception))
+
+                runner.responses[adapter.active_probe_argv()].append(99)
+                with self.assertRaises(ServicePackageError) as ctx:
+                    ops._native_state()
+                self.assertIn("native_service_probe_failed", str(ctx.exception))
+
+                # api.py run_coordinator_service_action
+                from unittest.mock import patch
+
+                with (
+                    patch("repomap_kg.service_package.api.select_service_adapter", return_value=adapter),
+                    patch("repomap_kg.service_package.api._run_manager_command", side_effect=runner),
+                    patch("repomap_kg.service_package.api._coordinator_health", return_value=True),
+                ):
+                    rendered = run_coordinator_service_action("render", root / "home")
+                    self.assertTrue(isinstance(rendered, str) and len(rendered) > 0)
+                    runner.responses[adapter.active_probe_argv()].append(3)
+                    runner.responses[adapter.enabled_probe_argv()].append(1)
+                    status_res = run_coordinator_service_action("status", root / "home")
+                    self.assertIsInstance(status_res, ServiceActionResult)
 
 
 if __name__ == "__main__":

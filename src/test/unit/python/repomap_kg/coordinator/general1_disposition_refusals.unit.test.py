@@ -1,9 +1,18 @@
 """Durable CAS refusal cannot authorize terminal release, retirement, or retry."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+from textwrap import dedent
+
+import pytest
+
 from repomap_kg.coordinator._control_types import JobClaim
 from repomap_kg.coordinator.core import SyntheticCoordinator
 from repomap_test_support.coordinator_core_fakes import FakeStore, terminal
-
-import pytest
+from repomap_test_support.run25_portable_workflows import build_clean_explicit_pythonpath
+from runner_coverage_execution import prepare_child_coverage_environment
 
 
 class RefusalStore(FakeStore):
@@ -122,3 +131,49 @@ def test_refused_retry_settles_once_as_failure_without_reporting_queued():
         assert any(call[0] == "release" for call in store.calls)
     finally:
         coordinator.shutdown()
+
+
+def test_retirement_error_settles_terminal_disposal_without_deadlock() -> None:
+    """A bounded control child proves residual recording and lease release settle."""
+    repo_root = Path(__file__).resolve().parents[6]
+    environment = prepare_child_coverage_environment(
+        base_env={**os.environ, "PYTHONPATH": build_clean_explicit_pythonpath(repo_root)},
+        family="unmeasured",
+        extra_env={"PYTHONNOUSERSITE": "1"},
+    )
+    script = dedent("""
+        import json
+        from repomap_kg.coordinator.core import SyntheticCoordinator
+        from repomap_test_support.coordinator_core_fakes import FakeStore
+
+        store = FakeStore()
+        def retire(_claim):
+            raise FileNotFoundError("synthetic retirement failure")
+        terminal = {
+            "status": "failed", "publication_state": "rolled_back",
+            "error_category": "permanent", "_termination_proved": True,
+        }
+        coordinator = SyntheticCoordinator(
+            store, "retirement-fixture", lambda *_: dict(terminal),
+            publication_retirer=retire,
+        )
+        coordinator.startup(lambda: None)
+        try:
+            outcome = coordinator.run_once()
+            residuals = coordinator.residual_evidence
+        finally:
+            coordinator.shutdown()
+        print(json.dumps({
+            "outcome": outcome,
+            "residuals": list(residuals),
+            "released": any(call[0] == "release" for call in store.calls),
+        }))
+    """)
+    completed = subprocess.run(
+        [sys.executable, "-c", script], cwd=repo_root, env=environment,
+        capture_output=True, text=True, timeout=10, check=False,
+    )
+    assert completed.returncode == 0, "retirement control child failed"
+    assert json.loads(completed.stdout) == {
+        "outcome": "failed", "residuals": ["job-1:1:not_found"], "released": True,
+    }
