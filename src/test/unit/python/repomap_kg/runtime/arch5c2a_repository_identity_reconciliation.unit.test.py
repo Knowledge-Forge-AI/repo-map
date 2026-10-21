@@ -41,7 +41,7 @@ def test_exact_current_path_keyed_state_reconciles_after_verified_backup(
     inspection = SimpleNamespace(
         checksum_verified=True,
         dump_summaries=(object(),),
-        manifest={"restore_supported": True},
+        manifest={"backup_format_version": 1, "restore_supported": True},
     )
     events: list[str] = []
 

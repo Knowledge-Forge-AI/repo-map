@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+from contextlib import nullcontext
 import subprocess
 import tomllib
 from pathlib import Path
@@ -14,7 +15,11 @@ import pytest
 from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
 from repomap_kg.ops.config_sections import parse_server_memory_section
 from repomap_test_support import cli_integration
-from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
+from repomap_test_support.local_db_backup import (
+    LocalDbBackupUnitTestCase,
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
 from scale28_observer_deadlines import ObserverConnectionSettings, ObserverDeadlinePolicy
 
 
@@ -99,33 +104,42 @@ def test_in_process_cli_routes_dump_to_recording_runner_and_reports_failure(
 
     def recording_runner(command, **kwargs):
         command = list(command)
-        calls.append((command, kwargs))
         if command == expected_inspect:
+            calls.append((command, kwargs))
             return LocalDbBackupUnitTestCase.owned_container_result(identity, command)
         if command == expected_dump:
+            calls.append((command, kwargs))
             return subprocess.CompletedProcess(
                 command,
                 1,
                 stdout=b"",
                 stderr=b"fixture pg_dump failure",
             )
+        prov = maybe_provenance_runner_result(command)
+        if prov is not None:
+            return prov
         raise AssertionError(command)
 
     monkeypatch.setattr(
         "repomap_kg.runtime.backup.subprocess.run", recording_runner
     )
-    exit_code, stdout, stderr = cli_integration.CliIntegrationTestCase().run_repo_map_in_process(
-        "local",
-        "db",
-        "dump",
-        "--repo-map-home",
-        str(home),
-        "--database",
-        "repomap",
-        "--reason",
-        "unit-test",
-        "--json",
+    monkeypatch.setattr(
+        "repomap_kg.cli.maintenance_window_for_database_drop",
+        lambda *_args, **_kwargs: nullcontext(),
     )
+    with unit_maintenance_window_patch():
+        exit_code, stdout, stderr = cli_integration.CliIntegrationTestCase().run_repo_map_in_process(
+            "local",
+            "db",
+            "dump",
+            "--repo-map-home",
+            str(home),
+            "--database",
+            "repomap",
+            "--reason",
+            "unit-test",
+            "--json",
+        )
 
     assert exit_code == 1
     assert stdout == ""

@@ -23,6 +23,7 @@ from repomap_kg.runtime.local import setup_local_runtime
 from repomap_kg.runtime.plan import build_local_runtime_plan
 from repomap_kg.server.http import load_config_for_server
 from repomap_kg.server.ops import load_mcp_ops_config
+from repomap_test_support.local_db_backup import maybe_provenance_runner_result
 
 
 def _env_values(text: str) -> dict[str, str]:
@@ -335,7 +336,14 @@ def test_coordinated_restore_reconciles_graphs_then_control(tmp_path: Path) -> N
             ),
         ),
     ):
-        restore_coordinated_backup(home, backup=backup_path)
+        restore_coordinated_backup(
+            home,
+            backup=backup_path,
+            command_runner=lambda command, **kwargs: (
+                maybe_provenance_runner_result(command)
+                or pytest.fail(str(command))
+            ),
+        )
 
     control = tuple(
         database for database in plan.owned_databases if database not in plan.graph_databases

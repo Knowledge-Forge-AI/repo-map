@@ -100,7 +100,8 @@ class Navigation33ControlPollingServiceIntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "reconcile_control_roles is not callable"):
             _reconcile_control_roles(type("BadAuth", (), {"reconcile_control_roles": 123})())
         with self.assertRaisesRegex(RuntimeError, "maintenance authority is unavailable"):
-            _maintenance_window(object(), graph_databases=("repomap_g1",))
+            with _maintenance_window(object(), graph_databases=("repomap_g1",)):
+                pass
         with self.assertRaisesRegex(CoordinatorControlError, "coordinator_control_reference_invalid"):
             _validate_reference_database("repomap_other_db")
         with self.assertRaisesRegex(ValueError, "database capability is invalid"):

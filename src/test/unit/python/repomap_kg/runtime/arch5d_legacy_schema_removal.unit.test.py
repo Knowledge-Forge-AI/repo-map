@@ -237,7 +237,7 @@ def test_upgrade_reconciles_identity_before_destructive_suffix(
     inspection = SimpleNamespace(
         checksum_verified=True,
         dump_summaries=(object(),),
-        manifest={"restore_supported": True},
+        manifest={"backup_format_version": 1, "restore_supported": True},
     )
     reconcilable = RepositoryIdentityState(1, 0, 0, 1)
     stable = RepositoryIdentityState(1, 1, 0, 1)

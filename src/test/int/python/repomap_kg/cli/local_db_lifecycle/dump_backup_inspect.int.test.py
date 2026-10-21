@@ -9,6 +9,10 @@ from unittest.mock import patch
 from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
 )
+from repomap_test_support.local_db_backup import (
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
 
 from repomap_kg.runtime.local import LocalRuntimeIdentity
 
@@ -143,7 +147,8 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
                 if command[:2] == ["docker", "inspect"]:
                     return subprocess.CompletedProcess(command, 0, stdout=inspect_payload, stderr="")
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_restore" in command:
-                    self.assertEqual(kwargs.get("input"), dump_bytes)
+                    self.assertIsNone(kwargs.get("input"))
+                    self.assertEqual(kwargs["stdin"].read(), dump_bytes)
                     return subprocess.CompletedProcess(command, 0, stdout=toc.encode("utf-8"), stderr=b"")
                 raise AssertionError(command)
 
@@ -198,6 +203,9 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
                 calls.append(list(command))
                 if command[:2] == ["docker", "inspect"]:
                     return subprocess.CompletedProcess(command, 0, stdout=inspect_payload, stderr="")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"]:
                     return subprocess.CompletedProcess(
                         command,
@@ -207,7 +215,14 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
                     )
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner):
+            with (
+                unit_maintenance_window_patch(),
+                patch(
+                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    return_value=nullcontext(),
+                ),
+                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner),
+            ):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "dump", "--repo-map-home", str(home), "--database", "repomap", "--json",
                 )
@@ -238,11 +253,15 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
             def fake_runner(command, **kwargs):
                 if command[:2] == ["docker", "inspect"]:
                     return subprocess.CompletedProcess(command, 0, stdout=inspect_payload, stderr="")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"]:
                     return subprocess.CompletedProcess(command, 0, stdout=b"dump-all", stderr=b"")
                 raise AssertionError(command)
 
             with (
+                unit_maintenance_window_patch(),
                 patch("repomap_kg.cli.maintenance_window_for_coordinated_backup", return_value=nullcontext()),
                 patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner),
             ):
@@ -286,12 +305,25 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
             bad_name_exit, bad_name_stdout, bad_name_stderr = self.run_module_entrypoint(
                 "local", "db", "dump", "--repo-map-home", str(home), "--database", "../repomap", "--dry-run", "--json",
             )
+            bad_live_exit, bad_live_stdout, bad_live_stderr = self.run_repo_map_in_process(
+                "local", "db", "dump", "--repo-map-home", str(home), "--database", "../repomap", "--json",
+            )
+            unowned_db_exit, unowned_db_stdout, unowned_db_stderr = self.run_repo_map_in_process(
+                "local", "db", "dump", "--repo-map-home", str(home), "--database", "postgres", "--json",
+            )
 
             def unowned_runner(command, **kwargs):
                 unowned_payload = json.dumps([{"Id": "container-123", "Config": {"Image": "postgres:16-alpine", "Labels": {"org.repomap.runtime": "false"}}}])
                 return subprocess.CompletedProcess(command, 0, stdout=unowned_payload, stderr="")
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=unowned_runner):
+            with (
+                unit_maintenance_window_patch(),
+                patch(
+                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    return_value=nullcontext(),
+                ),
+                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=unowned_runner),
+            ):
                 unowned_exit, unowned_stdout, unowned_stderr = self.run_repo_map_in_process(
                     "local", "db", "dump", "--repo-map-home", str(home), "--database", "repomap", "--json",
                 )
@@ -299,11 +331,21 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
             def failing_runner(command, **kwargs):
                 if command[:2] == ["docker", "inspect"]:
                     return subprocess.CompletedProcess(command, 0, stdout=inspect_payload, stderr="")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 return subprocess.CompletedProcess(
                     command, 1, stdout=b"", stderr=b"POSTGRES_PASSWORD=fake-cli-secret password=fake-cli-secret"
                 )
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=failing_runner):
+            with (
+                unit_maintenance_window_patch(),
+                patch(
+                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    return_value=nullcontext(),
+                ),
+                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=failing_runner),
+            ):
                 fail_exit, fail_stdout, fail_stderr = self.run_repo_map_in_process(
                     "local", "db", "dump", "--repo-map-home", str(home), "--database", "repomap", "--json",
                 )
@@ -319,6 +361,10 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
         self.assertEqual(bad_name_exit, 1)
         self.assertEqual(bad_name_stdout, "")
         self.assertIn("database name must be a safe PostgreSQL identifier", bad_name_stderr)
+        self.assertEqual((bad_live_exit, bad_live_stdout), (1, ""))
+        self.assertIn("database name must be a safe PostgreSQL identifier", bad_live_stderr)
+        self.assertEqual((unowned_db_exit, unowned_db_stdout), (1, ""))
+        self.assertIn("database is not an authorized RepoMap lifecycle target", unowned_db_stderr)
         self.assertEqual(unowned_exit, 1)
         self.assertEqual(unowned_stdout, "")
         self.assertIn("not RepoMap-owned", unowned_stderr)

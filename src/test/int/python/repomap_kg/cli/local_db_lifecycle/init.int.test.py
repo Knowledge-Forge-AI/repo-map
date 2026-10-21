@@ -8,6 +8,10 @@ from unittest.mock import patch
 from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
 )
+from repomap_test_support.local_db_backup import (
+    baseline_toc_bytes,
+    maybe_provenance_runner_result,
+)
 
 from repomap_kg.runtime.local import LocalRuntimeIdentity
 from repomap_kg.storage import discover_migrations
@@ -98,7 +102,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                     }
                 ],
                 "dump_format": "pgcustom",
-                "restore_supported": False,
+                "restore_supported": True,
             }
             (backup_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
@@ -108,6 +112,9 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                 calls.append(list(command))
                 if command[:2] == ["docker", "inspect"]:
                     return subprocess.CompletedProcess(command, 0, stdout=inspect_payload, stderr="")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"]:
                     return subprocess.CompletedProcess(command, 0, stdout=b"0\n", stderr=b"")
                 raise AssertionError(command)
@@ -227,6 +234,11 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_restore" in command:
                     self.assertNotIn("input", kwargs)
                     stream = kwargs["stdin"]
+                    if "-l" in command:
+                        self.assertEqual(stream.read(), dump)
+                        return subprocess.CompletedProcess(
+                            command, 0, stdout=baseline_toc_bytes(), stderr=b""
+                        )
                     while chunk := stream.read(5):
                         restore_chunks.append(chunk)
                     return subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
@@ -248,6 +260,9 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=inspect_payload, stderr="")
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 raise AssertionError(command)
 
             with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=existing_runner):

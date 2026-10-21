@@ -228,7 +228,8 @@ def test_inherited_public_edge_uses_the_exact_recovered_proof(pytestconfig: pyte
     repo = pytestconfig.rootpath
     baseline = json.loads((repo / BASELINE_PATH).read_text())
     result = audit_candidate_lineage(repo, BASELINE_PATH, baseline)
-    assert result.scope_transitions == 3
+    # NAV37 added one reviewed forward transition after the inherited proof.
+    assert result.scope_transitions == 4
     assert not result.candidate_transition
     proof = json.loads((repo / PROOFS_PATH).read_text())["proofs"][0]
     assert proof["commit"] == "1adfc7a15e830c8709f76f4e61abb9e24a8c0b17"

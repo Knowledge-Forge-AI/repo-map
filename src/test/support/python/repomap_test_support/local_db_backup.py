@@ -154,6 +154,8 @@ def setup_real_backup_home(
     real_container = session.harness.container_name
     home.mkdir(mode=0o700, parents=True, exist_ok=True)
     setup_local_runtime(home)
+    home.chmod(0o700)
+    (home / "runtime").chmod(0o700)
     toml_path = home / "repomap.rpl.toml"
     toml_text = (
         f'schema_version = 1\n[service]\nmode = "local"\nmcp_transport = "stdio"\nlog_level = "info"\n'
@@ -210,6 +212,8 @@ def unit_maintenance_window_patch(
     databases: tuple[str, ...] = (
         "repomap_control",
         "repomap",
+        "repomap_live_harden1_control",
+        "repomap_live_harden1",
         "graph_alpha",
         "graph_beta",
         "graph_gamma",

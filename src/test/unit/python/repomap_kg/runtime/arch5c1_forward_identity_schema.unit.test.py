@@ -64,7 +64,7 @@ def test_backup_first_upgrade_applies_exact_pending_ledger_prefix(
     inspection = SimpleNamespace(
         checksum_verified=True,
         dump_summaries=(object(),),
-        manifest={"restore_supported": True},
+        manifest={"backup_format_version": 1, "restore_supported": True},
     )
     events: list[str] = []
 
@@ -164,7 +164,7 @@ def test_backup_first_upgrade_applies_interim_identity_prefix_when_behind_identi
     inspection = SimpleNamespace(
         checksum_verified=True,
         dump_summaries=(object(),),
-        manifest={"restore_supported": True},
+        manifest={"backup_format_version": 1, "restore_supported": True},
     )
     events: list[str] = []
 

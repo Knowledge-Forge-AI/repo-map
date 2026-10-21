@@ -9,8 +9,12 @@ import subprocess
 import psycopg
 import pytest
 
+from repomap_kg.coordinator.local_lifecycle import (
+    initialize_coordinator_control,
+    maintenance_window_for_graph_upgrade,
+)
 from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import LocalRuntimeIdentity, build_local_runtime_plan, setup_local_runtime
+from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
 from repomap_kg.runtime.schema_upgrade import (
     inspect_backup,
     query_schema_ledger,
@@ -25,11 +29,11 @@ from repomap_kg.storage import (
     run_psql,
 )
 from repomap_kg.storage.main import _migration_script
+from repomap_test_support.local_db_backup import setup_real_backup_home
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
 )
-from repomap_test_support.public_branch_contracts import owned_container_result
 
 EXPECTED_ACTIONS = (
     "inspect-target",
@@ -160,6 +164,7 @@ def test_upgrade_graph_schema_preconditions_and_dry_run_validation(
 
 def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_command_runner(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     require_postgres_binaries()
     pg_dump = shutil.which("pg_dump")
@@ -168,25 +173,19 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
     assert pg_restore is not None
 
     with temporary_postgres() as postgres:
+        monkeypatch.setenv("REPOMAP_PG_PASSWORD", postgres.password)
+        monkeypatch.setenv("POSTGRES_PASSWORD", postgres.password)
         connection_args = dict(host=postgres.host, port=postgres.port, user=postgres.user,
                                dbname=postgres.database, password=postgres.password, autocommit=True)
         with closing(psycopg.connect(**connection_args)) as owner:
             assert owner.execute("SELECT 1 FROM pg_database WHERE datname = 'repomap_wave1_upgrade'").fetchone() is None
             try:
                 home = tmp_path / "schema_home"
-                setup_local_runtime(home)
-                config_file = home / "repomap.rpl.toml"
-                config_file.write_text(config_file.read_text().replace('database = "repomap"', 'database = "repomap_wave1_upgrade"').replace('user = "repomap"', f'user = "{postgres.user}"'))
-                identity = LocalRuntimeIdentity.from_home(home)
-                env_file = home / "runtime" / ".env"
-                env_file.write_text(
-                    f"REPOMAP_RUNTIME_HOME_HASH={identity.home_hash}\n"
-                    f"POSTGRES_PASSWORD={postgres.password}\n"
-                    f"REPOMAP_PG_PASSWORD={postgres.password}\n",
-                    encoding="utf-8",
+                _identity, base_runner = setup_real_backup_home(
+                    home, postgres, graph_db="repomap_wave1_upgrade"
                 )
-
                 upgrade_db = postgres.create_database("repomap_wave1_upgrade")
+                initialize_coordinator_control(home)
 
                 executed_commands: list[list[str]] = []
 
@@ -194,53 +193,7 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                     if not cmd:
                         raise AssertionError("db_runner received empty command")
                     executed_commands.append(list(cmd))
-                    if "env" in kwargs:
-                        kwargs["env"]["PGPASSWORD"] = postgres.password
-                    if len(cmd) >= 2 and cmd[:2] == ["docker", "inspect"]:
-                        return owned_container_result(identity, cmd)
-                    if len(cmd) >= 2 and cmd[:2] == ["docker", "exec"]:
-                        tool_idx: int | None = None
-                        for idx in range(2, len(cmd)):
-                            if Path(cmd[idx]).name in ("psql", "pg_dump", "pg_restore"):
-                                tool_idx = idx
-                                break
-                        if tool_idx is None:
-                            raise AssertionError(f"no recognized postgres tool in exec command: {cmd}")
-                        subcmd = Path(cmd[tool_idx]).name
-                        rest = cmd[tool_idx + 1 :]
-                        if subcmd == "psql":
-                            real_cmd = [
-                                postgres.psql_command, "-h", postgres.host,
-                                "-p", str(postgres.port), "-U", postgres.user,
-                            ]
-                        elif subcmd == "pg_dump":
-                            real_cmd = [
-                                pg_dump, "-h", postgres.host,
-                                "-p", str(postgres.port), "-U", postgres.user,
-                            ]
-                        elif subcmd == "pg_restore":
-                            real_cmd = [pg_restore]
-                        else:
-                            raise AssertionError(f"unexpected tool {subcmd}")
-
-                        clean: list[str] = []
-                        idx = 0
-                        while idx < len(rest):
-                            if rest[idx] == "-U" and idx + 1 < len(rest):
-                                clean.extend(["-U", postgres.user])
-                                idx += 2
-                            elif rest[idx] in ("-h", "-p") and idx + 1 < len(rest):
-                                idx += 2
-                            else:
-                                clean.append(rest[idx])
-                                idx += 1
-                        real_cmd.extend(clean)
-                        kwargs["check"] = False
-                        return subprocess.run(real_cmd, **kwargs)
-                    if len(cmd) >= 1 and (cmd[0] == pg_restore or Path(cmd[0]).name == "pg_restore"):
-                        kwargs["check"] = False
-                        return subprocess.run(cmd, **kwargs)
-                    raise AssertionError(f"unexpected command {cmd}")
+                    return base_runner(cmd, **kwargs)
 
                 migrations = discover_migrations(default_rdbms_root())
                 run_psql(
@@ -248,13 +201,14 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                     input_text=_migration_script(migrations[:1], initialize_ledger=True),
                 )
 
-                result = upgrade_graph_schema(
-                    home, timestamp="20260101T000001Z",
-                    database="repomap_wave1_upgrade",
-                    backup_first=True,
-                    confirmed=True,
-                    command_runner=db_runner,
-                )
+                with maintenance_window_for_graph_upgrade(home, "repomap_wave1_upgrade"):
+                    result = upgrade_graph_schema(
+                        home, timestamp="20260101T000001Z",
+                        database="repomap_wave1_upgrade",
+                        backup_first=True,
+                        confirmed=True,
+                        command_runner=db_runner,
+                    )
                 assert result.result == "success"
                 assert result.schema_before == "behind"
                 assert result.schema_after == "current"
@@ -310,13 +264,14 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                     ),
                 )
 
-                pre_result = upgrade_graph_schema(
-                    home, timestamp="20260101T000002Z",
-                    database="repomap_wave1_upgrade",
-                    backup_first=True,
-                    confirmed=True,
-                    command_runner=db_runner,
-                )
+                with maintenance_window_for_graph_upgrade(home, "repomap_wave1_upgrade"):
+                    pre_result = upgrade_graph_schema(
+                        home, timestamp="20260101T000002Z",
+                        database="repomap_wave1_upgrade",
+                        backup_first=True,
+                        confirmed=True,
+                        command_runner=db_runner,
+                    )
                 assert pre_result.result == "success"
                 assert pre_result.schema_before == "supported-preledger"
                 assert pre_result.schema_after == "current"
@@ -346,16 +301,17 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                         "CREATE TABLE divergent_table (id integer);\n"
                     ),
                 )
-                with pytest.raises(
-                    LocalDbBackupError, match="target is not a supported pre-ledger graph schema"
-                ) as refused:
-                    upgrade_graph_schema(
-                        home, timestamp="20260101T000003Z",
-                        database="repomap_wave1_upgrade",
-                        backup_first=True,
-                        confirmed=True,
-                        command_runner=db_runner,
-                    )
+                with maintenance_window_for_graph_upgrade(home, "repomap_wave1_upgrade"):
+                    with pytest.raises(
+                        LocalDbBackupError, match="target is not a supported pre-ledger graph schema"
+                    ) as refused:
+                        upgrade_graph_schema(
+                            home, timestamp="20260101T000003Z",
+                            database="repomap_wave1_upgrade",
+                            backup_first=True,
+                            confirmed=True,
+                            command_runner=db_runner,
+                        )
                 assert [item.code for item in refused.value.diagnostics] == [
                     "unsupported-preledger-schema"
                 ]
@@ -377,6 +333,7 @@ def test_upgrade_graph_schema_maintained_entrypoint_with_real_database_and_comma
                 ).fetchall() == [("repomap_wave1_upgrade",)]
             finally:
                 owner.execute('DROP DATABASE IF EXISTS repomap_wave1_upgrade WITH (FORCE)')
+                owner.execute('DROP DATABASE IF EXISTS repomap_wave1_upgrade_control WITH (FORCE)')
 
 
 def _assert_verified_backup(home, backup_id, runner) -> None:

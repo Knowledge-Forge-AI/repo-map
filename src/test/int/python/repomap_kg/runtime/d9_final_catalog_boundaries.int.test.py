@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from contextlib import closing
 from pathlib import Path
+import shutil
 import subprocess
-import sys
 import threading
 import time
 from typing import Any
@@ -94,26 +94,31 @@ def test_real_extcondition_arrays_are_not_padded_or_truncated(
 
 
 def test_linux_native_command_deadline_retires_inherited_output(tmp_path: Path) -> None:
+    sh_cmd = shutil.which("sh") or "/bin/sh"
+    sleep_cmd = shutil.which("sleep")
+    assert Path(sh_cmd).is_file() and sleep_cmd is not None
     marker = tmp_path / "child-pid"
-    program = (
-        "import subprocess,sys; "
-        "child=subprocess.Popen([sys.executable,'-c','import time; time.sleep(2)']); "
-        "open(sys.argv[1],'w').write(str(child.pid))"
-    )
+    program = '"$1" 2 & printf "%s" "$!" > "$2"'
     before = {thread.ident for thread in threading.enumerate()}
     with pytest.raises(LocalDbBackupError) as caught:
         run_bounded_popen(
-            [sys.executable, "-c", program, str(marker)], max_output_bytes=1024,
+            [sh_cmd, "-c", program, "sh", sleep_cmd, str(marker)], max_output_bytes=1024,
             timeout_seconds=1.0, error_code="backup-toc-inconsistent", field="repomap",
         )
     assert caught.value.diagnostics[0].code == "backup-toc-inconsistent"
     assert marker.is_file()
     assert not ({thread.ident for thread in threading.enumerate()} - before)
-    try:
-        child = psutil.Process(int(marker.read_text()))
-        assert not child.is_running() or child.status() == psutil.STATUS_ZOMBIE
-    except psutil.NoSuchProcess:
-        pass
+    child_pid = int(marker.read_text())
+    deadline = time.monotonic() + 0.5
+    while True:
+        try:
+            child = psutil.Process(child_pid)
+            if not child.is_running() or child.status() == psutil.STATUS_ZOMBIE:
+                break
+        except psutil.NoSuchProcess:
+            break
+        assert time.monotonic() < deadline, "timed-out descendant remained active after process-group kill"
+        time.sleep(0.01)
 
 
 def test_real_maintenance_deadlines_and_lock_release() -> None:

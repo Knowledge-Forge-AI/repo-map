@@ -1,11 +1,13 @@
 import io
 import json
+import tempfile
 import unittest
 from contextlib import contextmanager, redirect_stdout
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from repomap_kg.cli import main
+from repomap_kg.runtime.local import setup_local_runtime
 
 class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
     def test_local_runtime_and_db_json_commands_delegate_to_safe_helpers(self):
@@ -205,10 +207,7 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
             )
 
         with (
-            patch(
-                "repomap_kg.cli.maintenance_window_for_graph_upgrade",
-                side_effect=maintenance_window,
-            ),
+            patch("repomap_kg.cli.maintenance_window_for_graph_upgrade", side_effect=maintenance_window),
             patch("repomap_kg.cli.upgrade_graph_schema", side_effect=upgrade),
             redirect_stdout(io.StringIO()),
         ):
@@ -222,31 +221,31 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
         self.assertEqual((exit_code, events), (0, ["enter", "exit"]))
 
         dump_events: list[str] = []
+        with tempfile.TemporaryDirectory() as tmpdir:
+            dump_home = f"{tmpdir}/home"
+            setup_local_runtime(dump_home)
 
-        @contextmanager
-        def dump_window(home, database):
-            self.assertEqual((home, database), ("/tmp/repo-map-home", "repomap_test"))
-            dump_events.append("enter")
-            try:
-                yield
-            finally:
-                dump_events.append("exit")
+            @contextmanager
+            def dump_window(home, database):
+                self.assertEqual((home, database), (dump_home, "repomap"))
+                dump_events.append("enter")
+                try:
+                    yield
+                finally:
+                    dump_events.append("exit")
 
-        def dump_result(*args, **kwargs):
-            self.assertEqual(dump_events, ["enter"])
-            return SimpleNamespace(to_jsonable=lambda: {"command": "dump", "result": "ok"})
+            def dump_result(*args, **kwargs):
+                self.assertEqual(dump_events, ["enter"])
+                return SimpleNamespace(to_jsonable=lambda: {"command": "dump", "result": "ok"})
 
-        with (
-            patch("repomap_kg.cli.maintenance_window_for_database_drop", side_effect=dump_window),
-            patch(
-                "repomap_kg.cli.dump_database",
-                side_effect=dump_result,
-            ),
-            redirect_stdout(io.StringIO()),
-        ):
-            dump_code = main(
-                ["local", "db", "dump", "--repo-map-home", "/tmp/repo-map-home", "--database", "repomap_test", "--json"]
-            )
+            with (
+                patch("repomap_kg.cli.maintenance_window_for_database_drop", side_effect=dump_window),
+                patch("repomap_kg.cli.dump_database", side_effect=dump_result),
+                redirect_stdout(io.StringIO()),
+            ):
+                dump_code = main(
+                    ["local", "db", "dump", "--repo-map-home", dump_home, "--database", "repomap", "--json"]
+                )
         self.assertEqual((dump_code, dump_events), (0, ["enter", "exit"]))
 
     def test_local_runtime_and_db_text_commands_delegate_to_formatters(self):

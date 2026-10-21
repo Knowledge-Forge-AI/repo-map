@@ -8,6 +8,10 @@ from unittest.mock import patch
 from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
 )
+from repomap_test_support.local_db_backup import (
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
 
 from repomap_kg.runtime.local import LocalRuntimeIdentity
 
@@ -107,6 +111,9 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
                         ),
                         stderr="",
                     )
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     events.append("exists")
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
@@ -119,6 +126,7 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
                 raise AssertionError(command)
 
             with (
+                unit_maintenance_window_patch(),
                 patch(
                     "repomap_kg.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
@@ -288,6 +296,9 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
                     )
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
                     return subprocess.CompletedProcess(
                         command,
@@ -298,6 +309,7 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
                 raise AssertionError(command)
 
             with (
+                unit_maintenance_window_patch(),
                 patch(
                     "repomap_kg.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
@@ -340,16 +352,8 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
             home = Path(tmpdir) / "repo-map-home"
             for flag in ("--no-backup", "--force-no-backup", "--wipe", "--reset", "--truncate", "--clear"):
                 exit_code, stdout, stderr = self.run_module_entrypoint(
-                    "local",
-                    "db",
-                    "drop",
-                    "--repo-map-home",
-                    str(home),
-                    "--database",
-                    "repomap",
-                    "--backup-first",
-                    "--dry-run",
-                    flag,
+                    "local", "db", "drop", "--repo-map-home", str(home),
+                    "--database", "repomap", "--backup-first", "--dry-run", flag,
                 )
 
                 self.assertEqual(exit_code, 2)
@@ -360,11 +364,7 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
             home = Path(tmpdir) / "repo-map-home"
             for command in ("restore", "drop-all", "wipe", "reset", "truncate", "clear"):
                 exit_code, stdout, stderr = self.run_module_entrypoint(
-                    "local",
-                    "db",
-                    command,
-                    "--repo-map-home",
-                    str(home),
+                    "local", "db", command, "--repo-map-home", str(home),
                 )
 
                 self.assertEqual(exit_code, 2)
@@ -373,15 +373,8 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
 
             for flag in ("--replace", "--force", "--drop-existing", "--overwrite", "--reset"):
                 exit_code, stdout, stderr = self.run_module_entrypoint(
-                    "local",
-                    "db",
-                    "init",
-                    "--repo-map-home",
-                    str(home),
-                    "--database",
-                    "repomap",
-                    "--from-source",
-                    flag,
+                    "local", "db", "init", "--repo-map-home", str(home),
+                    "--database", "repomap", "--from-source", flag,
                 )
 
                 self.assertEqual(exit_code, 2)

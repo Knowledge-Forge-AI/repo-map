@@ -7,6 +7,11 @@ from collections.abc import Callable
 from contextlib import nullcontext
 from types import ModuleType
 
+from repomap_kg.ops.config import resolve_repo_map_home
+from repomap_kg.runtime._backup_lifecycle import validate_owned_database
+from repomap_kg.runtime.backup_commands import validate_database_name
+from repomap_kg.runtime.local import build_local_runtime_plan
+
 
 def dispatch_local_command(
     args: argparse.Namespace,
@@ -57,6 +62,14 @@ def dispatch_local_command(
     try:
         if args.local_command == "db":
             if args.local_db_command == "dump":
+                if not args.dry_run:
+                    validate_database_name(args.database)
+                    validate_owned_database(
+                        args.database,
+                        build_local_runtime_plan(
+                            resolve_repo_map_home(args.repo_map_home)
+                        ),
+                    )
                 window = (
                     nullcontext()
                     if args.dry_run

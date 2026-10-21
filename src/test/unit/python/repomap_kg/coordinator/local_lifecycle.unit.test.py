@@ -212,7 +212,7 @@ def test_control_upgrade_rejects_bad_backup_and_cleans_reference_on_adoption_fai
     invalid = BackupInspectionStub(
         checksum_verified=False,
         dump_summaries=(),
-        manifest={"restore_supported": False},
+        manifest={"backup_format_version": 1, "restore_supported": False},
     )
 
     def dump_backup(

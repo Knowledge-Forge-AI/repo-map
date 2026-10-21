@@ -2,19 +2,24 @@
 
 from __future__ import annotations
 
+from contextlib import redirect_stderr, redirect_stdout
+import io
 from pathlib import Path
-import sys
+import shutil
 import threading
-from unittest.mock import MagicMock
+import time
+from unittest.mock import MagicMock, patch
 
 import psutil
 import psycopg
 import pytest
 
+from repomap_kg.cli import main
 from repomap_kg.runtime._backup_observation import _normalize_server_provenance
 from repomap_kg.runtime._backup_provenance import parse_toc_entries, run_bounded_popen
 from repomap_kg.runtime.backup_manifests import summarize_pg_restore_toc
 from repomap_kg.runtime.backup_records import LocalDbBackupError
+from repomap_kg.runtime.local import setup_local_runtime
 from repomap_kg.runtime import maintenance, release_cluster
 from repomap_test_support.local_db_backup import default_baseline_server_provenance
 
@@ -53,26 +58,53 @@ def test_core_schema_and_table_whitespace_is_preserved(schema: str) -> None:
 
 
 def test_command_deadline_covers_descendant_output_and_retires_readers(tmp_path: Path) -> None:
+    sh_cmd = shutil.which("sh") or "/bin/sh"
+    sleep_cmd = shutil.which("sleep")
+    assert Path(sh_cmd).is_file() and sleep_cmd is not None
     marker = tmp_path / "child-pid"
-    program = (
-        "import subprocess,sys; "
-        "child=subprocess.Popen([sys.executable,'-c','import time; time.sleep(2)']); "
-        "open(sys.argv[1],'w').write(str(child.pid))"
-    )
+    program = '"$1" 2 & printf "%s" "$!" > "$2"'
     before = {thread.ident for thread in threading.enumerate()}
     with pytest.raises(LocalDbBackupError) as caught:
         run_bounded_popen(
-            [sys.executable, "-c", program, str(marker)], max_output_bytes=1024,
+            [sh_cmd, "-c", program, "sh", sleep_cmd, str(marker)], max_output_bytes=1024,
             timeout_seconds=1.0, error_code="backup-toc-inconsistent", field="repomap",
         )
     assert caught.value.diagnostics[0].code == "backup-toc-inconsistent"
     assert marker.is_file(), "the command must have reached its inherited-pipe boundary"
     assert not ({thread.ident for thread in threading.enumerate()} - before)
-    try:
-        child = psutil.Process(int(marker.read_text()))
-        assert not child.is_running() or child.status() == psutil.STATUS_ZOMBIE
-    except psutil.NoSuchProcess:
-        pass
+    child_pid = int(marker.read_text())
+    deadline = time.monotonic() + 0.5
+    while True:
+        try:
+            child = psutil.Process(child_pid)
+            if not child.is_running() or child.status() == psutil.STATUS_ZOMBIE:
+                break
+        except psutil.NoSuchProcess:
+            break
+        assert time.monotonic() < deadline, "timed-out descendant remained active after process-group kill"
+        time.sleep(0.01)
+
+
+def test_cli_dump_validates_target_before_outer_maintenance_window(tmp_path: Path) -> None:
+    home = tmp_path / "repo-map-home"
+    setup_local_runtime(home)
+    for bad_db, expected_msg in (
+        ("../repomap", "database name must be a safe PostgreSQL identifier"),
+        ("postgres", "database is not an authorized RepoMap lifecycle target"),
+        ("unowned_db", "database is not an authorized RepoMap lifecycle target"),
+    ):
+        stderr = io.StringIO()
+        with (
+            patch(
+                "repomap_kg.cli.maintenance_window_for_database_drop",
+                side_effect=AssertionError("outer maintenance window entered before target validation"),
+            ),
+            redirect_stdout(io.StringIO()),
+            redirect_stderr(stderr),
+        ):
+            code = main(["local", "db", "dump", "--repo-map-home", str(home), "--database", bad_db])
+        assert code == 1
+        assert expected_msg in stderr.getvalue()
 
 
 def test_exclusive_maintenance_sets_deadlines_before_waiting() -> None:

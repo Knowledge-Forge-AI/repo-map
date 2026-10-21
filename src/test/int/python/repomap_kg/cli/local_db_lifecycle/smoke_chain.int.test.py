@@ -8,6 +8,10 @@ from unittest.mock import patch
 from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
 )
+from repomap_test_support.local_db_backup import (
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
 
 from repomap_kg.runtime.backup import verify_drop_backup
 from repomap_kg.runtime.local import LocalRuntimeIdentity
@@ -97,7 +101,8 @@ class CliLocalDbLifecycleSmokeChainIntegrationTests(CliIntegrationTestCase):
                     )
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_restore" in command:
                     events.append("inspect")
-                    self.assertEqual(kwargs.get("input"), dump_bytes)
+                    self.assertIsNone(kwargs.get("input"))
+                    self.assertEqual(kwargs["stdin"].read(), dump_bytes)
                     return subprocess.CompletedProcess(
                         command,
                         0,
@@ -120,9 +125,13 @@ class CliLocalDbLifecycleSmokeChainIntegrationTests(CliIntegrationTestCase):
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     events.append("exists")
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 raise AssertionError(command)
 
             with (
+                unit_maintenance_window_patch(),
                 patch(
                     "repomap_kg.cli.maintenance_window_for_database_drop",
                     side_effect=maintenance_window,

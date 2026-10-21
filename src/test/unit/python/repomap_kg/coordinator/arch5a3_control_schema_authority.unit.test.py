@@ -149,7 +149,7 @@ def test_arch5a3_control_upgrade_is_backup_first_and_cleans_reference(
     inspection = SimpleNamespace(
         checksum_verified=True,
         dump_summaries=(object(),),
-        manifest={"restore_supported": True},
+        manifest={"backup_format_version": 1, "restore_supported": True},
     )
 
     def dump(*args, **kwargs):
@@ -217,7 +217,7 @@ def test_arch5a3_control_upgrade_cleans_reference_after_adoption_failure(
     inspection = SimpleNamespace(
         checksum_verified=True,
         dump_summaries=(object(),),
-        manifest={"restore_supported": True},
+        manifest={"backup_format_version": 1, "restore_supported": True},
     )
 
     def fail_adoption(**kwargs) -> None:
@@ -310,7 +310,7 @@ def test_known_older_control_ledger_uses_backup_verified_upgrade(tmp_path: Path)
     events: list[str] = []
     authority = _Authority(events, status="behind")
     backup = SimpleNamespace(plan=SimpleNamespace(backup_path=tmp_path / "verified-backup"))
-    inspection = SimpleNamespace(checksum_verified=True, dump_summaries=(object(),), manifest={"restore_supported": True})
+    inspection = SimpleNamespace(checksum_verified=True, dump_summaries=(object(),), manifest={"backup_format_version": 1, "restore_supported": True})
     result = upgrade_coordinator_control(
         tmp_path, backup_first=True, confirmed=True, timestamp="20261002T130000Z",
         authority_factory=lambda home: authority, dump_function=lambda *a, **k: backup,

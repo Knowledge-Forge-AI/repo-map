@@ -6,6 +6,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from repomap_test_support.local_db_backup import (
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
 from repomap_test_support.public_branch_contracts import (
     owned_container_result,
     unexpected_runner,
@@ -205,6 +209,9 @@ class PublicBranchLocalDbLifecycleIntegrationTests(unittest.TestCase):
                 if command[:2] == ["docker", "inspect"]:
                     events.append("inspect")
                     return owned_container_result(identity, command)
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     events.append("exists")
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
@@ -216,15 +223,16 @@ class PublicBranchLocalDbLifecycleIntegrationTests(unittest.TestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
                 raise AssertionError(command)
 
-            success = drop_database(
-                home,
-                database="repomap",
-                backup_first=True,
-                confirmed=True,
-                timestamp="20260702T010204Z",
-                reason="test drop",
-                command_runner=success_runner,
-            )
+            with unit_maintenance_window_patch():
+                success = drop_database(
+                    home,
+                    database="repomap",
+                    backup_first=True,
+                    confirmed=True,
+                    timestamp="20260702T010204Z",
+                    reason="test drop",
+                    command_runner=success_runner,
+                )
             success_payload = success.to_jsonable()
             manifest = json.loads(
                 (success.backup_plan.backup_path / "manifest.json").read_text(
@@ -278,6 +286,9 @@ class PublicBranchLocalDbLifecycleIntegrationTests(unittest.TestCase):
             def failing_drop_runner(command, **kwargs):
                 if command[:2] == ["docker", "inspect"]:
                     return owned_container_result(identity, command)
+                prov = maybe_provenance_runner_result(command)
+                if prov is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
@@ -289,7 +300,7 @@ class PublicBranchLocalDbLifecycleIntegrationTests(unittest.TestCase):
                     stderr=b"POSTGRES_PASSWORD=fake-secret password=fake-secret",
                 )
 
-            with self.assertRaises(LocalDbBackupError) as drop_error:
+            with unit_maintenance_window_patch(), self.assertRaises(LocalDbBackupError) as drop_error:
                 drop_database(
                     home,
                     database="repomap",
