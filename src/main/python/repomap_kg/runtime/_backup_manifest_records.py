@@ -7,11 +7,16 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
+from repomap_kg.runtime._backup_provenance import (
+    BACKUP_FORMAT_VERSION,
+    MAX_MANIFEST_UTF8_BYTES,
+    is_supported_format_version,
+)
+from repomap_kg.runtime._backup_support import validate_format2_manifest_provenance
 from repomap_kg.runtime.backup_records import LocalDbBackupError
 from repomap_kg.runtime.backup_streaming import describe_dump_file
 from repomap_kg.runtime.local import LocalRuntimeDiagnostic
 
-BACKUP_FORMAT_VERSION = 1
 SAFE_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,62}$")
 
 
@@ -38,31 +43,64 @@ def is_incomplete_backup_path(backups_root: Path, path: Path) -> bool:
     )
 
 
+def _unique_json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    obj: dict[str, Any] = {}
+    for key, val in pairs:
+        if key in obj:
+            raise ValueError(f"duplicate JSON key: {key!r}")
+        obj[key] = val
+    return obj
+
+
+def _reject_nonfinite(token: str) -> Any:
+    raise ValueError(f"non-finite JSON constant: {token!r}")
+
+
 def read_manifest_file(path: Path) -> dict[str, Any]:
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        raise LocalDbBackupError(
-            (
-                LocalRuntimeDiagnostic(
-                    "warning",
-                    "backup-manifest-unreadable",
-                    str(path),
-                    "backup manifest could not be read",
-                ),
-            )
-        ) from error
-    if not isinstance(payload, dict):
-        raise LocalDbBackupError(
-            (
-                LocalRuntimeDiagnostic(
-                    "warning",
-                    "backup-manifest-invalid",
-                    str(path),
-                    "backup manifest must be a JSON object",
-                ),
-            )
+        with path.open("rb") as handle:
+            raw_bytes = handle.read(MAX_MANIFEST_UTF8_BYTES + 1)
+    except OSError as error:
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("warning", "backup-manifest-unreadable", str(path), "backup manifest could not be read"),
+        )) from error
+    if len(raw_bytes) > MAX_MANIFEST_UTF8_BYTES:
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("error", "backup-manifest-invalid", str(path), "backup manifest exceeds maximum size ceiling"),
+        ))
+    try:
+        payload = json.loads(
+            raw_bytes.decode("utf-8"),
+            object_pairs_hook=_unique_json_pairs,
+            parse_constant=_reject_nonfinite,
         )
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("warning", "backup-manifest-unreadable", str(path), "backup manifest could not be read"),
+        )) from error
+    except ValueError as error:
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("error", "backup-manifest-invalid", str(path), str(error)),
+        )) from error
+    if not isinstance(payload, dict):
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("warning", "backup-manifest-invalid", str(path), "backup manifest must be a JSON object"),
+        ))
+    version = payload.get("backup_format_version")
+    if not is_supported_format_version(version):
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("error", "backup-format-unsupported", "manifest.json", "backup manifest format is unsupported"),
+        ))
+    if version == BACKUP_FORMAT_VERSION:
+        raw_dbs = payload.get("databases")
+        raw_db = payload.get("database")
+        if isinstance(raw_dbs, list) and raw_dbs and all(isinstance(d, str) and d for d in raw_dbs):
+            expected_dbs = [str(d) for d in raw_dbs]
+        elif isinstance(raw_db, str) and raw_db:
+            expected_dbs = [raw_db]
+        else:
+            raise malformed_backup_manifest("databases")
+        validate_format2_manifest_provenance(payload, manifest_path=path, expected_databases=expected_dbs)
     return payload
 
 
@@ -74,28 +112,15 @@ def select_dump_file_for_database(
     manifest: Mapping[str, Any],
     database: str,
 ) -> dict[str, Any]:
-    if manifest.get("backup_format_version") != BACKUP_FORMAT_VERSION:
-        raise LocalDbBackupError(
-            (
-                LocalRuntimeDiagnostic(
-                    "error",
-                    "backup-format-unsupported",
-                    "manifest.json",
-                    "backup manifest format is unsupported",
-                ),
-            )
-        )
+    version = manifest.get("backup_format_version")
+    if not is_supported_format_version(version):
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("error", "backup-format-unsupported", "manifest.json", "backup manifest format is unsupported"),
+        ))
     if manifest.get("dump_format") not in (None, "pgcustom"):
-        raise LocalDbBackupError(
-            (
-                LocalRuntimeDiagnostic(
-                    "error",
-                    "backup-dump-format-unsupported",
-                    "manifest.json",
-                    "backup dump format is unsupported",
-                ),
-            )
-        )
+        raise LocalDbBackupError((
+            LocalRuntimeDiagnostic("error", "backup-dump-format-unsupported", "manifest.json", "backup dump format is unsupported"),
+        ))
     dump_files = manifest.get("dump_files", [])
     if not isinstance(dump_files, list):
         raise malformed_backup_manifest("dump_files")
@@ -255,9 +280,15 @@ def resolve_backup_manifest_path(
             raise backup_not_found(candidate_text)
         return path
     for manifest_path in list_manifest_paths(backups_root):
-        manifest = read_manifest_file(manifest_path)
-        if manifest.get("backup_id") == candidate_text:
-            return manifest_path
+        try:
+            with manifest_path.open("rb") as handle:
+                raw = handle.read(MAX_MANIFEST_UTF8_BYTES + 1)
+            if len(raw) <= MAX_MANIFEST_UTF8_BYTES:
+                parsed = json.loads(raw.decode("utf-8"))
+                if isinstance(parsed, dict) and parsed.get("backup_id") == candidate_text:
+                    return manifest_path
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
     raise backup_not_found(candidate_text)
 
 

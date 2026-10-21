@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from repomap_kg.ops.config import resolve_repo_map_home
+from repomap_kg.runtime._backup_provenance import (
+    BACKUP_FORMAT_VERSION,
+    is_supported_format_version,
+)
+from repomap_kg.runtime._backup_support import require_backup_restore_supported
 from repomap_kg.runtime.backup import (
     create_database,
     database_exists,
@@ -19,8 +24,8 @@ from repomap_kg.runtime.backup_commands import (
     backup_root,
     planned_pg_restore_command,
 )
+from repomap_kg.runtime.backup_inspection import verify_archive_toc_for_restore
 from repomap_kg.runtime.backup_manifests import (
-    BACKUP_FORMAT_VERSION,
     optional_manifest_text,
     read_manifest_file,
     resolve_backup_manifest_path,
@@ -115,6 +120,14 @@ def restore_coordinated_backup(
         manifest,
     )
     container = inspect_owned_postgres_container(runtime_plan, runner)
+    for database in restore_order:
+        verify_archive_toc_for_restore(
+            runtime_plan,
+            manifest,
+            database=database,
+            dump_path=dumps[database],
+            command_runner=runner,
+        )
     existing = tuple(
         database
         for database in restore_order
@@ -193,8 +206,9 @@ def _validate_complete_set(
             "coordinated-restore-topology-invalid",
             "configured graph/control authority is not an exact restorable topology",
         )
+    version = manifest.get("backup_format_version")
     if (
-        manifest.get("backup_format_version") != BACKUP_FORMAT_VERSION
+        not is_supported_format_version(version)
         or manifest.get("scope") != COORDINATED_SCOPE
         or manifest.get("database") is not None
     ):
@@ -232,6 +246,20 @@ def _validate_complete_set(
         dump_path = manifest_path.parent / dump_file["name"]
         verify_dump_file_checksum(dump_path, dump_file)
         dumps[database] = dump_path
+    require_quiescence = version == BACKUP_FORMAT_VERSION
+    require_backup_restore_supported(
+        manifest,
+        database=None,
+        require_quiescence=require_quiescence,
+        target="coordinated restore",
+    )
+    for database in databases:
+        require_backup_restore_supported(
+            manifest,
+            database=database,
+            require_quiescence=require_quiescence,
+            target=database,
+        )
     return databases, graph_databases + control_databases, dumps
 
 

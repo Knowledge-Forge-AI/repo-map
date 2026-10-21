@@ -16,6 +16,9 @@ from repomap_kg.runtime._schema_upgrade_ledger import (
     query_schema_ledger as query_schema_ledger,
     schema_ledger_exists as schema_ledger_exists,
 )
+from repomap_kg.runtime._backup_support import (
+    require_verified_backup_inspection_supported,
+)
 from repomap_kg.runtime.backup import (
     apply_source_schema as apply_source_schema,
     create_database as create_database,
@@ -223,15 +226,12 @@ def upgrade_graph_schema(
         backup.plan.backup_path,
         command_runner=runner,
     )
-    if not (
-        inspection.checksum_verified
-        and inspection.dump_summaries
-        and inspection.manifest.get("restore_supported") is True
-    ):
+    if not (inspection.checksum_verified and inspection.dump_summaries):
         raise _upgrade_error(
             "schema-upgrade-backup-invalid",
             "schema upgrade backup is not verified and restorable",
         )
+    require_verified_backup_inspection_supported(inspection, database=database)
 
     reference_created = False
     reference_cleaned = False

@@ -57,12 +57,21 @@ def dispatch_local_command(
     try:
         if args.local_command == "db":
             if args.local_db_command == "dump":
-                backup_result = dump_database(
-                    args.repo_map_home,
-                    database=args.database,
-                    dry_run=args.dry_run,
-                    reason=args.reason,
+                window = (
+                    nullcontext()
+                    if args.dry_run
+                    else maintenance_window_for_database_drop(
+                        args.repo_map_home,
+                        args.database,
+                    )
                 )
+                with window:
+                    backup_result = dump_database(
+                        args.repo_map_home,
+                        database=args.database,
+                        dry_run=args.dry_run,
+                        reason=args.reason,
+                    )
                 if args.json:
                     print(json.dumps(backup_result.to_jsonable(), sort_keys=True))
                 else:

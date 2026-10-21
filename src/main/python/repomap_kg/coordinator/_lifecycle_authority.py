@@ -26,7 +26,12 @@ from repomap_kg.runtime.database_role_contract import (
 from repomap_kg.runtime.database_roles import (
     render_database_role_sql,
 )
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
+from repomap_kg.runtime.maintenance import (
+    MaintenanceUnavailableError,
+    bind_maintenance_custody,
+    held_maintenance_custody_for,
+    runtime_maintenance_namespace,
+)
 
 
 class CoordinatorControlError(RuntimeError):
@@ -66,14 +71,46 @@ def _reconcile_control_roles(authority: object) -> None:
         reconcile_roles()
 
 
+@contextmanager
 def _maintenance_window(
     authority: object,
     *,
     graph_databases: tuple[str, ...],
-) -> AbstractContextManager[None]:
+) -> Iterator[None]:
     if not isinstance(authority, _MaintenanceWindowAuthority):
         raise RuntimeError("maintenance authority is unavailable")
-    return authority.maintenance_window(graph_databases=graph_databases)
+    control_db = getattr(authority, "database_name", None)
+    namespace = getattr(authority, "authority_namespace", None)
+    if (
+        not isinstance(control_db, str) or not control_db
+        or not isinstance(namespace, str) or not namespace or namespace == "*"
+    ):
+        with authority.maintenance_window(graph_databases=graph_databases):
+            yield
+        return
+    targets = tuple(sorted(set(graph_databases)))
+    locked_dbs = (control_db, *targets)
+    existing = held_maintenance_custody_for(*locked_dbs, authority_namespace=namespace)
+    if existing is not None and existing.control_database == control_db:
+        with bind_maintenance_custody(
+            mode="reused-outer-maintenance-window",
+            control_database=control_db,
+            databases=locked_dbs,
+            authority_namespace=namespace,
+        ):
+            yield
+        return
+    with authority.maintenance_window(graph_databases=graph_databases):
+        if held_maintenance_custody_for(*locked_dbs, authority_namespace=namespace) is not None:
+            yield
+        else:
+            with bind_maintenance_custody(
+                mode="coordinator-maintenance-window",
+                control_database=control_db,
+                databases=locked_dbs,
+                authority_namespace=namespace,
+            ):
+                yield
 
 
 def derived_control_database(graph_database: str) -> str:
@@ -113,6 +150,9 @@ class LocalControlAuthority:
         endpoint = execution_postgres(config)
         self._host = endpoint.host
         self._port = endpoint.port
+        self._authority_namespace = runtime_maintenance_namespace(
+            home, host=self._host, port=self._port
+        )
         self._owner_user = config.postgres.user
         try:
             self._admin_password = (
@@ -138,6 +178,10 @@ class LocalControlAuthority:
     @property
     def database_name(self) -> str:
         return self._database
+
+    @property
+    def authority_namespace(self) -> str:
+        return self._authority_namespace
 
     def reference_database_exists(self, database: str) -> bool:
         self._validate_control_or_reference_database(database)
@@ -216,13 +260,32 @@ class LocalControlAuthority:
                 raise MaintenanceUnavailableError(
                     "maintenance target is not an owned graph database"
                 )
+        locked_dbs = (self._database, *targets)
+        existing = held_maintenance_custody_for(
+            *locked_dbs, authority_namespace=self._authority_namespace
+        )
+        if existing is not None and existing.control_database == self._database:
+            with bind_maintenance_custody(
+                mode="reused-outer-maintenance-window",
+                control_database=self._database,
+                databases=locked_dbs,
+                authority_namespace=self._authority_namespace,
+            ):
+                yield
+            return
         with ExitStack() as stack:
             stack.enter_context(self.control_store().maintenance_window())
             for database in targets:
                 stack.enter_context(
                     self.control_store_for(database).maintenance_window()
                 )
-            yield
+            with bind_maintenance_custody(
+                mode="coordinator-maintenance-window",
+                control_database=self._database,
+                databases=locked_dbs,
+                authority_namespace=self._authority_namespace,
+            ):
+                yield
 
     def create_reference_database(self, database: str) -> None:
         _validate_reference_database(database)
@@ -280,4 +343,5 @@ class LocalControlAuthority:
             dbname=database,
             password=password,
             autocommit=autocommit,
+            connect_timeout=10,
         )

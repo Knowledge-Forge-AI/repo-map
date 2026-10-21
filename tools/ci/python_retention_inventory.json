@@ -1431,6 +1431,20 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation37.extension_provenance1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d9_final_catalog_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d9_manifest_provenance.int.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_final_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_manifest_provenance.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_postreview_boundaries.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 unit and containerized integration test owners for ADR 0084 D9-A format-2 backup provenance, v1 compatibility, TOC cross-checking and destructive consumer refusals; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -27430,8 +27444,44 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_backup_observation.py",
+      "rationale": "ADR 0084 D9-A bounded catalog observation and archive TOC cross-checking helper.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/runtime/_backup_operations.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_backup_process.py",
+      "rationale": "ADR 0084 D9-A bounded provenance process IO and exact owned POSIX session cleanup.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_backup_provenance.py",
+      "rationale": "ADR 0084 D9-A format-2 backup provenance records, SQL catalog observation contract and TOC parser.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_backup_support.py",
+      "rationale": "ADR 0084 D9-A shared backup restore support and fail-closed consumer refusal evaluator.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -30933,6 +30983,24 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py",
       "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_final_catalog_boundaries.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 causal regressions for strict provenance, archive integrity, maintenance custody and bounded process cleanup.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_manifest_provenance.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 containerized integration test owner for ADR 0084 D9-A format-2 backup provenance, v1 compatibility, TOC cross-checking and destructive consumer refusals.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -39402,6 +39470,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/coordinator_transition.unit.test.py",
       "rationale": "Coordinator transition behavior test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_final_boundaries.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 causal regressions for strict provenance, archive integrity, maintenance custody and bounded process cleanup.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_manifest_provenance.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 unit test owner for ADR 0084 D9-A format-2 backup provenance, v1 compatibility, TOC cross-checking and destructive consumer refusals.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_postreview_boundaries.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 causal regressions for strict provenance, archive integrity, maintenance custody and bounded process cleanup.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

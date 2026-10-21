@@ -1,3 +1,4 @@
+import hashlib
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
@@ -214,22 +215,31 @@ class _FakeAuthority:
         self.events.append(("maintenance", "exit"))
 
 
-def test_release_cluster_initializes_and_backup_first_upgrades_exact_topology() -> None:
+def test_release_cluster_initializes_and_backup_first_upgrades_exact_topology(tmp_path: Path) -> None:
     operator = _FakeGraphOperator()
 
-    def backup(_home: str | Path, _operator: object, database: str) -> None:
+    def backup(_home: str | Path, _operator: object, database: str) -> Path:
         operator.events.append(("backup", database))
+        backup_dir = tmp_path / database
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        content = b"PGDMP-graph"
+        (backup_dir / "database.dump").write_bytes(content)
+        (backup_dir / "schema-upgrade.json").write_text(
+            f'{{"schema_version":1,"database":"{database}","artifact":"database.dump",'
+            f'"sha256":"{hashlib.sha256(content).hexdigest()}",'
+            f'"size_bytes":{len(content)},"restore_supported":true,"restore_blockers":[]}}\n',
+            encoding="utf-8",
+        )
+        return backup_dir
 
-    payload = initialize_release_cluster(
-        "/repo-map-home",
-        operator_factory=lambda _home: operator,
-        control_initializer=lambda _home: {
-            "result": "ready",
-            "database_created": True,
-        },
-        authority_factory=lambda _home: _FakeAuthority(operator.events),
-        backup_function=backup,
-    )
+    with patch("repomap_kg.runtime._backup_support.run_bounded_popen", return_value=b"1; 3079 13500 EXTENSION - plpgsql \n"):
+        payload = initialize_release_cluster(
+            "/repo-map-home",
+            operator_factory=lambda _home: operator,
+            control_initializer=lambda _home: {"result": "ready", "database_created": True},
+            authority_factory=lambda _home: _FakeAuthority(operator.events),
+            backup_function=backup,
+        )
 
     assert payload == {
         "command": "release-cluster-init",
@@ -250,13 +260,14 @@ def test_release_cluster_initializes_and_backup_first_upgrades_exact_topology() 
     assert operator.events.count(("roles", "graph_c")) == 1
 
 
-def test_release_control_preledger_is_backup_first_upgraded() -> None:
+def test_release_control_preledger_is_backup_first_upgraded(tmp_path: Path) -> None:
     store = SimpleNamespace(
         schema_readiness=lambda: SimpleNamespace(
             status=SimpleNamespace(value="preledger")
         )
     )
     authority = SimpleNamespace(
+        database_name="repomap_control",
         database_exists=lambda: True,
         control_store=lambda: store,
     )
@@ -288,20 +299,25 @@ def test_release_control_preledger_is_backup_first_upgraded() -> None:
             "/repo-map-home",
             Path("/repo-map-admin/schema-upgrades/unverified"),
         )
-    with patch(
-        "repomap_kg.runtime.release_cluster._backup_graph_before_upgrade",
-        return_value=Path("/repo-map-admin/schema-upgrades/synthetic"),
-    ) as backup:
-        receipt = kwargs["dump_function"](
-            "/repo-map-home",
-            database="repomap_control",
-        )
-        inspection = kwargs["inspect_function"](
-            "/repo-map-home",
-            receipt.plan.backup_path,
-        )
+    synthetic_dir = tmp_path / "synthetic"
+    synthetic_dir.mkdir()
+    (synthetic_dir / "database.dump").write_bytes(b"PGDMP-control")
+    (synthetic_dir / "schema-upgrade.json").write_text(
+        '{"schema_version":1,"database":"repomap_control","artifact":"database.dump",'
+        f'"sha256":"{hashlib.sha256(b"PGDMP-control").hexdigest()}",'
+        '"size_bytes":13,"restore_supported":true,"restore_blockers":[]}\n',
+        encoding="utf-8",
+    )
+    with (
+        patch("repomap_kg.runtime.release_cluster._backup_graph_before_upgrade", return_value=synthetic_dir) as backup,
+        patch("repomap_kg.runtime._backup_support.run_bounded_popen", return_value=b"1; 3079 13500 EXTENSION - plpgsql\n"),
+    ):
+        receipt = kwargs["dump_function"]("/repo-map-home", database="repomap_control")
+        inspection = kwargs["inspect_function"]("/repo-map-home", receipt.plan.backup_path)
     assert inspection.checksum_verified is True
-    assert inspection.manifest == {"restore_supported": True}
+    assert inspection.dump_summaries and getattr(inspection.dump_summaries[0], "dump_contents_read", False) is True
+    assert inspection.manifest["restore_supported"] is True
+    assert inspection.manifest["restore_blockers"] == []
     backup.assert_called_once()
 
 

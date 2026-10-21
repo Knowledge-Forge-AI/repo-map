@@ -4020,6 +4020,55 @@
       "source_commit": "1adfc7a15e830c8709f76f4e61abb9e24a8c0b17",
       "source_manifest_sha256": "32d7af46121ffdcb5031cf72a1d755b29a66d01bebfdc27fbce48429dc9f093c",
       "status_path": "tools/ci/nav27-navigation-projection-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime._backup_observation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_backup_observation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._backup_process",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_backup_process.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._backup_provenance",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_backup_provenance.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._backup_support",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_backup_support.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "803332b44cf3dc78a42bac611434229daa6a773b592a02f62c75b0bd211d1d0f",
+      "new_selected_set_sha256": "0c5d57467065040870ad136222268d998583c5dc0d22689ad9fa4f7bb9ef4e73",
+      "old_ownership_manifest_sha256": "000657c6c98af5e2417fa0b6f581067632a89d0fe0ebcb130bca12edd5042b6c",
+      "old_selected_set_sha256": "aafee861366359479c574d08406572620786b8afe16d8fcd9bc2edefa12b2136",
+      "phase": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1",
+      "reason": "D9-A provenance, refusal and bounded process foundation: exactly four new clean retained modules; no removed or reclassified incumbent and no new or increased debt, import edge or ceiling.",
+      "source_commit": "6860912b789db59792c6c56487ba17c7699ba800",
+      "source_manifest_sha256": "000657c6c98af5e2417fa0b6f581067632a89d0fe0ebcb130bca12edd5042b6c",
+      "status_path": "tools/ci/nav37-extension-provenance.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

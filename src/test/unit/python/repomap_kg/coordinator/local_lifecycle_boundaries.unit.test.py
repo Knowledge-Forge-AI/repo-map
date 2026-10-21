@@ -159,6 +159,7 @@ def test_maintenance_wrappers_bound_refusal_and_authority_errors(
 def test_control_authority_maintenance_window_orders_and_validates_graphs():
     events: list[str] = []
     authority = OwnedMaintenanceAuthority(events)
+    authority._authority_namespace = "test:lifecycle-boundaries"
     with authority.maintenance_activity():
         events.append("activity-owned")
     with authority.maintenance_window(

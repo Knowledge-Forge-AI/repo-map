@@ -13,6 +13,15 @@ from repomap_kg.runtime.backup_records import LocalDbBackupError
 from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
 from repomap_kg.runtime.local import setup_local_runtime
 from repomap_kg.runtime.plan import build_local_runtime_plan
+from repomap_test_support.local_db_backup import baseline_toc_bytes
+
+
+@pytest.fixture(autouse=True)
+def _mock_restore_toc_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "repomap_kg.runtime.backup_inspection._run_pg_restore_list_bytes",
+        lambda *_args, **_kwargs: baseline_toc_bytes(),
+    )
 
 
 STABLE_RECOVERY_POINT = {

@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 
 from repomap_kg.cli import main
+from repomap_kg.runtime.maintenance import bind_maintenance_custody, runtime_maintenance_namespace
 from repomap_kg.runtime.release_cluster import (
     GraphOperator,
     ReleaseClusterError,
@@ -16,6 +17,10 @@ from repomap_kg.runtime.release_cluster import (
     _runtime_password,
     initialize_release_cluster,
     release_cluster_status,
+)
+from repomap_test_support.local_db_backup import (
+    baseline_observation_json_bytes,
+    baseline_toc_bytes,
 )
 
 
@@ -135,12 +140,26 @@ def test_release_cluster_backup_adapter_inspects_and_publishes_manifest(
 ) -> None:
     operator = ReleaseGraphOperator.__new__(ReleaseGraphOperator)
     setattr(operator, "plan", SimpleNamespace())
+    operator.databases = ("graph_a",)
+    operator.control_database = "repomap_control"
+    operator.authority_namespace = runtime_maintenance_namespace(
+        Path("/repo-map-home"), host="127.0.0.1", port=5432
+    )
     operator.password = "synthetic-password"
     setattr(operator, "pg_dump_command", lambda database: (
         "/usr/bin/pg_dump",
         "-d",
         database,
     ))
+    @contextmanager
+    def fake_connect(_database: str):
+        yield SimpleNamespace(
+            execute=lambda _sql: SimpleNamespace(
+                fetchone=lambda: (baseline_observation_json_bytes().decode("utf-8"),)
+            )
+        )
+
+    setattr(operator, "_connect", fake_connect)
     staging = tmp_path / ".staging"
     staging.mkdir()
     published = tmp_path / "schema-upgrades" / "synthetic" / "graph_a"
@@ -157,6 +176,14 @@ def test_release_cluster_backup_adapter_inspects_and_publishes_manifest(
 
     monkeypatch.setenv("REPOMAP_ADMIN_ROOT", str(tmp_path))
     with (
+        bind_maintenance_custody(
+            mode="coordinator-maintenance-window",
+            control_database="repomap_control",
+            databases=("repomap_control", "graph_a"),
+            authority_namespace=runtime_maintenance_namespace(
+                Path("/repo-map-home"), host="127.0.0.1", port=5432
+            ),
+        ),
         patch(
             "repomap_kg.runtime.release_cluster.timestamp_utc",
             return_value="synthetic",
@@ -171,7 +198,7 @@ def test_release_cluster_backup_adapter_inspects_and_publishes_manifest(
         ) as stream,
         patch(
             "repomap_kg.runtime.release_cluster.subprocess.run",
-            return_value=SimpleNamespace(returncode=0),
+            return_value=SimpleNamespace(returncode=0, stdout=baseline_toc_bytes()),
         ) as inspect,
         patch(
             "repomap_kg.runtime.release_cluster.write_private_text"
@@ -191,13 +218,15 @@ def test_release_cluster_backup_adapter_inspects_and_publishes_manifest(
         str(staging / "database.dump"),
     )
     manifest = json.loads(write_manifest.call_args.args[1])
-    assert manifest == {
-        "artifact": "database.dump",
-        "restore_client": "/usr/bin/pg_restore",
-        "schema_version": 1,
-        "sha256": "a" * 64,
-        "size_bytes": 12,
-    }
+    assert manifest["artifact"] == "database.dump"
+    assert manifest["restore_client"] == "/usr/bin/pg_restore"
+    assert manifest["schema_version"] == 2
+    assert manifest["restore_protocol"] == "core_v1"
+    assert manifest["restore_supported"] is True
+    assert manifest["restore_blockers"] == []
+    assert manifest["sha256"] == "a" * 64
+    assert manifest["size_bytes"] == 12
+    assert "graph_a" in manifest["database_catalogs"]
 
 
 def test_release_cluster_refuses_noncurrent_postcondition() -> None:
@@ -320,27 +349,14 @@ def test_release_cluster_rejects_missing_or_oversized_runtime_password(
 
 
 def test_release_cluster_cli_wires_init_and_status() -> None:
-    ready = {
-        "result": "ready",
-        "graph_database_count": 3,
-    }
+    ready = {"result": "ready", "graph_database_count": 3}
     for command, target in (
         ("release-cluster-init", "initialize_release_cluster"),
         ("release-cluster-status", "release_cluster_status"),
     ):
         stdout = io.StringIO()
-        with patch(f"repomap_kg.cli.{target}", return_value=ready) as operation:
-            with redirect_stdout(stdout):
-                exit_code = main(
-                    [
-                        "ops",
-                        command,
-                        "--repo-map-home",
-                        "/placeholder/home",
-                        "--json",
-                    ]
-                )
-
+        with patch(f"repomap_kg.cli.{target}", return_value=ready) as operation, redirect_stdout(stdout):
+            exit_code = main(["ops", command, "--repo-map-home", "/placeholder/home", "--json"])
         assert exit_code == 0
         assert json.loads(stdout.getvalue()) == ready
         operation.assert_called_once_with("/placeholder/home")
@@ -348,20 +364,11 @@ def test_release_cluster_cli_wires_init_and_status() -> None:
 
 def test_release_cluster_cli_failure_is_bounded() -> None:
     stderr = io.StringIO()
-    with patch(
-        "repomap_kg.cli.initialize_release_cluster",
-        side_effect=ReleaseClusterError("release_cluster_init_failed"),
+    with (
+        patch("repomap_kg.cli.initialize_release_cluster", side_effect=ReleaseClusterError("release_cluster_init_failed")),
+        redirect_stderr(stderr),
     ):
-        with redirect_stderr(stderr):
-            exit_code = main(
-                [
-                    "ops",
-                    "release-cluster-init",
-                    "--repo-map-home",
-                    "/placeholder/home",
-                ]
-            )
-
+        exit_code = main(["ops", "release-cluster-init", "--repo-map-home", "/placeholder/home"])
     assert exit_code == 1
     assert stderr.getvalue() == "ERROR: release_cluster_init_failed\n"
 
@@ -369,22 +376,8 @@ def test_release_cluster_cli_failure_is_bounded() -> None:
 def test_release_cluster_cli_table_reports_not_ready() -> None:
     stdout = io.StringIO()
     payload = {"result": "not_ready", "graph_database_count": 2}
-    with patch(
-        "repomap_kg.cli.release_cluster_status",
-        return_value=payload,
-    ) as status:
-        with redirect_stdout(stdout):
-            exit_code = main(
-                [
-                    "ops",
-                    "release-cluster-status",
-                    "--repo-map-home",
-                    "/placeholder/home",
-                ]
-            )
-
+    with patch("repomap_kg.cli.release_cluster_status", return_value=payload) as status, redirect_stdout(stdout):
+        exit_code = main(["ops", "release-cluster-status", "--repo-map-home", "/placeholder/home"])
     assert exit_code == 1
-    assert stdout.getvalue() == (
-        "RepoMap release cluster: result=not_ready graphs=2\n"
-    )
+    assert stdout.getvalue() == "RepoMap release cluster: result=not_ready graphs=2\n"
     status.assert_called_once_with("/placeholder/home")

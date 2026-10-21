@@ -5,7 +5,10 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
+from repomap_test_support.local_db_backup import (
+    LocalDbBackupUnitTestCase,
+    maybe_provenance_runner_result,
+)
 
 from repomap_kg.runtime.backup import (
     LocalDbBackupError,
@@ -105,6 +108,8 @@ class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     events.append("exists")
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
                     events.append("backup")
                     return subprocess.CompletedProcess(command, 0, stdout=b"pre-drop-dump", stderr=b"")
@@ -168,6 +173,8 @@ class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
                     return self.owned_container_result(identity, command)
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
                     events.append("backup")
                     return subprocess.CompletedProcess(command, 0, stdout=b"pre-drop-dump", stderr=b"")
@@ -185,6 +192,7 @@ class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
                 manifest_path = plan.manifest_path
                 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
                 manifest["dump_files"][0]["sha256"] = "0" * 64
+                manifest["artifact_provenance"]["archive_bindings"][0]["sha256"] = "0" * 64
                 manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
             with patch(
@@ -226,6 +234,8 @@ class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
                     return self.owned_container_result(identity, command)
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"pre-drop-dump", stderr=b"")
                 return subprocess.CompletedProcess(

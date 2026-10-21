@@ -20,6 +20,7 @@ class _Store:
 class _Authority(LocalControlAuthority):
     def __init__(self, events: list[str]) -> None:
         self._database = "control"
+        self._authority_namespace = "test:maintenance-order"
         self._graph_databases = ("graph-a", "graph-b")
         self._events = events
 

@@ -18,6 +18,16 @@ from repomap_kg.runtime.backup_commands import backup_root
 from repomap_kg.runtime.backup_records import LocalDbBackupError
 from repomap_kg.runtime.local import setup_local_runtime
 from repomap_kg.runtime.plan import LocalRuntimeIdentity, build_local_runtime_plan
+from repomap_test_support.local_db_backup import (
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
+
+
+@pytest.fixture(autouse=True)
+def _unit_custody():
+    with unit_maintenance_window_patch():
+        yield
 
 
 TIMESTAMP = "20260717T130000Z"
@@ -67,6 +77,8 @@ def test_dump_all_captures_exact_owned_set_with_stable_manifest(tmp_path: Path) 
     def runner(command, **kwargs):
         if command[:2] == ["docker", "inspect"]:
             return _container_result(identity, command)
+        if (prov := maybe_provenance_runner_result(command)) is not None:
+            return prov
         if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
             database = command[-1]
             dumped.append(database)
@@ -246,6 +258,8 @@ def test_mid_set_failure_publishes_nothing_and_removes_staging(tmp_path: Path) -
         nonlocal calls
         if command[:2] == ["docker", "inspect"]:
             return _container_result(identity, command)
+        if (prov := maybe_provenance_runner_result(command)) is not None:
+            return prov
         if command[:2] == ["docker", "exec"] and "/usr/bin/pg_dump" in command:
             calls += 1
             kwargs["stdout"].write(b"partial-dump")

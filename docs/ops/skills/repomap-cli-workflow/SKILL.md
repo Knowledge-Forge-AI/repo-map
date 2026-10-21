@@ -224,6 +224,26 @@ wipe/reset/clear/truncate operation. Dumps and manifests belong under
 `REPOMAP_HOME/backups`. Do not operate on host-installed or unrelated
 Postgres.
 
+### PostgreSQL backup provenance and refusal
+
+New PostgreSQL backups use manifest format 2 with the retained `core_v1`
+execution protocol. Formats 1 and 2 remain readable. Format-1 capability
+provenance is unknown; an actual archive TOC showing a non-baseline extension
+refuses before restore creation or destructive backup-first work. Format 2
+requires bounded catalog and archive observations and derives support for the
+selected restore unit. A verified checksum or `restore_supported` flag alone
+does not establish a supported recovery artifact.
+
+Single/coordinated backup, restore, drop and graph/control upgrades share the
+support guard. Non-baseline extensions remain unsupported in D9-A even when
+fully observed; do not edit the manifest to bypass a refusal. Keep original
+archives and a compatible reader. Catalogs, role identities and artifact
+observations remain operator-private. Metadata records facts and assumptions;
+it does not establish an executed extension restore, artifact availability or
+production pgvector admission. D9-B remains separately proposed in
+[ADR 0084](../../../adr/2026/10/0084-extension-aware-backup-and-restore.md).
+
+
 ## Source Ingestion Routing
 
 Explicit, policy-approved source configs acquire non-folder artifacts into

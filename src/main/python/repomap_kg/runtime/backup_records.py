@@ -78,8 +78,7 @@ class LocalDbBackupPlan:
             return (PACKAGED_PG_DUMP, "-h", host, "-p", str(port), "-Fc", "-U", self.plan.user, "-d", database)
         return (
             self.plan.container_runtime, "exec", "-e", "PGPASSWORD",
-            self.plan.identity.postgres_container, PACKAGED_PG_DUMP,
-            "-Fc", "-U", self.plan.user, "-d", database,
+            self.plan.identity.postgres_container, PACKAGED_PG_DUMP, "-Fc", "-U", self.plan.user, "-d", database,
         )
 
 
@@ -96,29 +95,29 @@ class LocalDbBackupResult:
     dump_executed: bool = False
     destructive_db_actions: bool = False
     direct_db_required: bool = False
+    restore_supported: bool | None = None
+    restore_protocol: str = "core_v1"
+    restore_blockers: tuple[str, ...] = ()
 
     def to_jsonable(self) -> dict[str, Any]:
+        supported = (
+            self.restore_supported
+            if self.restore_supported is not None
+            else (bool(self.dump_files) and not self.restore_blockers)
+        )
         payload: dict[str, Any] = {
-            "command": self.command,
-            "result": self.result,
-            "backup_id": self.plan.backup_id,
-            "backup_kind": self.plan.backup_kind,
-            "database": self.plan.database,
-            "databases": list(self.plan.databases),
-            "timestamp": self.plan.timestamp,
-            "dump_format": self.plan.dump_format,
+            "command": self.command, "result": self.result,
+            "backup_id": self.plan.backup_id, "backup_kind": self.plan.backup_kind,
+            "database": self.plan.database, "databases": list(self.plan.databases),
+            "timestamp": self.plan.timestamp, "dump_format": self.plan.dump_format,
             "dump_files": [item.to_jsonable() for item in self.dump_files],
             "diagnostics": [item.to_jsonable() for item in self.diagnostics],
-            "backup_path_created": self.backup_path_created,
-            "dump_executed": self.dump_executed,
-            "destructive_db_actions": self.destructive_db_actions,
-            "direct_db_required": self.direct_db_required,
-            "direct_db_exposure": {
-                "enabled": self.plan.plan.direct_db_host_port_enabled,
-                "required": self.direct_db_required,
-            },
+            "backup_path_created": self.backup_path_created, "dump_executed": self.dump_executed,
+            "destructive_db_actions": self.destructive_db_actions, "direct_db_required": self.direct_db_required,
+            "direct_db_exposure": {"enabled": self.plan.plan.direct_db_host_port_enabled, "required": self.direct_db_required},
             "container": self.container.to_jsonable() if self.container else None,
-            "restore_supported": bool(self.dump_files),
+            "restore_protocol": self.restore_protocol, "restore_supported": supported,
+            "restore_blockers": list(self.restore_blockers),
         }
         if self.plan.reason:
             payload["reason"] = self.plan.reason
@@ -134,12 +133,9 @@ class BackupListingResult:
 
     def to_jsonable(self) -> dict[str, Any]:
         return {
-            "command": "backups",
-            "backup_count": len(self.backups),
-            "backups": list(self.backups),
+            "command": "backups", "backup_count": len(self.backups), "backups": list(self.backups),
             "diagnostics": [item.to_jsonable() for item in self.diagnostics],
-            "dump_contents_read": False,
-            "destructive_db_actions": False,
+            "dump_contents_read": False, "destructive_db_actions": False,
         }
 
 
@@ -154,8 +150,7 @@ class BackupInfoResult:
         return {
             "command": "backup-info",
             "manifest": safe_manifest_summary(self.manifest, self.manifest_path.parent),
-            "dump_contents_read": False,
-            "destructive_db_actions": False,
+            "dump_contents_read": False, "destructive_db_actions": False,
         }
 
 
@@ -169,17 +164,15 @@ class DumpTocSummary:
     table_data_count: int = 0
     tables: tuple[str, ...] = ()
     table_data_tables: tuple[str, ...] = ()
+    extensions: tuple[str, ...] = ()
+    schemas: tuple[str, ...] = ()
 
     def to_jsonable(self) -> dict[str, Any]:
         return {
-            "dump_file": self.dump_file,
-            "dump_format": self.dump_format,
-            "dump_contents_read": self.dump_contents_read,
-            "toc_entry_count": self.toc_entry_count,
-            "table_count": self.table_count,
-            "table_data_count": self.table_data_count,
-            "tables": list(self.tables),
-            "table_data_tables": list(self.table_data_tables),
+            "dump_file": self.dump_file, "dump_format": self.dump_format,
+            "dump_contents_read": self.dump_contents_read, "toc_entry_count": self.toc_entry_count,
+            "table_count": self.table_count, "table_data_count": self.table_data_count,
+            "tables": list(self.tables), "table_data_tables": list(self.table_data_tables),
         }
 
 
@@ -197,38 +190,30 @@ class BackupInspectResult:
     def to_jsonable(self) -> dict[str, Any]:
         manifest = safe_manifest_summary(self.manifest, self.manifest_path.parent)
         tables = bounded_sorted_union(summary.tables for summary in self.dump_summaries)
-        table_data_tables = bounded_sorted_union(
-            summary.table_data_tables for summary in self.dump_summaries
-        )
+        table_data_tables = bounded_sorted_union(summary.table_data_tables for summary in self.dump_summaries)
+        toc_exts = bounded_sorted_union(summary.extensions for summary in self.dump_summaries)
+        blockers = list(manifest.get("restore_blockers", []))
+        if any(ext != "plpgsql" for ext in toc_exts) and "extension-restore-protocol-unimplemented" not in blockers:
+            blockers = sorted([*blockers, "extension-restore-protocol-unimplemented"])
+        restore_supported = bool(manifest.get("restore_supported", False)) and not blockers
         table_presence = set(tables) | set(table_data_tables)
         return {
-            "command": "backup-inspect",
-            "backup_id": manifest.get("backup_id"),
-            "backup_kind": manifest.get("backup_kind"),
-            "database": manifest.get("database"),
-            "databases": manifest.get("databases", []),
-            "manifest_verified": True,
+            "command": "backup-inspect", "backup_id": manifest.get("backup_id"),
+            "backup_kind": manifest.get("backup_kind"), "database": manifest.get("database"),
+            "databases": manifest.get("databases", []), "manifest_verified": True,
             "checksum_verified": self.checksum_verified,
-            "restore_supported": bool(manifest.get("restore_supported", False)),
-            "dump_contents_read": any(
-                summary.dump_contents_read for summary in self.dump_summaries
-            ),
+            "restore_protocol": manifest.get("restore_protocol", "core_v1"),
+            "restore_supported": restore_supported, "restore_blockers": blockers,
+            "extension_census_state": manifest.get("extension_census_state", "unknown"),
+            "dump_contents_read": any(s.dump_contents_read for s in self.dump_summaries),
             "dump_format": self.manifest.get("dump_format"),
-            "toc_entry_count": sum(
-                summary.toc_entry_count for summary in self.dump_summaries
-            ),
-            "table_count": len(tables),
-            "table_data_count": len(table_data_tables),
-            "tables": list(tables),
-            "table_data_tables": list(table_data_tables),
-            "expected_repomap_tables": {
-                table: table in table_presence for table in EXPECTED_REPOMAP_TABLES
-            },
+            "toc_entry_count": sum(s.toc_entry_count for s in self.dump_summaries),
+            "table_count": len(tables), "table_data_count": len(table_data_tables),
+            "tables": list(tables), "table_data_tables": list(table_data_tables),
+            "expected_repomap_tables": {table: table in table_presence for table in EXPECTED_REPOMAP_TABLES},
             "dump_summaries": [summary.to_jsonable() for summary in self.dump_summaries],
             "diagnostics": [diagnostic.to_jsonable() for diagnostic in self.diagnostics],
-            "destructive_db_actions": False,
-            "raw_dump_contents_exposed": False,
-            "planned_command_exposed": False,
+            "destructive_db_actions": False, "raw_dump_contents_exposed": False, "planned_command_exposed": False,
         }
 
 
@@ -259,31 +244,19 @@ class LocalDbInitResult:
     direct_db_required: bool = False
 
     def to_jsonable(self) -> dict[str, Any]:
-        payload: dict[str, Any] = {
-            "command": self.command,
-            "result": self.result,
-            "database": self.database,
-            "source_mode": self.source_mode,
-            "backup_id": self.backup_id,
-            "dump_file": self.dump_file,
-            "checksum_verified": self.checksum_verified,
-            "target_existed": self.target_existed,
-            "planned_actions": list(self.planned_actions),
+        return {
+            "command": self.command, "result": self.result, "database": self.database,
+            "source_mode": self.source_mode, "backup_id": self.backup_id,
+            "dump_file": self.dump_file, "checksum_verified": self.checksum_verified,
+            "target_existed": self.target_existed, "planned_actions": list(self.planned_actions),
             "diagnostics": [item.to_jsonable() for item in self.diagnostics],
-            "database_created": self.database_created,
-            "schema_initialized": self.schema_initialized,
-            "dump_restored": self.dump_restored,
-            "schema_ready": self.schema_ready,
+            "database_created": self.database_created, "schema_initialized": self.schema_initialized,
+            "dump_restored": self.dump_restored, "schema_ready": self.schema_ready,
             "restore_supported": bool(self.dump_file and self.checksum_verified),
-            "destructive_db_actions": self.destructive_db_actions,
-            "direct_db_required": self.direct_db_required,
-            "direct_db_exposure": {
-                "enabled": self.runtime_plan.direct_db_host_port_enabled,
-                "required": self.direct_db_required,
-            },
+            "destructive_db_actions": self.destructive_db_actions, "direct_db_required": self.direct_db_required,
+            "direct_db_exposure": {"enabled": self.runtime_plan.direct_db_host_port_enabled, "required": self.direct_db_required},
             "container": self.container.to_jsonable() if self.container else None,
         }
-        return payload
 
 
 @dataclass(frozen=True)
@@ -311,67 +284,63 @@ class LocalDbDropResult:
 
     def to_jsonable(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
-            "command": self.command,
-            "result": self.result,
-            "database": self.database,
-            "backup_first": self.backup_first,
-            "confirmation_received": self.confirmation_received,
-            "dry_run": self.dry_run,
-            "backup_id": self.backup_plan.backup_id,
-            "backup_kind": self.backup_plan.backup_kind,
-            "restore_command_hint": restore_hint(self.backup_plan),
-            "target_existed": self.target_existed,
-            "checksum_verified": self.checksum_verified,
-            "restore_note_verified": self.restore_note_verified,
-            "planned_actions": list(self.planned_actions),
+            "command": self.command, "result": self.result, "database": self.database,
+            "backup_first": self.backup_first, "confirmation_received": self.confirmation_received,
+            "dry_run": self.dry_run, "backup_id": self.backup_plan.backup_id,
+            "backup_kind": self.backup_plan.backup_kind, "restore_command_hint": restore_hint(self.backup_plan),
+            "target_existed": self.target_existed, "checksum_verified": self.checksum_verified,
+            "restore_note_verified": self.restore_note_verified, "planned_actions": list(self.planned_actions),
             "diagnostics": [item.to_jsonable() for item in self.diagnostics],
-            "backup_path_created": bool(
-                self.backup_result and self.backup_result.backup_path_created
-            ),
+            "backup_path_created": bool(self.backup_result and self.backup_result.backup_path_created),
             "dump_executed": bool(self.backup_result and self.backup_result.dump_executed),
             "database_dropped": self.database_dropped,
-            "restore_supported": self.backup_first,
-            "destructive_db_actions": self.destructive_db_actions,
-            "direct_db_required": self.direct_db_required,
-            "direct_db_exposure": {
-                "enabled": self.runtime_plan.direct_db_host_port_enabled,
-                "required": self.direct_db_required,
-            },
+            "restore_supported": (
+                self.backup_result.restore_supported
+                if self.backup_result and self.backup_result.restore_supported is not None
+                else self.backup_first
+            ),
+            "destructive_db_actions": self.destructive_db_actions, "direct_db_required": self.direct_db_required,
+            "direct_db_exposure": {"enabled": self.runtime_plan.direct_db_host_port_enabled, "required": self.direct_db_required},
             "container": self.container.to_jsonable() if self.container else None,
         }
         if self.backup_plan.reason:
-            payload["reason"] = self.backup_plan.reason
+            payload["reason"] = self.plan_reason
         return payload
+
+    @property
+    def plan_reason(self) -> str | None:
+        return self.backup_plan.reason
 
 
 def safe_manifest_summary(manifest: Mapping[str, Any], backup_path: Path) -> dict[str, Any]:
+    del backup_path
     dump_files = [
-        {
-            "name": item.get("name"),
-            "size_bytes": item.get("size_bytes"),
-            "sha256": item.get("sha256"),
-        }
+        {"name": item.get("name"), "size_bytes": item.get("size_bytes"), "sha256": item.get("sha256")}
         for item in manifest.get("dump_files", [])
         if isinstance(item, Mapping)
     ]
     backup_id = manifest.get("backup_id")
     database = manifest.get("database")
-    restore_command_hint = None
-    if backup_id and database and manifest.get("restore_supported", False):
-        restore_command_hint = (
-            f"repomap-kg local db init --database {database} --from-dump {backup_id}"
-        )
+    version = manifest.get("backup_format_version", 1)
+    protocol = str(manifest.get("restore_protocol") or "core_v1")
+    raw_blockers = manifest.get("restore_blockers")
+    blockers = (
+        sorted({str(b) for b in raw_blockers if isinstance(b, str) and b.strip()})
+        if isinstance(raw_blockers, list)
+        else []
+    )
+    if protocol != "core_v1" and "extension-restore-protocol-unimplemented" not in blockers:
+        blockers = sorted([*blockers, "extension-restore-protocol-unimplemented"])
+    census = "complete" if version == 2 and isinstance(manifest.get("database_catalogs"), Mapping) else "unknown"
+    restore_supported = bool(manifest.get("restore_supported", False)) and not blockers
+    hint = f"repomap-kg local db init --database {database} --from-dump {backup_id}" if (backup_id and database and restore_supported) else None
     return {
-        "backup_id": backup_id,
-        "timestamp": manifest.get("timestamp"),
-        "backup_kind": manifest.get("backup_kind"),
-        "database": database,
-        "databases": manifest.get("databases", []),
-        "runtime_id": manifest.get("runtime_id"),
-        "dump_files": dump_files,
-        "total_bytes": sum(item.get("size_bytes") or 0 for item in dump_files),
-        "restore_supported": bool(manifest.get("restore_supported", False)),
-        "restore_command_hint": restore_command_hint,
+        "backup_format_version": version, "backup_id": backup_id, "timestamp": manifest.get("timestamp"),
+        "backup_kind": manifest.get("backup_kind"), "database": database,
+        "databases": manifest.get("databases", []), "runtime_id": manifest.get("runtime_id"),
+        "dump_files": dump_files, "total_bytes": sum(item.get("size_bytes") or 0 for item in dump_files),
+        "restore_protocol": protocol, "restore_supported": restore_supported, "restore_blockers": blockers,
+        "extension_census_state": census, "restore_command_hint": hint,
     }
 
 

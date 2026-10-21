@@ -20,6 +20,16 @@ from repomap_kg.runtime.backup_manifests import (
 )
 from repomap_kg.runtime.backup_records import RuntimeContainerMetadata
 from repomap_kg.runtime.local import setup_local_runtime
+from repomap_test_support.local_db_backup import (
+    maybe_provenance_runner_result,
+    unit_maintenance_window_patch,
+)
+
+
+@pytest.fixture(autouse=True)
+def _unit_custody():
+    with unit_maintenance_window_patch():
+        yield
 
 
 TIMESTAMP = "20260717T120000Z"
@@ -48,6 +58,8 @@ def test_dump_streams_to_private_staging_then_atomically_publishes(
     observed_streams: list[object] = []
 
     def runner(command, **kwargs):
+        if (prov := maybe_provenance_runner_result(command)) is not None:
+            return prov
         assert "/usr/bin/pg_dump" in command
         assert not final_path.exists()
         stream = kwargs["stdout"]
@@ -79,7 +91,8 @@ def test_dump_streams_to_private_staging_then_atomically_publishes(
     restore_path = final_path / "restore.md"
     assert dump_path.read_bytes() == DUMP_BYTES
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert manifest["backup_format_version"] == 1
+    assert manifest["backup_format_version"] == 2
+    assert manifest["restore_protocol"] == "core_v1"
     assert manifest["dump_files"] == [
         {
             "name": "dump.pgcustom",
@@ -106,6 +119,8 @@ def test_manifest_failure_removes_staging_and_never_publishes_final_set(
     final_path = _final_backup_path(home)
 
     def runner(command, **kwargs):
+        if (prov := maybe_provenance_runner_result(command)) is not None:
+            return prov
         stream = kwargs["stdout"]
         if stream is not subprocess.PIPE:
             stream.write(DUMP_BYTES)
@@ -141,6 +156,8 @@ def test_midstream_dump_failure_removes_partial_staging_artifact(
     final_path = _final_backup_path(home)
 
     def runner(command, **kwargs):
+        if (prov := maybe_provenance_runner_result(command)) is not None:
+            return prov
         stream = kwargs["stdout"]
         assert stream is not subprocess.PIPE
         stream.write(b"partial-private-dump")
@@ -176,6 +193,8 @@ def test_dump_refuses_duplicate_stream_and_returned_bytes_without_fallback(
     final_path = _final_backup_path(home)
 
     def runner(command, **kwargs):
+        if (prov := maybe_provenance_runner_result(command)) is not None:
+            return prov
         kwargs["stdout"].write(b"streamed")
         return subprocess.CompletedProcess(
             command,

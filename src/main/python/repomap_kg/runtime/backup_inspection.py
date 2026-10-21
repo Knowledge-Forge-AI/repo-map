@@ -6,6 +6,23 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from repomap_kg.ops.config import resolve_repo_map_home
+from repomap_kg.runtime._backup_provenance import (
+    BACKUP_FORMAT_VERSION,
+    CORE_V1_RESTORE_PROTOCOL,
+    DEFAULT_TOC_TIMEOUT_SECONDS,
+    MAX_TOC_OUTPUT_BYTES,
+    _STDLIB_SUBPROCESS_RUN,
+    parse_and_verify_toc_provenance,
+    parse_toc_entries,
+    provenance_error,
+    run_bounded_popen,
+    runtime_postgres_password,
+)
+from repomap_kg.runtime._backup_support import (
+    BackupSupportEvaluation,
+    raise_for_unsupported_restore,
+    require_backup_restore_supported,
+)
 from repomap_kg.runtime.backup_commands import (
     CommandRunner,
     backup_root,
@@ -153,19 +170,41 @@ def inspect_backup(
             continue
         if container is None:
             container = inspect_owned_postgres_container(runtime_plan, runner)
-        toc_text = run_pg_restore_list(
-            runtime_plan,
-            dump_path,
-            planned_pg_restore_list_command(runtime_plan),
-            runner,
+        cmd = planned_pg_restore_list_command(runtime_plan)
+        if run_pg_restore_list is globals().get("run_pg_restore_list"):
+            raw_toc_bytes = _run_pg_restore_list_bytes(runtime_plan, dump_path, cmd, runner)
+            toc_text = decode_process_output(raw_toc_bytes)
+        else:
+            toc_out: Any = run_pg_restore_list(runtime_plan, dump_path, cmd, runner)
+            raw_toc_bytes = toc_out if isinstance(toc_out, bytes) else str(toc_out).encode("utf-8")
+            toc_text = decode_process_output(toc_out)
+        summary = summarize_pg_restore_toc(
+            toc_text, dump_file=dump_name_safe, dump_format=dump_format
         )
-        dump_summaries.append(
-            summarize_pg_restore_toc(
-                toc_text,
-                dump_file=dump_name_safe,
-                dump_format=dump_format,
-            )
-        )
+        dump_summaries.append(summary)
+        if manifest.get("backup_format_version") == BACKUP_FORMAT_VERSION:
+            db_for_dump = _database_for_dump_name(manifest, dump_name_safe)
+            catalogs = manifest.get("database_catalogs")
+            db_cat = catalogs.get(db_for_dump) if isinstance(catalogs, Mapping) and db_for_dump else None
+            if isinstance(db_cat, Mapping) and db_for_dump:
+                try:
+                    toc_obs = parse_and_verify_toc_provenance(
+                        raw_toc_bytes, database=db_for_dump, database_catalog=db_cat
+                    )
+                    _verify_manifest_toc_binding(
+                        manifest, database=db_for_dump, dump_file=dump_name_safe, toc_sha256=toc_obs.toc_sha256
+                    )
+                except LocalDbBackupError as error:
+                    diagnostics.extend(error.diagnostics)
+                    manifest = _mark_manifest_toc_inconsistent(manifest)
+            else:
+                diagnostics.append(
+                    LocalRuntimeDiagnostic("error", "backup-toc-inconsistent", dump_name_safe, "missing database catalog for dump")
+                )
+                manifest = _mark_manifest_toc_inconsistent(manifest)
+        if any(ext != "plpgsql" for ext in summary.extensions):
+            manifest = _mark_manifest_blocker(manifest, "extension-not-allowlisted")
+            manifest = _mark_manifest_blocker(manifest, "extension-restore-protocol-unimplemented")
     return BackupInspectResult(
         repo_map_home=home,
         backups_root=backups_root,
@@ -178,20 +217,147 @@ def inspect_backup(
     )
 
 
+def _database_for_dump_name(manifest: Mapping[str, Any], dump_name: str) -> str | None:
+    if isinstance(manifest.get("database"), str):
+        return str(manifest["database"])
+    if dump_name.endswith(".pgcustom"):
+        return dump_name[: -len(".pgcustom")]
+    return None
+
+
+def _verify_manifest_toc_binding(
+    manifest: Mapping[str, Any], *, database: str, dump_file: str, toc_sha256: str
+) -> None:
+    art = manifest.get("artifact_provenance")
+    bindings = art.get("archive_bindings") if isinstance(art, Mapping) else None
+    if isinstance(bindings, list):
+        for binding in bindings:
+            if (
+                isinstance(binding, Mapping)
+                and binding.get("database") == database
+                and binding.get("dump_file") == dump_file
+            ):
+                if binding.get("toc_sha256") != toc_sha256:
+                    raise provenance_error("backup-toc-inconsistent", database, "archive TOC digest mismatch")
+                return
+    raise provenance_error("backup-toc-inconsistent", database, "archive TOC binding missing in manifest")
+
+
+def _mark_manifest_blocker(manifest: Mapping[str, Any], blocker: str) -> dict[str, Any]:
+    updated = dict(manifest)
+    raw = updated.get("restore_blockers")
+    blockers = {str(b) for b in raw if isinstance(b, str)} if isinstance(raw, list) else set()
+    blockers.add(blocker)
+    updated["restore_blockers"] = sorted(blockers)
+    updated["restore_supported"] = False
+    return updated
+
+
+def _mark_manifest_toc_inconsistent(manifest: Mapping[str, Any]) -> dict[str, Any]:
+    return _mark_manifest_blocker(manifest, "backup-toc-inconsistent")
+
+
+def _run_pg_restore_list_bytes(
+    plan: LocalRuntimePlan,
+    dump_path: Path,
+    command: Sequence[str],
+    command_runner: CommandRunner,
+) -> bytes:
+    if command_runner is _STDLIB_SUBPROCESS_RUN:
+        import os
+
+        secret = runtime_postgres_password(plan)
+        env = dict(os.environ, PGPASSWORD=secret)
+        return run_bounded_popen(
+            command,
+            max_output_bytes=MAX_TOC_OUTPUT_BYTES,
+            timeout_seconds=DEFAULT_TOC_TIMEOUT_SECONDS,
+            error_code="backup-toc-inconsistent",
+            field=dump_path.name,
+            secret=secret,
+            env=env,
+            stdin_path=dump_path,
+        )
+    try:
+        with dump_path.open("rb") as input_stream:
+            result = run_container_command(
+                plan,
+                command,
+                command_runner,
+                label="pg_restore -l",
+                input_stream=input_stream,
+            )
+    except OSError as exc:
+        raise provenance_error(
+            "backup-toc-inconsistent",
+            dump_path.name,
+            "failed to open archive for TOC check",
+        ) from exc
+    raw = (
+        result.stdout
+        if isinstance(result.stdout, bytes)
+        else decode_process_output(result.stdout).encode("utf-8")
+    )
+    if len(raw) > MAX_TOC_OUTPUT_BYTES:
+        raise provenance_error("backup-toc-inconsistent", dump_path.name, "TOC output exceeded ceiling")
+    return raw
+
+
 def run_pg_restore_list(
     plan: LocalRuntimePlan,
     dump_path: Path,
     command: Sequence[str],
     command_runner: CommandRunner,
 ) -> str:
-    result = run_container_command(
+    return decode_process_output(_run_pg_restore_list_bytes(plan, dump_path, command, command_runner))
+
+
+def verify_archive_toc_for_restore(
+    plan: LocalRuntimePlan,
+    manifest: Mapping[str, Any],
+    *,
+    database: str,
+    dump_path: Path,
+    command_runner: CommandRunner,
+    **_ignored: Any,
+) -> None:
+    raw_toc_bytes = _run_pg_restore_list_bytes(
         plan,
-        command,
+        dump_path,
+        planned_pg_restore_list_command(plan),
         command_runner,
-        label="pg_restore -l",
-        input_data=dump_path.read_bytes(),
     )
-    return decode_process_output(result.stdout)
+    toc_obs = parse_toc_entries(raw_toc_bytes, database=database)
+    toc_text = decode_process_output(raw_toc_bytes)
+    summary = summarize_pg_restore_toc(
+        toc_text, dump_file=dump_path.name, dump_format="pgcustom"
+    )
+    if any(ext != "plpgsql" for ext in summary.extensions) or any(
+        ext != "plpgsql" for ext in toc_obs.extensions
+    ):
+        raise_for_unsupported_restore(
+            BackupSupportEvaluation(
+                restore_protocol=CORE_V1_RESTORE_PROTOCOL,
+                restore_supported=False,
+                restore_blockers=(
+                    "extension-not-allowlisted",
+                    "extension-restore-protocol-unimplemented",
+                ),
+                extension_census_state="unknown",
+            ),
+            target=database,
+        )
+    if manifest.get("backup_format_version") == BACKUP_FORMAT_VERSION:
+        catalogs = manifest.get("database_catalogs")
+        db_cat = catalogs.get(database) if isinstance(catalogs, Mapping) else None
+        if not isinstance(db_cat, Mapping):
+            raise provenance_error("backup-toc-inconsistent", database, "missing database catalog")
+        toc_obs = parse_and_verify_toc_provenance(
+            raw_toc_bytes, database=database, database_catalog=db_cat
+        )
+        _verify_manifest_toc_binding(
+            manifest, database=database, dump_file=dump_path.name, toc_sha256=toc_obs.toc_sha256
+        )
 
 
 def verify_drop_backup(
@@ -203,6 +369,12 @@ def verify_drop_backup(
     verify_dump_file_checksum(
         backup_result.plan.backup_path / dump_file["name"],
         dump_file,
+    )
+    require_backup_restore_supported(
+        manifest,
+        database=database,
+        require_quiescence=True,
+        target=database,
     )
     if not backup_result.plan.restore_path.is_file():
         raise LocalDbBackupError(

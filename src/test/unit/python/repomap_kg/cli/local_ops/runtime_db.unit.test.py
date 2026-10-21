@@ -214,21 +214,40 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
         ):
             exit_code = main(
                 [
-                    "local",
-                    "db",
-                    "upgrade-schema",
-                    "--repo-map-home",
-                    "/tmp/repo-map-home",
-                    "--database",
-                    "repomap_test",
-                    "--backup-first",
-                    "--yes",
-                    "--json",
+                    "local", "db", "upgrade-schema", "--repo-map-home", "/tmp/repo-map-home",
+                    "--database", "repomap_test", "--backup-first", "--yes", "--json",
                 ]
             )
 
-        self.assertEqual(exit_code, 0)
-        self.assertEqual(events, ["enter", "exit"])
+        self.assertEqual((exit_code, events), (0, ["enter", "exit"]))
+
+        dump_events: list[str] = []
+
+        @contextmanager
+        def dump_window(home, database):
+            self.assertEqual((home, database), ("/tmp/repo-map-home", "repomap_test"))
+            dump_events.append("enter")
+            try:
+                yield
+            finally:
+                dump_events.append("exit")
+
+        def dump_result(*args, **kwargs):
+            self.assertEqual(dump_events, ["enter"])
+            return SimpleNamespace(to_jsonable=lambda: {"command": "dump", "result": "ok"})
+
+        with (
+            patch("repomap_kg.cli.maintenance_window_for_database_drop", side_effect=dump_window),
+            patch(
+                "repomap_kg.cli.dump_database",
+                side_effect=dump_result,
+            ),
+            redirect_stdout(io.StringIO()),
+        ):
+            dump_code = main(
+                ["local", "db", "dump", "--repo-map-home", "/tmp/repo-map-home", "--database", "repomap_test", "--json"]
+            )
+        self.assertEqual((dump_code, dump_events), (0, ["enter", "exit"]))
 
     def test_local_runtime_and_db_text_commands_delegate_to_formatters(self):
         def result(command):

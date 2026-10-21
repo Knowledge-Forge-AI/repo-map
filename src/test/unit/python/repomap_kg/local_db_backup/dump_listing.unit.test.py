@@ -4,7 +4,10 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
+from repomap_test_support.local_db_backup import (
+    LocalDbBackupUnitTestCase,
+    maybe_provenance_runner_result,
+)
 
 from repomap_kg.runtime.backup import (
     LocalDbBackupError,
@@ -71,6 +74,8 @@ class LocalDbBackupDumpListingUnitTests(LocalDbBackupUnitTestCase):
                         stderr="",
                     )
                 if command[:2] == ["docker", "exec"]:
+                    if (prov := maybe_provenance_runner_result(command)) is not None:
+                        return prov
                     return subprocess.CompletedProcess(
                         command,
                         0,
@@ -96,7 +101,10 @@ class LocalDbBackupDumpListingUnitTests(LocalDbBackupUnitTestCase):
             self.assertTrue(restore_path.is_file())
             self.assertEqual(dump_path.read_bytes(), b"fake-pgcustom-dump")
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            self.assertEqual(manifest["backup_format_version"], 1)
+            self.assertEqual(manifest["backup_format_version"], 2)
+            self.assertEqual(manifest["restore_protocol"], "core_v1")
+            self.assertEqual(manifest["restore_blockers"], [])
+            self.assertIn("repomap", manifest["database_catalogs"])
             self.assertEqual(manifest["backup_kind"], "manual-dump")
             self.assertEqual(manifest["database"], "repomap")
             self.assertEqual(manifest["container"]["name"], identity.postgres_container)
@@ -171,6 +179,8 @@ class LocalDbBackupDumpListingUnitTests(LocalDbBackupUnitTestCase):
                         stderr="",
                     )
                 if command[:2] == ["docker", "exec"]:
+                    if (prov := maybe_provenance_runner_result(command)) is not None:
+                        return prov
                     return subprocess.CompletedProcess(command, 0, stdout=b"dump", stderr=b"")
                 raise AssertionError(command)
 

@@ -12,6 +12,9 @@ from repomap_kg.coordinator._lifecycle_authority import (
     _maintenance_window,
     _validate_reference_database,
 )
+from repomap_kg.runtime._backup_support import (
+    require_verified_backup_inspection_supported,
+)
 from repomap_kg.runtime.backup import dump_database, inspect_backup
 from repomap_kg.runtime.backup_commands import timestamp_utc
 
@@ -163,8 +166,8 @@ def upgrade_coordinator_control(
             )
     except CoordinatorControlError:
         raise
-    except Exception:
-        raise CoordinatorControlError("coordinator_control_upgrade_failed") from None
+    except Exception as exc:
+        raise CoordinatorControlError("coordinator_control_upgrade_failed") from exc
 
 
 def _upgrade_coordinator_control_owned(
@@ -224,11 +227,12 @@ def _upgrade_coordinator_control_owned(
             timestamp=upgrade_timestamp,
         )
         inspection = inspect_function(repo_map_home, backup.plan.backup_path)
-        if not (
-            inspection.checksum_verified
-            and inspection.dump_summaries
-            and inspection.manifest.get("restore_supported") is True
-        ):
+        if not (inspection.checksum_verified and inspection.dump_summaries):
+            raise RuntimeError("control backup is not restorable")
+        require_verified_backup_inspection_supported(
+            inspection, database=authority.database_name
+        )
+        if inspection.manifest.get("restore_supported") is not True:
             raise RuntimeError("control backup is not restorable")
 
         reference_created = False
@@ -262,5 +266,5 @@ def _upgrade_coordinator_control_owned(
             "reference_cleaned": reference_cleaned,
             "planned_actions": list(actions),
         }
-    except Exception:
-        raise CoordinatorControlError("coordinator_control_upgrade_failed") from None
+    except Exception as exc:
+        raise CoordinatorControlError("coordinator_control_upgrade_failed") from exc

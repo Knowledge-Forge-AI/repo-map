@@ -155,7 +155,10 @@ class LocalDbBackupReportsInspectUnitTests(LocalDbBackupUnitTestCase):
                 if command[:2] == ["docker", "inspect"]:
                     return self.owned_container_result(identity, command)
                 if command[:2] == ["docker", "exec"] and "/usr/bin/pg_restore" in command:
-                    self.assertEqual(kwargs.get("input"), (backup_dir / "dump.pgcustom").read_bytes())
+                    stdin_stream = kwargs.get("stdin")
+                    self.assertIsNone(kwargs.get("input"))
+                    assert stdin_stream is not None
+                    self.assertEqual(stdin_stream.read(), (backup_dir / "dump.pgcustom").read_bytes())
                     return subprocess.CompletedProcess(command, 0, stdout=toc.encode("utf-8"), stderr=b"")
                 raise AssertionError(command)
 

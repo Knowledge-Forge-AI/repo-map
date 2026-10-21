@@ -2101,9 +2101,45 @@
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR 0084 D9-A bounded catalog observation and archive TOC cross-checking helper under existing zero-new-debt retained Python enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._backup_observation",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.runtime._backup_operations under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "repomap_kg.runtime._backup_operations",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR 0084 D9-A bounded provenance process IO and exact owned POSIX session cleanup under zero-new-debt retained Python enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._backup_process",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR 0084 D9-A format-2 backup provenance records, SQL catalog observation contract and TOC parser under existing zero-new-debt retained Python enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._backup_provenance",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR 0084 D9-A shared backup restore support and fail-closed consumer refusal evaluator under existing zero-new-debt retained Python enforcement.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._backup_support",
       "ownership_class": "python_retained"
     },
     {

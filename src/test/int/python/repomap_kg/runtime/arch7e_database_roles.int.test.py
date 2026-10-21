@@ -16,6 +16,7 @@ from repomap_kg.runtime.local import setup_local_runtime
 from repomap_kg.runtime.release_cluster import (
     ReleaseClusterError,
     ReleaseGraphOperator,
+    _backup_graph_before_upgrade,
     initialize_release_cluster,
     release_cluster_status,
 )
@@ -382,13 +383,13 @@ def test_release_cluster_backup_first_upgrades_when_behind(
         operator = ReleaseGraphOperator(home)
         assert operator.schema_state("repomap_cluster_graph")[0] == "behind"
 
+        monkeypatch.setenv("REPOMAP_ADMIN_ROOT", str(tmp_path / "admin"))
         backups_called: list[str] = []
 
-        def track_backup(_home, op, db):
-            state, applied = op.schema_state(db)
-            assert state == "behind"
-            assert applied == 1
+        def track_backup(h, op, db):
+            assert op.schema_state(db) == ("behind", 1)
             backups_called.append(db)
+            return _backup_graph_before_upgrade(h, op, db)
 
         res = initialize_release_cluster(home, backup_function=track_backup)
         assert res["result"] == "ready" and res["graph_schema_upgraded_count"] == 1

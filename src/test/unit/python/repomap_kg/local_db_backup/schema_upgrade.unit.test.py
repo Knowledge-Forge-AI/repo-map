@@ -198,7 +198,7 @@ class TestGraphSchemaUpgradeUnit:
         inspection = SimpleNamespace(
             checksum_verified=True,
             dump_summaries=(object(),),
-            manifest={"restore_supported": True},
+            manifest={"backup_format_version": 1, "restore_supported": True},
         )
         expected_ledger = tuple(
             (
@@ -305,7 +305,7 @@ class TestGraphSchemaUpgradeUnit:
         inspection = SimpleNamespace(
             checksum_verified=True,
             dump_summaries=(object(),),
-            manifest={"restore_supported": True},
+            manifest={"backup_format_version": 1, "restore_supported": True},
         )
 
         with (

@@ -8,6 +8,12 @@ import tempfile
 from typing import Any
 import unittest
 
+from repomap_test_support.local_db_backup import (
+    baseline_toc_bytes,
+    default_baseline_database_catalog,
+    default_baseline_server_provenance,
+    maybe_provenance_runner_result,
+)
 from repomap_kg.runtime.backup_manifests import BACKUP_FORMAT_VERSION
 from repomap_kg.runtime.backup_records import LocalDbBackupError
 from repomap_kg.runtime.backup_restore_sets import (
@@ -42,6 +48,7 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
                 }
             )
 
+        toc_sha = hashlib.sha256(baseline_toc_bytes()).hexdigest()
         manifest = {
             "backup_format_version": BACKUP_FORMAT_VERSION,
             "backup_id": "test-backup-s9",
@@ -49,12 +56,40 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
             "databases": list(plan.owned_databases),
             "recovery_point": STABLE_RECOVERY_POINT,
             "dump_files": dump_files_list,
+            "restore_protocol": "core_v1",
+            "restore_supported": True,
+            "restore_blockers": [],
+            "server_provenance": default_baseline_server_provenance(),
+            "artifact_provenance": {
+                "archive_bindings": [
+                    {
+                        "database": db,
+                        "dump_file": f"{db}.pgcustom",
+                        "sha256": item["sha256"],
+                        "size_bytes": item["size_bytes"],
+                        "toc_sha256": toc_sha,
+                    }
+                    for db, item in zip(plan.owned_databases, dump_files_list, strict=True)
+                ],
+                "dump_format": "pgcustom",
+            },
+            "database_catalogs": {
+                db: default_baseline_database_catalog(owner=plan.user)
+                for db in plan.owned_databases
+            },
+            "quiescence": {
+                "verified": True,
+                "before_after_fingerprint_matched": True,
+                "mode": "coordinated-maintenance-window",
+            },
         }
         (backup_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
         return home, backup_dir, plan
 
     def _default_runner(self, plan: Any) -> Any:
-        def runner(cmd: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        def runner(cmd: Any, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
+            if (prov := maybe_provenance_runner_result(cmd)) is not None:
+                return prov
             cmd_str = " ".join(str(c) for c in cmd)
             if "inspect" in cmd:
                 return subprocess.CompletedProcess(
@@ -87,11 +122,18 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
             valid_manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
 
             cases = (
-                ({"backup_format_version": 999}, "coordinated-backup-scope-invalid"),
+                ({"backup_format_version": 999}, "backup-format-unsupported"),
                 ({"scope": "single-database"}, "coordinated-backup-scope-invalid"),
                 ({"database": "repomap"}, "coordinated-backup-scope-invalid"),
                 ({"recovery_point": {"status": "unstable"}}, "coordinated-backup-unstable"),
                 ({"databases": ["only_one_db"]}, "coordinated-backup-topology-mismatch"),
+                (
+                    {
+                        "restore_supported": False,
+                        "restore_blockers": ["extension-not-allowlisted"],
+                    },
+                    "backup-extension-restore-unsupported",
+                ),
             )
             for override, expected_code in cases:
                 mutated = dict(valid_manifest)
@@ -155,6 +197,8 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
             home, backup_dir, plan = self._setup_backup_fixture(tmpdir)
 
             def runner_with_existing(cmd, **kwargs):
+                if (prov := maybe_provenance_runner_result(cmd)) is not None:
+                    return prov
                 cmd_str = " ".join(str(c) for c in cmd)
                 if "inspect" in cmd:
                     return subprocess.CompletedProcess(
@@ -206,6 +250,8 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
             recorded_actions = []
 
             def tracking_runner(cmd, **kwargs):
+                if (prov := maybe_provenance_runner_result(cmd)) is not None:
+                    return prov
                 cmd_str = " ".join(str(c) for c in cmd)
                 if "inspect" in cmd:
                     return subprocess.CompletedProcess(
@@ -257,6 +303,8 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
             cleaned_up = []
 
             def failing_runner(cmd, **kwargs):
+                if (prov := maybe_provenance_runner_result(cmd)) is not None:
+                    return prov
                 cmd_str = " ".join(str(c) for c in cmd)
                 if "inspect" in cmd:
                     return subprocess.CompletedProcess(
@@ -294,6 +342,8 @@ class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):
             home, backup_dir, plan = self._setup_backup_fixture(tmpdir)
 
             def catastrophic_runner(cmd, **kwargs):
+                if (prov := maybe_provenance_runner_result(cmd)) is not None:
+                    return prov
                 cmd_str = " ".join(str(c) for c in cmd)
                 if "inspect" in cmd:
                     return subprocess.CompletedProcess(

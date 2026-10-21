@@ -4,14 +4,8 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
-
-from repomap_kg.runtime.backup import (
-    LocalDbBackupError,
-    format_init_result_table,
-    init_database_from_dump,
-    init_database_from_source,
-)
+from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase, maybe_provenance_runner_result
+from repomap_kg.runtime.backup import LocalDbBackupError, format_init_result_table, init_database_from_dump, init_database_from_source
 from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
 from repomap_kg.storage import StorageSchemaError, discover_migrations
 
@@ -124,6 +118,8 @@ class LocalDbBackupInitLifecycleUnitTests(LocalDbBackupUnitTestCase):
             def fake_runner(command, **kwargs):
                 if command[:2] == ["docker", "inspect"]:
                     return self.owned_container_result(identity, command)
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"]:
                     return subprocess.CompletedProcess(command, 0, stdout=b"0\n", stderr=b"")
                 raise AssertionError(command)
@@ -156,6 +152,8 @@ class LocalDbBackupInitLifecycleUnitTests(LocalDbBackupUnitTestCase):
                 calls.append(list(command))
                 if command[:2] == ["docker", "inspect"]:
                     return self.owned_container_result(identity, command)
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if "to_regclass('public.repomap_schema_migrations')" in " ".join(command):
                     return subprocess.CompletedProcess(command, 0, stdout=b"t\n", stderr=b"")
                 if "FROM repomap_schema_migrations ORDER BY ordinal" in " ".join(command):
@@ -183,7 +181,7 @@ class LocalDbBackupInitLifecycleUnitTests(LocalDbBackupUnitTestCase):
             self.assertTrue(payload["database_created"])
             self.assertFalse(payload["schema_initialized"])
             self.assertTrue(payload["dump_restored"])
-            restore_calls = [call for call in calls if "/usr/bin/pg_restore" in call]
+            restore_calls = [call for call in calls if "/usr/bin/pg_restore" in call and "-l" not in call]
             self.assertEqual(len(restore_calls), 1)
             self.assertEqual(b"".join(restore_chunks), b"repomap-dump")
             self.assertGreater(len(restore_chunks), 1)
@@ -267,6 +265,8 @@ class LocalDbBackupInitLifecycleUnitTests(LocalDbBackupUnitTestCase):
             def fake_runner(command, **kwargs):
                 if command[:2] == ["docker", "inspect"]:
                     return self.owned_container_result(identity, command)
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"]:
                     return subprocess.CompletedProcess(command, 0, stdout=b"0\n", stderr=b"")
                 raise AssertionError(command)
@@ -319,6 +319,8 @@ class LocalDbBackupInitLifecycleUnitTests(LocalDbBackupUnitTestCase):
             def restore_runner(command, **kwargs):
                 if command[:2] == ["docker", "inspect"]:
                     return self.owned_container_result(identity, command)
+                if (prov := maybe_provenance_runner_result(command)) is not None:
+                    return prov
                 if command[:2] == ["docker", "exec"] and "-tAc" in command:
                     return subprocess.CompletedProcess(command, 0, stdout=b"0\n", stderr=b"")
                 if command[:2] == ["docker", "exec"] and any(

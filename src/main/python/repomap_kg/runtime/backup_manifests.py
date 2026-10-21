@@ -29,6 +29,14 @@ from repomap_kg.runtime._backup_manifest_records import (
     verify_dump_file_checksum as verify_dump_file_checksum,
     verify_dump_file_checksum_for_inspection as verify_dump_file_checksum_for_inspection,
 )
+from repomap_kg.runtime._backup_provenance import (
+    SUPPORTED_BACKUP_FORMAT_VERSIONS,
+    provenance_error,
+)
+from repomap_kg.runtime._backup_support import (
+    BackupSupportEvaluation,
+    derive_manifest_support,
+)
 from repomap_kg.runtime.backup_records import (
     MAX_TOC_TABLE_NAMES,
     BackupDumpFile,
@@ -40,6 +48,11 @@ from repomap_kg.runtime.backup_records import (
 from repomap_kg.runtime.backup_streaming import (
     write_private_bytes,
     write_private_text,
+)
+from repomap_kg.runtime.release import (
+    PACKAGED_PG_DUMP,
+    PACKAGED_PG_RESTORE,
+    PACKAGED_PSQL,
 )
 
 
@@ -60,7 +73,12 @@ def write_manifest_and_restore_docs(
     command_invoked: Sequence[str],
     scope: str,
     recovery_point: Mapping[str, str] | None = None,
-) -> None:
+    server_provenance: Mapping[str, Any] | None = None,
+    database_catalogs: Mapping[str, Mapping[str, Any]] | None = None,
+    toc_digests: Mapping[str, str] | None = None,
+    quiescence: Mapping[str, Any] | None = None,
+    support_evaluation: BackupSupportEvaluation | None = None,
+) -> BackupSupportEvaluation:
     manifest = build_manifest(
         plan,
         dump_files=dump_files,
@@ -68,12 +86,23 @@ def write_manifest_and_restore_docs(
         command_invoked=command_invoked,
         scope=scope,
         recovery_point=recovery_point,
+        server_provenance=server_provenance,
+        database_catalogs=database_catalogs,
+        toc_digests=toc_digests,
+        quiescence=quiescence,
+        support_evaluation=support_evaluation,
     )
     write_private_text(
         plan.manifest_path,
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
     )
     write_private_text(plan.restore_path, render_restore_doc(manifest))
+    return BackupSupportEvaluation(
+        restore_protocol=str(manifest["restore_protocol"]),
+        restore_supported=bool(manifest["restore_supported"]),
+        restore_blockers=tuple(manifest["restore_blockers"]),
+        extension_census_state="complete",
+    )
 
 
 def build_manifest(
@@ -84,7 +113,65 @@ def build_manifest(
     command_invoked: Sequence[str],
     scope: str,
     recovery_point: Mapping[str, str] | None = None,
+    server_provenance: Mapping[str, Any] | None = None,
+    database_catalogs: Mapping[str, Mapping[str, Any]] | None = None,
+    toc_digests: Mapping[str, str] | None = None,
+    quiescence: Mapping[str, Any] | None = None,
+    support_evaluation: BackupSupportEvaluation | None = None,
 ) -> dict[str, Any]:
+    if (
+        server_provenance is None
+        or database_catalogs is None
+        or toc_digests is None
+        or quiescence is None
+    ):
+        raise provenance_error(
+            "backup-manifest-invalid",
+            "manifest.json",
+            "format-2 manifest requires explicit server, catalog, TOC, and quiescence provenance",
+        )
+    resolved_server = dict(server_provenance)
+    resolved_catalogs: dict[str, dict[str, Any]] = {
+        db: dict(cat) for db, cat in database_catalogs.items()
+    }
+    resolved_toc = dict(toc_digests)
+    resolved_quiescence: dict[str, Any] = dict(quiescence)
+    fp_matched = resolved_quiescence.get("before_after_fingerprint_matched")
+    if not isinstance(fp_matched, bool):
+        raise provenance_error(
+            "backup-manifest-invalid",
+            "manifest.json",
+            "format-2 manifest requires explicit boolean before_after_fingerprint_matched in quiescence",
+        )
+    if len(plan.databases) != len(dump_files):
+        raise provenance_error(
+            "backup-manifest-invalid",
+            "manifest.json",
+            "format-2 manifest dump_files count must match plan.databases",
+        )
+    support = support_evaluation or derive_manifest_support(
+        resolved_catalogs,
+        before_after_fingerprint_matched=fp_matched,
+        quiescence=resolved_quiescence,
+    )
+    archive_bindings = []
+    for db_name, dump_file in zip(plan.databases, dump_files, strict=True):
+        toc_sha = resolved_toc.get(dump_file.name, resolved_toc.get(db_name))
+        if not isinstance(toc_sha, str) or len(toc_sha) != 64:
+            raise provenance_error(
+                "backup-manifest-invalid",
+                db_name,
+                "format-2 manifest requires a verified 64-char toc_sha256 for every dump file",
+            )
+        archive_bindings.append(
+            {
+                "database": db_name,
+                "dump_file": dump_file.name,
+                "sha256": dump_file.sha256,
+                "size_bytes": dump_file.size_bytes,
+                "toc_sha256": toc_sha,
+            }
+        )
     manifest: dict[str, Any] = {
         "backup_format_version": BACKUP_FORMAT_VERSION,
         "repo_map_version": __version__,
@@ -118,8 +205,34 @@ def build_manifest(
             "user": plan.plan.user,
             "password": "[REDACTED]",
         },
-        "restore_supported": True,
-        "restore_hint": restore_hint(plan),
+        "restore_protocol": support.restore_protocol,
+        "restore_supported": support.restore_supported,
+        "restore_blockers": list(support.restore_blockers),
+        "server_provenance": resolved_server,
+        "artifact_provenance": {
+            "archive_bindings": archive_bindings,
+            "client_identities": resolved_server.get(
+                "client_identities",
+                {
+                    "pg_dump_version": "unavailable",
+                    "pg_restore_version": "unavailable",
+                    "psql_version": "unavailable",
+                },
+            ),
+            "container_id": container.container_id,
+            "container_image": container.image or "unavailable",
+            "dump_format": plan.dump_format,
+            "pg_dump_executable": PACKAGED_PG_DUMP,
+            "pg_restore_executable": PACKAGED_PG_RESTORE,
+            "policy_binding": {
+                "d1_baseline": f"{ 'plpgsql' }@{ 'pg_catalog' }",
+                "d3_policy": "allowlist-required",
+            },
+            "psql_executable": PACKAGED_PSQL,
+        },
+        "database_catalogs": resolved_catalogs,
+        "quiescence": resolved_quiescence,
+        "restore_hint": restore_hint(plan) if support.restore_supported else None,
         "warnings": [
             "Restore/init creates only new databases and refuses existing targets."
         ],
@@ -131,16 +244,31 @@ def render_restore_doc(manifest: Mapping[str, Any]) -> str:
     database = manifest.get("database") or "<database>"
     backup_id = manifest.get("backup_id", "<backup-id>")
     dump_files = manifest.get("dump_files", [])
+    protocol = str(manifest.get("restore_protocol") or "core_v1")
+    supported = bool(manifest.get("restore_supported", False))
+    blockers = manifest.get("restore_blockers") or []
     file_lines = "\n".join(
         f"- `{item.get('name')}` sha256 `{item.get('sha256')}`"
         for item in dump_files
         if isinstance(item, Mapping)
     )
+    if not supported or blockers:
+        blocker_text = ", ".join(str(b) for b in blockers) or "restore_supported=false"
+        return (
+            f"# RepoMap Backup {backup_id}\n\n"
+            "This backup was created by RepoMap local database lifecycle commands.\n\n"
+            f"Restore status: `restore_supported=false` (`restore_protocol={protocol}`).\n"
+            f"Automatic restore/init is refused due to blockers: `{blocker_text}`.\n\n"
+            "## Dump Files\n\n"
+            f"{file_lines or '- none recorded'}\n\n"
+            "No passwords are stored in this restore note.\n"
+        )
     return (
         f"# RepoMap Backup {backup_id}\n\n"
         "This backup was created by RepoMap local database lifecycle commands.\n\n"
         "Restore/init support is available for new databases only. Existing target "
-        "databases are refused and are not modified.\n\n"
+        "databases are refused and are not modified.\n"
+        f"Restore status: `restore_supported=true` (`restore_protocol={protocol}`).\n\n"
         "## Dump Files\n\n"
         f"{file_lines or '- none recorded'}\n\n"
         "## Future Restore Command\n\n"
@@ -161,21 +289,41 @@ def summarize_pg_restore_toc(
     toc_entry_count = 0
     tables: set[str] = set()
     table_data_tables: set[str] = set()
-    for raw_line in toc_text.splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith(";") or ";" not in line:
+    extensions: set[str] = set()
+    schemas: set[str] = set()
+    for raw_line in toc_text.split("\n"):
+        line = raw_line.rstrip("\r\n")
+        if not line.strip() or line.lstrip().startswith(";") or ";" not in line:
+            continue
+        dump_id_str, after_semi = line.split(";", 1)
+        parts = after_semi.lstrip(" ").split(" ", 2)
+        if not dump_id_str.strip().isdigit() or len(parts) < 3 or not parts[0].isdigit() or not parts[1].isdigit() or not parts[2]:
             continue
         toc_entry_count += 1
-        parts = line.split(";", 1)[1].strip().split()
-        if len(parts) < 5:
-            continue
-        if parts[2:4] == ["TABLE", "DATA"] and len(parts) >= 6:
-            table = sanitize_toc_identifier(parts[5])
+        rest = parts[2]
+        if rest.startswith("EXTENSION - "):
+            ext_tail = rest[len("EXTENSION - "):]
+            ext = ext_tail[:-1] if ext_tail.endswith(" ") else ext_tail
+            if ext:
+                extensions.add(ext)
+        elif rest.startswith("SCHEMA - "):
+            sch_tail = rest[len("SCHEMA - "):]
+            raw_sch = (sch_tail[:-1] if sch_tail.endswith(" ") else sch_tail.rpartition(" ")[0]).strip()
+            sch = sanitize_toc_identifier(raw_sch) or raw_sch
+            if sch:
+                schemas.add(sch)
+        elif rest.startswith("TABLE DATA "):
+            data_tail = rest[len("TABLE DATA "):]
+            ns_and_rel = (data_tail[:-1] if data_tail.endswith(" ") else data_tail.rpartition(" ")[0]).strip()
+            raw_tbl = ns_and_rel.split(" ", 1)[1] if " " in ns_and_rel else ""
+            table = sanitize_toc_identifier(raw_tbl)
             if table:
                 table_data_tables.add(table)
-            continue
-        if parts[2] == "TABLE":
-            table = sanitize_toc_identifier(parts[4])
+        elif rest.startswith("TABLE "):
+            tbl_tail = rest[len("TABLE "):]
+            ns_and_rel = (tbl_tail[:-1] if tbl_tail.endswith(" ") else tbl_tail.rpartition(" ")[0]).strip()
+            raw_tbl = ns_and_rel.split(" ", 1)[1] if " " in ns_and_rel else ""
+            table = sanitize_toc_identifier(raw_tbl)
             if table:
                 tables.add(table)
     bounded_tables = tuple(sorted(tables)[:MAX_TOC_TABLE_NAMES])
@@ -189,12 +337,15 @@ def summarize_pg_restore_toc(
         table_data_count=len(bounded_table_data_tables),
         tables=bounded_tables,
         table_data_tables=bounded_table_data_tables,
+        extensions=tuple(sorted(extensions)[:MAX_TOC_TABLE_NAMES]),
+        schemas=tuple(sorted(schemas)[:MAX_TOC_TABLE_NAMES]),
     )
 
 
 __all__ = [
     "BACKUP_FORMAT_VERSION",
     "SAFE_IDENTIFIER_RE",
+    "SUPPORTED_BACKUP_FORMAT_VERSIONS",
     "backup_dump_not_found",
     "backup_not_found",
     "bounded_text",
