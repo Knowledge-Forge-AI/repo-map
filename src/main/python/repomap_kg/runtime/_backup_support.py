@@ -14,10 +14,16 @@ from repomap_kg.runtime._backup_observation import (
     observe_client_identities, parse_and_validate_catalog_observation, verify_provenance_fingerprints,
 )
 from repomap_kg.runtime._backup_provenance import (
-    BACKUP_FORMAT_VERSION, BASELINE_EXTENSION_NAME, BASELINE_EXTENSION_SCHEMA, CORE_V1_RESTORE_PROTOCOL,
-    DEFAULT_TOC_TIMEOUT_SECONDS, DatabaseObservation, EXTENSION_V2_RESTORE_PROTOCOL, MAX_DATABASES_PER_MANIFEST,
-    MAX_MANIFEST_UTF8_BYTES, MAX_TOC_OUTPUT_BYTES, _STDLIB_SUBPROCESS_RUN, catalog_observation_sql,
-    is_supported_format_version, parse_and_verify_toc_provenance, parse_toc_entries, provenance_error, run_bounded_popen,
+    BACKUP_FORMAT_VERSION, BASELINE_EXTENSION_NAME, CORE_V1_RESTORE_PROTOCOL, DEFAULT_TOC_TIMEOUT_SECONDS,
+    DatabaseObservation, EXTENSION_V2_RESTORE_PROTOCOL, MAX_DATABASES_PER_MANIFEST, MAX_MANIFEST_UTF8_BYTES,
+    MAX_TOC_OUTPUT_BYTES, _STDLIB_SUBPROCESS_RUN, catalog_observation_sql, is_supported_format_version,
+    parse_and_verify_toc_provenance, parse_toc_entries, provenance_error, run_bounded_popen,
+)
+from repomap_kg.runtime._extension_restore_blockers import (
+    derive_database_blockers_with_policy, derive_manifest_support_with_policy, evaluate_manifest_support_with_policy,
+)
+from repomap_kg.runtime._extension_restore_policy import (
+    TrustedExtensionRestorePolicy, project_policy_for_observation, resolve_extension_restore_policy,
 )
 from repomap_kg.runtime.backup_records import DumpTocSummary, LocalDbBackupError
 from repomap_kg.runtime.backup_streaming import describe_dump_file
@@ -28,6 +34,7 @@ from repomap_kg.runtime.release import PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE
 def quiescence_record_for_databases(*databases: str, before_after_fingerprint_matched: bool, authority_namespace: str | None = None) -> dict[str, object]:
     from repomap_kg.runtime.maintenance import quiescence_record_for_databases as _qr
     return _qr(*databases, before_after_fingerprint_matched=before_after_fingerprint_matched, authority_namespace=authority_namespace)
+
 
 _PRIVATE_MANIFEST_KEYS = frozenset({"server_provenance", "artifact_provenance", "database_catalogs", "quiescence"})
 _KNOWN_RESTORE_PROTOCOLS = frozenset({CORE_V1_RESTORE_PROTOCOL, EXTENSION_V2_RESTORE_PROTOCOL})
@@ -42,48 +49,11 @@ class BackupSupportEvaluation:
     extension_census_state: str
 
 
-def derive_database_blockers(database_catalog: Mapping[str, object]) -> set[str]:
-    blockers: set[str] = set()
-    installed = database_catalog.get("installed_extensions")
-    if not isinstance(installed, list):
-        return {"extension-catalog-incomplete"}
-    for item in installed:
-        if not isinstance(item, Mapping):
-            blockers.add("extension-catalog-incomplete")
-            continue
-        name, schema = item.get("name"), item.get("schema")
-        cfg_tables, conds, prereqs = item.get("extconfig_tables"), item.get("extcondition"), item.get("prerequisite_extensions")
-        own_class, reloc, is_base = item.get("ownership_classification"), item.get("relocatable"), item.get("is_baseline")
-        if (
-            not isinstance(name, str) or name == "" or not isinstance(schema, str) or schema == ""
-            or not isinstance(cfg_tables, list) or not isinstance(conds, list) or not isinstance(prereqs, list)
-            or not isinstance(own_class, str) or not isinstance(reloc, bool) or not isinstance(is_base, bool)
-        ):
-            blockers.add("extension-catalog-incomplete")
-            continue
-        if name != BASELINE_EXTENSION_NAME:
-            blockers.update(("extension-restore-protocol-unimplemented", "extension-not-allowlisted"))
-            if schema not in (BASELINE_EXTENSION_SCHEMA, "public"):
-                blockers.add("extension-schema-unsupported")
-        elif schema != BASELINE_EXTENSION_SCHEMA:
-            blockers.update(("extension-schema-unsupported", "extension-restore-protocol-unimplemented"))
-        if cfg_tables or conds:
-            blockers.update(("extension-config-table-unsupported", "extension-restore-protocol-unimplemented"))
-    cfg_entries = database_catalog.get("extension_config_tables")
-    if not isinstance(cfg_entries, list):
-        blockers.add("extension-catalog-incomplete")
-    elif cfg_entries:
-        blockers.update(("extension-config-table-unsupported", "extension-restore-protocol-unimplemented"))
-    dep = database_catalog.get("extension_dependency_summary")
-    if not isinstance(dep, Mapping) or "edge_count" not in dep or "edges" not in dep:
-        blockers.add("extension-catalog-incomplete")
-    else:
-        edge_count, edges = dep.get("edge_count"), dep.get("edges")
-        if isinstance(edge_count, bool) or not isinstance(edge_count, int) or edge_count < 0 or not isinstance(edges, list) or edge_count != len(edges):
-            blockers.add("extension-catalog-incomplete")
-        elif edge_count > 0 or edges:
-            blockers.update(("extension-dependency-unsupported", "extension-restore-protocol-unimplemented"))
-    return blockers
+def derive_database_blockers(
+    database_catalog: Mapping[str, object], *, extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
+    server_provenance: Mapping[str, object] | None = None,
+) -> set[str]:
+    return derive_database_blockers_with_policy(database_catalog, policy=extension_restore_policy, server_provenance=server_provenance)
 
 
 def _is_quiescence_held(quiescence: object) -> bool:
@@ -93,14 +63,15 @@ def _is_quiescence_held(quiescence: object) -> bool:
 def derive_manifest_support(
     database_catalogs: Mapping[str, Mapping[str, object]], *, before_after_fingerprint_matched: bool,
     require_quiescence: bool = False, quiescence: Mapping[str, object] | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None, server_provenance: Mapping[str, object] | None = None,
 ) -> BackupSupportEvaluation:
-    blockers: set[str] = {"extension-catalog-incomplete"} if (not database_catalogs or len(database_catalogs) > MAX_DATABASES_PER_MANIFEST) else set()
-    for db_catalog in database_catalogs.values():
-        blockers.update(derive_database_blockers(db_catalog))
-    if before_after_fingerprint_matched is not True or (require_quiescence and not _is_quiescence_held(quiescence)):
-        blockers.add("quiescence-not-verified")
-    sorted_blockers = tuple(sorted(blockers))
-    return BackupSupportEvaluation(CORE_V1_RESTORE_PROTOCOL, len(sorted_blockers) == 0, sorted_blockers, "complete")
+    return BackupSupportEvaluation(
+        *derive_manifest_support_with_policy(
+            database_catalogs, before_after_fingerprint_matched=before_after_fingerprint_matched,
+            require_quiescence=require_quiescence, quiescence=quiescence, policy=extension_restore_policy,
+            server_provenance=server_provenance, is_quiescence_held_fn=_is_quiescence_held,
+        )
+    )
 
 
 def validate_format2_manifest_provenance(manifest: Mapping[str, object], *, manifest_path: Path, expected_databases: Sequence[str]) -> None:
@@ -165,47 +136,16 @@ def validate_format2_manifest_provenance(manifest: Mapping[str, object], *, mani
 
 
 def evaluate_backup_restore_support(
-    manifest: Mapping[str, object], *, database: str | None = None, require_quiescence: bool = False, dry_run: bool = False
+    manifest: Mapping[str, object], *, database: str | None = None, require_quiescence: bool = False,
+    dry_run: bool = False, extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> BackupSupportEvaluation:
     del dry_run
-    version = manifest.get("backup_format_version")
-    if not is_supported_format_version(version):
-        raise provenance_error("backup-format-unsupported", database or "manifest.json", "backup manifest format is unsupported")
-    protocol = str(manifest.get("restore_protocol") or CORE_V1_RESTORE_PROTOCOL)
-    blockers: set[str] = set()
-    raw_blockers, catalogs = manifest.get("restore_blockers"), manifest.get("database_catalogs")
-    is_single_from_multi = database is not None and isinstance(catalogs, Mapping) and len(catalogs) > 1
-    if not is_single_from_multi and isinstance(raw_blockers, list):
-        blockers.update(str(item) for item in raw_blockers if str(item))
-    if protocol != CORE_V1_RESTORE_PROTOCOL:
-        blockers.add("extension-restore-protocol-unimplemented")
-
-    if version == BACKUP_FORMAT_VERSION:
-        if not isinstance(catalogs, Mapping) or not catalogs:
-            blockers.add("extension-catalog-incomplete")
-        else:
-            raw_dbs = manifest.get("databases")
-            fallback_dbs = raw_dbs if isinstance(raw_dbs, (list, tuple)) and raw_dbs else tuple(catalogs.keys())
-            target_dbs = (database,) if database is not None else tuple(str(d) for d in fallback_dbs)
-            if not target_dbs:
-                blockers.add("extension-catalog-incomplete")
-            for db_name in target_dbs:
-                db_cat = catalogs.get(db_name)
-                blockers.update(derive_database_blockers(db_cat) if isinstance(db_cat, Mapping) else {"extension-catalog-incomplete"})
-        quiescence = manifest.get("quiescence")
-        if not isinstance(quiescence, Mapping) or quiescence.get("before_after_fingerprint_matched") is not True or (require_quiescence and not _is_quiescence_held(quiescence)):
-            blockers.add("quiescence-not-verified")
-        raw_supported = manifest.get("restore_supported")
-        flag_ok = isinstance(raw_supported, bool) if is_single_from_multi else (raw_supported is True)
-        return BackupSupportEvaluation(protocol, flag_ok and not blockers and (protocol == CORE_V1_RESTORE_PROTOCOL), tuple(sorted(blockers)), "complete")
-
-    if isinstance(catalogs, Mapping):
-        for db_name in ((database,) if database is not None else tuple(str(k) for k in catalogs)):
-            db_cat = catalogs.get(db_name)
-            if isinstance(db_cat, Mapping):
-                blockers.update(derive_database_blockers(db_cat))
-    raw_supported = manifest.get("restore_supported")
-    return BackupSupportEvaluation(protocol, (raw_supported is not False) and not blockers and (protocol == CORE_V1_RESTORE_PROTOCOL), tuple(sorted(blockers)), "unknown")
+    return BackupSupportEvaluation(
+        *evaluate_manifest_support_with_policy(
+            manifest, database=database, require_quiescence=require_quiescence,
+            policy=extension_restore_policy, is_quiescence_held_fn=_is_quiescence_held,
+        )
+    )
 
 
 def raise_for_unsupported_restore(evaluation: BackupSupportEvaluation, *, target: str) -> None:
@@ -220,26 +160,40 @@ def raise_for_unsupported_restore(evaluation: BackupSupportEvaluation, *, target
         diags.append(LocalRuntimeDiagnostic("error", "backup-extension-config-unsupported", target, f"extconfig unsupported ({summary})"))
     if "extension-schema-unsupported" in blockers:
         diags.append(LocalRuntimeDiagnostic("error", "backup-extension-schema-unsupported", target, f"schema unsupported ({summary})"))
-    if any(c in blockers for c in ("extension-not-allowlisted", "extension-dependency-unsupported", "extension-restore-protocol-unimplemented")):
+    if "database-creation-semantics-mismatch" in blockers:
+        diags.append(LocalRuntimeDiagnostic("error", "restore-creation-semantics-incompatible", target, f"creation semantics incompatible ({summary})"))
+    ext_codes = (
+        "extension-not-allowlisted", "extension-dependency-unsupported", "extension-restore-protocol-unimplemented",
+        "extension-version-not-qualified", "extension-owner-unapproved", "extension-policy-binding-mismatch",
+        "extension-target-incompatible", "database-creation-semantics-mismatch",
+    )
+    if any(c in blockers for c in ext_codes):
         diags.append(LocalRuntimeDiagnostic("error", "backup-extension-restore-unsupported", target, f"extension restore unsupported ({summary})"))
     diags.append(LocalRuntimeDiagnostic("error", "backup-restore-unsupported", target, f"backup restore unsupported for {target} (not verified and restorable): {summary}"))
     raise LocalDbBackupError(tuple(diags))
 
 
 def require_backup_restore_supported(
-    manifest: Mapping[str, object], *, database: str | None = None, require_quiescence: bool = False, dry_run: bool = False, target: str = "manifest"
+    manifest: Mapping[str, object], *, database: str | None = None, require_quiescence: bool = False,
+    dry_run: bool = False, target: str = "manifest", extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> BackupSupportEvaluation:
-    evaluation = evaluate_backup_restore_support(manifest, database=database, require_quiescence=require_quiescence, dry_run=dry_run)
+    evaluation = evaluate_backup_restore_support(
+        manifest, database=database, require_quiescence=require_quiescence, dry_run=dry_run, extension_restore_policy=extension_restore_policy
+    )
     if not evaluation.restore_supported:
         raise_for_unsupported_restore(evaluation, target=database or target)
     return evaluation
 
 
-def require_verified_backup_inspection_supported(inspection: Any, *, database: str) -> BackupSupportEvaluation:
+def require_verified_backup_inspection_supported(
+    inspection: Any, *, database: str, extension_restore_policy: TrustedExtensionRestorePolicy | None = None
+) -> BackupSupportEvaluation:
     manifest = getattr(inspection, "manifest", None)
     if not isinstance(manifest, Mapping):
         raise provenance_error("backup-restore-unsupported", database, "pre-upgrade backup verification failed")
-    evaluation = require_backup_restore_supported(manifest, database=database, require_quiescence=False, target=database)
+    evaluation = require_backup_restore_supported(
+        manifest, database=database, require_quiescence=False, target=database, extension_restore_policy=extension_restore_policy
+    )
     has_toc = bool(getattr(inspection, "dump_summaries", ())) or (
         bool(getattr(inspection, "dump_contents_read", False)) and int(getattr(inspection, "toc_entry_count", 0) or 0) > 0
     )
@@ -248,12 +202,16 @@ def require_verified_backup_inspection_supported(inspection: Any, *, database: s
     return evaluation
 
 
-def sanitize_public_manifest(manifest: Mapping[str, object]) -> dict[str, object]:
-    ev = evaluate_backup_restore_support(manifest, dry_run=True)
+def sanitize_public_manifest(
+    manifest: Mapping[str, object], *, extension_restore_policy: TrustedExtensionRestorePolicy | None = None
+) -> dict[str, object]:
+    ev = evaluate_backup_restore_support(manifest, dry_run=True, extension_restore_policy=extension_restore_policy)
     return {**{k: v for k, v in manifest.items() if k not in _PRIVATE_MANIFEST_KEYS}, "extension_census_state": ev.extension_census_state, "restore_protocol": ev.restore_protocol, "restore_blockers": list(ev.restore_blockers)}
 
 
-def observe_connection_provenance(operator: Any, database: str) -> DatabaseObservation:
+def observe_connection_provenance(
+    operator: Any, database: str, *, extension_restore_policy: TrustedExtensionRestorePolicy | None = None
+) -> DatabaseObservation:
     import psycopg
     connect_fn = getattr(operator, "_connect", None)
     if not callable(connect_fn):
@@ -265,6 +223,7 @@ def observe_connection_provenance(operator: Any, database: str) -> DatabaseObser
         role = "control"
     else:
         raise provenance_error("backup-observation-incomplete", database, "database is not an owned graph or control database")
+    ext_policy = project_policy_for_observation(extension_restore_policy, database_role=role)
     try:
         with connect_fn(database) as connection:
             connection.execute("SET statement_timeout = '30s'; SET lock_timeout = '30s';")
@@ -276,7 +235,9 @@ def observe_connection_provenance(operator: Any, database: str) -> DatabaseObser
     dump_cmd = operator.pg_dump_command(database) if callable(getattr(operator, "pg_dump_command", None)) else ()
     dump_bin = str(dump_cmd[0]) if isinstance(dump_cmd, (tuple, list)) and dump_cmd else PACKAGED_PG_DUMP
     clients = observe_client_identities(pg_dump_bin=dump_bin, pg_restore_bin=PACKAGED_PG_RESTORE, psql_bin=None)
-    return parse_and_validate_catalog_observation(row[0].encode("utf-8"), database=database, expected_role=role, observed_clients=clients)
+    return parse_and_validate_catalog_observation(
+        row[0].encode("utf-8"), database=database, expected_role=role, extension_policy=ext_policy, observed_clients=clients
+    )
 
 
 def _run_trusted_toc_bytes(
@@ -298,19 +259,33 @@ def _run_trusted_toc_bytes(
 def build_and_verify_release_cluster_upgrade_manifest(
     *, operator: Any, database: str, dump: Any, dump_path: Path, restore_client: str,
     command_runner: Any, env: Mapping[str, str], before_obs: DatabaseObservation,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> dict[str, object]:
-    after_obs = verify_provenance_fingerprints(before_obs, observe_connection_provenance(operator, database))
+    after_obs = verify_provenance_fingerprints(
+        before_obs, observe_connection_provenance(operator, database, extension_restore_policy=extension_restore_policy)
+    )
     raw_toc = _run_trusted_toc_bytes(PACKAGED_PG_RESTORE, dump_path, database=database, command_runner=command_runner, env=env, secret=getattr(operator, "password", None))
     toc_obs = parse_and_verify_toc_provenance(raw_toc, database=database, database_catalog=after_obs.database_catalog)
     quiescence = quiescence_record_for_databases(database, before_after_fingerprint_matched=True, authority_namespace=getattr(operator, "authority_namespace", None))
-    support = derive_manifest_support({database: after_obs.database_catalog}, before_after_fingerprint_matched=True, require_quiescence=True, quiescence=quiescence)
-    return {
+    support = derive_manifest_support(
+        {database: after_obs.database_catalog},
+        before_after_fingerprint_matched=True,
+        require_quiescence=True,
+        quiescence=quiescence,
+        extension_restore_policy=extension_restore_policy,
+        server_provenance=after_obs.server_provenance,
+    )
+    resolved = resolve_extension_restore_policy(extension_restore_policy)
+    result: dict[str, object] = {
         "artifact": dump.name, "database": database, "database_catalogs": {database: after_obs.database_catalog},
         "quiescence": quiescence, "restore_blockers": list(support.restore_blockers), "restore_client": restore_client,
         "restore_protocol": support.restore_protocol, "restore_supported": support.restore_supported,
         "schema_version": BACKUP_FORMAT_VERSION, "server_provenance": after_obs.server_provenance,
         "sha256": dump.sha256, "size_bytes": dump.size_bytes, "toc_sha256": toc_obs.toc_sha256,
     }
+    if resolved.allow_extension_v2:
+        result["artifact_provenance"] = {"policy_binding": resolved.policy_binding_record()}
+    return result
 
 
 def _validate_release_archive_fields(payload: Mapping[str, object], *, database: str) -> tuple[str, str, int]:
@@ -325,7 +300,11 @@ def _validate_release_archive_fields(payload: Mapping[str, object], *, database:
 
 
 def load_and_verify_release_cluster_upgrade_artifact(
-    artifact: Mapping[str, object] | Path, *, database: str = "repomap", verify_dump_on_disk: bool = False
+    artifact: Mapping[str, object] | Path,
+    *,
+    database: str = "repomap",
+    verify_dump_on_disk: bool = False,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> tuple[dict[str, object], BackupSupportEvaluation]:
     if verify_dump_on_disk and not isinstance(artifact, Path):
         raise provenance_error("backup-manifest-invalid", database, "on-disk verification requires a filesystem path")
@@ -358,7 +337,9 @@ def load_and_verify_release_cluster_upgrade_artifact(
     translated: dict[str, object] = dict(payload, backup_format_version=schema_version)
     if "database_catalog" in translated and "database_catalogs" not in translated:
         translated["database_catalogs"] = {database: translated["database_catalog"]}
-    evaluation = require_backup_restore_supported(translated, database=database, require_quiescence=(schema_version == 2), target=database)
+    evaluation = require_backup_restore_supported(
+        translated, database=database, require_quiescence=(schema_version == 2), target=database, extension_restore_policy=extension_restore_policy
+    )
     art_name, sha_val, size_val = _validate_release_archive_fields(payload, database=database)
     if schema_version == 2:
         toc_val, rc_val = payload.get("toc_sha256"), payload.get("restore_client")
@@ -383,7 +364,11 @@ def load_and_verify_release_cluster_upgrade_artifact(
         toc_obs = parse_toc_entries(raw_toc, database=database)
         if toc_obs.entry_count <= 0:
             raise provenance_error("backup-toc-inconsistent", database, "release upgrade artifact TOC has no entries")
-        if any(ext != BASELINE_EXTENSION_NAME for ext in toc_obs.extensions):
+        resolved = resolve_extension_restore_policy(extension_restore_policy)
+        if any(
+            ext != BASELINE_EXTENSION_NAME and (schema_version != 2 or not resolved.allow_extension_v2 or resolved.rule_for(ext) is None)
+            for ext in toc_obs.extensions
+        ):
             raise_for_unsupported_restore(BackupSupportEvaluation(CORE_V1_RESTORE_PROTOCOL, False, ("extension-not-allowlisted", "extension-restore-protocol-unimplemented"), "unknown"), target=database)
         if schema_version == 2:
             cats = translated["database_catalogs"]
@@ -395,5 +380,12 @@ def load_and_verify_release_cluster_upgrade_artifact(
     return translated, evaluation
 
 
-def evaluate_release_cluster_upgrade_artifact(artifact: Mapping[str, object] | Path, *, database: str = "repomap") -> BackupSupportEvaluation:
-    return load_and_verify_release_cluster_upgrade_artifact(artifact, database=database)[1]
+def evaluate_release_cluster_upgrade_artifact(
+    artifact: Mapping[str, object] | Path,
+    *,
+    database: str = "repomap",
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
+) -> BackupSupportEvaluation:
+    return load_and_verify_release_cluster_upgrade_artifact(
+        artifact, database=database, extension_restore_policy=extension_restore_policy
+    )[1]

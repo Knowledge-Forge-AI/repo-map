@@ -33,6 +33,7 @@ class RuntimeContainerMetadata:
     name: str
     image: str | None
     labels: Mapping[str, str]
+    image_id: str | None = None
 
     def to_jsonable(self) -> dict[str, Any]:
         return {"id": self.container_id, "name": self.name, "image": self.image, "labels_verified": True}

@@ -23,6 +23,10 @@ from repomap_kg.runtime._backup_support import (
     raise_for_unsupported_restore,
     require_backup_restore_supported,
 )
+from repomap_kg.runtime._extension_restore_policy import (
+    TrustedExtensionRestorePolicy,
+    resolve_extension_restore_policy,
+)
 from repomap_kg.runtime.backup_commands import (
     CommandRunner,
     backup_root,
@@ -100,7 +104,9 @@ def inspect_backup(
     build_local_runtime_plan: Callable[..., LocalRuntimePlan],
     inspect_owned_postgres_container: Callable[..., RuntimeContainerMetadata],
     run_pg_restore_list: Callable[..., str],
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> BackupInspectResult:
+    resolved_policy = resolve_extension_restore_policy(extension_restore_policy)
     runner = command_runner or default_command_runner
     home = resolve_repo_map_home(repo_map_home)
     runtime_plan = build_local_runtime_plan(home)
@@ -115,58 +121,24 @@ def inspect_backup(
     manifest_dump_format = manifest.get("dump_format")
     for dump_file in manifest.get("dump_files", []):
         if not isinstance(dump_file, Mapping):
-            diagnostics.append(
-                LocalRuntimeDiagnostic(
-                    "warning",
-                    "backup-dump-metadata-invalid",
-                    "dump_files",
-                    "backup dump metadata entry is not an object",
-                )
-            )
+            diagnostics.append(LocalRuntimeDiagnostic("warning", "backup-dump-metadata-invalid", "dump_files", "backup dump metadata entry is not an object"))
             checksum_results.append(False)
             continue
         dump_name = safe_dump_file_name(dump_file.get("name"))
-        dump_path, dump_name_safe = resolve_dump_file_for_inspection(
-            backup_dir,
-            dump_file,
-        )
+        dump_path, dump_name_safe = resolve_dump_file_for_inspection(backup_dir, dump_file)
         if dump_path is None:
-            diagnostics.append(
-                LocalRuntimeDiagnostic(
-                    "error",
-                    "backup-dump-name-unsafe",
-                    dump_name,
-                    "backup dump file name is not safe for inspection",
-                )
-            )
+            diagnostics.append(LocalRuntimeDiagnostic("error", "backup-dump-name-unsafe", dump_name, "backup dump file name is not safe for inspection"))
             checksum_results.append(False)
             continue
-        checksum_ok, checksum_diagnostics = verify_dump_file_checksum_for_inspection(
-            dump_path,
-            dump_file,
-            dump_name_safe,
-        )
+        checksum_ok, checksum_diagnostics = verify_dump_file_checksum_for_inspection(dump_path, dump_file, dump_name_safe)
         diagnostics.extend(checksum_diagnostics)
         checksum_results.append(checksum_ok)
         dump_format = str(manifest_dump_format or infer_dump_format(dump_name_safe))
         if not checksum_ok:
             continue
         if dump_format != "pgcustom":
-            diagnostics.append(
-                LocalRuntimeDiagnostic(
-                    "warning",
-                    "backup-dump-toc-unsupported",
-                    dump_name_safe,
-                    "backup dump TOC inspection is supported for pgcustom dumps only",
-                )
-            )
-            dump_summaries.append(
-                DumpTocSummary(
-                    dump_file=dump_name_safe,
-                    dump_format=dump_format,
-                    dump_contents_read=False,
-                )
-            )
+            diagnostics.append(LocalRuntimeDiagnostic("warning", "backup-dump-toc-unsupported", dump_name_safe, "backup dump TOC inspection is supported for pgcustom dumps only"))
+            dump_summaries.append(DumpTocSummary(dump_file=dump_name_safe, dump_format=dump_format, dump_contents_read=False))
             continue
         if container is None:
             container = inspect_owned_postgres_container(runtime_plan, runner)
@@ -178,33 +150,30 @@ def inspect_backup(
             toc_out: Any = run_pg_restore_list(runtime_plan, dump_path, cmd, runner)
             raw_toc_bytes = toc_out if isinstance(toc_out, bytes) else str(toc_out).encode("utf-8")
             toc_text = decode_process_output(toc_out)
-        summary = summarize_pg_restore_toc(
-            toc_text, dump_file=dump_name_safe, dump_format=dump_format
-        )
+        summary = summarize_pg_restore_toc(toc_text, dump_file=dump_name_safe, dump_format=dump_format)
         dump_summaries.append(summary)
-        if manifest.get("backup_format_version") == BACKUP_FORMAT_VERSION:
+        is_v2 = manifest.get("backup_format_version") == BACKUP_FORMAT_VERSION
+        if is_v2:
             db_for_dump = _database_for_dump_name(manifest, dump_name_safe)
             catalogs = manifest.get("database_catalogs")
             db_cat = catalogs.get(db_for_dump) if isinstance(catalogs, Mapping) and db_for_dump else None
             if isinstance(db_cat, Mapping) and db_for_dump:
                 try:
-                    toc_obs = parse_and_verify_toc_provenance(
-                        raw_toc_bytes, database=db_for_dump, database_catalog=db_cat
-                    )
-                    _verify_manifest_toc_binding(
-                        manifest, database=db_for_dump, dump_file=dump_name_safe, toc_sha256=toc_obs.toc_sha256
-                    )
+                    toc_obs = parse_and_verify_toc_provenance(raw_toc_bytes, database=db_for_dump, database_catalog=db_cat)
+                    _verify_manifest_toc_binding(manifest, database=db_for_dump, dump_file=dump_name_safe, toc_sha256=toc_obs.toc_sha256)
                 except LocalDbBackupError as error:
                     diagnostics.extend(error.diagnostics)
                     manifest = _mark_manifest_toc_inconsistent(manifest)
             else:
-                diagnostics.append(
-                    LocalRuntimeDiagnostic("error", "backup-toc-inconsistent", dump_name_safe, "missing database catalog for dump")
-                )
+                diagnostics.append(LocalRuntimeDiagnostic("error", "backup-toc-inconsistent", dump_name_safe, "missing database catalog for dump"))
                 manifest = _mark_manifest_toc_inconsistent(manifest)
-        if any(ext != "plpgsql" for ext in summary.extensions):
-            manifest = _mark_manifest_blocker(manifest, "extension-not-allowlisted")
-            manifest = _mark_manifest_blocker(manifest, "extension-restore-protocol-unimplemented")
+        for ext in summary.extensions:
+            if ext == "plpgsql":
+                continue
+            if not is_v2 or not resolved_policy.allow_extension_v2:
+                manifest = _mark_manifest_blocker(_mark_manifest_blocker(manifest, "extension-not-allowlisted"), "extension-restore-protocol-unimplemented")
+            elif resolved_policy.rule_for(ext) is None:
+                manifest = _mark_manifest_blocker(manifest, "extension-not-allowlisted")
     return BackupInspectResult(
         repo_map_home=home,
         backups_root=backups_root,
@@ -319,8 +288,10 @@ def verify_archive_toc_for_restore(
     database: str,
     dump_path: Path,
     command_runner: CommandRunner,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
     **_ignored: Any,
 ) -> None:
+    resolved_policy = resolve_extension_restore_policy(extension_restore_policy)
     raw_toc_bytes = _run_pg_restore_list_bytes(
         plan,
         dump_path,
@@ -332,8 +303,11 @@ def verify_archive_toc_for_restore(
     summary = summarize_pg_restore_toc(
         toc_text, dump_file=dump_path.name, dump_format="pgcustom"
     )
-    if any(ext != "plpgsql" for ext in summary.extensions) or any(
-        ext != "plpgsql" for ext in toc_obs.extensions
+    is_v2 = manifest.get("backup_format_version") == BACKUP_FORMAT_VERSION
+    toc_exts = (*summary.extensions, *toc_obs.extensions)
+    if any(
+        ext != "plpgsql" and (not is_v2 or not resolved_policy.allow_extension_v2 or resolved_policy.rule_for(ext) is None)
+        for ext in toc_exts
     ):
         raise_for_unsupported_restore(
             BackupSupportEvaluation(
@@ -347,7 +321,7 @@ def verify_archive_toc_for_restore(
             ),
             target=database,
         )
-    if manifest.get("backup_format_version") == BACKUP_FORMAT_VERSION:
+    if is_v2:
         catalogs = manifest.get("database_catalogs")
         db_cat = catalogs.get(database) if isinstance(catalogs, Mapping) else None
         if not isinstance(db_cat, Mapping):
@@ -363,6 +337,8 @@ def verify_archive_toc_for_restore(
 def verify_drop_backup(
     backup_result: LocalDbBackupResult,
     database: str,
+    *,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> None:
     manifest = read_manifest_file(backup_result.plan.manifest_path)
     dump_file = select_dump_file_for_database(manifest, database)
@@ -375,6 +351,7 @@ def verify_drop_backup(
         database=database,
         require_quiescence=True,
         target=database,
+        extension_restore_policy=extension_restore_policy,
     )
     if not backup_result.plan.restore_path.is_file():
         raise LocalDbBackupError(

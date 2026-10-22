@@ -15,6 +15,7 @@ from repomap_kg.runtime._backup_provenance import (
     MAX_SCHEMAS_PER_DATABASE, _STDLIB_SUBPROCESS_RUN, catalog_observation_sql, provenance_error,
     redact_secret_text, run_bounded_popen, runtime_postgres_password,
 )
+from repomap_kg.runtime._extension_restore_policy import project_policy_for_observation
 from repomap_kg.runtime.backup_commands import (
     CommandRunner, container_internal_enabled, decode_process_output, planned_psql_command,
 )
@@ -51,10 +52,7 @@ def _observe_single_client_version(
 ) -> str:
     if binary is None:
         return "unused"
-    cmd = (
-        (plan.container_runtime, "exec", plan.identity.postgres_container, binary, "--version")
-        if plan is not None and not container_internal_enabled() else (binary, "--version")
-    )
+    cmd = (plan.container_runtime, "exec", plan.identity.postgres_container, binary, "--version") if (plan is not None and not container_internal_enabled()) else (binary, "--version")
     try:
         if command_runner is None or command_runner is _STDLIB_SUBPROCESS_RUN:
             raw = run_bounded_popen(cmd, max_output_bytes=4096, timeout_seconds=5.0, error_code="backup-observation-incomplete", field=field_name)
@@ -62,10 +60,8 @@ def _observe_single_client_version(
             res = command_runner(list(cmd), check=False, input=None, stdin=None, capture_output=True, text=False)
             if getattr(res, "returncode", 1) != 0:
                 return "unavailable"
-            out = getattr(res, "stdout", b"")
-            raw = out if isinstance(out, bytes) else decode_process_output(out).encode("utf-8")
-        first_line = decode_process_output(raw).splitlines()[0].strip() if raw else ""
-        return first_line if first_line else "unavailable"
+            raw = res.stdout if isinstance(res.stdout, bytes) else decode_process_output(getattr(res, "stdout", b"")).encode("utf-8")
+        return (decode_process_output(raw).splitlines()[0].strip() if raw else "") or "unavailable"
     except Exception:
         return "unavailable"
 
@@ -82,9 +78,7 @@ def observe_client_identities(
 
 
 def canonical_provenance_fingerprint(server_provenance: Mapping[str, object], database_catalog: Mapping[str, object]) -> str:
-    payload = json.dumps(
-        {"database_catalog": database_catalog, "server_provenance": server_provenance}, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+    payload = json.dumps({"database_catalog": database_catalog, "server_provenance": server_provenance}, sort_keys=True, separators=(",", ":")).encode("utf-8")
     if len(payload) > MAX_OBSERVATION_JSON_BYTES:
         raise provenance_error("backup-observation-incomplete", "database_catalogs", f"canonical observation JSON exceeded {MAX_OBSERVATION_JSON_BYTES} bytes")
     return hashlib.sha256(payload).hexdigest()
@@ -144,12 +138,14 @@ def _normalize_server_provenance(
     preload_items = [_req_str(item, field="shared_preload_libraries[]", database=database) for item in preload_raw]
     if len(preload_items) != len(set(preload_items)):
         raise provenance_error("backup-observation-incomplete", database, "duplicate shared_preload_libraries entry")
-    return {
-        "catalog_version_no": cat_ver, "client_identities": client_identities,
-        "compile_abi": compile_abi, "os_arch_abi": os_arch, "server_version": version_text,
-        "server_version_num": version_num, "shared_preload_libraries": sorted(preload_items),
-        "version_string": version_string,
+    normalized: dict[str, object] = {
+        "catalog_version_no": cat_ver, "client_identities": client_identities, "compile_abi": compile_abi,
+        "os_arch_abi": os_arch, "server_version": version_text, "server_version_num": version_num,
+        "shared_preload_libraries": sorted(preload_items), "version_string": version_string,
     }
+    if raw.get("system_identifier") is not None:
+        normalized["system_identifier"] = _req_str(raw.get("system_identifier"), field="system_identifier", database=database)
+    return normalized
 
 
 def _resolve_and_order_extensions(extensions: list[dict[str, Any]], *, database: str) -> list[dict[str, Any]]:
@@ -188,7 +184,7 @@ def _resolve_and_order_extensions(extensions: list[dict[str, Any]], *, database:
 
 
 def _normalize_database_catalog(
-    raw: object, *, database: str, expected_role: str | None = None, extension_policy: Mapping[str, Mapping[str, str]] | None = None
+    raw: object, *, database: str, expected_role: str | None = None, extension_policy: Mapping[str, Mapping[str, Any]] | None = None
 ) -> dict[str, object]:
     if not isinstance(raw, Mapping):
         raise provenance_error("backup-observation-incomplete", database, "database_catalog must be an object")
@@ -202,9 +198,9 @@ def _normalize_database_catalog(
     if (icu_raw is not None and not isinstance(icu_raw, str)) or (collver_raw is not None and not isinstance(collver_raw, str)):
         raise provenance_error("backup-observation-incomplete", database, "invalid locale metadata")
     creation_semantics: dict[str, object] = {
-        "datcollate": _req_str(cs_raw.get("datcollate"), field="datcollate", database=database),
-        "datcollversion": collver_raw, "datctype": _req_str(cs_raw.get("datctype"), field="datctype", database=database),
-        "daticulocale": icu_raw, "datlocprovider": _req_str(cs_raw.get("datlocprovider"), field="datlocprovider", database=database),
+        "datcollate": _req_str(cs_raw.get("datcollate"), field="datcollate", database=database), "datcollversion": collver_raw,
+        "datctype": _req_str(cs_raw.get("datctype"), field="datctype", database=database), "daticulocale": icu_raw,
+        "datlocprovider": _req_str(cs_raw.get("datlocprovider"), field="datlocprovider", database=database),
         "encoding": _req_str(cs_raw.get("encoding"), field="encoding", database=database),
         "template": _req_str(cs_raw.get("template"), field="template", database=database),
     }
@@ -235,12 +231,18 @@ def _normalize_database_catalog(
         owner = _req_str(item.get("owner"), field="extension.owner", database=database)
         version = _req_str(item.get("version"), field="extension.version", database=database)
         reloc, trusted, is_base = item.get("relocatable"), item.get("trusted"), item.get("is_baseline")
-        pol = extension_policy.get(name, {}) if extension_policy else {}
-        own_class = pol.get("ownership_classification", item.get("ownership_classification"))
-        base_origin = pol.get("baseline_origin", item.get("baseline_origin"))
-        decl_id = pol.get("declaration_identity", item.get("declaration_identity"))
-        exp_ctx = pol.get("experimental_context", item.get("experimental_context"))
         prereqs_raw, ext_cfg, ext_cond = item.get("prerequisite_extensions"), item.get("extconfig_tables"), item.get("extcondition")
+        pol = extension_policy.get(name, {}) if extension_policy else {}
+        use_pol = bool(pol) and (
+            "exact_versions" not in pol or (
+                version in pol["exact_versions"] and schema == pol["required_schema"] and owner in pol["allowed_owners"]
+                and (pol.get("relocatable") is None or reloc == pol["relocatable"]) and not ext_cfg and not ext_cond
+            )
+        )
+        own_class = pol.get("ownership_classification", item.get("ownership_classification")) if use_pol else item.get("ownership_classification")
+        base_origin = pol.get("baseline_origin", item.get("baseline_origin")) if use_pol else item.get("baseline_origin")
+        decl_id = pol.get("declaration_identity", item.get("declaration_identity")) if use_pol else item.get("declaration_identity")
+        exp_ctx = pol.get("experimental_context", item.get("experimental_context")) if use_pol else item.get("experimental_context")
         if (
             not isinstance(reloc, bool) or (trusted is not None and not isinstance(trusted, bool)) or not isinstance(is_base, bool)
             or is_base != (name == BASELINE_EXTENSION_NAME and schema == BASELINE_EXTENSION_SCHEMA)
@@ -270,6 +272,11 @@ def _normalize_database_catalog(
             "relocatable": reloc, "schema": schema, "trusted": trusted, "version": version,
         })
     ordered_extensions = _resolve_and_order_extensions(extensions, database=database)
+    for ext in ordered_extensions:
+        pol = extension_policy.get(str(ext["name"]), {}) if extension_policy else {}
+        if "prerequisites" in pol and tuple(ext["prerequisite_extensions"]) != tuple(pol["prerequisites"]):
+            ext["ownership_classification"], ext["declaration_identity"] = "unclassified", "unavailable"
+            ext["experimental_context"], ext["baseline_origin"] = "unavailable", "unavailable"
     ext_names = {str(e["name"]) for e in ordered_extensions}
 
     cfg_raw = raw.get("extension_config_tables")
@@ -340,16 +347,14 @@ def _normalize_database_catalog(
     edges.sort(key=lambda e: (str(e["extension"]), str(e["object_class"]), str(e["object_schema"]), str(e["object_identity"]), str(e["deptype"])))
     return {
         "creation_semantics": creation_semantics, "database_role": db_role, "extension_config_tables": config_tables,
-        "extension_dependency_summary": {
-            "by_class": {k: by_class_counts[k] for k in sorted(by_class_counts)}, "edge_count": len(edges), "edges": edges
-        },
+        "extension_dependency_summary": {"by_class": {k: by_class_counts[k] for k in sorted(by_class_counts)}, "edge_count": len(edges), "edges": edges},
         "installed_extensions": ordered_extensions, "non_system_schemas": schemas,
     }
 
 
 def parse_and_validate_catalog_observation(
     raw_bytes: bytes, *, database: str, expected_role: str | None = None,
-    extension_policy: Mapping[str, Mapping[str, str]] | None = None, observed_clients: Mapping[str, str] | None = None,
+    extension_policy: Mapping[str, Mapping[str, Any]] | None = None, observed_clients: Mapping[str, str] | None = None,
 ) -> DatabaseObservation:
     if raw_bytes.lstrip().startswith(b"OVERFLOW:") or len(raw_bytes) > min(MAX_QUERY_OBSERVED_OUTPUT_BYTES, MAX_OBSERVATION_JSON_BYTES):
         raise provenance_error("backup-observation-incomplete", database, f"catalog observation output exceeded {MAX_QUERY_OBSERVED_OUTPUT_BYTES} bytes")
@@ -370,21 +375,18 @@ def verify_provenance_fingerprints(before: DatabaseObservation, after: DatabaseO
     return after
 
 
-def observe_database_provenance(plan: LocalRuntimePlan, database: str, command_runner: CommandRunner) -> DatabaseObservation:
+def observe_database_provenance(
+    plan: LocalRuntimePlan, database: str, command_runner: CommandRunner, *, extension_restore_policy: Any = None
+) -> DatabaseObservation:
     secret = runtime_postgres_password(plan)
-    if database in plan.graph_databases:
-        role = "graph"
-    elif database in plan.owned_databases:
-        role = "control"
-    else:
+    if database not in plan.owned_databases:
         raise provenance_error("database-not-owned", database, "database is not owned by this RepoMap runtime")
+    role = "graph" if database in plan.graph_databases else "control"
+    ext_policy = project_policy_for_observation(extension_restore_policy, database_role=role)
     command = planned_psql_command(plan, database, "-X", "-A", "-t", "-q", "-v", "ON_ERROR_STOP=1", "-c", catalog_observation_sql(role))
     env = dict(os.environ, PGPASSWORD=secret)
     if command_runner is _STDLIB_SUBPROCESS_RUN:
-        raw_bytes = run_bounded_popen(
-            command, max_output_bytes=MAX_QUERY_OBSERVED_OUTPUT_BYTES, timeout_seconds=DEFAULT_OBSERVATION_TIMEOUT_SECONDS,
-            error_code="backup-observation-incomplete", field=database, secret=secret, env=env,
-        )
+        raw_bytes = run_bounded_popen(command, max_output_bytes=MAX_QUERY_OBSERVED_OUTPUT_BYTES, timeout_seconds=DEFAULT_OBSERVATION_TIMEOUT_SECONDS, error_code="backup-observation-incomplete", field=database, secret=secret, env=env)
     else:
         completed = command_runner(list(command), check=False, input=None, stdin=None, capture_output=True, text=False, env=env)
         if completed.returncode != 0:
@@ -392,4 +394,4 @@ def observe_database_provenance(plan: LocalRuntimePlan, database: str, command_r
             raise provenance_error("backup-observation-incomplete", database, msg)
         raw_bytes = completed.stdout if isinstance(completed.stdout, bytes) else decode_process_output(completed.stdout).encode("utf-8")
     clients = observe_client_identities(plan=plan, command_runner=command_runner) if b'"client_identities"' not in raw_bytes else None
-    return parse_and_validate_catalog_observation(raw_bytes, database=database, expected_role=role, observed_clients=clients)
+    return parse_and_validate_catalog_observation(raw_bytes, database=database, expected_role=role, extension_policy=ext_policy, observed_clients=clients)

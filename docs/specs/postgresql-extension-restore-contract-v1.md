@@ -1,16 +1,17 @@
 # PostgreSQL Extension Restore Contract v1
 
-Status: **D9-A implemented; hosted candidate qualification pending**; D9-B remains **Proposed**.
-Design phase: `REPOMAP-PRODUCT6-NAVIGATION36-EXTENSION-RESTORE-DESIGN1`.
-Implementation phase: `REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1`.
-Date: 2026-10-20. Operator approval covers provenance and refusal guards only;
-it does not admit extension replay or production pgvector.
+Status: D9-A's public staging predecessor is hosted-qualified by
+[CI56](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/39540435586).
+The operator separately approved bounded D9-B on 2026-10-21. This is its
+implementation candidate, `REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1`; new hosted qualification is pending.
+Production pgvector/D15 admission and configuration-data replay remain separate.
 
-[ADR 0084](../adr/2026/10/0084-extension-aware-backup-and-restore.md) owns the
-decision request and content-bound source census. [ADR 0051](../adr/2026/08/0051-postgresql-extension-and-database-capability-architecture.md)
-remains the accepted capability authority. The D9-A requirements are approved;
-the future extension protocol remains proposed. Neither approval nor recorded
-metadata establishes executed restore qualification.
+[ADR 0084](../adr/2026/10/0084-extension-aware-backup-and-restore.md) records the
+decision. [ADR 0051](../adr/2026/08/0051-postgresql-extension-and-database-capability-architecture.md)
+remains the capability authority. The
+[staging milestone note](../../tools/ci/nav40-extension-restore.md) records the
+bounded publication scope. Metadata and scoped evidence do not establish complete
+hosted qualification.
 
 ## 1. Bounded implementation sequence
 
@@ -21,8 +22,8 @@ behavior. Do not install extensions, enable optional production defaults or
 implement derived-TOC replay in this slice. Non-baseline extensions remain
 unsupported regardless of complete metadata or experimental fixture availability.
 
-**D9-B, proposed later:** implement and prove the target D9 restore protocol under
-a separate accepted assignment. A disposable experimental policy may qualify
+**D9-B, separately approved on 2026-10-21:** implement and prove the bounded target
+D9 restore protocol under NAVIGATION40. A disposable experimental policy may qualify
 tests; it does not become production admission. The remaining transport and
 artifact-availability proofs must precede a positive extension restore claim.
 
@@ -196,8 +197,11 @@ rewriting. Preserve or explicitly disposition extension comments/ACLs as well.
 
 `-L` needs a second input while the original archive is streamed. Materialize
 the bounded derived list as a 0600 file in an invocation-owned 0700 directory
-inside the exact target container; the internal route uses equivalent private
-local storage. Verify uploaded bytes/digest and close handles before replay.
+inside the exact target container. Any qualified internal route must use equivalent
+private local storage. The current bounded `extension_v2` implementation refuses
+container-internal execution because its Engine identity cannot be established;
+no positive internal-route support or native proof is claimed. Admitting that
+route requires separately proven identity and custody; `core_v1` is unchanged. Verify uploaded bytes/digest and close handles before replay.
 Track exact container/runtime and temporary-resource ownership; clean up in
 `finally` without masking the initiating failure. Never use a host bind, shared
 temporary path, broad deletion or an unowned target file.
@@ -207,6 +211,416 @@ If this transport does not work, refuse and revise the design before deployment;
 there is no automatic SQL rewrite, silent archive spooling or filtering fallback.
 `--exit-on-error` is proposed for this new protocol and must be tested. It is not
 silently added to the retained legacy core protocol in D9-A.
+
+### 7.1 Selected D9-B engineering mechanisms (NAVIGATION40 correction2)
+
+Recorded before the corresponding code, within the obligations above. They
+select mechanisms only; they do not claim implementation, proof or qualification.
+
+- **Source facts and target baseline.** The source `creation_semantics.template`
+  stays the observed `unknown`; PostgreSQL does not record the historical template.
+  Source encoding, provider, collation, ctype, ICU locale and collation version are
+  compatibility inputs, separate from target policy. The only selectable target
+  template is `template1`. `template0` cannot be observed logically without
+  changing `datallowconn`, and filesystem or statistics heuristics are not a
+  baseline. The caller policy binds each admitted Engine image content ID to a
+  clean-reference SHA-256. That digest covers a bounded canonical logical baseline
+  over every PostgreSQL 16 database-local catalog. Volatile statistics columns
+  are excluded, and ACLs are normalized to role OIDs. Large-object and
+  user-mapping rows are covered through their public metadata. An unexpected local
+  catalog set refuses. The reference comes from a separate clean cluster of the
+  same admitted artifact, never from the target. Before the first creation,
+  preflight reads template1's attributes and digest without mutation.
+  Source locale facts must equal template1's, as template1 requires, including a
+  collation version observed on both. The digest is revalidated before each
+  `CREATE DATABASE`. Each new database must show the same digest before
+  installation. A modified template refuses before any creation. Digest equality
+  detects drift; it does not exclude superuser changes between checks.
+- **Lifecycle authority.** Reuse canonical key `0x5245504F`, endpoint and namespace
+  resolution. Hold it exclusively on the maintenance database for the invocation,
+  serializing `extension_v2` restore actors. Also hold it on each created target
+  through a dedicated connection, from just after creation until finalization or
+  compensation. This excludes canonical maintenance windows and shared maintenance
+  activity on that database. Custody names only databases actually locked.
+  Endpoint or lock failure refuses for every runner. While that connection exists,
+  cooperating actors cannot drop or rename the database. Identity is revalidated
+  through it at each mutation seam: OID, system identifier, container, stamp.
+  Compensation issues `DROP DATABASE ... WITH (FORCE)` only while it is held.
+  Lost custody, an outcome-unknown creation or a mismatch retains the target and
+  ledger for intervention. Between `CREATE DATABASE` and target lock acquisition,
+  only maintenance-database serialization and the trusted-administrator,
+  single-lifecycle precondition apply. Legacy `core_v1` restore and provisioning
+  do not take that lock. No hostile-superuser or ABA guarantee is claimed.
+- **Artifact and client identity.** The target identity is the Engine `Image`
+  content ID; when it is missing, the restore refuses, and `Config.Image` is never
+  consulted. Optional registry manifest digests come only from inspecting that
+  exact content ID. `extension_v2` requires exact pg_dump and pg_restore versions
+  recorded at the source and exact pg_restore and psql versions observed at the
+  target. The container and image content ID are revalidated at mutation seams.
+- **Native custody.** Owned input files use exclusive no-follow creation, recorded
+  identity, complete writes and fsync. Removal is identity-verified in `finally`
+  and preserves the initiating `BaseException`. The container TOC script reports
+  directory and file identities immediately after exclusive acquisition. Cleanup
+  removes only proven identities. After unknown acquisition, a bounded existence
+  probe either reports absence or retains and reports the path.
+- **Replay bounds.** Whole-archive `extension_v2` replay requires explicit caller
+  policy bounds: a deadline and an output ceiling, with no default. They are
+  outside the trust digest and are not capacity qualification. TOC limits do not
+  apply, and `core_v1` replay is unchanged.
+- **Optional rows and grants.** Historical rebuild rows remain data. Each row must
+  match its own run's canonical receipt: recomputed receipt and profile identities,
+  generations, bundle, snapshot and row count. Any non-empty historical principal
+  is accepted. Node and evidence binding is required for rows of the current
+  accepted publication. Grants use a bounded projection parsed from
+  `candidate_schema_sql`; restore verifies both positive and negative privileges.
+
+
+### 7.2 Preimplementation refinement: recovery binding and container command custody
+
+Selected by the parent within approved bounded D9-B before correction3 code.
+Implementation, independent review and new-candidate qualification remain pending.
+
+**Stable backup declaration, current target qualification.** The stored policy
+binding identifies the accepted source capability declaration: policy identity,
+protocol selection and exact extension rules, including versions, schemas,
+ownership, prerequisites, artifact expectations and optional role contracts.
+Restore-target qualification inputs (admitted Engine IDs, server/client/platform
+sets and clean template references) and operational replay bounds are separate
+current restore inputs. They must not enter that stable declaration digest.
+A later independently qualified target can therefore be considered against the
+original unchanged backup without re-dumping or rewriting its manifest. Source
+observations and archive bindings stay mandatory and are checked against current
+independent qualification; a changed declaration, tampered source fact, missing
+qualification or unavailable target still refuses before creation. This does not
+admit new extension artifact variants or production/D15 policy. The first public
+extension protocol must define the digest representation explicitly; legacy
+format1 and `core_v1` behavior remain unchanged.
+
+**Container-side command lifetime.** A killed host `docker exec` client is not
+proof that its container process or PostgreSQL session ended. New extension
+restore commands require bounded, invocation-owned control of their actual
+container-side execution, using only existing qualified image facilities. Bind
+immutable container identity and exact process/start identity, private control
+resources and a unique invocation/session identity. A deadline or interruption
+must settle the owned remote execution and any correlated database work, or
+retain a specific unknown-outcome record and refuse further mutation. Never
+signal a reused/unowned PID, an unrelated session or a replaced container. Host
+process, remote process, PostgreSQL outcome and resource removal are distinct
+proofs. Preserve the initiating exception with bounded secondary diagnostics.
+No package/image acquisition or fallback to a positive host-only cleanup claim is
+allowed. The existing query/TOC/cleanup ceilings and explicit replay bounds stay
+owned separately; existing core command execution is unchanged.
+
+Required scoped native evidence includes a real container command timeout or
+interruption through the production bounded path, remote/process/backend outcome
+and exact cleanup receipts, unchanged-archive restore on an independent target,
+and later target qualification using the original backup. Setup injection and
+native fault/observation boundaries must be distinguished. Unknown effects remain
+conservative, with retained private evidence; preflight does not claim absence of
+external administrator drift or an ABA guarantee.
+
+**Correction3 technical refinement (recorded before the corresponding code).**
+The `extension_v2` policy binding is the exact record `d1_baseline`, `d3_policy`,
+`policy_id`, `declaration_format` = `repomap-extension-declaration-v1` and
+`declaration_sha256`. The digest is SHA-256 over sorted-key compact UTF-8 JSON of
+`format`, `policy_id`, `allow_extension_v2` and every extension rule with all its
+fields, ordered by name and database roles. The stored record must equal the record
+of the current policy. A record without this format, such as an earlier experimental
+`policy_sha256`, refuses; it is not migrated.
+
+Each new container command runs by immutable container ID under a POSIX `sh`
+supervisor. The supervisor exclusively creates a 0700 control directory and a 0600
+`pid starttime token` record, sets a unique `application_name`, then `exec`s the
+command, so the recorded process is the command. After every command a separate
+bounded settlement exec reads that record. It signals only a live process whose PID,
+start time and environment token all match, waits at most 2 s, and removes only that
+control path. An absent control directory is fenced by settlement so that a late start
+cannot run. Settlement never writes into or removes an existing directory without a
+matching record; that state remains unknown and retained. After a
+failed PostgreSQL client command, correlated sessions are terminated by exact
+`application_name` and current role, then their absence is read back. Settlement
+uses a 10 s host deadline and a 4096-byte output ceiling; session settlement uses a
+5 s statement timeout and a 2 s termination wait. An unobserved or unsettled outcome
+must be retained in a concrete private execution record. Later commands, including
+compensation, must refuse while the relevant outcome remains unknown. A failed
+`CREATE DATABASE` becomes not-created only after settlement and absence observed
+under the held maintenance lock. Extension replay uses no parallel `pg_restore` jobs.
+The preflight archive listing retains the existing 60 s/4 MiB TOC limits.
+
+### 7.3 Execution custody completion requirements
+
+Recorded before further implementation in NAVIGATION40 correction4. The correction3
+candidate is not accepted: its preflight, process-descendant and reused-command
+exceptions do not satisfy section 7.2. The following complete those existing
+obligations without admitting a new protocol, artifact or production capability.
+
+- Every container execution used by `extension_v2`, including client-version
+  probes and reused baseline role reconciliation, must use its immutable container
+  binding and bounded execution custody. Host `docker inspect` creates no container
+  process and retains its existing bounded host handling. Legacy `core_v1` behavior,
+  flags, secret transport and role semantics remain unchanged.
+- An unsettled preflight command requires a durable private execution record that
+  identifies the invocation, immutable container and exact retained resources. It
+  must distinguish command state from target ownership and must not represent the
+  maintenance database as an invocation-created target. Outstanding unknown state
+  refuses subsequent restore attempts until settled or explicitly handled.
+- A retired shell leader does not prove that its descendants stopped. Either
+  settle actual owned execution, including relevant children, or record the remaining
+  uncertainty and refuse continuation. Preserve the qualified trusted-administrator
+  model; this is not a hostile-administrator or ABA guarantee.
+- Positive host retirement requires explicit evidence. Neither a successful client
+  exit nor the absence of exception context proves that host cleanup completed.
+  A typed runner observation or conservative unknown classification is required.
+  The existing `_backup_process.py` is an authorized causal owner for this fix;
+  existing core success/error behavior and every process budget remain unchanged.
+- Compensation must refresh execution outcomes that arise during cleanup itself
+  before attempting another command and before persisting its final record. Guard
+  ownership-query and cleanup I/O failures, preserve the initiating exception and
+  retain bounded secondary diagnostics and the exact unresolved state.
+
+Required scoped evidence distinguishes native observations from injected triggers
+and parser-only handling. Check timeout/interruption, child-process uncertainty,
+preflight retention and compensation failures before disposable-container teardown.
+No new utility, image, dependency, full local suite or local coverage is authorized.
+
+**Correction4 technical refinement (recorded before the corresponding code).**
+These select mechanisms for the requirements above; they claim no proof.
+
+- *Typed host retirement.* `run_bounded_process` accepts an optional typed
+  retirement observation. It becomes `retired` only after the owned process group
+  was signalled and its leader reaped without error. A pending, started or
+  interrupted retirement is host `unknown`. Callers that pass none keep their exact
+  output, errors, deadlines, ceilings and 2 s retirement wait.
+- *Piped input.* The bounded runner may also feed bounded stdin bytes through a
+  non-blocking pipe under the command's own deadline. Role reconciliation uses it,
+  so its secret-bearing SQL is not written to disk. The stdin-file path is unchanged.
+- *Client probes and role reconciliation.* With the stdlib runner, each `--version`
+  probe runs supervised by immutable container ID within the existing 4096-byte and
+  5 s limits. A settled failure keeps the existing `unavailable` observation; an
+  unsettled one refuses. The core role helper still renders and validates its SQL.
+  Its single container exec is routed through the same custody with the existing
+  30 s observation deadline, 2 MiB ceiling, error code and label. A caller-supplied
+  runner keeps the shared core path; `core_v1` callers are untouched.
+- *Descendants.* The supervised command and every descendant inherit the exported
+  invocation token. On each path that would otherwise settle, settlement scans the
+  container's `/proc` for live processes whose environment carries that exact
+  token, excluding itself. It SIGKILLs one only while its PID and start time still
+  match the scanned identity, rescans for up to 2 s, then reports `DESCENDANTS`
+  `none`, `killed` or `remaining`; an unscanned path reports `unknown`. Settlement
+  requires `none` or `killed`. Supervised commands do not change credentials, so
+  their environments stay readable to the same exec user.
+- *Sessions.* PostgreSQL sessions inherit the exported `application_name`. They
+  are settled after any failed command, or after descendants were killed,
+  whether or not the leader is a PostgreSQL client. A fenced command needs none.
+- *Durable execution record.* An unsettled preflight outcome is written atomically
+  to a 0700 `.restore-exec-record-<id>` directory as a 0600 `record.json`. Its
+  `record_type` is `repomap-extension-exec-record-v1`, with phase, invocation ID
+  and immutable container ID. Its `owned_targets` list is empty. Each unknown
+  command keeps its label, token, separate host/remote/descendant/session/control
+  observations and exact control path. Intent-ledger entries carry the same
+  command records. While a record or intent ledger exists, `extension_v2`
+  preflight and execution refuse before any container command. Operator inspection
+  removes it. A failed record write is a secondary diagnostic beside the primary.
+- *Compensation.* Unknown outcomes are re-read before each target and immediately
+  before the ledger write. Held-identity verification runs inside the guarded
+  drop handling: an exception retains that target, and an interruption also stops
+  later drops. Either way the initiating exception survives.
+
+**Correction4 review refinement (recorded before the corresponding code).** The
+independent work review found, and a native check in the disposable container
+then confirmed, that the descendant mechanism above broadens cleanup. In the
+qualified PostgreSQL image the postmaster is the container's PID 1, so it reaps
+every reparented orphan. To the postmaster, any reaped exit other than 0 or 1 is a
+crashed server process, so it terminates every session. That included an unrelated
+held connection. These replace the corresponding parts of the bullets above:
+
+- *Descendant order.* Settlement signals token-bearing descendants leaf-first,
+  while their live parent can still reap them. It signals the supervised leader
+  only once no other token-bearing process remains. It never signals a
+  token-bearing process whose parent is PID 1. It never signals the leader while
+  such an orphan exists, or while a live child of the leader or of a token-bearing
+  process lacks the token. That child may be unreadable or may have changed its
+  environment. These cases report `DESCENDANTS remaining` or `unknown`; they are
+  retained, never signalled. An orphan that has already lost its token, or has
+  changed credentials, is outside the qualified trusted-administrator model.
+- *Sessions with remaining descendants.* When descendants are `remaining`,
+  correlated sessions are not terminated, because a terminated orphaned client
+  exits abnormally. They stay `unknown` and retained.
+- *Retained control resources.* Any durable execution record or intent ledger
+  lists every command whose outcome is unsettled, plus every settled command whose
+  control path was not removed. Each entry gives that exact control path, and
+  every settlement diagnostic names it too. Only unsettled outcomes refuse further
+  commands and compensation, as before.
+
+### 7.4 Reaping and process-creation quiescence
+
+Recorded before correction5 source changes, within the same bounded D9-B scope.
+The final correction4 source still skips zombie processes during its census and
+discloses a possible fork between the last scan and leader termination. These are
+questions to verify natively before acceptance, not evidence of a reproduced fault.
+
+A terminated child may remain waitable until its parent reaps it. Such a child
+must not count as absent when deciding whether terminating the parent can broaden
+cleanup. A momentarily childless census while a parent remains able to fork also
+does not establish safe termination. Establish the required quiescence using
+existing qualified facilities, or retain the precise uncertainty without signalling
+that parent. Preserve the existing refusal, private-record and primary-error rules.
+
+Use a paused invocation-owned parent, actual child state and an unrelated held
+session to distinguish reaping from termination in the disposable native proof.
+If the suspected path is refuted, retain that evidence rather than making an
+unnecessary product change. No new image, init process, dependency, core behavior,
+complete local suite or local coverage is authorized by this verification.
+
+**Correction5 technical refinement (recorded before the corresponding code).** A
+native check on the correction4 source established the concern. The leader stopped
+itself after its psql child's session became visible. In one case the child exited 3
+and stayed a zombie of that leader, yet settlement reported `none` and killed the
+leader. In the other case settlement killed the live child while its parent could not
+reap it, then killed the leader. Both times the PID 1 postmaster reaped the adopted
+child and crash-restarted, ending an unrelated held session. These mechanisms
+supplement the correction4 bullets:
+
+- *Census.* Settlement counts every process in the container's `/proc`, including
+  zombies, which it attributes by PPid. A terminated child of a token-bearing process
+  stays present until it leaves `/proc`.
+- *Reaping.* While a token-bearing process has a zombie child, that parent is never
+  signalled. Settlement waits within the same 2 s rescan window for the reap. If the
+  zombie remains, it reports `DESCENDANTS unreaped`, and the outcome is retained.
+- *Reapable parents only.* Settlement signals a token-bearing descendant only while its
+  parent is a live, unstopped token-bearing process. A child of a stopped parent stays
+  `remaining`.
+- *Quiescence before SIGKILL.* Before any SIGKILL, settlement stops the target with
+  SIGSTOP, unless it is already stopped. It then confirms the stopped state within 1 s.
+  It sends the kill only if a census taken while the target is stopped shows no child of
+  it in any state. A stopped process cannot fork, so that census stays true until the
+  kill. Otherwise settlement resumes the target, but only if settlement stopped it. It
+  retries the leader at most three times. A leader still not killed is `REMOTE alive`,
+  `DESCENDANTS unknown`.
+- *Explicit pause state.* While settlement holds its own stop, a `halt` file inside the
+  exact control path names that PID and start time. Settlement removes the file after
+  the kill or the resume. A retained control path therefore names any pause left by an
+  interrupted settlement. Settlement never resumes a stop that it did not introduce.
+- *Sessions.* Correlated sessions are not terminated when descendants are `remaining` or
+  `unreaped`. Every report first checks for a token-bearing process whose parent is
+  PID 1, whatever order `/proc` lists processes in. This includes reports whose control
+  record is unproven. Any such process is `remaining`.
+- *Operator recovery.* A retained child under a stopped leader is released by resuming
+  that leader so that it reaps the child. Killing the leader would hand the child to
+  PID 1.
+
+**Correction5 close refinement (recorded before the corresponding code).** The
+independent work review found that the reapable-parent rule was checked only against
+the pass-wide census. One pass can hold several stops of up to 1 s each, so a later
+target could be stopped and killed after its parent had exited and PID 1 had adopted
+it. These rules supplement the bullets above:
+
+- *Fresh parent check.* Immediately before stopping a descendant, and again after
+  confirming its stop and immediately before the kill, settlement re-reads the
+  target. Its PPid must still name the parent from the census, and that parent must
+  still be live, with the same start time, and neither stopped nor traced. Otherwise
+  settlement does not signal the target.
+- *Exact resume.* Settlement resumes its own stop only while the target keeps its
+  start time and its census parent. If PID 1 adopted the target during that stop,
+  it stays stopped. Its `halt` file stays in the retained control path, and the
+  report is `remaining`. The pause is created exclusively, so a `halt` file that
+  already exists prevents any new stop.
+- *Observed leader child.* If a leader attempt fails after the stopped leader was
+  seen with a child, a leader still alive after three attempts reports `DESCENDANTS
+  remaining`, not `unknown`. Its correlated sessions are not terminated.
+
+This refinement is wrong if a stopped process can still create a child. It is also
+wrong if a zombie can leave its parent other than by being reaped or adopted. If either
+holds, the census before the kill does not prove quiescence. Two windows remain,
+without pidfd. A parent can exit between the final re-read and a signal, the same
+probe-then-signal window as PID reuse. A live parent can also exit after the kill
+without reaping the killed child. Settlement does not stop that parent, because a
+stopped parent cannot reap. Either case hands an abnormal exit to PID 1. This
+refinement does not claim to exclude them.
+
+### 7.5 Conservative descendant retention
+
+Parent decision before correction6 code, within the same approved bounded D9-B.
+Correction5's disclosed exit-before-reap window is not accepted. A fresh parent
+identity check cannot guarantee that the parent remains alive to reap a child
+that settlement has killed. This is an ordinary execution failure, distinct from
+hostile PID reuse. No pidfd, new dependency, init process or image is needed to
+avoid inducing that failure: retain the uncertain execution instead.
+
+Settlement must not signal any non-leader invocation process, whether live,
+stopped, adopted or unreaped. It may observe bounded natural completion/reaping.
+While such a process or an uncertain child remains, keep the exact private control
+state, report remaining/unreaped/unknown accurately and refuse continuation.
+Do not terminate correlated PostgreSQL sessions for any of these states, including
+unknown. Native target effects are not disproved by host-client retirement.
+
+Only the recorded supervisor leader may be stopped or killed: its PID/start/token
+must still match, it must not be adopted by PID 1, and a census after its confirmed
+stop must prove it has no child in any state. A child discovered at this boundary
+causes conservative retention, never a descendant kill. Every introduced pause
+keeps its exact PID/start record until its own kill or identity-checked resume is
+confirmed; an unproven resume keeps that record. Never resume an externally
+introduced stop or a process adopted by PID 1. Preserve the qualified stable
+Docker-exec runtime and single-binary client model; this is no hostile-host or
+atomic-PID guarantee. Source and tests must state that boundary honestly.
+
+The corresponding unit fixture must retain original process handles and use their
+PID-reuse-checked signalling for cleanup, instead of signalling historical numeric
+PIDs after a wait thread has reaped them. Unit metadata remains simulated; native
+Linux child and bystander observations remain in disposable integration tests.
+
+These supersede every earlier descendant-signalling mechanism. Healthy direct
+client commands and compensation of proven-settled failures stay supported.
+Unknown failures already require operator intervention under the approved scope.
+
+**Correction6 technical refinement (recorded before the corresponding code).**
+These select mechanisms within the invariant above; they claim no proof.
+
+- *Observation only.* The census still counts every process, including zombies
+  by PPid. For up to the same 2 s it waits for token-bearing non-leader processes
+  to finish and for zombie children to be reaped naturally, and sends them nothing.
+  A token-bearing process whose parent is PID 1 is `remaining`, whether or not it
+  is the recorded leader. A live untokened child of a token-bearing process is
+  `unknown`. At the deadline a live token-bearing non-leader is `remaining` and a
+  zombie child is `unreaped`. `killed` is no longer a descendant observation: the
+  parser reads it as `unknown`, and only `none` settles descendants.
+- *Leader retirement.* The leader is considered only after a census reports
+  `none`. It needs the recorded PID, start time and token and PPid 0, the exec
+  shim outside the container's PID namespace. A leader under PID 1 or any
+  in-container parent is never signalled; it stays `alive`, retained, and is
+  reported `remaining` when adopted by PID 1 and otherwise `unknown`.
+  Settlement stops it unless it is already stopped, first recording that stop
+  exclusively in `halt`. Once the stop is confirmed within 1 s, a census must show
+  no child of the leader in any state. A fresh read must then still show it
+  stopped, with the same start time and the same PPid as before the stop. Only then
+  is it sent SIGKILL. `halt` is removed only after the leader is seen no longer
+  live. An existing `halt` record prevents every signal.
+- *Child at the stop boundary.* A child found by that census is sent nothing.
+  Settlement resumes only its own stop, and only while the leader keeps its start
+  time and pre-stop PPid. It removes `halt` only once it sees the leader running
+  again. It reports the leader `alive` and the control path `retained`, with the
+  fresh census result, or `remaining` if the child has gone by then. A leader that
+  was adopted, changed identity or still looks stopped keeps its `halt` record. A
+  stop not confirmed within 1 s is resumed the same way and retried at most three
+  times; then the leader is `alive` with `DESCENDANTS unknown`.
+- *Externally stopped leader.* A stop that settlement did not introduce is never
+  resumed. Such a leader is killed only after the same childless census and fresh
+  identity and PPid read; otherwise it stays stopped and is retained.
+- *Sessions.* Correlated sessions are terminated only after a failed command whose
+  descendants are `none` and whose remote outcome is settled. `remaining`,
+  `unreaped`, `unknown` and any unsettled remote outcome leave them `unknown`.
+
+Under the qualified Docker exec runtime the leader's parent is the runtime's exec
+shim, outside the container's PID namespace (PPid 0), and that shim reaps it.
+Settlement requires that PPid before the stop and again before the kill, and the
+native integration owner observes it on the live leader rather than assuming it. A
+shim crash or PID reuse between the final read and the kill is outside that
+runtime model; it is not an ordinary execution failure, and this is no atomic-PID
+or hostile-host guarantee. This refinement is wrong if settlement can signal any
+non-leader invocation process, or if a stopped leader can gain a child in that
+interval. That would need a child subreaper, outside the single-binary client
+model. It is also wrong if an ordinary exit of any process during settlement can
+hand a process that settlement signalled to PID 1.
 
 ## 8. Principals, configuration data and privacy
 
@@ -295,7 +709,8 @@ real. The implemented D9-A provenance owners are
 `src/test/int/python/repomap_kg/runtime/d9_manifest_provenance.int.test.py`.
 D9-B additionally needs a focused restore unit owner and
 `src/test/int/python/repomap_kg/runtime/d9_extension_restore.int.test.py`.
-The D9-A owners exist; the D9-B restore owner remains future work. Freeze exact selectors and stopping rules
+The D9-A owners exist. NAVIGATION40 adds D9-B restore owners under review;
+their presence does not establish acceptance. Freeze exact selectors and stopping rules
 in each accepted implementation assignment, including coordinator/release callers
 whose actual owners are affected. Do not convert the whole legacy population.
 
@@ -365,3 +780,10 @@ they do not turn an injected restore into executed archive replay. The final
 selection uses `--pg-test-profile core` and `--no-coverage`. Optional pgvector
 qualification, complete-population coverage and D9-B target admission remain
 separate. See ADR 0084 for review and post-review amendment limits.
+
+## Subsequent hosted and implementation checkpoints
+
+CI56 attempt1 executed and passed all eight jobs for staging
+`157e5b88048bdc605cab1f037089c705ab555ce8`. It supersedes the historical D9-A
+pending record above for that candidate. It does not qualify this later D9-B
+candidate. See the [NAVIGATION40 milestone](../../tools/ci/nav40-extension-restore.md).

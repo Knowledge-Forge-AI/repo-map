@@ -14,7 +14,7 @@ from repomap_kg.runtime.backup_commands import (
     CommandRunner, decode_process_output, planned_pg_restore_list_command, read_runtime_password,
 )
 from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime._backup_process import BoundedProcessError, run_bounded_process
+from repomap_kg.runtime._backup_process import BoundedProcessError, ProcessRetirement, run_bounded_process
 from repomap_kg.runtime.local import LocalRuntimeDiagnostic, LocalRuntimePlan, redact_runtime_text
 
 BACKUP_FORMAT_VERSION = 2
@@ -57,6 +57,7 @@ def catalog_observation_sql(database_role: str = "graph") -> str:
         "    'compile_abi', (SELECT jsonb_build_object('max_data_alignment', i.max_data_alignment, 'database_block_size', i.database_block_size,\n"
         "      'float8_pass_by_value', i.float8_pass_by_value, 'data_page_checksum_version', i.data_page_checksum_version) FROM pg_control_init() i),\n"
         "    'catalog_version_no', (SELECT catalog_version_no::bigint FROM pg_control_system()),\n"
+        "    'system_identifier', (SELECT system_identifier::text FROM pg_control_system()),\n"
         "    'shared_preload_libraries', COALESCE((SELECT jsonb_agg(sub.lib ORDER BY sub.lib) FROM (SELECT DISTINCT btrim(raw_lib) AS lib\n"
         "      FROM unnest(string_to_array(COALESCE(current_setting('shared_preload_libraries', true), ''), ',')) AS raw_lib\n"
         "      WHERE btrim(raw_lib) <> '') sub), '[]'::jsonb)),\n"
@@ -105,7 +106,7 @@ def catalog_observation_sql(database_role: str = "graph") -> str:
         "        JOIN pg_depend dm ON dm.refclassid = 'pg_extension'::regclass AND dm.refobjid = e.oid AND dm.deptype = 'e' WHERE e.extname <> 'plpgsql'\n"
         "      ), raw_edges AS (\n"
         "        SELECT DISTINCT e.extname AS extension, COALESCE(NULLIF(id.type, ''), d.classid::regclass::text) AS object_class,\n"
-        "          COALESCE(id.schema, '') AS object_schema,\n"
+        "          COALESCE(NULLIF(id.schema, ''), (SELECT n.nspname FROM pg_constraint con JOIN pg_namespace n ON n.oid = con.connamespace WHERE d.classid = 'pg_constraint'::regclass AND con.oid = d.objid), (SELECT n.nspname FROM pg_attrdef ad JOIN pg_class c ON c.oid = ad.adrelid JOIN pg_namespace n ON n.oid = c.relnamespace WHERE d.classid = 'pg_attrdef'::regclass AND ad.oid = d.objid), (SELECT n.nspname FROM pg_amop ao JOIN pg_opfamily opf ON opf.oid = ao.amopfamily JOIN pg_namespace n ON n.oid = opf.opfnamespace WHERE d.classid = 'pg_amop'::regclass AND ao.oid = d.objid), (SELECT n.nspname FROM pg_amproc ap JOIN pg_opfamily opf ON opf.oid = ap.amprocfamily JOIN pg_namespace n ON n.oid = opf.opfnamespace WHERE d.classid = 'pg_amproc'::regclass AND ap.oid = d.objid), '') AS object_schema,\n"
         "          CASE WHEN id.identity IS NOT NULL AND btrim(id.identity) <> '' THEN id.identity\n"
         "            ELSE 'unidentified:' || COALESCE(NULLIF(id.type, ''), d.classid::regclass::text) END AS object_identity,\n"
         "          (id.identity IS NOT NULL AND btrim(id.identity) <> '') AS identity_portable, d.deptype::text AS deptype\n"
@@ -162,11 +163,12 @@ def redact_secret_text(text: str, secret: str | None = None) -> str:
 def run_bounded_popen(
     command: Sequence[str], *, max_output_bytes: int, timeout_seconds: float, error_code: str,
     field: str, secret: str | None = None, env: Mapping[str, str] | None = None, stdin_path: Path | None = None,
+    stdin_bytes: bytes | None = None, retirement: ProcessRetirement | None = None,
 ) -> bytes:
     try:
         return run_bounded_process(
             command, max_output_bytes=max_output_bytes, timeout_seconds=timeout_seconds,
-            env=env, stdin_path=stdin_path,
+            env=env, stdin_path=stdin_path, stdin_bytes=stdin_bytes, retirement=retirement,
         )
     except BoundedProcessError as exc:
         raise provenance_error(error_code, field, redact_secret_text(str(exc), secret)) from exc

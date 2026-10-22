@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 from repomap_kg.coordinator._lifecycle_authority import (
     CoordinatorControlError,
@@ -15,6 +15,7 @@ from repomap_kg.coordinator._lifecycle_authority import (
 from repomap_kg.runtime._backup_support import (
     require_verified_backup_inspection_supported,
 )
+from repomap_kg.runtime._extension_restore_policy import TrustedExtensionRestorePolicy
 from repomap_kg.runtime.backup import dump_database, inspect_backup
 from repomap_kg.runtime.backup_commands import timestamp_utc
 
@@ -133,6 +134,7 @@ def upgrade_coordinator_control(
     authority_factory: Callable[[str | Path], _UpgradeAuthority] = LocalControlAuthority,
     dump_function: _DumpFunction = dump_database,
     inspect_function: _InspectFunction = inspect_backup,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> dict[str, object]:
     """Adopt control schema while holding cross-plane maintenance ownership."""
 
@@ -147,6 +149,7 @@ def upgrade_coordinator_control(
             authority_factory=authority_factory,
             dump_function=dump_function,
             inspect_function=inspect_function,
+            extension_restore_policy=extension_restore_policy,
         )
     try:
         authority = authority_factory(repo_map_home)
@@ -163,6 +166,7 @@ def upgrade_coordinator_control(
                 authority_factory=lambda _home: authority,
                 dump_function=dump_function,
                 inspect_function=inspect_function,
+                extension_restore_policy=extension_restore_policy,
             )
     except CoordinatorControlError:
         raise
@@ -181,6 +185,7 @@ def _upgrade_coordinator_control_owned(
     authority_factory: Callable[[str | Path], _UpgradeAuthority] = LocalControlAuthority,
     dump_function: _DumpFunction = dump_database,
     inspect_function: _InspectFunction = inspect_backup,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> dict[str, object]:
     """Adopt one exact supported pre-ledger coordinator control database."""
 
@@ -220,17 +225,35 @@ def _upgrade_coordinator_control_owned(
         if authority.reference_database_exists(reference_database):
             raise RuntimeError("control schema reference already exists")
 
-        backup = dump_function(
-            repo_map_home,
-            database=authority.database_name,
-            reason=reason or "pre-control-schema-upgrade",
-            timestamp=upgrade_timestamp,
-        )
-        inspection = inspect_function(repo_map_home, backup.plan.backup_path)
+        if extension_restore_policy is None:
+            backup = dump_function(
+                repo_map_home,
+                database=authority.database_name,
+                reason=reason or "pre-control-schema-upgrade",
+                timestamp=upgrade_timestamp,
+            )
+            inspection = inspect_function(repo_map_home, backup.plan.backup_path)
+        else:
+            dump_any: Any = dump_function
+            inspect_any: Any = inspect_function
+            backup = dump_any(
+                repo_map_home,
+                database=authority.database_name,
+                reason=reason or "pre-control-schema-upgrade",
+                timestamp=upgrade_timestamp,
+                extension_restore_policy=extension_restore_policy,
+            )
+            inspection = inspect_any(
+                repo_map_home,
+                backup.plan.backup_path,
+                extension_restore_policy=extension_restore_policy,
+            )
         if not (inspection.checksum_verified and inspection.dump_summaries):
             raise RuntimeError("control backup is not restorable")
         require_verified_backup_inspection_supported(
-            inspection, database=authority.database_name
+            inspection,
+            database=authority.database_name,
+            extension_restore_policy=extension_restore_policy,
         )
         if inspection.manifest.get("restore_supported") is not True:
             raise RuntimeError("control backup is not restorable")

@@ -10,9 +10,16 @@ from typing import Any, Mapping
 from repomap_kg.ops.config import resolve_repo_map_home
 from repomap_kg.runtime._backup_provenance import (
     BACKUP_FORMAT_VERSION,
+    EXTENSION_V2_RESTORE_PROTOCOL,
     is_supported_format_version,
 )
-from repomap_kg.runtime._backup_support import require_backup_restore_supported
+from repomap_kg.runtime._backup_support import (
+    BackupSupportEvaluation,
+    require_backup_restore_supported,
+)
+from repomap_kg.runtime._extension_restore_lifecycle import execute_extension_v2_restore_set
+from repomap_kg.runtime._extension_restore_policy import TrustedExtensionRestorePolicy
+from repomap_kg.runtime._extension_restore_preflight import preflight_extension_v2_restore_set
 from repomap_kg.runtime.backup import (
     create_database,
     database_exists,
@@ -106,6 +113,7 @@ def restore_coordinated_backup(
     backup: str | Path,
     dry_run: bool = False,
     command_runner: CommandRunner | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> CoordinatedRestoreResult:
     """Restore one exact stable coordinated set into an empty topology."""
 
@@ -114,30 +122,13 @@ def restore_coordinated_backup(
     runtime_plan = build_local_runtime_plan(home)
     manifest_path = resolve_backup_manifest_path(backup_root(home), backup)
     manifest = read_manifest_file(manifest_path)
-    databases, restore_order, dumps = _validate_complete_set(
+    databases, restore_order, dumps, evaluation = _validate_complete_set(
         runtime_plan,
         manifest_path,
         manifest,
+        extension_restore_policy=extension_restore_policy,
     )
     container = inspect_owned_postgres_container(runtime_plan, runner)
-    for database in restore_order:
-        verify_archive_toc_for_restore(
-            runtime_plan,
-            manifest,
-            database=database,
-            dump_path=dumps[database],
-            command_runner=runner,
-        )
-    existing = tuple(
-        database
-        for database in restore_order
-        if database_exists(runtime_plan, database, runner)
-    )
-    if existing:
-        raise _restore_error(
-            "coordinated-restore-target-exists",
-            "restore requires every configured target database to be absent",
-        )
     base_result = CoordinatedRestoreResult(
         result="dry_run" if dry_run else "success",
         repo_map_home=home,
@@ -151,6 +142,52 @@ def restore_coordinated_backup(
         checksum_verified=True,
         target_preflight_complete=True,
     )
+    if evaluation.restore_protocol == EXTENSION_V2_RESTORE_PROTOCOL:
+        set_pre = preflight_extension_v2_restore_set(
+            runtime_plan,
+            manifest,
+            databases=restore_order,
+            dumps=dumps,
+            container=container,
+            command_runner=runner,
+            policy=extension_restore_policy,
+            require_quiescence=True,
+            coordinated=True,
+        )
+        if dry_run:
+            return base_result
+        created_t, restored_t = execute_extension_v2_restore_set(
+            runtime_plan,
+            set_pre,
+            restore_order=restore_order,
+            command_runner=runner,
+            coordinated=True,
+        )
+        return replace(
+            base_result,
+            databases_created=created_t,
+            dumps_restored=restored_t,
+        )
+
+    for database in restore_order:
+        verify_archive_toc_for_restore(
+            runtime_plan,
+            manifest,
+            database=database,
+            dump_path=dumps[database],
+            command_runner=runner,
+            extension_restore_policy=extension_restore_policy,
+        )
+    existing = tuple(
+        database
+        for database in restore_order
+        if database_exists(runtime_plan, database, runner)
+    )
+    if existing:
+        raise _restore_error(
+            "coordinated-restore-target-exists",
+            "restore requires every configured target database to be absent",
+        )
     if dry_run:
         return base_result
 
@@ -195,7 +232,9 @@ def _validate_complete_set(
     plan: LocalRuntimePlan,
     manifest_path: Path,
     manifest: Mapping[str, Any],
-) -> tuple[tuple[str, ...], tuple[str, ...], dict[str, Path]]:
+    *,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
+) -> tuple[tuple[str, ...], tuple[str, ...], dict[str, Path], BackupSupportEvaluation]:
     databases = plan.owned_databases
     graph_databases = tuple(sorted(plan.graph_databases))
     control_databases = tuple(
@@ -247,11 +286,12 @@ def _validate_complete_set(
         verify_dump_file_checksum(dump_path, dump_file)
         dumps[database] = dump_path
     require_quiescence = version == BACKUP_FORMAT_VERSION
-    require_backup_restore_supported(
+    evaluation = require_backup_restore_supported(
         manifest,
         database=None,
         require_quiescence=require_quiescence,
         target="coordinated restore",
+        extension_restore_policy=extension_restore_policy,
     )
     for database in databases:
         require_backup_restore_supported(
@@ -259,8 +299,9 @@ def _validate_complete_set(
             database=database,
             require_quiescence=require_quiescence,
             target=database,
+            extension_restore_policy=extension_restore_policy,
         )
-    return databases, graph_databases + control_databases, dumps
+    return databases, graph_databases + control_databases, dumps, evaluation
 
 
 def _invalid_dump_set() -> LocalDbBackupError:

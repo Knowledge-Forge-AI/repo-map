@@ -2155,6 +2155,159 @@
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_blockers",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_compensation",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_custody",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_exec",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_exec_control",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_grants",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_lifecycle",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_native",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_policy",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_postcheck",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_preflight",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_qualification",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_steps",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_target",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_template",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_toc",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B execution helper, retained Python under existing zero-new-debt enforcement; no architecture relocation or incumbent reclassification.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime._extension_restore_toc_custody",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Bounded local home and lifecycle administrator authority repair; retained under zero-new-debt Python enforcement.",
       "match": "exact",
       "module_prefix": "repomap_kg.runtime._home_authority",

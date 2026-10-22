@@ -9,84 +9,38 @@ from pathlib import Path
 import repomap_kg.runtime.backup_inspection as _backup_inspection
 from repomap_kg.ops.config import resolve_repo_map_home
 from repomap_kg.runtime._backup_lifecycle import (
-    build_backup_plan,
-    execute_backup_plan,
-    init_database_from_dump,
-    init_database_from_source,
-    validate_owned_database,
+    build_backup_plan, execute_backup_plan, init_database_from_dump, init_database_from_source, validate_owned_database,
 )
-from repomap_kg.runtime._backup_observation import (
-    observe_database_provenance,
-    verify_provenance_fingerprints,
-)
+from repomap_kg.runtime._backup_observation import observe_database_provenance, verify_provenance_fingerprints
 from repomap_kg.runtime._backup_operations import (
-    acquire_or_reuse_backup_maintenance_window,
-    apply_source_schema,
-    backup_first_required,
-    cleanup_empty_backup_directory,
-    create_database,
-    database_already_exists,
-    database_exists,
-    database_not_found,
-    default_backup_runner,
-    drop_confirmation_required,
-    drop_runtime_database,
-    ensure_new_backup_directory,
-    inspect_owned_postgres_container,
-    run_pg_dump,
-    run_pg_restore,
+    acquire_or_reuse_backup_maintenance_window, apply_source_schema, backup_first_required,
+    cleanup_empty_backup_directory, create_database, database_already_exists, database_exists,
+    database_not_found, default_backup_runner, drop_confirmation_required, drop_runtime_database,
+    ensure_new_backup_directory, inspect_owned_postgres_container, run_pg_dump, run_pg_restore,
 )
-from repomap_kg.runtime._backup_provenance import (
-    observe_archive_toc,
-    provenance_error,
-)
+from repomap_kg.runtime._backup_provenance import observe_archive_toc, provenance_error
 from repomap_kg.runtime._backup_support import derive_manifest_support, quiescence_record_for_databases
+from repomap_kg.runtime._extension_restore_policy import (
+    CORE_ONLY_EXTENSION_RESTORE_POLICY, TrustedArtifactQualification, TrustedExtensionRestorePolicy,
+    TrustedExtensionRule, TrustedOptionalCapabilityContract,
+)
 from repomap_kg.runtime.backup_commands import (
-    CommandRunner,
-    backup_root,
-    planned_drop_database_command,
-    read_runtime_password,
-    validate_database_name,
+    CommandRunner, backup_root, planned_drop_database_command, read_runtime_password, validate_database_name,
 )
 from repomap_kg.runtime.backup_formatting import (
-    format_backup_info_table,
-    format_backup_inspect_table,
-    format_backup_listing_table,
-    format_backup_result_table,
-    format_drop_result_table,
-    format_init_result_table,
+    format_backup_info_table, format_backup_inspect_table, format_backup_listing_table,
+    format_backup_result_table, format_drop_result_table, format_init_result_table,
 )
-from repomap_kg.runtime.backup_inspection import (
-    list_backups,
-    read_backup_info,
-    run_pg_restore_list,
-    verify_drop_backup,
-)
-from repomap_kg.runtime.backup_manifests import (
-    BACKUP_FORMAT_VERSION,
-    write_manifest_and_restore_docs,
-)
+from repomap_kg.runtime.backup_inspection import list_backups, read_backup_info, run_pg_restore_list, verify_drop_backup
+from repomap_kg.runtime.backup_manifests import BACKUP_FORMAT_VERSION, write_manifest_and_restore_docs
 from repomap_kg.runtime.backup_records import (
-    BackupDumpFile,
-    BackupInspectResult,
-    LocalDbBackupError,
-    LocalDbBackupPlan,
-    LocalDbBackupResult,
-    LocalDbDropResult,
-    LocalDbInitResult,
-    RuntimeContainerMetadata,
+    BackupDumpFile, BackupInspectResult, LocalDbBackupError, LocalDbBackupPlan,
+    LocalDbBackupResult, LocalDbDropResult, LocalDbInitResult, RuntimeContainerMetadata,
 )
 from repomap_kg.runtime.backup_streaming import atomic_private_backup_directory
 from repomap_kg.runtime.database_roles import reconcile_graph_database_roles
-from repomap_kg.runtime.local import (
-    LocalRuntimePlan,
-    build_local_runtime_plan,
-)
-from repomap_kg.storage import (
-    StorageSchemaError,
-    discover_migrations,
-    graph_schema_initialization_sql,
-)
+from repomap_kg.runtime.local import LocalRuntimePlan, build_local_runtime_plan
+from repomap_kg.storage import StorageSchemaError, discover_migrations, graph_schema_initialization_sql
 
 
 def dump_database(
@@ -97,6 +51,7 @@ def dump_database(
     reason: str | None = None,
     timestamp: str | None = None,
     command_runner: CommandRunner | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> LocalDbBackupResult:
     validate_database_name(database)
     runner = command_runner or default_backup_runner()
@@ -122,12 +77,17 @@ def dump_database(
         backup_plan.backup_path, backups_root=backup_root(home)
     ) as staging_path:
         staging_plan = replace(backup_plan, backup_path=staging_path)
-        before_obs = observe_database_provenance(runtime_plan, database, runner)
+        before_obs = observe_database_provenance(
+            runtime_plan, database, runner, extension_restore_policy=extension_restore_policy
+        )
         dump_file = run_pg_dump(
             runtime_plan, planned_command, runner, staging_path / "dump.pgcustom"
         )
         after_obs = verify_provenance_fingerprints(
-            before_obs, observe_database_provenance(runtime_plan, database, runner)
+            before_obs,
+            observe_database_provenance(
+                runtime_plan, database, runner, extension_restore_policy=extension_restore_policy
+            ),
         )
         toc_obs = observe_archive_toc(
             runtime_plan, database, staging_path / "dump.pgcustom", runner, after_obs.database_catalog
@@ -141,6 +101,8 @@ def dump_database(
             {database: after_obs.database_catalog},
             before_after_fingerprint_matched=True,
             quiescence=quiescence,
+            extension_restore_policy=extension_restore_policy,
+            server_provenance=after_obs.server_provenance,
         )
         write_manifest_and_restore_docs(
             staging_plan, dump_files=(dump_file,), container=container,
@@ -149,6 +111,7 @@ def dump_database(
             database_catalogs={database: after_obs.database_catalog},
             toc_digests={dump_file.name: toc_obs.toc_sha256},
             quiescence=quiescence, support_evaluation=support,
+            extension_restore_policy=extension_restore_policy,
         )
     return LocalDbBackupResult(
         command="dump", result="success", plan=backup_plan, dump_files=(dump_file,),
@@ -168,6 +131,7 @@ def dump_all_databases(
     timestamp: str | None = None,
     command_runner: CommandRunner | None = None,
     stable_recovery_point: bool = False,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> LocalDbBackupResult:
     runner = command_runner or default_backup_runner()
     home = resolve_repo_map_home(repo_map_home)
@@ -200,12 +164,17 @@ def dump_all_databases(
         staging_plan = replace(backup_plan, backup_path=staging_path)
         for database in databases:
             dump_dest = staging_path / f"{database}.pgcustom"
-            before_obs = observe_database_provenance(runtime_plan, database, runner)
+            before_obs = observe_database_provenance(
+                runtime_plan, database, runner, extension_restore_policy=extension_restore_policy
+            )
             dump_file = run_pg_dump(
                 runtime_plan, backup_plan.planned_dump_command(database), runner, dump_dest
             )
             after_obs = verify_provenance_fingerprints(
-                before_obs, observe_database_provenance(runtime_plan, database, runner)
+                before_obs,
+                observe_database_provenance(
+                    runtime_plan, database, runner, extension_restore_policy=extension_restore_policy
+                ),
             )
             if server_prov is not None and server_prov != after_obs.server_provenance:
                 raise provenance_error(
@@ -228,6 +197,8 @@ def dump_all_databases(
             before_after_fingerprint_matched=True,
             require_quiescence=stable_recovery_point,
             quiescence=quiescence,
+            extension_restore_policy=extension_restore_policy,
+            server_provenance=server_prov,
         )
         write_manifest_and_restore_docs(
             staging_plan, dump_files=tuple(dump_files), container=container,
@@ -243,6 +214,7 @@ def dump_all_databases(
             ),
             server_provenance=server_prov, database_catalogs=database_catalogs,
             toc_digests=toc_digests, quiescence=quiescence, support_evaluation=support,
+            extension_restore_policy=extension_restore_policy,
         )
     return LocalDbBackupResult(
         command="dump-all", result="success", plan=backup_plan,
@@ -259,6 +231,7 @@ def inspect_backup(
     backup_id_or_path: str | Path,
     *,
     command_runner: CommandRunner | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> BackupInspectResult:
     return _backup_inspection.inspect_backup(
         **locals(),
@@ -279,6 +252,7 @@ def drop_database(
     reason: str | None = None,
     timestamp: str | None = None,
     command_runner: CommandRunner | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> LocalDbDropResult:
     validate_database_name(database)
     if not backup_first:
@@ -310,8 +284,9 @@ def drop_database(
     backup_result = execute_backup_plan(
         backup_plan, database=database, command_runner=runner,
         container=container, scope="pre-drop-single-database",
+        extension_restore_policy=extension_restore_policy,
     )
-    verify_drop_backup(backup_result, database)
+    verify_drop_backup(backup_result, database, extension_restore_policy=extension_restore_policy)
     drop_runtime_database(runtime_plan, database, planned_drop, runner)
     return LocalDbDropResult(
         command="drop", result="success", repo_map_home=home, database=database,
@@ -328,53 +303,19 @@ def validate_drop_database_name(database: str, plan: LocalRuntimePlan) -> None:
 
 
 __all__ = [
-    "BACKUP_FORMAT_VERSION",
-    "BackupDumpFile",
-    "BackupInspectResult",
-    "CommandRunner",
-    "LocalDbBackupError",
-    "LocalDbBackupPlan",
-    "LocalDbBackupResult",
-    "LocalDbDropResult",
-    "LocalDbInitResult",
-    "RuntimeContainerMetadata",
-    "StorageSchemaError",
-    "apply_source_schema",
-    "atomic_private_backup_directory",
-    "backup_first_required",
-    "backup_root",
-    "build_backup_plan",
-    "cleanup_empty_backup_directory",
-    "create_database",
-    "database_already_exists",
-    "database_exists",
-    "database_not_found",
-    "discover_migrations",
-    "drop_confirmation_required",
-    "drop_database",
-    "drop_runtime_database",
-    "dump_all_databases",
-    "dump_database",
-    "ensure_new_backup_directory",
-    "execute_backup_plan",
-    "format_backup_info_table",
-    "format_backup_inspect_table",
-    "format_backup_listing_table",
-    "format_backup_result_table",
-    "format_drop_result_table",
-    "format_init_result_table",
-    "graph_schema_initialization_sql",
-    "init_database_from_dump",
-    "init_database_from_source",
-    "inspect_backup",
-    "inspect_owned_postgres_container",
-    "list_backups",
-    "read_backup_info",
-    "reconcile_graph_database_roles",
-    "run_pg_dump",
-    "run_pg_restore",
-    "run_pg_restore_list",
-    "subprocess",
-    "validate_drop_database_name",
-    "validate_owned_database",
+    "BACKUP_FORMAT_VERSION", "BackupDumpFile", "BackupInspectResult", "CORE_ONLY_EXTENSION_RESTORE_POLICY",
+    "CommandRunner", "LocalDbBackupError", "LocalDbBackupPlan", "LocalDbBackupResult", "LocalDbDropResult",
+    "LocalDbInitResult", "RuntimeContainerMetadata", "StorageSchemaError", "TrustedArtifactQualification",
+    "TrustedExtensionRestorePolicy", "TrustedExtensionRule", "TrustedOptionalCapabilityContract",
+    "apply_source_schema", "atomic_private_backup_directory", "backup_first_required", "backup_root",
+    "build_backup_plan", "cleanup_empty_backup_directory", "create_database", "database_already_exists",
+    "database_exists", "database_not_found", "discover_migrations", "drop_confirmation_required",
+    "drop_database", "drop_runtime_database", "dump_all_databases", "dump_database",
+    "ensure_new_backup_directory", "execute_backup_plan", "format_backup_info_table",
+    "format_backup_inspect_table", "format_backup_listing_table", "format_backup_result_table",
+    "format_drop_result_table", "format_init_result_table", "graph_schema_initialization_sql",
+    "init_database_from_dump", "init_database_from_source", "inspect_backup",
+    "inspect_owned_postgres_container", "list_backups", "read_backup_info",
+    "reconcile_graph_database_roles", "run_pg_dump", "run_pg_restore", "run_pg_restore_list",
+    "subprocess", "validate_drop_database_name", "validate_owned_database",
 ]

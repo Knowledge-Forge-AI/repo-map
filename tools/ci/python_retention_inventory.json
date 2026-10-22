@@ -1445,6 +1445,39 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation40.extension_restore1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d9_extension_exec_custody.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d9_extension_exec_reaping.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d9_extension_restore.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d9_extension_restore_faults.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d9_extension_restore_pgvector.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d9_extension_restore_requalification.int.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_exec_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_exec_reaping.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_restore.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_compensation.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_recovery.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_requalification.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 bounded D9-B test/fixture owners, exact dependency closure and zero-debt admission under existing ADR0063/0065 rules.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation40.extension_restore1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d9_extension_policies.py",
+        "src/test/support/python/repomap_test_support/d9_extension_restore.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 bounded D9-B test/fixture owners, exact dependency closure and zero-debt admission under existing ADR0063/0065 rules.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -27495,6 +27528,159 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_blockers.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_compensation.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_custody.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_exec.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_exec_control.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_grants.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_lifecycle.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_native.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_policy.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_postcheck.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_preflight.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_qualification.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_steps.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_target.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_template.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_toc.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/_extension_restore_toc_custody.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -30990,6 +31176,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_extension_exec_custody.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_extension_exec_reaping.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_extension_restore.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_extension_restore_faults.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_extension_restore_pgvector.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d9_extension_restore_requalification.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d9_final_catalog_boundaries.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 causal regressions for strict provenance, archive integrity, maintenance custody and bounded process cleanup.",
       "root": "test_owners",
@@ -32936,6 +33176,24 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/coordinator_core_fakes.py",
       "rationale": "Shared typed coordinator core fixtures for bounded core and diagnostics owners.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d9_extension_policies.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d9_extension_restore.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -39470,6 +39728,69 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/coordinator_transition.unit.test.py",
       "rationale": "Coordinator transition behavior test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_exec_custody.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_exec_reaping.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_restore.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_compensation.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_custody.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_recovery.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_restore_requalification.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

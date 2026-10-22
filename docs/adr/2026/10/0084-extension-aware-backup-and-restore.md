@@ -2,12 +2,11 @@
 
 ## Status
 
-Accepted for **D9-A only** by the operator on 2026-10-20.
-Design phase: `REPOMAP-PRODUCT6-NAVIGATION36-EXTENSION-RESTORE-DESIGN1`.
-Implementation phase: `REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1`.
-The approval covers format-2 provenance and unsupported-extension refusal guards
-while preserving current core restore behavior. D9-B remains **Proposed**;
-full extension replay and production pgvector admission remain separate.
+D9-A was accepted on 2026-10-20 and its staging predecessor was hosted-qualified
+by [CI56](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/39540435586)
+on 2026-10-21. Bounded D9-B was separately approved on 2026-10-21.
+Implementation candidate: `REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1`; new hosted qualification remains pending.
+Production pgvector/D15 admission and configuration-data replay remain separate.
 
 ## Date
 
@@ -21,10 +20,32 @@ evidence. Preserve current core restore semantics, existing reason codes and
 single-graph selection from coordinated backups. Do not introduce a new CLI flag,
 fixed collation, dependency, image or production pgvector enablement.
 
-D9-B, which would execute exact-version extension restores, remains a proposed
-target requiring its own accepted scope and executable proof. Combining A and B
-is not recommended. The [companion contract](../../../specs/postgresql-extension-restore-contract-v1.md)
-defines the proposed fields, support decisions, evidence and remaining gaps.
+The operator separately approved bounded D9-B after D9-A. The
+[companion contract](../../../specs/postgresql-extension-restore-contract-v1.md)
+defines its requirements and the distinction between implementation evidence,
+hosted qualification and production capability admission.
+
+## Accepted bounded D9-B decision
+
+Preflight the complete selected restore set before any target creation. Require
+an explicit trusted capability declaration, exact extension artifacts and versions,
+and independent current target qualification. Install exact prerequisites and
+replay unchanged custom archives through verified private derived-TOC and streamed
+transport. Preserve supported historical rows, canonical readiness and the existing
+least-privileged role contract.
+
+Keep backup declaration binding stable across later qualified targets. Use
+invocation-owned execution and target custody; settle effects or retain concrete
+private unknown records and refuse continuation. Compensate only proven-owned
+targets, preserve the initiating failure and never delete shared roles or an
+unproven target by name. Contract section 7 records the engineering obligations.
+
+Preserve format1 and core_v1 behavior, default non-baseline refusal and existing
+graph selection. No new CLI flag, dependency, production image/default, workflow,
+gate, ceiling or complete local suite is admitted. Disposable optional-profile
+proof is separate from D15 production admission. The
+[NAVIGATION40 milestone](../../../../tools/ci/nav40-extension-restore.md) records
+the publication boundary; its introducing commit records exact scoped evidence.
 
 ## Context and governing decisions
 
@@ -37,7 +58,7 @@ owns data-bearing exit migration; D15 owns production admission.
 lifecycle work backup-first. [ADR 0077](0077-publication-bound-pgvector-candidates.md)
 permits only its experimental candidate and separately admitted disposable tests.
 [ADR 0071](../09/0071-post-promotion-local-server-cloud-architecture.md) and the
-[completion plan](../../../specs/postgresql-intelligence-completion-plan-v1.md)
+[staging milestone boundary](../../../../tools/ci/nav40-extension-restore.md)
 leave useful optional pgvector and its production obligations open.
 
 At the NAVIGATION36 design checkpoint, the writer format was 1. The whole-database `pg_dump -Fc` command has no schema
@@ -61,13 +82,13 @@ an existing-role/test-superuser setup and rewritten plain SQL. The coordinated
 custom-archive path on a fresh cluster. The source bindings below are static
 evidence, not restore qualification.
 
-## Alternatives and recommendation
+## Original alternatives and subsequent decision
 
 | Alternative | Benefit | Cost and disposition |
 | --- | --- | --- |
 | Retain format 1 and current support flags | No compatibility change | Cannot establish D9 extension safety. Retain only the explicitly legacy core path; do not admit an extension from it. |
 | D9-A: observe and refuse unsupported capability sets | Smallest reviewable foundation; closes support-flag bypasses without installing extensions | New writer format and deliberate refusal of unverified extension restores; does not complete D9. Recommended first. |
-| D9-B: exact-version extension restore protocol | Could satisfy the remaining D9 execution obligations after proof | Adds target preflight, installation, TOC handling and cleanup responsibilities. Proposed target; not approved here. |
+| D9-B: exact-version extension restore protocol | Could satisfy the remaining D9 execution obligations after proof | Adds target preflight, installation, TOC handling and cleanup responsibilities. Separately approved as bounded D9-B; new hosted and production qualification remain separate. |
 
 The target preserves original archive bytes. A derived TOC list is the leading
 proposal for entries already satisfied by exact pre-installation. Actual custom
@@ -77,11 +98,11 @@ There is no claim that every extension entry raises an already-exists error.
 If the proposed stream/list transport fails, refuse and return the transport
 choice for design; never ignore errors, silently omit objects or rewrite SQL.
 
-## Proposed decisions and invariants
+## Preserved design invariants
 
 - Separate manifest format from restore protocol. Format 2 adds observations;
   `core_v1` preserves existing core execution semantics. `extension_v2` identifies
-  a future implemented and separately qualified D9 protocol. In D9-A every
+  the bounded implementation candidate above. Under the default policy every
   non-baseline extension remains unsupported, even when fully observed.
 - Preserve all existing format-1 fields, identifier/timestamp conventions,
   applicable optional fields and readable archives. Old readers may reject
@@ -209,3 +230,10 @@ suites and Python coverage were unselected; canonical Go preflight component
 coverage is separate. New public-candidate hosted qualification and coverage
 remain pending. This establishes the bounded D9-A implementation checkpoint,
 not D9-B replay, complete D9, D15 admission or roadmap step 6 completion.
+
+## Subsequent hosted and implementation checkpoints
+
+CI56 attempt1 executed and passed all eight jobs for staging
+`157e5b88048bdc605cab1f037089c705ab555ce8`. This qualifies the D9-A predecessor
+and supersedes its historical pending record above. The later bounded D9-B
+candidate has separate scoped evidence and pending hosted qualification.

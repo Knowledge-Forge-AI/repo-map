@@ -22,12 +22,15 @@ from repomap_kg.runtime._backup_operations import (
     run_pg_dump,
     run_pg_restore,
 )
-from repomap_kg.runtime._backup_provenance import observe_archive_toc
+from repomap_kg.runtime._backup_provenance import EXTENSION_V2_RESTORE_PROTOCOL, observe_archive_toc
 from repomap_kg.runtime._backup_support import (
     derive_manifest_support,
     quiescence_record_for_databases,
     require_backup_restore_supported,
 )
+from repomap_kg.runtime._extension_restore_lifecycle import execute_extension_v2_restore_set
+from repomap_kg.runtime._extension_restore_policy import TrustedExtensionRestorePolicy
+from repomap_kg.runtime._extension_restore_preflight import preflight_extension_v2_restore_set
 from repomap_kg.runtime.backup_commands import (
     CommandRunner,
     backup_root,
@@ -161,6 +164,7 @@ def init_database_from_dump(
     backup: str | Path,
     dry_run: bool = False,
     command_runner: CommandRunner | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> LocalDbInitResult:
     validate_database_name(database)
     runner = command_runner or default_backup_runner()
@@ -173,21 +177,40 @@ def init_database_from_dump(
     dump_file = select_dump_file_for_database(manifest, database)
     dump_path = manifest_path.parent / dump_file["name"]
     verify_dump_file_checksum(dump_path, dump_file)
-    require_backup_restore_supported(
+    evaluation = require_backup_restore_supported(
         manifest,
         database=database,
         require_quiescence=False,
         dry_run=dry_run,
         target=database,
+        extension_restore_policy=extension_restore_policy,
     )
     inspect_fn = inspect_owned_postgres_container
     container = inspect_fn(runtime_plan, runner)
+    if evaluation.restore_protocol == EXTENSION_V2_RESTORE_PROTOCOL:
+        set_pre = preflight_extension_v2_restore_set(
+            runtime_plan, manifest, databases=(database,), dumps={database: dump_path},
+            container=container, command_runner=runner, policy=extension_restore_policy,
+            require_quiescence=False, coordinated=False,
+        )
+        ext_planned = planned_pg_restore_command(runtime_plan, database, exit_on_error=True, use_list_path="<private-derived-toc>")
+        ext_actions = ("preflight-extension-v2", "create-database", "install-extensions", "restore-dump-with-derived-toc", "reconcile-roles-and-grants", "verify-post-restore")
+        if not dry_run:
+            execute_extension_v2_restore_set(runtime_plan, set_pre, restore_order=(database,), command_runner=runner, coordinated=False)
+        return LocalDbInitResult(
+            command="init", result="dry_run" if dry_run else "success", repo_map_home=home, database=database, source_mode="dump",
+            runtime_plan=runtime_plan, container=container, backup_id=optional_manifest_text(manifest.get("backup_id")),
+            backup_path=manifest_path.parent, manifest_path=manifest_path, dump_file=dump_file["name"], dump_path=dump_path,
+            checksum_verified=True, target_existed=False, planned_actions=ext_actions, planned_command=ext_planned,
+            database_created=not dry_run, dump_restored=not dry_run, schema_ready=not dry_run,
+        )
     verify_archive_toc_for_restore(
         runtime_plan,
         manifest,
         database=database,
         dump_path=dump_path,
         command_runner=runner,
+        extension_restore_policy=extension_restore_policy,
     )
     exists_fn = database_exists
     existed = exists_fn(runtime_plan, database, runner)
@@ -293,6 +316,7 @@ def execute_backup_plan(
     command_runner: CommandRunner,
     container: RuntimeContainerMetadata,
     scope: str,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> LocalDbBackupResult:
     planned_command = backup_plan.planned_dump_command(database)
     if backup_plan.backup_path.exists():
@@ -309,7 +333,7 @@ def execute_backup_plan(
     ) as staging_path:
         staging_plan = replace(backup_plan, backup_path=staging_path)
         before_obs = observe_database_provenance(
-            backup_plan.plan, database, command_runner
+            backup_plan.plan, database, command_runner, extension_restore_policy=extension_restore_policy
         )
         dump_file = run_pg_dump(
             backup_plan.plan,
@@ -319,7 +343,9 @@ def execute_backup_plan(
         )
         after_obs = verify_provenance_fingerprints(
             before_obs,
-            observe_database_provenance(backup_plan.plan, database, command_runner),
+            observe_database_provenance(
+                backup_plan.plan, database, command_runner, extension_restore_policy=extension_restore_policy
+            ),
         )
         toc_obs = observe_archive_toc(
             backup_plan.plan,
@@ -338,6 +364,8 @@ def execute_backup_plan(
             before_after_fingerprint_matched=True,
             require_quiescence=(scope == "pre-drop-single-database"),
             quiescence=quiescence,
+            extension_restore_policy=extension_restore_policy,
+            server_provenance=after_obs.server_provenance,
         )
         write_manifest_and_restore_docs(
             staging_plan,
@@ -350,6 +378,7 @@ def execute_backup_plan(
             toc_digests={dump_file.name: toc_obs.toc_sha256},
             quiescence=quiescence,
             support_evaluation=support,
+            extension_restore_policy=extension_restore_policy,
         )
     return LocalDbBackupResult(
         command=backup_plan.command,

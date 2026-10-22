@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from contextlib import redirect_stderr, redirect_stdout
 import io
+import os
 from pathlib import Path
 import shutil
+import subprocess
 import threading
 import time
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import psutil
@@ -16,10 +19,21 @@ import pytest
 
 from repomap_kg.cli import main
 from repomap_kg.runtime._backup_observation import _normalize_server_provenance
-from repomap_kg.runtime._backup_provenance import parse_toc_entries, run_bounded_popen
+from repomap_kg.runtime._backup_process import BoundedProcessError, ProcessRetirement, run_bounded_process
+from repomap_kg.runtime import _extension_restore_exec as exec_mod
+from repomap_kg.runtime import _extension_restore_native as native_mod
+from repomap_kg.runtime._backup_provenance import parse_toc_entries, provenance_error, run_bounded_popen
+from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
+from repomap_kg.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH
+from repomap_kg.runtime._extension_restore_lifecycle import reconcile_restored_roles
+from repomap_kg.runtime._extension_restore_native import observe_custodied_client_identities
+from repomap_kg.runtime.backup_commands import planned_psql_stdin_command
 from repomap_kg.runtime.backup_manifests import summarize_pg_restore_toc
 from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import setup_local_runtime
+from repomap_kg.runtime.database_role_contract import read_role_secrets
+from repomap_kg.runtime.database_roles import render_database_role_sql
+from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
+from repomap_kg.runtime.release import PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL
 from repomap_kg.runtime import maintenance, release_cluster
 from repomap_test_support.local_db_backup import default_baseline_server_provenance
 
@@ -161,6 +175,40 @@ def test_release_dump_and_connection_use_the_execution_endpoint(monkeypatch: pyt
     assert connect.call_args.kwargs["user"] == "owner"
 
 
+def test_typed_retirement_is_positive_only_after_the_owned_group_is_reaped(monkeypatch: pytest.MonkeyPatch) -> None:
+    sh_cmd = shutil.which("sh") or "/bin/sh"
+    retired = ProcessRetirement()
+    assert run_bounded_process([sh_cmd, "-c", "printf ok"], max_output_bytes=64, timeout_seconds=10.0, retirement=retired) == b"ok"
+    assert retired.state == "retired"
+    assert run_bounded_process([sh_cmd, "-c", "printf ok"], max_output_bytes=64, timeout_seconds=10.0) == b"ok", "callers without an observation are unchanged"
+    real_killpg = os.killpg
+
+    def interrupted_killpg(pid: int, sig: int) -> None:
+        real_killpg(pid, sig)
+        raise KeyboardInterrupt("retirement interrupted")
+
+    interrupted = ProcessRetirement()
+    monkeypatch.setattr(os, "killpg", interrupted_killpg)
+    with pytest.raises(KeyboardInterrupt):
+        run_bounded_process([sh_cmd, "-c", "printf ok"], max_output_bytes=64, timeout_seconds=10.0, retirement=interrupted)
+    assert interrupted.state == "started", "client success plus an interrupted retirement is not a retirement observation"
+
+
+def test_piped_stdin_bytes_stay_off_disk_and_are_bounded_by_the_command(tmp_path: Path) -> None:
+    sh_cmd = shutil.which("sh") or "/bin/sh"
+    payload = b"x" * 200_000  # larger than any default pipe buffer
+    retired = ProcessRetirement()
+    out = run_bounded_process([sh_cmd, "-c", "wc -c"], max_output_bytes=64, timeout_seconds=10.0, stdin_bytes=payload, retirement=retired)
+    assert out.strip() == b"200000" and retired.state == "retired"
+    assert run_bounded_process([sh_cmd, "-c", "exit 0"], max_output_bytes=64, timeout_seconds=10.0, stdin_bytes=payload) == b"", "an early reader exit is decided by its status"
+    with pytest.raises(BoundedProcessError):
+        run_bounded_process([sh_cmd, "-c", "cat >/dev/null; exit 3"], max_output_bytes=64, timeout_seconds=10.0, stdin_bytes=payload)
+    stdin_file = tmp_path / "in"
+    stdin_file.write_bytes(b"a")
+    with pytest.raises(ValueError):
+        run_bounded_process([sh_cmd, "-c", "cat"], max_output_bytes=64, timeout_seconds=10.0, stdin_path=stdin_file, stdin_bytes=b"b")
+
+
 def test_unavailable_command_is_a_bounded_refusal(tmp_path: Path) -> None:
     with pytest.raises(LocalDbBackupError) as caught:
         run_bounded_popen(
@@ -169,3 +217,86 @@ def test_unavailable_command_is_a_bounded_refusal(tmp_path: Path) -> None:
         )
     assert caught.value.diagnostics[0].code == "backup-toc-inconsistent"
     assert str(tmp_path) not in str(caught.value)
+
+
+def _custody_plan(tmp_path: Path) -> Any:
+    home = tmp_path / "home"
+    home.mkdir(mode=0o700)
+    setup_local_runtime(home)
+    (home / "runtime").chmod(0o700)
+    plan = build_local_runtime_plan(home)
+    plan.env_file.chmod(0o600)
+    return plan
+
+
+class _ScriptedBounded:
+    """Scripted bounded runner (parser/orchestration only): typed retirement plus settlement reports."""
+
+    def __init__(self, respond: Any, settlement: bytes = b"REMOTE exited\nCONTROL removed\nDESCENDANTS none\n") -> None:
+        self.respond, self.settlement = respond, settlement
+        self.commands: list[tuple[list[str], dict[str, Any]]] = []
+
+    def __call__(self, command: list[str], **kwargs: Any) -> bytes:
+        if SETTLE_PROCESS_SH in command:
+            return self.settlement
+        if "pg_terminate_backend" in " ".join(command):
+            return b"0\n0\n"
+        self.commands.append((command, kwargs))
+        kwargs["retirement"].state = "retired"
+        return self.respond(command)
+
+
+def test_client_version_probes_run_under_container_custody_with_existing_limits(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    plan = _custody_plan(tmp_path)
+
+    def respond(command: list[str]) -> bytes:
+        if command[-2] == PACKAGED_PSQL:
+            raise provenance_error("backup-observation-incomplete", "psql", "provenance command exited with non-zero status")
+        return f"{Path(command[-2]).name} (PostgreSQL) 16.14\n".encode()
+
+    bounded = _ScriptedBounded(respond)
+    monkeypatch.setattr(exec_mod, "run_bounded_popen", bounded)
+    with bound_exec_custody("c" * 64) as custody:
+        assert observe_custodied_client_identities(plan, subprocess.run) == {
+            "pg_dump_version": "pg_dump (PostgreSQL) 16.14", "pg_restore_version": "pg_restore (PostgreSQL) 16.14", "psql_version": "unavailable",
+        }, "a settled probe failure keeps the existing unavailable observation"
+    assert [command[-2:] for command, _ in bounded.commands] == [[b, "--version"] for b in (PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL)]
+    assert all("c" * 64 in command and plan.identity.postgres_container not in command for command, _ in bounded.commands)
+    assert all((kw["max_output_bytes"], kw["timeout_seconds"], kw["error_code"]) == (4096, 5.0, "backup-observation-incomplete") for _, kw in bounded.commands)
+    assert len(custody.outcomes) == 3 and custody.unknown == []
+    bounded.settlement = b"REMOTE mismatch\nCONTROL retained\nDESCENDANTS unknown\n"
+    with bound_exec_custody("c" * 64), pytest.raises(LocalDbBackupError) as unsettled:
+        observe_custodied_client_identities(plan, subprocess.run)
+    assert "restore-exec-outcome-unknown" in [d.code for d in unsettled.value.diagnostics], "an unsettled probe is never reported as unavailable"
+    legacy: list[Any] = []
+
+    def shared_observation(**kw: Any) -> dict[str, str]:
+        legacy.append(kw)
+        return {"psql_version": "shared"}
+
+    monkeypatch.setattr(native_mod, "observe_client_identities", shared_observation)
+    runner = MagicMock()
+    assert observe_custodied_client_identities(plan, runner) == {"psql_version": "shared"} and legacy == [{"plan": plan, "command_runner": runner}]
+
+
+def test_role_reconciliation_reuses_core_sql_under_custody_with_piped_input(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    plan = _custody_plan(tmp_path)
+    database = plan.graph_databases[0]
+    expected_sql = render_database_role_sql(
+        database=database, owner_role=plan.user, database_kind="graph", secrets=read_role_secrets(plan.env_file),
+    ).encode("utf-8")
+    bounded = _ScriptedBounded(lambda command: b"BEGIN\nCOMMIT\n")
+    monkeypatch.setattr(exec_mod, "run_bounded_popen", bounded)
+    with bound_exec_custody("c" * 64) as custody:
+        reconcile_restored_roles(plan, database, "graph", subprocess.run)
+    [(command, kwargs)] = bounded.commands
+    assert "c" * 64 in command and plan.identity.postgres_container not in command
+    inner = list(planned_psql_stdin_command(plan, database)[6:])
+    assert inner[0] == PACKAGED_PSQL and command[-len(inner):] == inner, "the unchanged core psql stdin form"
+    assert kwargs["stdin_bytes"] == expected_sql and kwargs.get("stdin_path") is None, "secret-bearing SQL is piped, not written to disk"
+    assert (kwargs["field"], kwargs["error_code"]) == ("database role reconciliation", "local-db-command-failed")
+    assert [o.label for o in custody.outcomes] == ["database role reconciliation"] and custody.unknown == []
+    assert not [p.name for p in plan.runtime_dir.iterdir() if p.name.startswith(".ext-stdin-")]
+    shared = MagicMock(return_value=subprocess.CompletedProcess([], 0, b"", b""))
+    reconcile_restored_roles(plan, database, "graph", shared)
+    assert shared.call_args.kwargs["input"] == expected_sql, "a caller-supplied runner keeps the shared core path"

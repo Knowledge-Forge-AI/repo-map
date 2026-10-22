@@ -191,7 +191,18 @@ def planned_create_database_command(plan: LocalRuntimePlan) -> tuple[str, ...]:
     )
 
 
-def planned_pg_restore_command(plan: LocalRuntimePlan, database: str) -> tuple[str, ...]:
+def planned_pg_restore_command(
+    plan: LocalRuntimePlan,
+    database: str,
+    *,
+    exit_on_error: bool = False,
+    use_list_path: str | None = None,
+) -> tuple[str, ...]:
+    extra: list[str] = []
+    if exit_on_error:
+        extra.append("--exit-on-error")
+    if use_list_path is not None:
+        extra.append(f"--use-list={use_list_path}")
     if container_internal_enabled():
         return (
             PACKAGED_PG_RESTORE,
@@ -202,6 +213,7 @@ def planned_pg_restore_command(plan: LocalRuntimePlan, database: str) -> tuple[s
             database,
             "--no-owner",
             "--no-privileges",
+            *extra,
         )
     return (
         plan.container_runtime,
@@ -217,6 +229,7 @@ def planned_pg_restore_command(plan: LocalRuntimePlan, database: str) -> tuple[s
         database,
         "--no-owner",
         "--no-privileges",
+        *extra,
     )
 
 

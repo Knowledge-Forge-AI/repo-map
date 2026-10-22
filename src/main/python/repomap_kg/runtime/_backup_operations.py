@@ -205,11 +205,14 @@ def inspect_owned_postgres_container(
                 plan.identity.postgres_container,
                 "target container is not RepoMap-owned for this REPOMAP_HOME",
             )
+    raw_image_id = item.get("Image")
+    image_id = str(raw_image_id).strip() if isinstance(raw_image_id, str) and raw_image_id.strip() else None
     return RuntimeContainerMetadata(
         container_id=str(item.get("Id", "")),
         name=plan.identity.postgres_container,
         image=item.get("Config", {}).get("Image"),
         labels=labels,
+        image_id=image_id,
     )
 
 

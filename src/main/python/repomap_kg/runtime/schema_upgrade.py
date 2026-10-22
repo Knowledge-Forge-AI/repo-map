@@ -19,6 +19,7 @@ from repomap_kg.runtime._schema_upgrade_ledger import (
 from repomap_kg.runtime._backup_support import (
     require_verified_backup_inspection_supported,
 )
+from repomap_kg.runtime._extension_restore_policy import TrustedExtensionRestorePolicy
 from repomap_kg.runtime.backup import (
     apply_source_schema as apply_source_schema,
     create_database as create_database,
@@ -100,6 +101,7 @@ def upgrade_graph_schema(
     reason: str | None = None,
     timestamp: str | None = None,
     command_runner: CommandRunner | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> GraphSchemaUpgradeResult:
     """Advance one recognized graph schema after a verified backup."""
 
@@ -214,24 +216,20 @@ def upgrade_graph_schema(
             "disposable schema reference database already exists",
         )
 
-    backup = dump_database(
-        home,
-        database=database,
-        reason=reason or "pre-schema-upgrade",
-        timestamp=upgrade_timestamp,
-        command_runner=runner,
-    )
-    inspection = inspect_backup(
-        home,
-        backup.plan.backup_path,
-        command_runner=runner,
-    )
+    if extension_restore_policy is None:
+        backup = dump_database(home, database=database, reason=reason or "pre-schema-upgrade", timestamp=upgrade_timestamp, command_runner=runner)
+        inspection = inspect_backup(home, backup.plan.backup_path, command_runner=runner)
+    else:
+        backup = dump_database(home, database=database, reason=reason or "pre-schema-upgrade", timestamp=upgrade_timestamp, command_runner=runner, extension_restore_policy=extension_restore_policy)
+        inspection = inspect_backup(home, backup.plan.backup_path, command_runner=runner, extension_restore_policy=extension_restore_policy)
     if not (inspection.checksum_verified and inspection.dump_summaries):
         raise _upgrade_error(
             "schema-upgrade-backup-invalid",
             "schema upgrade backup is not verified and restorable",
         )
-    require_verified_backup_inspection_supported(inspection, database=database)
+    require_verified_backup_inspection_supported(
+        inspection, database=database, extension_restore_policy=extension_restore_policy
+    )
 
     reference_created = False
     reference_cleaned = False

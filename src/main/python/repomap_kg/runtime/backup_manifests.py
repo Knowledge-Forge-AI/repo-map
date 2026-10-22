@@ -37,6 +37,11 @@ from repomap_kg.runtime._backup_support import (
     BackupSupportEvaluation,
     derive_manifest_support,
 )
+from repomap_kg.runtime._extension_restore_policy import (
+    TrustedExtensionRestorePolicy,
+    resolve_extension_restore_policy,
+)
+from repomap_kg.runtime._extension_restore_qualification import engine_image_content_id
 from repomap_kg.runtime.backup_records import (
     MAX_TOC_TABLE_NAMES,
     BackupDumpFile,
@@ -78,6 +83,7 @@ def write_manifest_and_restore_docs(
     toc_digests: Mapping[str, str] | None = None,
     quiescence: Mapping[str, Any] | None = None,
     support_evaluation: BackupSupportEvaluation | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> BackupSupportEvaluation:
     manifest = build_manifest(
         plan,
@@ -91,6 +97,7 @@ def write_manifest_and_restore_docs(
         toc_digests=toc_digests,
         quiescence=quiescence,
         support_evaluation=support_evaluation,
+        extension_restore_policy=extension_restore_policy,
     )
     write_private_text(
         plan.manifest_path,
@@ -118,6 +125,7 @@ def build_manifest(
     toc_digests: Mapping[str, str] | None = None,
     quiescence: Mapping[str, Any] | None = None,
     support_evaluation: BackupSupportEvaluation | None = None,
+    extension_restore_policy: TrustedExtensionRestorePolicy | None = None,
 ) -> dict[str, Any]:
     if (
         server_provenance is None
@@ -149,10 +157,13 @@ def build_manifest(
             "manifest.json",
             "format-2 manifest dump_files count must match plan.databases",
         )
+    resolved_policy = resolve_extension_restore_policy(extension_restore_policy)
     support = support_evaluation or derive_manifest_support(
         resolved_catalogs,
         before_after_fingerprint_matched=fp_matched,
         quiescence=resolved_quiescence,
+        extension_restore_policy=resolved_policy,
+        server_provenance=resolved_server,
     )
     archive_bindings = []
     for db_name, dump_file in zip(plan.databases, dump_files, strict=True):
@@ -221,13 +232,11 @@ def build_manifest(
             ),
             "container_id": container.container_id,
             "container_image": container.image or "unavailable",
+            "container_image_id": engine_image_content_id(container.image_id) or "unavailable",
             "dump_format": plan.dump_format,
             "pg_dump_executable": PACKAGED_PG_DUMP,
             "pg_restore_executable": PACKAGED_PG_RESTORE,
-            "policy_binding": {
-                "d1_baseline": f"{ 'plpgsql' }@{ 'pg_catalog' }",
-                "d3_policy": "allowlist-required",
-            },
+            "policy_binding": resolved_policy.policy_binding_record(),
             "psql_executable": PACKAGED_PSQL,
         },
         "database_catalogs": resolved_catalogs,

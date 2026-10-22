@@ -39,6 +39,7 @@ from repomap_test_support.semantic_candidate_cleanup import (
 )
 
 PGVECTOR_VERSION = "0.8.7"
+DIAGNOSTIC_ONLY_SAME_CLUSTER_REWRITTEN_SQL = True
 
 
 def execute_sql(postgres: Any, sql: str, *, role: str | None = None) -> None:
@@ -71,7 +72,7 @@ def record_optional_schema_state(
         "SELECT tableowner FROM pg_tables WHERE schemaname = 'repomap_enrichment' AND tablename = 'embeddings';"
     )
     enrichment_principal = postgres.psql_scalar(
-        "SELECT enrichment_principal FROM repomap_enrichment.rebuilds;"
+        "SELECT string_agg(enrichment_principal, ',' ORDER BY rebuild_id) FROM repomap_enrichment.rebuilds;"
     )
     ext_version = postgres.psql_scalar(
         "SELECT extversion FROM pg_extension WHERE extname = 'vector';"
@@ -82,6 +83,9 @@ def record_optional_schema_state(
     )
     ext_owner = postgres.psql_scalar(
         "SELECT pg_get_userbyid(extowner) FROM pg_extension WHERE extname = 'vector';"
+    )
+    ext_comment = postgres.psql_scalar(
+        "SELECT coalesce(obj_description(oid, 'pg_extension'), '') FROM pg_extension WHERE extname = 'vector';"
     )
 
     def _tp(role: str, table: str, priv: str) -> bool:
@@ -125,6 +129,7 @@ def record_optional_schema_state(
         "vector_extension_version": ext_version,
         "vector_extension_schema": ext_schema,
         "vector_extension_owner": ext_owner,
+        "vector_extension_comment": ext_comment,
         "privileges": privileges,
         "receipt_mapping": receipt_mapping,
         "run_id": record.run_id if record else None,
@@ -148,8 +153,9 @@ def verify_restored_acl_and_principal(
     assert current_state["vector_extension_version"] == expected["vector_extension_version"]
     assert current_state["vector_extension_schema"] == expected["vector_extension_schema"]
     assert current_state["vector_extension_owner"] == expected["vector_extension_owner"]
+    assert current_state["vector_extension_comment"] == expected["vector_extension_comment"]
     assert current_state["privileges"] == expected["privileges"]
-    assert current_state["enrichment_principal"] == writer
+    assert writer in str(current_state["enrichment_principal"]).split(",")
     assert current_state["enrichment_principal"] == expected["enrichment_principal"]
 
     restored_record = read_latest_publication(postgres.psql_args, psql_command=postgres.psql_command)
@@ -159,7 +165,14 @@ def verify_restored_acl_and_principal(
 
 
 def verify_reader_privilege_refusals(postgres: Any, *, reader: str) -> None:
-    """Enforce real SELECT-only reader boundaries; all mutation attempts fail."""
+    """Enforce real SELECT-only reader boundaries; positive SELECT succeeds and all mutation attempts fail."""
+    execute_sql(
+        postgres,
+        "SELECT count(*) FROM repomap_enrichment.rebuilds; "
+        "SELECT count(*) FROM repomap_enrichment.embeddings; "
+        "SELECT '[1,0,0]'::repomap_vector.vector OPERATOR(repomap_vector.<=>) '[1,0,0]'::repomap_vector.vector;",
+        role=reader,
+    )
     cols = (
         "rebuild_id, repository_identity, run_id, receipt_identity, source_generation, "
         "config_generation, extractor_generation, canonicalizer_generation, publication_bundle_id, "
@@ -200,6 +213,8 @@ def verify_reader_privilege_refusals(postgres: Any, *, reader: str) -> None:
             role=reader,
         )
     with pytest.raises(StorageSchemaError, match="permission denied"):
+        execute_sql(postgres, "TRUNCATE TABLE repomap_enrichment.embeddings;", role=reader)
+    with pytest.raises(StorageSchemaError, match="permission denied"):
         execute_sql(
             postgres,
             "UPDATE public.canonical_nodes SET display_name = 'mutated' "
@@ -215,25 +230,40 @@ def verify_reader_privilege_refusals(postgres: Any, *, reader: str) -> None:
 
 
 def verify_writer_privilege_refusals(postgres: Any, *, writer: str) -> None:
-    """Enforce writer boundaries: no principal spoofing, no mutation of canonical truth."""
-    cols = (
+    """Enforce writer boundaries: positive SELECT/INSERT succeeds; spoofing, UPDATE/DELETE/TRUNCATE, and canonical mutation fail."""
+    allowed_cols = (
         "rebuild_id, repository_identity, run_id, receipt_identity, source_generation, "
         "config_generation, extractor_generation, canonicalizer_generation, publication_bundle_id, "
         "snapshot_manifest_id, profile_identity, model, model_version, generator, generator_version, "
-        "representation_version, dimensions, normalization, metric, privacy_class, row_count, "
-        "enrichment_principal"
+        "representation_version, dimensions, normalization, metric, privacy_class, row_count"
     )
+    execute_sql(
+        postgres,
+        f"BEGIN; "
+        f"INSERT INTO repomap_enrichment.rebuilds ({allowed_cols}) "
+        f"SELECT 'allowed-writer-rebuild', {allowed_cols.split(', ', 1)[1]} "
+        f"FROM repomap_enrichment.rebuilds LIMIT 1; "
+        f"INSERT INTO repomap_enrichment.embeddings "
+        f"SELECT 'allowed-writer-rebuild', canonical_key, source_binding_id, snapshot_id, input_digest, dimensions, embedding "
+        f"FROM repomap_enrichment.embeddings LIMIT 1; "
+        f"ROLLBACK;",
+        role=writer,
+    )
+    cols = f"{allowed_cols}, enrichment_principal"
     with pytest.raises(StorageSchemaError, match="permission denied"):
         execute_sql(
             postgres,
             f"INSERT INTO repomap_enrichment.rebuilds ({cols}) "
-            f"SELECT 'spoofed-rebuild', repository_identity, run_id, receipt_identity, source_generation, "
-            f"config_generation, extractor_generation, canonicalizer_generation, publication_bundle_id, "
-            f"snapshot_manifest_id, profile_identity, model, model_version, generator, generator_version, "
-            f"representation_version, dimensions, normalization, metric, privacy_class, row_count, "
-            f"'spoofed_role' FROM repomap_enrichment.rebuilds LIMIT 1;",
+            f"SELECT 'spoofed-rebuild', {allowed_cols.split(', ', 1)[1]}, 'spoofed_role' "
+            f"FROM repomap_enrichment.rebuilds LIMIT 1;",
             role=writer,
         )
+    with pytest.raises(StorageSchemaError, match="permission denied"):
+        execute_sql(postgres, "UPDATE repomap_enrichment.rebuilds SET model = 'mutated';", role=writer)
+    with pytest.raises(StorageSchemaError, match="permission denied"):
+        execute_sql(postgres, "DELETE FROM repomap_enrichment.embeddings;", role=writer)
+    with pytest.raises(StorageSchemaError, match="permission denied"):
+        execute_sql(postgres, "TRUNCATE TABLE repomap_enrichment.embeddings;", role=writer)
     with pytest.raises(StorageSchemaError, match="permission denied"):
         execute_sql(
             postgres,

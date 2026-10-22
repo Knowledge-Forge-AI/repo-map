@@ -4069,6 +4069,172 @@
       "source_commit": "6860912b789db59792c6c56487ba17c7699ba800",
       "source_manifest_sha256": "000657c6c98af5e2417fa0b6f581067632a89d0fe0ebcb130bca12edd5042b6c",
       "status_path": "tools/ci/nav37-extension-provenance.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_blockers",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_blockers.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_compensation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_compensation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_custody",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_custody.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_exec",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_exec.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_exec_control",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_exec_control.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_grants",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_grants.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_lifecycle",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_lifecycle.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_native",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_native.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_policy",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_policy.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_postcheck",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_postcheck.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_preflight",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_preflight.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_qualification",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_qualification.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_steps",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_steps.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_target",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_target.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_template",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_template.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_toc",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_toc.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.runtime._extension_restore_toc_custody",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/_extension_restore_toc_custody.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "8f55929270209e050bac12bbec78132ed278c0406a57cc64040c6585c618c080",
+      "new_selected_set_sha256": "20e7d6cfc8ef47429c8f7645c3b4a5f4537fd2c3391149b1c60cb4de1daa46bf",
+      "old_ownership_manifest_sha256": "803332b44cf3dc78a42bac611434229daa6a773b592a02f62c75b0bd211d1d0f",
+      "old_selected_set_sha256": "0c5d57467065040870ad136222268d998583c5dc0d22689ad9fa4f7bb9ef4e73",
+      "phase": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1",
+      "reason": "Admit exactly 17 new clean bounded D9-B runtime helpers in existing T1-future retained ownership; preserve every incumbent selection, debt ceiling and historical authority.",
+      "source_commit": "157e5b88048bdc605cab1f037089c705ab555ce8",
+      "source_manifest_sha256": "803332b44cf3dc78a42bac611434229daa6a773b592a02f62c75b0bd211d1d0f",
+      "status_path": "tools/ci/nav40-extension-restore.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"
