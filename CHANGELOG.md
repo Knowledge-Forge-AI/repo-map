@@ -11,12 +11,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `0.1.0` or later will be the earliest package-manager publication line.
 - `main` represents released public versions.
 - Public `staging` is the prospective next-version branch; release promotions to `main` are squash merges where each resulting commit represents one version release.
+- Exception for v0.0.3 only: `main` is fast-forwarded to the exact qualified staging commit so that it keeps the history required by the author-correction proof ([ADR 0086](docs/adr/2026/10/0086-preview-003-staging-ancestry.md)). Later releases return to squash merges.
 
-## [0.0.3] - Unreleased
+## [0.0.3] - 2026-10-22
 
-Prospective public source preview; exact-candidate hosted qualification and main
-content promotion remain pending.
+Public source preview. Like earlier previews, it is not published to any package
+manager or registry. The promotion creates no tag. Release evidence:
+[preview v0.0.3 notes](docs/preview-v0.0.3.md).
 
+### Release qualification
+- Hosted release-qualification run 59 (attempt 1) executed and passed all eight jobs on the exact staging candidate merged with the `main` base: source and export policy, pre-review static checks, unit tests, the staging integration gate, the main system gate, CodeQL for Go and for Python, and SBOM/vulnerability scanning.
+- Unit coverage was 93.64% lines and 87.58% branches. Integration coverage was 89.94% lines and 81.85% branches. Both clear the unchanged hard gates of 85/85 (unit) and 80/80 (integration). The separate 82% integration branch target was not reached.
+- The run qualifies the core profile only. The optional pgvector profile was not part of this hosted run.
+
+### Changed
 - Restore driver-free SQLite startup while preserving explicit PostgreSQL custody.
 - Correct steward author metadata on public main and staging with an authenticated proof.
 - Update the steward contact address and coherent preview package/export metadata.
