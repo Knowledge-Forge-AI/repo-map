@@ -22,7 +22,7 @@ import subprocess
 import sys
 from typing import Any, Mapping, Sequence
 
-DEFAULT_TARGET_VERSION = "0.0.2"
+DEFAULT_TARGET_VERSION = "0.0.3"
 WITHHELD_DIRECTORIES = ("docs/status", "docs/superpowers")
 
 
@@ -332,7 +332,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--expected-version",
         default=DEFAULT_TARGET_VERSION,
-        help="expected semver version (default: 0.0.2)",
+        help=f"expected semver version (default: {DEFAULT_TARGET_VERSION})",
     )
     parser.add_argument(
         "--event-path",

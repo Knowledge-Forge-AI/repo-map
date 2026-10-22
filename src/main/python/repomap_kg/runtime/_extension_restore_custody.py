@@ -30,13 +30,6 @@ from repomap_kg.runtime._extension_restore_template import (
 )
 from repomap_kg.runtime.backup_records import LocalDbBackupError
 from repomap_kg.runtime.local import LocalRuntimeDiagnostic, LocalRuntimePlan
-from repomap_kg.runtime.maintenance import (
-    MAINTENANCE_LOCK_KEY,
-    MaintenanceUnavailableError,
-    bind_maintenance_custody,
-    maintenance_window,
-    runtime_maintenance_namespace,
-)
 from repomap_kg.runtime.postgres_route import execution_postgres
 
 STAMP_PREFIX = "repomap-restore-invocation:"
@@ -200,6 +193,11 @@ class RestoreLifecycleAuthority:
         self._targets: dict[str, tuple[Any, ExitStack]] = {}
 
     def __enter__(self) -> RestoreLifecycleAuthority:
+        # maintenance imports the driver; resolve it on PostgreSQL use, outside the
+        # wrapping below, so SQLite Local startup stays driver-free and a missing
+        # driver still surfaces as itself.
+        from repomap_kg.runtime.maintenance import MaintenanceUnavailableError, maintenance_window
+
         try:
             self._maintenance = self._connect(self._plan.maintenance_database)
             conn = self._maintenance
@@ -240,6 +238,12 @@ class RestoreLifecycleAuthority:
 
     def hold_target(self, intent: DatabaseCreationIntent, *, control: bool) -> None:
         """Lock a just-created target, bind its OID and system identifier, and stamp it."""
+        from repomap_kg.runtime.maintenance import (
+            MaintenanceUnavailableError,
+            bind_maintenance_custody,
+            maintenance_window,
+        )
+
         per_target = ExitStack()
         try:
             conn = self._connect(intent.database)
@@ -288,6 +292,8 @@ class RestoreLifecycleAuthority:
             )
 
     def _identity(self, database: str) -> tuple[int, str, str, bool]:
+        from repomap_kg.runtime.maintenance import MAINTENANCE_LOCK_KEY
+
         conn, _ = self._targets[database]
         row = conn.execute(_IDENTITY_SQL, (MAINTENANCE_LOCK_KEY,)).fetchone()
         if row is None:
@@ -339,6 +345,8 @@ class RestoreLifecycleAuthority:
 
 def canonical_restore_authority(plan: LocalRuntimePlan) -> RestoreLifecycleAuthority:
     """Resolve the canonical endpoint and namespace; refuse rather than bind a pretend window."""
+    from repomap_kg.runtime.maintenance import runtime_maintenance_namespace
+
     try:
         endpoint = execution_postgres(load_ops_config_home(plan.repo_map_home))
         password = runtime_postgres_password(plan)

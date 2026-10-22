@@ -223,16 +223,33 @@ def test_shallow_clone_cannot_use_projection_to_replace_history(tmp_path: Path) 
         fixture.audit()
 
 
+INHERITED_PROOF_HOPS = ("REPOMAP-PRODUCT5-PUBLIC-STAGING-REPAIR1", "REPOMAP-PRODUCT5-HOSTED-QUAL2-REPAIR10")
+# Each independently reviewed clean forward admission committed after the inherited proof.
+FORWARD_ADMISSIONS = (
+    "REPOMAP-PRODUCT6-NAVIGATION27-PUBLIC-PROJECTION-FIX1",
+    "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1",
+    "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1",
+)
+
+
 def test_inherited_public_edge_uses_the_exact_recovered_proof(pytestconfig: pytest.Config) -> None:
     import json
     repo = pytestconfig.rootpath
     baseline = json.loads((repo / BASELINE_PATH).read_text())
     result = audit_candidate_lineage(repo, BASELINE_PATH, baseline)
-    # NAV37 added one reviewed forward transition after the inherited proof.
-    assert result.scope_transitions == 4
     assert not result.candidate_transition
     proof = json.loads((repo / PROOFS_PATH).read_text())["proofs"][0]
     assert proof["commit"] == "1adfc7a15e830c8709f76f4e61abb9e24a8c0b17"
     assert proof["parent"] == "d1671f8088531c4be11de65908f762c61f986844"
-    assert len(proof["hops"]) == 2
+    assert tuple(hop["phase"] for hop in proof["hops"]) == INHERITED_PROOF_HOPS
+    # The post-genesis registry tail is exactly the proof hops followed by the forward
+    # admissions, each continuing its predecessor's ownership and selection state.
+    expected = INHERITED_PROOF_HOPS + FORWARD_ADMISSIONS
+    records = json.loads((repo / SCOPE_PATH).read_text())["records"][-len(expected) - 1:]
+    assert tuple(record["phase"] for record in records[1:]) == expected
+    for before, after in zip(records, records[1:]):
+        assert after["old_ownership_manifest_sha256"] == before["new_ownership_manifest_sha256"]
+        assert after["old_selected_set_sha256"] == before["new_selected_set_sha256"]
+    # The audit consumes exactly that authority: one key per hop and per forward admission.
+    assert result.scope_transitions == len(expected)
     assert render_document(baseline).encode() == (repo / BASELINE_PATH).read_bytes()

@@ -1,0 +1,106 @@
+{
+  "schema": "repomap-public-author-correction-proof-v1",
+  "proof": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-PUBLIC-AUTHOR-CORRECTION1",
+  "decision": "docs/adr/2026/10/0085-public-author-metadata-correction.md",
+  "target_author": "Samuel Leighton Lair <sam.lair@knowledge-forge.ai>",
+  "old_tip": "a8ae5d274e42217376fef8f0ed6ae08b0c001431",
+  "new_tip": "33b0d9759f2bd84df231fb8e54c3b8d7a177c770",
+  "committer_policy": "preserve",
+  "rows": [
+    {
+      "old": "32f4f64fea8e43f53a933b3566728afe2510a015",
+      "new": "8cf1e2685dadb7b2e84659230f4ccdfa98dafa11",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "d1671f8088531c4be11de65908f762c61f986844",
+      "new": "001cac6298ff18b272e2f92a4c5ff8b047cdfbcf",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "1adfc7a15e830c8709f76f4e61abb9e24a8c0b17",
+      "new": "1bc81cf88d58305251b61e01069a75c932f7d2de",
+      "old_author_source": "inherited_projection_author",
+      "removed_signature_headers": [
+        {
+          "position": 4,
+          "header_base64": "Z3Bnc2lnIC0tLS0tQkVHSU4gUEdQIFNJR05BVFVSRS0tLS0tCiAKIHdzRmNCQUFCQ0FBUUJRSnF5QURzQ1JDMWFRN3V1NVVobEFBQVorb1FBQlpWYzNVTU5TNU95VmswaHE2ZUxMb2kKIC9sbzZpYlhHbWR3WGlhekFKV05GWW1nTCt4dHdaZWNqQm90elVkeFBNbEtWTWVhSUs0R29sQVJTditnK3JMVHAKIHNSdG9tdmVBNHpkNEphUjNuSkE0TngrdXdGa2swY2dPT3pUNm1Ha2FFMHl4MGZVL21BYVZMOHlaVWJsUTRPWnIKIHRtWFV3RDQzdnMwLzBWcHN3aE9LUk9EVmpxamhSVUxFcTBobDFOdm1nck1WSkZUR09TOG8wMGpOY0ZtekhIdkMKIHI0dS8zS0pTaHZ6V0NoSnZ1Nm5sQU8vS0Q2NjlRUzh3TjkxSnZ6RE9LODVWMk16ei9lLzBKeWxtTzVNcTUyMFgKIFJUK21LMmhISUhUVjNxMW5IWUxYQ1p1c3B5MExQK1dGN3J6cTZiR3JhNXE0SWhnWlVMSW1abDdjMFZCN1htK0QKIGlIQkdYaUdBUTAzNTNqZEdrL0lqdXNQSHFwd2tUWWJ6UjRML0FlRWU4YzFYWGRnNUN2RU5pT251WWhvZTIxdlYKIHNJdDV5ejUvbHZQbGRHNmovOEFtV2h0QjVjYzlCNFkwWkszT0lDNm1VZ29nNDlWKytsQkowa0FRTmxhMXJNR3MKIFZiNDlIWXFFM3FyN0tBc3lHdWNSSkpNUVZQR1gxYVpCTHJKRDdaUlk1a1gydW9tK1hhMWgxb0ZrSzB1NkRVZHQKIGFhcjN6SStRQVZhQW5KMERjV0h0WWVoV0d0WEEyREpqYm9pU08xMHNEZGdpYm1lWWViWWxIckdBdjRUUHNHSnAKIGJnZGV4eXdUTlcxUllLMmFOb3JncjVzL2Q3WU9GQysrYURwMDd6N2NFL29wUWJ2c2dqYXJKajRud2hhVXg2SEkKIEhlSERjaGVNTi91MkhmNm1PbWVWCiA9M3FGOQogLS0tLS1FTkQgUEdQIFNJR05BVFVSRS0tLS0tCiA="
+        }
+      ]
+    },
+    {
+      "old": "80cd3020d0d04c56b15eebacea35de4d43ce26f5",
+      "new": "c5f5a947e14a2671a799f1334bb936ed0bdbcbf4",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "499bda50a881208da434ae844b7662d6e6cb5211",
+      "new": "0ef90c83e15ec45795a775c16f4b1377de7e1269",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "49e03625608876836e643cd97f42bc3c2886f124",
+      "new": "97fc3717ac13c5a407354c60385d3f943a995166",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "76691373abf67cb44c5d05bee08a4bbbf308661c",
+      "new": "f6690cfdc6e9869ca3e6220d1165ae48c687d081",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "b535afb493fdf17badb9a11ca74bfe7300e63241",
+      "new": "00f3f4a22a84f05278214808e57878e723897051",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "a7f4542acc43b5d501e3e26ba5fca7faaec902b1",
+      "new": "3d6d9b97804ef37233ce7ef60cb2372d9347a7d7",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "2c1003c525042123b96a0b64909db0fd16f7dca7",
+      "new": "547c896aaa60ddbb5579bf71d26811fe23ed2da8",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "12b0d4bcde7d5bcf045a57a41b2f0a9857bece42",
+      "new": "32a8f8df1754e9849d0a91c17eb7a90f9d4608ed",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "6860912b789db59792c6c56487ba17c7699ba800",
+      "new": "39781ee209e936814dba572d9f67f5f747352ea4",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "bae3e008ff12eec8f00a16c09e3e225e2985672e",
+      "new": "7a2756790aa0d95a906e9fc26ef76f8616868dfd",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "157e5b88048bdc605cab1f037089c705ab555ce8",
+      "new": "c8aa628986d8f4a9db5a3b77546d68e5f6e8fe8b",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    },
+    {
+      "old": "a8ae5d274e42217376fef8f0ed6ae08b0c001431",
+      "new": "33b0d9759f2bd84df231fb8e54c3b8d7a177c770",
+      "old_author_source": "committer",
+      "removed_signature_headers": []
+    }
+  ]
+}

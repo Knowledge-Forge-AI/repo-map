@@ -97,3 +97,4 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 # v0.0.2 dynamic target re-attestation.
+# v0.0.3 dynamic target re-attestation.

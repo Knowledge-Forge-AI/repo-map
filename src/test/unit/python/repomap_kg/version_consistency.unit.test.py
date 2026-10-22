@@ -20,8 +20,8 @@ def test_version_consistency() -> None:
     with open(pyproject_path, "rb") as f:
         pyproject = tomllib.load(f)
     pyproject_version = pyproject["project"]["version"]
-    assert pyproject_version == "0.0.2"
-    assert repomap_kg.__version__ == "0.0.2"
-    assert DEFAULT_TARGET_VERSION == "0.0.2"
+    assert pyproject_version == "0.0.3"
+    assert repomap_kg.__version__ == "0.0.3"
+    assert DEFAULT_TARGET_VERSION == "0.0.3"
     assert repomap_kg.__version__ == pyproject_version
     assert DEFAULT_TARGET_VERSION == pyproject_version

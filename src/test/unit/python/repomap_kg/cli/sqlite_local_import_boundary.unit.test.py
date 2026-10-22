@@ -89,6 +89,39 @@ def test_postgres_home_reports_the_bounded_missing_driver_error(tmp_path: Path) 
     assert any(event["kind"] == "import-blocked" for event in harness.guard_events()), harness.guard_events()
 
 
+def test_extension_restore_custody_defers_maintenance_until_postgresql_use(tmp_path: Path) -> None:
+    """Each deferred custody site reaches the real driver only when used, and reports it unwrapped."""
+    harness = LocalHarness(tmp_path / "custody", block_psycopg=True)
+    code = (
+        "import runpy, sys, types\n"
+        f"runpy.run_path({str(Path(sqlite_local_guard.__file__))!r})['_install_psycopg_blocker']()\n"
+        "from repomap_kg.cli._postgres_facade import is_postgres_driver_missing\n"
+        "from repomap_kg.runtime import _backup_lifecycle, _extension_restore_custody as custody\n"
+        "assert 'repomap_kg.runtime.maintenance' not in sys.modules\n"
+        "plan = types.SimpleNamespace()\n"
+        "authority = custody.RestoreLifecycleAuthority(plan, lambda _database: None, namespace='n')\n"
+        "intent = custody.DatabaseCreationIntent('target', 'token')\n"
+        "for name, call in (('enter', authority.__enter__),\n"
+        "                   ('hold', lambda: authority.hold_target(intent, control=False)),\n"
+        "                   ('identity', lambda: authority._identity('target')),\n"
+        "                   ('canonical', lambda: custody.canonical_restore_authority(plan))):\n"
+        "    try:\n"
+        "        call()\n"
+        "    except ModuleNotFoundError as error:\n"
+        "        assert is_postgres_driver_missing(error), (name, error)\n"
+        "        print(name)\n"
+        "    else:\n"
+        "        raise AssertionError(name)\n"
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", code], env=harness.environment(), capture_output=True, text=True, check=False
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.split() == ["enter", "hold", "identity", "canonical"], completed.stdout
+    blocked = [event["detail"] for event in harness.guard_events() if event["kind"] == "import-blocked"]
+    assert blocked == ["psycopg"] * 4, blocked
+
+
 def test_help_and_local_status_commands_start_without_the_driver(tmp_path: Path) -> None:
     harness = LocalHarness(tmp_path / "scratch", block_psycopg=True)
     home = _home(tmp_path)

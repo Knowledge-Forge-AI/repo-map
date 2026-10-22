@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from contextlib import redirect_stdout
+import io
 from pathlib import Path
 import tempfile
 import unittest
 
 from ci.public_export_policy import (
+    DEFAULT_TARGET_VERSION,
     check_candidate_identity,
     check_fixture_integrity,
     check_promotion_policy,
@@ -14,6 +17,7 @@ from ci.public_export_policy import (
     check_version_consistency,
     check_withheld_paths,
     evaluate_public_export,
+    main,
 )
 
 
@@ -66,6 +70,22 @@ class TestPublicExportPolicy(unittest.TestCase):
             violations = check_version_consistency(repo_root, "0.0.1")
             self.assertTrue(len(violations) >= 1)
             self.assertTrue(any("0.1.0" in v for v in violations))
+
+    def test_default_target_is_the_coherent_preview_version(self) -> None:
+        self.assertEqual(DEFAULT_TARGET_VERSION, "0.0.3")
+        self.assertEqual(check_version_consistency(Path(__file__).resolve().parents[6]), [])
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            pkg_dir = repo_root / "src/main/python/repomap_kg"
+            pkg_dir.mkdir(parents=True)
+            for version in ("0.0.3", "0.0.2"):
+                (repo_root / "pyproject.toml").write_text(f'[project]\nversion = "{version}"\n')
+                (pkg_dir / "__init__.py").write_text(f'__version__ = "{version}"\n')
+                violations = check_version_consistency(repo_root)
+                self.assertEqual(bool(violations), version != DEFAULT_TARGET_VERSION)
+        with self.assertRaises(SystemExit), redirect_stdout(io.StringIO()) as output:
+            main(["--help"])
+        self.assertIn("(default: 0.0.3)", " ".join(output.getvalue().split()))
 
     def test_version_consistency_missing_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -389,3 +389,4 @@ def test_integration_cli_subprocess_retains_runner_child_coverage_bootstrap(tmp_
     assert started == exited == recorded
     assert list(session.data_dir.glob(".coverage.*"))
 # REPOMAP-PUBLIC-V002-FIX10-R1 dynamic boundary re-attestation.
+# v0.0.3 dynamic target re-attestation.

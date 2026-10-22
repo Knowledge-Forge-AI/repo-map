@@ -25,4 +25,4 @@ Code released before the `apache-2.0-final` tag remains available under the
 Apache License, Version 2.0. Those Apache-2.0 grants are not revoked by the
 license change for future RepoMap releases.
 
-For commercial licensing, contact: lair001@gmail.com.
+For commercial licensing, contact: sam.lair@knowledge-forge.ai.

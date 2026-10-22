@@ -61,4 +61,4 @@ pull request acknowledgment.
 
 ## Contact
 
-Questions about contribution terms can be sent to lair001@gmail.com.
+Questions about contribution terms can be sent to sam.lair@knowledge-forge.ai.

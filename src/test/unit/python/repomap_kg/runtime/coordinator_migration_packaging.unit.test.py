@@ -30,7 +30,7 @@ def _manifest(
 
 def transform_pyproject_for_public(text: str) -> str:
     assert 'version = "0.1.0"' in text, "pyproject.toml must declare private version 0.1.0"
-    return text.replace('version = "0.1.0"', 'version = "0.0.2"', 1)
+    return text.replace('version = "0.1.0"', 'version = "0.0.3"', 1)
 
 
 def test_october_has_exact_explicit_destination_and_maintained_glob():
@@ -76,11 +76,11 @@ def test_release_install_consumes_manifest_and_verifies_installed_control_catalo
 def test_public_transformation_preserves_october_manifest_and_metadata():
     raw = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     version = tomllib.loads(raw)["project"]["version"]
-    assert version in {"0.1.0", "0.0.2"}
-    private_input = raw.replace('version = "0.0.2"', 'version = "0.1.0"', 1)
+    assert version in {"0.1.0", "0.0.3"}
+    private_input = raw.replace('version = "0.0.3"', 'version = "0.1.0"', 1)
     transformed = transform_pyproject_for_public(private_input)
     data = tomllib.loads(transformed)
-    assert data["project"]["version"] == "0.0.2"
+    assert data["project"]["version"] == "0.0.3"
     assert data["project"]["dependencies"] == ["typing-extensions==4.16.0"]
     assert not any(
         driver in req.lower()

@@ -182,3 +182,26 @@ def test_new_retention_requires_exact_superseded_forecast(tmp_path: Path) -> Non
     path.write_text(json.dumps(ledger))
     with pytest.raises(RetentionAuthorityError, match="specific superseded rationale"):
         validate_ownership_transitions(tmp_path, files, [revision])
+
+
+@pytest.mark.parametrize("changed", ["tools/ci/public_author_corrections.json",
+                                     "docs/adr/2026/10/0085-public-author-metadata-correction.md",
+                                     "tools/ci/public_author_correction.py"])
+def test_author_correction_proof_decision_and_checker_are_bound(tmp_path: Path, changed: str) -> None:
+    from ci.public_author_correction import DECISION, PROOF_ID, PROOF_PATH, SCHEMA, TARGET_AUTHOR
+    inv, ratchet = binding_fixture(tmp_path)
+    assert not any("author_correction" in path for path in bind_inputs(tmp_path, inv, ratchet))
+    row = {"old": "a" * 40, "new": "b" * 40, "old_author_source": "committer",
+           "removed_signature_headers": []}
+    (tmp_path / PROOF_PATH).write_text(json.dumps({
+        "schema": SCHEMA, "proof": PROOF_ID, "decision": DECISION, "target_author": TARGET_AUTHOR,
+        "committer_policy": "preserve", "old_tip": "a" * 40, "new_tip": "b" * 40, "rows": [row]}))
+    (tmp_path / DECISION).parent.mkdir(parents=True)
+    (tmp_path / DECISION).write_text(f"# Synthetic decision\n\n{PROOF_ID}\n")
+    (tmp_path / "tools/ci/public_author_correction.py").write_text('"""Synthetic checker."""\n')
+    bindings = bind_inputs(tmp_path, inv, ratchet)
+    assert {PROOF_PATH, DECISION, "tools/ci/public_author_correction.py"} <= set(bindings)
+    with (tmp_path / changed).open("a") as output:
+        output.write("\n")
+    with pytest.raises(RetentionAuthorityError, match="changed"):
+        verify_bindings(tmp_path, bindings, inv, ratchet)

@@ -176,7 +176,7 @@ def test_projected_public_wheel_contains_complete_graph_and_control_migration_ca
 
     cap = resolve_bootstrap_capability(env=os.environ)
     current_version = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text())["project"]["version"]
-    if current_version == "0.0.2":
+    if current_version == "0.0.3":
         test_wheel_contains_complete_graph_and_control_migration_catalogs(tmp_path)
         return
 
@@ -185,7 +185,7 @@ def test_projected_public_wheel_contains_complete_graph_and_control_migration_ca
     raw_pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert 'version = "0.1.0"' in raw_pyproject
     (projected_src / "pyproject.toml").write_text(
-        raw_pyproject.replace('version = "0.1.0"', 'version = "0.0.2"', 1),
+        raw_pyproject.replace('version = "0.1.0"', 'version = "0.0.3"', 1),
         encoding="utf-8",
     )
     shutil.copyfile(REPO_ROOT / "README.md", projected_src / "README.md")
@@ -211,5 +211,5 @@ def test_projected_public_wheel_contains_complete_graph_and_control_migration_ca
         capability=cap,
     )
     assert wheel_build.returncode == 0, wheel_build.stderr[-2_000:]
-    wheel = next(wheel_directory.glob("repomap_kg-0.0.2-*.whl"))
-    _verify_wheel_contents(wheel, "0.0.2", tmp_path, cap, "public")
+    wheel = next(wheel_directory.glob("repomap_kg-0.0.3-*.whl"))
+    _verify_wheel_contents(wheel, "0.0.3", tmp_path, cap, "public")

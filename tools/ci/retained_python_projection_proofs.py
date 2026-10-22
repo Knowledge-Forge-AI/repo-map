@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, Sequence
 
+from ci.public_author_correction_history import load_author_correction
 from ci.retained_python_comparison import selection_delta
 from ci.retained_python_git import blob, is_ancestor, parents
 from ci.retained_python_projection_evidence import (
@@ -53,7 +54,11 @@ class ProjectionProofLedger:
                  audit: Audit) -> None:
         self.root, self.baseline, self.scopes, self.audit = root, baseline, scopes, audit
         proofs = load_history(root, head, genesis)
-        self.proofs = {(p["commit"], p["parent"]): p for p in proofs}
+        # Original edge strings stay immutable; only authenticated corrected IDs are looked up.
+        correction = load_author_correction(root, head)
+        self.proofs = {(correction.resolve(p["commit"]), correction.resolve(p["parent"])): p
+                       for p in proofs}
+        require(len(self.proofs) == len(proofs), "edge is ambiguous after author correction")
         self.consumed: set[tuple[str, str]] = set()
         self.proof_keys: set[Key] = set()
         self.direct_keys: set[Key] = set()

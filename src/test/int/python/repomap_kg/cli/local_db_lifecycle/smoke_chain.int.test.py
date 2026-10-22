@@ -74,11 +74,15 @@ class CliLocalDbLifecycleSmokeChainIntegrationTests(CliIntegrationTestCase):
                 finally:
                     events.append("maintenance-exit")
 
-            def verify_under_maintenance(backup_result, database):
+            def verify_under_maintenance(backup_result, database, *, extension_restore_policy):
                 self.assertIn("maintenance-enter", events)
                 self.assertNotIn("maintenance-exit", events)
+                # The default CLI drop admits no trusted extension restore policy.
+                self.assertIsNone(extension_restore_policy)
                 events.append("verify")
-                return verify_drop_backup(backup_result, database)
+                return verify_drop_backup(
+                    backup_result, database, extension_restore_policy=extension_restore_policy
+                )
 
             def fake_runner(command, **kwargs):
                 command_text = " ".join(command)

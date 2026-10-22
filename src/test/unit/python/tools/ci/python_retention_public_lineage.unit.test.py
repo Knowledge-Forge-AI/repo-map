@@ -106,15 +106,17 @@ class TestPythonRetentionPublicLineage(unittest.TestCase):
             self.assertFalse(key.startswith("docs/status/"), f"docs/status should not be bound: {key}")
 
     def test_v2_scope_registry_validates_against_v1_d1671f8_registry(self) -> None:
-        import subprocess
+        from ci.public_author_correction_history import load_author_correction
+        from ci.retained_python_git import blob
         from ci.retained_python_ratchet_lineage import _assert_registry_extension
         repo_root = Path(__file__).resolve().parents[6]
         current_path = repo_root / "tools/ci/retained_python_scope_transitions.json"
         current_reg = json.loads(current_path.read_text(encoding="utf-8"))
-        v1_bytes = subprocess.check_output(
-            ["git", "show", "d1671f8088531c4be11de65908f762c61f986844:tools/ci/retained_python_scope_transitions.json"],
-            cwd=repo_root,
-        )
+        # The original public commit was author-corrected (ADR 0085); read its authenticated tree.
+        v1_commit = load_author_correction(repo_root, "HEAD").resolve(
+            "d1671f8088531c4be11de65908f762c61f986844")
+        v1_bytes = blob(repo_root, v1_commit, "tools/ci/retained_python_scope_transitions.json")
+        assert v1_bytes is not None
         v1_reg = json.loads(v1_bytes)
         _assert_registry_extension(v1_reg, current_reg)
 

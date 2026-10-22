@@ -44,6 +44,12 @@ def blob(repo_root: Path, commit: str, path: str) -> bytes | None:
     return shown.stdout
 
 
+def raw_commit(repo_root: Path, commit: str) -> bytes | None:
+    """Return unauthenticated raw commit bytes; callers must verify the object ID."""
+    shown = git(repo_root, ("cat-file", "commit", commit), text=False)
+    return shown.stdout if shown.returncode == 0 else None
+
+
 def commit_authority(repo_root: Path, commit: str, path: str) -> str | None:
     content = blob(repo_root, commit, path)
     return content.decode("utf-8") if content is not None else None

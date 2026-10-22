@@ -250,19 +250,22 @@ def test_sqlite_local_guard_abrupt_kill_settlement_produces_complete_receipt_and
         with session:
             runner = session.create_coverage(coverage)
             runner.start()
-            harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "vault")
-            child = harness.start(
-                "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", "vault", "--output", str(output),
-                extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
-                family="cli_module",
-            )
+            # Stop the owned collector on every path so cleanup never masks a child failure.
             try:
-                await_ready(barrier, child)
-                kill_paused_child(child)
+                harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "vault")
+                child = harness.start(
+                    "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", "vault", "--output", str(output),
+                    extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
+                    family="cli_module",
+                )
+                try:
+                    await_ready(barrier, child)
+                    kill_paused_child(child)
+                finally:
+                    child.communicate()
             finally:
-                child.communicate()
-            runner.stop()
-            runner.save()
+                runner.stop()
+                runner.save()
 
             # 1. Terminal receipt is complete and bound to correct child identity
             records = read_registered_children(session.child_manifest_dir, session.session_dir.name, "int")
@@ -308,19 +311,21 @@ def test_abrupt_child_unexpectedly_released_invalidates_receipt_and_raises(tmp_p
         with session:
             runner = session.create_coverage(coverage)
             runner.start()
-            harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "vault")
-            child = harness.start(
-                "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", "vault", "--output", str(output),
-                extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
-                family="cli_module",
-            )
             try:
-                await_ready(barrier, child)
-                release(barrier)
+                harness.run("ops", "sqlite-init", "--repo-map-home", str(home), "--graph", "vault")
+                child = harness.start(
+                    "ops", "sqlite-backup", "--repo-map-home", str(home), "--graph", "vault", "--output", str(output),
+                    extra_env=harness.paused_env("backup:before-manifest-link", barrier, abrupt=True),
+                    family="cli_module",
+                )
+                try:
+                    await_ready(barrier, child)
+                    release(barrier)
+                finally:
+                    _, stderr = child.communicate()
             finally:
-                _, stderr = child.communicate()
-            runner.stop()
-            runner.save()
+                runner.stop()
+                runner.save()
             assert child.returncode != 0
             assert "guard: abrupt termination child was released instead of killed" in stderr
 

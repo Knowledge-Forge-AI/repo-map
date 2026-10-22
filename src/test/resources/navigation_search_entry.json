@@ -113,7 +113,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 4,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -183,7 +183,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 2,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -235,7 +235,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -302,7 +302,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -364,7 +364,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -416,7 +416,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -468,7 +468,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -519,7 +519,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -585,7 +585,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -637,7 +637,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -689,7 +689,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -756,7 +756,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -806,7 +806,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -858,7 +858,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -910,7 +910,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -961,7 +961,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1011,7 +1011,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1063,7 +1063,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1115,7 +1115,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1166,7 +1166,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1216,7 +1216,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1268,7 +1268,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1320,7 +1320,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1371,7 +1371,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1421,7 +1421,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1473,7 +1473,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 1,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1525,7 +1525,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 500,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1576,7 +1576,7 @@
         "server": "repomap-kg",
         "target": "nodes",
         "total": 0,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_nodes"
     },
@@ -1718,7 +1718,7 @@
         "server": "repomap-kg",
         "target": "files",
         "total": 2,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_files"
     },
@@ -1793,7 +1793,7 @@
         "server": "repomap-kg",
         "target": "observations",
         "total": 2,
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_search_observations"
     },
@@ -1807,7 +1807,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "multiple_stored_locations",
@@ -1853,7 +1853,7 @@
             "publication": {
               "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
               "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
               "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
             },
             "publication_relation": "accepted_run",
@@ -1890,7 +1890,7 @@
             "publication": {
               "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
               "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
               "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
             },
             "publication_relation": "accepted_run",
@@ -1934,7 +1934,7 @@
         },
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -1948,7 +1948,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "multiple_stored_locations",
@@ -2030,7 +2030,7 @@
           {
             "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
             "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
             "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
           }
         ],
@@ -2040,7 +2040,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2054,7 +2054,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "multiple_stored_locations",
@@ -2102,7 +2102,7 @@
             "publication": {
               "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
               "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
               "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
             },
             "publication_relation": "accepted_run",
@@ -2140,7 +2140,7 @@
             "publication": {
               "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
               "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
               "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
             },
             "publication_relation": "accepted_run",
@@ -2184,7 +2184,7 @@
         },
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2198,7 +2198,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "multiple_stored_locations",
@@ -2282,7 +2282,7 @@
           {
             "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
             "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
             "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
           }
         ],
@@ -2292,7 +2292,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2306,7 +2306,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "unavailable",
@@ -2359,7 +2359,7 @@
         },
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2373,7 +2373,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "unavailable",
@@ -2406,7 +2406,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2420,7 +2420,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "unavailable",
@@ -2473,7 +2473,7 @@
         },
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2487,7 +2487,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "unavailable",
@@ -2520,7 +2520,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2534,7 +2534,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "single_stored_location",
@@ -2572,7 +2572,7 @@
             "end_line": null,
             "evidence_key": "[REDACTED]",
             "extractor": "repo-markdown",
-            "extractor_version": "0.0.2",
+            "extractor_version": "0.0.3",
             "link_kind": "observed",
             "path": "root/docs/guide.md",
             "path_namespace": "graph_source_relative",
@@ -2580,7 +2580,7 @@
             "publication": {
               "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
               "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
               "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
             },
             "publication_relation": "accepted_run",
@@ -2588,7 +2588,7 @@
             "raw_observation": {
               "kind": "markdown.document",
               "ordinal": 5,
-              "payload_hash": "27c886cbffd648aba3283f48c141f747390aeffb27ec82320ea0e67e378fff00",
+              "payload_hash": "791b50aa061af7373b945ce165888d75edb3c790d20a241850292ed7b8a92939",
               "run_id": 1,
               "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:docs/guide.md#markdown-document",
               "status": "available"
@@ -2634,7 +2634,7 @@
         },
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2648,7 +2648,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "single_stored_location",
@@ -2683,7 +2683,7 @@
             "confidence": "extracted",
             "end_line": null,
             "extractor": "repo-markdown",
-            "extractor_version": "0.0.2",
+            "extractor_version": "0.0.3",
             "link_kind": "observed",
             "path": "root/docs/guide.md",
             "path_status": "available",
@@ -2718,7 +2718,7 @@
           {
             "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
             "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
             "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
           }
         ],
@@ -2728,7 +2728,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2742,7 +2742,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "single_stored_location",
@@ -2782,7 +2782,7 @@
             "evidence_key": "[REDACTED]",
             "evidence_role": "direct",
             "extractor": "repo-markdown",
-            "extractor_version": "0.0.2",
+            "extractor_version": "0.0.3",
             "link_kind": "observed",
             "path": "root/docs/guide.md",
             "path_namespace": "graph_source_relative",
@@ -2790,7 +2790,7 @@
             "publication": {
               "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
               "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-              "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+              "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
               "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
             },
             "publication_relation": "accepted_run",
@@ -2798,7 +2798,7 @@
             "raw_observation": {
               "kind": "markdown.document",
               "ordinal": 5,
-              "payload_hash": "27c886cbffd648aba3283f48c141f747390aeffb27ec82320ea0e67e378fff00",
+              "payload_hash": "791b50aa061af7373b945ce165888d75edb3c790d20a241850292ed7b8a92939",
               "run_id": 1,
               "source_id": "bind1:e9b85d8caa63b78b2c4162c673facfe7555d056bf60fd11b82f7840896488ea2:docs/guide.md#markdown-document",
               "status": "available"
@@ -2845,7 +2845,7 @@
         },
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2859,7 +2859,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "single_stored_location",
@@ -2895,7 +2895,7 @@
             "end_line": null,
             "evidence_role": "direct",
             "extractor": "repo-markdown",
-            "extractor_version": "0.0.2",
+            "extractor_version": "0.0.3",
             "link_kind": "observed",
             "path": "root/docs/guide.md",
             "path_status": "available",
@@ -2931,7 +2931,7 @@
           {
             "extraction_receipt_id": "receipt1:9999999999999999999999999999999999999999999999999999999999999999",
             "graph_candidate_id": "cand1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a",
-            "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+            "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
             "snapshot_manifest_id": "snapmanifest1:c59d8cf56f7ef034882e51b88b3710aa2b6dcb651c472e5e54016448fa48ff5a"
           }
         ],
@@ -2941,7 +2941,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "located",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -2955,7 +2955,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "metadata_only",
@@ -3019,7 +3019,7 @@
         },
         "server": "repomap-kg",
         "status": "metadata_only",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3033,7 +3033,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "metadata_only",
@@ -3077,7 +3077,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "metadata_only",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3091,7 +3091,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "metadata_only",
@@ -3155,7 +3155,7 @@
         },
         "server": "repomap-kg",
         "status": "metadata_only",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3169,7 +3169,7 @@
       "payload": {
         "accepted_publication": {
           "generation": 1,
-          "publication_bundle_id": "bundle1:139ca9a000f5627f1351e8c6cd1651c4f3d7ebd15d8c0da77af97faee4cd67ae",
+          "publication_bundle_id": "bundle1:723185f89f9f45ddd5154dfba6fe6383b6cca7f5c57f033be8b2506e1e6bb403",
           "run_id": 1
         },
         "ambiguity": "metadata_only",
@@ -3213,7 +3213,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "metadata_only",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3272,7 +3272,7 @@
         },
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3312,7 +3312,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3372,7 +3372,7 @@
         },
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3412,7 +3412,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3472,7 +3472,7 @@
         },
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3512,7 +3512,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3572,7 +3572,7 @@
         },
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },
@@ -3612,7 +3612,7 @@
         "schema_version": 1,
         "server": "repomap-kg",
         "status": "unavailable",
-        "version": "0.0.2"
+        "version": "0.0.3"
       },
       "tool": "repomap_node_locations"
     },

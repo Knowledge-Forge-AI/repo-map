@@ -1032,6 +1032,28 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "navigation40.ci57.author_correction.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/public_author_correction.unit.test.py",
+        "src/test/unit/python/tools/ci/public_author_correction_lineage.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 offline raw-object proof and negative contracts; no legacy debt or scope-authority change.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "navigation40.ci57.author_correction.tools",
+      "members": [
+        "tools/ci/public_author_correction.py",
+        "tools/ci/public_author_correction_history.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 offline raw-object proof and negative contracts; no legacy debt or scope-authority change.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "pr26.qual6.fix2.tools.ci.python_retention_owner_capability.py",
       "members": [
@@ -23671,6 +23693,304 @@
       ],
       "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
       "test_sha256": "fff136f9a874f1356fe237451382c75a244767404a865611b616eae20d74a8fd"
+    },
+    {
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "id": "navigation40.ci57.preview003.v002.fix10.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "kind": "run_module",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "7692a46a05db4169fc55d000f768d9657bb3cf942191d33e2bed6d4855f2c441",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "v002.fix10.core.unit.test.py.CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "symbol": "CliCoreUnitTests.test_module_entrypoint_returns_cli_exit_status",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "7692a46a05db4169fc55d000f768d9657bb3cf942191d33e2bed6d4855f2c441"
+    },
+    {
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "id": "navigation40.ci57.preview003.v002.fix10.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "kind": "run_module",
+      "owner": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "owner_sha256": "7692a46a05db4169fc55d000f768d9657bb3cf942191d33e2bed6d4855f2c441",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "v002.fix10.core.unit.test.py.CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "symbol": "CliCoreUnitTests.test_packaged_module_entrypoint_scrubs_environment_before_cli_main",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_kg/cli/core.unit.test.py",
+      "test_sha256": "7692a46a05db4169fc55d000f768d9657bb3cf942191d33e2bed6d4855f2c441"
+    },
+    {
+      "fingerprint": "be38b60a70b3a02e71ced4f9ed26dba70b2a5f0add1d578f0a86de368adf12eb",
+      "id": "navigation40.ci57.preview003.v002.revise39.cli.py.run_module_entrypoint",
+      "kind": "run_module",
+      "owner": "src/test/support/python/repomap_test_support/cli.py",
+      "owner_sha256": "cdeed3294bfef463390d991405fdc4cdad9f6761afb86657b69024460fb2231e",
+      "parameters": {
+        "module": "repomap_kg",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "v002.revise39.cli.py.run_module_entrypoint",
+      "symbol": "run_module_entrypoint",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        },
+        {
+          "module": "repomap_kg.__main__",
+          "path": "src/main/python/repomap_kg/__main__.py",
+          "sha256": "fe733d23937ca39f9e44724d0d19b0cb1d3b671787d292c9d9ab2b5ab65ef759",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
+      "test_sha256": "aeba9e3f4b92ff3bad33c21c0133823beff63f8274632064ac78f10dccf1ab7a"
+    },
+    {
+      "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+      "id": "navigation40.ci57.preview003.v002.revise41.base_package_import.0.hosted_ci_repair1",
+      "kind": "spec_from_file_location",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.0.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1"
+    },
+    {
+      "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+      "id": "navigation40.ci57.preview003.v002.revise41.base_package_import.1.hosted_ci_repair1",
+      "kind": "module_from_spec",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.1.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1"
+    },
+    {
+      "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+      "id": "navigation40.ci57.preview003.v002.revise41.base_package_import.2.hosted_ci_repair1",
+      "kind": "modules",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.2.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1"
+    },
+    {
+      "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+      "id": "navigation40.ci57.preview003.v002.revise41.base_package_import.3.hosted_ci_repair1",
+      "kind": "exec_module",
+      "owner": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "owner_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1",
+      "parameters": {
+        "alternate_names": [
+          "_repomap_without_scale_tools"
+        ],
+        "blocked_domain": [
+          "docker",
+          "psutil"
+        ],
+        "case": "base_package_import",
+        "chain": [
+          {
+            "fingerprint": "bcafb836f6be49c970c055124993283331aa034c4ac29c366871c112735be8b9",
+            "kind": "spec_from_file_location"
+          },
+          {
+            "fingerprint": "b8560ea5f644ac429cad53f4fe3c8ffa21facd2ad00b0051cdeb4e7d08b04cf6",
+            "kind": "module_from_spec"
+          },
+          {
+            "fingerprint": "372b5a7d03476b30a52b22fa9a1b1298582d87ad711132aa333290bcf2f527d1",
+            "kind": "modules"
+          },
+          {
+            "fingerprint": "5ed13ded0a198fa824de741f3dfa032188d5f5dddfc12247f40c6d7746d89c20",
+            "kind": "exec_module"
+          }
+        ],
+        "schema": "optional-import-substitution-v1",
+        "target_module": "repomap_kg",
+        "target_path": "src/main/python/repomap_kg/__init__.py",
+        "target_sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4"
+      },
+      "recipe": "optional_import_substitution",
+      "supersedes": "v002.revise41.base_package_import.3.hosted_ci_repair1",
+      "symbol": "test_base_package_import_does_not_require_scale_tools",
+      "targets": [
+        {
+          "module": "repomap_kg",
+          "path": "src/main/python/repomap_kg/__init__.py",
+          "sha256": "3f318cf83080d4f63b56806a8329bf1215b7fdd166c005fc19a2916ea923dce4",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
+      "test_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",
@@ -42984,6 +43304,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/public_author_correction.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 exact public author-correction proof owner; zero-debt admission with incumbent authority preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/public_author_correction_lineage.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 exact public author-correction proof owner; zero-debt admission with incumbent authority preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/public_export_policy.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -45200,6 +45538,24 @@
       "maintained_executable": true,
       "path": "tools/ci/prompt_defense_check.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/public_author_correction.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 exact public author-correction proof owner; zero-debt admission with incumbent authority preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/public_author_correction_history.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 exact public author-correction proof owner; zero-debt admission with incumbent authority preserved.",
       "root": "tools",
       "status": "active_tool"
     },

@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `main` represents released public versions.
 - Public `staging` is the prospective next-version branch; release promotions to `main` are squash merges where each resulting commit represents one version release.
 
+## [0.0.3] - Unreleased
+
+Prospective public source preview; exact-candidate hosted qualification and main
+content promotion remain pending.
+
+- Restore driver-free SQLite startup while preserving explicit PostgreSQL custody.
+- Correct steward author metadata on public main and staging with an authenticated proof.
+- Update the steward contact address and coherent preview package/export metadata.
+- Retain extension-restore and packaging checks without changing debt or coverage ceilings.
+
 ## [0.0.2] - Unreleased
 
 ### Added

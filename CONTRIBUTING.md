@@ -28,4 +28,9 @@ Pull requests should also confirm that the contributor has authority to submit
 the work under `CLA.md`.
 
 Questions about commercial licensing or contribution terms can be sent to
-lair001@gmail.com.
+sam.lair@knowledge-forge.ai.
+
+Public commits authored by the project steward use
+`Samuel Leighton Lair <sam.lair@knowledge-forge.ai>`. Configure repository-local
+Git author and committer identity accordingly before publication. Contributor
+and automated dependency-update authorship remains attributable to its authors.
