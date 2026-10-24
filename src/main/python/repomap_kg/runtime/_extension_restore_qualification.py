@@ -18,6 +18,12 @@ SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 SAFE_VERSION_RE = re.compile(r"^[A-Za-z0-9._+-]{1,64}$")
 
 
+# A complete Debian server display version, e.g. ``16.15 (Debian 16.15-1.pgdg13+2)``; fullmatch only.
+_DEBIAN_SERVER_VERSION_RE = re.compile(
+    r"[0-9]{1,4}(?:\.[0-9]{1,4}){1,2} \(Debian [0-9][0-9A-Za-z.+:~-]{0,63}\)"
+)
+
+
 TARGET_TEMPLATE = "template1"
 
 
@@ -62,12 +68,18 @@ class TrustedArtifactQualification:
                     "allowed_server_majors and allowed_client_majors must be non-empty positive ints"
                 )
         if any(
-            not isinstance(v, str) or not SAFE_VERSION_RE.match(v)
-            for v in (*self.allowed_server_versions, *self.allowed_client_versions)
+            not isinstance(v, str)
+            or not (SAFE_VERSION_RE.match(v) or _DEBIAN_SERVER_VERSION_RE.fullmatch(v))
+            for v in self.allowed_server_versions
         ):
             raise ValueError(
-                "allowed_server_versions and allowed_client_versions entries must be exact version strings"
+                "allowed_server_versions entries must be exact version strings or complete Debian server versions"
             )
+        if any(
+            not isinstance(v, str) or not SAFE_VERSION_RE.match(v)
+            for v in self.allowed_client_versions
+        ):
+            raise ValueError("allowed_client_versions entries must be exact version strings")
         if any(
             not isinstance(a, str) or not a.strip() or a == "unavailable"
             for a in self.allowed_os_arch_abis

@@ -37,7 +37,7 @@ def _verify_wheel_contents(
 
     assert unconditional == ["Requires-Dist: typing-extensions==4.16.0"]
     assert [line for line in requirements if "psycopg" in line] == [
-        'Requires-Dist: psycopg[binary]==3.2.12; extra == "postgres"'
+        'Requires-Dist: psycopg[c]==3.3.6; extra == "postgres"'
     ]
     assert "Provides-Extra: postgres" in header
 

@@ -1,6 +1,6 @@
 """Typed fields of the existing canonical test-runtime identity document."""
 
-from typing import TypedDict
+from typing import Mapping, TypedDict
 
 
 class RuntimeIdentityFields(TypedDict):
@@ -9,7 +9,7 @@ class RuntimeIdentityFields(TypedDict):
     base_reference: str
     base_canonical_reference: str
     base_repo_digests: tuple[str, ...]
-    lock_resolution_input: None
+    materialization_inputs: Mapping[str, object]
     project_runtime_dependencies: tuple[str, ...]
     psycopg_release_version: str
     python_base_family: str

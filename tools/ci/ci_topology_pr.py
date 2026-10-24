@@ -131,18 +131,23 @@ def _check_unit_tests(
         )
 
     commands = [str(step["run"]) for step in steps if "run" in step]
+    bootstrap_cmd = "python tools/ci/psycopg_bootstrap.py --python python"
+    closure_cmd = "python -m pip install --require-hashes --no-deps --requirement tools/ci/project_dependencies.lock"
     required_commands = (
-        "python -m pip install --require-hashes --no-deps --requirement "
-        "tools/ci/project_dependencies.lock",
-        'python -m pip install --editable ".[test,scale-tools,static-analysis]"',
-        "df -B1 /",
-        contracts.unit_command,
+        bootstrap_cmd, closure_cmd, 'python -m pip install --editable ".[test,scale-tools,static-analysis]"',
+        "df -B1 /", contracts.unit_command,
     )
     for required in required_commands:
         if commands.count(required) != 1:
-            violations.append(
-                f"{workflow.path.name}: unit lane must contain {required!r} exactly once"
-            )
+            violations.append(f"{workflow.path.name}: unit lane must contain {required!r} exactly once")
+    if commands.count(bootstrap_cmd) == 1 and commands.count(closure_cmd) == 1:
+        if commands.index(bootstrap_cmd) > commands.index(closure_cmd):
+            violations.append(f"{workflow.path.name}: C Psycopg bootstrap must precede the project runtime closure")
+    closure_step = next((step for step in steps if step.get("run") == closure_cmd), None)
+    if closure_step is not None:
+        closure_env = closure_step.get("env")
+        if not isinstance(closure_env, dict) or closure_env.get("PIP_ONLY_BINARY") != ":all:":
+            violations.append(f"{workflow.path.name}: project runtime closure step must set PIP_ONLY_BINARY to ':all:'")
     unit_step = next(
         (step for step in steps if step.get("run") == contracts.unit_command),
         None,
@@ -299,6 +304,7 @@ def _check_global(
     system_uses = 0
     retired_all_uses = 0
     unit_uses = 0
+    d12_native_uses = 0
     for workflow in workflows:
         violations.extend(permission_violations(workflow))
         if "push" in workflow.triggers:
@@ -341,6 +347,7 @@ def _check_global(
         staging_uses += commands.count(contracts.staging_marker)
         system_uses += commands.count(contracts.system_marker)
         unit_uses += commands.count(contracts.unit_command)
+        d12_native_uses += commands.count(contracts.d12_native_marker)
         retired_all_uses += commands.count("--suite all")
         lowered = commands.lower()
         for marker in contracts.git_mutation_markers:
@@ -372,8 +379,10 @@ def _check_global(
             violations.append(f"{workflow.path.name}: workflows must consume no secrets")
         if "continue-on-error" in workflow_text:
             violations.append(f"{workflow.path.name}: continue-on-error is forbidden")
-    if runner_uses != 3:
-        violations.append(f"the canonical test runner must appear exactly three times across all workflows, found {runner_uses}")
+    if runner_uses != 4:
+        violations.append(
+            f"the canonical test runner must appear exactly four times across all workflows, found {runner_uses}"
+        )
     if staging_uses != 1:
         violations.append(f"the staging project-owned command must appear exactly once, found {staging_uses}")
     if system_uses != 1:
@@ -382,4 +391,6 @@ def _check_global(
         violations.append(f"the retired --suite all command must not appear, found {retired_all_uses}")
     if unit_uses != 1:
         violations.append(f"the canonical PR unit command must appear exactly once, found {unit_uses}")
+    if d12_native_uses != 1:
+        violations.append(f"the native D12 preflight runner marker must appear exactly once, found {d12_native_uses}")
     return violations

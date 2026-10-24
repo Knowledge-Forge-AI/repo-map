@@ -146,7 +146,12 @@ ensuring no merge-local baseline or registry change can bypass audit. Shallow
 or incomplete history is a tool failure. New or increased debt can never be
 authorized. Removed or reclassified retained modules require an exact
 append-only record in `tools/ci/retained_python_scope_transitions.json`; clean
-new retained modules may enter without one. Registry records remain in
+new retained modules may enter without one when the baseline's ownership
+digest is unchanged and no retained rows are removed or reclassified.
+An ownership digest change requires an exact scope
+record even for a clean addition. This does not permit binding unrelated
+pre-existing ownership changes: preserve their unresolved state and review
+the isolated candidate's actual manifest delta. Registry records remain in
 append order; their digest keys need not sort lexicographically. A scope record
 must be committed with its baseline transition, and its referenced exit status
 must be present in that commit or earlier. Splitting either authority after the

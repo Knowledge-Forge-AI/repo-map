@@ -1,0 +1,16 @@
+{
+  "d12_context": {
+    "context_file_count": 694,
+    "dockerfile_sha256": "4f1654900a5598840f0a9caac6a62068f051ecad21493fed91c80ff05aa61878",
+    "recipe_sha256": "0dedb63d3a48c45df553dbe790c95363a248a7c99c368c436419f0ca1edeb392",
+    "source_sha256": "6e470c5b287e4218f8ce78f458dbc17f5d033bf87acd012a97bb99e048d3abca"
+  },
+  "platform": "linux/amd64",
+  "schema": "repomap-d12-hosted-candidate-v1",
+  "sdk_sandbox": {
+    "image_tag": "repomap-test-sandbox:py313-go125-docker294-v1",
+    "sdk_dockerfile_sha256": "f8a8be96ac78ff32b8f2b4f6372f3d9203750a56f75ff49e0af722f5f75e3786",
+    "sdk_helper_sha256": "df616a151d062b4ade001bbd029007b2f414aa22422de63c520895663b850c5f",
+    "sdk_recipe_sha256": "24ddf31d8890922c012559d5cab4b1dffe4b41e5b19e9b3438555aabe22d2862"
+  }
+}

@@ -1,2 +1,2 @@
-psycopg[binary]==3.2.12
+psycopg[c]==3.3.6
 typing-extensions==4.16.0

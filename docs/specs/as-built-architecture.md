@@ -1236,22 +1236,19 @@ and leaves ordinary CLI startup fail-fast.
 
 The Python distribution requires Python 3.12 or newer. Since LOCAL11 its base
 dependency set is only `typing-extensions==4.16.0`: the base wheel is the
-SQLite Local install and carries no PostgreSQL driver. The `postgres` extra
-pins `psycopg[binary]==3.2.12` for the PostgreSQL Server Engine, and the
-generated Server image installs `".[postgres]"`. The manager accepted an
+SQLite Local install and carries no PostgreSQL driver. Since
+NAVIGATION45 ([ADR 0089](../adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md)) the `postgres` extra pins
+`psycopg[c]==3.3.6` for the PostgreSQL Server Engine: its C extension is built
+from a hash-bound source archive and dynamically linked to the system libpq,
+and the generated Server image builds `".[postgres]"` that way. The manager accepted an
 attended native macOS arm64 / Python 3.13.12 run of the reviewed LOCAL11 base
 wheel in a fresh virtual environment without Psycopg (PRESTAGING-DEBT-CLOSE1,
 `docs/status/2026/09/30/00988-product4-prestaging-debt-close1-exit.md`).
 Windows-native Local mutation and distribution remain unqualified. ARCH7F
 packages graph and coordinator-control migration resources as installed wheel
 data and resolves them from the distribution data root outside a checkout.
-The generated Linux runtime image uses digest-pinned official PostgreSQL 16.14
-Bookworm, Python 3.12.13 slim Bookworm, and Go 1.25.12 Bookworm indexes. The
-final application image inherits the same PostgreSQL 16.14 `psql`, `pg_dump`,
-and `pg_restore` clients used by the database image and installs Psycopg's
-bundled libpq 17.6. Fixed executable paths and image labels make the accepted
-matrix explicit. ARCH7G accepts those clients against the live release cluster
-for query, private dump creation, and restore-catalog inspection.
+The generated Linux runtime recipe pins official PostgreSQL 16.15
+Trixie ([ADR 0091](../adr/2026/10/0091-d12-tls-p3-disposition-and-trixie-remediation.md); earlier 16.15 Bookworm under [ADR 0087](../adr/2026/10/0087-d12-image-evidence-and-core-security-prerequisite.md) and 16.14 Bookworm), Python 3.12.15 slim Trixie, and Go 1.26.10 Bookworm indexes ([ADR 0090](../adr/2026/10/0090-d12-application-go-supported-toolchain.md); earlier 1.25.12). The final application image inherits the PostgreSQL `psql`, `pg_dump`, and `pg_restore` clients of the database image; under [ADR 0089](../adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md) Psycopg loads that image's own `libpq5` (the earlier binary pin bundled libpq 17.6). Fixed executable paths and image labels make the matrix explicit. ARCH7G accepted the 16.14 clients against the live release cluster for query, private dump creation, and restore-catalog inspection. The separate `d12-native-amd64` workflow job configures the first native `linux/amd64` D12 hosted checkpoint under [ADR 0092](../adr/2026/10/0092-public-native-d12-qualification.md); ARM64 hosted qualification is deferred, and hosted image acceptance remains pending. The `d12-system-hold` step in `main-system-gate` invokes `system-hold` before SDK or application work and refuses unresolved prerequisites; the Alpine 16.14 test pin and pgvector 0.8.7 test image are unchanged, so test and production minor versions now differ.
 
 `src/main/python/repomap_kg/service_package/platforms.py::select_service_adapter`
 selects a user LaunchAgent on macOS and a systemd user unit on Linux. Windows

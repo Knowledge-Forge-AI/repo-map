@@ -116,6 +116,7 @@ def execute_staging_decision_b(
             "collected": list(partition.collected_nodes),
             "required": list(partition.all_nodes), "measured": list(partition.m_nodes),
             "abrupt": list(partition.a_nodes), "deferred": list(partition.deferred_nodes),
+            "optional": partition.optional_population,
         }
         partition_data["sha256"] = digest_partition(partition_data)
         report["partition"] = partition_data

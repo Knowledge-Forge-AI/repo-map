@@ -252,15 +252,18 @@ def test_client_version_probes_run_under_container_custody_with_existing_limits(
     def respond(command: list[str]) -> bytes:
         if command[-2] == PACKAGED_PSQL:
             raise provenance_error("backup-observation-incomplete", "psql", "provenance command exited with non-zero status")
-        return f"{Path(command[-2]).name} (PostgreSQL) 16.14\n".encode()
+        return f"{Path(command[-2]).name} (PostgreSQL) 16.15\n".encode()
 
     bounded = _ScriptedBounded(respond)
     monkeypatch.setattr(exec_mod, "run_bounded_popen", bounded)
     with bound_exec_custody("c" * 64) as custody:
         assert observe_custodied_client_identities(plan, subprocess.run) == {
-            "pg_dump_version": "pg_dump (PostgreSQL) 16.14", "pg_restore_version": "pg_restore (PostgreSQL) 16.14", "psql_version": "unavailable",
+            "pg_dump_version": "pg_dump (PostgreSQL) 16.15",
+            "pg_restore_version": "pg_restore (PostgreSQL) 16.15",
+            "psql_version": "unavailable",
         }, "a settled probe failure keeps the existing unavailable observation"
-    assert [command[-2:] for command, _ in bounded.commands] == [[b, "--version"] for b in (PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL)]
+    expected_cmds = [[b, "--version"] for b in (PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL)]
+    assert [command[-2:] for command, _ in bounded.commands] == expected_cmds
     assert all("c" * 64 in command and plan.identity.postgres_container not in command for command, _ in bounded.commands)
     assert all((kw["max_output_bytes"], kw["timeout_seconds"], kw["error_code"]) == (4096, 5.0, "backup-observation-incomplete") for _, kw in bounded.commands)
     assert len(custody.outcomes) == 3 and custody.unknown == []

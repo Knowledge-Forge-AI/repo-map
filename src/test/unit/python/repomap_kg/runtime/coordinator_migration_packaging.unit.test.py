@@ -66,7 +66,7 @@ def test_release_install_consumes_manifest_and_verifies_installed_control_catalo
     dockerfile = render_server_dockerfile()
     assert "COPY pyproject.toml README.md ./" in dockerfile
     assert "COPY src/main/resources ./src/main/resources" in dockerfile
-    assert 'pip install --no-cache-dir --no-build-isolation ".[postgres]"' in dockerfile
+    assert 'pip install --no-cache-dir --no-index --no-deps --no-build-isolation ".[postgres]"' in dockerfile
     assert "installed_control == source_control" in dockerfile
     dockerignore = (ROOT / ".dockerignore").read_text()
     assert "!pyproject.toml\n" in dockerignore
@@ -88,7 +88,7 @@ def test_public_transformation_preserves_october_manifest_and_metadata():
         for driver in ("psycopg", "libpq", "pg8000", "asyncpg")
     )
     assert data["project"]["optional-dependencies"]["postgres"] == [
-        "psycopg[binary]==3.2.12"
+        "psycopg[c]==3.3.6"
     ]
     assert (
         data["tool"]["setuptools"]["data-files"][

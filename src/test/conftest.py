@@ -30,6 +30,7 @@ path difference.
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -45,6 +46,7 @@ from repomap_test_support.test_scratch import (  # noqa: E402
     finalize_run,
 )
 from repomap_test_support.build_profile_debt import (  # noqa: E402
+    DEFERRED_BUILD_PROFILE_NODE_IDS,
     enforce_build_profile_authority,
 )
 from repomap_test_support.resource_run_test_support import (  # noqa: E402
@@ -54,6 +56,86 @@ from repomap_test_support.resource_run_test_support import (  # noqa: E402
 # one, so a direct pytest invocation under the runner never creates a second
 # run root.
 _LAYOUT = establish_run().apply()
+
+
+def pytest_configure(config):
+    from repomap_test_support import d12_core_image as d12
+
+    config.addinivalue_line("markers", f"{d12.MARKER}: {d12.DESELECTION_REASON}")
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_modifyitems(session, config, items):
+    """Reconcile the optional D12 owner with its one-node registry.
+
+    Under the runner-selected profile the population must be exactly that
+    node. Every ordinary population visibly deselects it, and a population
+    whose path arguments cover its file must have collected it, so a renamed
+    or deleted owner cannot disappear silently. The raw collected IDs, the
+    excluded IDs, their count and the exact reason are recorded for runner
+    discovery, separately from the deferred build-profile registry.
+    """
+    from repomap_test_support import d12_core_image as d12
+
+    raw = [item.nodeid for item in items]
+    optional = set(d12.OPTIONAL_NODE_IDS)
+    marked = [item for item in items if item.get_closest_marker(d12.MARKER) is not None]
+    marked_ids = {item.nodeid for item in marked}
+    collected = {item.nodeid for item in items} & optional
+    if marked_ids - optional or collected - marked_ids:
+        raise d12.D12ProfileError("D12 optional marker and one-node registry disagree")
+    if optional & set(DEFERRED_BUILD_PROFILE_NODE_IDS) or any(
+        item.get_closest_marker("requires_build_profile") is not None for item in marked
+    ):
+        raise d12.D12ProfileError("the D12 optional owner must not enter deferred build debt")
+    active = os.environ.get(d12.ENV_PROFILE)
+    if active is not None:
+        if active not in d12.PLATFORMS or raw != [d12.NODE_ID]:
+            raise d12.D12ProfileError("D12 profile population must be exactly the one named node")
+        _record_optional_population(config, raw, ())
+        return
+    if _covers_d12_owner(config) and collected != optional:
+        raise d12.D12ProfileError(
+            "a population covering the D12 owner must collect exactly its one named node"
+        )
+    if marked:
+        items[:] = [item for item in items if item.nodeid not in marked_ids]
+        config.hook.pytest_deselected(items=marked)
+    _record_optional_population(config, raw, marked_ids)
+
+
+def _record_optional_population(config, raw, excluded_ids):
+    """Each exclusion keeps its raw collection index, so raw collected IDs can be rebuilt exactly."""
+    from repomap_test_support import d12_core_image as d12
+
+    excluded = [{"nodeid": nodeid, "raw_index": index}
+                for index, nodeid in enumerate(raw) if nodeid in excluded_ids]
+    setattr(config, d12.POPULATION_ATTR, {
+        "excluded": excluded, "count": len(excluded), "raw_count": len(raw), "reason": d12.DESELECTION_REASON,
+    })
+
+
+def _covers_d12_owner(config):
+    """Whether a path argument (not a node selection) contains the optional owner file."""
+    root = Path(getattr(config, "rootpath", Path.cwd()))
+    base = Path(getattr(getattr(config, "invocation_params", None), "dir", root))
+    from repomap_test_support.d12_core_image import NODE_FILE
+
+    node = (root / NODE_FILE).resolve()
+    paths = [(base / arg).resolve() for arg in getattr(config, "args", ()) if "::" not in str(arg)]
+    return any(path == node or path in node.parents for path in paths)
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    from repomap_test_support import d12_core_image as d12
+
+    record = getattr(config, d12.POPULATION_ATTR, {})
+    ids = [entry["nodeid"] for entry in record.get("excluded", ())]
+    if ids:
+        terminalreporter.write_line(
+            f"D12 optional core-image owners deselected: {len(ids)} "
+            f"{', '.join(ids)} ({d12.DESELECTION_REASON})"
+        )
 
 
 def pytest_report_header(config):
@@ -96,6 +178,29 @@ def pytest_runtest_setup(item):
     """Refuse direct execution of visible build debt without build authority."""
     if item.get_closest_marker("requires_build_profile") is not None:
         enforce_build_profile_authority()
+    from repomap_test_support import d12_core_image as d12
+
+    if item.get_closest_marker(d12.MARKER) is not None:
+        _require_d12_admission(d12, item.nodeid)
+
+
+def _require_d12_admission(d12, nodeid):
+    """Build admission, or else the separately admitted E1 exploration of exactly this node; never both.
+
+    E1 keeps its own slot in the runner's ``tools`` module (ADR 0089 D9), imported here only for the D12
+    marker, as the owner imports it. ``d12.current_admission()`` refuses throughout E1, so a lost
+    exploration refuses rather than reaching build authority.
+    """
+    import d12_dependency_preflight as inner
+
+    exploration = inner.current_exploration()
+    if exploration is None:
+        d12.current_admission()
+        return
+    if d12._ADMISSION is not None:
+        raise d12.D12ProfileError("mixed build and exploration admission in one process")
+    if nodeid != d12.NODE_ID or exploration.node_id != nodeid:
+        raise d12.D12ProfileError(f"E1 exploration admits only {exploration.node_id}, not {nodeid}")
 
 
 def pytest_sessionfinish(session, exitstatus):

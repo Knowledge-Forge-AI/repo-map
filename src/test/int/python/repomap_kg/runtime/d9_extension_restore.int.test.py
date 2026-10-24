@@ -16,25 +16,31 @@ import pytest
 
 from repomap_kg.coordinator._lifecycle_upgrade import upgrade_coordinator_control
 from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority, initialize_coordinator_control
+from repomap_kg.runtime._extension_restore_qualification import qualify_server_provenance
 from repomap_kg.runtime.backup import drop_database, dump_all_databases, dump_database, init_database_from_dump, inspect_backup
 from repomap_kg.runtime.backup_records import LocalDbBackupError
 from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
+from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE
 from repomap_kg.runtime.release_cluster import initialize_release_cluster
 from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
-from repomap_kg.storage import GraphSchemaStatus, default_rdbms_root, discover_migrations, graph_schema_readiness, run_psql
+from repomap_kg.storage import (
+    GraphSchemaStatus, apply_migrations, default_rdbms_root, discover_migrations, graph_schema_readiness, run_psql,
+)
 from repomap_kg.storage.main import _migration_script
 from repomap_test_support.d9_extension_policies import (
     control_extension_policy, hide_extension_script_in_container, installed_synthetic_extensions,
     probe_live_container_qualification, synthetic_multilevel_extension_policy, tamper_extension_script_in_container,
 )
 from repomap_test_support.d9_extension_restore import (
-    clean_template_reference, database_names, observe_template_baseline_in_container, owned_d9_postgres_cluster, seed_synthetic_graph,
+    SYNTHETIC_GRAPH_SQL, clean_template_reference, database_names, observe_template_baseline_in_container,
+    owned_d9_postgres_cluster, postmaster_crash_lines, seed_synthetic_graph,
 )
 from repomap_test_support.local_db_backup import connect_real_postgres as _connect
 from repomap_test_support.postgres_harness import require_postgres_binaries
 from repomap_test_support.test_scratch import short_test_directory
 
 BASELINE_ROLES = ("repomap_read_status", "repomap_refresh_publication", "repomap_coordinator_control")
+TRIXIE_SERVER_VERSION = "16.15 (Debian 16.15-1.pgdg13+2)"  # observed on POSTGRES_RELEASE_IMAGE
 
 
 def _drop_baseline_roles(postgres: Any) -> None:
@@ -48,9 +54,13 @@ def _assert_no_private_toc_dirs(runner: Any, container_name: str) -> None:
     assert res.returncode == 0 and res.stdout.strip() == "", f"private TOC residue: {res.stdout!r} rc={res.returncode}"
 
 
-def _refused(code: str, home: Path, backup: Path, runner: Any, policy: Any, postgres: Any, before: list[str]) -> None:
+def _refused(
+    code: str, home: Path, backup: Path, runner: Any, policy: Any, postgres: Any, before: list[str],
+    *, database: str = "d9b_graph",
+) -> None:
     with pytest.raises(LocalDbBackupError) as exc:
-        init_database_from_dump(home, database="d9b_graph", backup=backup, command_runner=runner, extension_restore_policy=policy)
+        init_database_from_dump(
+            home, database=database, backup=backup, command_runner=runner, extension_restore_policy=policy)
     codes = [d.code for d in exc.value.diagnostics]
     assert code in codes, f"expected {code}, got {codes}"
     assert database_names(postgres) == before, "refusal must happen before any CREATE DATABASE"
@@ -235,3 +245,156 @@ def test_d9b_backup_first_upgrade_and_drop_consumers_with_policy(monkeypatch: py
                 assert cc_res["result"] == "ready"
                 drop_res = drop_database(home, database=graph_db, backup_first=True, confirmed=True, timestamp="20261021T021000Z", command_runner=runner, extension_restore_policy=policy)
                 assert drop_res.result == "success" and drop_res.database_dropped is True
+
+
+_CREATION_FACTS_SQL = ("SELECT datlocprovider::text, datcollate, datctype, daticulocale, datcollversion, "
+                       "pg_database_collation_actual_version(oid) FROM pg_database WHERE datname = %s")
+
+
+def _creation_facts(postgres: Any, database: str) -> tuple[Any, ...]:
+    with closing(_connect(postgres, autocommit=True)) as adm:
+        return tuple(adm.execute(_CREATION_FACTS_SQL, (database,)).fetchone())
+
+
+def _graph_content(postgres: Any, database: str) -> tuple[Any, ...]:
+    with closing(_connect(postgres, database)) as g:
+        return (g.execute("SELECT id, tag FROM app_ext.items ORDER BY id").fetchall(),
+                g.execute("SELECT last_value, is_called FROM app_ext.item_seq").fetchone(),
+                g.execute(
+                    "SELECT extname, extversion FROM pg_extension WHERE extname LIKE 'ext_%%' ORDER BY 1"
+                ).fetchall())
+
+def _exact_trixie_container(container: str) -> dict[str, str]:
+    """The owned server runs the exact preloaded release pin; nothing is pulled (--pull=never)."""
+    run_dk = lambda *argv: subprocess.run(["docker", *argv], capture_output=True, text=True, check=True).stdout
+    inspect = lambda *argv: json.loads(run_dk(*argv))[0]
+    item = inspect("inspect", container)
+    digests = inspect("image", "inspect", item["Image"]).get("RepoDigests") or []
+    release = run_dk("exec", container, "cat", "/etc/os-release")
+    listed = run_dk(
+        "exec", container, "dpkg-query", "-W", "-f=${db:Status-Abbrev}${Package} ${Version}\\n", "libicu[0-9]*")
+    icu = [part for line in listed.splitlines() if line.startswith("ii ") for part in line.split()[1:]]
+    assert item["Config"]["Image"] == POSTGRES_RELEASE_IMAGE, item["Config"]["Image"]
+    assert any(d.endswith("@" + POSTGRES_RELEASE_IMAGE.split("@", 1)[1]) for d in digests), digests
+    assert "VERSION_CODENAME=trixie" in release.splitlines() and len(icu) == 2, (release, icu)
+    return {"image_id": item["Image"], "icu_package": icu[0], "icu_version": icu[1]}
+
+
+def test_d12_trixie_backup_restore_and_collation_refusals(monkeypatch: pytest.MonkeyPatch) -> None:
+    """ADR 0091 D9 compatibility on the exact Trixie release server, separate disposable clusters only."""
+    require_postgres_binaries()
+    with short_test_directory("d12t-", "home/repomap.rpl.toml") as directory:
+        root = Path(directory)
+        graph_db, home = "d12t_graph", root / "home"
+        reference = clean_template_reference(root, image=POSTGRES_RELEASE_IMAGE)
+        receipts: list[tuple[str, str]] = []
+        with owned_d9_postgres_cluster(
+            home, graph_db=graph_db, image=POSTGRES_RELEASE_IMAGE,
+        ) as (identity, postgres, runner):
+            monkeypatch.setenv("REPOMAP_PG_PASSWORD", str(postgres.password))
+            monkeypatch.setenv("POSTGRES_PASSWORD", str(postgres.password))
+            facts = _exact_trixie_container(identity.postgres_container)
+            assert observe_template_baseline_in_container(identity.postgres_container, user=postgres.user) == reference
+            assert _creation_facts(postgres, "template1") == ("c", "C", "C", None, None, None), "product C template1"
+            with closing(_connect(postgres, autocommit=True)) as adm:
+                icu_root = adm.execute("SELECT collversion, pg_collation_actual_version(oid) FROM pg_collation "
+                                       "WHERE collname = 'und-x-icu' AND collprovider = 'i'").fetchone()
+            assert icu_root is not None and icu_root[1], f"the Trixie server's ICU root collation: {icu_root} {facts}"
+            cid = identity.postgres_container
+            with installed_synthetic_extensions("docker", cid, runner=runner, receipts=receipts):
+                qual = probe_live_container_qualification(cid, user=postgres.user, template_baseline_sha256=reference)
+                assert qual.allowed_server_versions == (TRIXIE_SERVER_VERSION,)
+                assert qual.allowed_engine_image_ids == (facts["image_id"],)
+                policy = synthetic_multilevel_extension_policy(owner=postgres.user, artifact_qualification=qual)
+                # C-locale round trip: the product's own template1 route, backup first, unchanged archive and content.
+                seed_synthetic_graph(postgres, graph_db)
+                source_facts, source_content = _creation_facts(postgres, graph_db), _graph_content(postgres, graph_db)
+                assert source_facts == ("c", "C", "C", None, None, None), source_facts
+                c_dump = dump_database(
+                    home, database=graph_db, timestamp="20261023T010000Z",
+                    command_runner=runner, extension_restore_policy=policy)
+                assert c_dump.restore_supported is True and c_dump.restore_blockers == (), c_dump.restore_blockers
+                c_manifest = json.loads(c_dump.plan.manifest_path.read_text(encoding="utf-8"))
+                assert c_manifest["server_provenance"]["server_version"] == qual.allowed_server_versions[0]
+                semantics = c_manifest["database_catalogs"][graph_db]["creation_semantics"]
+                assert (semantics["datlocprovider"], semantics["datcollate"], semantics["datcollversion"]) == (
+                    "c", "C", None)
+                archive = c_dump.plan.backup_path / "dump.pgcustom"
+                c_sha = hashlib.sha256(archive.read_bytes()).hexdigest()
+                with closing(_connect(postgres, autocommit=True)) as adm:
+                    adm.execute(f'DROP DATABASE "{graph_db}" WITH (FORCE)')
+                _drop_baseline_roles(postgres)
+                before = database_names(postgres)
+
+                # Deliberately tampered metadata, not a migration: a fabricated source collation version must refuse.
+                manifest_bytes = c_dump.plan.manifest_path.read_bytes()
+                tampered = json.loads(manifest_bytes)
+                tampered["database_catalogs"][graph_db]["creation_semantics"]["datcollversion"] = "153.128"
+                c_dump.plan.manifest_path.write_text(json.dumps(tampered), encoding="utf-8")
+                c_bkp = c_dump.plan.backup_path
+                try:
+                    _refused(
+                        "restore-creation-semantics-incompatible", home, c_bkp,
+                        runner, policy, postgres, before, database=graph_db)
+                finally:
+                    c_dump.plan.manifest_path.write_bytes(manifest_bytes)
+                # DELIBERATELY TAMPERED ABI METADATA, not an ABI migration: a test-only qualification copy admits one
+                # synthetic second ABI (declaration binding unchanged); the source manifest claims it, so source and
+                # actual target are each admitted but differ, and the cross-ABI guard refuses before CREATE DATABASE.
+                synthetic_abi = "repomap-test-tampered-abi"
+                abi_qual = replace(qual, allowed_os_arch_abis=(*qual.allowed_os_arch_abis, synthetic_abi))
+                abi_policy = replace(policy, artifact_qualification=abi_qual)
+                assert abi_policy.policy_binding_record() == policy.policy_binding_record()
+                assert synthetic_abi not in qual.allowed_os_arch_abis
+                tampered = json.loads(manifest_bytes)
+                tampered["server_provenance"]["os_arch_abi"] = synthetic_abi
+                assert qualify_server_provenance(tampered["server_provenance"], abi_qual) == set()
+                c_dump.plan.manifest_path.write_text(json.dumps(tampered), encoding="utf-8")
+                try:
+                    _refused(
+                        "restore-target-incompatible", home, c_bkp,
+                        runner, abi_policy, postgres, before, database=graph_db)
+                finally:
+                    c_dump.plan.manifest_path.write_bytes(manifest_bytes)
+                assert c_dump.plan.manifest_path.read_bytes() == manifest_bytes
+                assert hashlib.sha256(archive.read_bytes()).hexdigest() == c_sha
+                restored = init_database_from_dump(
+                    home, database=graph_db, backup=c_bkp, command_runner=runner, extension_restore_policy=policy)
+                assert restored.result == "success" and restored.dump_restored is True
+                assert hashlib.sha256(archive.read_bytes()).hexdigest() == c_sha, "the archive is never rewritten"
+                assert _creation_facts(postgres, graph_db) == source_facts
+                assert _graph_content(postgres, graph_db) == source_content
+                _assert_no_private_toc_dirs(runner, identity.postgres_container)
+
+                # Real ICU source semantics on this server against the product C template1: refused before creation.
+                with closing(_connect(postgres, autocommit=True)) as adm:
+                    adm.execute(f'DROP DATABASE "{graph_db}" WITH (FORCE)')
+                    adm.execute(f"CREATE DATABASE \"{graph_db}\" WITH TEMPLATE template0 ENCODING 'UTF8' LOCALE 'C' "
+                                "LOCALE_PROVIDER icu ICU_LOCALE 'und'")
+                icu_handle = replace(postgres, database=graph_db)
+                apply_migrations(default_rdbms_root(), icu_handle.psql_args, psql_command=icu_handle.psql_command)
+                with closing(_connect(postgres, graph_db, autocommit=True)) as conn:
+                    conn.execute(SYNTHETIC_GRAPH_SQL)
+                provider, _collate, _ctype, icu_locale, icu_version, actual = _creation_facts(postgres, graph_db)
+                assert provider == "i" and icu_locale and icu_version == actual, (icu_locale, icu_version, actual)
+                icu_dump = dump_database(
+                    home, database=graph_db, timestamp="20261023T011000Z",
+                    command_runner=runner, extension_restore_policy=policy)
+                assert icu_dump.restore_supported is True, icu_dump.restore_blockers
+                icu_manifest = json.loads(icu_dump.plan.manifest_path.read_text(encoding="utf-8"))
+                semantics = icu_manifest["database_catalogs"][graph_db]["creation_semantics"]
+                assert (semantics["datlocprovider"], semantics["daticulocale"], semantics["datcollversion"]) == (
+                    "i", icu_locale, icu_version)
+                icu_archive = icu_dump.plan.backup_path / "dump.pgcustom"
+                icu_sha = hashlib.sha256(icu_archive.read_bytes()).hexdigest()
+                with closing(_connect(postgres, autocommit=True)) as adm:
+                    adm.execute(f'DROP DATABASE "{graph_db}" WITH (FORCE)')
+                _drop_baseline_roles(postgres)
+                _refused(
+                    "restore-creation-semantics-incompatible", home, icu_dump.plan.backup_path,
+                    runner, policy, postgres, database_names(postgres), database=graph_db)
+                assert hashlib.sha256(icu_archive.read_bytes()).hexdigest() == icu_sha
+                assert graph_db not in database_names(postgres), "no ICU target was created, refreshed or migrated"
+                _assert_no_private_toc_dirs(runner, cid)
+            assert postmaster_crash_lines(cid) == [], "no backend crash on the Trixie server"
+        assert receipts and all(outcome in ("REMOVED", "ABSENT") for _name, outcome in receipts), receipts

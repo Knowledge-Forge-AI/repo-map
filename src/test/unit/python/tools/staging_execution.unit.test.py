@@ -5,7 +5,9 @@ from types import SimpleNamespace
 
 import pytest
 import runner_integration_execution as execution
-from staging_report_contract import execution_succeeded, load_report, qualifies, validate_report
+import json
+from typing import Any
+from staging_report_contract import SCHEMA, SCHEMA_V1, execution_succeeded, load_report, qualifies, validate_report
 from src.test.unit.python.tools.staging_execution_fixtures import (
     IDENTITY, _args, _execute, _install_fakes, _summary,
 )
@@ -21,6 +23,46 @@ def test_pass_pass_runs_measured_then_abrupt_once_and_qualifies(monkeypatch, tmp
     assert execution_succeeded(report)
     assert qualifies(report)
     assert all(session.cleaned for session in sessions)
+    optional = report["partition"]["optional"]  # persisted beside, never inside, deferred debt
+    assert optional["count"] == 1 and optional["raw_count"] == len(report["partition"]["collected"]) + 1
+    assert report["partition"]["deferred"] == []
+    assert optional["excluded"][0]["nodeid"] not in report["partition"]["collected"]
+
+
+def test_report_refuses_an_unreconciled_or_missing_optional_owner_record(monkeypatch, tmp_path):
+    _result, path, _order, _coverage_env, _sessions = _execute(monkeypatch, tmp_path, staging=True)
+    report = load_report(path)
+    changes: tuple[dict[str, Any] | None, ...] = ({"count": 0}, {"raw_count": 1}, {"excluded": []}, None, {})
+    for change in changes:
+        broken = json.loads(json.dumps(report))
+        broken["partition"]["optional"] = None if change is None else {**broken["partition"]["optional"], **change}
+        if change == {}:  # a pre-ADR 0088 v1 report has no record at all
+            del broken["partition"]["optional"]
+        with pytest.raises(ValueError, match=r"optional-owner|partition missing \['optional'\]"):
+            validate_report(broken)
+        assert not qualifies(broken) and not execution_succeeded(broken)
+
+
+def test_v2_pins_the_registered_owner_and_v1_reports_keep_their_own_rules(monkeypatch, tmp_path):
+    _result, path, _order, _coverage_env, _sessions = _execute(monkeypatch, tmp_path, staging=True)
+    report = load_report(path)
+    assert report["schema"] == SCHEMA == "repomap-staging-obligations-v2", report["schema"]
+    entry = report["partition"]["optional"]["excluded"][0]
+    for change in ({"reason": "optional owner"},
+                   {"excluded": [{**entry, "nodeid": "src/test/int/python/other.int.test.py::test_t"}]}):
+        broken = json.loads(json.dumps(report))
+        broken["partition"]["optional"].update(change)
+        with pytest.raises(ValueError, match="unregistered reason or node ID"):
+            validate_report(broken)
+    legacy = json.loads(json.dumps({**report, "schema": SCHEMA_V1}))  # a relabelled current report
+    for current in (validate_report, lambda value: validate_report(value, legacy_v1=True)):
+        with pytest.raises(ValueError, match=r"only by explicit legacy v1|unknown fields \['optional'\]"):
+            current(legacy)  # current rules refuse the label; v1 rules refuse the v2-only record
+    del legacy["partition"]["optional"]
+    validate_report(legacy, legacy_v1=True)
+    assert qualifies(legacy, legacy_v1=True) and not qualifies(legacy) and not execution_succeeded(legacy)
+    with pytest.raises(ValueError, match="accepts only a v1 report"):
+        validate_report(report, legacy_v1=True)
 
 
 @pytest.mark.parametrize("failure_leg", ["M", "A"])

@@ -12,6 +12,7 @@ from unittest.mock import Mock, patch
 REPO_ROOT = Path(__file__).resolve().parents[5]
 
 import run_tests
+from runner_staging_discovery_contract import OPTIONAL_NODE_IDS, OPTIONAL_REASON
 
 def coverage_summary(
     *,
@@ -167,10 +168,14 @@ class ReportTestCase(unittest.TestCase):
             seen["discovery"] = call_info
             if discovery_error is not None:
                 raise discovery_error
-            return partition_population(
+            partition = partition_population(
                 population, declarations=declarations, suite=args.suite, scoped=scoped,
                 deferred_nodes=(), collected_nodes=population,
             )
+            # The conftest record a real collection carries: the optional owner, excluded last.
+            excluded = [] if scoped else [{"nodeid": OPTIONAL_NODE_IDS[0], "raw_index": len(population)}]
+            return replace(partition, optional_population={"excluded": excluded, "count": len(excluded),
+                           "raw_count": len(population) + len(excluded), "reason": OPTIONAL_REASON})
 
         class FakeLegPlugin:
             def __init__(self, partition, leg, *, suite, full_population):

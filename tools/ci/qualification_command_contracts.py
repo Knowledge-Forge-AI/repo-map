@@ -89,7 +89,7 @@ def _validate_staging_runner_tokens(workflow: Workflow, job_name: str) -> list[s
 
 
 def _validate_downstream_dependencies(workflow: Workflow) -> list[str]:
-    jobs = ("pre-review-static", "unit-tests", "staging-integration-gate", "main-system-gate",
+    jobs = ("pre-review-static", "unit-tests", "d12-native-amd64", "staging-integration-gate", "main-system-gate",
             *[name for name in workflow.jobs if "codeql" in name.lower() or "sbom" in name.lower()])
     violations: list[str] = []
     for name in jobs:
@@ -98,6 +98,37 @@ def _validate_downstream_dependencies(workflow: Workflow) -> list[str]:
             if needs != ["source-and-export-policy"]:
                 violations.append(f"{workflow.path.name}: {name} needs must be [source-and-export-policy]")
     return violations
+
+
+def _validate_d12_native_amd64_runner(workflow: Workflow, job_name: str = "d12-native-amd64") -> list[str]:
+    from ci.qualification_native_contracts import (
+        script_contains_shell_loop,
+        validate_d12_native_amd64_runner_command,
+    )
+
+    prefix = f"{workflow.path.name}: "
+    if job_name not in workflow.jobs:
+        return [prefix + f"{job_name} job is missing"]
+    try:
+        violations = [
+            prefix + f"cross-job leakage: d12 native preflight runner found in {name}"
+            for name in workflow.jobs
+            if name != job_name
+            if any(
+                "--d12-core-image-preflight" in args or "--d12-core-image-profile" in args
+                for args in _job_runners(workflow, name)
+            )
+        ]
+        job_scripts = workflow.job_run_commands(job_name)
+        for script in job_scripts:
+            if script_contains_shell_loop(script):
+                violations.append(prefix + "d12-native-amd64 must not wrap runner in a retry loop")
+    except ValueError:
+        return [prefix + "shell parse error: qualification shell command cannot be parsed"]
+    run_scripts = [script for script in job_scripts if "tools/run_tests.py" in script]
+    if len(run_scripts) != 1:
+        return violations + [prefix + f"requires exactly one runner step in {job_name}; found {len(run_scripts)}"]
+    return violations + validate_d12_native_amd64_runner_command(run_scripts[0], workflow_name=workflow.path.name)
 
 
 _BOUND_REVISIONS = {
@@ -283,7 +314,9 @@ def _validate_main_system_gate_ordering(workflow: Workflow, job_name: str = "mai
                     runners.append(index)
     except ValueError:
         return [prefix + "qualification shell command cannot be parsed"]
-    for values, label in ((bindings, "merge-parent/candidate binding"), (setups, "setup-python"), (runners, "system runner")):
+    for values, label in (
+        (bindings, "merge-parent/candidate binding"), (setups, "setup-python"), (runners, "system runner")
+    ):
         if len(values) != 1:
             return [prefix + f"requires exactly one {label}; found {len(values)}"]
     if not bindings[0] < setups[0] < runners[0]:
@@ -293,8 +326,10 @@ def _validate_main_system_gate_ordering(workflow: Workflow, job_name: str = "mai
             return [prefix + "candidate binding must precede expensive setup commands"]
     runner_commands = _job_runners(workflow, job_name)
     system_arguments = next(args for args in runner_commands if _option_values(args, "--suite") == ["system"])
-    for flag, name in (("--candidate-sha", "CANDIDATE_SHA"), ("--candidate-tree", "CANDIDATE_TREE"),
-                       ("--candidate-base-parent", "CANDIDATE_BASE_PARENT"), ("--candidate-head-parent", "CANDIDATE_HEAD_PARENT")):
+    for flag, name in (
+        ("--candidate-sha", "CANDIDATE_SHA"), ("--candidate-tree", "CANDIDATE_TREE"),
+        ("--candidate-base-parent", "CANDIDATE_BASE_PARENT"), ("--candidate-head-parent", "CANDIDATE_HEAD_PARENT"),
+    ):
         if not validate_command_option_var_expansion(system_arguments, flag, name):
             return [prefix + "system request must consume bound " + name]
     if not _expanded_path_option(system_arguments, "--gate-request-json", "RUNNER_TEMP", "/gate-request.json"):

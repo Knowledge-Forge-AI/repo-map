@@ -3,6 +3,7 @@ from __future__ import annotations
 
 
 import test_sandbox as sandbox_owner
+from repomap_kg.runtime import release
 
 
 from pathlib import Path
@@ -70,6 +71,12 @@ def test_inner_prerequisites_precede_release_and_logs_are_followed(tmp_path):
     assert not any(command[:2] == ["docker", "pull"] for command in calls)
     assert follower_calls == [["docker", "logs", "--follow", outer_id]]
     assert not any(command[:2] == ["docker", "logs"] for command in calls)
+
+
+
+def test_inner_go_prerequisite_is_the_release_go_pin():
+    """The sandbox's duplicate literal must stay the release recipe's exact Go index (ADR 0090)."""
+    assert sandbox_owner.GO_RELEASE_IMAGE == release.GO_RELEASE_IMAGE
 
 
 

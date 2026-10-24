@@ -19,6 +19,7 @@ if __package__ in (None, ""):
         sys.path.insert(0, str(tools_root))
 
 from ci.bootstrap_tool import host_platform, install_tool, load_manifest, verified_payload
+from ci.psycopg_bootstrap import bootstrap as bootstrap_psycopg
 
 
 CI_ROOT = Path(__file__).resolve().parent
@@ -117,6 +118,10 @@ def bootstrap(tool_root: Path) -> tuple[Path, ...]:
             str(CI_ROOT / "pre_review_python.lock"),
         ]
     )
+    # ADR 0089: C Psycopg is built from its hash-bound sdist without isolation;
+    # the rest of the project closure then installs from wheels only.
+    psycopg_evidence = bootstrap_psycopg(str(python_root / "bin" / "python"))
+    print(f"pre-review C Psycopg: {json.dumps(psycopg_evidence, sort_keys=True)}")
     run(
         [
             str(python_root / "bin" / "python"),
@@ -125,6 +130,8 @@ def bootstrap(tool_root: Path) -> tuple[Path, ...]:
             "install",
             "--require-hashes",
             "--no-deps",
+            "--only-binary",
+            ":all:",
             "--requirement",
             str(CI_ROOT / "project_dependencies.lock"),
         ]
@@ -169,7 +176,8 @@ def bootstrap(tool_root: Path) -> tuple[Path, ...]:
     verify_version([str(python_root / "bin" / "pip-audit"), "--version"], "2.10.1")
     verify_version([str(python_root / "bin" / "semgrep"), "--version"], "1.174.0")
     for module, distribution, version in (
-        ("psycopg", "psycopg", "3.2.12"),
+        ("psycopg", "psycopg", "3.3.6"),
+        ("psycopg_c", "psycopg-c", "3.3.6"),
         ("typing_extensions", "typing-extensions", "4.16.0"),
     ):
         verify_python_distribution(

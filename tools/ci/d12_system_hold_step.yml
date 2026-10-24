@@ -1,0 +1,11 @@
+steps:
+  - name: Verify release prerequisites before system SDK or candidate build
+    id: d12-system-hold
+    run: |
+      python3 tools/ci/d12_hosted_qualification.py system-hold \
+        --repo-root "${GITHUB_WORKSPACE}" \
+        --candidate-sha "${CANDIDATE_SHA}" \
+        --candidate-tree "${CANDIDATE_TREE}" \
+        --candidate-base-parent "${CANDIDATE_BASE_PARENT}" \
+        --candidate-head-parent "${CANDIDATE_HEAD_PARENT}" \
+        --output-json "${GITHUB_WORKSPACE}/ci-system-report/repomap-system-hold-refusal-v1.json"

@@ -28,11 +28,7 @@ def test_live_setuptools_authorities_use_one_exact_fixed_version() -> None:
         in release
     )
     assert f"- Selected version: `{FIXED_SETUPTOOLS_VERSION}`" in notices
-    assert (
-        f"python -m pip install --no-cache-dir "
-        f"setuptools=={FIXED_SETUPTOOLS_VERSION}"
-        in dockerfile
-    )
+    assert f'"setuptools=={FIXED_SETUPTOOLS_VERSION} --hash=sha256:' in dockerfile
 
     for live_authority in (pyproject, release, notices, dockerfile):
         assert VULNERABLE_SETUPTOOLS_VERSION not in live_authority

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import go_runner_coverage
 import runner_integration_execution as execution
 from runner_integration_obligations import MAINTAINED_ABRUPT_DECLARATIONS
+from runner_staging_discovery_contract import OPTIONAL_NODE_IDS, OPTIONAL_REASON
 from test_report import CoverageFileRecord, CoverageSummary, TestRecord as _TestRecord
 from test_report import GoCoverageSummary
 
@@ -177,18 +178,27 @@ def _install_fakes(monkeypatch, *, collection_exit=0, failure_leg=None,
         if collection_exit != 0:
             raise RuntimeError("population collection did not complete")
         from runner_integration_population import partition_population
-        return partition_population(
+        return with_optional_owner(partition_population(
             raw,
             suite=_args.suite,
             scoped=False,
             deferred_nodes=(),
             collected_nodes=raw,
-        )
+        ))
 
     def environment(_suites, _args):
         return null_context()
 
     return run_order, coverage_env, sessions, fake_run, fake_coverage_run, environment, fake_discovery
+
+
+def with_optional_owner(partition):
+    """Attach the conftest record a real collection carries: the optional owner, excluded last."""
+    excluded = [] if partition.is_scoped else [
+        {"nodeid": OPTIONAL_NODE_IDS[0], "raw_index": len(partition.collected_nodes)}]
+    return replace(partition, optional_population={
+        "excluded": excluded, "count": len(excluded), "raw_count": len(partition.collected_nodes) + len(excluded),
+        "reason": OPTIONAL_REASON})
 
 
 @contextmanager

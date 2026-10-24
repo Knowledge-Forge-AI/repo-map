@@ -209,7 +209,7 @@ def test_main_system_gate_cli_lifecycle(tmp_path: Path) -> None:
         "candidate_tree_sha": CANDIDATE_TREE,
         "candidate_commit_sha": CANDIDATE_SHA,
             "release_version_checks": {
-                "postgresql": "16.14",
+                "postgresql": "16.15",
                 "python": "3.12.13",
                 "go": "1.25.12",
                 "psycopg": "3.2.12",

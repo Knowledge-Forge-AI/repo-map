@@ -1,4 +1,4 @@
-"""Stdlib-only v1 schema, persistence, and manager validation; CLI: staging_report_contract.py --report PATH --commit SHA --source-sha256 SHA --invocation-id UUIDHEX."""
+"""Stdlib-only v2/legacy-v1 staging report contract, persistence, and manager validation CLI."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -12,7 +12,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, NoReturn
 from runner_integration_obligations import MAINTAINED_ABRUPT_DECLARATIONS
-SCHEMA = "repomap-staging-obligations-v1"
+from runner_staging_discovery_contract import require_registered_optional, validate_optional_population
+SCHEMA, SCHEMA_V1 = "repomap-staging-obligations-v2", "repomap-staging-obligations-v1"  # v2 requires partition.optional
 POLICY = "ADR0067-PR26-STAGING-CONTRACT1-v1"
 STAGING_REPORT_SCHEMA_VERSION = SCHEMA
 MIN_COVERAGE = 80.0
@@ -255,12 +256,14 @@ def _go_summary(value: Any) -> None:
     _str(summary["branch_status"], "go_coverage.branch_status")
     if not isinstance(summary["diagnostic_category"], str):
         _bad("go_coverage.diagnostic_category must be a string")
-
-def validate_report(payload: Mapping[str, Any], *, expected_commit: str | None = None, expected_source_sha256: str | None = None, expected_invocation_id: str | None = None, declarations: Sequence[Any] | None = None) -> None:
-    """Raise ValueError unless root identity, accounting, and both legs are exact."""
+def validate_report(payload: Mapping[str, Any], *, expected_commit: str | None = None,
+                    expected_source_sha256: str | None = None, expected_invocation_id: str | None = None,
+                    declarations: Sequence[Any] | None = None, legacy_v1: bool = False) -> None:
     report = _obj(payload, "report"); _fields(report, _TOP, "report")
-    if report["schema"] != SCHEMA or report["policy"] != POLICY:
-        _bad("unsupported schema or policy")
+    if report["schema"] not in (SCHEMA, SCHEMA_V1) or report["policy"] != POLICY: _bad("unsupported schema or policy")
+    if (report["schema"] == SCHEMA_V1) != legacy_v1:
+        _bad("legacy v1 validation accepts only a v1 report"
+             if legacy_v1 else "a v1 report is accepted only by explicit legacy v1 validation")
     invocation = _str(report["invocation_id"], "invocation_id")
     if not _UUID_HEX.fullmatch(invocation):
         _bad("invocation_id must be lowercase UUID hex")
@@ -275,9 +278,14 @@ def validate_report(payload: Mapping[str, Any], *, expected_commit: str | None =
     if _str(report["smoke"], "smoke") not in _SMOKE or not isinstance(report["errors"], list) or any(not isinstance(item, str) or not item or len(item) > 512 for item in report["errors"]):
         _bad("smoke or errors is invalid")
     _go_summary(report["go_coverage"])
-    partition = _obj(report["partition"], "partition"); _fields(partition, frozenset((*_PARTS, "sha256")), "partition")
+    partition, legacy = _obj(report["partition"], "partition"), report["schema"] == SCHEMA_V1
+    _fields(partition, frozenset((*_PARTS, *(() if legacy else ("optional",)), "sha256")), "partition")
     values = {field: _nodes(partition[field], f"partition.{field}") for field in _PARTS}
     collected, required, measured, abrupt, deferred = (values[field] for field in _PARTS)
+    if not legacy:
+        validate_optional_population(partition["optional"], collected, error=StagingReportValidationError,
+                                     required_count=None if report["scoped"] else 1)
+        require_registered_optional(partition["optional"], scoped=report["scoped"], error=StagingReportValidationError)
     measured_set, abrupt_set = set(measured), set(abrupt)
     required_set, deferred_set, collected_set = set(required), set(deferred), set(collected)
     if required_set & deferred_set or collected_set != required_set | deferred_set or required != [node for node in collected if node not in deferred_set] or deferred != [node for node in collected if node in deferred_set] or measured_set & abrupt_set or measured_set | abrupt_set != required_set:
@@ -299,12 +307,10 @@ def validate_report(payload: Mapping[str, Any], *, expected_commit: str | None =
     m_session, a_session = m_leg["measurement"]["session_id"], a_leg["measurement"]["session_id"]
     if m_session is not None and m_session == a_session:
         _bad("M and A coverage sessions must be distinct")
-
-def _semantics(payload: Mapping[str, Any], diagnostic: bool, declarations: Sequence[Any] | None = None) -> bool:
-    try:
-        validate_report(payload, declarations=declarations)
-    except (TypeError, ValueError):
-        return False
+def _semantics(payload: Mapping[str, Any], diagnostic: bool, declarations: Sequence[Any] | None = None,
+               legacy_v1: bool = False) -> bool:
+    try: validate_report(payload, declarations=declarations, legacy_v1=legacy_v1)
+    except (TypeError, ValueError): return False
     if payload["errors"] or payload["smoke"] not in ({"passed", "not_required"} if diagnostic else {"passed"}):
         return False
     partition, legs = payload["partition"], payload["legs"]
@@ -322,12 +328,10 @@ def _semantics(payload: Mapping[str, Any], diagnostic: bool, declarations: Seque
     return True
 
 validate_staging_report = validate_report
-def qualifies(payload: Mapping[str, Any], *, declarations: Sequence[Any] | None = None) -> bool:
-    return _semantics(payload, False, declarations)
-
-def execution_succeeded(payload: Mapping[str, Any], *, declarations: Sequence[Any] | None = None) -> bool:
-    return _semantics(payload, True, declarations)
-
+def qualifies(payload: Mapping[str, Any], *, declarations: Sequence[Any] | None = None,
+              legacy_v1: bool = False) -> bool: return _semantics(payload, False, declarations, legacy_v1)
+def execution_succeeded(payload: Mapping[str, Any], *, declarations: Sequence[Any] | None = None,
+                        legacy_v1: bool = False) -> bool: return _semantics(payload, True, declarations, legacy_v1)
 def persist_report(path: Path | str, payload: Mapping[str, Any], *, validate: bool = False) -> Path:
     """Atomically persist even incomplete observations; manager validates later."""
     if not isinstance(payload, Mapping):
@@ -356,45 +360,41 @@ def persist_report(path: Path | str, payload: Mapping[str, Any], *, validate: bo
                 os.unlink(temporary)
             except FileNotFoundError:
                 pass
-
-
 persist_staging_report = persist_report
-
 def load_report(path: Path | str) -> dict[str, Any]:
     value = json.loads(Path(path).read_text(encoding="utf-8"))
-    if not isinstance(value, dict):
-        _bad("report JSON root must be an object")
+    if not isinstance(value, dict): _bad("report JSON root must be an object")
     return value
-
-def validate_manager_report(path: Path | str, *, expected_commit: str, expected_source_sha256: str, expected_invocation_id: str, declarations: Sequence[Any] | None = None) -> dict[str, Any]:
+def validate_manager_report(path: Path | str, *, expected_commit: str, expected_source_sha256: str,
+                            expected_invocation_id: str, declarations: Sequence[Any] | None = None,
+                            legacy_v1: bool = False) -> dict[str, Any]:
     payload = load_report(path)
-    validate_report(payload, expected_commit=expected_commit, expected_source_sha256=expected_source_sha256, expected_invocation_id=expected_invocation_id, declarations=declarations)
+    validate_report(payload, expected_commit=expected_commit, expected_source_sha256=expected_source_sha256,
+                    expected_invocation_id=expected_invocation_id, declarations=declarations, legacy_v1=legacy_v1)
     return payload
-
 def build_staging_report(payload: Mapping[str, Any] | None = None, **kwargs: Any) -> dict[str, Any]:
-    """Return observed fields only; no identity or lifecycle defaults are supplied."""
-    if payload is not None:
-        return dict(payload)
-    if not set(_TOP) <= kwargs.keys():
-        _bad("build_staging_report requires every v1 report field")
+    if payload is not None: return dict(payload)
+    if not set(_TOP) <= kwargs.keys(): _bad("build_staging_report requires every v1 report field")
     return {field: kwargs[field] for field in _TOP}
-
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate a RepoMap PR26 staging report")
-    parser.add_argument("--report", required=True, type=Path)
-    parser.add_argument("--commit", "--expected-commit", dest="commit", required=True)
-    parser.add_argument("--source-sha256", "--expected-source-sha256", dest="source", required=True)
-    parser.add_argument("--invocation-id", "--expected-invocation-id", dest="invocation", required=True)
-    parser.add_argument("--validate-only", action="store_true")
-    args = parser.parse_args(argv)
+    p = argparse.ArgumentParser(description="Validate a RepoMap PR26 staging report")
+    p.add_argument("--report", required=True, type=Path); p.add_argument("--validate-only", action="store_true")
+    p.add_argument("--commit", "--expected-commit", dest="commit", required=True)
+    p.add_argument("--source-sha256", "--expected-source-sha256", dest="source", required=True)
+    p.add_argument("--invocation-id", "--expected-invocation-id", dest="invocation", required=True)
+    p.add_argument("--legacy-v1", action="store_true", help="validate an old v1 report under v1 rules")
+    args = p.parse_args(argv)
     try:
-        payload = validate_manager_report(args.report, expected_commit=args.commit, expected_source_sha256=args.source, expected_invocation_id=args.invocation)
+        payload = validate_manager_report(args.report, expected_commit=args.commit, expected_source_sha256=args.source,
+                                          expected_invocation_id=args.invocation, legacy_v1=args.legacy_v1)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"staging report validation failed: {error}", file=sys.stderr); return 2
-    result = {"schema": SCHEMA, "qualified": qualifies(payload), "execution_succeeded": execution_succeeded(payload)}
+    result = {"schema": payload["schema"], "rules": "v1" if args.legacy_v1 else "v2",
+              "current_qualification": not args.legacy_v1, "qualified": qualifies(payload, legacy_v1=args.legacy_v1),
+              "execution_succeeded": execution_succeeded(payload, legacy_v1=args.legacy_v1)}
     print(json.dumps(result, sort_keys=True)); return 0 if args.validate_only or result["qualified"] else 1
-
-__all__ = ("MAINTAINED_ABRUPT_DECLARATIONS", "POLICY", "SCHEMA", "STAGING_REPORT_SCHEMA_VERSION", "StagingReportValidationError", "ReportValidationError", "build_staging_report", "digest_partition", "execution_succeeded", "load_report", "main", "persist_report", "persist_staging_report", "qualifies", "validate_manager_report", "validate_report", "validate_staging_report")
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+__all__ = ("MAINTAINED_ABRUPT_DECLARATIONS", "POLICY", "SCHEMA", "SCHEMA_V1", "STAGING_REPORT_SCHEMA_VERSION",
+           "StagingReportValidationError", "ReportValidationError", "build_staging_report", "digest_partition",
+           "execution_succeeded", "load_report", "main", "persist_report", "persist_staging_report", "qualifies",
+           "validate_manager_report", "validate_report", "validate_staging_report")
+if __name__ == "__main__": raise SystemExit(main())

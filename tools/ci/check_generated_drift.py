@@ -22,7 +22,19 @@ CI_ROOT = Path(__file__).resolve().parent
 PYTHON_LOCKS = (
     ("pre_review_python.in", "pre_review_python.lock"),
     ("project_dependencies.in", "project_dependencies.lock"),
+    ("psycopg_build.in", "psycopg_build.lock"),
 )
+# ADR 0089 D5: the Psycopg build lock holds exactly its declared build closure:
+# setuptools, wheel and wheel's one Requires-Dist, packaging.
+DECLARED_ONLY_LOCKS = frozenset({"psycopg_build.lock"})
+# Lock resolution never runs a build backend on the host. Wheel-only locks
+# refuse source builds outright. The project lock holds the approved psycopg-c
+# sdist, whose metadata is static; its backend requires setuptools, so a
+# constraint no release satisfies refuses any build environment before sdist
+# code could run.
+STATIC_SDIST_LOCKS = frozenset({"project_dependencies.lock"})
+BUILD_REFUSAL_PATH = "tools/ci/.build-refusal-constraints.txt"
+BUILD_REFUSAL_CONSTRAINTS = "setuptools<0\nwheel<0\n"
 POLICY_PATH = CI_ROOT / "generated_lock_policy.json"
 PYPI_INDEX = "https://pypi.org/simple"
 SUBPROCESS_ENV_ALLOWLIST = (
@@ -190,6 +202,12 @@ def compile_command(
         "--custom-compile-command",
         update_command(policy),
     ]
+    if lock in STATIC_SDIST_LOCKS:
+        command.extend(("--build-constraint", BUILD_REFUSAL_PATH))
+    else:
+        command.append("--no-build")
+    if lock in DECLARED_ONLY_LOCKS:
+        command.append("--no-deps")
     if upgrade:
         command.append("--upgrade")
     return [
@@ -201,7 +219,10 @@ def compile_command(
 
 
 def run(command: list[str], *, cwd: Path, env: dict[str, str]) -> None:
+    refusal = cwd / BUILD_REFUSAL_PATH if BUILD_REFUSAL_PATH in command else None
     try:
+        if refusal is not None:
+            refusal.write_text(BUILD_REFUSAL_CONSTRAINTS, encoding="utf-8")
         completed = subprocess.run(
             command,
             cwd=cwd,
@@ -211,6 +232,9 @@ def run(command: list[str], *, cwd: Path, env: dict[str, str]) -> None:
         )
     except OSError as error:
         raise ToolFailure(f"{Path(command[0]).name} unavailable") from error
+    finally:
+        if refusal is not None:
+            refusal.unlink(missing_ok=True)
     if completed.returncode != 0:
         raise ToolFailure(f"{Path(command[0]).name} exited {completed.returncode}")
 

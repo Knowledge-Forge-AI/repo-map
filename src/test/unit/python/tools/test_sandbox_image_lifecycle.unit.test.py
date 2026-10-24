@@ -65,7 +65,8 @@ def test_managed_image_build_context_contains_only_sandbox_recipe(tmp_path):
         }
     )
     inspect_count = 0
-    calls = []
+    calls, staged = [], {}
+    (context / ".dockerignore").write_text("*\n!Dockerfile\n", encoding="utf-8")
 
     def fake_runner(command, **kwargs):
         nonlocal inspect_count
@@ -75,6 +76,8 @@ def test_managed_image_build_context_contains_only_sandbox_recipe(tmp_path):
             if inspect_count == 1:
                 return subprocess.CompletedProcess(command, 1, "", f"Error response from daemon: No such image: {module.IMAGE_TAG}\n")
             return completed(command, stdout=inspect_payload + "\n")
+        if command[:2] == ["docker", "build"]:
+            staged.update({path.name: path.read_bytes() for path in Path(command[-1]).iterdir()})
         if command[:3] == ["docker", "image", "ls"]:
             return completed(command, stdout=image_id + "\n")
         if command[:3] == ["docker", "container", "ls"]:
@@ -83,10 +86,9 @@ def test_managed_image_build_context_contains_only_sandbox_recipe(tmp_path):
 
     assert module.ensure_sandbox_image(dockerfile=dockerfile, runner=fake_runner) == image_id
     build = next(command for command in calls if command[:2] == ["docker", "build"])
-    assert build[-1] == str(context)
-    assert str(REPO_ROOT) not in " ".join(build)
-    assert ["--build-arg", f"REPOMAP_SANDBOX_RECIPE={recipe}"] == build[4:6]
-
+    assert staged == {"Dockerfile": dockerfile.read_bytes()} and not Path(build[-1]).exists() and not any(
+        str(root) in " ".join(build) for root in (REPO_ROOT, context))
+    assert ["--build-arg", f"REPOMAP_SANDBOX_RECIPE={recipe}", "--pull=false"] == build[4:7]
 
 
 def test_managed_image_rebuilds_a_stale_owned_recipe(tmp_path):
@@ -96,9 +98,10 @@ def test_managed_image_rebuilds_a_stale_owned_recipe(tmp_path):
     dockerfile = context / "Dockerfile"
     source = (REPO_ROOT / "tools/test_sandbox/Dockerfile").read_text()
     dockerfile.write_text(source, encoding="utf-8")
+    helper = (REPO_ROOT / "tools/native_apt_prerequisites.py").read_bytes()  # staged from its canonical source
     previous = source.replace(" " + chr(92) + "\n    && go clean -cache -modcache", "")
-    old_recipe = hashlib.sha256(previous.encode()).hexdigest()
-    recipe = hashlib.sha256(dockerfile.read_bytes()).hexdigest()
+    old_recipe = module._images.sandbox_recipe({"Dockerfile": previous.encode(), "apt_prerequisites.py": helper})
+    recipe = module._images.sandbox_recipe(module._images.sandbox_recipe_inputs(dockerfile))
     assert recipe != old_recipe
     image_id = "sha256:" + "a" * 64
     calls = []

@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 import staging_report_contract as contract
+from runner_staging_discovery_contract import OPTIONAL_NODE_IDS, OPTIONAL_REASON
 
 from staging_report_contract import (
     POLICY,
@@ -94,9 +95,9 @@ def _partition(*, measured: list[str] | None = None, abrupt: list[str] | None = 
     value: dict[str, Any] = {
         "collected": [*required, *deferred],
         "required": required,
-        "measured": measured,
-        "abrupt": abrupt,
-        "deferred": deferred,
+        "measured": measured, "abrupt": abrupt, "deferred": deferred,
+        "optional": {"excluded": [{"nodeid": OPTIONAL_NODE_IDS[0], "raw_index": len(required) + len(deferred)}],
+                     "count": 1, "raw_count": len(required) + len(deferred) + 1, "reason": OPTIONAL_REASON},
     }
     value["sha256"] = digest_partition(value)
     return value
@@ -334,9 +335,10 @@ def test_manager_identity_is_external_to_payload(tmp_path: Path, identity: str) 
     persist_report(path, report)
     assert validate_manager_report(path, expected_commit=COMMIT, expected_source_sha256=SOURCE, expected_invocation_id=INVOCATION, declarations=DECLARATIONS) == report
     expected = dict(expected_commit=COMMIT, expected_source_sha256=SOURCE, expected_invocation_id=INVOCATION)
-    expected[identity] = "f" * len(expected[identity])
+    expected[identity] = "f" * len(expected[identity]); c, s, i = expected.values()
     with pytest.raises(ValueError, match="identity"):
-        validate_manager_report(path, **expected, declarations=DECLARATIONS)
+        validate_manager_report(path, expected_commit=c, expected_source_sha256=s,
+                                expected_invocation_id=i, declarations=DECLARATIONS)
 
 
 def test_persist_keeps_incomplete_observation_without_accepting_it(tmp_path: Path) -> None:

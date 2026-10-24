@@ -116,10 +116,29 @@ python3 tools/staging_report_contract.py
 ```
 
 Default success requires qualification; `--validate-only` checks the schema and
-must not be substituted for acceptance. The report schema is
-`repomap-staging-obligations-v1`, policy
+must not be substituted for acceptance. The current report schema is
+`repomap-staging-obligations-v2`, policy
 `ADR0067-PR26-STAGING-CONTRACT1-v1`. `summary.json` embeds the obligations and
 HTML displays M/A with a link to the authoritative same-invocation JSON.
+
+Schema v2 ([ADR 0089](../adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md)
+D10) adds the required `partition.optional` record of the registered optional
+owner's visible exclusion: exact reason, count, raw count and each excluded ID
+with its raw collection index. The stdlib validator pins the registered reason
+and node IDs itself, without importing test support; scoped reports may exclude
+a subset of them and unscoped reports must exclude exactly them. The discovery
+receipt that carries the record is `repomap-staging-discovery-receipt-v2`;
+receipts never outlive their run, so a v1 receipt is refused, not migrated.
+
+Old reports are validated under the rules of their own schema, but only when
+the manager asks for that explicitly. A v1 report, such as the CI62 gate
+report, carries no `partition.optional` and validates under v1 rules with
+`--legacy-v1` (Python: `legacy_v1=True`) or with the validator at its own
+commit. Current validation and `qualifies` refuse any v1 label, so relabelling
+a current report as v1 cannot skip the optional-owner reconciliation. Legacy
+mode refuses a v2 report and a v1 report that carries the record, and its CLI
+result states `"rules": "v1"` and `"current_qualification": false`.
+Validating an old report never proves the optional-owner exclusion it predates.
 An incomplete collection/refusal report is intentionally persisted even though
 it cannot pass schema/acceptance validation.
 

@@ -22,7 +22,16 @@ from ci.ci_topology_contracts import (
     check_trusted_gate_copy_set,
 )
 from ci.ci_topology_gates import _check_main_system_gate, _check_staging_gate
+from ci.qualification_native_contracts import (
+    project_public_qualification_workflow,
+    validate_d12_native_amd64_job,
+    validate_d12_system_hold_step,
+)
 from ci.workflow_model import Workflow, load_workflow
+from src.test.unit.python.tools.ci.d12_hosted_workflow_fixture import (
+    PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT,
+    write_public_qualification_workflow_tree,
+)
 
 WORKFLOWS_DIR = ROOT / ".github/workflows"
 STAGING_WORKFLOW_PATH = WORKFLOWS_DIR / STAGING_GATE_WORKFLOW
@@ -180,3 +189,58 @@ def test_trusted_copy_set_rejects_extra_or_overwriting_commands(extra: str) -> N
     steps: list[Mapping[str, object]] = [{"run": "\n".join([*lines, extra])}]
     assert any("exact declared copy set" in item
                for item in check_trusted_gate_copy_set("test.yml", steps, 0))
+
+
+def test_release_qualification_workflow_contains_native_d12_unit_bootstrap_and_system_hold() -> None:
+    wf = load_workflow(RELEASE_WORKFLOW_PATH)
+    assert validate_d12_native_amd64_job(wf) == []
+    assert validate_d12_system_hold_step(wf) == []
+    unit_steps = wf.job_steps("unit-tests")
+    commands = [str(step.get("run", "")) for step in unit_steps]
+    bootstrap_cmd = "python tools/ci/psycopg_bootstrap.py --python python"
+    lock_cmd = "python -m pip install --require-hashes --no-deps --requirement tools/ci/project_dependencies.lock"
+    assert bootstrap_cmd in commands
+    assert lock_cmd in commands
+    assert commands.index(bootstrap_cmd) < commands.index(lock_cmd)
+    lock_step = next(step for step in unit_steps if step.get("run") == lock_cmd)
+    assert lock_step.get("env") == {"PIP_ONLY_BINARY": ":all:"}
+
+
+def test_projected_public_release_qualification_topology_requires_four_runners_and_native_contracts(
+    tmp_path: Path,
+) -> None:
+    repo_dir = tmp_path / "repo"
+    projected = project_public_qualification_workflow(PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT)
+    write_public_qualification_workflow_tree(repo_dir, projected)
+    assert check_topology(repo_dir) == ()
+
+
+def test_unprojected_three_runner_public_workflow_is_rejected_by_connected_topology(
+    tmp_path: Path,
+) -> None:
+    repo_dir = tmp_path / "repo"
+    write_public_qualification_workflow_tree(repo_dir, PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT)
+    violations = check_topology(repo_dir)
+    assert any("d12-native-amd64" in item for item in violations)
+    assert any("four times" in item for item in violations)
+
+
+def test_public_workflow_rejects_disabled_cancel_in_progress_or_missing_system_hold(
+    tmp_path: Path,
+) -> None:
+    projected = project_public_qualification_workflow(PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT)
+    no_cancel_dir = tmp_path / "no-cancel"
+    write_public_qualification_workflow_tree(
+        no_cancel_dir,
+        projected.replace("cancel-in-progress: true", "cancel-in-progress: false"),
+    )
+    assert any("cancel-in-progress" in item for item in check_topology(no_cancel_dir))
+
+    no_hold_dir = tmp_path / "no-hold"
+    without_hold = "\n".join(
+        line
+        for line in projected.splitlines()
+        if "d12-system-hold" not in line and "d12_hosted_qualification.py system-hold" not in line
+    )
+    write_public_qualification_workflow_tree(no_hold_dir, without_hold)
+    assert any("d12-system-hold" in item for item in check_topology(no_hold_dir))

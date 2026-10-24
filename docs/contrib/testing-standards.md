@@ -48,6 +48,95 @@ implemented future build-profile authority replaces that refusal. No ambient
 environment variable can authorize it. Do not replace this contract with skip, xfail,
 source-text grep, or a mutable local selection list.
 
+The one approved exception is the ADR 0087 D12-A owner,
+`src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py::test_d12_core_image_refresh_candidate_round_trip`.
+It carries its own `requires_d12_core_image_profile` marker and one-node
+registry in `repomap_test_support.d12_core_image`, never
+`requires_build_profile`, and the twelve-node registry is unchanged. Every
+ordinary population deselects it visibly and the pytest summary reports the
+count, node ID and reason. A population whose path arguments cover its file
+must have collected it, so a renamed or deleted owner refuses instead of
+disappearing. The root conftest records that exclusion separately from the
+deferred build-profile nodes. The record holds the exact reason, the count, the
+raw collection count, and each excluded ID with its raw collection index.
+Discovery persists it in its receipt, and the integration partition persists it
+as `partition.optional`. The discovery child first rebases the indices onto
+the collector-visible population, because profile plugins such as the pgvector
+core filter deselect items before the collector records them. Discovery and
+the stdlib report validator (schema v2, receipt v2; ADR 0089 D10) both require
+the registered reason and node IDs, which the stdlib discovery contract pins
+without importing test support. Both contracts reinsert the
+exclusions, rebuild the raw collection exactly, and require that no excluded ID appears in the collected,
+deferred, measured or abrupt populations. A canonical (unscoped) population
+must exclude exactly the one registered owner. It runs only under `--d12-core-image-profile linux/arm64` or
+`linux/amd64` with `--suite int --no-coverage`, `--jobs 1`, the core PostgreSQL
+profile, an explicit unused `--report-dir`, the frozen build-context digest as
+`--d12-core-image-source-sha256`, and exactly that node after `--`. Any other
+shape, an extra selector or pytest option, ambient `REPOMAP_TEST_D12_*`
+environment or direct pytest refuses before Docker work. On the host, the
+runner also requires `--d12-core-image-budget-ledger`. Before host admission
+can consume anything, the ADR 0089 D9 preflight
+(`tools/d12_dependency_preflight.py`) uses read-only Docker queries to classify
+the platform as native, emulated (an existing host builder lists it) or
+non-executable. The fresh inner sandbox daemon, not the host builder, performs
+the build, so a host listing is only a forecast: it proves neither emulation
+nor base availability there. The preflight therefore refuses every platform,
+native included, before anything is reserved, consumed or admitted. A positive
+preflight of execution and base availability in the same daemon that would
+build is unimplemented and unqualified. The refusal also names a builder without
+BuildKit and any platform the frozen dynamic package manifest does not cover;
+a refusal leaves the ledger bytes unchanged. `--d12-core-image-preflight` is a
+non-consuming E1 exploration mode of the same node (ADR 0089). It refuses a
+ledger option and a missing profile first, and never reaches the build-mode
+preflight, admission, a ledger or a build. In the sandbox it records inner
+daemon facts and simulated package resolution, then returns before the build
+with zero build and pull counts. Its admission is separate from build
+admission: build admission stays empty, so the build accessor refuses
+throughout E1. The root conftest's setup gate accepts either ordinary build
+admission or an E1 admitted for exactly the named node, and refuses no
+admission, a mismatched node and both modes. Each mode refuses the other
+before filling its own slot. It establishes no build readiness and never
+lifts the build-mode refusal. It is unit-tested source, not accepted. The
+integration owner takes the exploration first. The parent admitted it for
+exactly one native linux/arm64 E1, which ran on 2026-10-23 and refused at the
+Python-base dynamic closure with zero application builds. That attempt is
+spent, with no automatic retry, and the build-mode preflight still refuses
+every platform (ADR 0089). The ledger is the
+cross-invocation budget: at most two attempts in total and one per platform,
+across phases. The support module's `budget-append` helper reserves one
+numbered attempt with a reservation ID. Host admission consumes that exact
+reservation once and records the consuming invocation's report directory.
+Every read-check-write holds an exclusive lock on the ledger directory, so
+racing invocations serialize, and it replaces the ledger bytes atomically. An
+empty, held, stale (digest-mismatched), reused (consumed), duplicate, foreign,
+misnumbered, unreadable or non-approved ledger refuses before sandbox dispatch
+and leaves the bytes unchanged. A non-null `parent_admission_state` is a hold, even
+at the approved bounds. A consumed entry is never reused, even when a
+later step fails. Build authority is then the canonical runner's in-process
+admission inside the authenticated sandbox. It rechecks the frozen source
+digest and is bound to that run's Docker boundary. A marker or environment
+value never authorizes a build. The run-wide Docker boundary counts the one
+`managed_system_candidate` build on entry, so a run spends at most one build
+and never retries it. Before that build, the owner
+proves that every pinned base is local for the admitted platform, and pulls no
+missing variant. It also starts and inventories the fresh server and checks
+the hash payload, so their defects cannot spend the build. Source and recipe
+are rechecked and staged into an exact context. Image-declared volumes are
+replaced by tmpfs, the server publishes no port, and the candidate image is
+removed exactly. A candidate tag with no ledgered image ID is never removed.
+Its exact image ID is recorded for the operator instead. Report parts stay
+within 1.5 MB each and 5 MB in total, with a reserve kept only for the cleanup
+part. Build log excerpts stay within 200,000 bytes. A failure to write the
+cleanup report never replaces the initiating failure.
+
+The parent-selected exact Python payload correction is design only until its
+written D4 amendment and resulting source pass independent review and parent
+acceptance. The first E1 remains spent. A later exact exploration requires
+its own written parent admission; no automatic retry, app build, ledger
+release or new Go campaign follows from the correction. P3 remains a
+separate written operator decision.
+
+
 Canonical smoke asks the repository-owned test-image manager to ensure a
 dependency-only runtime cache image and consumes the exact lowercase Docker
 Engine image configuration ID it returns. The cache is keyed by recipe, Docker
@@ -496,9 +585,13 @@ RepoMap operates five hosted CI lanes across the three cost tiers:
    the behavioral PR Fast lane. TEST-ISO1 proved that `--suite unit` is unit-only
    direct-host execution without Docker-backed integration resources, so this
    lane runs the complete canonical population exactly once through
-   `python3 tools/run_tests.py --suite unit`. It installs the hash-locked
-   `tools/ci/project_dependencies.lock` closure (Psycopg, which unit collection
-   imports but the base package no longer requires) and then
+   `python3 tools/run_tests.py --suite unit`. It first runs
+   `tools/ci/psycopg_bootstrap.py`, which verifies the runner's compiler and
+   matching libpq headers/runtime, installs `tools/ci/psycopg_build.lock`, and
+   builds psycopg-c from its hash-bound sdist without build isolation (ADR 0089).
+   It then installs the hash-locked `tools/ci/project_dependencies.lock`
+   closure from wheels only (Psycopg, which unit collection imports but the
+   base package no longer requires) and then
    `.[test,scale-tools,static-analysis]`. The `scale-tools` extra supplies `docker`
    and `psutil` for injected clients, parsers, and failure mapping. The pinned
    static-analysis extra supplies the real mypy and Ruff subprocesses exercised by

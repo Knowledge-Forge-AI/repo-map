@@ -58,6 +58,14 @@ def pytest_environment_for(suites: tuple[str, ...], args):
     from runner_pgvector_profile import validate_profile_choice
     validated_profile = validate_profile_choice(pg_profile)
     updates["REPOMAP_TEST_PG_PROFILE"] = validated_profile
+    d12_platform = getattr(args, "d12_core_image_profile", None)
+    if d12_platform is not None:
+        # Population selection only; build authority is the runner's admission.
+        from repomap_test_support import d12_core_image as d12
+
+        updates[d12.ENV_PROFILE] = d12_platform
+        updates[d12.ENV_REPORT_DIR] = str(
+            Path(args.report_dir) / "d12-core-image" / d12_platform.replace("/", "-"))
 
     plugin_module = "repomap_test_support.pgvector_profile"
     existing_plugins = [

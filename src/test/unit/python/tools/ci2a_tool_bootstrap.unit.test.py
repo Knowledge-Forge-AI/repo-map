@@ -115,12 +115,14 @@ def test_ci2a_sealed_python_installs_and_attests_exact_runtime_dependencies() ->
         encoding="utf-8"
     )
 
-    assert "psycopg[binary]==3.2.12" in requirements
-    assert "psycopg==3.2.12" in lock
-    assert "psycopg-binary==3.2.12" in lock
+    assert "psycopg[c]==3.3.6" in requirements
+    assert "psycopg==3.3.6" in lock
+    assert "psycopg-c==3.3.6" in lock and "psycopg-binary" not in lock
     assert "typing-extensions==4.16.0" in lock
     assert 'str(CI_ROOT / "project_dependencies.lock")' in bootstrap
-    assert '"psycopg", "psycopg", "3.2.12"' in bootstrap
+    assert '"--only-binary",\n            ":all:",' in bootstrap and "bootstrap_psycopg(" in bootstrap
+    assert '"psycopg", "psycopg", "3.3.6"' in bootstrap
+    assert '"psycopg_c", "psycopg-c", "3.3.6"' in bootstrap
     assert '"typing_extensions", "typing-extensions", "4.16.0"' in bootstrap
 
 

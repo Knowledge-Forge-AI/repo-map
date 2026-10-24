@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 from types import SimpleNamespace
 import pytest
+from repomap_test_support.resource_test_image_cache import write_private_runtime_evidence
 from repomap_test_support.resource_test_images import (
     DEPLOYMENT_IMAGE_PREFIX,
     EPHEMERAL_IMAGE_PREFIX,
@@ -173,10 +174,35 @@ def test_concurrent_ensure_is_single_flight_and_writes_private_identity_evidence
     manager.ensure_runtime_image()
     evidence_path = next(evidence_root.glob("test-runtime-*.evidence.json"))
     payload = json.loads(evidence_path.read_text(encoding="utf-8"))
+    # A run root's top-level name is a ledger scratch category, bounded to 64 bytes.
+    assert len(evidence_path.name.encode()) <= 64, evidence_path.name
     assert payload["canonical_json"] == manager.runtime_identity().canonical_json
     assert payload["selected_image_id"] == selected[0]
     assert stat.S_IMODE(evidence_path.stat().st_mode) == 0o600
     assert retained == [(evidence_path, "diagnostic_evidence")]
+
+
+def test_runtime_evidence_refuses_name_collisions_and_conflicts_and_keeps_consistent_repeats(tmp_path):
+    retained: list[str] = []
+    run = SimpleNamespace(layout=SimpleNamespace(run_root=tmp_path),
+                          retain_evidence=lambda path, *, reason: retained.append(path.name))
+    first, other = "a" * 16 + "b" * 48, "a" * 16 + "c" * 48
+    built = {
+        "fingerprint": first, "canonical_json": "{}", "outcome": "built", "selected_image_id": "sha256:" + "1" * 64}
+    write_private_runtime_evidence(run, first, built)
+    write_private_runtime_evidence(run, first, built)
+    write_private_runtime_evidence(run, first, {**built, "outcome": "reused"})
+    name = "test-runtime-" + "a" * 16
+    assert retained == [f"{name}.evidence.json"] * 2 + [f"{name}.1.evidence.json"], retained
+    assert json.loads((tmp_path / f"{name}.1.evidence.json").read_text())["outcome"] == "reused", "not merged"
+    for payload, message in (({**built, "fingerprint": other}, "collides or conflicts"),
+                             ({**built, "canonical_json": '{"x":1}'}, "collides or conflicts"),
+                             ({**built, "selected_image_id": "sha256:" + "2" * 64}, "evidence conflicts")):
+        with pytest.raises(ImageLifecycleError, match=message):
+            write_private_runtime_evidence(run, payload["fingerprint"], payload)
+    with pytest.raises(ImageLifecycleError, match="names another fingerprint"):
+        write_private_runtime_evidence(run, first, {**built, "fingerprint": other})
+    assert len(retained) == 3, "a refused observation writes and retains nothing"
 
 
 def test_private_evidence_path_rejects_opaque_materialization_failure(

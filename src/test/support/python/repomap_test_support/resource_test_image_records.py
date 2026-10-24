@@ -153,6 +153,7 @@ def create_runtime_identity(
     psycopg_release_version: str,
     recipe_schema: int,
     runtime_extras: tuple[str, ...],
+    materialization_inputs: Mapping[str, object],
 ) -> RuntimeIdentity:
     architecture = base_provenance.canonical_server_architecture
     repo_digests = tuple(sorted(str(item) for item in base.attrs.get("RepoDigests") or ()))
@@ -162,7 +163,7 @@ def create_runtime_identity(
         "base_reference": base_reference,
         "base_canonical_reference": base_authority.canonical_reference,
         "base_repo_digests": repo_digests,
-        "lock_resolution_input": None,
+        "materialization_inputs": dict(materialization_inputs),
         "project_runtime_dependencies": dependencies,
         "psycopg_release_version": psycopg_release_version,
         "python_base_family": python_base_family,

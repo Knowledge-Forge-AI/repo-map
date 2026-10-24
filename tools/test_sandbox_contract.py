@@ -32,20 +32,20 @@ TEST_POSTGRES_IMAGE = (
     "e013e867e712fec275706a6c51c966f0bb0c93cfa8f51000f85a15f9865a28cb"
 )
 PRODUCTION_POSTGRES_IMAGE = (
-    "postgres:16-bookworm@sha256:"
-    "92620daddcd947f8d5ab5ba66e848702fe443d87fed30c4cea8e389fd78dfc55"
+    "postgres:16.15-trixie@sha256:"
+    "9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
 )
 ALPINE_PROBE_IMAGE = (
     "alpine:latest@sha256:"
     "28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b"
 )
 PYTHON_RELEASE_IMAGE = (
-    "python:3.12-slim-bookworm@sha256:"
-    "d50fb7611f86d04a3b0471b46d7557818d88983fc3136726336b2a4c657aa30b"
+    "python:3.12-slim-trixie@sha256:"
+    "a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704"
 )
 GO_RELEASE_IMAGE = (
-    "golang:1.25-bookworm@sha256:"
-    "ea341baa9bd5ba6784f6d7161ace70544349a6242d54d34a0fbfd2c4d51c9d58"
+    "golang:1.26.10-bookworm@sha256:"
+    "632dff7351799a5a9954a48dc06670ade72ee44e8c351cdc0e5a57af2fea21af"
 )
 
 

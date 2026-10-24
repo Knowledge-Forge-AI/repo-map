@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 from typing import Callable
 
 from test_sandbox_report import write_sandbox_diagnostic
@@ -85,6 +86,38 @@ def inspect_managed_image(
     return 0, image_id
 
 
+# Context files a recipe may COPY, each bound by its own digest build argument.
+# The checked-in .dockerignore admits only the Dockerfile, so builds use a fresh
+# private context staged from the exact bytes that form the recipe identity.
+# Each context name keeps its container basename but is read from its canonical
+# source (ADR 0089): the staged, hashed and executed bytes are that module's.
+SANDBOX_CONTEXT_FILES = {"apt_prerequisites.py": "REPOMAP_SANDBOX_APT_HELPER_SHA256"}
+SANDBOX_CONTEXT_SOURCES = {"apt_prerequisites.py": Path(__file__).resolve().parent / "native_apt_prerequisites.py"}
+SANDBOX_RECIPE_SCHEMA = "repomap-sandbox-recipe-v2"
+
+
+def sandbox_recipe_inputs(dockerfile: Path) -> dict[str, bytes]:
+    """Read the Dockerfile and the canonical source of every context file it names exactly once."""
+    recipe = dockerfile.read_bytes()
+    inputs = {"Dockerfile": recipe}
+    for name in SANDBOX_CONTEXT_FILES:
+        if name.encode() in recipe:
+            path = SANDBOX_CONTEXT_SOURCES[name]
+            if not path.is_file():
+                raise RuntimeError(f"sandbox recipe context file is absent: {name}")
+            inputs[name] = path.read_bytes()
+    return inputs
+
+
+def sandbox_recipe(inputs: dict[str, bytes]) -> str:
+    """A Dockerfile-only recipe keeps its file digest; any context file joins a v2 manifest."""
+    if set(inputs) == {"Dockerfile"}:
+        return hashlib.sha256(inputs["Dockerfile"]).hexdigest()
+    manifest = {"schema": SANDBOX_RECIPE_SCHEMA,
+                "files": {name: hashlib.sha256(data).hexdigest() for name, data in sorted(inputs.items())}}
+    return hashlib.sha256(json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 def ensure_sandbox_image(
     *,
     dockerfile: Path,
@@ -94,25 +127,36 @@ def ensure_sandbox_image(
     prune: Callable[..., None],
     image_tag: str,
 ) -> str:
-    recipe = hashlib.sha256(dockerfile.read_bytes()).hexdigest()
+    inputs = sandbox_recipe_inputs(dockerfile)
+    recipe = sandbox_recipe(inputs)
     status, image_id = inspect(runner, recipe)
     if status == 0 and image_id is not None:
         prune(runner, keep_image_id=image_id)
         return image_id
-    build = captured(
-        runner,
-        [
-            "docker",
-            "build",
-            "--tag",
-            image_tag,
-            "--build-arg",
-            f"REPOMAP_SANDBOX_RECIPE={recipe}",
-            "--pull=false",
-            str(dockerfile.parent),
-        ],
-        timeout=1800,
-    )
+    digests = [
+        f"{SANDBOX_CONTEXT_FILES[name]}={hashlib.sha256(data).hexdigest()}"
+        for name, data in sorted(inputs.items()) if name in SANDBOX_CONTEXT_FILES
+    ]
+    with tempfile.TemporaryDirectory(prefix="repomap-sandbox-context-") as raw:
+        context = Path(raw)
+        for name, data in inputs.items():
+            (context / name).write_bytes(data)
+            (context / name).chmod(0o644)
+        build = captured(
+            runner,
+            [
+                "docker",
+                "build",
+                "--tag",
+                image_tag,
+                "--build-arg",
+                f"REPOMAP_SANDBOX_RECIPE={recipe}",
+                *(item for digest in digests for item in ("--build-arg", digest)),
+                "--pull=false",
+                str(context),
+            ],
+            timeout=1800,
+        )
     _image_diagnostic("build", build, "build_failed" if build.returncode else "built")
     if build.returncode != 0:
         raise RuntimeError(f"managed integration sandbox image build failed: exit={build.returncode}")

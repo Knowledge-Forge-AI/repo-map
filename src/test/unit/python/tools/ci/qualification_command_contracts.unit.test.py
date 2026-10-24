@@ -3,12 +3,20 @@ from pathlib import Path
 
 import pytest
 
+import ci.qualification_command_contracts as cmd_contracts
 from ci.qualification_command_contracts import (
     _extract_commands_from_script,
     _validate_downstream_dependencies, _validate_main_system_gate_ordering,
     _validate_staging_runner_tokens,
 )
+from ci.qualification_native_contracts import (
+    D12_NATIVE_AMD64_NODE_ID,
+    project_public_qualification_workflow,
+)
 from ci.workflow_model import Workflow, parse_yaml
+from src.test.unit.python.tools.ci.d12_hosted_workflow_fixture import (
+    PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT,
+)
 
 STAGING = ("python3 tools/run_tests.py --suite staging --hygiene-profile exhaustive "
            "--declared-complete-gates 1 --operator-attest-exclusive "
@@ -305,3 +313,73 @@ def test_request_construction_rejects_a_literal_shell_code_argument():
     code = _extract_commands_from_script(BIND)[-1][2]
     literal_binding = BIND[:BIND.index('python3 -c')] + "python3 -c " + shlex.quote(code)
     assert _validate_main_system_gate_ordering(_main_workflow(binding=literal_binding))
+
+
+def _projected_public_workflow() -> Workflow:
+    projected_text = project_public_qualification_workflow(
+        PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT
+    )
+    return Workflow(
+        Path("repomap-release-qualification.yml"),
+        parse_yaml(projected_text),
+    )
+
+
+def test_projected_public_workflow_satisfies_native_and_system_command_contracts() -> None:
+    wf = _projected_public_workflow()
+    validate_native_runner = getattr(cmd_contracts, "_validate_d12_native_amd64_runner", None)
+    assert callable(validate_native_runner)
+    assert _validate_downstream_dependencies(wf) == []
+    assert validate_native_runner(wf) == []
+    assert _validate_main_system_gate_ordering(wf) == []
+
+
+def test_d12_native_amd64_downstream_dependency_requires_source_and_export_policy_only() -> None:
+    wf = _projected_public_workflow()
+    mutated_jobs = dict(wf.jobs)
+    mutated_jobs["d12-native-amd64"] = {
+        **dict(mutated_jobs["d12-native-amd64"]),
+        "needs": ["source-and-export-policy", "unit-tests"],
+    }
+    bad_wf = Workflow(wf.path, {**wf.document, "jobs": mutated_jobs})
+    assert any(
+        "d12-native-amd64 needs must be [source-and-export-policy]" in err
+        for err in _validate_downstream_dependencies(bad_wf)
+    )
+
+
+def test_d12_native_amd64_runner_rejects_cross_job_leakage() -> None:
+    validate_native_runner = getattr(cmd_contracts, "_validate_d12_native_amd64_runner", None)
+    assert callable(validate_native_runner)
+    wf = Workflow(
+        Path("repomap-release-qualification.yml"),
+        {
+            "jobs": {
+                "d12-native-amd64": {
+                    "steps": [{"run": "python3 tools/run_tests.py --sandbox --suite int"}]
+                },
+                "other-job": {
+                    "steps": [
+                        {
+                            "run": (
+                                "echo --d12-core-image-profile linux/amd64 "
+                                "--d12-core-image-preflight "
+                                f"-- {D12_NATIVE_AMD64_NODE_ID}"
+                            )
+                        }
+                    ]
+                },
+            }
+        },
+    )
+    assert validate_native_runner(wf) != []
+
+
+def test_d12_native_amd64_runner_catches_shell_parse_errors_and_loop_constructs() -> None:
+    validate_native_runner = getattr(cmd_contracts, "_validate_d12_native_amd64_runner", None)
+    assert callable(validate_native_runner)
+    unclosed_wf = Workflow(
+        Path("repomap-release-qualification.yml"),
+        {"jobs": {"d12-native-amd64": {"steps": [{"run": 'python3 tools/run_tests.py "unclosed'}]}}},
+    )
+    assert any("parse" in err for err in validate_native_runner(unclosed_wf))

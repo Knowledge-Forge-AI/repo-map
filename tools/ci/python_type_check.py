@@ -195,7 +195,7 @@ def _attest_environment() -> EnvironmentAttestation:
         raise TypeCheckToolError("MYPYPATH does not select current-checkout source")
     versions = {
         "mypy": "2.1.0",
-        "psycopg": "3.2.12",
+        "psycopg": "3.3.6",
         "typing-extensions": "4.16.0",
     }
     for distribution, expected in versions.items():

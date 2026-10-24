@@ -9,13 +9,24 @@ from pathlib import Path
 import stat
 from typing import Any
 
-DISCOVERY_RECEIPT_SCHEMA = "repomap-staging-discovery-receipt-v1"
+# v2 requires the optional-owner record. Receipts never outlive their run, so a
+# v1 receipt is refused rather than migrated.
+DISCOVERY_RECEIPT_SCHEMA = "repomap-staging-discovery-receipt-v2"
 REQUEST_SCHEMA = "repomap-staging-discovery-request-v1"
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
 REQUEST_KEYS = {"schema", "invocation_id", "candidate", "suite", "scoped",
                 "pytest_args", "python_paths", "cwd", "declarations", "environment"}
 RECEIPT_KEYS = {"schema", "request_sha256", "exit_code", "collected", "eligible",
-                "deferred", "error", "sha256"}
+                "deferred", "optional", "error", "sha256"}
+OPTIONAL_KEYS = {"excluded", "count", "raw_count", "reason"}
+# ADR 0089 D10: the one registered optional owner, pinned in this stdlib module
+# so the standalone report validator never imports test support. A unit test
+# proves equality with repomap_test_support.d12_core_image.
+OPTIONAL_REASON = "optional D12 core-image owner runs only under --d12-core-image-profile"
+OPTIONAL_NODE_IDS = (
+    "src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py"
+    "::test_d12_core_image_refresh_candidate_round_trip",
+)
 
 
 class PopulationDiscoveryError(RuntimeError):
@@ -113,7 +124,45 @@ def validate_discovery_receipt(
             raise PopulationDiscoveryError("invalid or duplicate discovery population")
     if require_success and (value["exit_code"] != 0 or value["error"] is not None):
         raise PopulationDiscoveryError("discovery collection did not complete successfully")
+    if require_success:
+        validate_optional_population(value["optional"], value["collected"])
     return value
+
+
+def validate_optional_population(record: Any, collected: list[str], *, required_count: int | None = None,
+                                 error: type[Exception] = PopulationDiscoveryError) -> None:
+    """Reconcile the optional-owner record against the collection it was removed from.
+
+    Each exclusion names its exact raw collection index, so reinserting them rebuilds the raw
+    collected IDs exactly. Exclusions never appear in the collection, so they stay disjoint from
+    deferred build-profile debt; a canonical population passes ``required_count``.
+    """
+    excluded = record.get("excluded") if isinstance(record, dict) else None
+    if (not isinstance(record, dict) or set(record) != OPTIONAL_KEYS or not isinstance(excluded, list)
+            or type(record["count"]) is not int or type(record["raw_count"]) is not int
+            or not isinstance(record["reason"], str) or not 0 < len(record["reason"]) <= 256):
+        raise error("invalid optional-owner population record")
+    if any(not isinstance(entry, dict) or set(entry) != {"nodeid", "raw_index"} or type(entry["nodeid"]) is not str
+           or not entry["nodeid"] or type(entry["raw_index"]) is not int for entry in excluded):
+        raise error("invalid optional-owner exclusion entry")
+    raw, indices, ids = list(collected), [entry["raw_index"] for entry in excluded], [e["nodeid"] for e in excluded]
+    for entry in excluded:
+        raw.insert(entry["raw_index"], entry["nodeid"])
+    if (indices != sorted(set(indices)) or indices and indices[0] < 0 or len(set(ids)) != len(ids)
+            or set(ids) & set(collected) or any(raw[entry["raw_index"]:][:1] != [entry["nodeid"]] for entry in excluded)
+            or (record["count"], record["raw_count"]) != (len(excluded), len(raw))
+            or required_count is not None and len(excluded) != required_count):
+        raise error("optional-owner exclusion does not reconcile raw collection, count and population")
+
+
+def require_registered_optional(record: Any, *, scoped: bool,
+                                error: type[Exception] = PopulationDiscoveryError) -> None:
+    """Exclusions carry the registered reason and IDs; a canonical population excludes exactly the owner."""
+    excluded = [entry["nodeid"] for entry in record["excluded"]]
+    if record["reason"] != OPTIONAL_REASON or not set(excluded) <= set(OPTIONAL_NODE_IDS):
+        raise error("optional-owner exclusion has an unregistered reason or node ID")
+    if not scoped and excluded != list(OPTIONAL_NODE_IDS):
+        raise error("canonical population does not exclude exactly the optional owner")
 
 
 def discovery_failure_detail(path: Path, *, request: dict[str, Any], exit_code: int) -> str:

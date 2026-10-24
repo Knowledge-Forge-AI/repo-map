@@ -2506,6 +2506,15 @@
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 payload contract; zero-new-debt Python, no relocation.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime.python_payload",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
       "match": "exact",
       "module_prefix": "repomap_kg.runtime.release",

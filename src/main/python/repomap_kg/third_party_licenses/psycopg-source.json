@@ -1,0 +1,69 @@
+{
+  "build_only_tools": {
+    "distributions": {
+      "packaging": "26.3 (Apache-2.0 OR BSD-2-Clause)",
+      "setuptools": "83.0.0 (MIT)",
+      "wheel": "0.48.0 (MIT)"
+    },
+    "lock": "tools/ci/psycopg_build.lock",
+    "shipped": false
+  },
+  "components": [
+    {
+      "artifact_sha256": "a1db9f7148b06a28606767efaca51fa6f9398c5c0a3810519be69d7000bdb631",
+      "form": "pure Python wheel psycopg-3.3.6-py3-none-any.whl",
+      "license_expression": "LGPL-3.0-only",
+      "license_file": "psycopg-LICENSE.txt",
+      "license_url": "https://github.com/psycopg/psycopg/blob/a67654d1e7afbf9b3a619557838f62de1c790e7c/LICENSE.txt",
+      "name": "psycopg",
+      "source_archive_sha256": "c081f2250df751a943036e42db6df4571c66cd0aabe8291a7a506512b12007d2",
+      "source_form": "the wheel's Python modules are the source; installed unmodified under site-packages/psycopg",
+      "version": "3.3.6"
+    },
+    {
+      "additional_notice_file": "psycopg-c-numutils-PostgreSQL.txt",
+      "build_instructions": [
+        "Install the target's C compiler and the libpq5/libpq-dev pair of one version (pg_config included).",
+        "python -m pip install --require-hashes --no-deps --only-binary :all: --requirement tools/ci/psycopg_build.lock",
+        "python -m pip install --no-index --require-hashes --no-deps --no-build-isolation --check-build-dependencies psycopg-c @ file://<path>/psycopg_c-3.3.6.tar.gz --hash=sha256:29c568426ad61c1b702c7d73505c43ca2c9fc5d97a8431d8d9049e731e319ff8"
+      ],
+      "form": "C extension compiled from the source archive below and dynamically linked to the system libpq.so.5",
+      "generated_c": "attributed to the hash-bound archive; not regenerated (no Cython)",
+      "image_source_copy": "/usr/share/doc/repomap-kg/psycopg/source/psycopg_c-3.3.6.tar.gz",
+      "license_expression": "LGPL-3.0-only",
+      "license_file": "psycopg-LICENSE.txt",
+      "license_url": "https://github.com/psycopg/psycopg/blob/a67654d1e7afbf9b3a619557838f62de1c790e7c/psycopg_c/LICENSE.txt",
+      "name": "psycopg-c",
+      "replacement": "psycopg_c/_psycopg and psycopg_c/pq are separate Python extension modules loaded at run time from site-packages/psycopg_c; they link libpq.so.5 dynamically (DT_NEEDED) and may be rebuilt from the source above and reinstalled in place. RepoMap imports only the psycopg package interface and does not modify Psycopg.",
+      "source_archive": "https://files.pythonhosted.org/packages/58/53/bf15aa48cd6f0ad0039b9f48681d2e76e8564d413af47b13fab50dd03555/psycopg_c-3.3.6.tar.gz",
+      "source_archive_sha256": "29c568426ad61c1b702c7d73505c43ca2c9fc5d97a8431d8d9049e731e319ff8",
+      "source_archive_size": 698245,
+      "tag_commit": "a67654d1e7afbf9b3a619557838f62de1c790e7c",
+      "upstream_repository": "https://github.com/psycopg/psycopg",
+      "version": "3.3.6"
+    }
+  ],
+  "decision": "docs/adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md",
+  "license_texts": {
+    "GPL-3.0.txt": {
+      "primary_source": "/usr/share/common-licenses/GPL-3, dpkg-owned by base-files 12.4+deb12u15 (Debian 12), dpkg --verify clean, read offline from golang:1.25-bookworm@sha256:ea341baa9bd5ba6784f6d7161ace70544349a6242d54d34a0fbfd2c4d51c9d58 (arm64)",
+      "reason": "LGPL-3.0 incorporates GPL-3.0; the approved plaintext fetch https://www.gnu.org/licenses/gpl-3.0.txt was refused by the producing environment's network policy on 2026-10-22 (twice), so the Debian copy is retained",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "text": "GNU General Public License version 3"
+    },
+    "psycopg-LICENSE.txt": {
+      "also_equal_to": "/usr/share/common-licenses/LGPL-3 of base-files 12.4+deb12u15 in the pinned Go release base",
+      "primary_source": "psycopg_c-3.3.6/LICENSE.txt in the archive above; byte-equal to psycopg_c/LICENSE.txt at the tag commit",
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+      "text": "GNU Lesser General Public License version 3"
+    },
+    "psycopg-c-numutils-PostgreSQL.txt": {
+      "primary_source": "verbatim notice from psycopg_c/types/numutils.c in the archive above (byte-equal at the tag commit) plus the PostgreSQL COPYRIGHT file at https://github.com/postgres/postgres/blob/REL_13_0/COPYRIGHT",
+      "sha256": "f52f8fa692e00e034dc62596e9180f1359260d82f8b3aa53dd6009c530885ba2",
+      "text": "PostgreSQL License (portions Copyright 1996-2020 PostgreSQL Global Development Group, 1994 Regents of the University of California)"
+    }
+  },
+  "not_claimed": "No legal conclusion. This record supplies technical conveyance facts: license texts, the exact source archive retained in the image, build instructions and the replaceable dynamic modules. Whether they satisfy LGPL-3.0 section 4 and GPL-3.0 section 6 for a given conveyance is not decided here.",
+  "schema": "repomap-third-party-source-v2",
+  "system_libpq": "Debian libpq5 package of the PostgreSQL release base (PostgreSQL License); its exact version, file hash and copyright file are frozen by the ADR 0089 platform preflight, not by this record"
+}

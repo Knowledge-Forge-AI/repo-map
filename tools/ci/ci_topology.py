@@ -72,9 +72,14 @@ from ci.ci_topology_pr import (
 )
 from ci.workflow_model import Workflow, WorkflowParseError, load_workflows
 from ci.qualification_command_contracts import (
+    _validate_d12_native_amd64_runner as _validate_d12_native_amd64_runner,
     _validate_staging_runner_tokens as _validate_staging_runner_tokens,
     _validate_main_system_gate_ordering as _validate_main_system_gate_ordering,
     _validate_downstream_dependencies as _validate_downstream_dependencies,
+)
+from ci.qualification_native_contracts import (
+    validate_d12_native_amd64_job as _validate_d12_native_amd64_job,
+    validate_d12_system_hold_step as _validate_d12_system_hold_step,
 )
 
 
@@ -237,14 +242,20 @@ def check_topology(repo_root: Path) -> tuple[str, ...]:
         return tuple(violations)
 
     release_wf = by_name[contracts.release_workflow]
+    concurrency = release_wf.document.get("concurrency")
+    if not isinstance(concurrency, dict) or concurrency.get("cancel-in-progress") is not True:
+        violations.append(f"{contracts.release_workflow}: concurrency must set cancel-in-progress: true")
     violations.extend(_check_global(workflows))
     violations.extend(_pr_check_source_and_export_policy(release_wf, contracts))
     violations.extend(_pr_check_pre_review_static(release_wf, contracts))
     violations.extend(_pr_check_unit_tests(release_wf, contracts))
+    violations.extend(_validate_d12_native_amd64_job(release_wf))
+    violations.extend(_validate_d12_native_amd64_runner(release_wf))
     violations.extend(_validate_downstream_dependencies(release_wf))
     violations.extend(_validate_staging_runner_tokens(release_wf, "staging-integration-gate"))
     violations.extend(_check_staging_gate(release_wf))
     violations.extend(_validate_main_system_gate_ordering(release_wf))
+    violations.extend(_validate_d12_system_hold_step(release_wf))
     violations.extend(_check_main_system_gate(release_wf))
     violations.extend(_pr_check_codeql(release_wf, contracts))
     violations.extend(_pr_check_sbom_security(release_wf, contracts))

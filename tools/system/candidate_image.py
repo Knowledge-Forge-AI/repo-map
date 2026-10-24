@@ -2,31 +2,27 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from dataclasses import dataclass
 import json
 import os
+from pathlib import Path
+import platform
 import re
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
 from typing import Any
 
-from dataclasses import dataclass
 from repomap_kg.runtime.commands import render_server_dockerfile
-from repomap_kg.runtime.release import GO_RELEASE_IMAGE
+from repomap_kg.runtime.release import (
+    DYNAMIC_PACKAGE_MANIFEST, GO_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION,
+    PSYCOPG_LIBPQ_VERSION, PlatformPackages, validate_package_manifest,
+)
 from tools.system.config import (
-    IMAGE_CLASS_SYSTEM_CANDIDATE,
-    LABEL_CANDIDATE_TREE,
-    LABEL_IMAGE_CLASS,
-    LABEL_MANAGED,
-    LABEL_RELEASE_GO,
-    LABEL_RELEASE_LIBPQ,
-    LABEL_RELEASE_POSTGRES,
-    LABEL_RELEASE_PSYCOPG,
-    LABEL_RELEASE_PYTHON,
-    LABEL_RUN_ID,
-    SystemTestConfig,
-    SystemTestError,
+    IMAGE_CLASS_SYSTEM_CANDIDATE, LABEL_CANDIDATE_TREE, LABEL_IMAGE_CLASS, LABEL_MANAGED,
+    LABEL_RELEASE_GO, LABEL_RELEASE_LIBPQ, LABEL_RELEASE_POSTGRES, LABEL_RELEASE_PSYCOPG,
+    LABEL_RELEASE_PYTHON, LABEL_RUN_ID, SystemTestConfig, SystemTestError,
 )
 
 
@@ -90,6 +86,34 @@ def get_current_tree_sha(repo_root: Path) -> str:
         return result.stdout.strip()
 
 
+def resolve_target_arch(machine: str | None = None) -> str:
+    raw = (machine if machine is not None else platform.machine()).lower()
+    return "arm64" if raw in ("arm64", "aarch64") else "amd64"
+
+
+def require_release_prerequisites_resolved(
+    target_arch: str = "amd64", *, libpq_version: object = ..., package_manifest: object = ...,
+) -> tuple[int, PlatformPackages]:
+    ver: object = PSYCOPG_LIBPQ_VERSION if libpq_version is ... else libpq_version
+    manifest: object = DYNAMIC_PACKAGE_MANIFEST if package_manifest is ... else package_manifest
+    if not isinstance(ver, int) or isinstance(ver, bool) or ver < PRODUCT_MINIMUM_LIBPQ_VERSION:
+        raise SystemTestError(
+            f"System candidate build refused before Docker build: PSYCOPG_LIBPQ_VERSION={ver!r} is unresolved."
+        )
+    if not isinstance(manifest, Mapping) or target_arch not in manifest:
+        raise SystemTestError(
+            f"System candidate build refused before Docker build: DYNAMIC_PACKAGE_MANIFEST lacks {target_arch!r}."
+        )
+    entry = manifest[target_arch]
+    if not isinstance(entry, PlatformPackages):
+        raise SystemTestError("System candidate build refused before Docker build: invalid manifest entry.")
+    try:
+        validate_package_manifest({target_arch: entry}, ver)
+    except ValueError as error:
+        raise SystemTestError(f"System candidate build refused before Docker build: {error}") from error
+    return ver, entry
+
+
 def build_and_verify_candidate_image(
     repo_root: Path,
     config: SystemTestConfig,
@@ -108,33 +132,21 @@ def build_and_verify_candidate_image(
             f"candidate tree SHA mismatch: expected {config.candidate_tree_sha}, got {current_tree}"
         )
 
+    target_arch = resolve_target_arch()
+    require_release_prerequisites_resolved(target_arch)
     labels = {
         LABEL_IMAGE_CLASS: IMAGE_CLASS_SYSTEM_CANDIDATE,
         LABEL_MANAGED: "true",
         LABEL_CANDIDATE_TREE: config.candidate_tree_sha,
         LABEL_RUN_ID: config.run_id,
     }
-
     dockerfile_content = render_server_dockerfile()
-
-    import platform
-
-    machine = platform.machine().lower()
-    target_arch = "arm64" if machine in ("arm64", "aarch64") else "amd64"
-    buildargs = {
-        "TARGETOS": "linux",
-        "TARGETARCH": target_arch,
-    }
-
+    buildargs = {"TARGETOS": "linux", "TARGETARCH": target_arch}
     build_request = f"candidate-image-build:{config.candidate_tag}"
     build_timeout = (
-        deadline.clamp_timeout(900.0)
-        if deadline is not None and hasattr(deadline, "clamp_timeout")
-        else 900.0
+        deadline.clamp_timeout(900.0) if deadline is not None and hasattr(deadline, "clamp_timeout") else 900.0
     )
-    with tempfile.NamedTemporaryFile(
-        mode="w", encoding="utf-8", suffix=".Dockerfile", delete=False
-    ) as dockerfile:
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".Dockerfile", delete=False) as dockerfile:
         dockerfile.write(dockerfile_content)
         dockerfile_path = Path(dockerfile.name)
     build_command = [
@@ -149,31 +161,18 @@ def build_and_verify_candidate_image(
     build_context = None
     operation_ticket = None
     try:
-        if boundary is not None and hasattr(
-            boundary, "managed_system_candidate_build"
-        ):
-            build_context = boundary.managed_system_candidate_build(
-                request=build_request
-            )
+        if boundary is not None and hasattr(boundary, "managed_system_candidate_build"):
+            build_context = boundary.managed_system_candidate_build(request=build_request)
             operation_ticket = build_context.__enter__()
         built = subprocess.run(
-            build_command,
-            capture_output=True,
-            text=True,
-            timeout=build_timeout,
-            check=False,
+            build_command, capture_output=True, text=True, timeout=build_timeout, check=False
         )
         if built.returncode != 0:
             raise SystemTestError(
-                "candidate image build failed: "
-                + (built.stderr.strip() or built.stdout.strip())[-2000:]
+                "candidate image build failed: " + (built.stderr.strip() or built.stdout.strip())[-2000:]
             )
         image = client.images.get(config.candidate_tag)
-        if (
-            boundary is not None
-            and operation_ticket is not None
-            and hasattr(boundary, "complete_operation")
-        ):
+        if boundary is not None and operation_ticket is not None and hasattr(boundary, "complete_operation"):
             boundary.complete_operation(operation_ticket, image_ids=(image.id,))
     finally:
         if build_context is not None:
@@ -198,7 +197,9 @@ def build_and_verify_candidate_image(
         (LABEL_RUN_ID, config.run_id),
     ):
         if image_labels.get(label_name) != expected_val:
-            raise SystemTestError(f"candidate image missing or invalid label {label_name}: {image_labels.get(label_name)!r}")
+            raise SystemTestError(
+                f"candidate image missing or invalid label {label_name}: {image_labels.get(label_name)!r}"
+            )
 
     for rel_label in (
         LABEL_RELEASE_POSTGRES,
@@ -224,7 +225,8 @@ def build_and_verify_candidate_image(
         "assert discover_control_migrations(), 'missing control migrations'; "
         "helper_cmd = resolve_go_helper_command(); "
         "assert helper_cmd and os.access(helper_cmd[0], os.X_OK), 'go helper missing or not executable'; "
-        "proto_res = subprocess.run([helper_cmd[0], '--protocol-version'], capture_output=True, text=True, check=True); "
+        "proto_res = subprocess.run("
+        "[helper_cmd[0], '--protocol-version'], capture_output=True, text=True, check=True); "
         "helper_proto = proto_res.stdout.strip(); "
         "psql_res = subprocess.run(['psql', '--version'], capture_output=True, text=True, check=True); "
         "psql_out = psql_res.stdout.strip(); "
@@ -248,7 +250,11 @@ def build_and_verify_candidate_image(
     release_versions: dict[str, str] = {}
     try:
         container.start()
-        self_test_timeout = int(deadline.clamp_timeout(30.0)) if deadline is not None and hasattr(deadline, "clamp_timeout") else 30
+        self_test_timeout = (
+            int(deadline.clamp_timeout(30.0))
+            if deadline is not None and hasattr(deadline, "clamp_timeout")
+            else 30
+        )
         res = container.wait(timeout=self_test_timeout)
         status_code = res.get("StatusCode", 1) if isinstance(res, dict) else getattr(res, "status_code", 1)
         logs = container.logs().decode("utf-8", errors="replace").strip()
@@ -278,7 +284,8 @@ def build_and_verify_candidate_image(
         expected_psycopg = image_labels.get(LABEL_RELEASE_PSYCOPG, "")
         if not observed_psycopg or not expected_psycopg or observed_psycopg != expected_psycopg:
             raise SystemTestError(
-                f"candidate self-test psycopg version mismatch: observed {observed_psycopg!r}, expected {expected_psycopg!r}"
+                f"candidate self-test psycopg version mismatch: "
+                f"observed {observed_psycopg!r}, expected {expected_psycopg!r}"
             )
 
         observed_libpq = parsed.get("libpq")
@@ -297,7 +304,8 @@ def build_and_verify_candidate_image(
         observed_pg = pg_match.group(1) if pg_match else ""
         if not observed_pg or observed_pg != expected_pg:
             raise SystemTestError(
-                f"candidate self-test postgresql version mismatch: observed {observed_pg_raw!r}, expected {expected_pg!r}"
+                f"candidate self-test postgresql version mismatch: "
+                f"observed {observed_pg_raw!r}, expected {expected_pg!r}"
             )
 
         observed_go_helper = parsed.get("go_helper")
@@ -306,7 +314,9 @@ def build_and_verify_candidate_image(
 
         observed_go_helper_protocol = parsed.get("go_helper_protocol")
         if not observed_go_helper_protocol or not str(observed_go_helper_protocol).isdigit():
-            raise SystemTestError(f"candidate self-test go helper protocol version is invalid: {observed_go_helper_protocol!r}")
+            raise SystemTestError(
+                f"candidate self-test go helper protocol version is invalid: {observed_go_helper_protocol!r}"
+            )
 
         with tempfile.TemporaryDirectory(prefix="repomap-go-helper-") as helper_dir:
             helper_copy = Path(helper_dir) / "helper"
@@ -330,17 +340,9 @@ def build_and_verify_candidate_image(
             try:
                 go_container.start()
                 go_wait = go_container.wait(
-                    timeout=(
-                        int(deadline.clamp_timeout(30.0))
-                        if deadline is not None
-                        else 30
-                    )
+                    timeout=(int(deadline.clamp_timeout(30.0)) if deadline is not None else 30)
                 )
-                go_status = (
-                    go_wait.get("StatusCode", 1)
-                    if isinstance(go_wait, dict)
-                    else 1
-                )
+                go_status = go_wait.get("StatusCode", 1) if isinstance(go_wait, dict) else 1
                 go_probe = go_container.logs().decode("utf-8", errors="strict")
                 if go_status != 0:
                     raise SystemTestError("Go build-info probe failed")

@@ -8,15 +8,30 @@ import subprocess
 
 import pytest
 
+from ci.retained_python_comparison import selection_delta
 from ci.retained_python_contract import LineagePolicyError, RatchetContractError
 from ci.retained_python_projection_evidence import EVIDENCE_PATH, PROOFS_PATH
 from ci.retained_python_projection_proofs import load_projection_proofs
-from ci.retained_python_ratchet_lineage import audit_candidate_lineage, audit_transition
-from ci.retained_python_records import render_document
-from repomap_test_support.retained_projection_fixture import (
-    add_chain_alternative, projection_fixture,
+from ci.retained_python_ratchet_lineage import (
+    audit_candidate_lineage,
+    audit_transition,
+    document_sha256,
 )
-from repomap_test_support.retained_ratchet_fixture import BASELINE_PATH, SCOPE_PATH, commit_all, git
+from ci.retained_python_records import BaselineDocument, render_document
+from ci.retained_python_selection import selection_digest
+from repomap_test_support.retained_projection_fixture import (
+    ProjectionFixture,
+    add_chain_alternative,
+    projection_fixture,
+)
+from repomap_test_support.retained_ratchet_fixture import (
+    BASELINE_PATH,
+    SCOPE_PATH,
+    commit_all,
+    git,
+    selection_item,
+    write_json,
+)
 
 
 def test_exact_projection_replays_original_hops_and_fails_without_proof(tmp_path: Path) -> None:
@@ -229,15 +244,81 @@ FORWARD_ADMISSIONS = (
     "REPOMAP-PRODUCT6-NAVIGATION27-PUBLIC-PROJECTION-FIX1",
     "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1",
     "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1",
+    "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED8",
 )
+
+
+def _prepare_direct_v2_admission(
+    fixture: ProjectionFixture,
+) -> tuple[BaselineDocument, dict[str, object], str]:
+    commit_all(fixture.repo, "Publish projection proof")
+    before = fixture.states[-1]
+    after = copy.deepcopy(before)
+    after["ownership"]["sha256"] = "c" * 64
+    after["selection"]["modules"].append(
+        selection_item("repomap_kg.projected2", "src/main/python/repomap_kg/projected2.py")
+    )
+    status_rel = "tools/ci/direct-qualification.md"
+    (fixture.repo / status_rel).write_text(
+        "# SYNTHETIC-DIRECT1 Exit: direct v2 qualification\n", encoding="utf-8"
+    )
+    record: dict[str, object] = {
+        "old_ownership_manifest_sha256": before["ownership"]["sha256"],
+        "new_ownership_manifest_sha256": after["ownership"]["sha256"],
+        "old_selected_set_sha256": selection_digest(before),
+        "new_selected_set_sha256": selection_digest(after),
+        "changes": selection_delta(before, after)[0],
+        "phase": "SYNTHETIC-DIRECT1",
+        "status_path": status_rel,
+        "reason": "Admit clean direct module after projection proof.",
+        "source_commit": fixture.edge,
+        "source_manifest_sha256": before["ownership"]["sha256"],
+    }
+    fixture.registry["records"].append(record)
+    write_json(fixture.repo / BASELINE_PATH, after)
+    write_json(fixture.repo / SCOPE_PATH, fixture.registry)
+    return after, record, document_sha256(fixture.states[0])
+
+
+def test_direct_v2_admission_audits_before_and_after_commit(tmp_path: Path) -> None:
+    fixture = projection_fixture(tmp_path)
+    after, _record, genesis = _prepare_direct_v2_admission(fixture)
+    uncommitted = audit_candidate_lineage(
+        fixture.repo, BASELINE_PATH, after, SCOPE_PATH, trusted_genesis_sha256=genesis
+    )
+    assert uncommitted.candidate_transition is True
+    assert uncommitted.committed_transitions == 1
+    assert uncommitted.scope_transitions == 3
+    commit_all(fixture.repo, "Commit clean v2 direct admission")
+    committed = audit_candidate_lineage(
+        fixture.repo, BASELINE_PATH, after, SCOPE_PATH, trusted_genesis_sha256=genesis
+    )
+    assert committed.candidate_transition is False
+    assert committed.committed_transitions == 2
+    assert committed.scope_transitions == uncommitted.scope_transitions == 3
+
+
+@pytest.mark.parametrize("missing_field", ["source_commit", "source_manifest_sha256"])
+def test_direct_v2_admission_requires_source_commit_and_manifest(
+    tmp_path: Path, missing_field: str
+) -> None:
+    fixture = projection_fixture(tmp_path)
+    after, record, genesis = _prepare_direct_v2_admission(fixture)
+    record.pop(missing_field)
+    write_json(fixture.repo / SCOPE_PATH, fixture.registry)
+    with pytest.raises(LineagePolicyError, match="scope transition record is invalid"):
+        audit_candidate_lineage(
+            fixture.repo, BASELINE_PATH, after, SCOPE_PATH, trusted_genesis_sha256=genesis
+        )
 
 
 def test_inherited_public_edge_uses_the_exact_recovered_proof(pytestconfig: pytest.Config) -> None:
     import json
     repo = pytestconfig.rootpath
     baseline = json.loads((repo / BASELINE_PATH).read_text())
+    head_baseline = json.loads(git(repo, "show", f"HEAD:{BASELINE_PATH}").stdout)
     result = audit_candidate_lineage(repo, BASELINE_PATH, baseline)
-    assert not result.candidate_transition
+    assert result.candidate_transition is (head_baseline != baseline)
     proof = json.loads((repo / PROOFS_PATH).read_text())["proofs"][0]
     assert proof["commit"] == "1adfc7a15e830c8709f76f4e61abb9e24a8c0b17"
     assert proof["parent"] == "d1671f8088531c4be11de65908f762c61f986844"

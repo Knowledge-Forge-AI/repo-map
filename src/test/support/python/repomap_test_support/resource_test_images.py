@@ -14,6 +14,9 @@ from repomap_test_support.resource_test_image_base import (
 from repomap_test_support.resource_test_image_cache import (
     CacheGcResult, TestImageCacheManager, dispose_failed_proof_runtime_cache,
 )
+from repomap_test_support.resource_test_image_commands import (
+    MaterializationSources, materialization_inputs, read_materialization_sources,
+)
 from repomap_test_support.resource_test_image_identity import canonical_runtime_fingerprint
 from repomap_test_support.resource_test_image_materialization import RuntimeImageMaterializer
 from repomap_test_support.resource_test_image_records import (
@@ -56,6 +59,7 @@ class TestImageManager(TestImageCacheManager):
         self._probe = probe or self._probe_runtime_image
         self._ephemeral_ids: list[str] = []
         self._last_identity: RuntimeIdentity | None = None
+        self._last_sources: MaterializationSources | None = None
         self._base_provenance: BaseImageProvenance | None = None
         self._base_pulled = False
         self._last_materialization: Any | None = None
@@ -79,6 +83,7 @@ class TestImageManager(TestImageCacheManager):
     def runtime_identity(self, base: Any | None = None) -> RuntimeIdentity:
         dependencies = self._runtime_dependencies()
         base = self._local_base_image() if base is None else base
+        self._last_sources = read_materialization_sources()
         self._last_identity = create_runtime_identity(
             dependencies=dependencies,
             base=base,
@@ -90,6 +95,7 @@ class TestImageManager(TestImageCacheManager):
             psycopg_release_version=self.psycopg_release_version,
             recipe_schema=self.recipe_schema,
             runtime_extras=self.runtime_extras,
+            materialization_inputs=materialization_inputs(sources=self._last_sources),
         )
         return self._last_identity
 
@@ -115,7 +121,7 @@ class TestImageManager(TestImageCacheManager):
             base = self._ensure_configured_base_locked()
             identity = self.runtime_identity(base)
             evidence: dict[str, Any] = {
-                "schema": "repomap-test-runtime-identity-v1",
+                "schema": "repomap-test-runtime-identity-v2",
                 "fingerprint": identity.fingerprint,
                 "canonical_json": identity.canonical_json,
             }
@@ -289,6 +295,12 @@ class TestImageManager(TestImageCacheManager):
             *identity.fields["project_runtime_dependencies"],
             *identity.fields["runtime_extras"],
         )
+        # The executed helper and locks must be the snapshot this fingerprint digested.
+        sources = self._last_sources
+        if sources is None or materialization_inputs(sources=sources) != identity.fields[
+            "materialization_inputs"
+        ]:
+            raise TestImageError("materialization sources differ from the fingerprinted identity")
         with ExitStack() as stack:
             ticket = stack.enter_context(
                 self.boundary.managed_test_runtime_build(request=tag)
@@ -302,6 +314,7 @@ class TestImageManager(TestImageCacheManager):
                     labels=self._runtime_labels(identity.fingerprint),
                     dependencies=dependencies,
                     psycopg_release_version=self.psycopg_release_version,
+                    sources=sources,
                 )
             except TestImageError as error:
                 if ticket is not None:
@@ -346,7 +359,7 @@ def ensure_canonical_runtime_image(
         client=client,
         boundary=boundary,
         base_reference=PYTHON_RELEASE_IMAGE,
-        python_base_family="python:3.12-slim-bookworm",
+        python_base_family="python:3.12-slim-trixie",
         python_version=PYTHON_RELEASE_VERSION,
         psycopg_release_version=PSYCOPG_RELEASE_VERSION,
     ).ensure_runtime_image()

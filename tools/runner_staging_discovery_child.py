@@ -37,10 +37,41 @@ def main(argv: list[str] | None = None) -> int:
     import pytest
     from runner_integration_population import ItemCollectorPlugin
 
+    from repomap_test_support.d12_core_image import POPULATION_ATTR
+
+    class OptionalPopulation:
+        """Rebase the conftest's optional-owner record onto the collector-visible population.
+
+        The root conftest records indices over pytest's whole collection, but profile plugins
+        (pgvector) deselect visibly before the collector records ``collected``. The persisted
+        record therefore indexes the collector's population plus the optional exclusions.
+        """
+        record = None
+        whole: list[str] = []
+
+        @pytest.hookimpl(hookwrapper=True)
+        def pytest_collection_modifyitems(self, session, config, items):
+            self.whole = [item.nodeid for item in items]
+            yield
+
+        def pytest_collection_finish(self, session) -> None:
+            record = getattr(session.config, POPULATION_ATTR, None)
+            if record is None:
+                return
+            excluded = {entry["nodeid"] for entry in record["excluded"]}
+            visible = excluded | set(collector.collected_nodeids)
+            raw = [nodeid for nodeid in self.whole if nodeid in visible]
+            if [nodeid for nodeid in raw if nodeid not in excluded] != list(collector.collected_nodeids):
+                raise RuntimeError("optional-owner exclusion does not rebase onto the collected population")
+            self.record = {**record, "raw_count": len(raw), "excluded": [
+                {"nodeid": nodeid, "raw_index": index} for index, nodeid in enumerate(raw) if nodeid in excluded]}
+
     collector = ItemCollectorPlugin(suite=request["suite"], full_population=not request["scoped"])
+    optional = OptionalPopulation()
     error_name = None
     try:
-        code = int(pytest.main(["--collect-only", "-q", *request["pytest_args"]], plugins=[collector]))
+        code = int(pytest.main(["--collect-only", "-q", *request["pytest_args"]],
+                               plugins=[collector, optional]))
     except BaseException as error:
         code, error_name = 2, type(error).__name__
     receipt = {
@@ -48,6 +79,7 @@ def main(argv: list[str] | None = None) -> int:
         "exit_code": code, "error": error_name,
         "collected": list(collector.collected_nodeids),
         "eligible": list(collector.eligible_nodeids), "deferred": list(collector.deferred_nodeids),
+        "optional": optional.record,
     }
     receipt["sha256"] = digest(receipt)
     write_document(receipt_path, receipt)

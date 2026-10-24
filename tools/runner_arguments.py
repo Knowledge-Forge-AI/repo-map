@@ -145,6 +145,18 @@ def add_runner_arguments(
             "(retained for compatibility; sandboxing is automatic)"
         ),
     )
+    parser.add_argument(
+        "--d12-core-image-profile",
+        choices=("linux/arm64", "linux/amd64"),
+        default=None,
+        help="ADR 0087 D12-A one-owner candidate build profile (exact scoped int node only)",
+    )
+    parser.add_argument("--d12-core-image-source-sha256", default=None,
+                        help="frozen D12 build-context digest the checkout must still match")
+    parser.add_argument("--d12-core-image-budget-ledger", default=None,
+                        help="D12 write-ahead build ledger; host admission consumes its matching entry")
+    parser.add_argument("--d12-core-image-preflight", action="store_true",
+                        help="non-consuming E1 exploration mode of the D12 profile; never builds or opens a ledger")
 
 
 def split_forwarded_args(argv: list[str]) -> tuple[list[str], list[str]]:
@@ -182,6 +194,8 @@ def validate_runner_options(
 ) -> None:
     if parallel_jobs_enabled_fn is None:
         parallel_jobs_enabled_fn = parallel_jobs_enabled
+    from repomap_test_support.d12_core_image import validate_options as validate_d12_options
+    validate_d12_options(args)
     if suites == ("smoke",):
         if args.report:
             raise RuntimeError("--report is only supported for pytest-backed suites")
@@ -231,6 +245,12 @@ def validate_sandbox_admission_options(
         validate_runner_options_fn(args, ("system",))
 
 
+def d12_platform_preflight(platform: str) -> None:
+    """Read-only ADR 0089 D9 host preflight; refuses every platform until inner readiness is proved."""
+    from d12_dependency_preflight import preflight
+    preflight(platform)
+
+
 def validate_pgvector_forwarded_selections(
     args,
     forwarded_pytest_args: Sequence[str],
@@ -239,7 +259,25 @@ def validate_pgvector_forwarded_selections(
     test_roots: Mapping[str, Path] | None = None,
     repo_root: Path | None = None,
 ) -> None:
-    """Validate pgvector selection before dispatch without changing facade callbacks."""
+    """Validate optional profile selections before dispatch without changing facade callbacks.
+
+    D12 (ADR 0089 D9): the host preflight refuses every platform; E1 and build admission refuse each other."""
+    from repomap_test_support.d12_core_image import admit_profile, validate_selection as validate_d12_selection
+    from test_sandbox import active_sandbox
+    root, platform = repo_root or Path(__file__).resolve().parents[1], getattr(args, "d12_core_image_profile", None)
+    if getattr(args, "d12_core_image_preflight", False):
+        # ADR 0089 D9 E1: never the host preflight, build admission or a ledger, even without a profile.
+        from d12_dependency_preflight import admit_exploration
+        admit_exploration(args, forwarded_pytest_args, repo_root=root, sandbox_active=active_sandbox)
+        return
+    if platform is not None:
+        from d12_dependency_preflight import PreflightRefusal, current_exploration
+        if current_exploration() is not None:  # E1 then build: refused before admit_profile can fill its slot
+            raise PreflightRefusal("mixed build and exploration admission in one process")
+        if not active_sandbox():  # every platform, native included, refuses before host admission can consume
+            validate_d12_selection(args, forwarded_pytest_args, repo_root=root)
+            d12_platform_preflight(platform)
+    admit_profile(args, forwarded_pytest_args, repo_root=root, sandbox_active=active_sandbox)
     if getattr(args, "pg_test_profile", "core") != "pgvector":
         return
     from runner_sandbox import validate_sandbox_profile_options

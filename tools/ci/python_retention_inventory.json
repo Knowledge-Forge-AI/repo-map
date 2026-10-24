@@ -1500,6 +1500,289 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation43.d12core1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py",
+        "src/test/unit/python/tools/d12_core_image_profile.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION43-D12CORE1 bounded optional core-image profile ownership; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation43.d12core1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_core_image.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION43-D12CORE1 bounded optional core-image profile ownership; no new quality debt or baseline.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12admit1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_exploration_admission.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D9 E1 separate exploration admission and root setup gate owner; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12apt1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_apt_prerequisites.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 native prerequisite custody before installation; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation45.d12apt1.tools",
+      "members": [
+        "tools/test_sandbox/apt_prerequisites.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 native prerequisite custody before installation; no new quality debt or baseline.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12dynamic1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_dynamic_linkage.int.test.py",
+        "src/test/unit/python/tools/ci2a_psycopg_bootstrap.unit.test.py",
+        "src/test/unit/python/tools/d12_core_image_cleanup.unit.test.py",
+        "src/test/unit/python/tools/d12_dynamic_linkage.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg ownership; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation45.d12dynamic1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_core_image_cleanup.py",
+        "src/test/support/python/repomap_test_support/d12_dynamic_linkage.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg ownership; no new quality debt or baseline.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation45.d12dynamic1.tools",
+      "members": [
+        "tools/ci/psycopg_bootstrap.py",
+        "tools/d12_dependency_preflight.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg ownership; no new quality debt or baseline.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12explore1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_inner_preflight.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D9 E1 non-consuming inner-daemon exploration owner; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12headers1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_builder_headers.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 E2 exact matching builder header selector owner; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12import1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_native_apt_import.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 canonical native prerequisite import and safe diagnostics; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation45.d12import1.tools",
+      "members": [
+        "tools/native_apt_prerequisites.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 canonical native prerequisite import and safe diagnostics; no new quality debt or baseline.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12numeric1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_libpq_runtime_probe.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 numeric libpq runtime proof; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation45.d12numeric1.tools",
+      "members": [
+        "tools/d12_libpq_runtime_probe.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 numeric libpq runtime proof; no new quality debt or baseline.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12owner1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_owner_exploration.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 named-owner E1 dataflow and build-authority guard orchestration owner; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12payload1.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/runtime/python_payload.unit.test.py",
+        "src/test/unit/python/tools/d12_python_closure.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 payload owners; no new debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation45.d12payload1.tools",
+      "members": [
+        "tools/d12_python_closure.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 payload owners; no new debt or baseline.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12preinstall1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/d12_preinstall_refusals.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 baseline-preserving native prerequisite selection and preinstall refusals; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12releaseapt1.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/runtime/d12_release_apt_custody.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 M2 APT custody owner; no new debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation45.d12trixie1.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_test_support/d9_trixie_image.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 exact Trixie server pin, mirrors and D9 optional image owner; no new quality debt or baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation46.d12hosted11.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/d12_hosted_admission.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED11 ADR 0092 explicit merge-parent binding and single counted SDK adapter unit owner; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation46.d12hosted2.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/d12_hosted_evidence.unit.test.py",
+        "src/test/unit/python/tools/ci/d12_hosted_fixtures.py",
+        "src/test/unit/python/tools/ci/d12_hosted_qualification.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_native_contracts.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification unit and fixture owners; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation46.d12hosted2.tools",
+      "members": [
+        "tools/ci/d12_hosted_evidence.py",
+        "tools/ci/d12_hosted_qualification.py",
+        "tools/ci/qualification_native_contracts.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification tool and contract owners; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation46.d12hosted3.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/d12_hosted_reports.unit.test.py",
+        "src/test/unit/python/tools/ci/d12_hosted_workflow_fixture.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED3 ADR 0092 canonical report helper unit owner and public workflow fixture owner; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation46.d12hosted3.tools",
+      "members": [
+        "tools/ci/d12_hosted_reports.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED3 ADR 0092 canonical D12 inner report helper; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation46.d12hosted4.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/d12_hosted_state.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED4 ADR 0092 bounded JSON report and prepare-refusal state helper unit owner; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation46.d12hosted4.tools",
+      "members": [
+        "tools/ci/d12_hosted_state.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED4 ADR 0092 bounded JSON report and prepare-refusal state helper; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -28199,6 +28482,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/python_payload.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 payload contract; strict clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -31496,6 +31788,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION43-D12CORE1 bounded optional core-image profile owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_dynamic_linkage.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d9_extension_exec_custody.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
       "root": "test_owners",
@@ -33496,6 +33806,33 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/coordinator_core_fakes.py",
       "rationale": "Shared typed coordinator core fixtures for bounded core and diagnostics owners.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_core_image.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION43-D12CORE1 bounded optional core-image profile owner; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_core_image_cleanup.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_dynamic_linkage.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -40055,6 +40392,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d12_release_apt_custody.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 M2 APT custody owner; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_exec_custody.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
       "root": "test_owners",
@@ -40174,6 +40520,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/postgres_route.unit.test.py",
       "rationale": "Native PostgreSQL route and observed publication repair owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/python_payload.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 payload owner; zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -41515,6 +41870,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/d9_trixie_image.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 exact Trixie server pin, mirrors and D9 optional image owner; zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -43223,6 +43587,69 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_admission.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED11 ADR 0092 explicit merge-parent binding and single counted SDK adapter unit owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_evidence.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_fixtures.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_qualification.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_reports.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED3 ADR 0092 canonical report helper unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_state.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED4 ADR 0092 bounded JSON report and prepare-refusal state helper unit owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_hosted_workflow_fixture.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED3 ADR 0092 canonical report helper unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/file_length_policy.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -43610,6 +44037,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_native_contracts.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/retained_python_projection.unit.test.py",
       "rationale": "ADR 0084 projection proof implementation or NAVIGATION28 CI repair contract owner.",
       "root": "test_owners",
@@ -43772,6 +44208,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci2a_psycopg_bootstrap.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci2a_python_type_ownership.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -43819,6 +44264,114 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/coverage_json_export.unit.test.py",
       "rationale": "Maintained REVISE12 helper or executable test owner; same Python retention forecast as its source family, protected only after successful applicable checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_apt_prerequisites.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 native prerequisite custody owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_builder_headers.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 E2 exact matching builder header selector owner; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_core_image_cleanup.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_core_image_profile.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION43-D12CORE1 bounded optional core-image profile owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_dynamic_linkage.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_exploration_admission.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D9 E1 separate exploration admission owner; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_inner_preflight.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D9 E1 exploration owner; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_libpq_runtime_probe.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 numeric libpq runtime proof component owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_native_apt_import.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 canonical native prerequisite import owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_owner_exploration.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 named-owner E1 dataflow and build-authority guard owner; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_preinstall_refusals.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 baseline-preserving native prerequisite selection owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_python_closure.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 payload owner; zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -45428,6 +45981,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/ci/d12_hosted_evidence.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification tool or contract owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_hosted_qualification.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification tool or contract owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_hosted_reports.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED3 ADR 0092 canonical D12 inner report helper; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_hosted_state.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED4 ADR 0092 bounded JSON report and prepare-refusal state helper; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/ci/file_length_policy.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -45538,6 +46127,15 @@
       "maintained_executable": true,
       "path": "tools/ci/prompt_defense_check.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/psycopg_bootstrap.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -45995,6 +46593,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/ci/qualification_native_contracts.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED2 ADR 0092 AMD-first public-CI native D12 qualification tool or contract owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/ci/qualification_shell_syntax.py",
       "rationale": "REPAIR7 bounded quote grammar and managed failure cleanup owners admitted under unchanged zero-debt profiles.",
       "root": "tools",
@@ -46157,6 +46764,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/d12_dependency_preflight.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/d12_libpq_runtime_probe.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 numeric libpq runtime proof owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/d12_python_closure.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 D4 E-f owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/go_runner_coverage.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -46168,6 +46802,15 @@
       "maintained_executable": true,
       "path": "tools/host_mcp_native_qualify.py",
       "rationale": "Host MCP native qualification runner (PREPARE1): operator entrypoint, direct console launch, evidence and kit; repository tooling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/native_apt_prerequisites.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 canonical native prerequisite custody module; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -47545,6 +48188,15 @@
       "maintained_executable": true,
       "path": "tools/test_sandbox.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/test_sandbox/apt_prerequisites.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 native prerequisite custody owner; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },

@@ -21,6 +21,7 @@ from repomap_test_support.resource_test_image_build_steps import (
 from repomap_test_support.resource_test_image_commands import (
     MATERIALIZATION_NETWORK_MODE,
     MATERIALIZATION_NETWORK_POLICY,
+    MaterializationSources,
     commit_configuration,
     container_output,
     exact_image_id,
@@ -88,11 +89,12 @@ class RuntimeImageMaterializer:
         labels: Mapping[str, str],
         dependencies: Sequence[str],
         psycopg_release_version: str,
+        sources: MaterializationSources | None = None,
     ) -> RuntimeMaterializationResult:
         before_ids = self._image_ids()
         intermediate_created: tuple[str, ...] = ()
         command = self._install_and_probe_command(
-            dependencies, psycopg_release_version
+            dependencies, psycopg_release_version, sources
         )
         container_id = self.containers.create(
             self._exact_id(base_image_id),

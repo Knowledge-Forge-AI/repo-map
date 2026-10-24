@@ -58,6 +58,7 @@ class SealedPopulationPartition:
     collected_nodes: tuple[str, ...]
     suite: str
     is_scoped: bool
+    optional_population: dict[str, Any] | None = None  # optional-owner exclusion record, not debt
 
     @property
     def total_count(self) -> int:

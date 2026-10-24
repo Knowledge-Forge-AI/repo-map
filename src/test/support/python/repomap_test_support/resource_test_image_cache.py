@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import stat
 from contextlib import contextmanager
@@ -22,6 +21,7 @@ from repomap_test_support.resource_test_image_base import (
     repository_scratch_directory,
     require_private_scratch_directory,
 )
+from repomap_test_support.resource_test_image_identity import write_private_runtime_evidence
 from repomap_test_support.resource_test_image_materialization import (
     IntermediateCleanupResult, RuntimeMaterializationResult,
     RuntimeBuildIntermediateCleaner,
@@ -80,40 +80,6 @@ def lifecycle_lock(repo_root: Path):
     finally:
         fcntl.flock(descriptor, fcntl.LOCK_UN)
         os.close(descriptor)
-
-
-def write_private_runtime_evidence(
-    resource_run: object, fingerprint: str, payload: Mapping[str, object]
-) -> None:
-    layout = getattr(resource_run, "layout", None)
-    retain = getattr(resource_run, "retain_evidence", None)
-    if layout is None or not callable(retain):
-        return
-    path = Path(layout.run_root) / f"test-runtime-{fingerprint}.evidence.json"
-    content = json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n"
-    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        descriptor = os.open(path, flags, 0o600)
-    except FileExistsError:
-        read_flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-        read_descriptor = os.open(path, read_flags)
-        try:
-            metadata = os.fstat(read_descriptor)
-            if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != os.getuid():
-                raise TestImageError("private runtime identity evidence is unsafe")
-            existing = json.loads(os.read(read_descriptor, 1_000_000))
-        finally:
-            os.close(read_descriptor)
-        if existing.get("canonical_json") != payload.get("canonical_json"):
-            raise TestImageError("private runtime identity evidence conflicts")
-        retain(path, reason="diagnostic_evidence")
-        return
-    try:
-        os.write(descriptor, content.encode("utf-8"))
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-    retain(path, reason="diagnostic_evidence")
 
 
 def dispose_failed_proof_runtime_cache(
@@ -341,8 +307,10 @@ class TestImageCacheManager:
             [
                 "-c",
                 (
-                    "import psycopg, typing_extensions; "
-                    f"assert psycopg.__version__ == {self.psycopg_release_version!r}"
+                    "import importlib.util, psycopg, typing_extensions; from psycopg import pq; "
+                    f"assert psycopg.__version__ == {self.psycopg_release_version!r}; "
+                    "assert pq.__impl__ == 'c' and pq.version() == pq.__build_version__; "
+                    "assert importlib.util.find_spec('psycopg_binary') is None"
                 ),
             ],
             role="test-runtime-cache-probe",

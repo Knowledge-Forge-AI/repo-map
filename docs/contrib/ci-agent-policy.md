@@ -92,10 +92,16 @@ request does not currently invoke the two PR Fast workflows, but the push is
 still a remote publication and still requires explicit authorization. A push
 to `main` triggers no hosted workflow.
 
-The static and unit workflows use per-workflow/ref concurrency with
-`cancel-in-progress: true`. This contains superseded work; it does not make
-time already executed free and is not permission to push repeatedly. The
-staging and main-system gates do not cancel an authorization run in progress.
+The current public `repomap-release-qualification.yml` workflow uses
+workflow-level concurrency keyed by `github.ref`, with
+`cancel-in-progress: true`. A newer event can therefore cancel its native
+D12 lane; an execution is spent when that lane starts. The historical
+five-workflow split uses per-workflow/ref concurrency for static and unit
+lanes, while its standalone staging and main-system gates do not cancel
+an authorization run in progress. These mechanisms contain superseded work;
+they do not recover time already spent or authorize repeated pushes.
+
+Under [ADR 0092](../adr/2026/10/0092-public-native-d12-qualification.md), the current public candidate adds the separate native `linux/amd64` job `d12-native-amd64` for the first D12 hosted checkpoint; ARM64 hosted qualification is deferred. The `d12-system-hold` step in `main-system-gate` invokes `system-hold` after candidate binding and Python setup, before SDK or application work, and refuses unresolved prerequisites. This factual workflow description grants no additional trigger or promotion authority.
 
 The workflow job timeouts are conservative hosted qualification envelopes:
 static analysis retains 25 minutes, PR Fast unit has 60 minutes, Staging Gate

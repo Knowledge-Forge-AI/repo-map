@@ -94,6 +94,47 @@ forwarded marker override. Direct execution of a deferred node requires
 separately implemented build-profile authority; ambient environment cannot
 authorize it, and skip or xfail is never a substitute.
 
+The ADR 0087 D12-A owner `d12_core_image_refresh.int.test.py` is the only
+other real-build node. It uses its own `requires_d12_core_image_profile`
+marker and one-node registry, not the twelve-node debt registry, and ordinary
+populations deselect it visibly. Discovery receipts and the partition's
+`optional` record persist that exclusion: reason, count, raw count and each ID
+with its raw index; report schema v2 and receipt v2 pin the registered reason
+and IDs; a v1 report validates only under explicit `--legacy-v1` rules and never as current qualification. Canonical populations must exclude exactly that owner. Run it only with
+`--d12-core-image-profile linux/arm64|linux/amd64`, scoped `--suite int
+--no-coverage`, an explicit unused `--report-dir`,
+`--d12-core-image-source-sha256` set to the frozen build-context digest,
+`--d12-core-image-budget-ledger` and that exact node. Before each platform's
+single attempt, reserve it with the support module's `budget-append` helper.
+Host admission consumes that exact reservation once, under the ledger
+directory's exclusive lock and with an atomic replace. It refuses empty, held,
+stale, reused, duplicate and racing second consumers. Before that, the
+read-only ADR 0089 preflight refuses every platform, native included, without
+consuming anything: a host classification or builder listing is only a forecast
+for the fresh inner daemon, and a positive same-inner-daemon execution and base
+preflight is unimplemented and unqualified. The refusal also names a
+non-BuildKit builder or an unfrozen package manifest.
+`--d12-core-image-preflight` is a separate exploration mode of that node. It
+refuses any ledger option, never reaches host admission or a build, and
+returns before the build with all four build and pull counts zero. Its report
+establishes no build readiness. E1 has its own admission slot; build admission
+stays empty, and the root setup gate accepts only build admission or an
+exact-node E1, never both. It is unit-tested source. The parent admitted it for
+one native arm64 E1, which refused at the Python-base closure with zero
+application builds; that attempt is spent, with no automatic retry, and the
+build-mode preflight still refuses every platform.
+The runner's in-sandbox admission is then its build authority, and each
+invocation is limited to one accounted `managed_system_candidate` build. A
+passing run is executed evidence only, not image or platform qualification.
+
+The parent-selected exact Python payload correction is design only until its
+written D4 amendment and resulting source pass independent review and parent
+acceptance. The first E1 remains spent. A later exact exploration requires
+its own written parent admission; no automatic retry, app build, ledger
+release or new Go campaign follows from the correction. P3 remains a
+separate written operator decision.
+
+
 For container-capable canonical work, preserve the run-wide entry snapshot of
 Docker image and volume IDs. Postgres routes use `--pull=never`, tmpfs for the
 image-declared data path, current-run labels, exact returned-ID ledgering, and

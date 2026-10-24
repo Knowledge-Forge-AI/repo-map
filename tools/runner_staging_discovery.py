@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import os
 from pathlib import Path
 import signal
@@ -20,7 +20,8 @@ from runner_staging_discovery_contract import (
     DISCOVERY_RECEIPT_SCHEMA as DISCOVERY_RECEIPT_SCHEMA,
     MAX_RECEIPT_BYTES as MAX_RECEIPT_BYTES,
     PopulationDiscoveryError as PopulationDiscoveryError,
-    REQUEST_SCHEMA, discovery_failure_detail, validate_discovery_receipt, validate_request, write_document,
+    REQUEST_SCHEMA, discovery_failure_detail, require_registered_optional, validate_discovery_receipt,
+    validate_request, write_document,
 )
 
 # Discovery has no inherited runner deadline. This fixed bound plus the two
@@ -76,6 +77,14 @@ def _python_paths(source_root: Path, support_root: Path, repo_root: Path) -> lis
     return list(dict.fromkeys(path for path in paths if path not in bootstrap))
 
 
+def require_canonical_optional_owner(optional: Mapping[str, Any], *, scoped: bool) -> None:
+    """Exclusions carry the registered reason and IDs; a canonical population excludes exactly the owner.
+
+    The deferred build-profile registry is accounted separately by the partition itself.
+    """
+    require_registered_optional(optional, scoped=scoped)
+
+
 def discover_staging_population(
     args: Any, pytest_args: Sequence[str], *, repo_root: Path, source_root: Path,
     test_support_root: Path, invocation_id: str, candidate_identity: dict[str, str],
@@ -120,6 +129,8 @@ def discover_staging_population(
                 receipt["eligible"], declarations=declarations, suite=args.suite, scoped=scoped,
                 collected_nodes=receipt["collected"], deferred_nodes=receipt["deferred"],
             )
+            require_canonical_optional_owner(receipt["optional"], scoped=scoped)
+            partition = replace(partition, optional_population=receipt["optional"])
         finally:
             terminate_and_reap(process)
         return partition

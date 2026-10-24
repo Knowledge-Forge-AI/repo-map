@@ -12,13 +12,15 @@ from types import SimpleNamespace
 import coverage
 import pytest
 
+from repomap_test_support import d12_core_image as d12
 from repomap_test_support.test_scratch import establish_run
 from runner_coverage import ChildCoverageSession
 from runner_integration_population import LegPartitionPytestPlugin
 import runner_staging_discovery as discovery
+import runner_staging_discovery_contract as discovery_contract
 from runner_staging_discovery_contract import (
     DISCOVERY_RECEIPT_SCHEMA, MAX_RECEIPT_BYTES, PopulationDiscoveryError,
-    digest, discovery_failure_detail, validate_discovery_receipt, write_document,
+    digest, discovery_failure_detail, validate_discovery_receipt, validate_optional_population, write_document,
 )
 
 REPO = Path(__file__).resolve().parents[5]
@@ -40,6 +42,11 @@ def fixture_tree(tmp_path: Path):
         "    assert product.choose(True) == 7\n"
     )
     (root / "pytest.ini").write_text("[pytest]\naddopts = --import-mode=importlib\n")
+    # Every real collection carries the root conftest's optional-owner record; mirror its shape.
+    (root / "conftest.py").write_text(
+        "import pytest\n@pytest.hookimpl(tryfirst=True)\ndef pytest_collection_modifyitems(config, items):\n"
+        f"    setattr(config, {d12.POPULATION_ATTR!r}, {{'excluded': [], 'count': 0, 'raw_count': len(items),"
+        f" 'reason': {d12.DESELECTION_REASON!r}}})\n")
     return root, source, product, test, marker
 
 
@@ -108,10 +115,90 @@ def test_real_discovery_and_m_collection_preserve_import_lines_and_arcs(tmp_path
     assert coverage.Coverage.current() is before
 
 
+def _optional(*excluded, raw_count=None, count=None, reason=d12.DESELECTION_REASON):
+    entries = [{"nodeid": nodeid, "raw_index": index} for nodeid, index in excluded]
+    return {"excluded": entries, "count": len(entries) if count is None else count,
+            "raw_count": 3 + len(entries) if raw_count is None else raw_count, "reason": reason}
+
+
+def test_optional_population_rebuilds_raw_collection_and_stays_outside_the_collection():
+    collected = ["a", "deferred", "c"]
+    validate_optional_population(_optional(("opt", 1)), collected, required_count=1)
+    validate_optional_population(_optional(("opt", 0), ("opt2", 4)), collected)
+    validate_optional_population(_optional(), collected)
+    for record, required in (
+        (_optional(("opt", 4)), None), (_optional(("opt", -1)), None), (_optional(("opt", 1), ("opt2", 1)), None),
+        (_optional(("a", 1)), None), (_optional(("opt", 1), ("opt", 2)), None), (_optional(("opt", 1), count=0), None),
+        (_optional(("opt", 1), raw_count=3), None), (_optional(), 1), (_optional(("opt", 1), ("opt2", 2)), 1),
+        (_optional(("opt", 1), reason=""), None), ({**_optional(), "extra": 1}, None), (None, None),
+        ({**_optional(), "excluded": [{"nodeid": "opt", "raw_index": True}]}, None),
+    ):
+        with pytest.raises(PopulationDiscoveryError):
+            validate_optional_population(record, collected, required_count=required)
+
+
+def test_canonical_discovery_requires_exactly_the_registered_optional_owner(tmp_path):
+    root, source, _product, test, _marker = fixture_tree(tmp_path)
+    partition = discover(root, source, test)
+    assert partition.optional_population == {"excluded": [], "count": 0, "raw_count": 1,
+                                             "reason": d12.DESELECTION_REASON}
+    assert partition.deferred_nodes == ()
+    exact = _optional(*((nodeid, index) for index, nodeid in enumerate(d12.OPTIONAL_NODE_IDS)))
+    discovery.require_canonical_optional_owner(exact, scoped=False)
+    discovery.require_canonical_optional_owner(exact, scoped=True)
+    discovery.require_canonical_optional_owner(_optional(), scoped=True)
+    with pytest.raises(PopulationDiscoveryError, match="exclude exactly the optional owner"):
+        discovery.require_canonical_optional_owner(_optional(), scoped=False)
+    for record in (_optional(("other.int.test.py::t", 0)), _optional((d12.NODE_ID, 0), ("x::t", 1)),
+                   _optional((d12.NODE_ID, 0), reason="optional owner")):
+        for scoped in (True, False):
+            with pytest.raises(PopulationDiscoveryError, match="unregistered reason or node ID"):
+                discovery.require_canonical_optional_owner(record, scoped=scoped)
+
+
+def test_stdlib_contract_pins_exactly_the_test_support_registry_and_versions_receipts():
+    assert discovery_contract.OPTIONAL_REASON == d12.DESELECTION_REASON, discovery_contract.OPTIONAL_REASON
+    assert discovery_contract.OPTIONAL_NODE_IDS == d12.OPTIONAL_NODE_IDS, discovery_contract.OPTIONAL_NODE_IDS
+    assert DISCOVERY_RECEIPT_SCHEMA == "repomap-staging-discovery-receipt-v2", DISCOVERY_RECEIPT_SCHEMA
+    imports = [line for line in Path(discovery_contract.__file__).read_text(encoding="utf-8").splitlines()
+               if line.startswith(("import ", "from "))]
+    assert not [line for line in imports if "repomap_test_support" in line], imports
+
+
+def test_real_discovery_rebases_the_optional_record_past_profile_deselection(tmp_path, monkeypatch):
+    """The real pgvector plugin deselects after the root conftest; the persisted record still reconciles."""
+    root, source, _product, test, _marker = fixture_tree(tmp_path)
+    test.write_text("import pytest\n@pytest.mark.requires_pgvector\ndef test_vector():\n    pass\n"
+                    + "".join(f"def test_{name}():\n    pass\n" for name in ("chosen", "optional", "after")))
+    # Mirrors the root conftest: tryfirst, visible deselection, indices over pytest's whole collection.
+    (root / "conftest.py").write_text(
+        "import pytest\n@pytest.hookimpl(tryfirst=True)\ndef pytest_collection_modifyitems(config, items):\n"
+        "    raw = [item.nodeid for item in items]\n"
+        "    excluded = [item for item in items if item.name == 'test_optional']\n"
+        "    items[:] = [item for item in items if item not in excluded]\n"
+        "    config.hook.pytest_deselected(items=excluded)\n"
+        f"    setattr(config, {d12.POPULATION_ATTR!r}, {{'excluded': [{{'nodeid': excluded[0].nodeid,"
+        f" 'raw_index': raw.index(excluded[0].nodeid)}}], 'count': 1, 'raw_count': len(raw),"
+        f" 'reason': {d12.DESELECTION_REASON!r}}})\n")
+    optional = "test_probe.py::test_optional"
+    monkeypatch.setattr(discovery_contract, "OPTIONAL_NODE_IDS", (optional,))
+    monkeypatch.setenv("REPOMAP_TEST_PG_PROFILE", "core")
+    partition = discovery.discover_staging_population(
+        SimpleNamespace(suite="int"),
+        [str(test), "--rootdir=" + str(root), "-p", "repomap_test_support.pgvector_profile"],
+        repo_root=root, source_root=source, test_support_root=SUPPORT, invocation_id="fixture-invocation",
+        candidate_identity={"commit": "a" * 40, "source_sha256": "b" * 64}, scoped=True,
+    )
+    assert partition.collected_nodes == ("test_probe.py::test_chosen", "test_probe.py::test_after")
+    assert partition.optional_population == {"excluded": [{"nodeid": optional, "raw_index": 1}], "count": 1,
+                                             "raw_count": 3, "reason": d12.DESELECTION_REASON}
+
+
 def receipt_for(request):
     result = {"schema": DISCOVERY_RECEIPT_SCHEMA, "request_sha256": digest(request),
               "exit_code": 0, "error": None, "collected": ["one", "two"],
-              "eligible": ["one", "two"], "deferred": []}
+              "eligible": ["one", "two"], "deferred": [],
+              "optional": {"excluded": [], "count": 0, "raw_count": 2, "reason": "fixture"}}
     result["sha256"] = digest(result)
     return result
 

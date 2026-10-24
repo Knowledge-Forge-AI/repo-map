@@ -228,11 +228,40 @@ repomap-kg --help
 
 The base install is the SQLite Local package and does not install a PostgreSQL
 driver. PostgreSQL Server Engine work needs the `postgres` extra, which pins
-Psycopg:
+`psycopg[c]==3.3.6`
+([ADR 0089](docs/adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md)).
+Its C extension is compiled from source and dynamically linked to the host's
+own libpq, so the host needs a C compiler, the libpq development headers and
+`pg_config`, with headers and runtime libpq from the same package version.
+RepoMap installs none of these. Every Psycopg input is hash-bound: install the
+locked build tools, then build `psycopg-c` from its hash-pinned source archive
+without isolation, then install RepoMap itself without resolving again:
 
 ```sh
-python -m pip install -e '.[postgres]'
+python -m pip install --require-hashes --no-deps --only-binary :all: --requirement tools/ci/psycopg_build.lock
+python -m pip install --require-hashes --no-deps --no-build-isolation --check-build-dependencies \
+  --requirement tools/ci/project_dependencies.lock
+python -m pip install --no-deps --no-build-isolation -e '.[postgres]'
 ```
+
+On a Debian-family host, `python tools/ci/psycopg_bootstrap.py --python python`
+performs the first two steps and also checks that `pg_config`, the headers and
+the runtime `libpq.so.5` belong to one installed `libpq-dev`/`libpq5` pair.
+With uv, install the build tools first
+(`uv pip install --require-hashes --no-deps -r tools/ci/psycopg_build.lock`),
+then `uv sync --inexact --extra postgres`. `pyproject.toml` builds `psycopg-c`
+without isolation and declares its static metadata, so `uv.lock` resolution
+runs no build backend and uv verifies the locked archive hash. The plain SQLite
+install above needs none of this.
+
+Psycopg 3.3.6 bounds `cancel_safe(timeout=...)`, which interrupted PostgreSQL
+staging uses, only with libpq 17 or newer; with an older host libpq it falls
+back to an unbounded `cancel()`. The release image requires libpq 17 or newer
+(ADR 0089 D2). The managed dependency test runtime uses the pinned
+`python:3.12-slim-trixie` image and its distro `libpq5`; its package version
+must be observed for the actual test image. Developer hosts and diagnostic
+environments with older libpq keep working, but do not establish that
+product behavior.
 
 When Nix and pyenv are both installed, check the command order before creating a
 venv or installing packages:
@@ -754,8 +783,9 @@ python3 tools/run_tests.py --suite int --pg-container-port 55433 -- -k postgres
 ```
 
 The shipped base package dependency set is smaller: it is only
-`typing-extensions`. `postgres` supplies Psycopg for the PostgreSQL Server
-Engine and for test collection, and `scale-tools` is required only when
+`typing-extensions`. `postgres` supplies C Psycopg for the PostgreSQL Server
+Engine and for test collection (with the native prerequisites above), and
+`scale-tools` is required only when
 repository-owned SCALE resource sampling or its tests are imported.
 
 Scoped runs are not a substitute for the required independent unit and staging

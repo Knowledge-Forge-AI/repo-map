@@ -33,7 +33,7 @@ def execute_group_k_ephemeral(
         resource_run=resource_run,
         client=client,
         base_reference=PYTHON_RELEASE_IMAGE,
-        python_base_family="python:3.12-slim-bookworm",
+        python_base_family="python:3.12-slim-trixie",
         python_version=PYTHON_RELEASE_VERSION,
         psycopg_release_version=PSYCOPG_RELEASE_VERSION,
     )

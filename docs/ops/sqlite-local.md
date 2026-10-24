@@ -11,19 +11,35 @@ are unchanged.
 
 The base distribution is the SQLite Local install. Its only dependency is
 `typing-extensions==4.16.0`; it installs no PostgreSQL driver. The PostgreSQL
-Server Engine needs the `postgres` extra, which pins
-`psycopg[binary]==3.2.12` (LOCAL11):
+Server Engine needs the `postgres` extra, which pins `psycopg[c]==3.3.6`
+([ADR 0089](../adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md);
+LOCAL11 pinned the earlier binary 3.2.12). Psycopg's C extension is built from
+source and dynamically linked to the host's libpq, so a Server Engine install
+needs a C compiler, matching libpq headers and runtime, and `pg_config` on the
+host. Its build tools and source archive install only from the repository's
+hash locks, without build isolation; RepoMap installs no host package. The
+SQLite Local install needs none of this:
 
 ```sh
-# From a directory holding the reviewed wheel
-python -m pip install --find-links ./dist 'repomap-kg==0.1.0'            # SQLite Local
-python -m pip install --find-links ./dist 'repomap-kg[postgres]==0.1.0'  # Server Engine
-# From a source checkout
-python -m pip install .                  # SQLite Local
-python -m pip install '.[postgres]'      # PostgreSQL/Server work
+# SQLite Local, from a directory holding the reviewed wheel or a source checkout
+python -m pip install --find-links ./dist 'repomap-kg==0.1.0'
+python -m pip install .
+# Server Engine (PostgreSQL): hash-locked build tools, then hash-pinned psycopg-c
+# built without isolation, then RepoMap without resolving again
+python -m pip install --require-hashes --no-deps --only-binary :all: --requirement tools/ci/psycopg_build.lock
+python -m pip install --require-hashes --no-deps --no-build-isolation --check-build-dependencies \
+  --requirement tools/ci/project_dependencies.lock
+python -m pip install --no-deps --find-links ./dist 'repomap-kg[postgres]==0.1.0'   # or: --no-deps '.[postgres]'
 ```
 
-The generated Server image installs `.[postgres]`. Repository test, static
+The README describes the Debian-family `tools/ci/psycopg_bootstrap.py` check
+and the uv route. Bounded `cancel_safe(timeout=...)` cancellation needs libpq
+17 or newer; the release image requires it, while a host with older libpq
+falls back to an unbounded `cancel()` and is not product evidence.
+
+The generated Server image builds `.[postgres]` against its PostgreSQL base's
+own libpq (ADR 0089; its frozen package manifest is not yet observed, so the
+recipe currently refuses before building). Repository test, static
 and SCALE extras compose with either form (see the README).
 
 The wheel is tagged `py3-none-any`, but that tag is not platform

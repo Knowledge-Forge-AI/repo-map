@@ -14,15 +14,30 @@ from typing import Any
 
 from repomap_kg.runtime._extension_restore_template import parse_template_baseline, template_baseline_sql
 from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE
 from repomap_kg.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.local_db_backup import connect_real_postgres
-from repomap_test_support.pgvector_profile import current_pg_test_profile
+from repomap_test_support.pgvector_profile import PGVECTOR_PROFILE, current_pg_test_profile
 from repomap_test_support.postgres_container import (
-    PostgresContainerConfig, PostgresContainerDatabase, PostgresContainerHarness, build_psql_wrapper_script,
+    TEST_POSTGRES_IMAGE, PostgresContainerConfig, PostgresContainerDatabase, PostgresContainerHarness,
+    build_psql_wrapper_script,
 )
 
-_CLEAN_TEMPLATE_REFERENCES: dict[str, str] = {}
+_CLEAN_TEMPLATE_REFERENCES: dict[tuple[str | None, str], str] = {}
 PRODUCT_INITDB_ARGS = "--encoding=UTF8 --locale=C"
+# The only explicit image: the exact release server pin the outer sandbox already preloads (ADR 0091). None keeps the
+# profile's default image; the reference cache is keyed by image and profile, so no image reuses another's reference.
+D9_EXPLICIT_IMAGES = {POSTGRES_RELEASE_IMAGE: "release"}
+
+
+def _explicit_image(image: str | None, profile: str | None) -> str | None:
+    if image is None:
+        return None
+    if image not in D9_EXPLICIT_IMAGES:
+        raise ValueError(f"unsupported D9 image {image!r}; only the exact release server pin may be selected")
+    if (profile or current_pg_test_profile()) == PGVECTOR_PROFILE:
+        raise ValueError("the pgvector profile keeps its own image; an explicit D9 image runs only the core profile")
+    return image
 
 
 def _reserve_free_local_port() -> int:
@@ -101,10 +116,16 @@ def setup_d9_backup_home(home: Path, postgres: Any, *, graph_db: str = "repomap"
 @contextmanager
 def owned_d9_postgres_cluster(
     home: Path, *, graph_db: str = "repomap", runtime: str = "docker",
-    password: str = "repomap_d9_test_pw", profile: str | None = None,
+    password: str = "repomap_d9_test_pw", profile: str | None = None, image: str | None = None,
 ) -> Iterator[tuple[LocalRuntimeIdentity, PostgresContainerDatabase, Any]]:
-    """Start an owned PostgreSQL container whose name and labels match LocalRuntimeIdentity.from_home(home)."""
-    config = _D9ContainerConfig(runtime=runtime, host_port=_reserve_free_local_port(), password=password, profile=profile)
+    """Start an owned PostgreSQL container whose name and labels match LocalRuntimeIdentity.from_home(home).
+
+    ``image`` optionally selects the one exact preloaded release pin (never pulled); anything else refuses first.
+    """
+    selected = _explicit_image(image, profile) or TEST_POSTGRES_IMAGE  # the unchanged configuration default
+    config = _D9ContainerConfig(
+        runtime=runtime, host_port=_reserve_free_local_port(), password=password, profile=profile,
+                                image=selected)
     stub_pg = PostgresContainerDatabase(
         host=config.bind_host, port=config.host_port, user=config.user,
         database=config.database, psql_command="psql", password=config.password,
@@ -161,15 +182,22 @@ def observe_template_baseline_in_container(container_name: str, *, user: str, da
     return parse_template_baseline(res.stdout, field=database)
 
 
-def clean_template_reference(root: Path, *, profile: str | None = None, runtime: str = "docker") -> str:
+def clean_template_reference(
+    root: Path, *, profile: str | None = None, runtime: str = "docker", image: str | None = None,
+) -> str:
     """Establish the clean template1 reference on a separate fresh cluster of the same admitted image.
 
-    The reference never comes from a restore target; it is cached per profile for the session.
+    The reference never comes from a restore target; it is cached per image and profile for the session.
     """
-    key = profile or current_pg_test_profile()
+    profile = profile or current_pg_test_profile()
+    key = (_explicit_image(image, profile), profile)
+    suffix = profile + (f"-{D9_EXPLICIT_IMAGES[image]}" if image else "")
     if key not in _CLEAN_TEMPLATE_REFERENCES:
-        with owned_d9_postgres_cluster(root / f"reference-home-{key}", runtime=runtime, profile=key) as (identity, postgres, _runner):
-            _CLEAN_TEMPLATE_REFERENCES[key] = observe_template_baseline_in_container(identity.postgres_container, user=str(postgres.user), runtime=runtime)
+        with owned_d9_postgres_cluster(
+            root / f"reference-home-{suffix}", runtime=runtime, profile=profile, image=image,
+        ) as (identity, postgres, _runner):
+            _CLEAN_TEMPLATE_REFERENCES[key] = observe_template_baseline_in_container(
+                identity.postgres_container, user=str(postgres.user), runtime=runtime)
     return _CLEAN_TEMPLATE_REFERENCES[key]
 
 

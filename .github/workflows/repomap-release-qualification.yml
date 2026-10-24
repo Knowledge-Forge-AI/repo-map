@@ -130,7 +130,12 @@ jobs:
             --bin-dir "${RUNNER_TEMP}/repomap-tools/bin"
           "${RUNNER_TEMP}/repomap-tools/bin/golangci-lint" version
 
+      - name: Build the hash-locked C Psycopg prerequisite
+        run: python tools/ci/psycopg_bootstrap.py --python python
+
       - name: Install locked dependencies
+        env:
+          PIP_ONLY_BINARY: ":all:"
         run: python -m pip install --require-hashes --no-deps --requirement tools/ci/project_dependencies.lock
 
       - name: Install unit-test dependencies
@@ -143,6 +148,78 @@ jobs:
         env:
           REPOMAP_TEST_HYGIENE_MIN_FREE_DISK_BYTES: "10737418240"
         run: python3 tools/run_tests.py --suite unit
+
+  d12-native-amd64:
+    name: d12-native-amd64
+    needs: [source-and-export-policy]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout merge candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind candidate merge identity
+        id: bind
+        run: |
+          {
+            echo "CANDIDATE_SHA=$(git rev-parse HEAD)"
+            echo "CANDIDATE_TREE=$(git rev-parse HEAD^{tree})"
+            echo "CANDIDATE_BASE_PARENT=$(git rev-parse HEAD^1)"
+            echo "CANDIDATE_HEAD_PARENT=$(git rev-parse HEAD^2)"
+          } >> "${GITHUB_ENV}"
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+
+      - name: Prepare native D12 qualification
+        run: |
+          python3 tools/ci/d12_hosted_qualification.py prepare \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --expected-json "${GITHUB_WORKSPACE}/tools/ci/d12_hosted_candidate.json" \
+            --state-dir "${RUNNER_TEMP}/d12-native-amd64-evidence" \
+            --report-dir "${RUNNER_TEMP}/d12-native-amd64-report" \
+            --github-env "${GITHUB_ENV}"
+
+      - name: Run canonical D12 native preflight
+        run: |
+          set -euo pipefail
+          status=0
+          python3 tools/run_tests.py \
+            --sandbox \
+            --suite int \
+            --no-coverage \
+            --jobs 1 \
+            --pg-container-port 55433 \
+            --d12-core-image-profile linux/amd64 \
+            --d12-core-image-preflight \
+            --d12-core-image-source-sha256 "${D12_EXPECTED_SOURCE_SHA256}" \
+            --report-dir "${RUNNER_TEMP}/d12-native-amd64-report" \
+            -- src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py::test_d12_core_image_refresh_candidate_round_trip || status=$?
+          printf '%s\n' "${status}" > "${RUNNER_TEMP}/d12-native-amd64-evidence/runner-exit-code.txt"
+          exit "${status}"
+
+      - name: Seal native D12 qualification evidence
+        if: always()
+        run: |
+          python3 tools/ci/d12_hosted_qualification.py seal \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --state-dir "${RUNNER_TEMP}/d12-native-amd64-evidence" \
+            --report-dir "${RUNNER_TEMP}/d12-native-amd64-report" \
+            --output-json "${RUNNER_TEMP}/d12-native-amd64-evidence/d12-native-amd64-sealed-evidence.json"
+
+      - name: Upload native D12 qualification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: repomap-d12-native-amd64-${{ github.run_id }}-a${{ github.run_attempt }}-${{ github.sha }}
+          path: ${{ runner.temp }}/d12-native-amd64-evidence
+          if-no-files-found: error
+          retention-days: 14
 
   staging-integration-gate:
     name: staging-integration-gate
@@ -238,6 +315,17 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
+
+      - name: Verify release prerequisites before system SDK or candidate build
+        id: d12-system-hold
+        run: |
+          python3 tools/ci/d12_hosted_qualification.py system-hold \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --candidate-sha "${CANDIDATE_SHA}" \
+            --candidate-tree "${CANDIDATE_TREE}" \
+            --candidate-base-parent "${CANDIDATE_BASE_PARENT}" \
+            --candidate-head-parent "${CANDIDATE_HEAD_PARENT}" \
+            --output-json "${GITHUB_WORKSPACE}/ci-system-report/repomap-system-hold-refusal-v1.json"
 
       - name: Record free disk before the system suite
         run: df -B1 /

@@ -18,6 +18,7 @@ MAIN_SYSTEM_GATE_WORKFLOW = "repomap-main-system-gate.yml"
 MAIN_POLICY_WORKFLOW = "repomap-main-source-policy.yml"
 
 RELEASE_WORKFLOW = "repomap-release-qualification.yml"
+PUBLIC_QUALIFICATION_WORKFLOW = RELEASE_WORKFLOW
 RETIRED_WORKFLOWS = frozenset({
     "repomap-main-source-policy.yml",
     "repomap-main-system-gate.yml",
@@ -30,6 +31,7 @@ REQUIRED_RELEASE_JOBS = (
     "source-and-export-policy",
     "pre-review-static",
     "unit-tests",
+    "d12-native-amd64",
     "staging-integration-gate",
     "main-system-gate",
     "codeql",
@@ -43,6 +45,7 @@ RUNNER_MARKER = "python3 tools/run_tests.py"
 STAGING_MARKER = "--suite staging"
 SYSTEM_MARKER = "--suite system"
 UNIT_COMMAND = "python3 tools/run_tests.py --suite unit"
+D12_NATIVE_MARKER = "--d12-core-image-profile linux/amd64"
 UNIT_PATHS = [
     "src/main/python/**",
     "src/main/go/**",
@@ -148,6 +151,7 @@ class TopologyContractValues:
     retired_workflows: frozenset[str] = RETIRED_WORKFLOWS
     allowed_workflows: frozenset[str] = ALLOWED_WORKFLOWS
     required_release_jobs: tuple[str, ...] = REQUIRED_RELEASE_JOBS
+    d12_native_marker: str = D12_NATIVE_MARKER
 
 
 DEFAULT_CONTRACTS = TopologyContractValues(
