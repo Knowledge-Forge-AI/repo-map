@@ -139,6 +139,9 @@ def make_runner(
                     mgr_map[pkey] = ln[len("diversion by ") :].split(" from: ", 1)[0]
                 if ln.startswith("diversion by ") and " to: " in ln:
                     true_map[pkey] = ln.split(" to: ", 1)[1].strip()
+            if pkey in mgr_map and pkey in true_map:
+                mgr_map[true_map[pkey]] = mgr_map[pkey]
+                true_map[true_map[pkey]] = true_map[pkey]
     mgr_map.update(divert_managers or {})
     true_map.update(divert_truenames or {})
 

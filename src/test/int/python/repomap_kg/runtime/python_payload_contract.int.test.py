@@ -14,9 +14,12 @@ import subprocess
 import sys
 import sysconfig
 
+from typing import Any
+
 import pytest
 
 from repomap_kg.runtime import python_payload as payload
+from repomap_test_support.python_payload_probes import make_stdlib_import_probe_runner
 
 DYN = payload.DYNLOAD
 LICENSE = "/usr/local/lib/python3.12/LICENSE.txt"
@@ -95,27 +98,38 @@ def test_real_sdk_elf_observation_dpkg_owners_and_clean_main_verification(
     tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
+    monkeypatch.setenv("CALLER_PAYLOAD_SENTINEL", "int-preserved")
+    env_before = dict(os.environ)
     real_m = platform.machine()
     arch = payload.NATIVE[real_m]
-
-    empty_m = tmp_path / "empty_mount"
-    empty_m.mkdir()
-    assert payload._walk(empty_m) == ({}, {})
-    (empty_m / "usr/local/empty_dir").mkdir(parents=True)
-    e_entries, e_obs = payload.observe(subprocess.run, empty_m, sys.executable, real_m)
-    assert "/usr/local/empty_dir" in e_entries and e_obs["elves"] == {}
-    assert payload.unresolved({}) == [] and payload.owners(subprocess.run, {}) == {}
-    out_p = tmp_path / "outside.txt"
-    out_p.write_text("outside", encoding="utf-8")
-    assert payload._logical(empty_m, empty_m / "usr/local/empty_dir") == "/usr/local/empty_dir"
-    assert payload._logical(empty_m, out_p).startswith("outside:")
 
     mount = tmp_path / "clean_mount"
     selected, exp_imports = _stage_sdk_mount(mount)
     so1, so2 = selected[0][1], selected[1][1]
     log1, log2 = f"{DYN}/{so1.name}", f"{DYN}/{so2.name}"
 
-    before_e, baseline = payload.observe(subprocess.run, mount, sys.executable, real_m)
+    observed_calls: list[tuple[list[str], dict[str, str] | None]] = []
+
+    def recording_run(command: list[str], *args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        raw_env = kwargs.get("env")
+        observed_calls.append((list(command), dict(raw_env) if isinstance(raw_env, dict) else None))
+        return subprocess.run(command, *args, **kwargs)
+
+    probe_run = make_stdlib_import_probe_runner(exp_imports, run=recording_run, executable=sys.executable)
+
+    empty_m = tmp_path / "empty_mount"
+    empty_m.mkdir()
+    assert payload._walk(empty_m) == ({}, {})
+    (empty_m / "usr/local/empty_dir").mkdir(parents=True)
+    e_entries, e_obs = payload.observe(probe_run, empty_m, sys.executable, real_m)
+    assert "/usr/local/empty_dir" in e_entries and e_obs["elves"] == {}
+    assert payload.unresolved({}) == [] and payload.owners(probe_run, {}) == {}
+    out_p = tmp_path / "outside.txt"
+    out_p.write_text("outside", encoding="utf-8")
+    assert payload._logical(empty_m, empty_m / "usr/local/empty_dir") == "/usr/local/empty_dir"
+    assert payload._logical(empty_m, out_p).startswith("outside:")
+
+    before_e, baseline = payload.observe(probe_run, mount, sys.executable, real_m)
     assert before_e[LICENSE][0] == "file"
     assert before_e[LICENSE_LINK] == ["symlink", "LICENSE.txt", 0, before_e[LICENSE_LINK][3]]
     assert baseline["elves"][log1]["sha256"] == hashlib.sha256(so1.read_bytes()).hexdigest()
@@ -124,7 +138,7 @@ def test_real_sdk_elf_observation_dpkg_owners_and_clean_main_verification(
     assert payload.unresolved(baseline["elves"]) == [] and payload.classify(baseline, None) is None
 
     rc = payload.main(
-        [arch, "--no-exclusion"], run=subprocess.run, mount=mount, executable=sys.executable, machine=lambda: real_m
+        [arch, "--no-exclusion"], run=probe_run, mount=mount, executable=sys.executable, machine=lambda: real_m
     )
     rep = json.loads(capsys.readouterr().out.splitlines()[-1])
     assert rc == 0 and rep["result"] == "clean" and rep["exclusion"] is None
@@ -135,7 +149,7 @@ def test_real_sdk_elf_observation_dpkg_owners_and_clean_main_verification(
     s_target, s_info = next(iter(baseline["targets"].items()))
     u_target = str(out_p)
     own = payload.owners(
-        subprocess.run,
+        probe_run,
         {
             "/usr/local/lib/libpython3.so": ["/usr/local/lib/libpython3.so", "a" * 64],
             s_target: s_info,
@@ -144,6 +158,16 @@ def test_real_sdk_elf_observation_dpkg_owners_and_clean_main_verification(
     )
     assert own["/usr/local/lib/libpython3.so"] == "cpython"
     assert own[s_target] != "" and own[u_target] == ""
+    assert dict(os.environ) == env_before
+
+    probe_envs = [env for cmd, env in observed_calls if cmd[:4] == [sys.executable, "-I", "-B", "-c"]]
+    non_probe_envs = [env for cmd, env in observed_calls if cmd[0] in ("ldd", "dpkg-query")]
+    assert len(probe_envs) == 2 * len(exp_imports)
+    assert non_probe_envs and all(env is None for env in non_probe_envs)
+    for p_env in probe_envs:
+        assert p_env is not None
+        assert p_env["LD_BIND_NOW"] == "1" and p_env["CALLER_PAYLOAD_SENTINEL"] == "int-preserved"
+        assert not any(key.startswith("COVERAGE_") for key in p_env)
 
 
 def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
@@ -155,6 +179,7 @@ def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
 
     mount = tmp_path / "trim_mount"
     selected, exp_imports = _stage_sdk_mount(mount)
+    probe_run = make_stdlib_import_probe_runner((*exp_imports, "_tkinter"), executable=sys.executable)
     so1 = selected[0][1]
     suffix = "." + so1.name.split(".", 1)[1]
     tk_log = f"{DYN}/_tkinter{suffix}"
@@ -166,7 +191,7 @@ def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
     tk_path.write_bytes(patched_tk)
     tk_sha = hashlib.sha256(patched_tk).hexdigest()
 
-    before_e, baseline = payload.observe(subprocess.run, mount, sys.executable, real_m)
+    before_e, baseline = payload.observe(probe_run, mount, sys.executable, real_m)
     assert payload.unresolved(baseline["elves"]) == [f"{tk_log}: libno0.so => not found"]
     assert baseline["imports"] == list(exp_imports) and sorted(baseline["failed"]) == ["_tkinter"]
 
@@ -174,7 +199,7 @@ def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
         payload.classify(baseline, None)
 
     rc_no = payload.main(
-        [arch, "--no-exclusion"], run=subprocess.run, mount=mount, executable=sys.executable, machine=lambda: real_m
+        [arch, "--no-exclusion"], run=probe_run, mount=mount, executable=sys.executable, machine=lambda: real_m
     )
     rep_no = json.loads(capsys.readouterr().out.splitlines()[-1])
     assert rc_no == 1 and "no frozen exclusion applies" in rep_no["reasons"][0] and tk_path.is_file()
@@ -195,8 +220,8 @@ def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
     payload.remove_exclusion(mount, sdk_entry)
     assert not tk_path.exists()
 
-    after_e, after_obs = payload.observe(subprocess.run, mount, sys.executable, real_m)
-    own = payload.owners(subprocess.run, after_obs["targets"])
+    after_e, after_obs = payload.observe(probe_run, mount, sys.executable, real_m)
+    own = payload.owners(probe_run, after_obs["targets"])
     ret = payload.verify_retained(before_e, after_e, after_obs, sdk_entry, own)
     assert ret["excluded_absent"] is True and ret["preserved"] is True
     assert ret["imports"] == list(exp_imports) and ret["digest"] == ret["expected_digest"]
@@ -221,7 +246,8 @@ def test_real_walk_special_entries_and_main_guard_refusals(
         payload.validate_exclusion(arm_entry._replace(size=0), "arm64")
 
     edge_m = tmp_path / "edge_mount"
-    selected, _exp = _stage_sdk_mount(edge_m)
+    selected, exp_imports = _stage_sdk_mount(edge_m)
+    probe_run = make_stdlib_import_probe_runner(exp_imports, run=subprocess.run, executable=sys.executable)
     suffix = "." + selected[0][1].name.split(".", 1)[1]
     dyn_dir = edge_m / DYN.lstrip("/")
     (edge_m / "usr/local/share").mkdir(parents=True, exist_ok=True)
@@ -232,7 +258,7 @@ def test_real_walk_special_entries_and_main_guard_refusals(
     os.mkfifo(edge_m / "usr/local/share/pipe.fifo")
     (dyn_dir / f"1bad{suffix}").write_bytes(b"not-an-elf")
 
-    walked, obs = payload.observe(subprocess.run, edge_m, sys.executable, real_m)
+    walked, obs = payload.observe(probe_run, edge_m, sys.executable, real_m)
     assert walked["/usr/local/share/pipe.fifo"][0] == "other"
     assert obs["elves"]["/usr/local/share/short_elf"]["elf"] == []
     assert obs["elves"]["/usr/local/share/big_elf"]["elf"] == [2, 2, 62]
@@ -253,23 +279,35 @@ def test_real_walk_special_entries_and_main_guard_refusals(
         )
 
     rc_f = payload.main(
-        [arch], run=subprocess.run, mount=edge_m, executable=sys.executable,
+        [arch], run=probe_run, mount=edge_m, executable=sys.executable,
         machine=lambda: real_m, exclusions={arch: arm_entry._replace(architecture=arch)},
     )
     rep_f = json.loads(capsys.readouterr().out.splitlines()[-1])
     assert rc_f == 1 and "frozen exclusion refused" in rep_f["reasons"][0]
 
-    assert payload.main([arch, "--bad"], mount=edge_m, machine=lambda: real_m) == 1
-    capsys.readouterr()
+    assert (
+        payload.main(
+            [arch, "--bad"], run=probe_run, mount=edge_m, executable=sys.executable, machine=lambda: real_m
+        )
+        == 1
+    )
+    assert "usage: ARCH [--no-exclusion]" in json.loads(capsys.readouterr().out.splitlines()[-1])["reasons"][0]
     monkeypatch.setattr(sys, "dont_write_bytecode", False)
-    assert payload.main([arch], mount=edge_m, machine=lambda: real_m) == 1
-    capsys.readouterr()
+    assert (
+        payload.main([arch], run=probe_run, mount=edge_m, executable=sys.executable, machine=lambda: real_m)
+        == 1
+    )
+    assert "run with -B" in json.loads(capsys.readouterr().out.splitlines()[-1])["reasons"][0]
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
-    assert payload.main([arch], mount=edge_m, machine=lambda: "riscv64") == 1
-    capsys.readouterr()
+    assert (
+        payload.main([arch], run=probe_run, mount=edge_m, executable=sys.executable, machine=lambda: "riscv64")
+        == 1
+    )
+    assert "native architecture 'riscv64'" in json.loads(capsys.readouterr().out.splitlines()[-1])["reasons"][0]
 
+    monkeypatch.setattr(subprocess, "run", probe_run)
     monkeypatch.setattr(sys, "argv", [payload.__file__, "riscv64"])
     with pytest.raises(SystemExit) as exited:
         runpy.run_path(payload.__file__, run_name="__main__")
     assert exited.value.code == 1
-    capsys.readouterr()
+    assert "native architecture" in json.loads(capsys.readouterr().out.splitlines()[-1])["reasons"][0]

@@ -268,6 +268,13 @@ def test_diverted_path_pg_config_proves_libpq_dev_original_and_cleans_up_child_p
     assert native["custody"]["sha256"] == LIBPQ_DEV_ORIGINAL_SHA256
     assert native["custody"]["control_entry"] == {"path": "usr/bin/pg_config", "md5": LIBPQ_DEV_ORIGINAL_MD5}
     assert "/usr/bin/pg_config" not in [cmd[0] for cmd, _env in calls]
+    divert_cmds = [cmd for cmd, _env in calls if cmd[0] == "dpkg-divert"]
+    assert divert_cmds == [
+        ["dpkg-divert", "--listpackage", "/usr/bin/pg_config"],
+        ["dpkg-divert", "--truename", "/usr/bin/pg_config"],
+        ["dpkg-divert", "--listpackage", diverted_target],
+        ["dpkg-divert", "--truename", diverted_target],
+    ]
     pip_envs = [env for cmd, env in calls if cmd[1:4] == ["-m", "pip", "install"]]
     assert len(pip_envs) == 3 and len(seen_links) == 3
     for env, (temp_bin, target) in zip(pip_envs, seen_links):

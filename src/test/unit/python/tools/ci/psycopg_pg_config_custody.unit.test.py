@@ -129,10 +129,17 @@ def test_known_diversion_succeeds_without_sibling_client_package_and_preserves_e
             "diversion manager postgresql-common is not installed",
         ),
         ({"divert_truenames": {"/usr/bin/pg_config": "/usr/bin/pg_config.evil"}}, "dpkg-divert truename"),
+        ({"divert_managers": {"/usr/bin/pg_config.libpq-dev": ""}}, "dpkg-divert manager for diverted target"),
+        ({"divert_managers": {"/usr/bin/pg_config.libpq-dev": "LOCAL"}}, "dpkg-divert manager for diverted target"),
         (
-            {"divert_managers": {"/usr/bin/pg_config": "postgresql-common", "/usr/bin/pg_config.libpq-dev": "LOCAL"}},
-            "itself diverted",
+            {"divert_managers": {"/usr/bin/pg_config.libpq-dev": "postgresql-common-dev"}},
+            "dpkg-divert manager for diverted target",
         ),
+        (
+            {"divert_managers": {"/usr/bin/pg_config.libpq-dev": "custom-pkg"}},
+            "dpkg-divert manager for diverted target",
+        ),
+        ({"divert_truenames": {"/usr/bin/pg_config.libpq-dev": "/usr/bin/pg_config.chained"}}, "itself diverted"),
         (
             {
                 "diversions": {

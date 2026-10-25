@@ -1816,6 +1816,27 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci64repair1.test_owners",
+      "members": [
+        "src/test/int/python/tools/ci/psycopg_pg_config_custody.int.test.py",
+        "src/test/unit/python/repomap_test_support/python_payload_probes.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI64REPAIR1 ADR 0093 containerized dpkg-divert custody integration owner and stdlib import probe adapter unit owner; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation47.ci64repair1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/python_payload_probes.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI64REPAIR1 ADR 0093 test-support subprocess adapter isolating SDK stdlib import probes from inherited coverage startup state; strict zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -33645,6 +33666,15 @@
       "status": "active_int_test"
     },
     {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/ci/psycopg_pg_config_custody.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI64REPAIR1 ADR 0093 containerized dpkg-divert endpoint semantics, chain refusal and CI pg_config custody integration test owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -34487,6 +34517,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/publication_fixtures.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/python_payload_probes.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI64REPAIR1 ADR 0093 test-support subprocess adapter isolating SDK stdlib import probes from inherited coverage startup state; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -42083,6 +42122,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/pr26_staging_qual6_schema_fixtures.unit.test.py",
       "rationale": "PR26-STAGING-QUAL6-FIX1 measured-execution repair; immediate existing quality governance, no waiver.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/python_payload_probes.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI64REPAIR1 ADR 0093 unit test owner for the stdlib import probe test-support adapter; strict zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

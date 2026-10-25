@@ -196,11 +196,12 @@ def _verify_diversion_records(
         raise CustodyError(f"diversion manager {mgr} is not installed exactly once")
     if true_p != exp_target or true_p not in _DIVERTED_TARGETS:
         raise CustodyError(f"dpkg-divert truename for {canonical} is {true_p!r}, expected {exp_target!r}")
-    if (
-        command_output(run, ["dpkg-divert", "--listpackage", true_p]).strip()
-        or command_output(run, ["dpkg-divert", "--truename", true_p]).strip() != true_p
-    ):
-        raise CustodyError(f"diverted target {true_p} is itself diverted")
+    target_mgr = command_output(run, ["dpkg-divert", "--listpackage", true_p]).strip()
+    target_true = command_output(run, ["dpkg-divert", "--truename", true_p]).strip()
+    if target_mgr != mgr:
+        raise CustodyError(f"dpkg-divert manager for diverted target {true_p} is {target_mgr!r}, expected {mgr!r}")
+    if target_true != true_p:
+        raise CustodyError(f"diverted target {true_p} is itself diverted to {target_true!r}")
 
     exp_div = {f"diversion by {mgr} from: {canonical}", f"diversion by {mgr} to: {true_p}"}
     s_out = command_output(run, ["dpkg-query", "-S", canonical], accept=(0, 1))
