@@ -16,6 +16,7 @@ if __package__ in (None, ""):
 
 from ci.d12_hosted_state import MAX_SAFE_JSON_REPORT_BYTES, load_safe_json_report
 import d12_libpq_runtime_probe
+import d12_python_closure
 from repomap_kg.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION, PYTHON_RELEASE_IMAGE,
     DebPackage, PlatformPackages, validate_package_manifest,
@@ -346,11 +347,8 @@ def validate_canonical_exploration_report(
     if not isinstance(cl := steps.get("closure"), Mapping):
         violations.append("positive exploration steps.closure must be a mapping")
     else:
-        elf, ret = cl.get("elf_count"), cl.get("retained")
-        if (cl.get("unresolved") != [] or cl.get("baseline_failed") != [] or not _is_strict_int(elf)
-                or not isinstance(elf, int) or elf <= 0 or not isinstance(ret, Mapping)
-                or ret.get("preserved") is not True):
-            violations.append("positive exploration steps.closure invalid")
+        violations.extend(d12_python_closure.validate_hosted_closure(
+            cl, VERIFIED_AMD64_BASE_METADATA["python"]["config"]))
     for step_key, req_non_empty in (("builder", True), ("final_closure", False)):
         if not isinstance(st := steps.get(step_key), Mapping):
             violations.append(f"positive exploration steps.{step_key} must be a mapping")

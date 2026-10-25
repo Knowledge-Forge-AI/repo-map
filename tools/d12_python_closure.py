@@ -109,3 +109,69 @@ def closure_facts(steps: dict[str, Any], run: apt.Runner, platform: str, *,
     if problem is not None:
         raise refusal(f"unresolved or missing dynamic dependencies, or payload contract refused: {problem}")
     return closure
+
+
+def validate_hosted_closure(closure: object, python_config: str) -> list[str]:
+    if not isinstance(closure, Mapping):
+        return ["positive exploration steps.closure invalid"]
+    elf, ret = closure.get("elf_count"), closure.get("retained")
+    if (closure.get("unresolved") != [] or type(elf) is not int or elf <= 0
+            or not isinstance(ret, Mapping) or ret.get("preserved") is not True):
+        return ["positive exploration steps.closure invalid"]
+    if ("contract" not in closure and "baseline" not in closure and closure.get("exclusion") is None
+            and not closure.get("baseline_unresolved") and closure.get("baseline_failed") == []
+            and ret.get("excluded_absent") is None and ret.get("unresolved") in (None, [])):
+        return []
+    try:
+        contract, base = closure["contract"], closure["baseline"]
+        if (not isinstance(contract, Mapping) or not isinstance(base, Mapping) or set(base) != BASELINE
+                or not _hex(base["digest"]) or type(base["entries"]) is not int
+                or not isinstance(base["machine"], str) or not isinstance(base["failed"], dict)
+                or not isinstance(base["imports"], list) or not all(isinstance(m, str) for m in base["imports"])
+                or not isinstance(base["elves"], dict)
+                or not all(isinstance(k, str) and isinstance(e, Mapping) and _hex(e["sha256"])
+                           and type(e["size"]) is int and isinstance(e["ldd"], str)
+                           and isinstance(e["elf"], list) for k, e in base["elves"].items())
+                or not isinstance(base["targets"], dict)
+                or not all(isinstance(t, (list, tuple)) and len(t) == 2 and isinstance(t[0], str)
+                           and (t[1] is None or _hex(t[1])) for t in base["targets"].values())
+                or not isinstance(base["dynload"], list)
+                or not all(isinstance(d, (list, tuple)) and len(d) == 2 and isinstance(d[0], str)
+                           and isinstance(d[1], str) for d in base["dynload"])):
+            return ["positive exploration steps.closure invalid: malformed contract or baseline"]
+        applies = contract.get("exclusion_applies")
+        prog_sha = hashlib.sha256(program().encode()).hexdigest()
+        if (not isinstance(applies, bool) or contract.get("native") != "native"
+                or contract.get("python_config") != python_config or contract.get("program_sha256") != prog_sha
+                or type(contract.get("exit")) is not int or contract.get("exit") != 0
+                or contract.get("reasons") != []):
+            return ["positive exploration steps.closure invalid: contract metadata mismatch"]
+        raw_lost = payload.unresolved(base["elves"])
+        claimed_trim = (applies or contract.get("result") == "trimmed" or closure.get("exclusion") is not None
+                        or closure.get("baseline_failed") != [] or closure.get("baseline_unresolved") != []
+                        or ret.get("excluded_absent") is not None or bool(base["failed"]))
+        if claimed_trim:
+            entry = payload.PYTHON_PAYLOAD_EXCLUSIONS.get("amd64")
+            if (not applies or contract.get("result") != "trimmed" or entry is None
+                    or entry.python_config != python_config):
+                return ["positive exploration steps.closure invalid: invalid trim contract or config"]
+            payload.validate_exclusion(entry, "amd64")
+            exp_lost = [f"{entry.path}: {lib} => not found" for lib in entry.missing]
+            if (closure.get("baseline_failed") != [entry.module]
+                    or closure.get("baseline_unresolved") != raw_lost or sorted(raw_lost) != exp_lost
+                    or ret.get("excluded_absent") is not True):
+                return ["positive exploration steps.closure invalid: baseline trim findings mismatch"]
+        else:
+            entry = None
+            if contract.get("result") != "clean" or raw_lost != []:
+                return ["positive exploration steps.closure invalid: clean contract mismatch"]
+        _check({"schema": payload.SCHEMA, "architecture": "amd64", "result": contract["result"],
+                "reasons": contract["reasons"], "baseline": base, "exclusion": closure.get("exclusion"),
+                "retained": ret}, 0, entry)
+        if (ret.get("elf_count") != len(ret["elves"]) or elf != len(ret["elves"])
+                or closure.get("imports") != ret.get("imports")
+                or closure.get("lib_dynload") != ret.get("lib_dynload")):
+            return ["positive exploration steps.closure invalid: summary mismatch"]
+    except (payload.PayloadRefusal, KeyError, TypeError, ValueError, AttributeError, IndexError) as error:
+        return [f"positive exploration steps.closure invalid: {error}"]
+    return []

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 import os
@@ -18,7 +19,9 @@ from repomap_kg.runtime.release import PYTHON_RELEASE_IMAGE, DebPackage, Platfor
 
 DYN, LIBC, LICENSE = payload.DYNLOAD, "/lib/aarch64-linux-gnu/libc.so.6", "/usr/local/lib/python3.12/LICENSE.txt"
 TK, SSL, MATH = (f"{DYN}/{name}.cpython-312-aarch64-linux-gnu.so" for name in ("_tkinter", "_ssl", "math"))
+TK_AMD = f"{DYN}/_tkinter.cpython-312-x86_64-linux-gnu.so"
 OK, MISSING = f"\tlibc.so.6 => {LIBC} (0x2)\n", "\tlibtcl8.6.so => not found\n\tlibtk8.6.so => not found\n"
+MISSING_AMD = "\tlibtk8.6.so => not found\n\tlibtcl8.6.so => not found\n"
 
 
 def elf(tag: bytes, machine: int = 183) -> bytes:
@@ -88,20 +91,42 @@ LEGACY: dict[str, Any] = dict(python_index="sha256:d50fb7611f86d04a3b0471b46d755
 
 def test_frozen_entry_is_the_static_trixie_arm64_identity_and_all_77_imports() -> None:
     entry = payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"]
-    assert set(payload.PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64"}, "no inferred amd64 entry"
+    assert set(payload.PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64", "amd64"}, "exact frozen arm64 and amd64 entries"
     assert entry[1:10] == ("sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
                            "sha256:6c6ae3622772575c3ac02ecb2b02a06d05f19e1713a0cbff476ef37bca79e90f",
                            "sha256:7efd45553a98be3d940b73600550669831c0be34f30c521159e7030a91fcdee6",
                            "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
                            "9fe4f2c93a746b000a15ebb6fbb71ea33b3b7888efb70e3c1296fac8b30c2c96", 70584, 183, "_tkinter",
                            ("libtcl8.6.so", "libtk8.6.so")), entry
-    assert PYTHON_RELEASE_IMAGE.endswith("@" + entry.python_index), "the pinned release index"
+    amd = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    assert amd[1:10] == ("sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
+                         "sha256:e8a38829209aea82774882e5157e1f7c3e8c8393ff53a697b3580896e57f345c",
+                         "sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1",
+                         "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+                         "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8", 62448, 62, "_tkinter",
+                         ("libtcl8.6.so", "libtk8.6.so")), amd
+    assert PYTHON_RELEASE_IMAGE.endswith("@" + entry.python_index) and amd.python_index == entry.python_index
+    amd_imports = getattr(payload, "AMD64_BASELINE_IMPORTS", None)
+    assert amd_imports == entry.baseline_imports == amd.baseline_imports
     assert len(entry.baseline_imports) == 77 and "nis" not in entry.baseline_imports
-    assert hashlib.sha256(" ".join(entry.baseline_imports).encode()).hexdigest() == (
-        "049267074bee42d4449e7a3ed866076d6529b44106e0e3676f41a5e1da277a1b"), "exactly the observed 77 names"
+    for items in (entry.baseline_imports, amd.baseline_imports):
+        assert hashlib.sha256(" ".join(items).encode()).hexdigest() == (
+            "049267074bee42d4449e7a3ed866076d6529b44106e0e3676f41a5e1da277a1b"), "exactly the observed 77 names"
     assert hashlib.sha256(" ".join(LEGACY["baseline_imports"]).encode()).hexdigest() == (
         "96ddc6b126ca6ddaa8ad4e9d2cdbcc0dcd4d494d8afe7655478a5025eccb9c09"), "the historical 78 are the 77 plus nis"
+    tree = ast.parse(Path(str(payload.__file__)).read_text(encoding="utf-8"))
+    assigns = {n.targets[0].id: n.value for n in tree.body
+               if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)}
+    for sym in ("ARM64_BASELINE_IMPORTS", "AMD64_BASELINE_IMPORTS"):
+        val = assigns.get(sym)
+        assert isinstance(val, ast.Tuple) and len(val.elts) == 77, f"{sym} must be an independent 77-item tuple literal"
+    calls = {n.args[0].value: n.args[-1] for n in ast.walk(tree)
+             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == "PayloadExclusion"
+             and n.args and isinstance(n.args[0], ast.Constant)}
+    amd_arg = calls.get("amd64")
+    assert isinstance(amd_arg, ast.Name) and amd_arg.id == "AMD64_BASELINE_IMPORTS"
     payload.validate_exclusion(entry, "arm64")
+    payload.validate_exclusion(amd, "amd64")
 
 
 def _observed(*, imports: tuple[str, ...] | None = None, tk: dict[str, Any] | None = None,
@@ -117,10 +142,33 @@ def _observed(*, imports: tuple[str, ...] | None = None, tk: dict[str, Any] | No
             "imports": imported, "failed": {"_tkinter": {"exit": 1, "error": "ImportError: libtk8.6.so"}}}
 
 
+def _observed_amd64(*, imports: tuple[str, ...] | None = None, tk: dict[str, Any] | None = None, extra: str = "",
+                    machine: str = "x86_64", tk_dynload: list[list[str]] | None = None,
+                    failed_extra: dict[str, Any] | None = None) -> dict[str, Any]:
+    assert "amd64" in payload.PYTHON_PAYLOAD_EXCLUSIONS, "frozen amd64 entry required"
+    entry = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    names = sorted((*entry.baseline_imports, "_tkinter") if imports is None else (*imports, "_tkinter"))
+    failed = {"_tkinter": {"exit": 1, "error": "ImportError: libtk8.6.so"}, **(failed_extra or {})}
+    imported = [name for name in names if name not in failed]
+    elf_tk = {"sha256": entry.sha256, "size": entry.size, "elf": [2, 1, 62], "ldd_exit": 0,
+              "ldd": OK + MISSING_AMD + extra, **(tk or {})}
+    base_dyn = [[f"{name}.cpython-312-x86_64-linux-gnu.so", "file"] for name in names if name != "_tkinter"]
+    tk_rows = tk_dynload or [["_tkinter.cpython-312-x86_64-linux-gnu.so", "file"]]
+    return {"machine": machine, "dynload_real": DYN, "elves": {TK_AMD: elf_tk}, "targets": {},
+            "dynload": sorted([*base_dyn, *tk_rows]), "imports": imported, "failed": failed}
+
+
 def test_frozen_entry_classifies_the_exact_observed_trixie_baseline() -> None:
     exclusion = payload.classify(_observed(), payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"])
     assert exclusion is not None and exclusion["sha256"] == payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"].sha256
     assert exclusion["size"] == 70584 and exclusion["baseline_imports"] == 77 and exclusion["module"] == "_tkinter"
+    obs_amd = _observed_amd64()
+    assert payload.unresolved(obs_amd["elves"]) == [
+        f"{TK_AMD}: libtk8.6.so => not found", f"{TK_AMD}: libtcl8.6.so => not found"]
+    amd_excl = payload.classify(obs_amd, payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"])
+    assert amd_excl is not None and amd_excl["sha256"] == payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"].sha256
+    assert amd_excl["size"] == 62448 and amd_excl["elf_machine"] == 62 and amd_excl["baseline_imports"] == 77
+    assert amd_excl["module"] == "_tkinter" and amd_excl["missing"] == ["libtcl8.6.so", "libtk8.6.so"]
 
 
 @pytest.mark.parametrize("observation, entry, message", [
@@ -136,6 +184,28 @@ def test_frozen_entry_classifies_the_exact_observed_trixie_baseline() -> None:
 ])
 def test_legacy_or_wrong_pins_and_import_drift_refuse_the_trixie_classification(observation, entry, message) -> None:
     frozen = payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"]._replace(**entry)
+    with pytest.raises(payload.PayloadRefusal, match=message):
+        payload.classify(observation(), frozen)
+
+
+@pytest.mark.parametrize("observation, entry, message", [
+    (lambda: _observed_amd64(), LEGACY, "target hash, size or ELF"),
+    (lambda: _observed_amd64(), {"sha256": payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"].sha256}, "target hash, size"),
+    (lambda: _observed_amd64(tk={"size": 70584}), {}, "target hash, size or ELF"),
+    (lambda: _observed_amd64(tk={"sha256": "0" * 64}), {}, "target hash, size or ELF"),
+    (lambda: _observed_amd64(tk={"elf": [2, 1, 183]}), {}, "target hash, size or ELF"),
+    (lambda: _observed_amd64(machine="aarch64"), {}, "native architecture 'aarch64' is not amd64"),
+    (lambda: _observed_amd64(extra="\tlibX11.so.6 => not found\n"), {}, "exactly the frozen missing pair"),
+    (lambda: _observed_amd64(failed_extra={"math": {"exit": 1, "error": "err"}}), {}, "non-importing modules"),
+    (lambda: _observed_amd64(imports=LEGACY["baseline_imports"]), {}, "baseline imports differ"),
+    (lambda: _observed_amd64(imports=payload.ARM64_BASELINE_IMPORTS[1:]), {}, "baseline imports differ"),
+    (lambda: _observed_amd64(tk_dynload=[["_tkinter.cpython-312-x86_64-linux-gnu.so", "symlink"]]), {}, "a symlink"),
+    (lambda: _observed_amd64(tk_dynload=[
+        ["_tkinter.cpython-312-x86_64-linux-gnu.so", "file"], ["_tkinter.abi3.so", "file"]]), {}, "duplicated"),
+])
+def test_amd64_classification_refuses_foreign_or_legacy_pins_and_drift(observation, entry, message) -> None:
+    assert "amd64" in payload.PYTHON_PAYLOAD_EXCLUSIONS, "frozen amd64 entry required"
+    frozen = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]._replace(**entry)
     with pytest.raises(payload.PayloadRefusal, match=message):
         payload.classify(observation(), frozen)
 

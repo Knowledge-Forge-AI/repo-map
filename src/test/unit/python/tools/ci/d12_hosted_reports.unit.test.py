@@ -8,15 +8,17 @@ import sys
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[6]
-for candidate_path in (ROOT / "tools", ROOT / "src/main/python", ROOT / "src/test/support/python"):
+for candidate_path in (ROOT, ROOT / "tools", ROOT / "src/main/python", ROOT / "src/test/support/python"):
     if str(candidate_path) not in sys.path:
         sys.path.insert(0, str(candidate_path))
 
 import d12_libpq_runtime_probe
+from repomap_kg.runtime import python_payload as payload
 from repomap_kg.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION, PYTHON_RELEASE_IMAGE,
 )
 from repomap_test_support import d12_core_image
+from src.test.unit.python.tools.ci.d12_hosted_fixtures import make_positive_amd64_closure
 import test_sandbox_images
 
 import ci.d12_hosted_reports as reports_mod
@@ -149,14 +151,7 @@ def make_exploration_report(*, refused: bool = False, api: int = 180006) -> dict
             "pgdg_source": pgdg_src,
             "pgdg_keyring": pgdg_key,
         }
-        report["steps"]["closure"] = {
-            "unresolved": [],
-            "baseline_failed": [],
-            "elf_count": 42,
-            "retained": {"preserved": True, "unresolved": []},
-            "imports": ["_ssl", "math"],
-            "packages": [["libpq5", ver, "amd64"]],
-        }
+        report["steps"]["closure"] = {**make_positive_amd64_closure(ver), "packages": [["libpq5", ver, "amd64"]]}
         report["steps"]["builder"] = {
             "native": "amd64",
             "preexisting_rows": 120,
@@ -201,7 +196,7 @@ def make_exploration_report(*, refused: bool = False, api: int = 180006) -> dict
                     ["libpq-dev", ver, "amd64", "6" * 64],
                 ],
                 "closure": [["libpq5", ver, "amd64", "4" * 64]],
-                "lib_dynload": ["_ssl", "math"],
+                "lib_dynload": list(report["steps"]["closure"]["imports"]),
             },
         }
     return report
@@ -353,3 +348,42 @@ def test_validate_canonical_exploration_report_positive_real_consume_and_indepen
     assert any("candidate metadata flags" in v for v in v_pos)
     assert any("closure invalid" in v for v in v_pos)
     assert any(f"below {PRODUCT_MINIMUM_LIBPQ_VERSION}" in v for v in v_pos)
+
+
+def test_validate_canonical_exploration_report_strict_amd64_trim_and_closure_mutations() -> None:
+    assert "amd64" in payload.PYTHON_PAYLOAD_EXCLUSIONS, "frozen amd64 entry required"
+    amd = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    py_meta = VERIFIED_AMD64_BASE_METADATA["python"]
+    assert (amd.python_index, amd.platform_manifest, amd.python_config) == (
+        py_meta["index"], py_meta["manifest"], py_meta["config"])
+
+    clean_legacy = make_exploration_report(refused=False)
+    clean_legacy["steps"]["closure"] = {
+        "unresolved": [], "baseline_failed": [], "elf_count": 42, "retained": {"preserved": True, "unresolved": []},
+        "imports": list(amd.baseline_imports), "packages": [["libpq5", "18.6-1.pgdg13+2", "amd64"]],
+    }
+    srv = {"files": [{"role": "libpq", "owner": "libpq5", "resolved": "/usr/lib/x86_64-linux-gnu/libpq.so.5.18",
+                      "sha256": "7" * 64}]}
+    exp_in, hashes = d12_libpq_runtime_probe.binding(clean_legacy["steps"], srv, "linux/amd64", "test-run-123")
+    clean_legacy["steps"]["libpq_runtime"] = d12_libpq_runtime_probe.record(
+        exp_in, hashes, api=180006, machine="x86_64",
+        selected=[["libpq5", "18.6-1.pgdg13+2", "amd64", "4" * 64]], digests=("b" * 64, "c" * 64))
+    assert validate_canonical_exploration_report(
+        clean_legacy, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True) == []
+
+    for mutate in (
+        lambda cl: cl.update(contract=None),
+        lambda cl: cl["contract"].update(exclusion_applies=False),
+        lambda cl: cl["contract"].update(python_config="sha256:" + "0" * 64),
+        lambda cl: cl["contract"].update(program_sha256="0" * 64),
+        lambda cl: cl.update(baseline_unresolved=sorted(cl["baseline_unresolved"])),
+        lambda cl: cl["retained"].update(excluded_absent=False),
+        lambda cl: cl["retained"].update(expected_digest="f" * 64),
+        lambda cl: cl.update(elf_count=82),
+        lambda cl: cl.update(baseline={}),
+    ):
+        rep = make_exploration_report(refused=False)
+        mutate(rep["steps"]["closure"])
+        v = validate_canonical_exploration_report(
+            rep, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True)
+        assert any("closure invalid" in item for item in v), v
