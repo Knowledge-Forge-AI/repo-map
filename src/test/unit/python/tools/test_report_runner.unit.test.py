@@ -251,7 +251,7 @@ class ReportGeneratorUnitTests(ReportTestCase):
         self.assertEqual(report["errors"], [
             "accounting: PopulationDiscoveryError",
             "report validation: partition missing "
-            "['abrupt', 'collected', 'deferred', 'measured', 'required', 'sha256']",
+            "['abrupt', 'collected', 'deferred', 'measured', 'optional', 'required', 'sha256']",
         ])
         # Failed discovery preserves diagnostics, never a fabricated partition.
         from staging_report_contract import StagingReportValidationError, validate_report

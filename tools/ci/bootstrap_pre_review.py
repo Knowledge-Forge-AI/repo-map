@@ -50,6 +50,8 @@ def verify_python_distribution(
             "import json",
             "from pathlib import Path",
             "import sys",
+            "if sys.argv[1] == 'psycopg_c':",
+            "    importlib.import_module('psycopg')",
             "module = importlib.import_module(sys.argv[1])",
             "origin = Path(module.__file__).resolve()",
             "owner = Path(sys.argv[4]).resolve()",

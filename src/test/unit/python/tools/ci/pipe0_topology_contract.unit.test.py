@@ -70,8 +70,32 @@ def test_canonical_test_runner_appears_exactly_three_times() -> None:
     for path in WORKFLOW_DIR.iterdir():
         commands = "\n".join(load_workflow(path).run_commands())
         occurrences += commands.count("python3 tools/run_tests.py")
-
-    assert occurrences == 3
+    if not PUBLIC_QUALIFICATION_GATE.exists():
+        assert occurrences == 3
+        return
+    assert occurrences == 4
+    workflow = load_workflow(PUBLIC_QUALIFICATION_GATE)
+    by_job = {name: "\n".join(workflow.job_run_commands(name)) for name in workflow.jobs}
+    counts = {name: text.count("python3 tools/run_tests.py") for name, text in by_job.items()}
+    approved = {"unit-tests", "d12-native-amd64", "staging-integration-gate", "main-system-gate"}
+    assert {name for name, count in counts.items() if count > 0} == approved
+    assert all(counts[name] == 1 for name in approved)
+    assert "python3 tools/run_tests.py --suite unit" in by_job["unit-tests"]
+    assert "--suite int" not in by_job["unit-tests"] and "--d12-core-image" not in by_job["unit-tests"]
+    d12_cmd = by_job["d12-native-amd64"]
+    for token in (
+        "--sandbox",
+        "--suite int",
+        "--no-coverage",
+        "--d12-core-image-profile linux/amd64",
+        "--d12-core-image-preflight",
+        "-- src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py"
+        "::test_d12_core_image_refresh_candidate_round_trip",
+    ):
+        assert token in d12_cmd
+    assert "--d12-core-image-budget-ledger" not in d12_cmd
+    assert "--suite staging" in by_job["staging-integration-gate"]
+    assert "--suite system" in by_job["main-system-gate"]
 
 
 def test_pr_fast_targets_staging_pull_requests_only() -> None:
@@ -200,12 +224,7 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
 @pytest.mark.parametrize(
     ("name", "old", "new", "expected"),
     [
-        (
-            "repomap-static-analysis.yml",
-            "    branches: [staging]",
-            "    branches: [main]",
-            "PR Fast must target",
-        ),
+        ("repomap-static-analysis.yml", "    branches: [staging]", "    branches: [main]", "PR Fast must target"),
         (
             "repomap-static-analysis.yml",
             "  workflow_dispatch:",
@@ -224,12 +243,7 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
             "        run: |\n          python3 tools/ci/promotion_policy.py\n          docker pull alpine:latest",
             "must cost nothing",
         ),
-        (
-            "repomap-static-analysis.yml",
-            "          fetch-depth: 0",
-            "          fetch-depth: 1",
-            "complete Git history",
-        ),
+        ("repomap-static-analysis.yml", "          fetch-depth: 0", "          fetch-depth: 1", "complete Git history"),
         (
             "repomap-static-analysis.yml",
             "python3 tools/ci/bootstrap_pre_review.py",
@@ -250,24 +264,9 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
             "      - name: Materialize the pinned pre-review toolchain\n",
             "must not be installed into host Python",
         ),
-        (
-            "repomap-unit-tests.yml",
-            "    branches: [staging]",
-            "    branches: [main]",
-            "unit lane must target",
-        ),
-        (
-            "repomap-unit-tests.yml",
-            '      - "src/main/go/**"\n',
-            "",
-            "unit lane paths must be",
-        ),
-        (
-            "repomap-unit-tests.yml",
-            "  contents: read",
-            "  contents: write",
-            "not read-only",
-        ),
+        ("repomap-unit-tests.yml", "    branches: [staging]", "    branches: [main]", "unit lane must target"),
+        ("repomap-unit-tests.yml", '      - "src/main/go/**"\n', "", "unit lane paths must be"),
+        ("repomap-unit-tests.yml", "  contents: read", "  contents: write", "not read-only"),
         (
             "repomap-unit-tests.yml",
             'python -m pip install --editable ".[test,scale-tools,static-analysis]"',
@@ -276,8 +275,7 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
         ),
         (
             "repomap-unit-tests.yml",
-            "python -m pip install --require-hashes --no-deps --requirement "
-            "tools/ci/project_dependencies.lock",
+            "python -m pip install --require-hashes --no-deps --requirement tools/ci/project_dependencies.lock",
             "python -m pip install psycopg",
             "unit lane must contain",
         ),
@@ -285,9 +283,7 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
             "repomap-unit-tests.yml",
             "      - name: Set up Go for the canonical runner\n"
             "        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0\n"
-            "        with:\n"
-            "          go-version-file: src/main/go/go.mod\n"
-            "          cache: false\n\n",
+            "        with:\n          go-version-file: src/main/go/go.mod\n          cache: false\n\n",
             "",
             "canonical unit runner requires pinned Go",
         ),
@@ -300,10 +296,35 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
         (
             "repomap-unit-tests.yml",
             "        run: python3 tools/run_tests.py --suite unit",
-            "        run: |\n"
-            "          python3 tools/run_tests.py --suite unit\n"
+            "        run: |\n          python3 tools/run_tests.py --suite unit\n"
             "          python3 tools/run_tests.py --suite int",
             "must not contain '--suite int'",
+        ),
+        (
+            "repomap-release-qualification.yml",
+            "          status=0\n          python3 tools/run_tests.py \\\n",
+            "          status=0\n          python3 tools/missing_runner.py \\\n",
+            "requires exactly one runner step in d12-native-amd64; found 0",
+        ),
+        (
+            "repomap-release-qualification.yml",
+            '          exit "${status}"',
+            '          python3 tools/run_tests.py --suite int\n          exit "${status}"',
+            "d12-native-amd64 must invoke python3 tools/run_tests.py once; found 2",
+        ),
+        (
+            "repomap-release-qualification.yml",
+            "        run: python3 tools/run_tests.py --suite unit",
+            "        run: |\n          python3 tools/run_tests.py --suite unit\n"
+            "          python3 tools/run_tests.py --suite int --d12-core-image-preflight",
+            "cross-job leakage: d12 native preflight runner found in unit-tests",
+        ),
+        (
+            "repomap-release-qualification.yml",
+            "-- src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py"
+            "::test_d12_core_image_refresh_candidate_round_trip",
+            "-- src/test/int/python/unapproved.int.test.py",
+            "d12-native-amd64 must select exact node",
         ),
     ],
 )
