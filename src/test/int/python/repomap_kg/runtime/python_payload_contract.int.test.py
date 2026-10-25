@@ -2,44 +2,39 @@
 
 from __future__ import annotations
 
+import cmath
 import hashlib
-import importlib
 import json
+import math
 import os
 from pathlib import Path
 import platform
-import runpy
 import shutil
 import subprocess
 import sys
 import sysconfig
-
+from types import ModuleType
 from typing import Any
 
 import pytest
 
 from repomap_kg.runtime import python_payload as payload
 from repomap_test_support.python_payload_probes import make_stdlib_import_probe_runner
+from runner_coverage_execution import launch_unified_coverage_process
 
 DYN = payload.DYNLOAD
 LICENSE = "/usr/local/lib/python3.12/LICENSE.txt"
 LICENSE_LINK = "/usr/local/lib/python3.12/LICENSE-link.txt"
-_SDK_EXTS: tuple[str, ...] = (
-    "math", "cmath", "_blake2", "select", "mmap", "fcntl", "termios", "resource",
-    "unicodedata", "zlib", "binascii", "_csv", "_json", "_struct", "_ctypes",
-    "_decimal", "_socket", "_ssl", "_hashlib", "_bz2", "_lzma", "_sqlite3", "_uuid",
-    "pyexpat", "readline", "array",
+_SDK_EXT_MODULES: tuple[tuple[str, ModuleType], ...] = (
+    ("math", math),
+    ("cmath", cmath),
 )
 
 
 def _select_sdk_extensions(count: int = 2) -> list[tuple[str, Path]]:
     dest_shared = Path(sysconfig.get_config_var("DESTSHARED") or "").resolve()
     selected: list[tuple[str, Path]] = []
-    for name in _SDK_EXTS:
-        try:
-            mod = importlib.import_module(name)
-        except ImportError:
-            continue
+    for name, mod in _SDK_EXT_MODULES:
         raw_file = getattr(mod, "__file__", None)
         if not isinstance(raw_file, str) or not raw_file:
             continue
@@ -305,9 +300,14 @@ def test_real_walk_special_entries_and_main_guard_refusals(
     )
     assert "native architecture 'riscv64'" in json.loads(capsys.readouterr().out.splitlines()[-1])["reasons"][0]
 
-    monkeypatch.setattr(subprocess, "run", probe_run)
-    monkeypatch.setattr(sys, "argv", [payload.__file__, "riscv64"])
-    with pytest.raises(SystemExit) as exited:
-        runpy.run_path(payload.__file__, run_name="__main__")
-    assert exited.value.code == 1
-    assert "native architecture" in json.loads(capsys.readouterr().out.splitlines()[-1])["reasons"][0]
+    src_root = str(Path(payload.__file__).resolve().parents[2])
+    guard_proc = launch_unified_coverage_process(
+        [sys.executable, "-B", "-m", "repomap_kg.runtime.python_payload", "riscv64"],
+        family="cli_module",
+        pid_namespace_relation="shared",
+        extra_env={"PYTHONPATH": src_root},
+    )
+    assert guard_proc.returncode == 1
+    guard_out = json.loads(guard_proc.stdout.splitlines()[-1])
+    assert guard_out["result"] == "refused"
+    assert f"native architecture {real_m!r} is not 'riscv64'" in guard_out["reasons"][0]

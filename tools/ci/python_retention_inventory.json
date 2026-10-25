@@ -24348,6 +24348,313 @@
       ],
       "test": "src/test/unit/python/tools/scale28_r1_dependency_boundary.unit.test.py",
       "test_sha256": "041da5a3f0e34386124ffc6d6528a34d26ea8b5069d77daf7fec8d38b4ee72c1"
+    },
+    {
+      "fingerprint": "7b44a9a7b5e3e0b6f8a705d21cfd659fa2ab97019d785636742f5aaf5c48848f",
+      "id": "v004.pr26.staging.contract1.fix1.11",
+      "kind": "import_module",
+      "owner": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_evidence.py",
+      "owner_sha256": "476b24481815dc1ac257eb4d55ed766dea407721eb826b220f361d23f2e17dee",
+      "parameters": {
+        "domain_module": "repomap_test_support.test_cov5k_r2_fix2_dynamic_targets",
+        "domain_path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.py",
+        "domain_sha256": "d9610bcc29cd8e02cddf1fd27a64316fb21ebd1cfb3fe397305993fea1e745ff"
+      },
+      "recipe": "guarded_symbol_import",
+      "supersedes": "v003.pr26.staging.contract1.fix1.11",
+      "symbol": "_resolve_symbol",
+      "targets": [
+        {
+          "module": "actual_refresh_failure_causality",
+          "path": "tools/actual_refresh_failure_causality.py",
+          "sha256": "f88ad8e0a518c522bc42022bc645f6852f4779a3edb9771a9600bccc4ad3767f",
+          "symbol": "FailureCausalityAuthority.record_code"
+        },
+        {
+          "module": "process_rss_monitor",
+          "path": "tools/process_rss_monitor.py",
+          "sha256": "621ba5ee6587890399e2a505139c08e8cee36a533a62d537443f2a30267b991a",
+          "symbol": "ProcessRssMonitor.run"
+        },
+        {
+          "module": "repomap_kg.cli.dispatch",
+          "path": "src/main/python/repomap_kg/cli/dispatch.py",
+          "sha256": "3550cf57c3feabd24ad0c3ee6547bfa2b81040d4dd292c3bb8b08b48d1e9501d",
+          "symbol": "dispatch_command"
+        },
+        {
+          "module": "repomap_test_support.resource_test_images",
+          "path": "src/test/support/python/repomap_test_support/resource_test_images.py",
+          "sha256": "c008ea952676e3b3d726bb6084e5fa39a92de41ddcbde299ac751785a23c6f54",
+          "symbol": "TestImageManager.build_ephemeral_image"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_backup"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_build"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_removal"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_start"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_container_stop"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_database_initialization"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_database_removal"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_docker_stats_diagnostic"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_psql_native_load"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_restore"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_schema_migration"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_administrative",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_administrative.py",
+          "sha256": "41a048a12790acecb4060843cb311cf5d6bfe1a9be5f89e8e957d422410958c1",
+          "symbol": "execute_test_harness"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce",
+          "symbol": "execute_complete_gate"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce",
+          "symbol": "execute_focused_selection"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_gate_executor",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_gate_executor.py",
+          "sha256": "8e24fb88f3ecd0d76e11d6d894bf69b1372cf988e81c7f15ed5484a489dd24ce",
+          "symbol": "execute_former_failure_node"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_fresh_public_rehearsal"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_mixed_configured_campaign"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_observer_request"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_observer_schedule"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_owning_area_execution"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_observer",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_observer.py",
+          "sha256": "c9dc1fe29020d8a4eef440eed0583c4e0ab1a092d731123e104ddd6e5fac82c1",
+          "symbol": "execute_prior_state_preservation"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "124e1c7d05016c601739f946a6a4fd69646c794b0168e80444a612bb4189ef30",
+          "symbol": "execute_preparation_condition"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_preparation",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py",
+          "sha256": "124e1c7d05016c601739f946a6a4fd69646c794b0168e80444a612bb4189ef30",
+          "symbol": "execute_preparation_state_path"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd",
+          "symbol": "ProcessBoundaryRecorder.run"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_process_recorder",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_process_recorder.py",
+          "sha256": "9cf680906bd916295941f642e3a643c4b1f2d8db9ccde5940cc35e65fab46ffd",
+          "symbol": "execute_zero_process_boundary"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_container_rss"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_container_rss_equivalence"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_failure_causality"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_process_containment_companion"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_process_rss"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_runtime_driver_read"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_terminal_live_cohort"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_terminal_read"
+        },
+        {
+          "module": "repomap_test_support.test_cov5k_r2_fix2_runtime",
+          "path": "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_runtime.py",
+          "sha256": "5a061062f1180a6a1faffd5f09d3ecbffe89102db99b8ef3b7b66ec6e9edd35e",
+          "symbol": "execute_terminal_stage_matrix"
+        },
+        {
+          "module": "run_tests",
+          "path": "tools/run_tests.py",
+          "sha256": "d4cfbccb93f48641b3214d06e247a28df7b3016e245709662e4ea2f6017ad7ed",
+          "symbol": "main"
+        },
+        {
+          "module": "scale14_actual_refresh_supervisor",
+          "path": "tools/scale14_actual_refresh_supervisor.py",
+          "sha256": "3bebef8c3b6535379621109a5a0c297b63cf637d9cc6afd76821582e82c95158",
+          "symbol": "ActualRefreshSupervisor"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606",
+          "symbol": "read_scale15_terminal_state"
+        },
+        {
+          "module": "scale15_actual_path_readback",
+          "path": "tools/scale15_actual_path_readback.py",
+          "sha256": "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606",
+          "symbol": "read_terminal_backend_summary"
+        },
+        {
+          "module": "scale28_backend_observer_session",
+          "path": "tools/scale28_backend_observer_session.py",
+          "sha256": "fe387621d9fa9b1f5c227a31921418622b6bacc11f84a80951205ff6493a667b",
+          "symbol": "BackendObserverSession.run"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b",
+          "symbol": "prepare_parent_startup_authorities"
+        },
+        {
+          "module": "scale28_hybrid_startup",
+          "path": "tools/scale28_hybrid_startup.py",
+          "sha256": "a16ff7d8ac592db2cdb6d01b4686b6bd3b224b946beeed1cdec1b973481a1c3b",
+          "symbol": "prepare_startup_resources"
+        },
+        {
+          "module": "scale28_preparation_authority",
+          "path": "tools/scale28_preparation_authority.py",
+          "sha256": "7cc7c1945ce3bb75f63281d5b50b7f063bea5f6534e917e5f2b59e7b26587685",
+          "symbol": "HybridPreparationAuthority.prepare"
+        },
+        {
+          "module": "scale28_preparation_worker",
+          "path": "tools/scale28_preparation_worker.py",
+          "sha256": "053a531e49231da9923456c4bafcabda79d1807c1cac80b8795cf39cb3db62c3",
+          "symbol": "PreparationWorkerAttempt"
+        },
+        {
+          "module": "scale28_runtime_identity",
+          "path": "tools/scale28_runtime_identity.py",
+          "sha256": "7aca851bc41b76bf931a9c576f8d74ae9c0af36ff76c575ab934de998f1e9c46",
+          "symbol": "capture_runtime_identity"
+        }
+      ],
+      "test": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.unit.test.py",
+      "test_sha256": "13bd89d911c2120dd42957ba9a56991c4f6ee3cacdabda555632835fb0f210f2"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",

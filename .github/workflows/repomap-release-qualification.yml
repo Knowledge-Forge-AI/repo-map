@@ -166,7 +166,7 @@ jobs:
         run: |
           {
             echo "CANDIDATE_SHA=$(git rev-parse HEAD)"
-            echo "CANDIDATE_TREE=$(git rev-parse HEAD^{tree})"
+            echo "CANDIDATE_TREE=$(git rev-parse 'HEAD^{tree}')"
             echo "CANDIDATE_BASE_PARENT=$(git rev-parse HEAD^1)"
             echo "CANDIDATE_HEAD_PARENT=$(git rev-parse HEAD^2)"
           } >> "${GITHUB_ENV}"

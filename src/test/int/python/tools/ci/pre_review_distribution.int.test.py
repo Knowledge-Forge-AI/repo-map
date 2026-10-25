@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib
 import importlib.metadata
 from pathlib import Path
 import subprocess
@@ -8,6 +7,7 @@ import sys
 
 import psycopg
 from psycopg import pq
+import psycopg_c
 import pytest
 
 from ci.bootstrap_pre_review import verify_python_distribution
@@ -16,15 +16,14 @@ from ci.bootstrap_pre_review import verify_python_distribution
 def test_sandbox_c_psycopg_distribution_attestation_succeeds_in_fresh_child_python() -> None:
     python_bin = Path(sys.executable)
     owner_root = Path(sys.prefix).resolve()
-    psycopg_c_mod = importlib.import_module("psycopg_c")
 
     assert importlib.metadata.version("psycopg") == "3.3.6"
     assert importlib.metadata.version("psycopg-c") == "3.3.6"
     assert pq.__impl__ == "c"
     assert psycopg.__file__ is not None
-    assert psycopg_c_mod.__file__ is not None
+    assert psycopg_c.__file__ is not None
     assert Path(psycopg.__file__).resolve().is_relative_to(owner_root)
-    assert Path(psycopg_c_mod.__file__).resolve().is_relative_to(owner_root)
+    assert Path(psycopg_c.__file__).resolve().is_relative_to(owner_root)
 
     verify_python_distribution(python_bin, "psycopg", "psycopg", "3.3.6", owner_root)
     verify_python_distribution(python_bin, "psycopg_c", "psycopg-c", "3.3.6", owner_root)

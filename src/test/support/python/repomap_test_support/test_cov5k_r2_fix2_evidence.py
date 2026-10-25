@@ -1,4 +1,4 @@
-"""Shared immutable executor evidence types."""
+"""Shared immutable executor evidence types with refreshed resource_test_images target custody."""
 
 from __future__ import annotations
 

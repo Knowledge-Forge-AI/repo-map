@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import hashlib
-import importlib
 import json
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from ci import d12_hosted_state
+
 
 def _state_mod() -> Any:
-    return importlib.import_module("ci.d12_hosted_state")
+    return d12_hosted_state
 
 
 def test_load_safe_json_report_constants_and_valid_mapping(tmp_path: Path) -> None:

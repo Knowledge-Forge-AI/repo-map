@@ -295,6 +295,10 @@ def test_preserves_independent_re_resolution_and_identities() -> None:
 _ACCEPTED_PREP_DIGEST = "124e1c7d05016c601739f946a6a4fd69646c794b0168e80444a612bb4189ef30"
 _PRIOR_PREP_DIGEST = "c3eb4a85bc29f9e1eb2275c0ac16d21f3539eff0ef6db99ee30ddf8f117c2c53"
 _PREP_PATH = "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py"
+_ACCEPTED_RESOURCE_DIGEST = "c008ea952676e3b3d726bb6084e5fa39a92de41ddcbde299ac751785a23c6f54"
+_PRIOR_RESOURCE_DIGEST = "8f81a75e0fb8164390de910e49ccc024fcd68eceac987a4a6918603ea00c8a25"
+_RESOURCE_PATH = "src/test/support/python/repomap_test_support/resource_test_images.py"
+_RESOURCE_SYM = "TestImageManager.build_ephemeral_image"
 
 
 def test_preparation_targets_resolve_accepted_digest_and_local_code_identities() -> None:
@@ -302,13 +306,15 @@ def test_preparation_targets_resolve_accepted_digest_and_local_code_identities()
         module_name, qualified, file_digest, code_id = _python_identity(_PREP_PATH, symbol)
         assert module_name == "repomap_test_support.test_cov5k_r2_fix2_preparation"
         assert qualified == f"repomap_test_support.test_cov5k_r2_fix2_preparation.{symbol}"
-        assert file_digest == _ACCEPTED_PREP_DIGEST
-        assert len(code_id) == 64
-
+        assert file_digest == _ACCEPTED_PREP_DIGEST and len(code_id) == 64
         resolved = _resolve_symbol(module_name, symbol)
-        code = getattr(resolved, "__code__", None)
-        assert code is not None
-        assert code_id == _code_object_identity(code)
+        assert resolved.__code__ is not None and code_id == _code_object_identity(resolved.__code__)
+    rmod, rqual, rdig, rcid = _python_identity(_RESOURCE_PATH, _RESOURCE_SYM)
+    assert rmod == "repomap_test_support.resource_test_images"
+    assert rqual == f"repomap_test_support.resource_test_images.{_RESOURCE_SYM}"
+    assert rdig == _ACCEPTED_RESOURCE_DIGEST and len(rcid) == 64
+    rfn = _resolve_symbol(rmod, _RESOURCE_SYM)
+    assert rfn.__code__ is not None and rcid == _code_object_identity(rfn.__code__)
 
 
 def test_python_identity_rejects_substituted_foreign_source_callable(
@@ -318,64 +324,66 @@ def test_python_identity_rejects_substituted_foreign_source_callable(
         pass
 
     monkeypatch.setattr(evidence_module, "_resolve_symbol", lambda _m, _s: foreign_callable)
-    with pytest.raises(
-        ExecutorEvidenceError,
-        match="registered callable code origin differs from registered path",
+    for path, sym in (
+        (_PREP_PATH, "execute_preparation_condition"),
+        (_RESOURCE_PATH, _RESOURCE_SYM),
+        ("tools/run_tests.py", "main"),
     ):
-        _python_identity(_PREP_PATH, "execute_preparation_condition")
-
-    with pytest.raises(
-        ExecutorEvidenceError,
-        match="registered callable code origin differs from registered path",
-    ):
-        _python_identity("tools/run_tests.py", "main")
+        with pytest.raises(
+            ExecutorEvidenceError,
+            match="registered callable code origin differs from registered path",
+        ):
+            _python_identity(path, sym)
 
 
 def test_current_preparation_owner_binding_passes_and_prior_digest_fails() -> None:
-    prep_mod = _module_name(_PREP_PATH)
-    cond_fn = _resolve_symbol(prep_mod, "execute_preparation_condition")
-    state_fn = _resolve_symbol(prep_mod, "execute_preparation_state_path")
-
     base_entry = next(
         e for e in build_closed_catalog()
         if e.executor_symbol == "execute_preparation_condition"
     )
-    entry = replace(
-        base_entry,
-        owner=OwnerBinding(
-            product_owner_id="test.preparation",
-            source_path=_PREP_PATH,
-            symbol="execute_preparation_condition",
-            callgraph_proof="proof",
+    cases = (
+        (
+            "test.preparation", _PREP_PATH, "execute_preparation_condition",
+            "execute_preparation_state_path", _ACCEPTED_PREP_DIGEST, _PRIOR_PREP_DIGEST,
         ),
-        executor_source_path=_PREP_PATH,
-        executor_symbol="execute_preparation_state_path",
+        (
+            "test.resource_images", _RESOURCE_PATH, _RESOURCE_SYM,
+            _RESOURCE_SYM, _ACCEPTED_RESOURCE_DIGEST, _PRIOR_RESOURCE_DIGEST,
+        ),
     )
-
-    current_owner = OwnerEntryEvidence(
-        module_source_digest=_ACCEPTED_PREP_DIGEST,
-        qualified_symbol=f"{prep_mod}.execute_preparation_condition",
-        code_object_identity=_code_object_identity(cond_fn.__code__),
-        executor_source_digest=_digest_bytes(inspect.getsource(state_fn).encode("utf-8")),
-        owner_entry_count=1,
-        scenario_seam_active=True,
-        owner_source_path=_PREP_PATH,
-        owner_module=prep_mod,
-        executor_source_path=_PREP_PATH,
-        executor_module=prep_mod,
-        executor_qualified_symbol=f"{prep_mod}.execute_preparation_state_path",
-        owner_entry_during_operation=True,
-    )
-
-    current_bound = _registered_owner_evidence(entry, current_owner)
-    _verify_registered_owner(current_bound)
-    assert current_bound.registered_owner_module_digest == _ACCEPTED_PREP_DIGEST
-
-    prior_owner = replace(current_owner, module_source_digest=_PRIOR_PREP_DIGEST)
-    prior_bound = _registered_owner_evidence(entry, prior_owner)
-    assert prior_bound.registered_owner_module_digest == _ACCEPTED_PREP_DIGEST
-    with pytest.raises(
-        ExecutorEvidenceError,
-        match="runtime owner module digest differs from registered owner",
-    ):
-        _verify_registered_owner(prior_bound)
+    for owner_id, path, owner_sym, exec_sym, accepted_dig, prior_dig in cases:
+        mod = _module_name(path)
+        owner_fn = _resolve_symbol(mod, owner_sym)
+        exec_fn = _resolve_symbol(mod, exec_sym)
+        entry = replace(
+            base_entry,
+            owner=OwnerBinding(owner_id, path, owner_sym, "proof"),
+            executor_source_path=path,
+            executor_symbol=exec_sym,
+        )
+        current_owner = OwnerEntryEvidence(
+            module_source_digest=accepted_dig,
+            qualified_symbol=f"{mod}.{owner_sym}",
+            code_object_identity=_code_object_identity(owner_fn.__code__),
+            executor_source_digest=_digest_bytes(inspect.getsource(exec_fn).encode("utf-8")),
+            owner_entry_count=1,
+            scenario_seam_active=True,
+            owner_source_path=path,
+            owner_module=mod,
+            executor_source_path=path,
+            executor_module=mod,
+            executor_qualified_symbol=f"{mod}.{exec_sym}",
+            owner_entry_during_operation=True,
+        )
+        current_bound = _registered_owner_evidence(entry, current_owner)
+        _verify_registered_owner(current_bound)
+        assert current_bound.registered_owner_module_digest == accepted_dig
+        prior_bound = _registered_owner_evidence(
+            entry, replace(current_owner, module_source_digest=prior_dig)
+        )
+        assert prior_bound.registered_owner_module_digest == accepted_dig
+        with pytest.raises(
+            ExecutorEvidenceError,
+            match="runtime owner module digest differs from registered owner",
+        ):
+            _verify_registered_owner(prior_bound)

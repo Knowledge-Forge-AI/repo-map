@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import psycopg
-from psycopg.abc import Query
+from psycopg.abc import QueryNoTemplate
 import pytest
 
 from repomap_kg.storage import StorageSchemaError, apply_migrations, default_rdbms_root
@@ -21,7 +21,7 @@ from repomap_test_support.portable_publication_fixtures import (
 
 def _fetch(
     connection: psycopg.Connection[tuple[object, ...]],
-    query: Query, params: tuple[object, ...] = (),
+    query: QueryNoTemplate, params: tuple[object, ...] = (),
 ) -> tuple[object, ...]:
     row = connection.execute(query, params).fetchone()
     assert row is not None

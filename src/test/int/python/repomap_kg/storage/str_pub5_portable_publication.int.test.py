@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import psycopg
 from psycopg import sql
-from psycopg.abc import Query
+from psycopg.abc import QueryNoTemplate
 import pytest
 
 from repomap_kg.artifacts import (
@@ -41,7 +41,9 @@ from repomap_test_support.portable_publication_fixtures import (
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
 
-def _fetch(connection: psycopg.Connection[tuple[object, ...]], query: Query, params: tuple[object, ...] = ()) -> tuple[object, ...]:
+def _fetch(
+    connection: psycopg.Connection[tuple[object, ...]], query: QueryNoTemplate, params: tuple[object, ...] = ()
+) -> tuple[object, ...]:
     row = connection.execute(query, params).fetchone()
     assert row is not None
     return row
