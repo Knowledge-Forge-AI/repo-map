@@ -304,3 +304,66 @@ def test_launcher_maps_sigterm_to_interrupt_and_cleans_outer(tmp_path, monkeypat
     assert ["docker", "rm", "-f", "-v", outer_id] in calls
     assert handlers[module.signal.SIGTERM] == module.signal.SIG_DFL
 
+
+def test_d12_preflight_exports_raw_reports_before_cleanup_for_zero_and_nonzero_exit(
+    tmp_path, monkeypatch
+):
+    module = sandbox_owner
+    monkeypatch.setattr(module, "bind_backing_capacity", lambda *_args, **_kwargs: None)
+    empty = module.HostSnapshot(frozenset(), frozenset(), frozenset(), frozenset())
+    node_id = (
+        "src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py"
+        "::test_d12_core_image_refresh_candidate_round_trip"
+    )
+    archive = report_archive(
+        {
+            "d12-core-image/linux-amd64/freeze.json": '{"schema":"freeze"}\n',
+            "d12-core-image/linux-amd64/exploration.json": '{"schema":"exploration"}\n',
+            "d12-core-image/linux-amd64/cleanup.json": '{"schema":"cleanup"}\n',
+        }
+    )
+    for label, wait_out, expected_rc in (("pass", "0\n", 0), ("refusal", "1\n", 1)):
+        report_dir = tmp_path / f"d12-report-{label}"
+        argv = [
+            "--suite", "int", "--no-coverage", "--jobs", "1", "--pg-container-port", "55433",
+            "--d12-core-image-profile", "linux/amd64", "--d12-core-image-preflight",
+            "--d12-core-image-source-sha256", "a" * 64, "--report-dir", str(report_dir),
+            "--", node_id,
+        ]
+        calls: list[list[object]] = []
+        outer_id = ("a" if expected_rc == 0 else "b") * 64
+
+        def fake_runner(command, _oid=outer_id, _wait=wait_out, _calls=calls, **_kwargs):
+            _calls.append(list(command))
+            if command[:3] == ["docker", "run", "-d"]:
+                return completed(command, stdout=_oid + "\n")
+            if command[:2] == ["docker", "wait"]:
+                return completed(command, stdout=_wait)
+            if command[:3] == ["docker", "container", "inspect"]:
+                return completed(command, status=1)
+            return completed(command)
+
+        def reader(container_id, required, _oid=outer_id, _calls=calls):
+            _calls.append(["archive", container_id, required])
+            assert ["docker", "rm", "-f", "-v", _oid] not in _calls
+            return archive
+
+        rc = module.run_in_sandbox(
+            argv,
+            repo_root=tmp_path / "repo",
+            image_id="sha256:" + "d" * 64,
+            runner=fake_runner,
+            follower_factory=finished_follower,
+            snapshotter=lambda _runner: empty,
+            boundary_prover=lambda *_args, **_kwargs: None,
+            archive_reader=reader,
+        )
+        assert rc == expected_rc
+        assert ["archive", outer_id, expected_rc == 0] in calls
+        assert ["docker", "rm", "-f", "-v", outer_id] in calls
+        outer = [str(tok) for tok in next(c for c in calls if c[:3] == ["docker", "run", "-d"])]
+        assert "--report" not in outer
+        assert outer[outer.index("--report-dir") + 1] == str(module.INNER_REPORT_ROOT)
+        for name in ("freeze.json", "exploration.json", "cleanup.json"):
+            assert (report_dir / "d12-core-image" / "linux-amd64" / name).is_file()
+

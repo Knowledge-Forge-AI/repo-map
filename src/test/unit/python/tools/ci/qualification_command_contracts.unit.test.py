@@ -331,6 +331,14 @@ def test_projected_public_workflow_satisfies_native_and_system_command_contracts
     assert callable(validate_native_runner)
     assert _validate_downstream_dependencies(wf) == []
     assert validate_native_runner(wf) == []
+    assert "--report" not in cmd_contracts._job_runners(wf, "d12-native-amd64")[0]
+    projected_text = project_public_qualification_workflow(PUBLIC_RELEASE_QUALIFICATION_WORKFLOW_TEXT)
+    for bad_text in (
+        projected_text.replace("            --report-dir ", "            --report \\\n            --report-dir "),
+        projected_text.replace("            --report-dir ", "            --report=false \\\n            --report-dir "),
+    ):
+        bad_wf = Workflow(Path("repomap-release-qualification.yml"), parse_yaml(bad_text))
+        assert any("--report" in err for err in validate_native_runner(bad_wf))
     assert _validate_main_system_gate_ordering(wf) == []
 
 

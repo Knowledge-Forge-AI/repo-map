@@ -12,6 +12,14 @@ import pytest
 from ci import check_generated_drift as drift
 from ci import psycopg_bootstrap as bootstrap
 from repomap_kg.runtime import release
+from src.test.unit.python.tools.ci.psycopg_custody_fixture import (
+    DIVERTED_USR_BIN,
+    LIBPQ_DEV_ORIGINAL_MD5,
+    LIBPQ_DEV_ORIGINAL_SHA256,
+    install_host_paths,
+    make_runner,
+    make_which,
+)
 
 ROOT = Path(__file__).resolve().parents[5]
 SDIST = "29c568426ad61c1b702c7d73505c43ca2c9fc5d97a8431d8d9049e731e319ff8"
@@ -125,9 +133,9 @@ PG_CONFIG = {"--includedir": "/usr/include/postgresql", "--libdir": "/usr/lib/aa
 
 
 @pytest.fixture
-def host_paths(monkeypatch):
+def host_paths(tmp_path, monkeypatch):
     # The fakes own every queried path; a real host symlink must not redirect them.
-    monkeypatch.setattr(bootstrap.os.path, "realpath", lambda path, **_options: path)
+    install_host_paths(monkeypatch, tmp_path)
 
 
 def _which(path="/usr/bin/pg_config"):
@@ -142,6 +150,8 @@ def _runner(packages=MATCHING, attestation=None, failing=(), owners=None, attest
 
     def run(command, **options):
         calls.append((command, options.get("env")))
+        if command == ["dpkg", "--print-architecture"]:
+            return SimpleNamespace(returncode=0, stdout="arm64\n")
         if command[:2] == ["dpkg-query", "-S"]:
             found = owned.get(command[2])
             out = f"{found}:arm64: {command[2]}\n" if found else ""
@@ -170,7 +180,9 @@ def test_bootstrap_installs_build_tools_then_builds_without_isolation_and_attest
     assert native["acquisition"].startswith("none") and native["packages"]["gcc"] == "4:12.2.0-3"
     assert isinstance(attestation, dict) and attestation["implementation"] == "c", attestation
     assert all("PSYCOPG_IMPL" not in (env or {}) for _command, env in calls)
-    assert not [command for command, _ in calls if command[0] in ("apt-get", "apt", "dpkg")], "no system install"
+    assert [command for command, _ in calls if command[0] in ("apt-get", "apt", "dpkg")] == [
+        ["dpkg", "--print-architecture"]
+    ], "no system install"
 
 
 @pytest.mark.parametrize("packages,attestation,failing,message", [
@@ -198,9 +210,9 @@ def test_pg_config_headers_and_runtime_must_be_owned_by_the_one_libpq_pair(owner
         bootstrap.native_prerequisites(run, _which())
 
 
-def test_relocated_path_pg_config_is_bound_by_its_own_realpath_package(monkeypatch):
+def test_relocated_path_pg_config_is_bound_by_its_own_realpath_package(tmp_path, monkeypatch):
     relocated, real = "/opt/runner/bin/pg_config", "/usr/lib/postgresql/17/bin/pg_config"
-    monkeypatch.setattr(bootstrap.os.path, "realpath", lambda path, **_options: real if path == relocated else path)
+    install_host_paths(monkeypatch, tmp_path, realpath_map={relocated: real})
     run, calls = _runner(owners={**OWNERS, real: "postgresql-client-17"})
     native = bootstrap.native_prerequisites(run, _which(relocated))
     executable, owners = native["pg_config_executable"], native["owners"]
@@ -236,3 +248,29 @@ def test_unit_lane_builds_c_psycopg_before_a_wheel_only_project_closure():
     closure_step = workflow.index("tools/ci/project_dependencies.lock\n")
     assert bootstrap_step < closure_step, "C Psycopg must be built before the closure step"
     assert 'PIP_ONLY_BINARY: ":all:"' in workflow[bootstrap_step:closure_step], "the closure must refuse sdist builds"
+
+
+def test_diverted_path_pg_config_proves_libpq_dev_original_and_cleans_up_child_path(tmp_path, monkeypatch):
+    install_host_paths(monkeypatch, tmp_path)
+    diverted_target = "/usr/bin/pg_config.libpq-dev"
+    diversions = {"/usr/bin/pg_config": DIVERTED_USR_BIN}
+    monkeypatch.setenv("CALLER_MARKER", "preserved")
+    monkeypatch.setenv("PSYCOPG_IMPL", "python")
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+    seen_links: list[tuple[Path, Path | None]] = []
+    run, calls = make_runner(diversions=diversions, pip_path_links=seen_links)
+    evidence = bootstrap.bootstrap("/py", run, make_which("/usr/bin/pg_config"))
+    native = evidence["native"]
+    assert isinstance(native, dict)
+    assert native["pg_config_executable"]["realpath"] == diverted_target
+    assert native["owners"] == {"libpq-fe.h": "libpq-dev", "libpq.so.5": "libpq5", "pg_config": "libpq-dev"}
+    assert native["custody"]["route"] == "dpkg_divert_libpq_dev_original"
+    assert native["custody"]["sha256"] == LIBPQ_DEV_ORIGINAL_SHA256
+    assert native["custody"]["control_entry"] == {"path": "usr/bin/pg_config", "md5": LIBPQ_DEV_ORIGINAL_MD5}
+    assert "/usr/bin/pg_config" not in [cmd[0] for cmd, _env in calls]
+    pip_envs = [env for cmd, env in calls if cmd[1:4] == ["-m", "pip", "install"]]
+    assert len(pip_envs) == 3 and len(seen_links) == 3
+    for env, (temp_bin, target) in zip(pip_envs, seen_links):
+        assert isinstance(env, dict) and env.get("CALLER_MARKER") == "preserved" and "PSYCOPG_IMPL" not in env
+        assert env["PATH"] == f"{temp_bin}{bootstrap.os.pathsep}/usr/bin:/bin" and target == Path(diverted_target)
+        assert not temp_bin.exists() and not temp_bin.parent.exists()

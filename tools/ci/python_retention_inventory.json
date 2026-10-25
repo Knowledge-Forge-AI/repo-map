@@ -1783,6 +1783,39 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci63repair3.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/backup_provenance_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/python_payload_contract.int.test.py",
+        "src/test/unit/python/tools/ci/psycopg_custody_fixture.py",
+        "src/test/unit/python/tools/ci/psycopg_pg_config_custody.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 CI pg_config custody unit/fixture owners and containerized runtime payload and backup provenance boundary integration test owners; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation47.ci63repair3.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/backup_provenance_boundaries.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 backup provenance boundary fixture and case table support module; strict zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.ci63repair3.tools",
+      "members": [
+        "tools/ci/psycopg_pg_config_custody.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 CI known-relocation pg_config custody helper; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
         "src/test/unit/python/tools/ci/pipe0_topology_support.py"
@@ -31776,6 +31809,15 @@
       "status": "active_int_test"
     },
     {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/backup_provenance_boundaries.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 containerized PostgreSQL archive TOC, connection provenance and release artifact boundary integration test owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -31871,6 +31913,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d9_manifest_provenance.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION37-EXTENSION-PROVENANCE1 containerized integration test owner for ADR 0084 D9-A format-2 backup provenance, v1 compatibility, TOC cross-checking and destructive consumer refusals.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/python_payload_contract.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 containerized D12 Python payload ELF, ldd and dpkg-query boundary integration test owner; strict zero-debt admission.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -33644,6 +33695,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/awk.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/backup_provenance_boundaries.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 backup provenance boundary fixture and case table support module; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -43731,6 +43791,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/psycopg_custody_fixture.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 CI pg_config custody unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/psycopg_pg_config_custody.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 CI pg_config custody unit or fixture owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/public_author_correction.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-CI57-REPAIR1 ADR0085 exact public author-correction proof owner; zero-debt admission with incumbent authority preserved.",
       "root": "test_owners",
@@ -46136,6 +46214,15 @@
       "maintained_executable": true,
       "path": "tools/ci/psycopg_bootstrap.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/psycopg_pg_config_custody.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI63REPAIR3 ADR 0093 CI known-relocation pg_config custody helper; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },

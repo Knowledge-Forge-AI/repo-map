@@ -244,8 +244,10 @@ def validate_d12_native_amd64_runner_command(
         if _opt_vals(pre_args, flag) != [expected]:
             violations.append(prefix + f"d12-native-amd64 runner missing {flag} {expected}")
     for flag in ("--sandbox", "--no-coverage", "--d12-core-image-preflight"):
-        if pre_args.count(flag) != 1:
+        if pre_args.count(flag) != 1 or any(str(tok).startswith(flag + "=") for tok in pre_args):
             violations.append(prefix + f"d12-native-amd64 runner missing {flag}")
+    if any(str(tok) == "--report" or str(tok).startswith("--report=") for tok in pre_args):
+        violations.append(prefix + "d12-native-amd64 runner must not pass --report with --no-coverage")
     if not validate_command_option_var_expansion(
         pre_args, "--d12-core-image-source-sha256", "D12_EXPECTED_SOURCE_SHA256"
     ):

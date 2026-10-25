@@ -59,6 +59,12 @@ def test_native_runner_command_contract_rejects_hidden_wrong_or_ledger_flags() -
     )
     assert validate_d12_native_amd64_runner_command(valid_cmd) == []
 
+    with_report = valid_cmd.replace("--report-dir", "--report --report-dir")
+    assert any("--report" in v for v in validate_d12_native_amd64_runner_command(with_report))
+
+    bad_report_val = valid_cmd.replace("--report-dir", "--report=false --report-dir")
+    assert any("--report" in v for v in validate_d12_native_amd64_runner_command(bad_report_val))
+
     hidden = "python3 tools/ci/d12_hosted_qualification.py run-inner"
     assert any("run_tests.py" in v for v in validate_d12_native_amd64_runner_command(hidden))
 

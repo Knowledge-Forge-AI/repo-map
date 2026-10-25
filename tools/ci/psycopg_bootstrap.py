@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Install C Psycopg into one interpreter from hash-locked inputs (ADR 0089 D5/D6).
+"""Install C Psycopg into one interpreter from hash-locked inputs (ADR 0089 D5/D6, ADR 0093).
 
 The host must be Debian-family and already provide ``gcc``, ``libc6-dev`` and
 one installed ``libpq-dev``/``libpq5`` pair. This tool acquires and installs no
 system package and adds no repository: it records the existing packages' dpkg
 identities, so their custody is the host or runner image's, not a resolution
-made here. The shared ``tools/native_apt_prerequisites.py`` attestation
-binds the PATH-resolved ``pg_config`` (realpath) to an installed package of the
-pair's source version and the selected header and runtime library to the pair.
+made here. The shared ``tools/native_apt_prerequisites.py`` attestation or
+CI ``dpkg-divert`` custody helper binds ``pg_config`` to the pair before
+execution.
 It then installs the hash-locked build tools, builds psycopg-c from its
 hash-bound sdist without build isolation, installs the Psycopg wheel, and
 attests the C implementation with equal header and runtime libpq. Any other
@@ -23,7 +23,6 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tempfile
 from typing import Callable, Sequence
 
 if __package__ in (None, ""):
@@ -31,6 +30,7 @@ if __package__ in (None, ""):
     if str(tools_root) not in sys.path:
         sys.path.insert(0, str(tools_root))
 
+from ci import psycopg_pg_config_custody as custody
 import native_apt_prerequisites as apt
 
 CI_ROOT = Path(__file__).resolve().parent
@@ -79,10 +79,9 @@ def native_prerequisites(
 ) -> dict[str, object]:
     """Record existing compiler and libpq identities; nothing is acquired or installed."""
     try:
-        libpq = apt.attest_libpq(run, which=which, realpath=os.path.realpath)
-        installed = apt.installed_packages(run)
+        installed, libpq = custody.attest_ci_libpq(run, which=which, realpath=os.path.realpath)
         compiler = apt.command_output(run, ["gcc", "--version"]).strip().splitlines()
-    except apt.PrerequisiteRefused as error:
+    except (apt.PrerequisiteRefused, custody.CustodyError) as error:
         raise BootstrapError(str(error)) from error
     packages = {row["name"]: row["version"] for row in installed.values()
                 if row["status"] == "ii" and row["name"] in ("gcc", "libc6-dev", "libpq-dev", "libpq5")}
@@ -96,7 +95,13 @@ def native_prerequisites(
         "pg_config_executable": libpq["pg_config"],
         "libpq_dev": libpq["libpq_dev"],
         "libpq5": libpq["libpq5"],
+        "source": libpq["source"],
+        "source_version": libpq["source_version"],
+        "includedir": libpq["includedir"],
+        "libdir": libpq["libdir"],
+        "paths": libpq["paths"],
         "owners": libpq["owners"],
+        "custody": libpq["custody"],
     }
 
 
@@ -137,13 +142,21 @@ def bootstrap(
 ) -> dict[str, object]:
     prerequisites = native_prerequisites(run, which)
     lock_text = PROJECT_LOCK.read_text(encoding="utf-8")
-    with tempfile.TemporaryDirectory(prefix="repomap-psycopg-") as raw:
-        sdist, wheel = Path(raw) / "psycopg-c.txt", Path(raw) / "psycopg.txt"
+
+    def _run_installs(raw_path: Path, child_env: dict[str, str]) -> None:
+        sdist, wheel = raw_path / "psycopg-c.txt", raw_path / "psycopg.txt"
         sdist.write_text(lock_entry(lock_text, "psycopg-c"), encoding="utf-8")
         wheel.write_text(lock_entry(lock_text, "psycopg"), encoding="utf-8")
         for command in install_commands(python, sdist, wheel):
-            if run(command, check=False).returncode != 0:
+            if run(command, check=False, env=child_env).returncode != 0:
                 raise BootstrapError(f"install step failed: {' '.join(command[3:])}")
+
+    try:
+        custody.run_build_with_bound_pg_config(
+            prerequisites, _run_installs, run=run, realpath=os.path.realpath
+        )
+    except custody.CustodyError as error:
+        raise BootstrapError(str(error)) from error
     return {"native": prerequisites, "attestation": attest(python, run)}
 
 

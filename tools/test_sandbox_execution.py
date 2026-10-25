@@ -169,7 +169,7 @@ def sandbox_report_arguments(
             continue
         gate_index += 1
 
-    if "--report" not in runner_argv:
+    if "--report" not in runner_argv and "--d12-core-image-preflight" not in runner_argv:
         return SandboxArgumentsResult([*runner_argv, *forwarded], None, gate_request_bytes)
 
     destination, injected_report_dir, index = Path(".test-reports"), True, 0
