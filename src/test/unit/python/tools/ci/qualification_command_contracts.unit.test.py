@@ -46,7 +46,8 @@ SYSTEM = ("python3 tools/run_tests.py --suite system "
           '--candidate-sha "${CANDIDATE_SHA}" --candidate-tree "${CANDIDATE_TREE}" '
           '--candidate-base-parent "${CANDIDATE_BASE_PARENT}" '
           '--candidate-head-parent "${CANDIDATE_HEAD_PARENT}" '
-          '--gate-request-json "${RUNNER_TEMP}/gate-request.json"')
+          '--gate-request-json "${RUNNER_TEMP}/gate-request.json" '
+          '--d12-system-proof-json "${RUNNER_TEMP}/repomap-d12-system-admission/proof.json"')
 
 
 def _workflow(steps, **other_jobs):
@@ -290,6 +291,11 @@ def test_environment_persistence_requires_real_redirect_and_expansion(binding):
 @pytest.mark.parametrize("runner", [
     SYSTEM.replace('"${RUNNER_TEMP}/gate-request.json"', "'${RUNNER_TEMP}/gate-request.json'"),
     SYSTEM.replace('"${RUNNER_TEMP}/gate-request.json"', "'$RUNNER_TEMP/gate-request.json'"),
+    SYSTEM.replace(' --d12-system-proof-json "${RUNNER_TEMP}/repomap-d12-system-admission/proof.json"', ""),
+    SYSTEM.replace(
+        '"${RUNNER_TEMP}/repomap-d12-system-admission/proof.json"',
+        "'${RUNNER_TEMP}/repomap-d12-system-admission/proof.json'",
+    ),
 ])
 def test_request_consumption_requires_expanded_path(runner):
     assert _validate_main_system_gate_ordering(_main_workflow(runner=runner))

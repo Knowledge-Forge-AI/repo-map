@@ -1856,6 +1856,72 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.d12system1.host_proof.tools",
+      "members": [
+        "tools/ci/d12_system_grant.py",
+        "tools/ci/d12_system_proof_host.py",
+        "tools/runner_d12_options.py",
+        "tools/test_sandbox_arguments.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B lower pure host-proof, grant, and sandbox option owners; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.d12system1.reports.tools",
+      "members": [
+        "tools/system/d12_system_reports.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 pure stdlib bounded JSON report accounting and atomic writer owner; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.d12system1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_system_admission.int.test.py",
+        "src/test/unit/python/repomap_kg/runtime/d12_release_manifest.unit.test.py",
+        "src/test/unit/python/tools/ci/d12_system_grant.unit.test.py",
+        "src/test/unit/python/tools/ci/d12_system_proof_host.unit.test.py",
+        "src/test/unit/python/tools/system/d12_exec.unit.test.py",
+        "src/test/unit/python/tools/system/d12_system_evidence.unit.test.py",
+        "src/test/unit/python/tools/system/d12_system_session.unit.test.py",
+        "src/test/unit/python/tools/test_sandbox_d12_proof.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation47.d12system1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_image_probes.py",
+        "src/test/support/python/repomap_test_support/d12_recipe.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.d12system1.tools",
+      "members": [
+        "tools/ci/d12_system_hold.py",
+        "tools/system/candidate_identity.py",
+        "tools/system/compose_command.py",
+        "tools/system/d12_exec.py",
+        "tools/system/d12_system_evidence.py",
+        "tools/system/d12_system_session.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "repair10.public_topology_support",
       "members": [
@@ -16811,6 +16877,69 @@
       "to": [
         "src/test/unit/python/repomap_test_support/sqlite_managed_child_interrupt.unit.test.py"
       ]
+    },
+    {
+      "from": "src/test/support/python/repomap_test_support/d12_core_image.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "src/test/support/python/repomap_test_support/d12_recipe.py"
+      ]
+    },
+    {
+      "from": "src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "src/test/support/python/repomap_test_support/d12_image_probes.py"
+      ]
+    },
+    {
+      "from": "tools/runner_arguments.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/runner_d12_options.py"
+      ]
+    },
+    {
+      "from": "tools/test_sandbox_execution.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/test_sandbox_arguments.py"
+      ]
+    },
+    {
+      "from": "tools/ci/d12_hosted_qualification.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/ci/d12_system_hold.py"
+      ]
+    },
+    {
+      "from": "tools/system/candidate_image.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/system/candidate_identity.py"
+      ]
+    },
+    {
+      "from": "tools/ci/d12_system_hold.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/ci/d12_system_proof_host.py"
+      ]
+    },
+    {
+      "from": "tools/ci/d12_hosted_evidence.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/ci/d12_system_proof_host.py"
+      ]
+    },
+    {
+      "from": "tools/system/d12_system_evidence.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
+      "to": [
+        "tools/system/d12_system_reports.py"
+      ]
     }
   ],
   "dynamic_boundaries": [
@@ -28890,6 +29019,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/release_manifest.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -32196,6 +32334,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_system_admission.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d9_extension_exec_custody.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
       "root": "test_owners",
@@ -34259,6 +34406,24 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/d12_dynamic_linkage.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_image_probes.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_recipe.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -40836,6 +41001,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d12_release_manifest.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/d9_extension_exec_custody.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION40-EXTENSION-RESTORE1 ADR0084 bounded D9-B extension restore owner; strict clean admission without incumbent debt growth.",
       "root": "test_owners",
@@ -44094,6 +44268,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_system_grant.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_system_proof_host.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/file_length_policy.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -45750,6 +45942,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_exec.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_system_evidence.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_system_session.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/system/scenario_restart_fence.unit.test.py",
       "rationale": "REPAIR4 cohesive fencing, lifecycle or evidence owner; preserves the maintained responsibility and immediate zero-debt quality obligations.",
       "root": "test_owners",
@@ -46182,6 +46401,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_sandbox_d12_proof.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_sandbox_git_readiness.unit.test.py",
       "rationale": "REVISE33 responsibility decomposition under original cohort and unchanged profile.",
       "root": "test_owners",
@@ -46481,6 +46709,33 @@
       "maintained_executable": true,
       "path": "tools/ci/d12_hosted_state.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION46-D12HOSTED4 ADR 0092 bounded JSON report and prepare-refusal state helper; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_system_grant.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_system_hold.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_system_proof_host.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -47550,6 +47805,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/runner_d12_options.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/runner_dependencies.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -48441,6 +48705,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/system/candidate_identity.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/system/candidate_image.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -48459,6 +48732,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/system/compose_command.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/system/compose_topology.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
       "root": "tools",
@@ -48470,6 +48752,42 @@
       "maintained_executable": true,
       "path": "tools/system/config.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_exec.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_system_evidence.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_system_reports.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_system_session.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -48677,6 +48995,15 @@
       "maintained_executable": true,
       "path": "tools/test_sandbox/apt_prerequisites.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 native prerequisite custody owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/test_sandbox_arguments.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },

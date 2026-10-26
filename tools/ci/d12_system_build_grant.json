@@ -1,0 +1,28 @@
+{
+  "schema": "repomap-d12-system-build-grant-v1",
+  "nonce": "68920c8be2054bddaefba6ff1761b2e5",
+  "reservation_sha256": "60d67477702e81125b5fba737c182965a78bcb6865c4e267adb0d064a71ac595",
+  "repository": "Knowledge-Forge-AI/repo-map",
+  "workflow_path": ".github/workflows/repomap-release-qualification.yml",
+  "pull_request": 13,
+  "event_action": "synchronize",
+  "head_ref": "staging",
+  "base_ref": "main",
+  "before": "33c0a6159a57b80c09dc8a5ddbd543c3369f448b",
+  "base": "24d15650a2d4563d188acb8bbf34a0dabf8f3d65",
+  "workflow_ordinal": 69,
+  "workflow_attempt": 1,
+  "platform": "linux/amd64",
+  "owner": "main-system-gate",
+  "maximum_total": 2,
+  "maximum_per_platform": 1,
+  "approval_sha256": "44ba2d4cf7a87e03877e174fce3de4f28d134f23d1b79bfa3be3fd65f332c557",
+  "ledger_before_sha256": "8cb19a8cdbc2c2c476c148d6468d2fe082015a6d2e5d07aa8cfd16c8c024a211",
+  "sdk_recipe_sha256": "24ddf31d8890922c012559d5cab4b1dffe4b41e5b19e9b3438555aabe22d2862",
+  "d12_context": {
+    "source_sha256": "09743b06f9ea0bb3819b23632dbd0508dedce8cefdc18255e5181af38e3ae0c3",
+    "recipe_sha256": "1c7c2c3ad3e9bfb526ced46bfa80dc1a80a9e3a3731636acb65308716ceafabb",
+    "dockerfile_sha256": "05f20b780dd92100631dd35cfd3d4ef7ffb7532c0870b4222df40be96e3d7094",
+    "context_file_count": 695
+  }
+}

@@ -145,18 +145,8 @@ def add_runner_arguments(
             "(retained for compatibility; sandboxing is automatic)"
         ),
     )
-    parser.add_argument(
-        "--d12-core-image-profile",
-        choices=("linux/arm64", "linux/amd64"),
-        default=None,
-        help="ADR 0087 D12-A one-owner candidate build profile (exact scoped int node only)",
-    )
-    parser.add_argument("--d12-core-image-source-sha256", default=None,
-                        help="frozen D12 build-context digest the checkout must still match")
-    parser.add_argument("--d12-core-image-budget-ledger", default=None,
-                        help="D12 write-ahead build ledger; host admission consumes its matching entry")
-    parser.add_argument("--d12-core-image-preflight", action="store_true",
-                        help="non-consuming E1 exploration mode of the D12 profile; never builds or opens a ledger")
+    from runner_d12_options import add_d12_runner_arguments
+    add_d12_runner_arguments(parser)
 
 
 def split_forwarded_args(argv: list[str]) -> tuple[list[str], list[str]]:
@@ -195,7 +185,9 @@ def validate_runner_options(
     if parallel_jobs_enabled_fn is None:
         parallel_jobs_enabled_fn = parallel_jobs_enabled
     from repomap_test_support.d12_core_image import validate_options as validate_d12_options
+    from runner_d12_options import validate_d12_system_proof_option
     validate_d12_options(args)
+    validate_d12_system_proof_option(args)
     if suites == ("smoke",):
         if args.report:
             raise RuntimeError("--report is only supported for pytest-backed suites")

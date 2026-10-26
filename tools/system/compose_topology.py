@@ -98,10 +98,13 @@ mode = "read_only"
         "services:",
         "  postgres:",
         f"    image: {POSTGRES_RELEASE_IMAGE}",
+        "    pull_policy: never",
     ]
     for svc in sorted(APPLICATION_SERVICES):
         override_yaml_lines.append(f"  {svc}:")
         override_yaml_lines.append(f"    image: {config.candidate_tag}")
+        override_yaml_lines.append("    build: !reset null")
+        override_yaml_lines.append("    pull_policy: never")
         if svc == "coordinator":
             override_yaml_lines.append("    environment:")
             override_yaml_lines.append("      _REPOMAP_SYSTEM_TEST_STAGED_PAUSE_PATH: /tmp/system_pause_trigger")
@@ -185,10 +188,18 @@ def inspect_and_verify_topology(
                 f"service {svc_name!r} has image {image!r}, expected candidate tag {candidate_tag!r}"
             )
 
-    # 2. Strictly reject any bind mount from repo root or any descendant of repo root across ALL services
+    # 2. Strictly reject any build descriptor, non-never pull_policy, or bind mount from repo root
     for s_name, s_data in services.items():
         if not isinstance(s_data, dict):
             raise SystemTestError(f"malformed service record for {s_name!r}")
+        if s_data.get("build") is not None:
+            raise SystemTestError(
+                f"service {s_name!r} retains forbidden build descriptor in merged compose topology"
+            )
+        if s_data.get("pull_policy") != "never":
+            raise SystemTestError(
+                f"service {s_name!r} has pull_policy {s_data.get('pull_policy')!r}, expected 'never'"
+            )
         volumes = s_data.get("volumes", [])
         if not isinstance(volumes, list):
             raise SystemTestError(f"malformed volumes section in service {s_name!r}")

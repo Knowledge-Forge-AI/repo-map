@@ -334,4 +334,11 @@ def _validate_main_system_gate_ordering(workflow: Workflow, job_name: str = "mai
             return [prefix + "system request must consume bound " + name]
     if not _expanded_path_option(system_arguments, "--gate-request-json", "RUNNER_TEMP", "/gate-request.json"):
         return [prefix + "system runner must consume the constructed request"]
+    if job_name == "main-system-gate" and not _expanded_path_option(
+        system_arguments,
+        "--d12-system-proof-json",
+        "RUNNER_TEMP",
+        "/repomap-d12-system-admission/proof.json",
+    ):
+        return [prefix + "system runner must consume the d12 system admission proof"]
     return []

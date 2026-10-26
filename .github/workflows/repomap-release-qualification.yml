@@ -267,7 +267,7 @@ jobs:
   main-system-gate:
     name: main-system-gate
     needs: [source-and-export-policy]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Check out repository
@@ -325,7 +325,8 @@ jobs:
             --candidate-tree "${CANDIDATE_TREE}" \
             --candidate-base-parent "${CANDIDATE_BASE_PARENT}" \
             --candidate-head-parent "${CANDIDATE_HEAD_PARENT}" \
-            --output-json "${GITHUB_WORKSPACE}/ci-system-report/repomap-system-hold-refusal-v1.json"
+            --output-json "${RUNNER_TEMP}/repomap-d12-system-admission/hold.json" \
+            --proof-json "${RUNNER_TEMP}/repomap-d12-system-admission/proof.json"
 
       - name: Record free disk before the system suite
         run: df -B1 /
@@ -351,6 +352,7 @@ jobs:
             --approval-id "pr-${PR_NUMBER}" \
             --pr-number "${PR_NUMBER}" \
             --repository "${GITHUB_REPOSITORY}" \
+            --d12-system-proof-json "${RUNNER_TEMP}/repomap-d12-system-admission/proof.json" \
             --report \
             --report-dir "${GITHUB_WORKSPACE}/ci-system-report"
 
@@ -359,7 +361,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: repomap-main-system-gate-report
-          path: ci-system-report
+          path: |
+            ci-system-report
+            ${{ runner.temp }}/repomap-d12-system-admission
           if-no-files-found: warn
           retention-days: 14
 

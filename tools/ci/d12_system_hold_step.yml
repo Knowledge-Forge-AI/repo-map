@@ -8,4 +8,5 @@ steps:
         --candidate-tree "${CANDIDATE_TREE}" \
         --candidate-base-parent "${CANDIDATE_BASE_PARENT}" \
         --candidate-head-parent "${CANDIDATE_HEAD_PARENT}" \
-        --output-json "${GITHUB_WORKSPACE}/ci-system-report/repomap-system-hold-refusal-v1.json"
+        --output-json "${RUNNER_TEMP}/repomap-d12-system-admission/hold.json" \
+        --proof-json "${RUNNER_TEMP}/repomap-d12-system-admission/proof.json"

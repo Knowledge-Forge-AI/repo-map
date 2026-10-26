@@ -9,7 +9,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import gc
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -20,6 +19,17 @@ import sys
 from typing import Any, Callable, Mapping, Sequence
 import uuid
 
+from repomap_test_support.d12_recipe import (
+    CONTEXT_PATHS as CONTEXT_PATHS,
+    D12ProfileError as D12ProfileError,
+    build_args,
+    compute_frozen_identity,
+    compute_recipe_digest,
+    context_files as context_files,
+    digest_files as digest_files,
+    recipe_text,
+)
+
 PROFILE_OPTION = "--d12-core-image-profile"
 PLATFORMS = ("linux/arm64", "linux/amd64")
 MARKER = "requires_d12_core_image_profile"
@@ -29,7 +39,6 @@ OPTIONAL_NODE_IDS = (NODE_ID,)
 ENV_PROFILE = "REPOMAP_TEST_D12_CORE_IMAGE_PROFILE"
 ENV_REPORT_DIR = "REPOMAP_TEST_D12_CORE_IMAGE_REPORT_DIR"
 DESELECTION_REASON = f"optional D12 core-image owner runs only under {PROFILE_OPTION}"
-CONTEXT_PATHS = ("pyproject.toml", "README.md", "src/main/python", "src/main/resources", "src/main/go")
 MAX_TOTAL_BUILDS, MAX_PLATFORM_BUILDS = 2, 1
 REPORT_PART_LIMIT, REPORT_TOTAL_LIMIT, REPORT_CLEANUP_RESERVE = 1_500_000, 5_000_000, 100_000
 LOG_EXCERPT_BYTES = 200_000
@@ -45,10 +54,6 @@ _PROFILE_ATTR, _COMPANIONS = "d12_core_image_profile", ("d12_core_image_source_s
 _NATIVE_PLATFORMS = {"aarch64": "linux/arm64", "arm64": "linux/arm64", "x86_64": "linux/amd64", "amd64": "linux/amd64"}
 _IMAGE_ID = re.compile(r"sha256:[0-9a-f]{64}\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
-
-
-class D12ProfileError(RuntimeError):
-    """The optional D12 profile refused before any candidate Docker work."""
 
 
 @dataclass(frozen=True)
@@ -115,6 +120,10 @@ def admit_profile(args: Any, forwarded: Sequence[str], *, repo_root: Path,
     platform = getattr(args, _PROFILE_ATTR, None)
     if platform is None:
         return None
+    if platform == "linux/amd64":
+        raise D12ProfileError(
+            "Route B transfers the one-use linux/amd64 candidate build to main-system-gate"
+        )
     identity = frozen_identity(repo_root, platform)
     if identity["source_sha256"] != getattr(args, _COMPANIONS[0]):
         raise D12ProfileError("stale source: checkout differs from --d12-core-image-source-sha256")
@@ -138,47 +147,23 @@ def current_admission() -> D12Admission:
     return _ADMISSION
 
 
-def _sha256(payload: bytes) -> str:
-    return hashlib.sha256(payload).hexdigest()
-
-
 def frozen_identity(repo_root: Path, platform: str) -> dict[str, Any]:
-    names = context_files(repo_root)
-    return {"source_sha256": digest_files(repo_root, names), "recipe_sha256": recipe_digest(platform),
-            "dockerfile_sha256": _sha256(recipe_text().encode()), "context_file_count": len(names)}
-
-
-def context_files(repo_root: Path) -> tuple[str, ...]:
-    """Exact non-ignored build-context files, as the recipe's COPY paths name them."""
-    command = ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--"]
-    listed = subprocess.run([*command, *CONTEXT_PATHS], cwd=repo_root, capture_output=True, check=True).stdout
-    return tuple(sorted(os.fsdecode(name) for name in set(listed.split(b"\0")) - {b""}))
-
-
-def digest_files(root: Path, names: Sequence[str]) -> str:
-    digest = hashlib.sha256()
-    for name in names:
-        path = root / name
-        if path.is_symlink() or not path.is_file():
-            raise D12ProfileError(f"build-context entry is not a regular file: {name}")
-        executable = b"x" if path.stat().st_mode & 0o111 else b"-"
-        digest.update(name.encode() + b"\0" + executable + bytes.fromhex(_sha256(path.read_bytes())))
-    return digest.hexdigest()
-
-
-def recipe_text() -> str:
-    from repomap_kg.runtime.commands import render_server_dockerfile
-
-    return render_server_dockerfile()
-
-
-def build_args(platform: str) -> dict[str, str]:
-    return {"TARGETOS": "linux", "TARGETARCH": platform.split("/", 1)[1]}
+    return compute_frozen_identity(
+        repo_root,
+        platform,
+        context_files_fn=context_files,
+        digest_files_fn=digest_files,
+        recipe_digest_fn=recipe_digest,
+        recipe_text_fn=recipe_text,
+    )
 
 
 def recipe_digest(platform: str) -> str:
-    payload = {"dockerfile": recipe_text(), "build_args": build_args(platform), "platform": platform}
-    return _sha256(json.dumps(payload, sort_keys=True).encode())
+    return compute_recipe_digest(
+        platform,
+        dockerfile_text=recipe_text(),
+        platform_build_args=build_args(platform),
+    )
 
 
 def stage_context(repo_root: Path, destination: Path, admission: D12Admission) -> Path:

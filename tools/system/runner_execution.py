@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import os
 import subprocess
 import sys
@@ -10,12 +11,14 @@ from pathlib import Path
 from typing import Any
 
 from tools.system.config import (
-    SYSTEM_DESIGN_TARGET_SECONDS,
-    SystemDeadline,
-    SystemTestConfig,
-    SystemTestError,
-    SystemTimeoutError,
+    SYSTEM_DESIGN_TARGET_SECONDS, SystemDeadline, SystemTestConfig, SystemTestError, SystemTimeoutError,
 )
+from tools.system.d12_system_evidence import (
+    build_and_write_d12_system_candidate_evidence,
+    run_disposable_roundtrip_probe,
+    run_post_build_candidate_probes,
+)
+from tools.system.d12_system_session import D12SystemSession
 from tools.system.report import SystemStepResult
 from tools.system.scenario_journal import ScenarioJournal
 
@@ -42,7 +45,13 @@ def execute_system_run(
     load_plan_env_fn,
     perform_system_cleanup_fn,
     write_system_report_fn,
+    d12_session: D12SystemSession | None = None,
+    run_post_build_candidate_probes_fn=run_post_build_candidate_probes,
+    run_disposable_roundtrip_probe_fn=run_disposable_roundtrip_probe,
+    build_and_write_d12_system_candidate_evidence_fn=build_and_write_d12_system_candidate_evidence,
 ) -> int:
+    if execution_mode == "hosted_qualification" and d12_session is None:
+        raise SystemTestError("hosted qualification system run requires an active D12SystemSession")
     client = getattr(docker_boundary, "client", None)
     if client is None:
         import docker
@@ -62,12 +71,11 @@ def execute_system_run(
     cleanup_status = {}
     step_results: tuple[SystemStepResult, ...] = ()
     passed = False
+    diagnostic_steps_passed = False
     error_message = ""
     start_time = time.monotonic()
     try:
-        outer_start_epoch = float(
-            os.environ.get(system_start_epoch_env, str(time.time()))
-        )
+        outer_start_epoch = float(os.environ.get(system_start_epoch_env, str(time.time())))
     except ValueError as error:
         raise SystemTestError("system start epoch is malformed") from error
     plan = None
@@ -84,14 +92,18 @@ def execute_system_run(
         print("  [1/4] Materializing mixed Python/Go test fixture...")
         materialize_fixture_repository_fn(fixture_dir)
 
+        if d12_session is not None:
+            print("  [2a/4] Running same-daemon D12 core-image prerequisite preflight...")
+            preflight_timeout = deadline.clamp_timeout(300.0) if hasattr(deadline, "clamp_timeout") else 300.0
+            d12_session.run_same_daemon_preflight(timeout_seconds=preflight_timeout, deadline=deadline)
+
         print("  [2/4] Building and verifying candidate release image...")
-        image_meta = build_and_verify_candidate_image_fn(
-            repo_root,
-            config,
-            boundary=docker_boundary,
-            client=client,
-            deadline=deadline,
-        )
+        build_kwargs: dict[str, Any] = {
+            "boundary": docker_boundary, "client": client, "deadline": deadline,
+        }
+        if d12_session is not None:
+            build_kwargs["d12_session"] = d12_session
+        image_meta = build_and_verify_candidate_image_fn(repo_root, config, **build_kwargs)
         candidate_image_id = image_meta.image_id
         candidate_image_digest = image_meta.image_digest
         candidate_image_labels = image_meta.labels
@@ -99,31 +111,43 @@ def execute_system_run(
         created_image_ids = image_meta.created_image_ids
         print(f"        Candidate image built: {config.candidate_tag} ({candidate_image_id[:19]})")
 
+        if d12_session is not None:
+            print("  [2b/4] Probing built candidate image and running disposable round-trip...")
+            probe_timeout = deadline.clamp_timeout(120.0) if hasattr(deadline, "clamp_timeout") else 120.0
+            rel_libpq = (d12_session.proof.get("release_manifest") or {}).get("libpq_version")
+            prb_kw: dict[str, Any] = {
+                "image_id": candidate_image_id,
+                "image_labels": candidate_image_labels,
+                "timeout_seconds": probe_timeout,
+                "deadline": deadline,
+            }
+            if isinstance(rel_libpq, int) and not isinstance(rel_libpq, bool):
+                prb_kw["expected_libpq_version"] = rel_libpq
+            run_post_build_candidate_probes_fn(d12_session, **prb_kw)
+            rt_timeout = deadline.clamp_timeout(120.0) if hasattr(deadline, "clamp_timeout") else 120.0
+            run_disposable_roundtrip_probe_fn(
+                d12_session, image_id=candidate_image_id, timeout_seconds=rt_timeout, deadline=deadline
+            )
+
         print("  [3/4] Rendering Compose topology and verifying no source mounts...")
         plan, _, _, topology = prepare_system_compose_topology_fn(
-            compose_dir=compose_dir,
-            repo_map_home=repo_map_home,
-            fixture_repo=fixture_dir,
-            repo_root=repo_root,
-            config=config,
+            compose_dir=compose_dir, repo_map_home=repo_map_home,
+            fixture_repo=fixture_dir, repo_root=repo_root, config=config,
         )
         named_volumes = tuple(
             sorted(
-                value["name"]
-                for value in topology.get("volumes", {}).values()
+                value["name"] for value in topology.get("volumes", {}).values()
                 if isinstance(value, dict) and isinstance(value.get("name"), str)
             )
         )
         named_networks = tuple(
             sorted(
-                value["name"]
-                for value in topology.get("networks", {}).values()
+                value["name"] for value in topology.get("networks", {}).values()
                 if isinstance(value, dict) and isinstance(value.get("name"), str)
             )
         )
 
         print("  [4/4] Executing 5-phase system scenario...")
-        import inspect
         scenario_kwargs: dict[str, Any] = {}
         try:
             sig = inspect.signature(execute_all_scenarios_fn)
@@ -132,22 +156,17 @@ def execute_system_run(
         except (ValueError, TypeError):
             pass
         step_results, service_identities, coordinator_evidence, mcp_readback_digest = (
-            execute_all_scenarios_fn(
-                compose_dir,
-                repo_map_home,
-                plan,
-                config,
-                timer,
-                **scenario_kwargs,
-            )
+            execute_all_scenarios_fn(compose_dir, repo_map_home, plan, config, timer, **scenario_kwargs)
         )
-        passed = True
+        diagnostic_steps_passed = True
+        passed = d12_session is None
         print("        All system scenario phases completed successfully.")
 
     except Exception as exc:
         error_message = str(exc)
         print(f"\nERROR: system suite failed: {error_message}", file=sys.stderr)
         passed = False
+        diagnostic_steps_passed = False
         step_results = journal.step_results()
         if not coordinator_evidence and journal is not None:
             for s in reversed(step_results):
@@ -158,10 +177,12 @@ def execute_system_run(
                     break
 
     finally:
-        total_duration = max(
-            time.monotonic() - start_time,
-            time.time() - outer_start_epoch,
-        )
+        if d12_session is not None and d12_session.image_id is not None:
+            if candidate_image_id is None:
+                candidate_image_id = d12_session.image_id
+            created_image_ids = tuple(sorted({*created_image_ids, d12_session.image_id}))
+
+        total_duration = max(time.monotonic() - start_time, time.time() - outer_start_epoch)
         if total_duration >= SYSTEM_DESIGN_TARGET_SECONDS:
             print(
                 f"WARNING: system suite elapsed time ({total_duration:.1f}s) "
@@ -170,8 +191,7 @@ def execute_system_run(
             )
         if isinstance(coordinator_evidence, dict):
             coordinator_evidence["timing_telemetry"] = {
-                "platform": sys.platform,
-                "runner_class": config.execution_mode,
+                "platform": sys.platform, "runner_class": config.execution_mode,
                 "total_duration_seconds": round(total_duration, 3),
                 "advisory_target_seconds": SYSTEM_DESIGN_TARGET_SECONDS,
                 "target_exceeded": total_duration >= SYSTEM_DESIGN_TARGET_SECONDS,
@@ -182,6 +202,7 @@ def execute_system_run(
                 env = load_plan_env_fn(plan)
             except Exception as exc:
                 passed = False
+                diagnostic_steps_passed = False
                 env_err = f"load_plan_env failed: {exc}"
                 print(f"WARNING: {env_err}", file=sys.stderr)
                 if not error_message:
@@ -190,6 +211,8 @@ def execute_system_run(
         recorded_container_ids: set[str] = set()
         if isinstance(service_identities, dict):
             recorded_container_ids.update(service_identities.values())
+        if d12_session is not None:
+            recorded_container_ids.update(d12_session.temp_container_ids)
         if compose_dir.exists():
             try:
                 rem_total = deadline.remaining_total_seconds()
@@ -197,22 +220,17 @@ def execute_system_run(
                     raise SystemTimeoutError("cleanup reserve budget exhausted before container inventory")
                 inventory = subprocess.run(
                     ["docker", "compose", "--profile", "*", "ps", "--all", "--quiet"],
-                    cwd=compose_dir,
-                    capture_output=True,
-                    text=True,
-                    env={**os.environ, **(env or {})},
-                    timeout=rem_total,
-                    check=False,
+                    cwd=compose_dir, capture_output=True, text=True,
+                    env={**os.environ, **(env or {})}, timeout=rem_total, check=False,
                 )
                 if inventory.returncode != 0:
                     raise SystemTestError("exact Compose container inventory failed")
                 recorded_container_ids.update(
-                    line.strip()
-                    for line in inventory.stdout.splitlines()
-                    if line.strip()
+                    line.strip() for line in inventory.stdout.splitlines() if line.strip()
                 )
             except Exception as error:
                 passed = False
+                diagnostic_steps_passed = False
                 if not error_message:
                     error_message = str(error)
         created_container_ids = tuple(sorted(recorded_container_ids))
@@ -220,11 +238,8 @@ def execute_system_run(
             if journal is not None:
                 try:
                     journal.preserve_diagnostics(
-                        compose_dir=compose_dir,
-                        env=env,
-                        error_message=error_message,
-                        plan=plan,
-                        deadline=deadline,
+                        compose_dir=compose_dir, env=env, error_message=error_message,
+                        plan=plan, deadline=deadline,
                     )
                 except Exception as diag_exc:
                     secondary_diag_error = f"diagnostic preservation failed: {diag_exc}"
@@ -232,19 +247,21 @@ def execute_system_run(
                     if isinstance(coordinator_evidence, dict):
                         coordinator_evidence["secondary_diagnostic_error"] = secondary_diag_error
 
+        temp_cleanup_errors: list[str] = []
+        if d12_session is not None:
+            temp_cleanup_errors = d12_session.cleanup_temp_containers(client)
+            if temp_cleanup_errors:
+                passed = False
+                if not error_message:
+                    error_message = f"D12 temp container cleanup failed: {temp_cleanup_errors}"
+
         print("  [cleanup] Tearing down Compose cluster and candidate image...")
         try:
             cleanup_status = perform_system_cleanup_fn(
-                compose_dir=compose_dir,
-                candidate_image_id=candidate_image_id,
-                config=config,
-                client=client,
-                env=env,
-                timeout_seconds=float(config.cleanup_reserve_seconds),
-                created_image_ids=created_image_ids,
-                created_volume_names=named_volumes,
-                created_network_names=named_networks,
-                created_container_ids=created_container_ids,
+                compose_dir=compose_dir, candidate_image_id=candidate_image_id, config=config,
+                client=client, env=env, timeout_seconds=float(config.cleanup_reserve_seconds),
+                created_image_ids=created_image_ids, created_volume_names=named_volumes,
+                created_network_names=named_networks, created_container_ids=created_container_ids,
             )
             if not cleanup_status.get("success", False):
                 passed = False
@@ -255,6 +272,29 @@ def execute_system_run(
             cleanup_status = {"success": False, "errors": [str(exc)]}
             if not error_message:
                 error_message = f"cleanup exception: {exc}"
+
+        if d12_session is not None:
+            try:
+                build_and_write_d12_system_candidate_evidence_fn(
+                    d12_session, config=config, candidate_image_id=candidate_image_id,
+                    candidate_image_digest=candidate_image_digest,
+                    candidate_image_labels=candidate_image_labels, step_results=step_results,
+                    mcp_readback_digest=mcp_readback_digest, cleanup_status=cleanup_status,
+                    temp_cleanup_errors=temp_cleanup_errors,
+                    diagnostic_steps_passed=diagnostic_steps_passed,
+                    error_message=error_message, evidence_dir=evidence_dir,
+                )
+            except Exception as sidecar_exc:
+                passed = False
+                s_err = f"D12 candidate evidence sidecar failed: {sidecar_exc}"
+                error_message = f"{error_message}; {s_err}" if error_message else s_err
+            finally:
+                d12_session.close_lock()
+            passed = False
+            if not error_message:
+                error_message = (
+                    "Route B candidate-only system run: P3 image/release acceptance remains unaccepted"
+                )
 
         projection: dict[str, int] = {}
         if docker_boundary is not None and hasattr(docker_boundary, "projection"):
@@ -288,18 +328,16 @@ def execute_system_run(
             run_id=config.run_id,
             passed=passed,
             conclusion="success" if passed else "failure",
-            merge_authorized=(passed if config.execution_mode == "hosted_qualification" else False),
+            merge_authorized=(
+                passed if (config.execution_mode == "hosted_qualification" and d12_session is None) else False
+            ),
             total_duration_seconds=total_duration,
             step_results=step_results,
             docker_projection=projection,
             execution_mode=config.execution_mode,
             error_message=error_message,
         )
-        written = write_system_report_fn(
-            result,
-            report_dir=config.report_dir,
-            evidence_dir=evidence_dir,
-        )
+        written = write_system_report_fn(result, report_dir=config.report_dir, evidence_dir=evidence_dir)
         if written:
             print(f"  [report] System report written to {written}")
 

@@ -2533,6 +2533,15 @@
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B candidate-only D12 AMD64 release manifest; inherits repomap_kg.runtime.release and repomap_kg.runtime.python_payload T1-future python_retained ownership under existing go_execution_supervisor placement with zero new debt and no Go replacement claim.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime.release_manifest",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.runtime.repository_identity_migration under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
       "match": "exact",
       "module_prefix": "repomap_kg.runtime.repository_identity_migration",

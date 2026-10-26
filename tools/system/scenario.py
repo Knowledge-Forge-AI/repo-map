@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 import secrets
 import subprocess
@@ -27,6 +26,7 @@ from tools.system.report import SystemStepResult
 from tools.system.replacement_readiness import wait_for_replacement_coordinator
 from tools.system.scenario_mcp import run_mcp_public_readback
 from tools.system import scenario_publication as _scenario_publication
+from tools.system.compose_command import _run_compose as _run_compose
 
 class MonotonicTimer:
     def __init__(
@@ -79,36 +79,6 @@ def load_plan_env(plan: LocalRuntimePlan | None) -> dict[str, str]:
             k, v = line.split("=", 1)
             env_vars[k.strip()] = v.strip()
     return env_vars
-def _run_compose(
-    compose_dir: Path,
-    args: list[str],
-    *,
-    timer: MonotonicTimer | None = None,
-    env: dict[str, str] | None = None,
-    stdin_input: str | None = None,
-    timeout: float = 60.0,
-    check: bool = True,
-) -> subprocess.CompletedProcess[str]:
-    run_env = dict(os.environ)
-    if env:
-        run_env.update(env)
-    effective_timeout = timer.clamp_timeout(timeout) if timer is not None else timeout
-    cmd = ["docker", "compose", *args]
-    result = subprocess.run(
-        cmd,
-        cwd=compose_dir,
-        capture_output=True,
-        text=True,
-        input=stdin_input,
-        env=run_env,
-        timeout=effective_timeout,
-        check=False,
-    )
-    if check and result.returncode != 0:
-        raise SystemTestError(
-            f"docker compose command failed ({' '.join(args)}): {result.stderr.strip() or result.stdout.strip()}"
-        )
-    return result
 def _postgres_json(
     compose_dir: Path,
     plan: LocalRuntimePlan,

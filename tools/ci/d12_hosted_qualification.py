@@ -23,7 +23,8 @@ from ci.d12_hosted_evidence import (
     EXPECTED_HOST_ARCH, EXPECTED_PLATFORM, EXPECTED_RUNNER_ARCH, EXPECTED_RUNNER_OS,
     EXPECTED_SDK_DOCKERFILE_SHA256, EXPECTED_SDK_HELPER_SHA256, EXPECTED_SDK_IMAGE_TAG,
     HostedD12EvidenceError, SDK_BUILD_INTENT_SCHEMA, SEALED_EVIDENCE_SCHEMA,
-    SYSTEM_HOLD_REFUSAL_SCHEMA, validate_expected_candidate_record, validate_sealed_d12_evidence,
+    SYSTEM_HOLD_REFUSAL_SCHEMA as SYSTEM_HOLD_REFUSAL_SCHEMA,
+    validate_expected_candidate_record, validate_sealed_d12_evidence,
 )
 from ci.d12_hosted_reports import load_safe_json_report, project_canonical_boundary_counts
 from ci.d12_hosted_state import load_prepare_or_refusal_state, write_prepare_refusal_state
@@ -32,7 +33,7 @@ from repomap_test_support import d12_core_image
 import test_sandbox
 import test_sandbox_images
 from tools.system.candidate_image import require_release_prerequisites_resolved
-from tools.system.config import SystemTestError
+from tools.system.config import SystemTestError as SystemTestError
 
 REPO_ROOT = _ROOT
 _REDACT_RE = re.compile(r"(/" + r"Users/[^\s\"']+|/home/[^\s\"']+|ghp_[A-Za-z0-9_]+|PRIVATE_KEY[^\s\"']*)")
@@ -330,34 +331,28 @@ def seal_hosted_d12(
 def run_system_hold(
     repo_root: Path, *, candidate_sha: str, candidate_tree: str,
     candidate_base_parent: str, candidate_head_parent: str, output_json: Path,
+    proof_json: Path | None = None, grant_json: Path | None = None, expected_json: Path | None = None,
     target_arch: str = "amd64", libpq_version: object = ..., package_manifest: object = ...,
+    env: Mapping[str, str] | None = None,
+    runner: Callable[..., subprocess.CompletedProcess[str]] | None = None,
+    uname_fn: Callable[[], tuple[str, str]] | None = None,
     frozen_identity_fn: Callable[[Path, str], dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], int]:
-    identity = (frozen_identity_fn or d12_core_image.frozen_identity)(repo_root, f"linux/{target_arch}")
-    reasons: list[str] = []
-    try:
-        require_release_prerequisites_resolved(
-            target_arch,
-            libpq_version=PSYCOPG_LIBPQ_VERSION if libpq_version is ... else libpq_version,
-            package_manifest=DYNAMIC_PACKAGE_MANIFEST if package_manifest is ... else package_manifest,
-        )
-        result, rc = "prerequisites_resolved", 0
-    except (SystemTestError, RuntimeError, ValueError) as exc:
-        reasons.append(str(exc))
-        result, rc = "refused_release_prerequisites_unresolved", 1
-    report: dict[str, Any] = {
-        "schema": SYSTEM_HOLD_REFUSAL_SCHEMA, "gate_kind": "main-system", "target_arch": target_arch,
-        "result": result, "qualified": False,
-        "sdk_builds_started": 0, "application_candidate_builds_started": 0,
-        "managed_system_candidate_image_build_count": 0,
-        "candidate_sha": candidate_sha, "candidate_tree": candidate_tree,
-        "candidate_base_parent": candidate_base_parent, "candidate_head_parent": candidate_head_parent,
-        "d12_source_sha256": identity["source_sha256"], "d12_recipe_sha256": identity["recipe_sha256"],
-        "d12_dockerfile_sha256": identity["dockerfile_sha256"], "reasons": reasons,
-    }
-    output_json.parent.mkdir(parents=True, exist_ok=True)
-    output_json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return report, rc
+    eff_libpq = (PSYCOPG_LIBPQ_VERSION if proof_json is None else ...) if libpq_version is ... else libpq_version
+    eff_manifest = (
+        (DYNAMIC_PACKAGE_MANIFEST if proof_json is None else ...) if package_manifest is ... else package_manifest
+    )
+    from ci.d12_system_hold import run_system_hold as _run_system_hold_impl
+
+    return _run_system_hold_impl(
+        repo_root, candidate_sha=candidate_sha, candidate_tree=candidate_tree,
+        candidate_base_parent=candidate_base_parent, candidate_head_parent=candidate_head_parent,
+        output_json=output_json, proof_json=proof_json, grant_json=grant_json,
+        expected_json=expected_json, target_arch=target_arch,
+        libpq_version=eff_libpq, package_manifest=eff_manifest, env=env, runner=runner,
+        uname_fn=uname_fn, frozen_identity_fn=frozen_identity_fn,
+        require_prerequisites_fn=require_release_prerequisites_resolved,
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -373,6 +368,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         hold.add_argument(flag, type=Path, required=True)
     for flag in ("--candidate-sha", "--candidate-tree", "--candidate-base-parent", "--candidate-head-parent"):
         hold.add_argument(flag, required=True)
+    for flag in ("--proof-json", "--grant-json", "--expected-json"):
+        hold.add_argument(flag, type=Path, default=None)
     hold.add_argument("--target-arch", default="amd64")
     args = parser.parse_args(argv)
     if args.subcommand == "prepare":
@@ -386,10 +383,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.subcommand == "seal":
         return seal_hosted_d12(args.repo_root, state_dir=args.state_dir, report_dir=args.report_dir,
                                output_json=args.output_json)[1]
-    return run_system_hold(args.repo_root, candidate_sha=args.candidate_sha, candidate_tree=args.candidate_tree,
-                           candidate_base_parent=args.candidate_base_parent,
-                           candidate_head_parent=args.candidate_head_parent,
-                           output_json=args.output_json, target_arch=args.target_arch)[1]
+    return run_system_hold(
+        args.repo_root, candidate_sha=args.candidate_sha, candidate_tree=args.candidate_tree,
+        candidate_base_parent=args.candidate_base_parent, candidate_head_parent=args.candidate_head_parent,
+        output_json=args.output_json, proof_json=args.proof_json, grant_json=args.grant_json,
+        expected_json=args.expected_json, target_arch=args.target_arch,
+    )[1]
 
 
 if __name__ == "__main__":

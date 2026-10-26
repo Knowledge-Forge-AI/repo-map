@@ -17,6 +17,7 @@ TOOLS = ROOT / "tools"
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
+from tools.system.compose_command import normalize_compose_args
 from tools.system.compose_topology import (
     APPLICATION_SERVICES,
     inspect_and_verify_topology,
@@ -55,13 +56,19 @@ def test_prepare_system_compose_topology_overrides(tmp_path: Path) -> None:
 
         for svc in APPLICATION_SERVICES:
             assert f"image: {config.candidate_tag}" in override_text
+        assert "build: !reset null" in override_text
+        assert "pull_policy: never" in override_text
 
         mock_inspect.assert_called_once()
 
 
 def test_inspect_and_verify_topology_detects_forbidden_mount(tmp_path: Path) -> None:
     all_svcs: dict[str, Any] = {
-        svc: {"image": "repomap-system-candidate:cccccccccccc", "volumes": []}
+        svc: {
+            "image": "repomap-system-candidate:cccccccccccc",
+            "pull_policy": "never",
+            "volumes": [],
+        }
         for svc in APPLICATION_SERVICES
     }
     all_svcs["http"]["volumes"] = [
@@ -134,6 +141,7 @@ def test_inspect_and_verify_topology_accepts_named_volumes(tmp_path: Path) -> No
     all_svcs = {
         svc: {
             "image": "repomap-system-candidate:cccccccccccc",
+            "pull_policy": "never",
             "volumes": [
                 {"type": "volume", "source": "admin-state", "target": "/repo-map-admin"},
                 {"type": "tmpfs", "target": "/tmp"},
@@ -157,9 +165,59 @@ def test_inspect_and_verify_topology_accepts_named_volumes(tmp_path: Path) -> No
         assert result == fake_config
 
 
+def test_inspect_and_verify_topology_rejects_build_descriptor_and_non_never_pull_policy(
+    tmp_path: Path,
+) -> None:
+    import json
+
+    with_build: dict[str, Any] = {
+        svc: {
+            "image": "repomap-system-candidate:cccccccccccc",
+            "pull_policy": "never",
+            "volumes": [],
+        }
+        for svc in APPLICATION_SERVICES
+    }
+    with_build["http"]["build"] = {"context": "."}
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout=json.dumps({"services": with_build})
+        )
+        with pytest.raises(SystemTestError, match="forbidden build descriptor"):
+            inspect_and_verify_topology(
+                compose_dir=tmp_path,
+                repo_root=ROOT,
+                candidate_tag="repomap-system-candidate:cccccccccccc",
+            )
+
+    bad_pull: dict[str, Any] = {
+        svc: {
+            "image": "repomap-system-candidate:cccccccccccc",
+            "pull_policy": "never",
+            "volumes": [],
+        }
+        for svc in APPLICATION_SERVICES
+    }
+    bad_pull["http"]["pull_policy"] = "always"
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout=json.dumps({"services": bad_pull})
+        )
+        with pytest.raises(SystemTestError, match="pull_policy"):
+            inspect_and_verify_topology(
+                compose_dir=tmp_path,
+                repo_root=ROOT,
+                candidate_tag="repomap-system-candidate:cccccccccccc",
+            )
+
+
 def test_inspect_and_verify_topology_rejects_malformed_volume(tmp_path: Path) -> None:
     all_svcs: dict[str, Any] = {
-        svc: {"image": "repomap-system-candidate:cccccccccccc", "volumes": []}
+        svc: {
+            "image": "repomap-system-candidate:cccccccccccc",
+            "pull_policy": "never",
+            "volumes": [],
+        }
         for svc in APPLICATION_SERVICES
     }
     all_svcs["http"]["volumes"] = [{"source": "admin-state"}]  # missing "type"
@@ -290,4 +348,35 @@ def test_wait_for_recovered_coordinator_job_no_progress_timeout(tmp_path: Path) 
             no_progress_timeout_seconds=10.0,
             poll_interval_seconds=2.0,
         )
+
+
+def test_normalize_compose_args_preserves_exec_and_run_payloads_and_refuses_forbidden_options() -> None:
+    exec_cmd = [
+        "-f", "docker-compose.yml", "exec", "-T", "-e", "MODE=build",
+        "coordinator", "repomap-kg", "up", "run", "build", "pull", "push", "--build", "--pull=always",
+    ]
+    assert normalize_compose_args(exec_cmd) == exec_cmd
+
+    run_payload = ["coordinator", "python", "-c", "up", "run", "build", "pull", "push", "--build"]
+    assert normalize_compose_args(["run", "--rm", "-e", "K=build", *run_payload]) == [
+        "run", "--pull", "never", "--rm", "-e", "K=build", *run_payload,
+    ]
+    assert normalize_compose_args(["--profile", "build", "up", "-d"]) == [
+        "--profile", "build", "up", "--no-build", "--pull", "never", "-d",
+    ]
+
+    for forbidden_cmd, match_re in (
+        (["build"], "forbidden subcommand 'build'"),
+        (["pull"], "forbidden subcommand 'pull'"),
+        (["push"], "forbidden subcommand 'push'"),
+        (["-f", "compose.yml", "build"], "forbidden subcommand 'build'"),
+        (["up", "--build"], "forbidden build flag '--build'"),
+        (["run", "--build", "coordinator", "true"], "forbidden build flag '--build'"),
+        (["exec", "--build", "coordinator", "true"], "forbidden build flag '--build'"),
+        (["up", "--pull", "always"], "forbidden --pull policy 'always'"),
+        (["up", "--pull=missing"], "forbidden --pull policy in '--pull=missing'"),
+        (["run", "--pull=always", "coordinator", "true"], "forbidden --pull policy in '--pull=always'"),
+    ):
+        with pytest.raises(SystemTestError, match=match_re):
+            normalize_compose_args(forbidden_cmd)
 

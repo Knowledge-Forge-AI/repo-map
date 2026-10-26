@@ -31,6 +31,7 @@ from tools.system.report import (
     write_system_report,
 )
 from tools.system.scenario import MonotonicTimer, execute_all_scenarios, load_plan_env
+from tools.system.d12_system_session import D12SystemSession
 from tools.system.runner_execution import execute_system_run
 
 
@@ -198,6 +199,14 @@ def run_system_suite(
             candidate_head_parent=candidate_head_parent,
             execution_mode=execution_mode,
         )
+        proof_json_arg = getattr(args, "d12_system_proof_json", None)
+        d12_session: D12SystemSession | None = None
+        if execution_mode == "hosted_qualification" or proof_json_arg is not None:
+            d12_session = D12SystemSession.establish(
+                repo_root=repo_root,
+                config=config,
+                proof_json_arg=proof_json_arg,
+            )
     except (Exception, KeyboardInterrupt) as error:
         if report_dir is not None:
             diagnostic = {
@@ -268,4 +277,5 @@ def run_system_suite(
         load_plan_env_fn=load_plan_env,
         perform_system_cleanup_fn=perform_system_cleanup,
         write_system_report_fn=write_system_report,
+        d12_session=d12_session,
     )

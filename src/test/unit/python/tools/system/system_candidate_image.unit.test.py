@@ -378,11 +378,12 @@ def test_build_and_verify_candidate_image_refuses_unresolved_prerequisites_befor
             candidate_image.require_release_prerequisites_resolved(arch)
         with pytest.raises(SystemTestError, match="refused before Docker build"):
             build_and_verify_candidate_image(
-                ROOT,
-                config,
-                boundary=boundary,
-                client=MagicMock(),
+                ROOT, config, boundary=boundary, client=MagicMock(),
             )
+    with pytest.raises(SystemTestError, match="requires an established D12SystemSession"):
+        build_and_verify_candidate_image(
+            ROOT, config, boundary=boundary, client=MagicMock(), d12_session=MagicMock(),
+        )
     assert render_calls == []
     assert tempfile_calls == []
     assert docker_calls == []

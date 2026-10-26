@@ -4,9 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
-import re
 import sys
-from typing import Any, TypeGuard
 
 _ROOT = Path(__file__).resolve().parents[2]
 for _rel in ("", "src/main/python", "tools", "src/test/support/python"):
@@ -21,43 +19,32 @@ from ci.d12_hosted_reports import (
     validate_canonical_exploration_report,
     validate_canonical_freeze_report,
 )
+from ci.d12_system_proof_host import (
+    EXPECTED_CANDIDATE_SCHEMA as EXPECTED_CANDIDATE_SCHEMA,
+    EXPECTED_PLATFORM as EXPECTED_PLATFORM,
+    EXPECTED_SDK_DOCKERFILE_SHA256 as EXPECTED_SDK_DOCKERFILE_SHA256,
+    EXPECTED_SDK_HELPER_SHA256 as EXPECTED_SDK_HELPER_SHA256,
+    EXPECTED_SDK_IMAGE_TAG as EXPECTED_SDK_IMAGE_TAG,
+    HostedD12EvidenceError as HostedD12EvidenceError,
+    SYSTEM_HOLD_REFUSAL_SCHEMA as SYSTEM_HOLD_REFUSAL_SCHEMA,
+    _is_hex,
+    _is_strict_int,
+    validate_expected_candidate_record as validate_expected_candidate_record,
+)
 
 SEALED_EVIDENCE_SCHEMA = "repomap-d12-hosted-sealed-evidence-v1"
-SYSTEM_HOLD_REFUSAL_SCHEMA = "repomap-d12-system-hold-refusal-v1"
-EXPECTED_CANDIDATE_SCHEMA = "repomap-d12-hosted-candidate-v1"
 SDK_BUILD_INTENT_SCHEMA = "repomap-d12-sdk-build-intent-v1"
 
-EXPECTED_PLATFORM = "linux/amd64"
 EXPECTED_HOST_ARCH = "x86_64"
 EXPECTED_RUNNER_ARCH = "X64"
 EXPECTED_RUNNER_OS = "Linux"
-EXPECTED_SDK_IMAGE_TAG = "repomap-test-sandbox:py313-go125-docker294-v1"
-EXPECTED_SDK_DOCKERFILE_SHA256 = "f8a8be96ac78ff32b8f2b4f6372f3d9203750a56f75ff49e0af722f5f75e3786"
-EXPECTED_SDK_HELPER_SHA256 = "df616a151d062b4ade001bbd029007b2f414aa22422de63c520895663b850c5f"
 ALL_APPLICATION_BUILD_KEYS: tuple[str, ...] = (
     "application_builds",
     "application_candidate_builds",
     *APPLICATION_BUILD_COUNT_KEYS,
 )
 
-_HEX_40_RE = re.compile(r"^[0-9a-f]{40}$")
-_HEX_64_RE = re.compile(r"^[0-9a-f]{64}$")
-_FORBIDDEN_COMMIT_KEYS = ("commit", "commit_sha", "candidate_sha", "head_sha", "base_sha")
 _REDACT_PATTERNS = ("/" + "Users/", "/home/", "PRIVATE_KEY", "ghp_")
-
-
-class HostedD12EvidenceError(ValueError):
-    """Raised when hosted D12 candidate or evidence records violate contract bounds."""
-
-
-def _is_strict_int(val: object) -> TypeGuard[int]:
-    return isinstance(val, int) and not isinstance(val, bool)
-
-
-def _is_hex(val: object, length: int) -> bool:
-    if not isinstance(val, str) or len(val) != length:
-        return False
-    return (_HEX_40_RE if length == 40 else _HEX_64_RE).match(val) is not None if length in (40, 64) else False
 
 
 def _is_empty_res(m: Mapping[str, object]) -> bool:
@@ -65,51 +52,6 @@ def _is_empty_res(m: Mapping[str, object]) -> bool:
         m.get(f"{k}_added") == [] and m.get(f"{k}_removed", []) == []
         for k in ("containers", "images", "volumes", "networks")
     )
-
-
-def validate_expected_candidate_record(record: object) -> dict[str, Any]:
-    if not isinstance(record, Mapping):
-        raise HostedD12EvidenceError("candidate record must be a mapping")
-    if any("commit" in str(k) or str(k) in _FORBIDDEN_COMMIT_KEYS for k in record):
-        raise HostedD12EvidenceError("self-referential commit field forbidden in expected candidate record")
-    if record.get("schema") != EXPECTED_CANDIDATE_SCHEMA or record.get("platform") != EXPECTED_PLATFORM:
-        raise HostedD12EvidenceError("invalid schema or platform")
-
-    d12_ctx, sdk = record.get("d12_context"), record.get("sdk_sandbox")
-    if not isinstance(d12_ctx, Mapping) or not isinstance(sdk, Mapping):
-        raise HostedD12EvidenceError("missing or invalid d12_context or sdk_sandbox")
-
-    source_sha = d12_ctx.get("source_sha256")
-    recipe_sha = d12_ctx.get("recipe_sha256")
-    dockerfile_sha = d12_ctx.get("dockerfile_sha256")
-    for name, val in (
-        ("source_sha256", source_sha),
-        ("recipe_sha256", recipe_sha),
-        ("dockerfile_sha256", dockerfile_sha),
-    ):
-        if not _is_hex(val, 64):
-            raise HostedD12EvidenceError(f"invalid {name}: must be 64-hex lowercase")
-
-    file_count = d12_ctx.get("context_file_count")
-    if not _is_strict_int(file_count) or file_count <= 0:
-        raise HostedD12EvidenceError("invalid context_file_count")
-
-    if (
-        sdk.get("image_tag") != EXPECTED_SDK_IMAGE_TAG
-        or sdk.get("sdk_dockerfile_sha256") != EXPECTED_SDK_DOCKERFILE_SHA256
-        or sdk.get("sdk_helper_sha256") != EXPECTED_SDK_HELPER_SHA256
-        or not _is_hex(sdk.get("sdk_recipe_sha256"), 64)
-    ):
-        raise HostedD12EvidenceError("sdk_sandbox metadata mismatch")
-
-    digests = [
-        source_sha, recipe_sha, dockerfile_sha,
-        sdk.get("sdk_dockerfile_sha256"), sdk.get("sdk_helper_sha256"), sdk.get("sdk_recipe_sha256"),
-    ]
-    if len(set(digests)) != len(digests):
-        raise HostedD12EvidenceError("hash domains must be distinct")
-
-    return {**dict(record), "d12_context": dict(d12_ctx), "sdk_sandbox": dict(sdk)}
 
 
 def _validate_sdk_materialization(sdk_mat: object, expected_sdk_recipe: str) -> list[str]:

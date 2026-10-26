@@ -4257,6 +4257,28 @@
       "source_commit": "a00e3c60c26e24153e8cf0923a1138459c5b545f",
       "source_manifest_sha256": "8f55929270209e050bac12bbec78132ed278c0406a57cc64040c6585c618c080",
       "status_path": "tools/ci/nav46-d12-native-qualification.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime.release_manifest",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/release_manifest.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "450ebca92f26439029e7f2b29a53ffb27f7bbe641dca45dce704893c8b4ea696",
+      "new_selected_set_sha256": "87f08fda5c9c68a06a6d46678ae202badd2fd006896379505298344c0a6635d2",
+      "old_ownership_manifest_sha256": "d861e034696b346f70c3a6d1598a85bb07dd537c8460f557c4e97b59ab7ce401",
+      "old_selected_set_sha256": "f934173c2befd53a31783d4659eedc019c6910afa17a2768421e3d2d08c7841f",
+      "phase": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1",
+      "reason": "Admit clean ADR 0095 Route B candidate-only D12 AMD64 release manifest repomap_kg.runtime.release_manifest in existing T1-future retained ownership; preserve every incumbent selection, debt ceiling and historical authority.",
+      "source_commit": "33c0a6159a57b80c09dc8a5ddbd543c3369f448b",
+      "source_manifest_sha256": "d861e034696b346f70c3a6d1598a85bb07dd537c8460f557c4e97b59ab7ce401",
+      "status_path": "tools/ci/nav47-d12-system-route-b.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

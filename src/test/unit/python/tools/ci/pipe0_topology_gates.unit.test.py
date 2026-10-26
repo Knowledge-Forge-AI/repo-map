@@ -151,6 +151,7 @@ def test_main_system_gate_passes_the_bound_request_and_candidate_identities() ->
             '--candidate-sha "${CANDIDATE_SHA}"', '--candidate-tree "${CANDIDATE_TREE}"',
             '--candidate-base-parent "${CANDIDATE_BASE_PARENT}"', '--candidate-head-parent "${CANDIDATE_HEAD_PARENT}"',
             '--approval-id "pr-${PR_NUMBER}"', '--pr-number "${PR_NUMBER}"', '--repository "${GITHUB_REPOSITORY}"',
+            '--d12-system-proof-json "${RUNNER_TEMP}/repomap-d12-system-admission/proof.json"',
         ):
             assert cmd.count(argument) == 1
         return
@@ -175,7 +176,9 @@ def test_main_system_gate_records_the_closed_report_and_binding() -> None:
         workflow = load_workflow(PUBLIC_QUALIFICATION_GATE)
         upload_step = next(s for s in workflow.jobs["main-system-gate"].get("steps", []) if str(s.get("uses", "")).startswith("actions/upload-artifact@"))
         assert upload_step.get("with", {}).get("name") == "repomap-main-system-gate-report"
-        assert upload_step.get("with", {}).get("path") == "ci-system-report"
+        raw_path = str(upload_step.get("with", {}).get("path", ""))
+        assert "ci-system-report" in raw_path
+        assert "${{ runner.temp }}/repomap-d12-system-admission" in raw_path
         return
     commands = [c for c in load_workflow(MAIN_SYSTEM_GATE).run_commands() if 'gate_contract.py" record' in c]
     assert len(commands) == 1
