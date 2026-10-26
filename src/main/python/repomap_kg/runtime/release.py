@@ -5,6 +5,11 @@ import shlex
 from types import MappingProxyType
 from typing import Iterable, Mapping, NamedTuple, Sequence
 
+from repomap_kg.runtime.python_payload import (
+    RELEASE_FINAL_PACKAGE_CHECK_PY,
+    RELEASE_PROBE_HELPERS_PY as RELEASE_PROBE_HELPERS_PY,
+)
+
 POSTGRES_RELEASE_VERSION = "16.15"
 PYTHON_RELEASE_VERSION = "3.12.15"
 GO_RELEASE_VERSION = "1.26.10"
@@ -280,44 +285,9 @@ for item in distribution.files or ():
 assert referencing, "no psycopg-c ELF references libpq"
 print(json.dumps({"libpq_exports": len(exports), "extensions": records}, indent=1, sort_keys=True))
 """
-# Fail-closed helpers of the final probe (ADR 0089 D2, M1). ``run`` accepts only
-# the documented exit codes, and stderr only with a documented non-zero outcome
-# (dpkg-query -S "no path found", dpkg --verify problems). ``dynamic`` reads the
-# ELF program headers without executing the file, so a static ELF such as the Go
-# helper is never handed to ldd, while every dynamic ELF needs ldd success.
-# ``LIBRARY_FILE`` names shared or static libraries, never Cython's libpq.pxd.
-RELEASE_PROBE_HELPERS_PY = """\
-import fnmatch, glob, re, struct, subprocess
-LIBRARY_FILE = re.compile(r"libpq[^/]*\\.(?:so(?:\\.\\d+)*|a|dylib)\\Z")
-def run(*command, codes=(0,)):
-    done = subprocess.run(list(command), capture_output=True, text=True, check=False)
-    if done.returncode not in codes or (done.returncode == 0 and done.stderr.strip()):
-        raise SystemExit(f"{command[0]} exited {done.returncode}: {done.stderr.strip()[:400]}")
-    return done.returncode, done.stdout.strip()
-def owner(path):
-    for candidate in (path, "/" + path.removeprefix("/usr/")):
-        code, text = run("dpkg-query", "-S", candidate, codes=(0, 1))
-        if code == 0 and text:
-            return text.split(":", 1)[0]
-    return ""
-def dynamic(path):
-    data = open(path, "rb").read()
-    wide, order = data[4] == 2, "<" if data[5] == 1 else ">"
-    offset = struct.unpack_from(order + ("Q" if wide else "I"), data, 0x20 if wide else 0x1C)[0]
-    size, count = struct.unpack_from(order + "HH", data, 0x36 if wide else 0x2A)
-    return any(struct.unpack_from(order + "I", data, offset + index * size)[0] == 2 for index in range(count))
-def filtered(line, rules):
-    excluded = False
-    for kind, pattern in rules if line.split()[:1] == ["missing"] else ():
-        excluded = kind == "path-exclude" if fnmatch.fnmatchcase(line.split()[-1], pattern) else excluded
-    return excluded
-def dpkg_rules(root="/etc/dpkg/dpkg.cfg.d"):
-    return [line.split() for config in sorted(glob.glob(root + "/*")) for line in open(config)
-            if len(line.split()) == 2 and line.split()[0] in ("path-exclude", "path-include")]
-"""
 # D2.2-D2.3 and D4 final assertions. Expected identities come from the frozen
 # manifest through REPOMAP_EXPECT_* environment values set per platform.
-RELEASE_FINAL_PROBE_PY = RELEASE_PROBE_HELPERS_PY + """\
+RELEASE_FINAL_PROBE_PY = RELEASE_PROBE_HELPERS_PY + RELEASE_FINAL_PACKAGE_CHECK_PY + """\
 import hashlib, importlib.metadata as md, importlib.util as iu, json, os, pathlib, sys
 os.environ.pop("PSYCOPG_IMPL", None)
 import psycopg
@@ -354,8 +324,8 @@ dule(m) for m in sys.argv[1:]]", *modules)
 rows = [line.split("\\t") for line in run("dpkg-query", "-W", "-f=${Package}\\t${db:Status-Abbrev}\\n")[1].splitlines()]
 assert rows and all(len(row) == 2 and row[1][:2] in ("ii", "rc") for row in rows), "package database state"
 packages = [name for name, state in rows if state.startswith("ii")]
-assert not [p for p in packages if p.endswith("-dev") or p in {"gcc", "binutils", "cp\
-p"} or p.startswith("gcc-")], packages
+offending = forbidden_packages(packages)
+assert not offending, offending
 build_only = json.loads(expect["build_only_modules"])
 assert not [m for m in build_only if iu.find_spec(m)] and not os.path.exists("/usr/local/include")
 print(json.dumps({"implementation": pq.__impl__, "libpq": pq.version(), "loaded": real, "elf_checked": len(elves),
@@ -387,6 +357,7 @@ __all__ = [
     "PlatformPackages",
     "RELEASE_BUILD_LINKAGE_PY",
     "RELEASE_BUILD_ONLY_MODULES",
+    "RELEASE_FINAL_PACKAGE_CHECK_PY",
     "RELEASE_FINAL_PROBE_PY",
     "RELEASE_PROBE_HELPERS_PY",
     "RELEASE_SDIST_INSPECTION_PY",

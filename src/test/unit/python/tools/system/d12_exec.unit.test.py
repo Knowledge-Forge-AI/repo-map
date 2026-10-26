@@ -17,6 +17,7 @@ from tools.system.d12_exec import (
     INNER_DOCKER_HOST,
     BoundedExecContainer,
     build_d12_container_exec_command,
+    format_build_failure_excerpt,
     run_d12_container_exec,
     wrap_create_with_bounded_exec,
 )
@@ -251,3 +252,69 @@ def test_bounded_exec_container_exec_run_pins_docker_host_and_strips_context(
 
     assert "DOCKER_CONTEXT" not in captured_env
     assert captured_env.get("DOCKER_HOST") == INNER_DOCKER_HOST
+
+
+def test_format_build_failure_excerpt_anchors_before_buildkit_echo_and_bounds_multi_kb_output() -> None:
+    long_run = "#14 [final 6/6] RUN REPOMAP_EXPECT_LIBPQ=" + ("A" * 1200) + " python3 -I -c 'probe'"
+    pkgs = [f"'pkg-{i:03d}'" for i in range(180)]
+    pkgs[15] = "'gcc-14-base'"
+    assertion_line = f"#14 0.412 AssertionError: [{', '.join(pkgs)}]"
+    stderr = "\n".join([
+        long_run,
+        long_run,
+        "#14 0.412 Traceback (most recent call last):",
+        '#14 0.412   File "<string>", line 65, in <module>',
+        assertion_line,
+        '#14 ERROR: process "/bin/sh -c ' + ("B" * 1200) + '" did not complete successfully: exit code: 1',
+        "------",
+        " > [final 6/6] RUN REPOMAP_EXPECT_LIBPQ=...",
+        "0.412 Traceback (most recent call last):",
+        "0.412 AssertionError: ['echoed']",
+        "------",
+        "Dockerfile:42",
+        "--------------------",
+        "  41 | >>> RUN REPOMAP_EXPECT_LIBPQ=...",
+        "--------------------",
+    ])
+    excerpt = format_build_failure_excerpt(stderr, "ignored stdout")
+    assert len(excerpt) <= 2000
+    assert excerpt.startswith("#14 [final 6/6] RUN REPOMAP_EXPECT_LIBPQ=")
+    assert "#14 0.412 Traceback (most recent call last):" in excerpt
+    assert "AssertionError: ['pkg-000'" in excerpt and "'gcc-14-base'" in excerpt
+    assert "...[omitted]..." in excerpt
+    assert "Dockerfile:42" not in excerpt and "['echoed']" not in excerpt
+
+
+def test_format_build_failure_excerpt_stdout_fallback_unicode_and_empty() -> None:
+    assert format_build_failure_excerpt("   ", "") == ""
+    assert format_build_failure_excerpt("something", "", limit=0) == ""
+    out_only = (
+        "#9 [stage 2/2] RUN check\n#9 0.210 dpkg-query exited 1: पाथ त्रुटि "
+        + ("Ω" * 2200)
+        + "\n------\nDockerfile:9\n"
+    )
+    excerpt = format_build_failure_excerpt("  \n ", out_only, limit=2000)
+    assert len(excerpt) <= 2000
+    assert excerpt.startswith("#9 [stage 2/2] RUN check\n#9 0.210 dpkg-query exited 1:")
+    assert "dpkg-query exited 1: पाथ त्रुटि" in excerpt
+    assert "...[omitted]..." in excerpt and "Dockerfile:9" not in excerpt
+    stderr_msg_only = "\n".join([
+        "#1 [internal] load build definition from Dockerfile",
+        "#14 [final 6/6] RUN python3 -I -c 'probe'",
+        "#14 0.110 intermediate output",
+        "#14 0.310 dpkg-query exited 1: package gcc-14-base is not installed",
+        '#14 ERROR: process "/bin/sh -c ' + ("P" * 260) + '" did not complete successfully: exit code: 1',
+        "------",
+        " > [final 6/6] RUN python3 -I -c 'probe':",
+    ])
+    stderr_excerpt = format_build_failure_excerpt(stderr_msg_only, "", limit=2000)
+    assert len(stderr_excerpt) <= 2000
+    assert stderr_excerpt.startswith(
+        "...[omitted]...\n#14 [final 6/6] RUN python3 -I -c 'probe'\n...[omitted]...\n"
+        "#14 0.310 dpkg-query exited 1: package gcc-14-base is not installed"
+    )
+    assert stderr_excerpt.endswith("\n...[omitted]...")
+    assert "intermediate output" not in stderr_excerpt and "> [final 6/6]" not in stderr_excerpt
+    refusal_err = "#8 [stage 1/2] RUN payload\n#8 0.100 ok\n#8 0.200 PayloadRefusal: bad hash\n------\n"
+    refusal_excerpt = format_build_failure_excerpt(refusal_err, "")
+    assert refusal_excerpt.startswith("#8 [stage 1/2] RUN payload\n...[omitted]...\n#8 0.200 PayloadRefusal:")

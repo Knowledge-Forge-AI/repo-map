@@ -295,5 +295,106 @@ def main(argv: Sequence[str], *, run: Runner = subprocess.run, mount: Path = Pat
     return 0 if report["result"] != "refused" else 1
 
 
+# Fail-closed helpers of the final probe (ADR 0089 D2, M1). ``run`` accepts only
+# the documented exit codes, and stderr only with a documented non-zero outcome
+# (dpkg-query -S "no path found", dpkg --verify problems). ``dynamic`` reads the
+# ELF program headers without executing the file, so a static ELF such as the Go
+# helper is never handed to ldd, while every dynamic ELF needs ldd success.
+# ``LIBRARY_FILE`` names shared or static libraries, never Cython's libpq.pxd.
+RELEASE_PROBE_HELPERS_PY = """\
+import fnmatch, glob, re, struct, subprocess
+LIBRARY_FILE = re.compile(r"libpq[^/]*\\.(?:so(?:\\.\\d+)*|a|dylib)\\Z")
+def run(*command, codes=(0,)):
+    done = subprocess.run(list(command), capture_output=True, text=True, check=False)
+    if done.returncode not in codes or (done.returncode == 0 and done.stderr.strip()):
+        raise SystemExit(f"{command[0]} exited {done.returncode}: {done.stderr.strip()[:400]}")
+    return done.returncode, done.stdout.strip()
+def owner(path):
+    for candidate in (path, "/" + path.removeprefix("/usr/")):
+        code, text = run("dpkg-query", "-S", candidate, codes=(0, 1))
+        if code == 0 and text:
+            return text.split(":", 1)[0]
+    return ""
+def dynamic(path):
+    data = open(path, "rb").read()
+    wide, order = data[4] == 2, "<" if data[5] == 1 else ">"
+    offset = struct.unpack_from(order + ("Q" if wide else "I"), data, 0x20 if wide else 0x1C)[0]
+    size, count = struct.unpack_from(order + "HH", data, 0x36 if wide else 0x2A)
+    return any(struct.unpack_from(order + "I", data, offset + index * size)[0] == 2 for index in range(count))
+def filtered(line, rules):
+    excluded = False
+    for kind, pattern in rules if line.split()[:1] == ["missing"] else ():
+        excluded = kind == "path-exclude" if fnmatch.fnmatchcase(line.split()[-1], pattern) else excluded
+    return excluded
+def dpkg_rules(root="/etc/dpkg/dpkg.cfg.d"):
+    return [line.split() for config in sorted(glob.glob(root + "/*")) for line in open(config)
+            if len(line.split()) == 2 and line.split()[0] in ("path-exclude", "path-include")]
+"""
+# ADR 0096 Decision 3: narrow amd64 base-support package check for gcc-14-base.
+RELEASE_FINAL_PACKAGE_CHECK_PY = """\
+import os, stat
+GCC14_BASE_DIRS = {"/", "/.", "/usr", "/usr/share", "/usr/share/doc", "/usr/share/doc/gcc-14-base"}
+GCC14_BASE_DOCS = {
+    "/usr/share/doc/gcc-14-base/README.Debian.amd64.gz",
+    "/usr/share/doc/gcc-14-base/TODO.Debian",
+    "/usr/share/doc/gcc-14-base/changelog.Debian.gz",
+    "/usr/share/doc/gcc-14-base/copyright",
+}
+def gcc14_base_allowed(packages, root=""):
+    if packages.count("gcc-14-base") != 1:
+        return False
+    code, meta = run(
+        "dpkg-query", "-W", "-f=${Package}\\t${Version}\\t${Architecture}\\t${db:Status-Abbrev}\\n",
+        "gcc-14-base", codes=(0, 1),
+    )
+    rows = [line.split("\\t") for line in meta.splitlines() if line]
+    if code != 0 or len(rows) != 1 or rows[0][:3] != ["gcc-14-base", "14.2.0-19", "amd64"]:
+        return False
+    if len(rows[0]) != 4 or rows[0][3] not in ("ii", "ii "):
+        return False
+    code, files = run("dpkg-query", "-L", "gcc-14-base:amd64", codes=(0, 1))
+    listed = {line.strip() for line in files.splitlines() if line.strip()}
+    required = {"/usr", "/usr/share", "/usr/share/doc", "/usr/share/doc/gcc-14-base"} | GCC14_BASE_DOCS
+    if code != 0 or not (required <= listed <= (GCC14_BASE_DIRS | GCC14_BASE_DOCS)):
+        return False
+    if not (listed & {"/", "/."}) or any(p.endswith((".h", ".hpp")) or "/include/" in p for p in listed):
+        return False
+    rules = dpkg_rules(f"{root}/etc/dpkg/dpkg.cfg.d" if root else "/etc/dpkg/dpkg.cfg.d")
+    for path in sorted(listed & GCC14_BASE_DIRS):
+        target = (root or path) if path in ("/", "/.") else f"{root}{path}"
+        try:
+            mode = os.lstat(target).st_mode
+        except OSError:
+            return False
+        if not stat.S_ISDIR(mode):
+            return False
+    for path in sorted(GCC14_BASE_DOCS):
+        target = f"{root}{path}"
+        if not os.path.lexists(target):
+            if not filtered(f"missing   {path}", rules):
+                return False
+            continue
+        try:
+            mode = os.lstat(target).st_mode
+            magic = open(target, "rb").read(4) if stat.S_ISREG(mode) else b""
+        except OSError:
+            return False
+        if not stat.S_ISREG(mode) or (mode & 0o111) != 0 or magic == b"\\x7fELF":
+            return False
+    code, verify = run("dpkg", "--verify", "gcc-14-base:amd64", codes=(0, 1))
+    if code != 0 and not verify:
+        return False
+    for line in verify.splitlines():
+        if len(line.split()) != 2 or line.split()[1] not in GCC14_BASE_DOCS or not filtered(line, rules):
+            return False
+    return True
+def forbidden_packages(packages, root=""):
+    offending = [p for p in packages if p.endswith("-dev") or p in {"gcc", "binutils", "cpp"} or p.startswith("gcc-")]
+    if "gcc-14-base" in offending and gcc14_base_allowed(packages, root=root):
+        return [p for p in offending if p != "gcc-14-base"]
+    return offending
+"""
+
+
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))

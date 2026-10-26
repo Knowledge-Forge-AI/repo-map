@@ -31,6 +31,7 @@ from tools.system.config import (
     LABEL_RELEASE_GO, LABEL_RELEASE_LIBPQ, LABEL_RELEASE_POSTGRES, LABEL_RELEASE_PSYCOPG,
     LABEL_RELEASE_PYTHON, LABEL_RUN_ID, SystemTestConfig, SystemTestError,
 )
+from tools.system.d12_exec import format_build_failure_excerpt
 
 if TYPE_CHECKING:
     from tools.system.d12_system_session import D12SystemSession
@@ -181,7 +182,7 @@ def build_and_verify_candidate_image(
             raise SystemTestError(f"candidate image build timed out after {build_timeout}s") from exc
         if built.returncode != 0:
             raise SystemTestError(
-                "candidate image build failed: " + (built.stderr.strip() or built.stdout.strip())[-2000:]
+                "candidate image build failed: " + format_build_failure_excerpt(built.stderr, built.stdout)
             )
         image = client.images.get(config.candidate_tag)
         if d12_session is not None:

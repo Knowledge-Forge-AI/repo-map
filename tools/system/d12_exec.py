@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 import os
+import re
 import subprocess
 from typing import Any
 
@@ -258,11 +259,104 @@ def wrap_create_with_bounded_exec(
     return _wrapped
 
 
+_BUILDKIT_CMD_RE = re.compile(r"(\bRUN\s+|process\s+\"/bin/sh\s+-c\s+)")
+_STEP_HEADER_RE = re.compile(r"^(?:#\d+\s+\[|Step\s+\d+(?:/\d+)?\s*:\s*RUN\b|RUN\s+)")
+_FAILURE_LINE_RE = re.compile(
+    r"(\b[A-Za-z_][A-Za-z0-9_]*(?:Error|Exception|Refusal|Exit):|\bAssertionError\b|\bexited\s+-?\d+:)"
+)
+_OMITTED_MARKER = " ...[omitted]... "
+
+
+def _compact_buildkit_line(line: str) -> str:
+    if len(line) > 220 and _BUILDKIT_CMD_RE.search(line):
+        return f"{line[:140]}{_OMITTED_MARKER}{line[-40:]}"
+    return line
+
+
+def format_build_failure_excerpt(stderr: str, stdout: str = "", *, limit: int = 2000) -> str:
+    """Return a bounded build failure excerpt anchored on the primary exception before BuildKit echo."""
+    raw = stderr.strip() or stdout.strip()
+    if not raw or limit <= 0:
+        return ""
+    lines = raw.splitlines()
+    echo_idx = next(
+        (
+            idx
+            for idx, line in enumerate(lines)
+            if line.strip() == "------" or line.strip().startswith("Dockerfile:")
+        ),
+        len(lines),
+    )
+    pre_lines = lines[:echo_idx] if echo_idx > 0 else lines
+    omitted_echo = echo_idx < len(lines) and echo_idx > 0
+    compacted: list[str] = []
+    seen_cmd_echoes: set[str] = set()
+    for line in pre_lines:
+        shortened = _compact_buildkit_line(line)
+        if shortened != line:
+            if shortened in seen_cmd_echoes:
+                if not compacted or compacted[-1] != _OMITTED_MARKER.strip():
+                    compacted.append(_OMITTED_MARKER.strip())
+                continue
+            seen_cmd_echoes.add(shortened)
+        compacted.append(shortened)
+    anchor_idx = next(
+        (
+            idx
+            for idx in range(len(compacted) - 1, -1, -1)
+            if "Traceback (most recent call last):" in compacted[idx]
+        ),
+        None,
+    )
+    if anchor_idx is None:
+        anchor_idx = next(
+            (
+                idx
+                for idx in range(len(compacted) - 1, -1, -1)
+                if _FAILURE_LINE_RE.search(compacted[idx])
+            ),
+            None,
+        )
+    if anchor_idx is not None and anchor_idx > 0:
+        header_idx = next(
+            (
+                idx
+                for idx in range(anchor_idx - 1, -1, -1)
+                if _STEP_HEADER_RE.search(compacted[idx]) and " ERROR: process " not in compacted[idx]
+            ),
+            next((idx for idx, line in enumerate(compacted[:anchor_idx]) if line.strip()), None),
+        )
+        prefix: list[str] = []
+        if header_idx is not None:
+            if header_idx > 0:
+                prefix.append(_OMITTED_MARKER.strip())
+            prefix.append(compacted[header_idx])
+            if anchor_idx > header_idx + 1:
+                prefix.append(_OMITTED_MARKER.strip())
+        else:
+            prefix.append(_OMITTED_MARKER.strip())
+        selected = [*prefix, *compacted[anchor_idx:]]
+    else:
+        selected = compacted[anchor_idx:] if anchor_idx is not None else compacted
+    if omitted_echo and selected and selected[-1] != _OMITTED_MARKER.strip():
+        selected = [*selected, _OMITTED_MARKER.strip()]
+    joined = "\n".join(selected).strip()
+    if len(joined) <= limit:
+        return joined
+    if limit <= len(_OMITTED_MARKER):
+        return joined[:limit]
+    budget = limit - len(_OMITTED_MARKER)
+    head_len = max(1, (budget * 3) // 4)
+    tail_len = max(0, budget - head_len)
+    return f"{joined[:head_len]}{_OMITTED_MARKER}{joined[-tail_len:] if tail_len else ''}"
+
+
 __all__ = [
     "BoundedExecContainer",
     "ExecRunResult",
     "INNER_DOCKER_HOST",
     "build_d12_container_exec_command",
+    "format_build_failure_excerpt",
     "run_d12_container_exec",
     "wrap_create_with_bounded_exec",
 ]

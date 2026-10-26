@@ -194,29 +194,29 @@ def test_build_and_verify_candidate_image_rejects_missing_labels(
 ) -> None:
     _seed_resolved_release_prerequisites(monkeypatch)
     tree_sha = "e" * 40
-    config = SystemTestConfig.create(
-        candidate_tree_sha=tree_sha,
-        run_id="run-image-test",
-    )
-
+    config = SystemTestConfig.create(candidate_tree_sha=tree_sha, run_id="run-image-test")
     client = MagicMock()
-    mock_image = MagicMock()
-    mock_image.id = "sha256:11223344556677889900aabbccddeeff"
-    mock_image.labels = {
-        LABEL_IMAGE_CLASS: "wrong-class",
-    }
+    mock_image = MagicMock(id="sha256:11223344556677889900aabbccddeeff", labels={LABEL_IMAGE_CLASS: "wrong-class"})
     client.images.get.return_value = mock_image
 
     build_result = MagicMock(returncode=0, stdout="", stderr="")
     with patch("tools.system.candidate_image.get_current_tree_sha", return_value=tree_sha), \
          patch("tools.system.candidate_image.subprocess.run", return_value=build_result):
         with pytest.raises(SystemTestError, match="missing or invalid label"):
-            build_and_verify_candidate_image(
-                ROOT,
-                config,
-                boundary=None,
-                client=client,
-            )
+            build_and_verify_candidate_image(ROOT, config, boundary=None, client=client)
+    failed_stderr = (
+        "#14 [final 6/6] RUN " + ("X" * 500) + "\n"
+        "#14 0.412 Traceback (most recent call last):\n"
+        "#14 0.412 AssertionError: ['gcc-14-base', " + ("'pkg', " * 400) + "]\n"
+        "------\nDockerfile:42\n"
+    )
+    failed_build = MagicMock(returncode=1, stdout="", stderr=failed_stderr)
+    with patch("tools.system.candidate_image.get_current_tree_sha", return_value=tree_sha), \
+         patch("tools.system.candidate_image.subprocess.run", return_value=failed_build):
+        pattern = r"(?s)#14 \[final 6/6\] RUN.*Traceback.*gcc-14-base.*\.\.\.\[omitted\]\.\.\."
+        with pytest.raises(SystemTestError, match=pattern) as exc_info:
+            build_and_verify_candidate_image(ROOT, config, boundary=None, client=client)
+        assert "Dockerfile:42" not in str(exc_info.value)
 
 
 def test_build_and_verify_candidate_image_rejects_invalid_self_test_json(

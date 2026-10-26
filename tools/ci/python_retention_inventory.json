@@ -1856,6 +1856,16 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation47.ci69fix1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_system_test_children.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI69FIX1 ADR 0096 isolated stdlib child helpers for D12 system proof transfer and lock contention; strict zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
@@ -34424,6 +34434,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/d12_recipe.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_system_test_children.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI69FIX1 ADR 0096 isolated stdlib child helpers for D12 system proof transfer and lock contention; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },

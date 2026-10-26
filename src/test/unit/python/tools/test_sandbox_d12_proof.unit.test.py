@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 from pathlib import Path
+import stat
 import subprocess
 from types import SimpleNamespace
 from typing import Any
@@ -12,6 +14,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from ci.d12_system_grant import D12SystemGrantError
+from repomap_test_support.d12_system_test_children import (
+    hold_exclusive_flock,
+    poisoned_coverage_base_env,
+    transfer_proof_locally,
+)
 import test_sandbox as sandbox_owner
 from test_sandbox_arguments import (
     INNER_D12_SYSTEM_PROOF_PATH,
@@ -207,3 +214,74 @@ def test_sandbox_report_arguments_rejects_fifo_proof_nonblocking(
             ["--suite", "system", "--d12-system-proof-json", str(fifo_path)],
             repo_root=tmp_path,
         )
+
+
+def test_isolated_stdlib_child_helpers_scrub_coverage_env_and_enforce_o_excl_and_flock(
+    tmp_path: Path,
+) -> None:
+    parent_before = (
+        os.environ.get("COVERAGE_PROCESS_START"),
+        os.environ.get("COVERAGE_PROCESS_CONFIG"),
+    )
+    poisoned = poisoned_coverage_base_env()
+    assert (
+        os.environ.get("COVERAGE_PROCESS_START"),
+        os.environ.get("COVERAGE_PROCESS_CONFIG"),
+    ) == parent_before
+    target_proof = tmp_path / "inner" / "proof.json"
+    proof_bytes = b'{"schema": "repomap-d12-system-admission-proof-v1"}\n'
+    recorded, digest = transfer_proof_locally(
+        None, "cid-unit", proof_bytes, target_path=target_proof, base_env=poisoned
+    )
+    assert len(recorded) == 8 and recorded[:7] == ["docker", "exec", "-i", "cid-unit", "python3", "-I", "-c"]
+    assert "O_EXCL" in recorded[7] and "0o600" in recorded[7]
+    assert digest == hashlib.sha256(proof_bytes).hexdigest()
+    assert target_proof.read_bytes() == proof_bytes
+    assert stat.S_IMODE(target_proof.lstat().st_mode) == 0o600
+    with pytest.raises(RuntimeError, match="integration sandbox D12 system proof transfer failed"):
+        transfer_proof_locally(
+            None, "cid-unit", proof_bytes, target_path=target_proof, base_env=poisoned
+        )
+    lock_file = tmp_path / "contended.lock"
+    with hold_exclusive_flock(lock_file, base_env=poisoned) as holder:
+        assert holder.poll() is None
+        with pytest.raises(RuntimeError, match="flock holder child failed"):
+            with hold_exclusive_flock(lock_file, base_env=poisoned):
+                pass
+    assert holder.poll() == 0
+
+    never_spawn = MagicMock()
+    bad_sanitizer = lambda **_kw: {"COVERAGE_PROCESS_START": "/bad"}
+    with pytest.raises(RuntimeError, match="unresolved coverage env"):
+        transfer_proof_locally(
+            None, "cid-unit", proof_bytes, target_path=tmp_path / "no.json",
+            base_env=poisoned, sanitizer=bad_sanitizer, run_child=never_spawn,
+        )
+    with pytest.raises(RuntimeError, match="unresolved coverage env"):
+        with hold_exclusive_flock(lock_file, base_env=poisoned, sanitizer=bad_sanitizer, popen_fn=never_spawn):
+            pass
+    never_spawn.assert_not_called()
+
+    def _failing_child(cmd: list[str], **kw: Any) -> subprocess.CompletedProcess[str]:
+        assert "leaked coverage env" in cmd[3]
+        assert not any(k.startswith("COVERAGE_") for k in kw["env"])
+        return subprocess.CompletedProcess(cmd, 1, "", "simulated child failure")
+
+    with pytest.raises(RuntimeError, match="integration sandbox D12 system proof transfer failed"):
+        transfer_proof_locally(
+            None, "cid-unit", proof_bytes, target_path=tmp_path / "fail.json",
+            base_env=poisoned, run_child=_failing_child,
+        )
+    fake_proc = MagicMock()
+    fake_proc.stdout.readline.return_value = "locked\n"
+    fake_proc.wait.side_effect = [subprocess.TimeoutExpired("python3", 10), 0]
+    with hold_exclusive_flock(lock_file, base_env=poisoned, popen_fn=lambda *_a, **_kw: fake_proc):
+        pass
+    fake_proc.kill.assert_called_once()
+    fake_proc.stdin.close.assert_called_once()
+    fake_proc.stdout.close.assert_called_once()
+    fake_proc.stderr.close.assert_called_once()
+    assert (
+        os.environ.get("COVERAGE_PROCESS_START"),
+        os.environ.get("COVERAGE_PROCESS_CONFIG"),
+    ) == parent_before

@@ -15,8 +15,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
 
-from repomap_kg.runtime.release import PSYCOPG_RELEASE_VERSION
+from repomap_kg.runtime.release import (
+    PSYCOPG_RELEASE_VERSION,
+    RELEASE_FINAL_PACKAGE_CHECK_PY,
+    RELEASE_PROBE_HELPERS_PY,
+)
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support import d12_dynamic_linkage as linkage
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
@@ -93,3 +98,57 @@ def test_dependency_only_runtime_links_system_libpq_dynamically() -> None:
     loaded = report["loaded_libpq"][0]
     assert loaded["real_path"].startswith("/usr/lib/"), loaded
     assert {Path(item["path"]).name.split(".")[0] for item in report["extensions"]} >= {"_psycopg", "pq"}
+    # ADR 0096 Decision 3: execute the shared final package classifier against the connected
+    # dependency-only runtime image (observing its own container files) and exported SDK package
+    # names under an explicitly unqualified root (proving compiler-name refusal only, not SDK
+    # payload qualification). Positive native amd64 qualification of gcc-14-base on the assembled
+    # PostgreSQL image remains hosted-only; arm64 runtime or compiler/dev names refuse without skip.
+    assert Path("/usr/bin/dpkg-query").is_file()
+    sdk_rows = [
+        line.split("\t")
+        for line in subprocess.run(
+            ["dpkg-query", "-W", "-f=${Package}\t${db:Status-Abbrev}\n"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+    ]
+    sdk_package_names = [name for name, st in sdk_rows if st.startswith("ii")]
+    pkg_script = (
+        RELEASE_PROBE_HELPERS_PY
+        + RELEASE_FINAL_PACKAGE_CHECK_PY
+        + "import json\n"
+        "arch = run('dpkg', '--print-architecture')[1]\n"
+        "q = run('dpkg-query', '-W', '-f=${Package}\\t${db:Status-Abbrev}\\n')[1].splitlines()\n"
+        "pkgs = [r.split('\\t')[0] for r in q if r.split('\\t')[1].startswith('ii')]\n"
+        f"sdk_package_names = {sdk_package_names!r}\n"
+        "print(json.dumps({'arch': arch, 'runtime_live': forbidden_packages(pkgs), "
+        "'unqualified': forbidden_packages(pkgs, root='/nonexistent'), "
+        "'with_tooling': forbidden_packages([*pkgs, 'gcc', 'binutils', 'cpp', 'libpq-dev']), "
+        "'sdk_compiler_names_refused': forbidden_packages(sdk_package_names, root='/nonexistent')}))\n"
+    )
+    pkg_cid = owner.create(
+        image_id,
+        ["-I", "-c", pkg_script],
+        role="d12-dynamic-linkage-pkg-probe",
+        entrypoint=["python"],
+        network_mode="none",
+    )
+    try:
+        pkg_container = client.containers.get(pkg_cid)
+        pkg_container.start()
+        pkg_status = pkg_container.wait(timeout=120).get("StatusCode", 1)
+        pkg_stdout = pkg_container.logs(stdout=True, stderr=False).decode("utf-8", "replace")
+        pkg_stderr = pkg_container.logs(stdout=False, stderr=True).decode("utf-8", "replace")
+    finally:
+        owner.cleanup(pkg_cid)
+    owner.verify_baseline()
+    assert pkg_status == 0, f"package classifier probe failed with {pkg_status}: {pkg_stderr[-2000:]}"
+    pkg_report = json.loads(pkg_stdout.splitlines()[-1])
+    print("D12_PACKAGE_CLASSIFIER=" + json.dumps(pkg_report, sort_keys=True))
+    assert isinstance(pkg_report["runtime_live"], list)
+    assert {"gcc", "binutils", "cpp", "libpq-dev"} <= set(pkg_report["with_tooling"])
+    assert {"gcc", "binutils", "cpp", "libpq-dev"} <= set(pkg_report["sdk_compiler_names_refused"])
+    assert "gcc-14-base" in pkg_report["unqualified"]
+    if pkg_report["arch"] != "amd64":
+        assert pkg_report["runtime_live"] == ["gcc-14-base"]

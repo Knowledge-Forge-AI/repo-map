@@ -17,6 +17,13 @@ from ci.d12_hosted_evidence import validate_expected_candidate_record
 from ci.d12_system_grant import (
     DEFAULT_CANDIDATE_RELPATH,
     DEFAULT_GRANT_RELPATH,
+    EXPECTED_APPROVAL_SHA256,
+    EXPECTED_BASE_SHA,
+    EXPECTED_BEFORE_SHA,
+    EXPECTED_LEDGER_BEFORE_SHA256,
+    EXPECTED_PHASE_ID,
+    SPENT_CI69_NONCE,
+    SPENT_CI69_RESERVATION_SHA256,
     D12SystemGrantError,
     SYSTEM_ADMISSION_PROOF_SCHEMA,
     SYSTEM_BUILD_GRANT_SCHEMA,
@@ -98,25 +105,68 @@ def test_load_tracked_system_build_grant_matches_candidate_record() -> None:
         expected_candidate=expected_cand,
         frozen_identity=dict(expected_cand["d12_context"]),
     )
+    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI69FIX1"
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
+    assert grant["workflow_ordinal"] == 70
+    assert grant["workflow_attempt"] == 1
     assert grant["maximum_total"] == 2
-    assert grant["maximum_per_platform"] == 1
+    assert grant["maximum_per_platform"] == 2
+    assert grant["before"] == EXPECTED_BEFORE_SHA
+    assert grant["base"] == EXPECTED_BASE_SHA
+    assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
+    assert grant["ledger_before_sha256"] == EXPECTED_LEDGER_BEFORE_SHA256
     assert grant["pull_request"] == 13
     assert len(grant_sha) == 64
 
 
 def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> None:
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
-    raw = json.loads(grant_path.read_text(encoding="utf-8"))
-    bad_bool = dict(raw, maximum_per_platform=True)
+    grant, grant_sha = load_and_validate_system_build_grant(grant_path)
+    bad_bool = dict(grant, maximum_per_platform=True)
     with pytest.raises(D12SystemGrantError, match="maximum_per_platform"):
         validate_system_build_grant(bad_bool)
 
-    bad_owner = dict(raw, owner="wrong-owner")
+    bad_owner = dict(grant, owner="wrong-owner")
     with pytest.raises(D12SystemGrantError, match="owner"):
         validate_system_build_grant(bad_owner)
+
+    for field, bad_val in (
+        ("workflow_ordinal", 69),
+        ("workflow_ordinal", 71),
+        ("workflow_attempt", 2),
+        ("maximum_per_platform", 1),
+        ("maximum_total", 1),
+        ("nonce", SPENT_CI69_NONCE),
+        ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
+        ("nonce", str(grant["nonce"]) + "\n"),
+        ("before", str(grant["before"]) + "\n"),
+        ("reservation_sha256", str(grant["reservation_sha256"]) + "\n"),
+        ("before", "1" * 40),
+        ("base", "2" * 40),
+        ("approval_sha256", "3" * 64),
+        ("ledger_before_sha256", "4" * 64),
+    ):
+        with pytest.raises(D12SystemGrantError):
+            validate_system_build_grant({**grant, field: bad_val})
+
+    cand_sha = hashlib.sha256((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_bytes()).hexdigest()
+    proof = _make_proof(grant, grant_sha, cand_sha)
+    for proof_field, bad_proof_val in (
+        ("workflow_ordinal", 69),
+        ("workflow_ordinal", 71),
+        ("workflow_attempt", 2),
+        ("nonce", SPENT_CI69_NONCE),
+        ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
+        ("nonce", str(proof["nonce"]) + "\n"),
+        ("before", str(proof["before"]) + "\n"),
+        ("reservation_sha256", str(proof["reservation_sha256"]) + "\n"),
+        ("before", "1" * 40),
+        ("base", "2" * 40),
+    ):
+        with pytest.raises(D12SystemGrantError):
+            validate_system_admission_proof({**proof, proof_field: bad_proof_val})
 
 
 def test_write_and_load_system_admission_proof_enforces_0600_and_no_overwrite(

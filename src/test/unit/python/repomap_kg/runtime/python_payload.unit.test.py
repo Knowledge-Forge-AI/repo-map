@@ -15,7 +15,15 @@ import pytest
 
 from repomap_kg.runtime import python_payload as payload
 from repomap_kg.runtime.commands import PYTHON_PAYLOAD_SOURCE, render_server_dockerfile
-from repomap_kg.runtime.release import PYTHON_RELEASE_IMAGE, DebPackage, PlatformPackages
+from repomap_kg.runtime.release import (
+    PYTHON_RELEASE_IMAGE,
+    RELEASE_FINAL_PACKAGE_CHECK_PY,
+    RELEASE_FINAL_PROBE_PY,
+    RELEASE_PROBE_HELPERS_PY,
+    DebPackage,
+    PlatformPackages,
+)
+from runner_coverage_execution import prepare_child_coverage_environment
 
 DYN, LIBC, LICENSE = payload.DYNLOAD, "/lib/aarch64-linux-gnu/libc.so.6", "/usr/local/lib/python3.12/LICENSE.txt"
 TK, SSL, MATH = (f"{DYN}/{name}.cpython-312-aarch64-linux-gnu.so" for name in ("_tkinter", "_ssl", "math"))
@@ -326,3 +334,54 @@ def test_recipe_runs_the_same_file_on_the_unmodified_base_before_any_builder_pac
     assert stage < recipe.index("esac\n", stage) < copy < run < min(later), (stage, copy, run, later)
     assert recipe.count("python_payload.py") == 3 and "--no-exclusion" not in recipe, "one wired, guarded run"
     assert "python_payload" not in render_server_dockerfile().split("AS runtime", 1)[1], "build stage only"
+    assert payload.RELEASE_PROBE_HELPERS_PY is RELEASE_PROBE_HELPERS_PY
+    assert payload.RELEASE_FINAL_PACKAGE_CHECK_PY is RELEASE_FINAL_PACKAGE_CHECK_PY
+    assert "def forbidden_packages(packages" in recipe and "offending = forbidden_packages(packages)" in recipe
+
+
+def test_shared_final_probe_helpers_and_ci69_package_classifier_invariants(tmp_path: Path) -> None:
+    assert "check=False).stdout" not in RELEASE_FINAL_PROBE_PY
+    lib_re = 'LIBRARY_FILE = re.compile(r"libpq[^/]*\\.(?:so(?:\\.\\d+)*|a|dylib)\\Z")'
+    assert lib_re in payload.RELEASE_PROBE_HELPERS_PY
+    assert 'p.name.startswith("libpq")' not in RELEASE_FINAL_PROBE_PY
+    assert 'run("dpkg", "--verify", "libpq5", codes=(0, 1))' in RELEASE_FINAL_PROBE_PY
+    child_runs = [
+        node for node in ast.walk(ast.parse(RELEASE_FINAL_PROBE_PY))
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "run"
+        and node.args and isinstance(node.args[0], ast.Attribute) and node.args[0].attr == "executable"
+    ]
+    assert len(child_runs) == 1
+    fixture_path = Path(__file__).resolve().parent / "fixtures" / "ci69-native-runtime-packages.json"
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    packages = [row[0] for row in fixture["packages"]]
+    cfg_dir = tmp_path / "etc" / "dpkg" / "dpkg.cfg.d"
+    doc_dir = tmp_path / "usr" / "share" / "doc" / "gcc-14-base"
+    cfg_dir.mkdir(parents=True)
+    doc_dir.mkdir(parents=True)
+    (cfg_dir / "docker").write_text("path-exclude /usr/share/doc/*\npath-include /usr/share/doc/*/copyright\n", "utf-8")
+    (doc_dir / "copyright").write_text("copyright\n", encoding="utf-8")
+    listed = (
+        "/.", "/usr", "/usr/share", "/usr/share/doc", "/usr/share/doc/gcc-14-base",
+        "/usr/share/doc/gcc-14-base/README.Debian.amd64.gz", "/usr/share/doc/gcc-14-base/TODO.Debian",
+        "/usr/share/doc/gcc-14-base/changelog.Debian.gz", "/usr/share/doc/gcc-14-base/copyright",
+    )
+    verify_out = "\n".join(f"{kind}   {path}" for kind, path in fixture["gcc_base_verify_mismatches"])
+    meta_out = "gcc-14-base\t14.2.0-19\tamd64\tii"
+    clean_env = prepare_child_coverage_environment(family="unmeasured")
+    assert not [k for k in clean_env if k.startswith("COVERAGE_")]
+    for expected in ([], ["gcc-14-base"]):
+        prog = (
+            payload.RELEASE_PROBE_HELPERS_PY + payload.RELEASE_FINAL_PACKAGE_CHECK_PY + "import json\n"
+            f"run = lambda *cmd, codes=(0,): (0, {meta_out!r}) "
+            f"if cmd[:2] == ('dpkg-query', '-W') else (0, {chr(10).join(listed)!r}) "
+            f"if cmd[:2] == ('dpkg-query', '-L') else (1, {verify_out!r})\n"
+            f"print(json.dumps(forbidden_packages({packages!r}, root={str(tmp_path)!r})))\n"
+        )
+        done = subprocess.run(
+            [sys.executable, "-I", "-c", prog], capture_output=True, text=True, check=True, env=clean_env
+        )
+        assert json.loads(done.stdout) == expected
+        if not expected:
+            real_doc_dir = tmp_path / "real-doc-dir"
+            doc_dir.rename(real_doc_dir)
+            doc_dir.symlink_to(real_doc_dir)

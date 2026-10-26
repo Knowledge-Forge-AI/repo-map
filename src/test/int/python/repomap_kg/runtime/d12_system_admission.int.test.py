@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import json, stat, subprocess, sys
+import json, stat, subprocess
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -20,10 +20,13 @@ from repomap_kg.runtime import release as release_mod
 from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import d12_core_image as d12, d12_recipe
 from repomap_test_support.d12_image_probes import _create
+from repomap_test_support.d12_system_test_children import (
+    hold_exclusive_flock, poisoned_coverage_base_env, transfer_proof_locally,
+)
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_run import active_resource_run
 from repomap_test_support.resource_test_images import ensure_canonical_runtime_image
-from test_sandbox_arguments import sandbox_report_arguments, transfer_system_proof
+from test_sandbox_arguments import sandbox_report_arguments
 from test_sandbox_dispatch import integration_sandbox_dispatch
 from tools.system.candidate_image import CandidateImageMetadata
 from tools.system.compose_command import normalize_compose_args
@@ -200,18 +203,12 @@ def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> No
         ["--suite", "system", "--d12-system-proof-json", str(proof_file)], repo_root=REPO_ROOT)
     assert arg_res.d12_proof_bytes == proof_file.read_bytes()
     inner_target = tmp_path / "inner-run" / "repomap-d12-system-proof.json"
-
-    def local_exec(_r: Any, cmd: list[str], *, input_text: str | None = None, timeout: float = 30) -> Any:
-        return subprocess.run(
-            [sys.executable, *cmd[5:]], input=input_text, capture_output=True, text=True, timeout=timeout, check=False)
-
-    assert arg_res.d12_proof_bytes is not None
-    transfer_system_proof(
-        MagicMock(), "local-cid", arg_res.d12_proof_bytes, captured=local_exec, inner_proof_path=inner_target)
-    assert inner_target.read_bytes() == arg_res.d12_proof_bytes and stat.S_IMODE(inner_target.lstat().st_mode) == 0o600
-    with pytest.raises(RuntimeError, match="transfer failed"):
-        transfer_system_proof(
-            MagicMock(), "local-cid", arg_res.d12_proof_bytes, captured=local_exec, inner_proof_path=inner_target)
+    assert (proof_raw := arg_res.d12_proof_bytes) is not None
+    poisoned = poisoned_coverage_base_env()
+    transfer_proof_locally(MagicMock(), "local-cid", proof_raw, target_path=inner_target, base_env=poisoned)
+    assert inner_target.read_bytes() == proof_raw and stat.S_IMODE(inner_target.lstat().st_mode) == 0o600
+    with pytest.raises(RuntimeError, match="integration sandbox D12 system proof transfer failed"):
+        transfer_proof_locally(MagicMock(), "local-cid", proof_raw, target_path=inner_target, base_env=poisoned)
 
 
 def test_sandbox_dispatch_blocks_system_suite_without_valid_proof() -> None:
@@ -252,23 +249,9 @@ def test_cross_process_flock_and_o_excl_race_and_execute_system_run(tmp_path: Pa
         return sess
 
     race_session = _new_session(lock_report_dir)
-    holder_code = (
-        "import fcntl, os, sys; fd = os.open(sys.argv[1], os.O_CREAT | os.O_RDWR, 0o600); "
-        "fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB); sys.stdout.write('locked\\n'); "
-        "sys.stdout.flush(); sys.stdin.read()"
-    )
-    holder = subprocess.Popen(
-        [sys.executable, "-I", "-c", holder_code, str(lock_file)],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
-    )
-    try:
-        assert holder.stdout is not None and holder.stdout.readline().strip() == "locked"
+    with hold_exclusive_flock(lock_file, base_env=poisoned_coverage_base_env()):
         with pytest.raises(SystemTestError, match="unable to acquire exclusive D12 system build lock"):
             race_session.reserve_one_use_candidate_build()
-    finally:
-        if holder.stdin is not None:
-            holder.stdin.close()
-        holder.wait(timeout=10)
 
     race_session.reserve_one_use_candidate_build()
     race_session.close_lock()
@@ -362,14 +345,34 @@ def test_real_container_bounded_exec_timeout_cleanup_and_merged_compose_no_build
     try:
         container.start()
         comb = container.exec_run(
-            ["python", "-c", "import sys; sys.stdout.write('ok\\n'); sys.stderr.write('err\\n')"], demux=False
-        )
+            ["python", "-c", "import sys; sys.stdout.write('ok\\n'); sys.stderr.write('err\\n')"], demux=False)
         assert comb.exit_code == 0 and isinstance(comb.output, bytes)
         assert b"ok\n" in comb.output and b"err\n" in comb.output
         dmx = container.exec_run(
-            ["python", "-c", "import sys; sys.stdout.write('out\\n'); sys.stderr.write('warn\\n')"], demux=True
-        )
+            ["python", "-c", "import sys; sys.stdout.write('out\\n'); sys.stderr.write('warn\\n')"], demux=True)
         assert dmx.exit_code == 0 and dmx.output == (b"out\n", b"warn\n")
+        # Runtime probes observe container files; exported SDK names use /nonexistent for compiler-name refusal only.
+        assert Path("/usr/bin/dpkg-query").is_file()
+        sdk_cmd = ["dpkg-query", "-W", "-f=${Package}\t${db:Status-Abbrev}\n"]
+        sdk_q = subprocess.run(sdk_cmd, check=True, capture_output=True, text=True).stdout.splitlines()
+        sdk_names = [r.split("\t")[0] for r in sdk_q if r.split("\t")[1].startswith("ii")]
+        pkg_probe = (
+            release_mod.RELEASE_PROBE_HELPERS_PY + release_mod.RELEASE_FINAL_PACKAGE_CHECK_PY + "import json\n"
+            f"sdk_names = {sdk_names!r}\narch = run('dpkg', '--print-architecture')[1]\n"
+            "q = run('dpkg-query', '-W', '-f=${Package}\\t${db:Status-Abbrev}\\n')[1].splitlines()\n"
+            "pkgs = [r.split('\\t')[0] for r in q if r.split('\\t')[1].startswith('ii')]\n"
+            "res = {'arch': arch, 'runtime_live': forbidden_packages(pkgs), "
+            "'sdk_compiler_names': forbidden_packages(sdk_names, root='/nonexistent'), "
+            "'unqualified': forbidden_packages(pkgs, root='/nonexistent'), "
+            "'tooling': forbidden_packages([*pkgs, 'gcc', 'libpq-dev'])}\nprint(json.dumps(res))\n"
+        )
+        pkg_res = container.exec_run(["python", "-I", "-c", pkg_probe], demux=False)
+        assert pkg_res.exit_code == 0 and isinstance(pkg_res.output, bytes)
+        pkg_obs = json.loads(pkg_res.output.decode("utf-8").strip().splitlines()[-1])
+        assert isinstance(pkg_obs["runtime_live"], list) and "gcc-14-base" in pkg_obs["unqualified"]
+        assert {"gcc", "binutils", "cpp", "libpq-dev"} <= set(pkg_obs["sdk_compiler_names"])
+        assert {"gcc", "libpq-dev"} <= set(pkg_obs["tooling"]) and (
+            pkg_obs["arch"] == "amd64" or pkg_obs["runtime_live"] == ["gcc-14-base"])
         short_container = wrap_create_with_bounded_exec(
             lambda *_a, **_kw: (cid, container._container), default_timeout_seconds=0.3
         )(owner, client, image_id, ["true"])[1]

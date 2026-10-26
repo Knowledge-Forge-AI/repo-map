@@ -6,16 +6,28 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 import hashlib
+import json
 import os
 from pathlib import Path
 import shlex
 import shutil
 import subprocess
+import sys
 
 import pytest
 
 from repomap_kg.runtime.commands import render_server_dockerfile
-from repomap_kg.runtime.release import APT_WORKDIR, DebPackage, PlatformPackages, apt_custody_program, render_apt_steps
+from repomap_kg.runtime.release import (
+    APT_WORKDIR,
+    RELEASE_FINAL_PACKAGE_CHECK_PY,
+    RELEASE_FINAL_PROBE_PY,
+    RELEASE_PROBE_HELPERS_PY,
+    DebPackage,
+    PlatformPackages,
+    apt_custody_program,
+    render_apt_steps,
+)
+from runner_coverage_execution import prepare_child_coverage_environment
 
 TOOLS = {tool: shutil.which(tool) for tool in ("sh", "sha256sum", "grep", "cat")}
 BASE = ["ii  libc6:arm64=2.36-9+deb12u10", "ii  tzdata:all=2025b-0+deb12u1", "ii  libgcc-s1:armhf=12.2.0-14",
@@ -264,3 +276,123 @@ def test_render_order_pipe_substitution_and_grep_groups() -> None:
         assert tokens[index - 1] == "{" and "&&" not in tokens[index:end], tokens[index:end]
         assert tokens[end + 1:end + 7] == ["test", "$?", "-eq", "1", ";", "}"], tokens[end:end + 7]
     assert "apt-get" not in render_server_dockerfile(), "the unfrozen manifest still refuses before APT"
+
+
+CI69_FIXTURE_PATH = Path(__file__).resolve().parent / "fixtures" / "ci69-native-runtime-packages.json"
+DEFAULT_GCC14_LISTED = (
+    "/.", "/usr", "/usr/share", "/usr/share/doc", "/usr/share/doc/gcc-14-base",
+    "/usr/share/doc/gcc-14-base/README.Debian.amd64.gz", "/usr/share/doc/gcc-14-base/TODO.Debian",
+    "/usr/share/doc/gcc-14-base/changelog.Debian.gz", "/usr/share/doc/gcc-14-base/copyright",
+)
+
+
+def _prepare_gcc14_root(root: Path, *, rules_text: str | None = None) -> Path:
+    cfg_dir = root / "etc" / "dpkg" / "dpkg.cfg.d"
+    doc_dir = root / "usr" / "share" / "doc" / "gcc-14-base"
+    cfg_dir.mkdir(parents=True, exist_ok=True)
+    doc_dir.mkdir(parents=True, exist_ok=True)
+    default_rules = "path-exclude /usr/share/doc/*\npath-include /usr/share/doc/*/copyright\n"
+    (cfg_dir / "docker").write_text(default_rules if rules_text is None else rules_text, encoding="utf-8")
+    copyright_file = doc_dir / "copyright"
+    copyright_file.write_text("Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/\n", "utf-8")
+    copyright_file.chmod(0o644)
+    return copyright_file
+
+
+def _run_classifier(
+    packages: list[str], *, root: Path, meta_out: str = "gcc-14-base\t14.2.0-19\tamd64\tii ",
+    listed_paths: tuple[str, ...] = DEFAULT_GCC14_LISTED, verify_code: int = 1,
+    verify_lines: tuple[str, ...] = (
+        "missing   /usr/share/doc/gcc-14-base/README.Debian.amd64.gz",
+        "missing   /usr/share/doc/gcc-14-base/TODO.Debian",
+        "missing   /usr/share/doc/gcc-14-base/changelog.Debian.gz",
+    ),
+) -> list[str]:
+    program = (
+        RELEASE_PROBE_HELPERS_PY + RELEASE_FINAL_PACKAGE_CHECK_PY + "import json\n"
+        f"meta_out, listed_paths = {meta_out!r}, {listed_paths!r}\n"
+        f"verify_code, verify_lines = {verify_code!r}, {verify_lines!r}\n"
+        "def _fake_run(*command, codes=(0,)):\n"
+        "    if command[:2] == ('dpkg-query', '-W'):\n"
+        "        return 0, meta_out\n"
+        "    if command == ('dpkg-query', '-L', 'gcc-14-base:amd64'):\n"
+        "        return 0, '\\n'.join(listed_paths)\n"
+        "    if command == ('dpkg', '--verify', 'gcc-14-base:amd64'):\n"
+        "        assert verify_code in codes\n"
+        "        return verify_code, '\\n'.join(verify_lines)\n"
+        "    raise AssertionError(f'unexpected command: {command!r}')\n"
+        "run = _fake_run\n"
+        f"print(json.dumps(forbidden_packages({packages!r}, root={str(root)!r})))\n"
+    )
+    clean_env = prepare_child_coverage_environment(family="unmeasured")
+    assert not [k for k in clean_env if k.startswith("COVERAGE_")]
+    done = subprocess.run(
+        [sys.executable, "-I", "-c", program], capture_output=True, text=True, check=True, env=clean_env
+    )
+    return list(json.loads(done.stdout))
+
+
+def test_ci69_native_runtime_package_fixture_and_gcc14_base_classifier(tmp_path: Path) -> None:
+    fixture = json.loads(CI69_FIXTURE_PATH.read_text(encoding="utf-8"))
+    packages = [row[0] for row in fixture["packages"]]
+    assert len(packages) == 142 and fixture["closure"] == []
+    # Historical pre-change D12HOSTED8 predicate (B2) and unqualified root both flag only gcc-14-base.
+    old_bad = [p for p in packages if p.endswith("-dev") or p in {"gcc", "binutils", "cpp"} or p.startswith("gcc-")]
+    assert old_bad == ["gcc-14-base"]
+    verify_lines = tuple(f"{kind}   {path}" for kind, path in fixture["gcc_base_verify_mismatches"])
+    assert _run_classifier(packages, root=tmp_path / "unqualified", verify_lines=verify_lines) == ["gcc-14-base"]
+    copyright_file = _prepare_gcc14_root(tmp_path)
+    assert _run_classifier(packages, root=tmp_path, verify_lines=verify_lines) == []
+    # Refuses wrong version, wrong architecture, third-column/malformed status, or multiple instances.
+    assert _run_classifier([*packages, "gcc-14-base"], root=tmp_path, verify_lines=verify_lines) == [
+        "gcc-14-base", "gcc-14-base",
+    ]
+    for bad_meta in (
+        "gcc-14-base\t14.2.0-18\tamd64\tii",
+        "gcc-14-base\t14.2.0-19\tarm64\tii",
+        "gcc-14-base\t14.2.0-19\tamd64\trc",
+        "gcc-14-base\t14.2.0-19\tamd64\tiiR",
+        "gcc-14-base\t14.2.0-19\tamd64\t ii",
+        "gcc-14-base\t14.2.0-19\tamd64\tii\ngcc-14-base\t14.2.0-19\ti386\tii",
+    ):
+        assert _run_classifier(packages, root=tmp_path, meta_out=bad_meta, verify_lines=verify_lines) == ["gcc-14-base"]
+    # Refuses omitted metadata doc or unexpected library/header paths in dpkg-query -L.
+    for bad_listed in (
+        DEFAULT_GCC14_LISTED[:-1],
+        tuple(p for p in DEFAULT_GCC14_LISTED if not p.endswith("TODO.Debian")),
+        (*DEFAULT_GCC14_LISTED, "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1"),
+        (*DEFAULT_GCC14_LISTED, "/usr/include/gcc-14.h"),
+    ):
+        assert _run_classifier(packages, root=tmp_path, listed_paths=bad_listed, verify_lines=verify_lines) == [
+            "gcc-14-base"
+        ]
+    # Refuses executable mode or ELF magic on an existing documentation file.
+    copyright_file.chmod(0o755)
+    assert _run_classifier(packages, root=tmp_path, verify_lines=verify_lines) == ["gcc-14-base"]
+    copyright_file.chmod(0o644)
+    copyright_file.write_bytes(b"\x7fELF\x02\x01\x01\x00")
+    assert _run_classifier(packages, root=tmp_path, verify_lines=verify_lines) == ["gcc-14-base"]
+    # Refuses symlink documentation file and unfiltered missing documentation file.
+    copyright_file.unlink()
+    assert _run_classifier(packages, root=tmp_path, verify_lines=verify_lines) == ["gcc-14-base"]
+    other_file = tmp_path / "other"
+    other_file.write_text("copy\n", encoding="utf-8")
+    copyright_file.symlink_to(other_file)
+    assert _run_classifier(packages, root=tmp_path, verify_lines=verify_lines) == ["gcc-14-base"]
+    copyright_file.unlink()
+    copyright_file.write_text("copyright\n", encoding="utf-8")
+    copyright_file.chmod(0o644)
+    # Refuses dpkg --verify checksum mismatch, filtered missing doc outside the four-doc list, or malformed line.
+    for bad_verify in (
+        ("??5??????   /usr/share/doc/gcc-14-base/copyright",),
+        (*verify_lines, "missing   /usr/share/doc/gcc-14-base/EXTRA.Debian"),
+        ("missing  c /usr/share/doc/gcc-14-base/TODO.Debian",),
+    ):
+        assert _run_classifier(packages, root=tmp_path, verify_lines=bad_verify) == ["gcc-14-base"]
+    with_compilers = [*packages, "gcc", "gcc-14", "cpp", "binutils", "libpq-dev"]
+    assert _run_classifier(with_compilers, root=tmp_path, verify_lines=verify_lines) == [
+        "gcc", "gcc-14", "cpp", "binutils", "libpq-dev",
+    ]
+    dockerfile = render_server_dockerfile({"arm64": ITEM}, 180004)
+    assert "offending = forbidden_packages(packages)" in RELEASE_FINAL_PROBE_PY
+    assert "offending = forbidden_packages(packages)" in dockerfile
