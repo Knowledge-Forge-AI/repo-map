@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import release
+from repomap_kg.runtime import release, release_manifest
 from repomap_kg.runtime.commands import (
     render_compose_yaml,
     render_server_dockerfile,
@@ -184,6 +184,47 @@ def test_frozen_manifest_compares_package_additions_in_one_c_byte_order() -> Non
     assert ("printf '%s\\n' 'ii  libgdbm-compat4:arm64=1.23-3' 'ii  libgdbm6:arm64=1.23-3' "
             "> /tmp/repomap-apt/exp") in steps[1], steps[1]
     assert "REPOMAP_EXPECT_MINIMUM_LIBPQ=170000" in dockerfile
+
+
+def test_runtime_stage_refreshes_linker_cache_once_after_closure_before_python() -> None:
+    assert release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST["amd64"].closure == ()
+    assert len(_platform().closure) == 2
+    default_df = render_server_dockerfile()
+    amd_df = render_server_dockerfile(
+        release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST,
+        release_manifest.D12_CANDIDATE_LIBPQ_VERSION,
+    )
+    fixture_df = render_server_dockerfile({"arm64": _platform()}, 180004)
+    assert "apt-get" not in default_df
+    assert (
+        'ADR 0089 D3 package manifest unresolved for ${TARGETARCH}; '
+        "refusing before package or backend execution" in default_df
+    )
+    assert "    amd64) true ;; \\\n    *) exit 1 ;; \\\n    esac\nRUN ldconfig\n" in amd_df
+    assert "rm -rf /var/lib/apt/lists/* ;; \\\n    *) exit 1 ;; \\\n    esac\nRUN ldconfig\n" in fixture_df
+    for rendered in (default_df, amd_df, fixture_df):
+        before_runtime, runtime_stage = rendered.split(
+            f"FROM {release.POSTGRES_RELEASE_IMAGE} AS runtime\n", 1
+        )
+        assert "ldconfig" not in before_runtime
+        assert rendered.count("ldconfig") == 1
+        assert runtime_stage.splitlines().count("RUN ldconfig") == 1
+        copy_idx = runtime_stage.index("COPY --from=python-runtime /usr/local /usr/local\n")
+        closure_idx = runtime_stage.index('RUN case "${TARGETARCH}" in \\\n', copy_idx)
+        closure_end = runtime_stage.index("    esac\n", closure_idx) + len("    esac\n")
+        ldconfig_idx = runtime_stage.index("RUN ldconfig\n")
+        first_python_idx = runtime_stage.index('RUN package_root="$(python -c ')
+        probe_idx = runtime_stage.index("python -I /tmp/repomap-release-probe.py")
+        assert copy_idx < closure_idx < closure_end == ldconfig_idx < first_python_idx < probe_idx
+        assert not [
+            line for line in runtime_stage[:ldconfig_idx].splitlines()
+            if "python" in line and not line.startswith("COPY --from=python-runtime")
+        ]
+        assert (
+            f"COPY <<'REPOMAP_PY' /tmp/repomap-release-probe.py\n"
+            f"{release.RELEASE_FINAL_PROBE_PY}REPOMAP_PY\n" in runtime_stage
+        )
+        assert 'assert "not found" not in linked, f"{path}: {linked}"' in runtime_stage
 
 
 REPEATS = "repeats a package name, SHA-256 or file"

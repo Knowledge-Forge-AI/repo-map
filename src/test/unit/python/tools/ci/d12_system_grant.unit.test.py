@@ -24,6 +24,8 @@ from ci.d12_system_grant import (
     EXPECTED_PHASE_ID,
     SPENT_CI69_NONCE,
     SPENT_CI69_RESERVATION_SHA256,
+    SPENT_CI70_NONCE,
+    SPENT_CI70_RESERVATION_SHA256,
     D12SystemGrantError,
     SYSTEM_ADMISSION_PROOF_SCHEMA,
     SYSTEM_BUILD_GRANT_SCHEMA,
@@ -105,14 +107,18 @@ def test_load_tracked_system_build_grant_matches_candidate_record() -> None:
         expected_candidate=expected_cand,
         frozen_identity=dict(expected_cand["d12_context"]),
     )
-    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI69FIX1"
+    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI70FIX1"
+    assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
+    assert SPENT_CI70_RESERVATION_SHA256 == (
+        "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
+    )
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 70
+    assert grant["workflow_ordinal"] == 71
     assert grant["workflow_attempt"] == 1
-    assert grant["maximum_total"] == 2
-    assert grant["maximum_per_platform"] == 2
+    assert grant["maximum_total"] == 3
+    assert grant["maximum_per_platform"] == 3
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
@@ -134,18 +140,26 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
 
     for field, bad_val in (
         ("workflow_ordinal", 69),
-        ("workflow_ordinal", 71),
+        ("workflow_ordinal", 70),
+        ("workflow_ordinal", 72),
         ("workflow_attempt", 2),
         ("maximum_per_platform", 1),
+        ("maximum_per_platform", 2),
         ("maximum_total", 1),
+        ("maximum_total", 2),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
+        ("nonce", SPENT_CI70_NONCE),
+        ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
         ("nonce", str(grant["nonce"]) + "\n"),
         ("before", str(grant["before"]) + "\n"),
         ("reservation_sha256", str(grant["reservation_sha256"]) + "\n"),
+        ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"),
         ("before", "1" * 40),
         ("base", "2" * 40),
+        ("approval_sha256", "88a3672196430bf30091672621771af4160fa22c28fe35b671145e2ed4e870b1"),
         ("approval_sha256", "3" * 64),
+        ("ledger_before_sha256", "1cc8dea0eed060628e427f052df5968118e91d015b8fc3c8792516314b84f6d5"),
         ("ledger_before_sha256", "4" * 64),
     ):
         with pytest.raises(D12SystemGrantError):
@@ -153,15 +167,23 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
 
     cand_sha = hashlib.sha256((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_bytes()).hexdigest()
     proof = _make_proof(grant, grant_sha, cand_sha)
+    assert "maximum_total" not in proof and "maximum_per_platform" not in proof
+    for max_key in ("maximum_total", "maximum_per_platform"):
+        with pytest.raises(D12SystemGrantError, match="closed schema"):
+            validate_system_admission_proof({**proof, max_key: 3})
     for proof_field, bad_proof_val in (
         ("workflow_ordinal", 69),
-        ("workflow_ordinal", 71),
+        ("workflow_ordinal", 70),
+        ("workflow_ordinal", 72),
         ("workflow_attempt", 2),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
+        ("nonce", SPENT_CI70_NONCE),
+        ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
         ("nonce", str(proof["nonce"]) + "\n"),
         ("before", str(proof["before"]) + "\n"),
         ("reservation_sha256", str(proof["reservation_sha256"]) + "\n"),
+        ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"),
         ("before", "1" * 40),
         ("base", "2" * 40),
     ):

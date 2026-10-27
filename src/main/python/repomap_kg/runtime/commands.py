@@ -178,6 +178,7 @@ FROM {POSTGRES_RELEASE_IMAGE} AS runtime
 ARG TARGETARCH
 COPY --from=python-runtime /usr/local /usr/local
 RUN {closure}
+RUN ldconfig
 COPY --from=python-runtime /build/src/main/python/repomap_kg/third_party_licenses/ /usr/share/doc/repomap-kg/psycopg/
 COPY --from=python-runtime /build/psycopg-c-linkage.json /usr/share/doc/repomap-kg/psycopg/linkage.json
 COPY --from=python-runtime /build/psycopg-c-source/ /usr/share/doc/repomap-kg/psycopg/source/
