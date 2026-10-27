@@ -58,3 +58,93 @@ def test_d12_recipe_renders_dockerfile_from_candidate_release_manifest() -> None
     )
     assert rendered == expected
     assert 'io.repomap.release.libpq="180006"' in rendered
+
+
+def test_runtime_stage_orders_closure_ldconfig_and_fail_closed_include_rmdir() -> None:
+    from repomap_kg.runtime import release_manifest
+
+    amd64_pkg = release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST["amd64"]
+    assert amd64_pkg.closure == ()
+    nonempty_pkg = amd64_pkg._replace(closure=amd64_pkg.builder[:2])
+    assert len(nonempty_pkg.closure) == 2
+    release.validate_package_manifest(
+        {"amd64": nonempty_pkg}, release_manifest.D12_CANDIDATE_LIBPQ_VERSION
+    )
+
+    default_df = commands.render_server_dockerfile()
+    amd_df = commands.render_server_dockerfile(
+        release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST,
+        release_manifest.D12_CANDIDATE_LIBPQ_VERSION,
+    )
+    nonempty_df = commands.render_server_dockerfile(
+        {"amd64": nonempty_pkg},
+        release_manifest.D12_CANDIDATE_LIBPQ_VERSION,
+    )
+
+    assert "apt-get" not in default_df
+    assert (
+        'ADR 0089 D3 package manifest unresolved for ${TARGETARCH}; '
+        "refusing before package or backend execution" in default_df
+    )
+    assert 'io.repomap.release.libpq="unresolved"' in default_df
+    assert (
+        "    amd64) true ;; \\\n    *) exit 1 ;; \\\n    esac\n"
+        "RUN ldconfig\nRUN rmdir /usr/local/include\n" in amd_df
+    )
+    assert (
+        "rm -rf /var/lib/apt/lists/* ;; \\\n    *) exit 1 ;; \\\n    esac\n"
+        "RUN ldconfig\nRUN rmdir /usr/local/include\n" in nonempty_df
+    )
+    for pkg in nonempty_pkg.closure:
+        assert f"{pkg.name}={pkg.version}" in nonempty_df
+
+    for rendered in (default_df, amd_df, nonempty_df):
+        before_runtime, runtime_stage = rendered.split(
+            f"FROM {release.POSTGRES_RELEASE_IMAGE} AS runtime\n", 1
+        )
+        assert "ldconfig" not in before_runtime
+        assert "rmdir" not in before_runtime
+        assert rendered.count("ldconfig") == 1
+        assert rendered.count("rmdir") == 1
+        assert runtime_stage.splitlines().count("RUN ldconfig") == 1
+        assert runtime_stage.splitlines().count("RUN rmdir /usr/local/include") == 1
+        assert [line for line in runtime_stage.splitlines() if "rmdir" in line] == [
+            "RUN rmdir /usr/local/include"
+        ]
+        copy_idx = runtime_stage.index("COPY --from=python-runtime /usr/local /usr/local\n")
+        closure_idx = runtime_stage.index('RUN case "${TARGETARCH}" in \\\n', copy_idx)
+        closure_end = runtime_stage.index("    esac\n", closure_idx) + len("    esac\n")
+        ldconfig_idx = runtime_stage.index("RUN ldconfig\n")
+        rmdir_idx = runtime_stage.index("RUN rmdir /usr/local/include\n")
+        license_copy_idx = runtime_stage.index(
+            "COPY --from=python-runtime /build/src/main/python/repomap_kg/third_party_licenses/ "
+            "/usr/share/doc/repomap-kg/psycopg/\n"
+        )
+        first_python_idx = runtime_stage.index('RUN package_root="$(python -c ')
+        probe_idx = runtime_stage.index("python -I /tmp/repomap-release-probe.py")
+        assert (
+            copy_idx
+            < closure_idx
+            < closure_end
+            == ldconfig_idx
+            < ldconfig_idx + len("RUN ldconfig\n")
+            == rmdir_idx
+            < rmdir_idx + len("RUN rmdir /usr/local/include\n")
+            == license_copy_idx
+            < first_python_idx
+            < probe_idx
+        )
+        assert not [
+            line
+            for line in runtime_stage[:first_python_idx].splitlines()
+            if "python" in line and not line.startswith("COPY --from=python-runtime")
+        ]
+        assert (
+            f"COPY <<'REPOMAP_PY' /tmp/repomap-release-probe.py\n"
+            f"{release.RELEASE_FINAL_PROBE_PY}REPOMAP_PY\n" in runtime_stage
+        )
+        assert (
+            'assert not [m for m in build_only if iu.find_spec(m)] '
+            'and not os.path.exists("/usr/local/include")\n'
+            in release.RELEASE_FINAL_PROBE_PY
+        )

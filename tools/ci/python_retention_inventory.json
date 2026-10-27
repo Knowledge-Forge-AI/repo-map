@@ -1866,6 +1866,16 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci71fix1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_runtime_hygiene.int.test.py"
+      ],
+      "rationale": "ADR0098 fail-closed runtime empty-directory mechanism; strict zero-debt test-owner admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
@@ -32337,6 +32347,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d12_dynamic_linkage.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_runtime_hygiene.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI71FIX1 actual native-base and empty-directory refusal owner; zero debt.",
       "root": "test_owners",
       "status": "active_int_test"
     },
