@@ -1,0 +1,885 @@
+{
+  "schema": "repomap-d12-p3-artifact-evidence-v1",
+  "revision": "2026-10-27.3",
+  "phase": "REPOMAP-PRODUCT6-NAVIGATION47-P3BYTES1",
+  "scope": "prospective Python base only",
+  "diagnostic_only": true,
+  "image_accepted": false,
+  "p3_accepted": false,
+  "native_platform_qualified": false,
+  "publisher_provenance_verified": false,
+  "inspected_python_index": "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e",
+  "compressed_bytes": 87312078,
+  "expanded_bytes": 274937856,
+  "logical_tar_members": 12335,
+  "conservative_header_units": 12347,
+  "layers": [
+    {
+      "platform": "amd64",
+      "digest": "sha256:f2be67225471500c788ce88c597eb5ea8336e912ad1ca4815650e0281afe2034",
+      "diff_id": "sha256:a70f6272827f64e1427d048ced77491aab5d64ab95725e56920802ff391197d7",
+      "expanded_bytes": 81254400,
+      "logical_members": 3271,
+      "conservative_header_units": 3271
+    },
+    {
+      "platform": "amd64",
+      "digest": "sha256:f5b253875fcbce1c3ed3bf3431019fc52d83f106ccf45e58e083985648ad4ec7",
+      "diff_id": "sha256:4471abbb93788ec93b3c4985c6552787a6a2e20c416becf3504b454e2ed16684",
+      "expanded_bytes": 5465600,
+      "logical_members": 1063,
+      "conservative_header_units": 1069
+    },
+    {
+      "platform": "amd64",
+      "digest": "sha256:ca30a39e3f58fe12fab1873dcbc2295c56c29222f8aca17c0765e9777c59615c",
+      "diff_id": "sha256:d0240b53eb0169db59a6fc2e9b65823e17ee303ce553be997d001569fb849369",
+      "expanded_bytes": 38153216,
+      "logical_members": 1828,
+      "conservative_header_units": 1828
+    },
+    {
+      "platform": "amd64",
+      "digest": "sha256:86586d55cc56d61ea925eceb95264d80c84fae62b3f013b4022710968a0bcf73",
+      "diff_id": "sha256:7d2c3f5d47a367987053141e12ed994fcbdf164831589314b0c2bf6b89a34408",
+      "expanded_bytes": 5120,
+      "logical_members": 8,
+      "conservative_header_units": 8
+    },
+    {
+      "platform": "arm64",
+      "digest": "sha256:ddc0c1e36a6793411b6c8d48e1ddad2987405d377da92bcf532ed3181c2e4d62",
+      "diff_id": "sha256:e5593b7179d10a64cfe451e886e3ab13ccd476f906dc670865322ae1dbdf969f",
+      "expanded_bytes": 103137280,
+      "logical_members": 3266,
+      "conservative_header_units": 3266
+    },
+    {
+      "platform": "arm64",
+      "digest": "sha256:1fe8ddfb8cbbdc5855c68e22392842a3bf0c0bf8d87eb204c158c96f664e2182",
+      "diff_id": "sha256:30b514fe84180ee4eb558f242e215cb351e323595f38d88bead3d3170324b7b3",
+      "expanded_bytes": 5510656,
+      "logical_members": 1063,
+      "conservative_header_units": 1069
+    },
+    {
+      "platform": "arm64",
+      "digest": "sha256:ff13255a981b23e12e8a9c280a29ba23dcfd066500231f0fda0200d4a1314a7f",
+      "diff_id": "sha256:c2b5c2a98ecbee949b1f9c3168d8070233dadd1abb5afb42f7c93fc05f9995a8",
+      "expanded_bytes": 41406464,
+      "logical_members": 1828,
+      "conservative_header_units": 1828
+    },
+    {
+      "platform": "arm64",
+      "digest": "sha256:3634f8258f7a1c7d6a39d89ead1c23218f16d88d64fbe6be2a2093726ae046a7",
+      "diff_id": "sha256:947c04d2828ec2bfe4d3f77439f60771fe5b4865825ee58a3daed257150e7950",
+      "expanded_bytes": 5120,
+      "logical_members": 8,
+      "conservative_header_units": 8
+    }
+  ],
+  "collector_checks": {
+    "invocations": 1,
+    "synthetic_cases": 45
+  },
+  "artifact_audits": 1,
+  "supplier_queries": {
+    "observed_package_versions": 19,
+    "debian_pages": 2,
+    "cve_records": 11,
+    "total_requests": 32,
+    "response_bytes": 1146995,
+    "unfetched_cve_aliases": [
+      "CVE-2025-50181",
+      "CVE-2026-13346",
+      "CVE-2026-1703",
+      "CVE-2026-25645",
+      "CVE-2026-3219",
+      "CVE-2026-4539",
+      "CVE-2026-59890",
+      "CVE-2026-6357",
+      "CVE-2026-8643"
+    ],
+    "empty_queries": [
+      {
+        "name": "CacheControl",
+        "version": "0.14.1",
+        "canonical_name": "cachecontrol",
+        "canonical_name_was_sent": false,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "distlib",
+        "version": "0.3.9",
+        "canonical_name": "distlib",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "distro",
+        "version": "1.9.0",
+        "canonical_name": "distro",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "packaging",
+        "version": "24.2",
+        "canonical_name": "packaging",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "platformdirs",
+        "version": "4.3.6",
+        "canonical_name": "platformdirs",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "pyproject-hooks",
+        "version": "1.2.0",
+        "canonical_name": "pyproject-hooks",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "resolvelib",
+        "version": "1.0.1",
+        "canonical_name": "resolvelib",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "rich",
+        "version": "13.9.4",
+        "canonical_name": "rich",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "tomli",
+        "version": "2.2.1",
+        "canonical_name": "tomli",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "truststore",
+        "version": "0.10.0",
+        "canonical_name": "truststore",
+        "canonical_name_was_sent": true,
+        "status": "no record found for sent name/version; not cleared"
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.12.2",
+        "canonical_name": "typing-extensions",
+        "canonical_name_was_sent": false,
+        "status": "no record found for sent name/version; not cleared"
+      }
+    ],
+    "pagination_tokens_seen": false,
+    "empty_query_is_clearance": false
+  },
+  "component_counts": {
+    "osv_records": 43,
+    "ghsa_groups": 22,
+    "osv_labels": {
+      "CRITICAL": 1,
+      "MODERATE": 10,
+      "HIGH": 8,
+      "LOW": 3
+    }
+  },
+  "review": {
+    "scope": "inline collector code and compact evidence; no independent raw-byte rehash",
+    "parent_checked_raw_custody": true,
+    "derived_report_corrections": true,
+    "corrections_independently_rereviewed": false
+  },
+  "ci72": {
+    "url": "https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/40457734398",
+    "attempt": 1,
+    "diagnostic_system_phases_passed": 5,
+    "archive_rows": 2000,
+    "p3_accepted": false,
+    "unit": {
+      "passed": 13836,
+      "skipped": 40,
+      "statements": [
+        53607,
+        60931
+      ],
+      "branches": [
+        17400,
+        19864
+      ]
+    },
+    "integration_m": {
+      "passed": 1812,
+      "skipped": 12,
+      "statements": [
+        54934,
+        60931
+      ],
+      "branches": [
+        16356,
+        19864
+      ]
+    },
+    "coverage_arithmetic_checked": true,
+    "complete_acceptance_validator_executed": false,
+    "coverage_does_not_qualify_inspected_python_base": true
+  },
+  "unchanged_build_budget": {
+    "spent_native_amd_application_starts": 4,
+    "new_application_starts": 0,
+    "rearmed": false
+  },
+  "sample_comparison": {
+    "equal": 36,
+    "unresolved_hardlink": 1,
+    "different": 0
+  },
+  "platforms": {
+    "amd64": {
+      "variant": null,
+      "packages": 87,
+      "source_version_pairs": 61,
+      "reused_exact_source_pairs": 59,
+      "reused_unresolved_source_rows": 72,
+      "new_source_claims": [
+        {
+          "source": "ca-certificates",
+          "version": "20250419+deb13u1"
+        },
+        {
+          "source": "tzdata",
+          "version": "2026e-0+deb13u1"
+        }
+      ],
+      "libc_claim": {
+        "name": "libc6",
+        "version": "2.41-12+deb13u4",
+        "source": "glibc",
+        "source_version": "2.41-12+deb13u4"
+      },
+      "libc_sha256": "9792e3cbb541c8f44c7acf5f14f4022ea62998ecc787d326bed4d8b6547dfd92",
+      "md5_status_counts": {
+        "match": 2346,
+        "not_observed_or_unresolved": 2048
+      },
+      "unresolved_usr_share": 2046,
+      "usr_share_lexical_policy_matches": 2046,
+      "lexical_matches_are_admission": false,
+      "matching_conffiles": 70,
+      "copyright_texts": 85,
+      "shared_copyright_directories": [
+        {
+          "package": "libgcc-s1",
+          "target": "gcc-14-base",
+          "candidate_text": "usr/share/doc/gcc-14-base/copyright",
+          "text_observed": true
+        },
+        {
+          "package": "libncursesw6",
+          "target": "libtinfo6",
+          "candidate_text": "usr/share/doc/libtinfo6/copyright",
+          "text_observed": true
+        },
+        {
+          "package": "libstdc++6",
+          "target": "gcc-14-base",
+          "candidate_text": "usr/share/doc/gcc-14-base/copyright",
+          "text_observed": true
+        }
+      ],
+      "lib_dynload_modules": 78,
+      "regular_untainted_elf_objects": 745,
+      "withheld_perl_aliases": [
+        "usr/bin/perl",
+        "usr/bin/perl5.40.1"
+      ],
+      "elf_method": "section-header data; PT_DYNAMIC and loader execution unproved",
+      "tkinter": {
+        "path": "usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8",
+        "size": 62448,
+        "machine": 62,
+        "bytes_equal_frozen_31215": true,
+        "new_oci_identity_admitted": false
+      },
+      "python_header_version": "3.12.16",
+      "pip_version": "25.0.1",
+      "pip_vendor_version_claims": 18,
+      "ensurepip_vendor_manifest_equals_installed": true,
+      "vendored_license_coverage_complete": false,
+      "native_execution": false,
+      "abi_qualified": false
+    },
+    "arm64": {
+      "variant": "v8",
+      "packages": 87,
+      "source_version_pairs": 61,
+      "reused_exact_source_pairs": 59,
+      "reused_unresolved_source_rows": 72,
+      "new_source_claims": [
+        {
+          "source": "ca-certificates",
+          "version": "20250419+deb13u1"
+        },
+        {
+          "source": "tzdata",
+          "version": "2026e-0+deb13u1"
+        }
+      ],
+      "libc_claim": {
+        "name": "libc6",
+        "version": "2.41-12+deb13u4",
+        "source": "glibc",
+        "source_version": "2.41-12+deb13u4"
+      },
+      "libc_sha256": "70fa4c4cf57eabeb96097cce47582d02379c4cd1de3db3e98ade4dd7089a1b13",
+      "md5_status_counts": {
+        "match": 2345,
+        "not_observed_or_unresolved": 2049
+      },
+      "unresolved_usr_share": 2047,
+      "usr_share_lexical_policy_matches": 2047,
+      "lexical_matches_are_admission": false,
+      "matching_conffiles": 70,
+      "copyright_texts": 85,
+      "shared_copyright_directories": [
+        {
+          "package": "libgcc-s1",
+          "target": "gcc-14-base",
+          "candidate_text": "usr/share/doc/gcc-14-base/copyright",
+          "text_observed": true
+        },
+        {
+          "package": "libncursesw6",
+          "target": "libtinfo6",
+          "candidate_text": "usr/share/doc/libtinfo6/copyright",
+          "text_observed": true
+        },
+        {
+          "package": "libstdc++6",
+          "target": "gcc-14-base",
+          "candidate_text": "usr/share/doc/gcc-14-base/copyright",
+          "text_observed": true
+        }
+      ],
+      "lib_dynload_modules": 78,
+      "regular_untainted_elf_objects": 744,
+      "withheld_perl_aliases": [
+        "usr/bin/perl",
+        "usr/bin/perl5.40.1"
+      ],
+      "elf_method": "section-header data; PT_DYNAMIC and loader execution unproved",
+      "tkinter": {
+        "path": "usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
+        "sha256": "9fe4f2c93a746b000a15ebb6fbb71ea33b3b7888efb70e3c1296fac8b30c2c96",
+        "size": 70584,
+        "machine": 183,
+        "bytes_equal_frozen_31215": true,
+        "new_oci_identity_admitted": false
+      },
+      "python_header_version": "3.12.16",
+      "pip_version": "25.0.1",
+      "pip_vendor_version_claims": 18,
+      "ensurepip_vendor_manifest_equals_installed": true,
+      "vendored_license_coverage_complete": false,
+      "native_execution": false,
+      "abi_qualified": false
+    }
+  },
+  "component_candidates": [
+    {
+      "package": "certifi",
+      "version": "2024.8.30",
+      "advisory": "GHSA-6q48-6c7w-9gw2",
+      "aliases": [
+        "PYSEC-2026-4320"
+      ],
+      "osv_label": "CRITICAL",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-6q48-6c7w-9gw2"
+    },
+    {
+      "package": "idna",
+      "version": "3.10",
+      "advisory": "GHSA-65pc-fj4g-8rjx",
+      "aliases": [
+        "CVE-2026-45409",
+        "PYSEC-2026-215"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": 6.9,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 6.9,
+          "severity": "MEDIUM",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-65pc-fj4g-8rjx"
+    },
+    {
+      "package": "msgpack",
+      "version": "1.1.0",
+      "advisory": "GHSA-6v7p-g79w-8964",
+      "aliases": [
+        "CVE-2026-57585",
+        "PYSEC-2026-3625"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 7.5,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV3_1",
+          "score": 7.5,
+          "severity": "HIGH",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-6v7p-g79w-8964"
+    },
+    {
+      "package": "pip",
+      "version": "25.0.1",
+      "advisory": "GHSA-4xh5-x5gv-qwph",
+      "aliases": [
+        "CVE-2025-8869",
+        "PYSEC-2026-1795"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": 5.9,
+      "reported_cve_metrics": [
+        {
+          "provider": "PSF",
+          "kind": "cvssV4_0",
+          "score": 5.9,
+          "severity": "MEDIUM",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-4xh5-x5gv-qwph"
+    },
+    {
+      "package": "pip",
+      "version": "25.0.1",
+      "advisory": "GHSA-58qw-9mgm-455v",
+      "aliases": [
+        "CVE-2026-3219",
+        "PYSEC-2026-2875"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-58qw-9mgm-455v"
+    },
+    {
+      "package": "pip",
+      "version": "25.0.1",
+      "advisory": "GHSA-6vgw-5pg2-w6jp",
+      "aliases": [
+        "CVE-2026-1703",
+        "PYSEC-2026-1796"
+      ],
+      "osv_label": "LOW",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-6vgw-5pg2-w6jp"
+    },
+    {
+      "package": "pip",
+      "version": "25.0.1",
+      "advisory": "GHSA-jp4c-xjxw-mgf9",
+      "aliases": [
+        "CVE-2026-6357",
+        "PYSEC-2026-2876"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-jp4c-xjxw-mgf9"
+    },
+    {
+      "package": "pip",
+      "version": "25.0.1",
+      "advisory": "GHSA-qwm4-qh6w-59xr",
+      "aliases": [
+        "CVE-2026-13346",
+        "PYSEC-2026-3721"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-qwm4-qh6w-59xr"
+    },
+    {
+      "package": "pip",
+      "version": "25.0.1",
+      "advisory": "GHSA-wf93-45jw-7689",
+      "aliases": [
+        "CVE-2026-8643",
+        "PYSEC-2026-196"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-wf93-45jw-7689"
+    },
+    {
+      "package": "pygments",
+      "version": "2.18.0",
+      "advisory": "GHSA-5239-wwwm-4pmq",
+      "aliases": [
+        "CVE-2026-4539",
+        "PYSEC-2026-2987"
+      ],
+      "osv_label": "LOW",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-5239-wwwm-4pmq"
+    },
+    {
+      "package": "requests",
+      "version": "2.32.3",
+      "advisory": "GHSA-9hjg-9r4m-mvj7",
+      "aliases": [
+        "CVE-2024-47081",
+        "PYSEC-2026-1872"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": 5.3,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV3_1",
+          "score": 5.3,
+          "severity": "MEDIUM",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-9hjg-9r4m-mvj7"
+    },
+    {
+      "package": "requests",
+      "version": "2.32.3",
+      "advisory": "GHSA-gc5v-m9x4-r6x2",
+      "aliases": [
+        "CVE-2026-25645",
+        "PYSEC-2026-2275"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-gc5v-m9x4-r6x2"
+    },
+    {
+      "package": "setuptools",
+      "version": "70.3.0",
+      "advisory": "GHSA-5rjg-fvgr-3xxf",
+      "aliases": [
+        "BIT-setuptools-2025-47273",
+        "CVE-2025-47273",
+        "PYSEC-2025-49"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 7.7,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 7.7,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:P"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-5rjg-fvgr-3xxf"
+    },
+    {
+      "package": "setuptools",
+      "version": "70.3.0",
+      "advisory": "GHSA-h35f-9h28-mq5c",
+      "aliases": [
+        "BIT-setuptools-2026-59890",
+        "CVE-2026-59890",
+        "PYSEC-2026-3447"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-h35f-9h28-mq5c"
+    },
+    {
+      "package": "setuptools",
+      "version": "70.3.0",
+      "advisory": "GHSA-xmj3-9gf7-h52w",
+      "aliases": [],
+      "osv_label": "LOW",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-xmj3-9gf7-h52w"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-2xpw-w6gg-jr37",
+      "aliases": [
+        "CVE-2025-66471",
+        "PYSEC-2026-1994"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 8.9,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 8.9,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-2xpw-w6gg-jr37"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-38jv-5279-wg99",
+      "aliases": [
+        "CVE-2026-21441",
+        "PYSEC-2026-1996"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 8.9,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 8.9,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H"
+        },
+        {
+          "provider": "redhat-SADP",
+          "kind": "cvssV3_1",
+          "score": 7.5,
+          "severity": "HIGH",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-38jv-5279-wg99"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-8988-9cw3-xx77",
+      "aliases": [
+        "CVE-2026-97687",
+        "PYSEC-2026-4175"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 7.6,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 7.6,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:P/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-8988-9cw3-xx77"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-gm62-xv2j-4w53",
+      "aliases": [
+        "CVE-2025-66418",
+        "PYSEC-2026-1998"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 8.9,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 8.9,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-gm62-xv2j-4w53"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-pq67-6m6q-mj2v",
+      "aliases": [
+        "CVE-2025-50181",
+        "PYSEC-2026-1999"
+      ],
+      "osv_label": "MODERATE",
+      "highest_fetched_cve_score": null,
+      "reported_cve_metrics": [],
+      "primary_numeric_unknown": true,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-pq67-6m6q-mj2v"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-qccp-gfcp-xxvc",
+      "aliases": [
+        "CVE-2026-44431",
+        "PYSEC-2026-141"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 8.2,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 8.2,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-qccp-gfcp-xxvc"
+    },
+    {
+      "package": "urllib3",
+      "version": "1.26.20",
+      "advisory": "GHSA-vxq7-64xx-v4gw",
+      "aliases": [
+        "CVE-2026-97689",
+        "PYSEC-2026-4177"
+      ],
+      "osv_label": "HIGH",
+      "highest_fetched_cve_score": 8.9,
+      "reported_cve_metrics": [
+        {
+          "provider": "GitHub_M",
+          "kind": "cvssV4_0",
+          "score": 8.9,
+          "severity": "HIGH",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H"
+        }
+      ],
+      "primary_numeric_unknown": false,
+      "feature_applicability": "pending vendored-subset/module/platform classification",
+      "scope": "base or build-stage candidate; not confirmed final-application vulnerability",
+      "accepted": false,
+      "reference": "https://osv.dev/vulnerability/GHSA-vxq7-64xx-v4gw"
+    }
+  ],
+  "remaining_gaps": [
+    "glibc 2.41-12+deb13u4 and individual retained runtime findings remain unresolved",
+    "incumbent comparison remains with its existing ADR0091 owner",
+    "publisher/attestation and construction provenance are unproved",
+    "generated/unowned paths and license obligations are not accepted",
+    "native imports, ABI, shared-libpq and final merged image require later proof",
+    "build-stage pip/vendor and Debian CA-trust classification remain open",
+    "no canonical-name equivalence proof for the sent CacheControl/typing_extensions queries",
+    "dedicated global-PAX fixture and generic reserved-whiteout hardening remain collector limitations",
+    "results bind only to this exact index; no automatic transfer to a rebuilt image"
+  ],
+  "image_stage_scope": {
+    "observed": "prospective Python build-stage base; Debian package/file/CA observations and ABI target only",
+    "runtime_recipe": "src/main/python/repomap_kg/runtime/commands.py",
+    "final_stage": "PostgreSQL base plus /usr/local copied from python-runtime",
+    "final_postgresql_base_debian_userland_inspected": false,
+    "python_base_replacement_clears_final_userland_findings": false
+  }
+}
