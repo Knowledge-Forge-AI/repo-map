@@ -35,6 +35,7 @@ from tools.system.report import SystemStepResult
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
 BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
+LIBC, SRV_IMAGE = "/usr/lib/x86_64-linux-gnu/libc.so.6", "sha256:" + "5" * 64
 
 
 @pytest.fixture(autouse=True)
@@ -102,9 +103,16 @@ def _matching_preflight_report(d12_ctx: dict[str, Any]) -> dict[str, Any]:
 
 
 def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemSession:
-    cand_path, grant_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH, REPO_ROOT / DEFAULT_GRANT_RELPATH
-    cand_sha = hashlib.sha256(cand_path.read_bytes()).hexdigest()
-    expected_cand = validate_expected_candidate_record(json.loads(cand_path.read_text(encoding="utf-8")))
+    live_cand_path, grant_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH, REPO_ROOT / DEFAULT_GRANT_RELPATH
+    raw_grant, _ = load_and_validate_system_build_grant(grant_path)
+    live_cand = validate_expected_candidate_record(json.loads(live_cand_path.read_text(encoding="utf-8")))
+    expected_cand = validate_expected_candidate_record(
+        {**live_cand, "d12_context": dict(raw_grant["d12_context"])}
+    )
+    cand_path = tmp_path / "ci72-candidate.json"
+    cand_raw = (json.dumps(expected_cand, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    cand_path.write_bytes(cand_raw)
+    cand_sha = hashlib.sha256(cand_raw).hexdigest()
     d12_ctx = dict(expected_cand["d12_context"])
     grant, grant_sha = load_and_validate_system_build_grant(
         grant_path, expected_candidate=expected_cand, frozen_identity=d12_ctx
@@ -134,6 +142,7 @@ def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemS
     session = D12SystemSession.establish(
         repo_root=REPO_ROOT, config=config, proof_json_arg=str(proof_file), target_arch_fn=lambda: "amd64",
         tree_sha_fn=lambda _r: "b" * 40, frozen_identity_fn=lambda _r, _p: d12_ctx, run_git_fn=fake_git,
+        expected_candidate_path=cand_path,
     )
     session.run_same_daemon_preflight(explore_fn=lambda *_a, **_kw: _matching_preflight_report(d12_ctx))
     if reserve_intent:
@@ -177,11 +186,13 @@ def _valid_inventory() -> dict[str, Any]:
         "files": [{
             "role": "libpq", "invoked": pkg.libpq_path, "resolved": pkg.libpq_path, "kind": "elf",
             "sha256": pkg.libpq_sha256, "interpreter": "-", "owner": "libpq5", "md5": "match",
-        }],
-        "links": [],
-        "packages": [["libpq5", pkg.libpq5_version, "amd64"], ["libssl3t64", "3.5.7-1~deb13u3", "amd64"]],
+        }, {"role": "library", "invoked": "/lib/x86_64-linux-gnu/libc.so.6", "resolved": LIBC, "kind": "elf",
+            "sha256": "e" * 64, "interpreter": "-", "owner": "libc6", "md5": "match"}],
+        "links": [[SERVER, "libc.so.6", "/lib/x86_64-linux-gnu/libc.so.6"]],
+        "packages": [["libpq5", pkg.libpq5_version, "amd64"], ["libssl3t64", "3.5.7-1~deb13u3", "amd64"],
+                     ["libc6", "2.41-12+deb13u4", "amd64"], ["libc-bin", "2.41-12+deb13u4", "amd64"]],
         "verify_mismatches": [], "verify_count": 0, "unowned_usr_lib": [], "unowned_count": 0,
-        "notices": {path: "c" * 64 for path in NOTICES}, "os": ["debian", "13", "trixie"],
+        "notices": {path: "c" * 64 for path in NOTICES}, "os": ["Debian GNU/Linux 13 (trixie)", "x86_64", "amd64"],
     }
 
 
@@ -207,7 +218,7 @@ def test_observe_and_assess_candidate_validates_gates_and_refuses_defects() -> N
         observe_and_assess_candidate(
             None, None, image_id="sha256:" + "1" * 64, platform="linux/amd64", server_id="srv-1",
             server_env=srv_env, server_side=server_side, server_inventory=_valid_inventory(),
-            availability=avail, expected_libpq_version=None,
+            availability=avail, expected_libpq_version=None, server_image_id=SRV_IMAGE,
         )
 
     def _make_run_once(
@@ -221,41 +232,43 @@ def test_observe_and_assess_candidate_validates_gates_and_refuses_defects() -> N
             return json.dumps(rt)
         return _fake_run_once
 
+    common: dict[str, Any] = {
+        "image_id": "sha256:" + "1" * 64, "platform": "linux/amd64", "server_id": "srv-1", "server_env": srv_env,
+        "server_side": server_side, "server_inventory": _valid_inventory(), "availability": avail,
+        "inventory_fn": lambda *_a, **_kw: copy.deepcopy(_valid_inventory()),
+        "hashes_fn": lambda *_a, **_kw: {pkg.libpq_path: pkg.libpq_sha256, LIBC: "e" * 64}}
+    good_run_once = _make_run_once(_valid_packaging_report(), _valid_linkage_report(), _valid_round_trip())
     reports: dict[str, dict[str, Any]] = {}
     out = observe_and_assess_candidate(
-        None, None, image_id="sha256:" + "1" * 64, platform="linux/amd64", server_id="srv-1",
-        server_env=srv_env, server_side=server_side, server_inventory=_valid_inventory(),
-        availability=avail, expected_libpq_version=D12_CANDIDATE_LIBPQ_VERSION,
-        write_report=lambda name, payload: reports.setdefault(name, payload),
-        run_once_fn=_make_run_once(_valid_packaging_report(), _valid_linkage_report(), _valid_round_trip()),
-        inventory_fn=lambda *_a, **_kw: copy.deepcopy(_valid_inventory()),
-        hashes_fn=lambda *_a, **_kw: {pkg.libpq_path: pkg.libpq_sha256},
-    )
+        None, None, **common, expected_libpq_version=D12_CANDIDATE_LIBPQ_VERSION, server_image_id=SRV_IMAGE,
+        write_report=lambda name, payload: reports.setdefault(name, payload), run_once_fn=good_run_once)
     assert out["result"]["qualification"] == "stop_pending_disposition"
     assert out["result"]["stops"] == list(APPROVED_DIAGNOSTIC_STOPS)
     assert set(reports) == {"inventory", "result"}
+    glibc = reports["result"]["glibc_disposition"]
+    assert glibc["status"] == "accepted_unresolved" and glibc["image_qualified"] is False
+    assert [(i["label"], i["image_id"]) for i in glibc["images"]] == [("candidate", "sha256:" + "1" * 64),
+                                                                      ("server", SRV_IMAGE)]
+    # Unknown service identity refuses despite the accepted risk; the refusal is retained before the run fails.
+    refused: dict[str, dict[str, Any]] = {}
+    with pytest.raises(D12CandidateAssessmentError, match="glibc disposition refused: server: image identity"):
+        observe_and_assess_candidate(
+            None, None, **common, server_image_id=None,
+            write_report=lambda n, p: refused.setdefault(n, p), run_once_fn=good_run_once)
+    assert refused["result"]["glibc_disposition"]["status"] == "refused"
+    assert refused["result"]["stops"] == list(APPROVED_DIAGNOSTIC_STOPS)
 
     bad_rt = _valid_round_trip()
     bad_rt["restored"]["fixture_rows"] = 1
     with pytest.raises(D12CandidateAssessmentError, match="2000-row mismatch"):
         observe_and_assess_candidate(
-            None, None, image_id="sha256:" + "1" * 64, platform="linux/amd64", server_id="srv-1",
-            server_env=srv_env, server_side=server_side, server_inventory=_valid_inventory(),
-            availability=avail,
-            run_once_fn=_make_run_once(_valid_packaging_report(), _valid_linkage_report(), bad_rt),
-            inventory_fn=lambda *_a, **_kw: copy.deepcopy(_valid_inventory()),
-            hashes_fn=lambda *_a, **_kw: {pkg.libpq_path: pkg.libpq_sha256},
-        )
+            None, None, **common, server_image_id=SRV_IMAGE,
+            run_once_fn=_make_run_once(_valid_packaging_report(), _valid_linkage_report(), bad_rt))
 
     with pytest.raises(D12CandidateAssessmentError, match="unattributed bytes"):
         observe_and_assess_candidate(
-            None, None, image_id="sha256:" + "1" * 64, platform="linux/amd64", server_id="srv-1",
-            server_env=srv_env, server_side=server_side, server_inventory=_valid_inventory(),
-            availability=avail,
-            run_once_fn=_make_run_once(_valid_packaging_report(), _valid_linkage_report(), _valid_round_trip()),
-            inventory_fn=lambda *_a, **_kw: copy.deepcopy(_valid_inventory()),
-            hashes_fn=lambda *_a, **_kw: {},
-        )
+            None, None, **{**common, "hashes_fn": lambda *_a, **_kw: {}}, server_image_id=SRV_IMAGE,
+            run_once_fn=good_run_once)
 
 
 def test_post_build_probes_roundtrip_and_sidecar_keep_acceptance_false(tmp_path: Path) -> None:
@@ -277,13 +290,15 @@ def test_post_build_probes_roundtrip_and_sidecar_keep_acceptance_false(tmp_path:
             "observed_versions": {"candidate": _valid_packaging_report()["versions"]},
             "tls_runtime": {"server": [["libssl3t64", "3.5.7-1~deb13u3", "amd64"]]},
             "findings": [], "libpq_findings": [], "critical_unknown": [],
-            "availability": {"execution": "native"},
+            "availability": {"execution": "native"}, "glibc_disposition": {"status": "accepted_unresolved"},
             "qualification": "stop_pending_disposition",
             "stops": list(APPROVED_DIAGNOSTIC_STOPS),
             "round_trip": _valid_round_trip(),
         }
 
+        seen: list[object] = []
         def fake_observe(*_a: object, write_report: Any = None, **_kw: object) -> dict[str, Any]:
+            seen.append(_kw.get("server_image_id"))
             if write_report is not None:
                 write_report("inventory", inv_payload)
                 write_report("result", res_payload)
@@ -351,10 +366,11 @@ def test_post_build_probes_roundtrip_and_sidecar_keep_acceptance_false(tmp_path:
             session, image_id="sha256:" + "1" * 64, image_labels=labels,
             owner=owner, client=MagicMock(),
             start_server_fn=lambda *_a, **_kw: ("srv-cid-1", srv_container),
-            inventory_fn=lambda *_a, **_kw: _valid_inventory(),
+            inventory_fn=(inv_fn := MagicMock(side_effect=lambda *_a, **_kw: _valid_inventory())),
             observe_fn=fake_observe,
         )
         assert probes["packaging"]["libpq"] == D12_CANDIDATE_LIBPQ_VERSION
+        assert seen[-1] == inv_fn.call_args.args[2] == "sha256:" + "1" * 64  # server bytes and identity: base ID
         owner.cleanup.assert_called_once_with("srv-cid-1")
         owner.verify_baseline.assert_called_once()
 
@@ -376,6 +392,7 @@ def test_post_build_probes_roundtrip_and_sidecar_keep_acceptance_false(tmp_path:
         assert payload["diagnostic_steps_passed"] is True and payload["cleanup_succeeded"] is True
         assert payload["image_accepted"] is False and payload["p3_accepted"] is False
         assert payload["merge_authorized"] is False and payload["qualified"] is False
+        assert payload["post_build_assessments"]["glibc_disposition"] == {"status": "accepted_unresolved"}
 
         with pytest.raises(SystemTestError, match="must remain False"):
             validate_d12_system_candidate_evidence({**payload, "p3_accepted": True})

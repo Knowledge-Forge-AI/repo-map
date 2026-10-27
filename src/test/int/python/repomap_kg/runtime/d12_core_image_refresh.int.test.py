@@ -96,6 +96,8 @@ def test_d12_core_image_refresh_candidate_round_trip() -> None:
     availability = d12.platform_availability(platform, client.info().get("Architecture", ""),
                                              d12.offered_platforms(builder))
     bases = d12.verify_bases(client, platform, (POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE, GO_RELEASE_IMAGE))
+    server_image_id = bases[POSTGRES_RELEASE_IMAGE]["id"]
+    assert isinstance(server_image_id, str)
     scratch = establish_run().tmp / f"d12-{uuid.uuid4().hex[:12]}"
     context = d12.stage_context(REPO_ROOT, scratch / "context", frozen)
     dockerfile = scratch / "Dockerfile"
@@ -115,10 +117,11 @@ def test_d12_core_image_refresh_candidate_round_trip() -> None:
         # Everything that needs no candidate runs first, so its defects cannot spend the build.
         server_env = {"POSTGRES_USER": "d12", "POSTGRES_DB": "d12", "POSTGRES_PASSWORD": secrets.token_hex(16)}
         server_id, server_container = _start_server(owner, client, server_env, platform)
-        assert server_container.attrs["Image"] == bases[POSTGRES_RELEASE_IMAGE]["id"]
+        assert server_container.attrs["Image"] == server_image_id
         server_side = {
             p: server_container.exec_run([p, "--version"]).output.decode().strip() for p in (SERVER, *CLIENTS)}
-        server_inventory = _inventory(owner, client, POSTGRES_RELEASE_IMAGE, platform, "d12-inventory-server")
+        server_inventory = _inventory(
+            owner, client, server_image_id, platform, "d12-inventory-server")
         _hashes(owner, client, PYTHON_RELEASE_IMAGE, ["/usr/local/bin/python3"], platform, "d12-hash-preflight")
         if exploration is not None:  # E1: observe and report, then return before the build; custody still runs
             b_map = {"run_id": run.ledger.identity.run_id, "sdk_image": "unobserved in the sandbox"}
@@ -148,6 +151,7 @@ def test_d12_core_image_refresh_candidate_round_trip() -> None:
             server_env=server_env, server_side=server_side, server_inventory=server_inventory,
             availability=availability, expected_libpq_version=PSYCOPG_LIBPQ_VERSION,
             tls_header=inner.HEADER, write_report=d12.write_report,
+            server_image_id=server_image_id,
             run_once_fn=_run_once, inventory_fn=_inventory, hashes_fn=_hashes,
         )
     except BaseException as error:

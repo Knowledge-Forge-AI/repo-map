@@ -45,8 +45,9 @@ BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
 
 def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]]:
     cand_doc = json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
-    expected_cand = validate_expected_candidate_record(cand_doc)
     grant, _ = load_and_validate_system_build_grant(REPO_ROOT / DEFAULT_GRANT_RELPATH)
+    expected_cand = validate_expected_candidate_record({**cand_doc, "d12_context": dict(grant["d12_context"])})
+    (tmp_path / "ci72-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
     event_path = tmp_path / "github_event.json"
     repo_info = {"full_name": grant["repository"], "fork": False}
     pr_payload = {
@@ -54,10 +55,8 @@ def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]
         "base": {"ref": "main", "sha": grant["base"], "repo": repo_info},
         "head": {"ref": "staging", "sha": "d" * 40, "repo": repo_info},
     }
-    event_doc = {
-        "action": "synchronize", "before": grant["before"],
-        "after": "d" * 40, "number": 13, "pull_request": pr_payload,
-    }
+    event_doc = {"action": "synchronize", "before": grant["before"], "after": "d" * 40,
+                 "number": 13, "pull_request": pr_payload}
     event_path.write_text(json.dumps(event_doc), encoding="utf-8")
     wf_ref = f"{grant['repository']}/{grant['workflow_path']}@refs/pull/13/merge"
     env = {
@@ -74,14 +73,12 @@ def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]
 def _fake_git(cmd: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
     rev = cmd[-1]
     mapping = {"HEAD": "a" * 40, "HEAD^{tree}": "b" * 40, "HEAD^1": BASE_SHA, "HEAD^2": "d" * 40}
-    if rev == "HEAD^3":
-        return subprocess.CompletedProcess(cmd, 1, "", "no parent 3")
-    return subprocess.CompletedProcess(cmd, 0, mapping[rev] + "\n", "")
+    return (subprocess.CompletedProcess(cmd, 1, "", "no parent 3") if rev == "HEAD^3"
+            else subprocess.CompletedProcess(cmd, 0, mapping[rev] + "\n", ""))
 
 
 def _active_run_id() -> str:
-    run = active_resource_run()
-    return str(run.ledger.identity.run_id) if run is not None else "int-run-d12"
+    return str(r.ledger.identity.run_id) if (r := active_resource_run()) is not None else "int-run-d12"
 
 
 def _matching_preflight_doc(d12_ctx: dict[str, Any]) -> dict[str, Any]:
@@ -143,7 +140,10 @@ def _hold_argv(out_path: Path, proof_path: Path | None = None) -> list[str]:
         "--candidate-tree", "b" * 40, "--candidate-base-parent", BASE_SHA,
         "--candidate-head-parent", "d" * 40, "--output-json", str(out_path),
     ]
-    return [*argv, "--proof-json", str(proof_path)] if proof_path is not None else argv
+    if proof_path is None:
+        return argv
+    return [*argv, "--proof-json", str(proof_path),
+            "--expected-json", str(proof_path.parents[1] / "ci72-candidate.json")]
 
 
 def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> None:
@@ -193,7 +193,7 @@ def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> No
     common_disp: dict[str, Any] = {"repo_root": drift_root, "env": env, "uname_fn": lambda: ("Linux", "x86_64"),
                    "runner": _fake_git, "frozen_identity_fn": lambda _r, _p: d12_ctx,
                    "grant_path": REPO_ROOT / DEFAULT_GRANT_RELPATH,
-                   "expected_candidate_path": REPO_ROOT / DEFAULT_CANDIDATE_RELPATH}
+                   "expected_candidate_path": tmp_path / "ci72-candidate.json"}
     with pytest.raises(D12SystemGrantError, match="live SDK recipe SHA256 disagrees with system build grant"):
         verify_host_system_proof_for_dispatch(args, **common_disp)
     (drift_root / "tools/test_sandbox/Dockerfile").write_bytes(sdk_df)
@@ -237,13 +237,13 @@ def test_cross_process_flock_and_o_excl_race_and_execute_system_run(tmp_path: Pa
     lock_report_dir.mkdir(parents=True, exist_ok=True)
     lock_file = lock_report_dir / SYSTEM_BUILD_LOCK_FILENAME
     preflight_doc = _matching_preflight_doc(d12_ctx)
+    cand_path = tmp_path / "ci72-candidate.json"
 
     def _new_session(rep_dir: Path) -> D12SystemSession:
         sess = D12SystemSession.establish(
-            repo_root=REPO_ROOT, config=_make_config(rep_dir),
-            proof_json_arg=str(proof_file), target_arch_fn=lambda: "amd64",
-            tree_sha_fn=lambda _r: "b" * 40, frozen_identity_fn=lambda _r, _p: d12_ctx,
-            run_git_fn=_fake_git,
+            repo_root=REPO_ROOT, config=_make_config(rep_dir), proof_json_arg=str(proof_file),
+            target_arch_fn=lambda: "amd64", tree_sha_fn=lambda _r: "b" * 40,
+            frozen_identity_fn=lambda _r, _p: d12_ctx, run_git_fn=_fake_git, expected_candidate_path=cand_path,
         )
         sess.run_same_daemon_preflight(explore_fn=lambda *_a, **_kw: preflight_doc)
         return sess
@@ -252,7 +252,6 @@ def test_cross_process_flock_and_o_excl_race_and_execute_system_run(tmp_path: Pa
     with hold_exclusive_flock(lock_file, base_env=poisoned_coverage_base_env()):
         with pytest.raises(SystemTestError, match="unable to acquire exclusive D12 system build lock"):
             race_session.reserve_one_use_candidate_build()
-
     race_session.reserve_one_use_candidate_build()
     race_session.close_lock()
     second_session = _new_session(lock_report_dir)
@@ -265,9 +264,9 @@ def test_cross_process_flock_and_o_excl_race_and_execute_system_run(tmp_path: Pa
     report_dir = tmp_path / "report"
     config = _make_config(report_dir)
     session = D12SystemSession.establish(
-        repo_root=REPO_ROOT, config=config, proof_json_arg=str(proof_file),
-        target_arch_fn=lambda: "amd64", tree_sha_fn=lambda _r: "b" * 40,
-        frozen_identity_fn=lambda _r, _p: d12_ctx, run_git_fn=_fake_git,
+        repo_root=REPO_ROOT, config=config, proof_json_arg=str(proof_file), target_arch_fn=lambda: "amd64",
+        tree_sha_fn=lambda _r: "b" * 40, frozen_identity_fn=lambda _r, _p: d12_ctx,
+        run_git_fn=_fake_git, expected_candidate_path=cand_path,
     )
 
     def fake_build(

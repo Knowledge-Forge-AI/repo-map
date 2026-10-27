@@ -22,6 +22,7 @@ from ci.d12_hosted_evidence import (
 from ci.d12_hosted_reports import APPLICATION_BUILD_COUNT_KEYS
 from src.test.unit.python.tools.ci.d12_hosted_fixtures import (
     SYNTHETIC_SDK_RECIPE_SHA256,
+    injected_amd64_31216_exclusion_fixture,
     make_expected_candidate_record,
     make_sealed_evidence,
     make_system_hold_refusal_report,
@@ -81,19 +82,24 @@ def test_sealed_evidence_accepts_partial_refusal_only_as_unqualified() -> None:
 
 def test_sealed_evidence_accepts_positive_record_without_raw_dpkg_lines_nb4() -> None:
     positive = make_sealed_evidence(positive=True)
-    assert validate_sealed_d12_evidence(positive) == []
-    assert (
-        validate_sealed_d12_evidence(positive, require_positive_qualification=True)
-        == []
+    assert any(
+        "invalid trim contract or config" in item
+        for item in validate_sealed_d12_evidence(positive, require_positive_qualification=True)
     )
-    extra_nb4 = copy.deepcopy(positive)
-    extra_nb4["inner_reports"]["exploration"]["steps"]["libpq_runtime"][
-        "raw_filtered_lines"
-    ] = ["??5?????? c /etc/dpkg/dpkg.cfg"]
-    violations = validate_sealed_d12_evidence(
-        extra_nb4, require_positive_qualification=True
-    )
-    assert any("libpq_runtime" in item for item in violations)
+    with injected_amd64_31216_exclusion_fixture():
+        assert validate_sealed_d12_evidence(positive) == []
+        assert (
+            validate_sealed_d12_evidence(positive, require_positive_qualification=True)
+            == []
+        )
+        extra_nb4 = copy.deepcopy(positive)
+        extra_nb4["inner_reports"]["exploration"]["steps"]["libpq_runtime"][
+            "raw_filtered_lines"
+        ] = ["??5?????? c /etc/dpkg/dpkg.cfg"]
+        violations = validate_sealed_d12_evidence(
+            extra_nb4, require_positive_qualification=True
+        )
+        assert any("libpq_runtime" in item for item in violations)
 
 
 def test_sealed_evidence_rejects_pr_attempt_and_parent_binding_violations() -> None:
@@ -124,59 +130,60 @@ def test_sealed_evidence_rejects_pr_attempt_and_parent_binding_violations() -> N
 
 
 def test_sealed_evidence_rejects_outer_seal_errors_validation_violations_and_app_builds() -> None:
-    for positive in (False, True):
-        base = make_sealed_evidence(positive=positive)
-        with_seal_err = copy.deepcopy(base)
-        with_seal_err["seal_errors"] = ["prepare refused at sdk_materialization: inspect failed"]
-        assert any(
-            "seal_errors" in v
-            for v in validate_sealed_d12_evidence(
-                with_seal_err, require_positive_qualification=positive
-            )
-        )
-
-        malformed_seal_err = copy.deepcopy(base)
-        malformed_seal_err["seal_errors"] = [""]
-        assert any(
-            "seal_errors" in v
-            for v in validate_sealed_d12_evidence(
-                malformed_seal_err, require_positive_qualification=positive
-            )
-        )
-
-        with_val_viol = copy.deepcopy(base)
-        with_val_viol["validation_violations"] = ["freeze missing"]
-        assert any(
-            "validation_violations" in v
-            for v in validate_sealed_d12_evidence(
-                with_val_viol, require_positive_qualification=positive
-            )
-        )
-
-        all_six_keys = (
-            "application_builds",
-            "application_candidate_builds",
-            *APPLICATION_BUILD_COUNT_KEYS,
-        )
-        for key in all_six_keys:
-            for bad_val in (None, 1, False):
-                bad_app = copy.deepcopy(base)
-                bad_app["application_builds"][key] = bad_val
-                assert any(
-                    key in v or "application_builds" in v
-                    for v in validate_sealed_d12_evidence(
-                        bad_app, require_positive_qualification=positive
-                    )
+    with injected_amd64_31216_exclusion_fixture():
+        for positive in (False, True):
+            base = make_sealed_evidence(positive=positive)
+            with_seal_err = copy.deepcopy(base)
+            with_seal_err["seal_errors"] = ["prepare refused at sdk_materialization: inspect failed"]
+            assert any(
+                "seal_errors" in v
+                for v in validate_sealed_d12_evidence(
+                    with_seal_err, require_positive_qualification=positive
                 )
-
-        inner_mismatch = copy.deepcopy(base)
-        inner_mismatch["inner_reports"]["freeze"]["budget"]["unmanaged_build_count"] = 1
-        assert any(
-            "unmanaged_build_count" in v or "application_builds" in v
-            for v in validate_sealed_d12_evidence(
-                inner_mismatch, require_positive_qualification=positive
             )
-        )
+
+            malformed_seal_err = copy.deepcopy(base)
+            malformed_seal_err["seal_errors"] = [""]
+            assert any(
+                "seal_errors" in v
+                for v in validate_sealed_d12_evidence(
+                    malformed_seal_err, require_positive_qualification=positive
+                )
+            )
+
+            with_val_viol = copy.deepcopy(base)
+            with_val_viol["validation_violations"] = ["freeze missing"]
+            assert any(
+                "validation_violations" in v
+                for v in validate_sealed_d12_evidence(
+                    with_val_viol, require_positive_qualification=positive
+                )
+            )
+
+            all_six_keys = (
+                "application_builds",
+                "application_candidate_builds",
+                *APPLICATION_BUILD_COUNT_KEYS,
+            )
+            for key in all_six_keys:
+                for bad_val in (None, 1, False):
+                    bad_app = copy.deepcopy(base)
+                    bad_app["application_builds"][key] = bad_val
+                    assert any(
+                        key in v or "application_builds" in v
+                        for v in validate_sealed_d12_evidence(
+                            bad_app, require_positive_qualification=positive
+                        )
+                    )
+
+            inner_mismatch = copy.deepcopy(base)
+            inner_mismatch["inner_reports"]["freeze"]["budget"]["unmanaged_build_count"] = 1
+            assert any(
+                "unmanaged_build_count" in v or "application_builds" in v
+                for v in validate_sealed_d12_evidence(
+                    inner_mismatch, require_positive_qualification=positive
+                )
+            )
 
 
 def test_sealed_evidence_warm_and_cold_sdk_materialization_and_residue_checks() -> None:

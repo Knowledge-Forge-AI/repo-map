@@ -1,10 +1,57 @@
-"""Candidate-only AMD package observation from CI68; product defaults remain held."""
+"""Historical Python 3.12.15 records: the Trixie payload exclusions and the CI68 candidate-only AMD package
+observation. Neither transfers to 3.12.16, whose native baselines python_payload holds until adopted (ADR 0100)."""
 
 from types import MappingProxyType
 from typing import Mapping
 
 from .release import DebPackage, PlatformPackages
-from .python_payload import AMD64_BASELINE_IMPORTS
+from .python_payload import DYNLOAD, PayloadExclusion
+
+# The 77 lib-dynload modules that imported in the Trixie 3.12.15 baseline's fresh LD_BIND_NOW=1 processes
+# (ADR 0091; the historical Bookworm 3.12.13 E1 set of 78 also had nis, which this base no longer ships).
+ARM64_BASELINE_IMPORTS = (
+    "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp",
+    "_codecs_kr", "_codecs_tw", "_contextvars", "_crypt", "_csv", "_ctypes", "_ctypes_test", "_curses",
+    "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_gdbm", "_hashlib", "_heapq", "_json",
+    "_lsprof", "_lzma", "_md5", "_multibytecodec", "_multiprocessing", "_opcode", "_pickle", "_posixshmem",
+    "_posixsubprocess", "_queue", "_random", "_sha1", "_sha2", "_sha3", "_socket", "_sqlite3", "_ssl",
+    "_statistics", "_struct", "_testbuffer", "_testcapi", "_testclinic", "_testimportmultiple",
+    "_testinternalcapi", "_testmultiphase", "_testsinglephase", "_uuid", "_xxinterpchannels",
+    "_xxsubinterpreters", "_xxtestfuzz", "_zoneinfo", "array", "audioop", "binascii", "cmath", "fcntl", "grp",
+    "math", "mmap", "ossaudiodev", "pyexpat", "readline", "resource", "select", "spwd", "syslog",
+    "termios", "unicodedata", "xxlimited", "xxlimited_35", "xxsubtype", "zlib",
+)
+# The 77 lib-dynload modules independently observed in the native x86_64 Trixie 3.12.15 baseline (ADR 0094).
+AMD64_BASELINE_IMPORTS = (
+    "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp",
+    "_codecs_kr", "_codecs_tw", "_contextvars", "_crypt", "_csv", "_ctypes", "_ctypes_test", "_curses",
+    "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_gdbm", "_hashlib", "_heapq", "_json",
+    "_lsprof", "_lzma", "_md5", "_multibytecodec", "_multiprocessing", "_opcode", "_pickle", "_posixshmem",
+    "_posixsubprocess", "_queue", "_random", "_sha1", "_sha2", "_sha3", "_socket", "_sqlite3", "_ssl",
+    "_statistics", "_struct", "_testbuffer", "_testcapi", "_testclinic", "_testimportmultiple",
+    "_testinternalcapi", "_testmultiphase", "_testsinglephase", "_uuid", "_xxinterpchannels",
+    "_xxsubinterpreters", "_xxtestfuzz", "_zoneinfo", "array", "audioop", "binascii", "cmath", "fcntl", "grp",
+    "math", "mmap", "ossaudiodev", "pyexpat", "readline", "resource", "select", "spwd", "syslog",
+    "termios", "unicodedata", "xxlimited", "xxlimited_35", "xxsubtype", "zlib",
+)
+# OCI identities of the historical 3.12.15 Trixie index's arm64 and amd64 children (ADR 0091, ADR 0094).
+HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = MappingProxyType({
+    "arm64": PayloadExclusion(
+        "arm64", "sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
+        "sha256:6c6ae3622772575c3ac02ecb2b02a06d05f19e1713a0cbff476ef37bca79e90f",
+        "sha256:7efd45553a98be3d940b73600550669831c0be34f30c521159e7030a91fcdee6",
+        f"{DYNLOAD}/_tkinter.cpython-312-aarch64-linux-gnu.so",
+        "9fe4f2c93a746b000a15ebb6fbb71ea33b3b7888efb70e3c1296fac8b30c2c96", 70584, 183,  # EM_AARCH64
+        "_tkinter", ("libtcl8.6.so", "libtk8.6.so"), ARM64_BASELINE_IMPORTS),
+    "amd64": PayloadExclusion(
+        "amd64", "sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
+        "sha256:e8a38829209aea82774882e5157e1f7c3e8c8393ff53a697b3580896e57f345c",
+        "sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1",
+        f"{DYNLOAD}/_tkinter.cpython-312-x86_64-linux-gnu.so",
+        "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8", 62448, 62,  # EM_X86_64
+        "_tkinter", ("libtcl8.6.so", "libtk8.6.so"), AMD64_BASELINE_IMPORTS),
+})
+
 
 D12_CANDIDATE_LIBPQ_VERSION = 180006
 CI68_MANIFEST_SHA256 = '13f616f876ebc6e2ef6c9772e55e39426184944a15cce61ef2690187b2ef0273'

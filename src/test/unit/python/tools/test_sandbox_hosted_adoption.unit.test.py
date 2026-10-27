@@ -79,6 +79,15 @@ def test_inner_go_prerequisite_is_the_release_go_pin():
     assert sandbox_owner.GO_RELEASE_IMAGE == release.GO_RELEASE_IMAGE
 
 
+def test_inner_python_prerequisite_is_the_release_python_pin():
+    """The sandbox's duplicate literal must stay the release recipe's exact Python 3.12.16 index (ADR 0100)."""
+    assert sandbox_owner.PYTHON_RELEASE_IMAGE == release.PYTHON_RELEASE_IMAGE
+    assert release.PYTHON_RELEASE_VERSION == "3.12.16"
+    assert release.PYTHON_RELEASE_IMAGE.endswith(
+        "@sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
+    )
+
+
 
 @pytest.mark.parametrize("test_status", [0, 7])
 def test_launcher_exports_complete_report_tree_before_exact_outer_removal(

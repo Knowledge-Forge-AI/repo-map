@@ -98,17 +98,41 @@ def _make_proof(
     )
 
 
-def test_load_tracked_system_build_grant_matches_candidate_record() -> None:
+def _historical_ci72_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], bytes, str]:
+    live_cand = validate_expected_candidate_record(
+        json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
+    )
+    cand_doc = {
+        **live_cand,
+        "d12_context": dict(grant["d12_context"]),
+        "sdk_sandbox": {
+            **dict(live_cand["sdk_sandbox"]),
+            "sdk_recipe_sha256": str(grant["sdk_recipe_sha256"]),
+        },
+    }
+    raw = (json.dumps(cand_doc, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
+
+
+def test_load_tracked_system_build_grant_matches_historical_and_refuses_live_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
-    expected_cand = validate_expected_candidate_record(
-        json.loads(cand_path.read_text(encoding="utf-8"))
-    )
+    raw_grant, _ = load_and_validate_system_build_grant(grant_path)
+    expected_cand, _, _ = _historical_ci72_candidate_record(raw_grant)
     grant, grant_sha = load_and_validate_system_build_grant(
         grant_path,
         expected_candidate=expected_cand,
         frozen_identity=dict(expected_cand["d12_context"]),
     )
+    live_cand = validate_expected_candidate_record(
+        json.loads(cand_path.read_text(encoding="utf-8"))
+    )
+    with pytest.raises(D12SystemGrantError, match="d12_context"):
+        load_and_validate_system_build_grant(
+            grant_path,
+            expected_candidate=live_cand,
+            frozen_identity=dict(live_cand["d12_context"]),
+        )
     assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI71FIX1"
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
     assert SPENT_CI70_RESERVATION_SHA256 == (
@@ -257,13 +281,11 @@ def test_validate_system_admission_proof_rejects_non_native_host() -> None:
 
 
 def test_verify_host_system_proof_for_dispatch_validates_live_bindings(tmp_path: Path) -> None:
-    cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
-    cand_sha = hashlib.sha256(cand_path.read_bytes()).hexdigest()
-    expected_cand = validate_expected_candidate_record(
-        json.loads(cand_path.read_text(encoding="utf-8"))
-    )
     grant, grant_sha = load_and_validate_system_build_grant(grant_path)
+    expected_cand, cand_raw, cand_sha = _historical_ci72_candidate_record(grant)
+    cand_path = tmp_path / "ci72-candidate.json"
+    cand_path.write_bytes(cand_raw)
     event_file = tmp_path / "event.json"
     event_file.write_text(json.dumps(_event_payload(grant, draft=True)), encoding="utf-8")
     raw_event_sha256 = hashlib.sha256(event_file.read_bytes()).hexdigest()

@@ -111,7 +111,7 @@ tree. Their presence in a built image is not yet observed.
 
 ## Python runtime and standard library
 
-- Packaged version: `3.12.15` (configured; D12 image acceptance pending)
+- Packaged version: `3.12.16` (configured under ADR 0100; local ARM payload component proof passed; native AMD and D12 image acceptance pending)
 - License expression: `PSF-2.0`
 - Upstream URL: <https://www.python.org/>
 - License URL: <https://docs.python.org/3/license.html>

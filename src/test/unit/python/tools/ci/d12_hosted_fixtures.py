@@ -2,14 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-import copy
-import hashlib
-import json
+from collections.abc import Iterator, Mapping, Sequence
+from contextlib import contextmanager
+import copy, hashlib, json, subprocess, sys, tempfile
 from pathlib import Path
-import subprocess
-import sys
-import tempfile
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[6]
@@ -20,6 +16,7 @@ for _rel in ("tools", "src/main/python", "src/test/support/python"):
 import d12_dependency_preflight as inner
 import d12_libpq_runtime_probe
 from repomap_kg.runtime import python_payload as payload
+from repomap_kg.runtime import release_manifest as historical
 from repomap_kg.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE, DebPackage, PlatformPackages,
 )
@@ -136,14 +133,12 @@ class _FakeDockerClient:
     def version(self) -> dict[str, Any]:
         return {"Version": "29.4.0", "ApiVersion": "1.51"}
 
-
 class _FakeContainerOwner:
     def cleanup(self, _identity: str) -> None:
         pass
 
     def verify_baseline(self) -> None:
         pass
-
 
 def make_zero_projection() -> dict[str, int]:
     keys = (*APPLICATION_BUILD_COUNT_KEYS, *RESIDUE_ZERO_KEYS,
@@ -153,9 +148,20 @@ def make_zero_projection() -> dict[str, int]:
     return {**dict.fromkeys(keys, 0), "managed_test_runtime_image_build_count": 1}
 
 
+@contextmanager
+def injected_amd64_31216_exclusion_fixture() -> Iterator[payload.PayloadExclusion]:
+    orig, entry = (payload.PYTHON_PAYLOAD_EXCLUSIONS,
+                   payload.build_31216_exclusion("amd64", historical.AMD64_BASELINE_IMPORTS))
+    payload.PYTHON_PAYLOAD_EXCLUSIONS = {**orig, "amd64": entry}
+    try:
+        yield entry
+    finally:
+        payload.PYTHON_PAYLOAD_EXCLUSIONS = orig
+
 def make_positive_amd64_closure(ver: str = "18.6-1.pgdg13+2") -> dict[str, Any]:
     py_meta = VERIFIED_AMD64_BASE_METADATA["python"]
-    entry = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    entry = (payload.PYTHON_PAYLOAD_EXCLUSIONS.get("amd64")
+             or payload.build_31216_exclusion("amd64", historical.AMD64_BASELINE_IMPORTS))
     libc, real = "/lib/x86_64-linux-gnu/libc.so.6", "/usr/lib/x86_64-linux-gnu/libc.so.6"
     ok, names = f"\tlibc.so.6 => {libc} (0x2)\n", list(entry.baseline_imports)
     elves = {f"{payload.DYNLOAD}/{n}.cpython-312-x86_64-linux-gnu.so": {
@@ -372,7 +378,7 @@ def make_valid_amd64_packages() -> PlatformPackages:
         key_fingerprints=("D" * 40,), libpq_path="/usr/lib/x86_64-linux-gnu/libpq.so.5.18",
         libpq_sha256="e" * 64, libpq5_version=ver,
         builder=(DebPackage("libpq5", ver, "amd64", "1" * 64), DebPackage("libpq-dev", ver, "amd64", "2" * 64)),
-        closure=(DebPackage("libpq5", ver, "amd64", "1" * 64),), lib_dynload=payload.ARM64_BASELINE_IMPORTS,
+        closure=(DebPackage("libpq5", ver, "amd64", "1" * 64),), lib_dynload=historical.ARM64_BASELINE_IMPORTS,
     )
 
 

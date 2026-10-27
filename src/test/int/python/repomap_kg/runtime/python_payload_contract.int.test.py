@@ -19,6 +19,7 @@ from typing import Any
 import pytest
 
 from repomap_kg.runtime import python_payload as payload
+from repomap_kg.runtime import release_manifest as historical
 from repomap_test_support.python_payload_probes import make_stdlib_import_probe_runner
 from runner_coverage_execution import launch_unified_coverage_process
 
@@ -203,7 +204,14 @@ def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
         str(p): os.readlink(p).encode() if p.is_symlink() else p.read_bytes()
         for p in mount.rglob("*") if p.is_file() or p.is_symlink()
     }
-    rc_def = payload.main([arch], run=probe_run, mount=mount, executable=sys.executable, machine=lambda: real_m)
+    rc_def = payload.main(
+        [arch],
+        run=probe_run,
+        mount=mount,
+        executable=sys.executable,
+        machine=lambda: real_m,
+        exclusions=historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS,
+    )
     rep_def = json.loads(capsys.readouterr().out.splitlines()[-1])
     tree_after_default = {
         str(p): os.readlink(p).encode() if p.is_symlink() else p.read_bytes()
@@ -214,7 +222,7 @@ def test_real_broken_elf_trim_lifecycle_and_refusal_boundaries(
     assert tree_after_default == tree_before_default and tk_path.is_file()
 
     elf_mach = baseline["elves"][tk_log]["elf"][2]
-    native_entry = payload.PYTHON_PAYLOAD_EXCLUSIONS[arch]
+    native_entry = historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS[arch]
     assert native_entry.elf_machine == elf_mach
     sdk_entry = native_entry._replace(
         architecture=arch, path=tk_log, sha256=tk_sha, size=len(patched_tk),
@@ -251,12 +259,13 @@ def test_real_walk_special_entries_and_main_guard_refusals(
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
     real_m = platform.machine()
     arch = payload.NATIVE[real_m]
-    assert set(payload.PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64", "amd64"}
-    for plat, ent in payload.PYTHON_PAYLOAD_EXCLUSIONS.items():
+    assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
+    assert set(historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64", "amd64"}
+    for plat, ent in historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS.items():
         payload.validate_exclusion(ent, plat)
         with pytest.raises(payload.PayloadRefusal, match="not exact"):
             payload.validate_exclusion(ent._replace(size=0), plat)
-    arm_entry = payload.PYTHON_PAYLOAD_EXCLUSIONS[arch]
+    arm_entry = historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS[arch]
 
     edge_m = tmp_path / "edge_mount"
     selected, exp_imports = _stage_sdk_mount(edge_m)

@@ -1,0 +1,252 @@
+{
+  "accepts_image_or_other_findings": false,
+  "advisories": [
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 4.0,
+      "id": "CVE-2010-4756",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2010-4756",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2010/4xxx/CVE-2010-4756.json",
+      "secondary_sha256": "9104bc5077e2d52af544e7cc63d06b7a52381d542410fafbbdf5fbd7c5187cf8"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "HIGH",
+      "highest_reported_score": 7.5,
+      "id": "CVE-2018-20796",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2018-20796",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2018/20xxx/CVE-2018-20796.json",
+      "secondary_sha256": "c91c40844c248d89700701a13b6d15f18871b6a17619feb8f4b6159a8f9c5b11"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "CRITICAL",
+      "highest_reported_score": 9.8,
+      "id": "CVE-2019-1010022",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2019-1010022",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2019/1010xxx/CVE-2019-1010022.json",
+      "secondary_sha256": "d93155969ac931b1d31e3996ef43956860bfea9409157ee1f301c80390358824"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.4,
+      "id": "CVE-2019-1010023",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2019-1010023",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2019/1010xxx/CVE-2019-1010023.json",
+      "secondary_sha256": "f31f3d48c55e9280702a0c5712930e549e015a79eee725e9692d9cd71823bbf9"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.3,
+      "id": "CVE-2019-1010024",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2019-1010024",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2019/1010xxx/CVE-2019-1010024.json",
+      "secondary_sha256": "c9ef813fbf4702b668a0e33cadf1155b4af4bc7aaa686d38315bf023c8307635"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.3,
+      "id": "CVE-2019-1010025",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2019-1010025",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2019/1010xxx/CVE-2019-1010025.json",
+      "secondary_sha256": "281ec1d4c29db09ab477f21c64737a79e465cd52cfb2542708102c1549e8a6c0"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "HIGH",
+      "highest_reported_score": 7.5,
+      "id": "CVE-2019-9192",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2019-9192",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2019/9xxx/CVE-2019-9192.json",
+      "secondary_sha256": "61934c4b65780b2dd07fd292f8afad2ce26801896eb282b2b8e344f3f1c11b30"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 4.9,
+      "id": "CVE-2026-18374",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-18374",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/18xxx/CVE-2026-18374.json",
+      "secondary_sha256": "aa73c418b75e95a044f422194f52fc7284e363547775f65571768d2e771b7c14"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "HIGH",
+      "highest_reported_score": 7.7,
+      "id": "CVE-2026-19499",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-19499",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/19xxx/CVE-2026-19499.json",
+      "secondary_sha256": "62e5aae6625ea84b38b147d66bf092fd3f46e4a30ee6ac1e72a89a148d5c3807"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.6,
+      "id": "CVE-2026-19542",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-19542",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/19xxx/CVE-2026-19542.json",
+      "secondary_sha256": "6483f18eae6c81b6ed7abec21c9624f699cf20ff210d64a97e3a5e9c4f2bf8f3"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "HIGH",
+      "highest_reported_score": 7.3,
+      "id": "CVE-2026-5435",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-5435",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/5xxx/CVE-2026-5435.json",
+      "secondary_sha256": "ee2c10fc349bb4357de55cf3d1be967d9a8c407fe35c5e8920d07aae44312f89"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 6.5,
+      "id": "CVE-2026-6238",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-6238",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/6xxx/CVE-2026-6238.json",
+      "secondary_sha256": "62452cae6cf6c18667ffb349bc4c0f91ba408ebd9b5467b41c81bd271c050b4d"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "LOW",
+      "highest_reported_score": 2.1,
+      "id": "CVE-2026-6368",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-6368",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/6xxx/CVE-2026-6368.json",
+      "secondary_sha256": "2bb321b6e3a913d766340a3b9ca0ed143c2d52272d4c62401a5fc71a6e973bc8"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 6.6,
+      "id": "CVE-2026-6791",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-6791",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/6xxx/CVE-2026-6791.json",
+      "secondary_sha256": "601193dc7064a8b747fafbc2450561cd464ef451d9ea1cca409cb35831c7b8ac"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.9,
+      "id": "CVE-2026-77117",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-77117",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/77xxx/CVE-2026-77117.json",
+      "secondary_sha256": "c169e43753c1332e0e6c43f271c32ffaf1261852752c9c3f5a42e819bc95473e"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.9,
+      "id": "CVE-2026-80489",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-80489",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/80xxx/CVE-2026-80489.json",
+      "secondary_sha256": "22ff88bea61876c0e25af02e561326ec1acc81b17f37a07d180cecff27ab3929"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 5.3,
+      "id": "CVE-2026-8674",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-8674",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/8xxx/CVE-2026-8674.json",
+      "secondary_sha256": "874c9674b69a957ae35cbc90c71d6c9d321e14a5a450edd16f8bfe2e9a6d87a9"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 6.3,
+      "id": "CVE-2026-86805",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-86805",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/86xxx/CVE-2026-86805.json",
+      "secondary_sha256": "96577f57ca7a2864b844129fefb9ba38c597eed3add961e7a49b46bebce257fe"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "MEDIUM",
+      "highest_reported_score": 4.2,
+      "id": "CVE-2026-89092",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-89092",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/89xxx/CVE-2026-89092.json",
+      "secondary_sha256": "03d61739b6f834c97524b4aeda580486e479bf4bd975d6107916a5ffadc9ed30"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "LOW",
+      "highest_reported_score": 3.6,
+      "id": "CVE-2026-95818",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-95818",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/95xxx/CVE-2026-95818.json",
+      "secondary_sha256": "c7bddf5f9e2d60d749787b7672017db4a7b30e55a291304658218dda673000cc"
+    },
+    {
+      "class": "affected",
+      "disposition": "accepted_unresolved",
+      "highest_reported_band": "LOW",
+      "highest_reported_score": 3.7,
+      "id": "CVE-2026-97399",
+      "owner": "Samuel Leighton Lair",
+      "primary": "https://security-tracker.debian.org/tracker/CVE-2026-97399",
+      "secondary": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/97xxx/CVE-2026-97399.json",
+      "secondary_sha256": "da84745095c36b0e1d489fec3a9b44ad395010384931c41908db336131e80050"
+    }
+  ],
+  "component": "glibc",
+  "decision": "accept_unresolved",
+  "decision_date": "2026-10-27",
+  "distribution": "debian-trixie",
+  "operator_statement": "Stick with Debian Trixie and accept the glibc risk.",
+  "owner": "Samuel Leighton Lair",
+  "phase": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1",
+  "platforms": [
+    "linux/amd64",
+    "linux/arm64"
+  ],
+  "postgres_index": "sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97",
+  "python_index": "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e",
+  "retained_catalogue_sha256": "b7be264228c3ab778074c27171cd0e7da7a7ae25adf7e2056e1e14e297feee6d",
+  "schema": "repomap-d12-glibc-disposition-v1",
+  "source_version": "2.41-12+deb13u4"
+}

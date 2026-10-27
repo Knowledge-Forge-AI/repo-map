@@ -20,6 +20,7 @@ from repomap_test_support.d12_image_probes import (
 )
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_run import active_resource_run
+from tools.system import d12_glibc_risk as glibc_risk
 from tools.system.config import SystemTestConfig, SystemTestError
 from tools.system.d12_exec import wrap_create_with_bounded_exec
 from tools.system.d12_system_reports import (
@@ -43,13 +44,11 @@ class D12CandidateAssessmentError(SystemTestError, ValueError):
 def _require(condition: object, message: str) -> None:
     if not condition:
         raise D12CandidateAssessmentError(message)
-
 def _check_deadline(deadline: Any | None, operation: str) -> None:
     if deadline is not None and hasattr(deadline, "check_test_budget"):
         deadline.check_test_budget(operation)
     elif deadline is not None and hasattr(deadline, "check_budget"):
         deadline.check_budget()
-
 def _finish_probe_owner(owner: Any, server_id: str | None, primary: BaseException | None) -> None:
     steps = ((f"server {server_id} cleanup", lambda: owner.cleanup(server_id)),) if server_id else ()
     for step_name, fn in (*steps, ("baseline verification", owner.verify_baseline)):
@@ -59,7 +58,6 @@ def _finish_probe_owner(owner: Any, server_id: str | None, primary: BaseExceptio
             if primary is None:
                 raise
             primary.add_note(f"D12 {step_name} also failed ({type(exc).__name__}: {exc})")
-
 def _invoke_with_optional_bounds(
     fn: Callable[..., Any], *args: Any, deadline: Any | None = None,
     create_fn: Callable[..., tuple[str, Any]] | None = None, **kwargs: Any,
@@ -78,7 +76,6 @@ def _invoke_with_optional_bounds(
         if val is not None:
             call_kwargs[key] = val
     return fn(*args, **call_kwargs)
-
 def _resolve_owner_client(owner: Any | None, client: Any | None) -> tuple[Any, Any]:
     if owner is not None and client is not None:
         return owner, client
@@ -87,7 +84,6 @@ def _resolve_owner_client(owner: Any | None, client: Any | None) -> tuple[Any, A
         raise SystemTestError("D12 post-build probes require an active canonical resource run")
     resolved_client = boundary.client if client is None else client
     return (CurrentRunDockerContainers(run, resolved_client) if owner is None else owner), resolved_client
-
 def _verify_round_trip(round_trip: Mapping[str, Any]) -> None:
     src, rst = round_trip.get("source"), round_trip.get("restored")
     if not isinstance(src, Mapping) or not isinstance(rst, Mapping):
@@ -148,7 +144,7 @@ def observe_and_assess_candidate(
     write_report: Callable[[str, dict[str, Any]], object] | None = None,
     run_once_fn: Callable[..., str] = _run_once, inventory_fn: Callable[..., dict[str, Any]] = _inventory,
     hashes_fn: Callable[..., dict[str, str]] = _hashes, deadline: Any | None = None,
-    create_fn: Callable[..., tuple[str, Any]] | None = None,
+    create_fn: Callable[..., tuple[str, Any]] | None = None, server_image_id: str | None,
 ) -> dict[str, Any]:
     """Run candidate-image probes, stage attribution, 2000-row archive round-trip, and D2/P3 assessment."""
     if isinstance(expected_libpq_version, bool) or not isinstance(expected_libpq_version, int):
@@ -201,9 +197,12 @@ def observe_and_assess_candidate(
            for name, inv in (("server", server_inventory), ("candidate", candidate))}
     stops += [f"{name} TLS runtime is not exactly {tls_header[0]}={tls_header[2]} (ADR 0091): {rows}"
               for name, rows in tls.items() if [r[1] for r in rows] != [tls_header[2]]]
+    glibc = glibc_risk.evaluate_d12_post_build(candidate_image_id=image_id, candidate_inventory=candidate,
+        server_image_id=server_image_id, server_inventory=server_inventory, base_reference=POSTGRES_RELEASE_IMAGE,
+        platform=platform, availability=availability)
     result_report: dict[str, Any] = {
         "observed_versions": observed, "server_side": dict(server_side), "tls_runtime": tls, "round_trip": round_trip,
-        "findings": findings, "libpq_findings": libpq, "critical_unknown": critical_unknown,
+        "findings": findings, "libpq_findings": libpq, "critical_unknown": critical_unknown, "glibc_disposition": glibc,
         "availability": dict(availability), "qualification": "stop_pending_disposition", "stops": stops}
     if write_report is not None:
         write_report("result", result_report)
@@ -211,6 +210,7 @@ def observe_and_assess_candidate(
         packaging=packaging, linkage_report=linkage_report, candidate=candidate, server_side=server_side,
         round_trip=round_trip, findings=findings, libpq=libpq, critical_unknown=critical_unknown, stops=stops,
         expected_libpq_version=expected_libpq_version)
+    _require(glibc["status"] == glibc_risk.ACCEPTED, f"glibc disposition refused: {glibc.get('refusal')}")
     return {"inventory": inventory_report, "result": result_report}
 
 def _store_session_probe_report(session: D12SystemSession, name: str, payload: dict[str, Any]) -> None:
@@ -231,7 +231,7 @@ def _store_session_probe_report(session: D12SystemSession, name: str, payload: d
             "verify_count": c_map.get("verify_count"), "unowned_count": c_map.get("unowned_count")}
     elif name == "result":
         keys = ("observed_versions", "tls_runtime", "findings", "libpq_findings",
-                "critical_unknown", "availability", "qualification", "stops")
+                "critical_unknown", "availability", "qualification", "stops", "glibc_disposition")
         session.post_build_assessments = {"result_sha256": digest, **{k: payload.get(k) for k in keys}}
         if isinstance(payload.get("round_trip"), Mapping):
             session.roundtrip_evidence = dict(payload["round_trip"])
@@ -276,14 +276,14 @@ def run_post_build_candidate_probes(
         srv_side = {p: (srv.exec_run([p, "--version"]).output or b"").decode("utf-8", "replace").strip()
                     for p in (SERVER, *CLIENTS)}
         srv_inv = _invoke_with_optional_bounds(
-            inventory_fn, owner, client, POSTGRES_RELEASE_IMAGE, platform, "d12-inventory-server",
+            inventory_fn, owner, client, expected_pg_id, platform, "d12-inventory-server",
             deadline=deadline, create_fn=b_create, run_once_fn=run_once_fn)
         assessed = _invoke_with_optional_bounds(
             observe_fn, owner, client, image_id=image_id, platform=platform, server_id=server_id,
             server_env=server_env, server_side=srv_side, server_inventory=srv_inv, availability=avail,
             expected_libpq_version=expected_libpq_version, tls_header=inner.HEADER, write_report=rec,
             run_once_fn=run_once_fn, inventory_fn=inventory_fn, hashes_fn=hashes_fn, deadline=deadline,
-            create_fn=b_create)
+            create_fn=b_create, server_image_id=expected_pg_id)
         if session.post_build_probes is None and isinstance(assessed.get("inventory"), Mapping):
             rec("inventory", dict(assessed["inventory"]))
         if session.post_build_assessments is None and isinstance(assessed.get("result"), Mapping):

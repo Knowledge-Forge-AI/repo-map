@@ -11,7 +11,7 @@ from repomap_kg.runtime.python_payload import (
 )
 
 POSTGRES_RELEASE_VERSION = "16.15"
-PYTHON_RELEASE_VERSION = "3.12.15"
+PYTHON_RELEASE_VERSION = "3.12.16"
 GO_RELEASE_VERSION = "1.26.10"
 PSYCOPG_RELEASE_VERSION = "3.3.6"
 # ADR 0089 D1: the release base's observed system libpq, frozen by the
@@ -36,7 +36,7 @@ POSTGRES_RELEASE_IMAGE = (
 )
 PYTHON_RELEASE_IMAGE = (
     "python:3.12-slim-trixie@sha256:"
-    "a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704"
+    "962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
 )
 GO_RELEASE_IMAGE = (
     "golang:1.26.10-bookworm@sha256:"

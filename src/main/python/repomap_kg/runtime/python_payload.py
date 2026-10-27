@@ -49,49 +49,34 @@ class PayloadExclusion(NamedTuple):
     baseline_imports: tuple[str, ...]
 
 
-# The 77 lib-dynload modules that imported in the Trixie 3.12.15 baseline's fresh LD_BIND_NOW=1 processes
-# (ADR 0091; the historical Bookworm 3.12.13 E1 set of 78 also had nis, which this base no longer ships).
-ARM64_BASELINE_IMPORTS = (
+# ADR 0100: the exact Python 3.12.16 index, its native children and their _tkinter bytes (unchanged from 3.12.15).
+# ARM imports below are its own native observation; unobserved AMD has no default entry.
+# Historical 3.12.15 records remain separate in release_manifest; no import set transfers.
+PYTHON_31216_INDEX = "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
+PYTHON_31216_ARM64_MANIFEST = "sha256:0ced713d9b8336172d981d8f25f2422b6782bdad019fda4cb653c6ee187430de"
+PYTHON_31216_ARM64_CONFIG = "sha256:7d0134fc196a9daa289acd038dd1c95b6873cacfaa4d6ea97c51501e0af515a3"
+PYTHON_31216_AMD64_MANIFEST = "sha256:6d2b0577e6d1632f077331de8e4780535f54839d163ded7abb4b7dd37b5d37ac"
+PYTHON_31216_AMD64_CONFIG = "sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28"
+ARM64_31216_NATIVE_BASELINE_IMPORTS: tuple[str, ...] = (
     "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp",
     "_codecs_kr", "_codecs_tw", "_contextvars", "_crypt", "_csv", "_ctypes", "_ctypes_test", "_curses",
     "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_gdbm", "_hashlib", "_heapq", "_json",
     "_lsprof", "_lzma", "_md5", "_multibytecodec", "_multiprocessing", "_opcode", "_pickle", "_posixshmem",
-    "_posixsubprocess", "_queue", "_random", "_sha1", "_sha2", "_sha3", "_socket", "_sqlite3", "_ssl",
-    "_statistics", "_struct", "_testbuffer", "_testcapi", "_testclinic", "_testimportmultiple",
-    "_testinternalcapi", "_testmultiphase", "_testsinglephase", "_uuid", "_xxinterpchannels",
-    "_xxsubinterpreters", "_xxtestfuzz", "_zoneinfo", "array", "audioop", "binascii", "cmath", "fcntl", "grp",
-    "math", "mmap", "ossaudiodev", "pyexpat", "readline", "resource", "select", "spwd", "syslog",
-    "termios", "unicodedata", "xxlimited", "xxlimited_35", "xxsubtype", "zlib",
+    "_posixsubprocess", "_queue", "_random", "_sha1", "_sha2", "_sha3", "_socket", "_sqlite3", "_ssl", "_statistics",
+    "_struct", "_testbuffer", "_testcapi", "_testclinic", "_testimportmultiple", "_testinternalcapi",
+    "_testmultiphase", "_testsinglephase", "_uuid", "_xxinterpchannels", "_xxsubinterpreters", "_xxtestfuzz",
+    "_zoneinfo", "array", "audioop", "binascii", "cmath", "fcntl", "grp", "math", "mmap", "ossaudiodev", "pyexpat",
+    "readline", "resource", "select", "spwd", "syslog", "termios", "unicodedata", "xxlimited", "xxlimited_35",
+    "xxsubtype", "zlib",
 )
-# The 77 lib-dynload modules independently observed in the native x86_64 Trixie 3.12.15 baseline (ADR 0094).
-AMD64_BASELINE_IMPORTS = (
-    "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp",
-    "_codecs_kr", "_codecs_tw", "_contextvars", "_crypt", "_csv", "_ctypes", "_ctypes_test", "_curses",
-    "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_gdbm", "_hashlib", "_heapq", "_json",
-    "_lsprof", "_lzma", "_md5", "_multibytecodec", "_multiprocessing", "_opcode", "_pickle", "_posixshmem",
-    "_posixsubprocess", "_queue", "_random", "_sha1", "_sha2", "_sha3", "_socket", "_sqlite3", "_ssl",
-    "_statistics", "_struct", "_testbuffer", "_testcapi", "_testclinic", "_testimportmultiple",
-    "_testinternalcapi", "_testmultiphase", "_testsinglephase", "_uuid", "_xxinterpchannels",
-    "_xxsubinterpreters", "_xxtestfuzz", "_zoneinfo", "array", "audioop", "binascii", "cmath", "fcntl", "grp",
-    "math", "mmap", "ossaudiodev", "pyexpat", "readline", "resource", "select", "spwd", "syslog",
-    "termios", "unicodedata", "xxlimited", "xxlimited_35", "xxsubtype", "zlib",
-)
-# OCI identities of the pinned Trixie index's arm64 and amd64 children (ADR 0091, ADR 0094).
-PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = MappingProxyType({
-    "arm64": PayloadExclusion(
-        "arm64", "sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
-        "sha256:6c6ae3622772575c3ac02ecb2b02a06d05f19e1713a0cbff476ef37bca79e90f",
-        "sha256:7efd45553a98be3d940b73600550669831c0be34f30c521159e7030a91fcdee6",
-        f"{DYNLOAD}/_tkinter.cpython-312-aarch64-linux-gnu.so",
-        "9fe4f2c93a746b000a15ebb6fbb71ea33b3b7888efb70e3c1296fac8b30c2c96", 70584, 183,  # EM_AARCH64
-        "_tkinter", ("libtcl8.6.so", "libtk8.6.so"), ARM64_BASELINE_IMPORTS),
-    "amd64": PayloadExclusion(
-        "amd64", "sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
-        "sha256:e8a38829209aea82774882e5157e1f7c3e8c8393ff53a697b3580896e57f345c",
-        "sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1",
-        f"{DYNLOAD}/_tkinter.cpython-312-x86_64-linux-gnu.so",
-        "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8", 62448, 62,  # EM_X86_64
-        "_tkinter", ("libtcl8.6.so", "libtk8.6.so"), AMD64_BASELINE_IMPORTS),
+AMD64_31216_NATIVE_BASELINE_IMPORTS: tuple[str, ...] | None = None
+_TK_31216_SPECS: Mapping[str, tuple[str, str, str, str, int, int]] = MappingProxyType({
+    "arm64": (PYTHON_31216_ARM64_MANIFEST, PYTHON_31216_ARM64_CONFIG,
+              f"{DYNLOAD}/_tkinter.cpython-312-aarch64-linux-gnu.so",
+              "9fe4f2c93a746b000a15ebb6fbb71ea33b3b7888efb70e3c1296fac8b30c2c96", 70584, 183),  # EM_AARCH64
+    "amd64": (PYTHON_31216_AMD64_MANIFEST, PYTHON_31216_AMD64_CONFIG,
+              f"{DYNLOAD}/_tkinter.cpython-312-x86_64-linux-gnu.so",
+              "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8", 62448, 62),  # EM_X86_64
 })
 
 
@@ -105,6 +90,21 @@ def validate_exclusion(entry: PayloadExclusion, architecture: str) -> None:
             or not all(_LIBRARY.fullmatch(library) for library in entry.missing) or not names
             or list(names) != sorted(set(names)) or not all(map(_MODULE.fullmatch, names)) or entry.module in names):
         raise PayloadRefusal(f"payload exclusion entry for {architecture!r} is not exact")
+
+
+def build_31216_exclusion(architecture: str, baseline_imports: Sequence[str]) -> PayloadExclusion:
+    """The exact 3.12.16 entry for one native architecture and an import set observed on that architecture."""
+    if (spec := _TK_31216_SPECS.get(architecture)) is None:
+        raise PayloadRefusal(f"unsupported 3.12.16 payload architecture: {architecture!r}")
+    manifest, config, path, sha256, size, elf_machine = spec
+    entry = PayloadExclusion(architecture, PYTHON_31216_INDEX, manifest, config, path, sha256, size, elf_machine,
+                             "_tkinter", ("libtcl8.6.so", "libtk8.6.so"), tuple(baseline_imports))
+    validate_exclusion(entry, architecture)
+    return entry
+
+
+PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = MappingProxyType(
+    {"arm64": build_31216_exclusion("arm64", ARM64_31216_NATIVE_BASELINE_IMPORTS)})
 
 
 def _digest(entries: Mapping[str, Any]) -> str:

@@ -1876,6 +1876,37 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci73.session_fixtures.test_owners",
+      "members": [
+        "src/test/unit/python/tools/system/d12_system_session_fixtures.py"
+      ],
+      "rationale": "Historical session fixture family extracted from the touched D12 session unit owner; same fixture bodies, no native evidence.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci73trixie1.glibc_risk.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_glibc_disposition.int.test.py",
+        "src/test/unit/python/tools/system/d12_glibc_risk.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.ci73trixie1.glibc_risk.tools",
+      "members": [
+        "tools/system/d12_glibc_risk.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
@@ -3513,6 +3544,16 @@
         "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py"
       ],
       "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-int-python-repomap_kg-runtime.d12_python31216.int.test",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_python31216.int.test.py"
+      ],
+      "rationale": "Contract owner d12_python31216.int.test in src/test/int/python/repomap_kg/runtime; ADR 0100 Python 3.12.16 native component proof.",
       "root": "test_owners"
     },
     {
@@ -5236,6 +5277,16 @@
         "src/test/support/python/repomap_test_support/coordinator_control_fixtures.py"
       ],
       "rationale": "coordinator_control_fixtures responsibility in src/test/support/python/repomap_test_support; includes the declared module family independent of current quality findings.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "src-test-support-python-repomap_test_support.d12_python31216",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_python31216.py"
+      ],
+      "rationale": "Support module d12_python31216 in src/test/support/python/repomap_test_support; ADR 0100 Python 3.12.16 native component proof helpers.",
       "root": "test_support"
     },
     {
@@ -9987,6 +10038,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_kg-runtime.d12_python31216.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_kg/runtime/d12_python31216.unit.test.py"
+      ],
+      "rationale": "Contract owner d12_python31216.unit.test in src/test/unit/python/repomap_kg/runtime; ADR 0100 Python 3.12.16 release and payload regressions.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "src-test-unit-python-repomap_kg-runtime.local_home_authority.unit.test",
       "members": [
         "src/test/unit/python/repomap_kg/runtime/local_home_authority.unit.test.py"
@@ -11126,6 +11187,16 @@
         "src/test/unit/python/repomap_test_support/pr26_staging_qual6_fixture_seams.unit.test.py"
       ],
       "rationale": "Contract owner cli.unit.test in src/test/unit/python/repomap_test_support; fixed existing test responsibility boundary.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "src-test-unit-python-repomap_test_support.d12_python31216.unit.test",
+      "members": [
+        "src/test/unit/python/repomap_test_support/d12_python31216.unit.test.py"
+      ],
+      "rationale": "Contract owner d12_python31216.unit.test in src/test/unit/python/repomap_test_support; ADR 0100 Python 3.12.16 support validator tests.",
       "root": "test_owners"
     },
     {
@@ -32354,6 +32425,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_glibc_disposition.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_python31216.int.test.py",
+      "rationale": "Contract owner d12_python31216.int.test in src/test/int/python/repomap_kg/runtime; ADR 0100 Python 3.12.16 native component proof.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d12_runtime_hygiene.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI71FIX1 actual native-base and empty-directory refusal owner; zero debt.",
       "root": "test_owners",
@@ -34444,6 +34533,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/d12_image_probes.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_python31216.py",
+      "rationale": "Support module d12_python31216 in src/test/support/python/repomap_test_support; ADR 0100 Python 3.12.16 native component proof helpers.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -41030,6 +41128,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/d12_python31216.unit.test.py",
+      "rationale": "Contract owner d12_python31216.unit.test in src/test/unit/python/repomap_kg/runtime; ADR 0100 Python 3.12.16 release and payload regressions.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/d12_release_apt_custody.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 M2 APT custody owner; zero-debt admission.",
       "root": "test_owners",
@@ -42517,6 +42624,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/d12_python31216.unit.test.py",
+      "rationale": "Contract owner d12_python31216.unit.test in src/test/unit/python/repomap_test_support; ADR 0100 Python 3.12.16 support validator tests.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -45989,6 +46105,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_glibc_risk.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/system/d12_system_evidence.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "test_owners",
@@ -46000,6 +46125,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/system/d12_system_session.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_system_session_fixtures.py",
+      "rationale": "Historical session fixture family extracted from the touched D12 session unit owner; same fixture bodies, no native evidence.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -48799,6 +48933,15 @@
       "maintained_executable": true,
       "path": "tools/system/d12_exec.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_glibc_risk.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },

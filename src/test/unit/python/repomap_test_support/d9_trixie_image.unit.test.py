@@ -26,13 +26,13 @@ import test_sandbox_contract as contract
 REPO_ROOT = Path(__file__).resolve().parents[5]
 TRIXIE = "postgres:16.15-trixie@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
 BOOKWORM = "postgres:16.15-bookworm@sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0"
-PYTHON = "python:3.12-slim-trixie@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704"
+PYTHON = "python:3.12-slim-trixie@sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
 
 
 def test_release_pins_and_every_mirror_are_the_exact_trixie_indexes():
     assert release.POSTGRES_RELEASE_IMAGE == contract.PRODUCTION_POSTGRES_IMAGE == TRIXIE
     assert release.PYTHON_RELEASE_IMAGE == contract.PYTHON_RELEASE_IMAGE == PYTHON
-    assert (release.PYTHON_RELEASE_VERSION, release.POSTGRES_RELEASE_VERSION) == ("3.12.15", "16.15")
+    assert (release.PYTHON_RELEASE_VERSION, release.POSTGRES_RELEASE_VERSION) == ("3.12.16", "16.15")
     assert release.GO_RELEASE_IMAGE == contract.GO_RELEASE_IMAGE and release.GO_RELEASE_VERSION == "1.26.10"
     assert release.PSYCOPG_LIBPQ_VERSION is None and dict(release.DYNAMIC_PACKAGE_MANIFEST) == {}, "unresolved"
     source = json.loads((REPO_ROOT / "tools/pgvector_test_source.json").read_text(encoding="utf-8"))
