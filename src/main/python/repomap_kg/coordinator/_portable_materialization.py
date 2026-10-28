@@ -9,16 +9,14 @@ import secrets
 import stat
 from collections.abc import Callable
 
+from repomap_kg._temporary import (
+    OwnedDirectoryIdentity as OwnedDirectoryIdentity,
+    _directory_identity as _directory_identity,
+    _remove_materialized_root as _remove_materialized_root,
+)
 from repomap_kg.artifacts.manifest import PortableSnapshotManifest
 from repomap_kg.artifacts.store import ArtifactStore
 from repomap_kg.coordinator._refresh_capability_io import validate_private_directory
-
-
-@dataclass(frozen=True)
-class OwnedDirectoryIdentity:
-    device: int
-    inode: int
-    owner_uid: int
 
 
 @dataclass(frozen=True)
@@ -113,13 +111,6 @@ class MaterializedWorkspace:
             )
 
 
-def _directory_identity(root: Path) -> OwnedDirectoryIdentity:
-    details = root.lstat()
-    if not stat.S_ISDIR(details.st_mode) or stat.S_ISLNK(details.st_mode):
-        raise RuntimeError("portable cleanup root is not an owned directory")
-    return OwnedDirectoryIdentity(details.st_dev, details.st_ino, details.st_uid)
-
-
 def _remove_attempt_root(
     root: Path,
     expected: OwnedDirectoryIdentity | None = None,
@@ -200,39 +191,6 @@ def _remove_owned_children(directory_descriptor: int) -> None:
                 os.rmdir(entry.name, dir_fd=directory_descriptor)
             else:
                 raise RuntimeError("portable cleanup encountered unexpected node")
-
-
-def _remove_materialized_root(
-    root: Path,
-    expected: OwnedDirectoryIdentity,
-) -> None:
-    try:
-        if _directory_identity(root) != expected:
-            raise RuntimeError("portable cleanup root identity changed")
-    except FileNotFoundError:
-        return
-    _remove_materialized_children(root)
-    if _directory_identity(root) != expected:
-        raise RuntimeError("portable cleanup root identity changed")
-    root.chmod(0o700)
-    root.rmdir()
-
-
-def _remove_materialized_children(root: Path) -> None:
-    with os.scandir(root) as entries:
-        for entry in entries:
-            path = root / entry.name
-            details = entry.stat(follow_symlinks=False)
-            if stat.S_ISREG(details.st_mode) and details.st_nlink == 1:
-                path.chmod(0o600)
-                path.unlink()
-            elif stat.S_ISDIR(details.st_mode) and not stat.S_ISLNK(details.st_mode):
-                _remove_materialized_children(path)
-                path.chmod(0o700)
-                path.rmdir()
-            else:
-                raise RuntimeError("portable cleanup encountered unexpected node")
-
 
 __all__ = [
     "MaterializedView",

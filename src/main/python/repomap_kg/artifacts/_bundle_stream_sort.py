@@ -7,6 +7,8 @@ from pathlib import Path
 import tempfile
 from typing import IO, Iterable, Iterator, Mapping
 
+from repomap_kg._temporary import OwnedTemporaryDirectory
+
 from repomap_kg.artifacts._canonical import canonical_json
 from repomap_kg.artifacts.bundle import MAX_BUNDLE_LINE_BYTES
 from repomap_kg.storage.staging_family_rows import StageFamily
@@ -26,7 +28,7 @@ class BoundedExternalRowSorter:
     ) -> None:
         self._max_buffer_bytes = max_buffer_bytes
         self._spool_dir = Path(spool_dir) if spool_dir is not None else None
-        self._temp_dir: tempfile.TemporaryDirectory[str] | None = None
+        self._temp_dir: OwnedTemporaryDirectory | None = None
         self.spill_run_count = 0
         self.spill_bytes = 0
 
@@ -34,7 +36,7 @@ class BoundedExternalRowSorter:
         if self._temp_dir is None:
             if self._spool_dir is not None:
                 self._spool_dir.mkdir(parents=True, exist_ok=True)
-            self._temp_dir = tempfile.TemporaryDirectory(
+            self._temp_dir = OwnedTemporaryDirectory(
                 prefix="repomap_sort_",
                 dir=str(self._spool_dir) if self._spool_dir is not None else None,
             )

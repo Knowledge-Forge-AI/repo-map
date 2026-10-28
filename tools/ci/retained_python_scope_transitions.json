@@ -4279,6 +4279,28 @@
       "source_commit": "33c0a6159a57b80c09dc8a5ddbd543c3369f448b",
       "source_manifest_sha256": "d861e034696b346f70c3a6d1598a85bb07dd537c8460f557c4e97b59ab7ce401",
       "status_path": "tools/ci/nav47-d12-system-route-b.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg._temporary",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/_temporary.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "cd794c217b9565f9a6eb5d84143c5ebb57c418e291c0e783a20b6fda9e522a14",
+      "new_selected_set_sha256": "005949e5ed5bf6410a42214852dacfd23f8a9e7a334d41efbf34ac6251fde882",
+      "old_ownership_manifest_sha256": "450ebca92f26439029e7f2b29a53ffb27f7bbe641dca45dce704893c8b4ea696",
+      "old_selected_set_sha256": "87f08fda5c9c68a06a6d46678ae202badd2fd006896379505298344c0a6635d2",
+      "phase": "REPOMAP-PRODUCT6-NAVIGATION47-CI85REPAIR1",
+      "reason": "ADR0106: admit one clean shared temporary-cleanup owner; preserve all incumbent selections, debt and historical authority.",
+      "source_commit": "bec5bff3550fbfba68a4cecccc8a005c0158de7a",
+      "source_manifest_sha256": "450ebca92f26439029e7f2b29a53ffb27f7bbe641dca45dce704893c8b4ea696",
+      "status_path": "tools/ci/nav47-ci85-repair.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

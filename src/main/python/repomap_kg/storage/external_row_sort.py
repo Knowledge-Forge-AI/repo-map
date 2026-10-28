@@ -5,7 +5,8 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable, Iterator, Sequence
 import heapq
 from pathlib import Path
-import tempfile
+
+from repomap_kg._temporary import OwnedTemporaryDirectory
 
 from repomap_kg.storage._external_row_sort_helpers import (
     ExternalRowSortError,
@@ -81,7 +82,7 @@ def external_sort_encoded_rows(
     source = iter(rows)
     artifacts = _ArtifactTracker(artifact_observer)
     try:
-        with tempfile.TemporaryDirectory(
+        with OwnedTemporaryDirectory(
             prefix="repomap-structural-digest-"
         ) as raw_directory:
             directory = Path(raw_directory)

@@ -47,6 +47,8 @@ BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
 def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]]:
     cand_doc = json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
     grant, _ = load_and_validate_system_build_grant(REPO_ROOT / DEFAULT_GRANT_RELPATH)
+    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (86, 6, 6)
+    assert grant["nonce"] != "e2833d583de847a7859fb5250d5f37c6"
     expected_cand = validate_expected_candidate_record({**cand_doc, "d12_context": dict(grant["d12_context"])})
     (tmp_path / "ci72-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
     event_path = tmp_path / "github_event.json"

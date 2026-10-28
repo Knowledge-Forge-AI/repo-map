@@ -19,6 +19,15 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0106: shared existing owned path cleanup with zero new debt; no authority or future-language forecast change.",
+      "match": "exact",
+      "module_prefix": "repomap_kg._temporary",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",

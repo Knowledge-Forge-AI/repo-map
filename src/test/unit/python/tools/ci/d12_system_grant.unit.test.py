@@ -30,6 +30,8 @@ from ci.d12_system_grant import (
     SPENT_CI71_RESERVATION_SHA256,
     SPENT_CI72_NONCE,
     SPENT_CI72_RESERVATION_SHA256,
+    SPENT_CI85_NONCE,
+    SPENT_CI85_RESERVATION_SHA256,
     D12SystemGrantError,
     SYSTEM_ADMISSION_PROOF_SCHEMA,
     SYSTEM_BUILD_GRANT_SCHEMA,
@@ -116,7 +118,7 @@ def _coherent_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], b
     return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
 
 
-def test_load_tracked_system_build_grant_matches_ci85_and_refuses_drifted_candidate() -> None:
+def test_load_tracked_system_build_grant_matches_ci86_and_refuses_drifted_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
@@ -137,7 +139,7 @@ def test_load_tracked_system_build_grant_matches_ci85_and_refuses_drifted_candid
             expected_candidate=live_cand,
             frozen_identity=dict(live_cand["d12_context"]),
         )
-    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1"
+    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI85REPAIR1"
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
     assert SPENT_CI70_RESERVATION_SHA256 == (
         "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
@@ -146,13 +148,15 @@ def test_load_tracked_system_build_grant_matches_ci85_and_refuses_drifted_candid
     assert SPENT_CI71_RESERVATION_SHA256 == (
         "159885801ce51461100eaf345163f02fb2b7ebc91eef71ff146acac66bc131be"
     )
+    assert SPENT_CI85_NONCE == "e2833d583de847a7859fb5250d5f37c6"
+    assert SPENT_CI85_RESERVATION_SHA256 == "04c66536b5f655be479934d1086bec6895ac9015bdcf3da96c197a7f9d28bc4f"
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 85
+    assert grant["workflow_ordinal"] == 86
     assert grant["workflow_attempt"] == 1
-    assert grant["maximum_total"] == 5
-    assert grant["maximum_per_platform"] == 5
+    assert grant["maximum_total"] == 6
+    assert grant["maximum_per_platform"] == 6
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
@@ -177,6 +181,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("workflow_ordinal", 70),
         ("workflow_ordinal", 71),
         ("workflow_ordinal", 73),
+        ("workflow_ordinal", 85),
         ("workflow_attempt", 2),
         ("maximum_per_platform", 1),
         ("maximum_per_platform", 2),
@@ -184,12 +189,16 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("maximum_total", 1),
         ("maximum_total", 2),
         ("maximum_total", 3),
+        ("maximum_total", 5),
+        ("maximum_per_platform", 5),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
         ("nonce", SPENT_CI70_NONCE),
         ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
         ("nonce", SPENT_CI71_NONCE),
         ("nonce", SPENT_CI72_NONCE),
+        ("nonce", SPENT_CI85_NONCE),
+        ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256),
         ("nonce", str(grant["nonce"]) + "\n"),
@@ -221,6 +230,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("workflow_ordinal", 70),
         ("workflow_ordinal", 71),
         ("workflow_ordinal", 73),
+        ("workflow_ordinal", 85),
         ("workflow_attempt", 2),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
@@ -228,6 +238,8 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
         ("nonce", SPENT_CI71_NONCE),
         ("nonce", SPENT_CI72_NONCE),
+        ("nonce", SPENT_CI85_NONCE),
+        ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256),
         ("nonce", str(proof["nonce"]) + "\n"),

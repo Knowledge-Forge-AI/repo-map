@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import tempfile
 from typing import Mapping
+
+from repomap_kg._temporary import OwnedTemporaryDirectory
 
 
 class DiskFamilyLinkValidator:
@@ -15,7 +16,7 @@ class DiskFamilyLinkValidator:
         import sqlite3
 
         self._spool_dir = Path(spool_dir) if spool_dir is not None else None
-        self._temp_dir: tempfile.TemporaryDirectory[str] | None = tempfile.TemporaryDirectory(
+        self._temp_dir: OwnedTemporaryDirectory | None = OwnedTemporaryDirectory(
             prefix="repomap_links_",
             dir=str(self._spool_dir) if self._spool_dir is not None else None,
         )

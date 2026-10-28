@@ -305,6 +305,10 @@ def test_ci83_amd_facts_validate_only_with_explicit_prospective_enrollment() -> 
     with pytest.raises(proof.NativeComponentError, match="inner flags must equal the host"):
         proof.validate_observation(raw, historical, "amd64")
     prospective = {**copy.deepcopy(historical), "default_enrolled": True, "default_matches": True}
+    # Synthetic current-pin mechanics; never relabel the retained native CI83 observation.
+    entry = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    prospective["trimmed_report"]["exclusion"].update(
+        python_index=entry.python_index, platform_manifest=entry.platform_manifest, python_config=entry.python_config)
     summary = proof.validate_observation(raw, prospective, "amd64")
     assert tuple(summary["baseline_imports"]) == payload.AMD64_31216_NATIVE_BASELINE_IMPORTS
     assert (summary["before_entries"], summary["after_entries"], summary["retained_owner_count"]) == (1721, 1720, 21)

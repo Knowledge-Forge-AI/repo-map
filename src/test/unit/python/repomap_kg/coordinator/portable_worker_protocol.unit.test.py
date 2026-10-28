@@ -54,10 +54,15 @@ def _limits() -> SimpleNamespace:
         max_protocol_line_bytes=65536, max_array_items=64,
     )
 
-def test_real_worker_negotiates_and_emits_receipt_and_bundle_without_publication(tmp_path) -> None:
+@pytest.mark.parametrize("with_go", [False, True], ids=["python", "python-go"])
+def test_real_worker_negotiates_and_emits_receipt_and_bundle_without_publication(tmp_path, with_go, monkeypatch) -> None:
     source = tmp_path / "source"
     source.mkdir()
     (source / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
+    if with_go:
+        (source / "helper.go").write_text("package main\nfunc Greet() string { return \"hello\" }\n", encoding="utf-8")
+        from repomap_test_support.portable_worker_scenarios import package_worker_code
+        monkeypatch.setattr("repomap_kg.coordinator._portable_worker_launch.__file__", package_worker_code(tmp_path / "package"))
     graph = fixture_graph(source)
     incumbent = capture_multi_source_candidate(graph)
     store = FileSystemArtifactStore(tmp_path / "store")

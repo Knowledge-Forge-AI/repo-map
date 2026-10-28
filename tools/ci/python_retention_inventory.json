@@ -2000,6 +2000,17 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci85repair1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/packaged_python_worker.int.test.py",
+        "src/test/unit/python/repomap_kg/owned_temporary.unit.test.py"
+      ],
+      "rationale": "Scoped identity-safe cleanup and pinned native Python worker regression proofs; existing ceilings preserved.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
@@ -49566,6 +49577,33 @@
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/_temporary.py",
+      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/packaged_python_worker.int.test.py",
+      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/owned_temporary.unit.test.py",
+      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

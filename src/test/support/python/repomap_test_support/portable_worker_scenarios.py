@@ -334,3 +334,19 @@ def portable_corpus_dependencies(corpus: str) -> dict[str, str]:
         ), "# Static fixture\n"),
     }
     return by_corpus.get(corpus, {})
+
+
+def package_worker_code(root: Path) -> Path:
+    """Copy the product package and runner-owned Go helper to a disposable installed layout."""
+    import shutil
+    from repomap_kg.coordinator import _portable_worker_launch
+    from repomap_kg.extractors.languages.go_helper import HELPER_NAME, platform_tag, resolve_go_helper_command
+
+    source = Path(_portable_worker_launch.__file__).resolve().parents[1]
+    package = root / "src/main/python/repomap_kg"
+    shutil.copytree(source, package, ignore=shutil.ignore_patterns("__pycache__", "_bin"))
+    helper = Path(resolve_go_helper_command()[0])
+    installed = package / "_bin" / platform_tag() / HELPER_NAME
+    installed.parent.mkdir(parents=True)
+    shutil.copy2(helper, installed)
+    return package / "coordinator/_portable_worker_launch.py"

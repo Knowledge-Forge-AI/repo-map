@@ -7,7 +7,8 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
-import tempfile
+
+from repomap_kg._temporary import OwnedTemporaryDirectory
 
 from repomap_kg.extractors.config.nix_resolver import (
     resolve_nix_relations as resolve_nix_relations,
@@ -142,7 +143,7 @@ def multi_source_semantic_identities(
 def capture_multi_source_candidate(graph: OpsGraphConfig) -> MultiSourceCandidateBundle:
     """Capture every binding, resolve one bound candidate, then reverify all inputs."""
 
-    with tempfile.TemporaryDirectory(prefix="repomap-multi-source-") as temporary:
+    with OwnedTemporaryDirectory(prefix="repomap-multi-source-") as temporary:
         captured = _capture_inventory(
             graph,
             stage_root=Path(temporary),

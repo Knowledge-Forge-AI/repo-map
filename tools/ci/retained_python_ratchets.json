@@ -836,7 +836,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "450ebca92f26439029e7f2b29a53ffb27f7bbe641dca45dce704893c8b4ea696"
+    "sha256": "cd794c217b9565f9a6eb5d84143c5ebb57c418e291c0e783a20b6fda9e522a14"
   },
   "ruff": {
     "findings": [
@@ -14197,6 +14197,12 @@
         "module": "repomap_kg.__main__",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/__main__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg._temporary",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/_temporary.py",
         "tier": "T1-future"
       },
       {

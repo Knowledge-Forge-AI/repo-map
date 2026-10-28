@@ -13,13 +13,16 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import python_payload, release
+from repomap_kg.runtime import release
 from repomap_test_support.d12_image_probes import NOTICES
 from tools.system import d12_glibc_risk as risk
 from tools.system.d12_glibc_risk import GlibcRiskError
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
 RECORD_BYTES = (REPO_ROOT / risk.RECORD_RELPATH).read_bytes()
+HISTORICAL = json.loads(RECORD_BYTES)
+HISTORICAL_POSTGRES = "postgres:16.15-trixie@" + HISTORICAL["postgres_index"]
+HISTORICAL_PYTHON = "python:3.12-slim-trixie@" + HISTORICAL["python_index"]
 ARCH = {"linux/amd64": ("amd64", "x86_64", "x86_64-linux-gnu"),
         "linux/arm64": ("arm64", "aarch64", "aarch64-linux-gnu")}
 LIBC_SHA, NOTICE_SHA = "e" * 64, "c" * 64
@@ -60,7 +63,7 @@ def _inventory(platform: str = "linux/amd64", *, duplicate: bool = False) -> dic
 
 
 def _image(label: str = "candidate", image_id: object = CANDIDATE_ID, platform: str = "linux/amd64",
-           base: str = release.POSTGRES_RELEASE_IMAGE, **inventory_kw: Any) -> dict[str, Any]:
+           base: str = HISTORICAL_POSTGRES, **inventory_kw: Any) -> dict[str, Any]:
     return {"label": label, "base_reference": base, "image_id": image_id, "platform": platform,
             "execution": "native", "inventory": _inventory(platform, **inventory_kw)}
 
@@ -69,11 +72,11 @@ def _libc_rows(image: dict[str, Any]) -> list[dict[str, Any]]:
     return [row for row in image["inventory"]["files"] if row["resolved"].endswith("/libc.so.6")]
 
 
-def test_assessor_constants_match_release_and_module_is_stdlib_only() -> None:
+def test_assessor_constants_match_retained_approval_and_module_is_stdlib_only() -> None:
     assert hashlib.sha256(RECORD_BYTES).hexdigest() == risk.APPROVED_RECORD_SHA256
     assert risk.RECORD_PATH == (REPO_ROOT / risk.RECORD_RELPATH).resolve()
-    assert risk.BASE_REFERENCES == (release.POSTGRES_RELEASE_IMAGE, release.PYTHON_RELEASE_IMAGE)
-    assert risk.PYTHON_INDEX == python_payload.PYTHON_31216_INDEX
+    assert risk.BASE_REFERENCES == (HISTORICAL_POSTGRES, HISTORICAL_PYTHON)
+    assert risk.PYTHON_INDEX == HISTORICAL["python_index"]
     assert set(risk.PLATFORMS) == set(json.loads(RECORD_BYTES)["platforms"]) and risk.PLATFORMS == ARCH
     assert risk.LIBC_NOTICE in NOTICES
     tree = ast.parse(Path(risk.__file__).read_text(encoding="utf-8"))
@@ -203,7 +206,7 @@ def test_record_shape_refusals(mutate: Mutation, match: str) -> None:
 def test_candidate_and_server_are_accepted_independently_with_original_findings() -> None:
     result = risk.evaluate_d12_post_build(
         candidate_image_id=CANDIDATE_ID, candidate_inventory=_inventory(), server_image_id=SERVER_ID,
-        server_inventory=_inventory(), base_reference=release.POSTGRES_RELEASE_IMAGE, platform="linux/amd64",
+        server_inventory=_inventory(), base_reference=HISTORICAL_POSTGRES, platform="linux/amd64",
         availability=NATIVE)
     assert result["status"] == risk.ACCEPTED == "accepted_unresolved"
     assert result["record_sha256"] == risk.APPROVED_RECORD_SHA256 and result["record_path"] == risk.RECORD_RELPATH
@@ -212,7 +215,7 @@ def test_candidate_and_server_are_accepted_independently_with_original_findings(
     assert [(i["label"], i["image_id"], i["platform"]) for i in result["images"]] == [
         ("candidate", CANDIDATE_ID, "linux/amd64"), ("server", SERVER_ID, "linux/amd64")]
     for image in result["images"]:
-        assert image["base_reference"] == release.POSTGRES_RELEASE_IMAGE
+        assert image["base_reference"] == HISTORICAL_POSTGRES
         assert image["package"] == ["libc6", "2.41-12+deb13u4", "amd64"]
         assert image["glibc_packages"] == [["libc6", risk.SOURCE_VERSION, "amd64"],
                                            ["libc-bin", risk.SOURCE_VERSION, "amd64"]]
@@ -223,7 +226,7 @@ def test_candidate_and_server_are_accepted_independently_with_original_findings(
 
 
 def test_native_arm64_raw_python_base_is_accepted() -> None:
-    image = _image("python-base", "sha256:" + "7" * 64, "linux/arm64", release.PYTHON_RELEASE_IMAGE)
+    image = _image("python-base", "sha256:" + "7" * 64, "linux/arm64", HISTORICAL_PYTHON)
     result = risk.assess_glibc_disposition([image])
     assert result["status"] == risk.ACCEPTED
     assert result["images"][0]["libc"]["path"] == "/usr/lib/aarch64-linux-gnu/libc.so.6"
@@ -371,7 +374,7 @@ def test_refusal_result_retains_bounded_identity_evidence() -> None:
     emulated = {**_image(label="x" * 5000), "execution": "emulated"}
     result = risk.evaluate_d12_post_build(
         candidate_image_id=CANDIDATE_ID, candidate_inventory=_inventory(), server_image_id=SERVER_ID,
-        server_inventory=_inventory(), base_reference=release.POSTGRES_RELEASE_IMAGE, platform="linux/amd64",
+        server_inventory=_inventory(), base_reference=HISTORICAL_POSTGRES, platform="linux/amd64",
         availability={**NATIVE, "execution": "emulated"})
     assert result["status"] == risk.REFUSED and "candidate: linux/amd64 execution 'emulated'" in result["refusal"]
     assert [(i["label"], i["image_id"], i["platform"]) for i in result["images"]] == [
@@ -379,9 +382,17 @@ def test_refusal_result_retains_bounded_identity_evidence() -> None:
     assert "findings" not in result and result["accepts_image_or_other_findings"] is False
     foreign = risk.evaluate_d12_post_build(
         candidate_image_id=CANDIDATE_ID, candidate_inventory=_inventory(), server_image_id=SERVER_ID,
-        server_inventory=_inventory(), base_reference=release.POSTGRES_RELEASE_IMAGE, platform="linux/amd64",
+        server_inventory=_inventory(), base_reference=HISTORICAL_POSTGRES, platform="linux/amd64",
         availability={**NATIVE, "platform": "linux/arm64"})  # ARM availability is never substituted for AMD
     assert foreign["status"] == risk.REFUSED and "for 'linux/arm64'" in foreign["refusal"]
     long = risk.evaluate_glibc_disposition([emulated])
     assert len(long["refusal"]) <= 1200 and len(long["images"][0]["label"]) <= 600
     assert len(json.dumps(long)) < 4000
+
+
+def test_current_runtime_pins_do_not_retroactively_extend_the_finite_approval() -> None:
+    for current in (release.POSTGRES_RELEASE_IMAGE, release.PYTHON_RELEASE_IMAGE):
+        assert current not in risk.BASE_REFERENCES
+        result = risk.evaluate_glibc_disposition([_image(base=current)])
+        assert result["status"] == risk.REFUSED and "not an approved index" in result["refusal"]
+    assert (REPO_ROOT / risk.RECORD_RELPATH).read_bytes() == RECORD_BYTES
