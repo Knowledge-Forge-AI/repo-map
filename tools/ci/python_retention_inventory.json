@@ -1783,6 +1783,40 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.amdproof1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_native_python_proof.int.test.py",
+        "src/test/unit/python/repomap_test_support/d12_native_python_proof.unit.test.py",
+        "src/test/unit/python/tools/ci/d12_native_python_job.unit.test.py",
+        "src/test/unit/python/tools/d12_native_python_fixture_helpers.py",
+        "src/test/unit/python/tools/d12_native_python_observer.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation47.amdproof1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_native_python_proof.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic pure provenance, capture and payload validators; strict zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.amdproof1.tools",
+      "members": [
+        "tools/d12_native_python_observer.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic observer lifecycle and E1 hook; strict zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "product6.navigation47.ci63repair3.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/runtime/backup_provenance_boundaries.int.test.py",
@@ -32434,6 +32468,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_native_python_proof.int.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d12_python31216.int.test.py",
       "rationale": "Contract owner d12_python31216.int.test in src/test/int/python/repomap_kg/runtime; ADR 0100 Python 3.12.16 native component proof.",
       "root": "test_owners",
@@ -34533,6 +34576,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/d12_image_probes.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_native_python_proof.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic pure provenance, capture and payload validators; strict zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -42631,6 +42683,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_test_support/d12_native_python_proof.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_test_support/d12_python31216.unit.test.py",
       "rationale": "Contract owner d12_python31216.unit.test in src/test/unit/python/repomap_test_support; ADR 0100 Python 3.12.16 support validator tests.",
       "root": "test_owners",
@@ -44422,6 +44483,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_native_python_job.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/d12_system_grant.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "test_owners",
@@ -45162,6 +45232,24 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/d12_native_apt_import.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 canonical native prerequisite import owner; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_native_python_fixture_helpers.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_native_python_observer.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -47682,6 +47770,15 @@
       "maintained_executable": true,
       "path": "tools/d12_libpq_runtime_probe.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0091 numeric libpq runtime proof owner; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/d12_native_python_observer.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic observer lifecycle and E1 hook; strict zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },

@@ -84,18 +84,15 @@ def test_canonical_test_runner_appears_exactly_three_times() -> None:
     assert "--suite int" not in by_job["unit-tests"] and "--d12-core-image" not in by_job["unit-tests"]
     d12_cmd = by_job["d12-native-amd64"]
     for token in (
-        "--sandbox",
-        "--suite int",
-        "--no-coverage",
-        "--d12-core-image-profile linux/amd64",
+        "--sandbox", "--suite int", "--no-coverage", "--d12-core-image-profile linux/amd64",
         "--d12-core-image-preflight",
+        "--smoke-image-reference sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28",
         "-- src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py"
         "::test_d12_core_image_refresh_candidate_round_trip",
     ):
         assert token in d12_cmd
-    assert "--d12-core-image-budget-ledger" not in d12_cmd
-    assert "--suite staging" in by_job["staging-integration-gate"]
-    assert "--suite system" in by_job["main-system-gate"]
+    assert "--d12-core-image-budget-ledger" not in d12_cmd and d12_cmd.count("--smoke-image-reference") == 1
+    assert "--suite staging" in by_job["staging-integration-gate"] and "--suite system" in by_job["main-system-gate"]
 
 
 def test_pr_fast_targets_staging_pull_requests_only() -> None:
@@ -326,6 +323,10 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
             "-- src/test/int/python/unapproved.int.test.py",
             "d12-native-amd64 must select exact node",
         ),
+        ("repomap-release-qualification.yml", "--smoke-image-reference sha256:3a1b",
+         "--smoke-image-ref sha256:3a1b", "unknown or abbreviated option '--smoke-image-ref'"),
+        ("repomap-release-qualification.yml", "--smoke-image-reference sha256:3a1b",
+         "--smoke-image-reference sha256:7d01", "must pass exactly one literal --smoke-image-reference"),
     ],
 )
 def test_topology_contracts_detect_their_own_violation(

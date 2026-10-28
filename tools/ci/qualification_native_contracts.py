@@ -28,12 +28,20 @@ D12_NATIVE_AMD64_RUNNER_MARKER = "--d12-core-image-profile linux/amd64"
 D12_SYSTEM_ADMISSION_HOLD_SUFFIX = "/repomap-d12-system-admission/hold.json"
 D12_SYSTEM_ADMISSION_PROOF_SUFFIX = "/repomap-d12-system-admission/proof.json"
 D12_SYSTEM_ADMISSION_UPLOAD_PATH = "${{ runner.temp }}/repomap-d12-system-admission"
+# ADR 0102: the one exact raw Python 3.12.16 AMD config selected for the native component diagnostic.
+D12_NATIVE_AMD64_RAW_PYTHON_CONFIG = "sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28"
 D12_NATIVE_AMD64_REQUIRED_TOKENS: tuple[str, ...] = (
     "python3 tools/run_tests.py", "--sandbox", "--suite int", "--no-coverage", "--jobs 1",
     "--pg-container-port 55433", "--d12-core-image-profile linux/amd64", "--d12-core-image-preflight",
+    f"--smoke-image-reference {D12_NATIVE_AMD64_RAW_PYTHON_CONFIG}",
     '--d12-core-image-source-sha256 "${D12_EXPECTED_SOURCE_SHA256}"',
     '--report-dir "${RUNNER_TEMP}/d12-native-amd64-report"', f"-- {D12_NATIVE_AMD64_NODE_ID}",
 )
+_NATIVE_VALUES = {"--suite": "int", "--jobs": "1", "--pg-container-port": "55433",
+                  "--d12-core-image-profile": "linux/amd64"}
+_NATIVE_FLAGS = ("--sandbox", "--no-coverage", "--d12-core-image-preflight")
+_NATIVE_OPTIONS = frozenset({*_NATIVE_VALUES, "--d12-core-image-source-sha256", "--report-dir",
+                             "--smoke-image-reference"})
 D12_NATIVE_AMD64_FORBIDDEN_MARKERS: tuple[str, ...] = (
     "--d12-core-image-budget-ledger", "--d12-core-image-profile linux/arm64",
     "--suite all", "--suite unit", "--suite staging", "--suite system", "--suite smoke",
@@ -58,7 +66,6 @@ _UNIT_LOCK_STEP_AFTER = (
     "      - name: Install locked dependencies\n        env:\n          PIP_ONLY_BINARY: \":all:\"\n"
     "        run: python -m pip install --require-hashes --no-deps --requirement tools/ci/project_dependencies.lock\n"
 )
-
 
 def load_native_amd64_job_fragment(path: Path = DEFAULT_NATIVE_JOB_FRAGMENT_PATH) -> dict[str, Any]:
     parsed = parse_yaml(path.read_text(encoding="utf-8"))
@@ -137,7 +144,6 @@ def _project_main_system_job_dict(body: dict[str, Any], hold_steps: list[dict[st
     insert_at = setup_idxs[0] + 1 if setup_idxs else (sys_idxs[0] if sys_idxs else len(steps))
     return {**body, "runs-on": D12_NATIVE_AMD64_RUNNER, "steps": [*steps[:insert_at], *hold_steps, *steps[insert_at:]]}
 
-
 @overload
 def project_public_qualification_workflow(
     base_workflow: str, *, job_fragment_path: Path = ..., hold_step_fragment_path: Path = ...,
@@ -186,7 +192,6 @@ def project_public_qualification_workflow(
         new_jobs.update(job_frag)
     return Workflow(path=base_workflow.path, document={**base_workflow.document, "jobs": new_jobs})
 
-
 def _opt_vals(args: list[str], flag: str) -> list[str | None]:
     vals: list[str | None] = []
     for idx, tok in enumerate(args):
@@ -196,7 +201,6 @@ def _opt_vals(args: list[str], flag: str) -> list[str | None]:
         elif tok.startswith(flag + "="):
             vals.append(tok[len(flag) + 1 :] or None)
     return vals
-
 
 def script_contains_shell_loop(script: str) -> bool:
     for cmd in parse_shell_script(script):
@@ -219,57 +223,58 @@ def script_contains_shell_loop(script: str) -> bool:
                 return True
     return False
 
-
 def validate_d12_native_amd64_runner_command(
     command: str, *, workflow_name: str = PUBLIC_QUALIFICATION_WORKFLOW_NAME,
 ) -> list[str]:
-    prefix = f"{workflow_name}: "
-    violations = [
-        prefix + f"d12-native-amd64 contains forbidden marker {m!r}"
-        for m in D12_NATIVE_AMD64_FORBIDDEN_MARKERS if m in command
-    ]
+    prefix = f"{workflow_name}: d12-native-amd64 "
+    violations = [prefix + f"contains forbidden marker {m!r}" for m in D12_NATIVE_AMD64_FORBIDDEN_MARKERS
+                  if m in command]
     try:
         parsed, has_loop = parse_shell_script(command), script_contains_shell_loop(command)
     except ValueError:
-        return violations + [prefix + "d12-native-amd64 shell parse error: command cannot be parsed"]
-    if has_loop:
-        violations.append(prefix + "d12-native-amd64 must not wrap runner in a retry loop")
-    runners = [
-        cmd[2:] for cmd in parsed
-        if len(cmd) >= 2 and cmd[0] in {"python", "python3"}
-        and cmd[1] in {"tools/run_tests.py", "./tools/run_tests.py"}
-    ]
+        return violations + [prefix + "shell parse error: command cannot be parsed"]
+    violations += [prefix + "must not wrap runner in a retry loop"] if has_loop else []
+    runners = [cmd[2:] for cmd in parsed if len(cmd) >= 2 and cmd[0] in {"python", "python3"}
+               and cmd[1] in {"tools/run_tests.py", "./tools/run_tests.py"}]
     if len(runners) != 1:
-        msg = f"d12-native-amd64 must invoke python3 tools/run_tests.py once; found {len(runners)}"
-        return violations + [prefix + msg]
-    args = runners[0]
-    if "--" not in args:
-        return violations + [prefix + "d12-native-amd64 runner must separate node selector after --"]
-    sep = args.index("--")
-    pre_args, post_args = args[:sep], args[sep + 1 :]
+        return violations + [prefix + f"must invoke python3 tools/run_tests.py once; found {len(runners)}"]
+    if "--" not in (args := runners[0]):
+        return violations + [prefix + "runner must separate node selector after --"]
+    pre_args, post_args = args[:args.index("--")], args[args.index("--") + 1 :]
     if [str(x) for x in post_args] != [D12_NATIVE_AMD64_NODE_ID]:
-        violations.append(prefix + f"d12-native-amd64 must select exact node {D12_NATIVE_AMD64_NODE_ID}")
-    for flag, expected in {
-        "--suite": "int", "--jobs": "1", "--pg-container-port": "55433", "--d12-core-image-profile": "linux/amd64",
-    }.items():
-        if _opt_vals(pre_args, flag) != [expected]:
-            violations.append(prefix + f"d12-native-amd64 runner missing {flag} {expected}")
-    for flag in ("--sandbox", "--no-coverage", "--d12-core-image-preflight"):
-        if pre_args.count(flag) != 1 or any(str(tok).startswith(flag + "=") for tok in pre_args):
-            violations.append(prefix + f"d12-native-amd64 runner missing {flag}")
+        violations.append(prefix + f"must select exact node {D12_NATIVE_AMD64_NODE_ID}")
+    violations.extend(prefix + f"runner rejects unknown or abbreviated option {tok!r}"
+                      for tok in _unexpected_native_tokens(pre_args))
+    violations.extend(prefix + f"runner missing {flag} {expected}"
+                      for flag, expected in _NATIVE_VALUES.items() if _opt_vals(pre_args, flag) != [expected])
+    violations.extend(prefix + f"runner missing {flag}" for flag in _NATIVE_FLAGS if pre_args.count(flag) != 1
+                      or any(str(tok).startswith(flag + "=") for tok in pre_args))
+    pins = [i for i, tok in enumerate(pre_args) if str(tok).split("=", 1)[0] == "--smoke-image-reference"]
+    if len(pins) != 1 or [str(t) for t in pre_args[pins[0]:pins[0] + 2]] != [  # ADR 0102 B2: one exact raw config
+            "--smoke-image-reference", D12_NATIVE_AMD64_RAW_PYTHON_CONFIG]:
+        violations.append(prefix + f"runner must pass exactly one literal --smoke-image-reference "
+                          f"{D12_NATIVE_AMD64_RAW_PYTHON_CONFIG}")
     if any(str(tok) == "--report" or str(tok).startswith("--report=") for tok in pre_args):
-        violations.append(prefix + "d12-native-amd64 runner must not pass --report with --no-coverage")
-    if not validate_command_option_var_expansion(
-        pre_args, "--d12-core-image-source-sha256", "D12_EXPECTED_SOURCE_SHA256"
-    ):
-        violations.append(prefix + "d12-native-amd64 runner must expand D12_EXPECTED_SOURCE_SHA256")
+        violations.append(prefix + "runner must not pass --report with --no-coverage")
+    if not validate_command_option_var_expansion(pre_args, "--d12-core-image-source-sha256",
+                                                 "D12_EXPECTED_SOURCE_SHA256"):
+        violations.append(prefix + "runner must expand D12_EXPECTED_SOURCE_SHA256")
     rep_dirs = _opt_vals(pre_args, "--report-dir")
     if len(rep_dirs) != 1 or rep_dirs[0] is None or not validate_var_path_expansion(
-        rep_dirs[0], "RUNNER_TEMP", "/d12-native-amd64-report"
-    ):
-        violations.append(prefix + "d12-native-amd64 runner must set --report-dir in RUNNER_TEMP")
+            rep_dirs[0], "RUNNER_TEMP", "/d12-native-amd64-report"):
+        violations.append(prefix + "runner must set --report-dir in RUNNER_TEMP")
     return violations
 
+def _unexpected_native_tokens(pre_args: list[str]) -> list[str]:
+    """B2: each pre-separator word is an exact full allowlisted option or the one value that option consumes."""
+    found: list[str] = []
+    idx = 0
+    while idx < len(pre_args):
+        tok = str(pre_args[idx])
+        joined = tok in _NATIVE_FLAGS or ("=" in tok and tok.split("=", 1)[0] in _NATIVE_OPTIONS)
+        found += [] if joined or tok in _NATIVE_OPTIONS else [tok]
+        idx += 1 if joined or tok not in _NATIVE_OPTIONS else 2
+    return found
 
 def validate_d12_native_amd64_job(workflow: Workflow) -> list[str]:
     prefix = f"{workflow.path.name}: "
@@ -294,11 +299,8 @@ def validate_d12_native_amd64_job(workflow: Workflow) -> list[str]:
     for step in steps:
         if step.get("uses") is not None and str(step.get("uses")) not in allowed_actions:
             violations.append(prefix + f"d12-native-amd64 uses unapproved or unpinned action {step.get('uses')!r}")
-    bind_idxs = [
-        i for i, s in enumerate(steps)
-        if s.get("id") == "bind" and "CANDIDATE_SHA=" in str(s.get("run", ""))
-        and "CANDIDATE_TREE=" in str(s.get("run", ""))
-    ]
+    bind_idxs = [i for i, s in enumerate(steps) if s.get("id") == "bind" and "CANDIDATE_SHA=" in str(s.get("run", ""))
+                 and "CANDIDATE_TREE=" in str(s.get("run", ""))]
     prep_idxs = [i for i, s in enumerate(steps) if D12_NATIVE_AMD64_PREPARE_MARKER in str(s.get("run", ""))]
     run_idxs = [i for i, s in enumerate(steps) if "tools/run_tests.py" in str(s.get("run", ""))]
     seal_idxs = [i for i, s in enumerate(steps) if D12_NATIVE_AMD64_SEAL_MARKER in str(s.get("run", ""))]
@@ -322,7 +324,6 @@ def validate_d12_native_amd64_job(workflow: Workflow) -> list[str]:
     if not isinstance(up_with, dict) or up_with.get("retention-days") != D12_NATIVE_AMD64_RETENTION_DAYS:
         violations.append(prefix + f"d12-native-amd64 upload retention-days must be {D12_NATIVE_AMD64_RETENTION_DAYS}")
     return violations
-
 
 def _validate_hold_step_command(hold_run: str, prefix: str) -> list[str]:
     try:

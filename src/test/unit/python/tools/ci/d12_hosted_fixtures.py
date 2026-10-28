@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Iterator, Mapping, MutableMapping, Sequence
 from contextlib import contextmanager
 import copy, hashlib, json, subprocess, sys, tempfile
 from pathlib import Path
@@ -109,8 +109,7 @@ class _FakeImage:
 
 
 class _FakeContainer:
-    def start(self) -> None:
-        pass
+    def start(self) -> None: pass
 
 
 class _FakeDockerClient:
@@ -127,18 +126,13 @@ class _FakeDockerClient:
             raise type("ImageNotFound", (Exception,), {})(reference)
         return self._map[reference]
 
-    def info(self) -> dict[str, Any]:
-        return {"Architecture": "x86_64", "Driver": "overlay2"}
+    def info(self) -> dict[str, Any]: return {"Architecture": "x86_64", "Driver": "overlay2"}
 
-    def version(self) -> dict[str, Any]:
-        return {"Version": "29.4.0", "ApiVersion": "1.51"}
+    def version(self) -> dict[str, Any]: return {"Version": "29.4.0", "ApiVersion": "1.51"}
 
 class _FakeContainerOwner:
-    def cleanup(self, _identity: str) -> None:
-        pass
-
-    def verify_baseline(self) -> None:
-        pass
+    def cleanup(self, _identity: str) -> None: pass
+    def verify_baseline(self) -> None: pass
 
 def make_zero_projection() -> dict[str, int]:
     keys = (*APPLICATION_BUILD_COUNT_KEYS, *RESIDUE_ZERO_KEYS,
@@ -196,6 +190,7 @@ def make_positive_amd64_closure(ver: str = "18.6-1.pgdg13+2") -> dict[str, Any]:
 
 def write_inner_reports(
     report_dir: Path, *, positive: bool = False, source_sha256: str = SYNTHETIC_D12_SOURCE_SHA256,
+    component: Mapping[str, Any] | None = None,
 ) -> Path:
     """Emit canonical freeze.json, exploration.json, and cleanup.json using the real producer functions."""
     inner_dir = report_dir / "d12-core-image/linux-amd64"
@@ -233,7 +228,7 @@ def write_inner_reports(
     server_inventory = {"packages": [["libpq5", ver, "amd64"]],
                         "files": [{"role": "libpq", "owner": "libpq5", "resolved": lib_path, "sha256": lib_sha}]}
     orig_trust, orig_closure = inner.trust_facts, inner.closure_facts
-    orig_resolve, orig_observe = inner.resolve, inner.runtime.observe
+    orig_resolve, orig_observe, orig_hook = inner.resolve, inner.runtime.observe, inner.observer.observe_exploration
 
     def _fake_trust(steps: dict[str, Any], container: Any) -> dict[str, bytes]:
         _ = container
@@ -271,9 +266,14 @@ def write_inner_reports(
             selected=[[pkg_pq["name"], pkg_pq["version"], pkg_pq["architecture"], pkg_pq["sha256"]]],
             digests=("b" * 64, "c" * 64))
 
+    def _fake_component(steps: MutableMapping[str, Any], *_args: Any, **_kwargs: Any) -> None:  # ADR 0102 double
+        if component is not None:
+            steps[inner.observer.SLOT] = copy.deepcopy(dict(component))
+
     primary: BaseException | None = None
     inner.trust_facts, inner.closure_facts = _fake_trust, _fake_closure
     inner.resolve, inner.runtime.observe = _fake_resolve, _fake_observe
+    inner.observer.observe_exploration = _fake_component
     try:
         inner.explore(
             owner, client, admission, bases=bases, availability=availability, inspected=inspected,
@@ -283,7 +283,7 @@ def write_inner_reports(
         primary = exc
     finally:
         inner.trust_facts, inner.closure_facts = orig_trust, orig_closure
-        inner.resolve, inner.runtime.observe = orig_resolve, orig_observe
+        inner.resolve, inner.runtime.observe, inner.observer.observe_exploration = orig_resolve, orig_observe, orig_hook
 
         def _custody(cleanup: dict[str, object]) -> None:
             cleanup.update({"candidate_image_id": None, "server": "removed", "containers": "baseline_verified",

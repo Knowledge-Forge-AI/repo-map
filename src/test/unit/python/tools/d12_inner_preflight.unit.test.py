@@ -179,7 +179,7 @@ def test_owner_imports_the_support_lazily_through_the_canonical_tools_path_only(
     imported = {a.name for n in ast.walk(support_tree) if isinstance(n, ast.Import) for a in n.names}
     imported |= {str(n.module) for n in ast.walk(support_tree) if isinstance(n, ast.ImportFrom)}
     allowed = {
-        "d12_libpq_runtime_probe", "d12_python_closure", "native_apt_prerequisites",
+        "d12_libpq_runtime_probe", "d12_native_python_observer", "d12_python_closure", "native_apt_prerequisites",
         "repomap_kg.runtime.release", "repomap_test_support", "repomap_test_support.d12_core_image", "__future__"}
     assert {name for name in imported if name.split(".")[0] not in sys.stdlib_module_names} <= allowed, imported
     assert "sys.path" not in ast.unparse(support_tree) and "sys.path" not in OWNER.read_text(encoding="utf-8")

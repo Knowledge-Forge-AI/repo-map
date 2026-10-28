@@ -34,6 +34,7 @@ import sys
 from typing import Any, Callable, Mapping, NoReturn, Sequence
 
 import d12_libpq_runtime_probe as runtime
+import d12_native_python_observer as observer
 import d12_python_closure as closure
 import native_apt_prerequisites as apt
 from repomap_kg.runtime.release import (
@@ -348,11 +349,13 @@ def explore(owner: Any, client: Any, admission: D12Admission, *, bases: Mapping[
 
     try:
         engine_facts(steps, client, admission, inspected, bases)
+        observer.observe_exploration(steps, client, owner, admission, exploration=_EXPLORATION)  # ADR 0102 slot
         rows = [row[1] for row in server_inventory.get("packages", []) if row[:1] == ["libpq5"]]
         libpq = steps["libpq5_version"] = rows[0] if len(rows) == 1 else None
         refusals.extend([] if libpq else ["libpq: the sealed PostgreSQL base has no single libpq5 version"])
         trust = observe("trust", POSTGRES_RELEASE_IMAGE, "none", lambda c: trust_facts(steps, c))
         closure = observe("closure", PYTHON_RELEASE_IMAGE, "none", lambda c: closure_facts(steps, c, platform))
+        observer.cross_check(steps)
         def builder(c: Any) -> None:  # E-g, then the accepted numeric proof in this same owned builder (ADR 0091)
             pkgs = ["gcc", "binutils", "libc6-dev", f"libpq-dev={libpq}", f"libpq5={libpq}"]
             steps["builder"] = resolve(c, platform, pkgs,

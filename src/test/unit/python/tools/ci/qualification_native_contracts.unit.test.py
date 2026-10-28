@@ -11,6 +11,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from ci.qualification_native_contracts import (
     D12_NATIVE_AMD64_NODE_ID,
+    D12_NATIVE_AMD64_RAW_PYTHON_CONFIG,
     load_native_amd64_job_fragment,
     load_system_hold_step_fragment,
     project_public_qualification_workflow,
@@ -53,11 +54,13 @@ def test_native_runner_command_contract_rejects_hidden_wrong_or_ledger_flags() -
         "python3 tools/run_tests.py --sandbox --suite int --no-coverage --jobs 1 "
         "--pg-container-port 55433 --d12-core-image-profile linux/amd64 "
         "--d12-core-image-preflight "
+        f"--smoke-image-reference {D12_NATIVE_AMD64_RAW_PYTHON_CONFIG} "
         '--d12-core-image-source-sha256 "${D12_EXPECTED_SOURCE_SHA256}" '
         '--report-dir "${RUNNER_TEMP}/d12-native-amd64-report" '
         f"-- {D12_NATIVE_AMD64_NODE_ID}"
     )
     assert validate_d12_native_amd64_runner_command(valid_cmd) == []
+    assert validate_d12_native_amd64_runner_command(valid_cmd.replace("--no-coverage", "--no-cov")) != []
 
     with_report = valid_cmd.replace("--report-dir", "--report --report-dir")
     assert any("--report" in v for v in validate_d12_native_amd64_runner_command(with_report))
