@@ -1,0 +1,197 @@
+{
+  "artifact_inspection_sha256": "ae2e137c1722482d57ad36561b10138bf9101b715a9f7698c04b1b0e8acd0028",
+  "debian_slim": {
+    "debian:stable-slim": {
+      "configs": [
+        {
+          "config": "sha256:c2eb227737856e0203e19e792588a9539fefad27bb9363edbef8d10360a76270",
+          "created": "2026-10-27T00:00:00Z",
+          "manifest": "sha256:dd324f2b5d8d63278a0ab2831193c0b2d192bc4d7f7a1879408fc51300546cdb",
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:280899ecdabf03962f596765a2ec8178afc12892a986ed3db9962e76bb5f6fc8"
+            ],
+            "type": "layers"
+          }
+        },
+        {
+          "config": "sha256:04222a053f6862d20f6b6c6635897fba8adde08dc77a41cb334471a657645ddd",
+          "created": "2026-10-27T00:00:00Z",
+          "manifest": "sha256:bdd7cd341a19a8f19389281ff0d8f3f9760ecf264c87318cc7221622986c34d9",
+          "platform": {
+            "architecture": "arm64",
+            "os": "linux",
+            "variant": "v8"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:cdb2b9053ace109eccc1c571ac3cd45cfd47bc8bd5f858242bf61811d0c0a89d"
+            ],
+            "type": "layers"
+          }
+        }
+      ],
+      "index": "sha256:9e3624ad785d0d322f0c69194c2c0ebba7bc5fda3e2c6523ac095b4f08a12ba7",
+      "pin_current": null,
+      "pinned_index": null
+    },
+    "debian:trixie-slim": {
+      "configs": [
+        {
+          "config": "sha256:394ffa2d2ac8f5c9f45148f22bad3587429bceb19c93b88e8595f1e3f7892853",
+          "created": "2026-10-27T00:00:00Z",
+          "manifest": "sha256:1e1a22175fbf1b32157ddaf0219e1db4e5401fab2b94ed285add64d18587cd2d",
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:a5d6d345f6afa08d7c31272055746d60a838b290bfcc82c0a23e8e984d61a933"
+            ],
+            "type": "layers"
+          }
+        },
+        {
+          "config": "sha256:8873a2717971e23423ddd559441bc69c3f447982dd4eed5b9e28cc8d4d3c61a4",
+          "created": "2026-10-27T00:00:00Z",
+          "manifest": "sha256:1470991b497d26788dc4d6f438bf5690c6ba0d499235d237e55f4b43caea7a75",
+          "platform": {
+            "architecture": "arm64",
+            "os": "linux",
+            "variant": "v8"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:685889762157cefb6370119253b3c709f70bb2622402052065c92243e3d9105f"
+            ],
+            "type": "layers"
+          }
+        }
+      ],
+      "index": "sha256:89c1ea91e897f0fe0a3731595330bc45b8bdef4047464a07116f891a94054b31",
+      "pin_current": null,
+      "pinned_index": null
+    }
+  },
+  "debian_stable_version": "13.7",
+  "native_qualification": "pending hosted CI; this record is registry/archive provenance only",
+  "observed_at": "2026-10-28T13:45:59.258236+00:00",
+  "runtime_derivatives": {
+    "postgres:16.15-trixie": {
+      "configs": [
+        {
+          "config": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1",
+          "created": "2026-10-28T01:31:05.187425053Z",
+          "manifest": "sha256:b95b87e93ceb7594715d5c71fb6e09f6fc878851ab537735d617325eb9ba8b1b",
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:a5d6d345f6afa08d7c31272055746d60a838b290bfcc82c0a23e8e984d61a933",
+              "sha256:25815b760b5546a3e4416eda206c644ac20fbeb8a6521a91e52c6189ff6eb522",
+              "sha256:7ecd2c9cd6a6a3f79baf186cf4aa5ddf8f79dcdff1e60174a25eaa521b69bdfd",
+              "sha256:e21c8a46c0598de8eb8cf82296058bf31e2ba1281850e705620288752bb60bcf",
+              "sha256:3a027dba476d677f14dedc81bb0717c18756a81ec912ce4a4e34e917473d8fae",
+              "sha256:9e3a4252b06dee0bba9381db17e3f79b5b37b24b8efc6dbde4d3ca49b2f02c0e",
+              "sha256:1befd9fe1a239c769166d9010aa5fa39e3e8fc937bdbd3cad28a365b7fda7236",
+              "sha256:dac254bdd262b10d586c77d4b241daa99c7a396c414b38209ac7a9c96071a598",
+              "sha256:17fdf6513fd268af4ddf8e7b9024eaa6cb18ca33b5de2d48164f8df8751c1951",
+              "sha256:a8defd8420d3ee95e24695db5f5f981c24ee178f8e298f124501aa1be5f42f4f",
+              "sha256:536661b082abad59622520f7dde93f5d550bb16261a2913141c38bd01c8fc2c0",
+              "sha256:0684f727d6d66bf4b17468311e5c59dd248a19d09999dfc1fdd0a012889cc677",
+              "sha256:b4fddb5f57df3d2b14799467d45cdf56622eb6129466adc5a788486dda2bbefc",
+              "sha256:f2e66c5cba051b12b6978d6ab908cf4e4776cdc9a820a14a4f2e92c04e4183c8"
+            ],
+            "type": "layers"
+          }
+        },
+        {
+          "config": "sha256:6162f3765f7563b273a879894c5751d41285f922dd75ba0ba508a89e024e43ca",
+          "created": "2026-10-28T01:34:42.171033701Z",
+          "manifest": "sha256:624b15a3c9e7b8930c8c1d3ff617a3135f92e06bb47df7a4fea49869ccd3a775",
+          "platform": {
+            "architecture": "arm64",
+            "os": "linux",
+            "variant": "v8"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:685889762157cefb6370119253b3c709f70bb2622402052065c92243e3d9105f",
+              "sha256:333c200c12ad6b243c701998fad7aa4876efb0140f6165c179c10316421c9c03",
+              "sha256:a37eba981036f0b46a2a6d62b9c560d703d9c93f69ec0717a0f6a451c3373048",
+              "sha256:06cbf4c3cb4c21d02cef14263a09c84b129aed80c88f64699bea07d0a57c5087",
+              "sha256:f98ecf9b2c1781f92714efbb4b489a8b5037c524d6f3ca0f0d9374c03584276e",
+              "sha256:875c437e81a3a80aa8d8eff50e08117baa7205de8eb2184b4d7a336936f6f935",
+              "sha256:69f4920c46828858921e65e16c0d10a989262884ff8a8f89df51c5e2525b6590",
+              "sha256:2294e8fb7df7111ae927ab81e485fd3bfd81337c6769cf7893f3b9008e44aa98",
+              "sha256:18aebe7ffe54c047e63a89bb8d3ee55a465bdd3e3e50f061af026fdec55223b5",
+              "sha256:649d04d90e2303781093bb92565b8712748b22ab4efd268f3770f67511ab94fd",
+              "sha256:eb3cb9c1e2191e01350e1f14ce0b556bc7d2f722c500d1e3a61b04d3fde5c505",
+              "sha256:191c7cbd97078941dadf14704b37d4e73f78a4fc9f6df66af7edb397a27ff1ca",
+              "sha256:de9f14654872fded78698fb118f33cefa80b86fe5cd24be7d9fa0c9141f385ad",
+              "sha256:bdd682933f51b827e2e411508699949edbbbeec8d9f03f0403075f0292c783c9"
+            ],
+            "type": "layers"
+          }
+        }
+      ],
+      "index": "sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c",
+      "pin_current": true,
+      "pinned_index": "sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c"
+    },
+    "python:3.12-slim-trixie": {
+      "configs": [
+        {
+          "config": "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e",
+          "created": "2026-10-28T02:03:39.583192962Z",
+          "manifest": "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b",
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:a5d6d345f6afa08d7c31272055746d60a838b290bfcc82c0a23e8e984d61a933",
+              "sha256:fab99bd4639aec48a77ec4d2e3564c0907e0e1e962bbf773219a0b503a168955",
+              "sha256:bca572b9549074f7cbc5f2d9d29f589038ff21c5f68cef2965167a33f177a9c0",
+              "sha256:cae4cb2b5e819765b847e67faa443b377607452f2ec949d142cad15d9d7ea0b3"
+            ],
+            "type": "layers"
+          }
+        },
+        {
+          "config": "sha256:ff710677e697054c516f12c53c92166f1aef075f21b2a593f4c615e522112b4e",
+          "created": "2026-10-28T02:10:06.229032226Z",
+          "manifest": "sha256:b224e2fe306f9d303251ada22961635e5b52a69c0414a0050611be31c59f5f5b",
+          "platform": {
+            "architecture": "arm64",
+            "os": "linux",
+            "variant": "v8"
+          },
+          "rootfs": {
+            "diff_ids": [
+              "sha256:685889762157cefb6370119253b3c709f70bb2622402052065c92243e3d9105f",
+              "sha256:5c0bc5ee0491a1a68853ceaecd26669d4e40028743b5ae987ee7ca5f9537680f",
+              "sha256:e3af5abbdc37fa9b5b795480004e631040ad0b537c2174d07352e25c43d1d0ed",
+              "sha256:013d8fa6cec40683d59b02f867200c97732ee03b6ce0a5816df5702a353ffedc"
+            ],
+            "type": "layers"
+          }
+        }
+      ],
+      "index": "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+      "pin_current": true,
+      "pinned_index": "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+    }
+  },
+  "schema": "repomap-debian-stable-slim-observation-v1",
+  "stable_suite": "trixie",
+  "upstream_findings": "informational"
+}

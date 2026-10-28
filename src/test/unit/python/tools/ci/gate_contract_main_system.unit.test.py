@@ -143,7 +143,7 @@ def test_main_system_gate_refuses_wrong_base_or_head() -> None:
         )
 
 
-def test_main_system_gate_cli_lifecycle(tmp_path: Path) -> None:
+def test_main_system_gate_cli_refuses_unattested_success_and_records_failure(tmp_path: Path) -> None:
     import hashlib
 
     pull_request_json = tmp_path / "pull-request.json"
@@ -280,12 +280,18 @@ def test_main_system_gate_cli_lifecycle(tmp_path: Path) -> None:
         "--conclusion", "success",
         "--result-out", str(result_json),
     )
+    assert recorded.returncode == 1
+    assert "retained expected host proof and export manifest" in recorded.stderr
+    assert not result_json.exists()
+    recorded = run_cli("record", *candidate_arguments,
+        "--system-report-json", str(system_report_json), "--system-binding-json", str(system_binding_json),
+        "--conclusion", "failure", "--result-out", str(result_json))
     assert recorded.returncode == 0, recorded.stderr
     result = json.loads(result_json.read_text(encoding="utf-8"))
     assert result["gate_kind"] == "main-system"
     assert result["approved_base_branch"] == "main"
     assert result["approved_head_branch"] == "staging"
-    assert result["merge_authorized"] is True
+    assert result["merge_authorized"] is False
     assert result["system_report_sha256"] == report_sha
     assert result["system_binding_sha256"] == binding_sha
 

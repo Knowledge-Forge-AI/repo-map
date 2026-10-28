@@ -17,7 +17,7 @@ from repomap_kg.runtime import python_payload as payload
 
 COMPONENT_SCHEMA = "repomap-d12-python31216-component-v1"
 ENVELOPE_PATH = "tools/ci/d12_python31216_native_inputs.json"
-ENVELOPE_SHA256 = "9781988ca058dcee40e7818be04843aedfdaec43fd5ab5fb1816fdb4a7fd2ce1"
+ENVELOPE_SHA256 = "cce7fccabbde1fe56bf6a543ed03c49243457708300c061202a96caf6ce137de"
 ENVELOPE_SCHEMA = "repomap-python31216-native-inputs-v1"
 ENVELOPE_LIMIT, CAPTURE_LIMIT, RECORD_LIMIT = 65_536, 1_000_000, 700_000
 METADATA_KEYS = ("amd64-config", "amd64-manifest", "arm64-config", "arm64-manifest", "index")

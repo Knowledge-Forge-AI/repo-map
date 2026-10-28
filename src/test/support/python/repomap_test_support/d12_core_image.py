@@ -40,15 +40,18 @@ ENV_PROFILE = "REPOMAP_TEST_D12_CORE_IMAGE_PROFILE"
 ENV_REPORT_DIR = "REPOMAP_TEST_D12_CORE_IMAGE_REPORT_DIR"
 DESELECTION_REASON = f"optional D12 core-image owner runs only under {PROFILE_OPTION}"
 MAX_TOTAL_BUILDS, MAX_PLATFORM_BUILDS = 2, 1
-REPORT_PART_LIMIT, REPORT_TOTAL_LIMIT, REPORT_CLEANUP_RESERVE = 1_500_000, 5_000_000, 100_000
+from repomap_test_support.d12_image_probes import (
+    REPORT_PART_LIMIT as REPORT_PART_LIMIT, REPORT_TOTAL_LIMIT as REPORT_TOTAL_LIMIT,
+    REPORT_CLEANUP_RESERVE as REPORT_CLEANUP_RESERVE,
+)
 LOG_EXCERPT_BYTES = 200_000
 # Raw collection, exclusion and reason recorded for runner discovery; separate from build-profile debt.
 POPULATION_ATTR = "_repomap_d12_optional_population"
 CANDIDATE_LABEL = "org.repomap.d12.candidate"
-# Registry metadata (ADR 0091, 2026-10-23): config digests of the pinned 16.15 Trixie index; AMD unqualified.
-BASE_CONFIG_DIGESTS = {"sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97": {
-    "linux/arm64": "sha256:94a8e6634f916ffafee47d9be81c53d964e6ed2f5175224fab66b2abacae7279",
-    "linux/amd64": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b"}}
+# Official registry metadata refreshed 2026-10-28 under ADR0105; runtime proof remains hosted.
+BASE_CONFIG_DIGESTS = {"sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c": {
+    "linux/arm64": "sha256:6162f3765f7563b273a879894c5751d41285f922dd75ba0ba508a89e024e43ca",
+    "linux/amd64": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1"}}
 _PROFILE_ATTR, _COMPANIONS = "d12_core_image_profile", ("d12_core_image_source_sha256", "d12_core_image_budget_ledger")
 # Docker reports the daemon's kernel architecture; builders advertise OS/arch platform names.
 _NATIVE_PLATFORMS = {"aarch64": "linux/arm64", "arm64": "linux/arm64", "x86_64": "linux/amd64", "amd64": "linux/amd64"}

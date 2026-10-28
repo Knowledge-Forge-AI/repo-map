@@ -169,21 +169,17 @@ def test_candidate_image_uses_staged_session_context_and_captures_iidfile_on_fai
         )
     assert config.report_dir is not None
     assert not (config.report_dir / SYSTEM_BUILD_INTENT_FILENAME).exists()
-    # The live recipe must refuse the spent historical admission before any build intent.
+    # A changed recipe refuses before any intent; the current frozen recipe then reaches the mocked failure.
+    current_renderer = candidate_image.render_server_dockerfile
+    current_recipe = current_renderer(
+        manifest=D12_CANDIDATE_PACKAGE_MANIFEST, libpq_version=D12_CANDIDATE_LIBPQ_VERSION)
+    monkeypatch.setattr(candidate_image, "render_server_dockerfile", lambda **_kw: current_recipe + "\n# drift\n")
     with pytest.raises(SystemTestError, match="Dockerfile SHA-256 drifted"):
         candidate_image.build_and_verify_candidate_image(
-            REPO_ROOT, config, boundary=boundary, client=None, d12_session=session
-        )
+            REPO_ROOT, config, boundary=boundary, client=None, d12_session=session)
     assert not (config.report_dir / SYSTEM_BUILD_INTENT_FILENAME).exists() and entered_requests == []
-    # Only the synthetic failure/capture mechanics below replay the exact historical recipe.
-    historical_recipe = candidate_image.render_server_dockerfile(
-        manifest=D12_CANDIDATE_PACKAGE_MANIFEST, libpq_version=D12_CANDIDATE_LIBPQ_VERSION
-    ).replace(
-        PYTHON_RELEASE_IMAGE.rsplit("@", 1)[1],
-        "sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
-    ).replace("3.12.16", "3.12.15")
-    assert hashlib.sha256(historical_recipe.encode()).hexdigest() == d12_ctx["dockerfile_sha256"]
-    monkeypatch.setattr(candidate_image, "render_server_dockerfile", lambda **_kw: historical_recipe)
+    assert hashlib.sha256(current_recipe.encode()).hexdigest() == d12_ctx["dockerfile_sha256"]
+    monkeypatch.setattr(candidate_image, "render_server_dockerfile", current_renderer)
     docker_cmds: list[list[str]] = []
 
     def _failing_docker_build(cmd: list[str], **_kw: object) -> subprocess.CompletedProcess[str]:
@@ -191,6 +187,7 @@ def test_candidate_image_uses_staged_session_context_and_captures_iidfile_on_fai
         Path(cmd[cmd.index("--iidfile") + 1]).write_text("sha256:" + "8" * 64 + "\n", encoding="utf-8")
         return subprocess.CompletedProcess(cmd, 1, "", "build failed after write")
 
+    original_run = candidate_image.subprocess.run
     monkeypatch.setattr(candidate_image.subprocess, "run", _failing_docker_build)
     try:
         with pytest.raises(SystemTestError, match="candidate image build failed"):
@@ -202,6 +199,7 @@ def test_candidate_image_uses_staged_session_context_and_captures_iidfile_on_fai
         assert session.image_id == "sha256:" + "8" * 64
     finally:
         session.close_lock()
+        monkeypatch.setattr(candidate_image.subprocess, "run", original_run)
 
     session2, _ = _establish(
         tmp_path / "second",

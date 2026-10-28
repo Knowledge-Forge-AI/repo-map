@@ -47,7 +47,7 @@ jobs:
             --pg-container-port 55433 \
             --d12-core-image-profile linux/amd64 \
             --d12-core-image-preflight \
-            --smoke-image-reference sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28 \
+            --smoke-image-reference sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e \
             --d12-core-image-source-sha256 "${D12_EXPECTED_SOURCE_SHA256}" \
             --report-dir "${RUNNER_TEMP}/d12-native-amd64-report" \
             -- src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py::test_d12_core_image_refresh_candidate_round_trip || status=$?

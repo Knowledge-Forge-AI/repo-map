@@ -24,9 +24,9 @@ import test_sandbox
 import test_sandbox_contract as contract
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-TRIXIE = "postgres:16.15-trixie@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
+TRIXIE = "postgres:16.15-trixie@sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c"
 BOOKWORM = "postgres:16.15-bookworm@sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0"
-PYTHON = "python:3.12-slim-trixie@sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
+PYTHON = "python:3.12-slim-trixie@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
 
 
 def test_release_pins_and_every_mirror_are_the_exact_trixie_indexes():
@@ -41,8 +41,8 @@ def test_release_pins_and_every_mirror_are_the_exact_trixie_indexes():
     assert hashlib.sha256(json.dumps(source, sort_keys=True).encode()).hexdigest() == (
         "e457433a873011dfbdeddd77a5a37f9a0864c7c1e93f92bcf990d89d3af9c91b"), "no other pgvector or D15 field moved"
     assert d12.BASE_CONFIG_DIGESTS == {TRIXIE.split("@", 1)[1]: {
-        "linux/arm64": "sha256:94a8e6634f916ffafee47d9be81c53d964e6ed2f5175224fab66b2abacae7279",
-        "linux/amd64": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b"}}
+        "linux/arm64": "sha256:6162f3765f7563b273a879894c5751d41285f922dd75ba0ba508a89e024e43ca",
+        "linux/amd64": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1"}}
 
 
 def _no_command(*args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:

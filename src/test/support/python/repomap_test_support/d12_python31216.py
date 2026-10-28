@@ -25,45 +25,43 @@ ARM64_TKINTER_PATH = f"{payload.DYNLOAD}/_tkinter.cpython-312-aarch64-linux-gnu.
 ARM64_TKINTER_SHA256 = "9fe4f2c93a746b000a15ebb6fbb71ea33b3b7888efb70e3c1296fac8b30c2c96"
 ARM64_TKINTER_SIZE, ARM64_TKINTER_ELF_MACHINE = 70584, 183
 ARM64_TKINTER_MISSING = ("libtcl8.6.so", "libtk8.6.so")
-EXPECTED_ARM64_LAYER_DIGESTS = (
-    "sha256:ddc0c1e36a6793411b6c8d48e1ddad2987405d377da92bcf532ed3181c2e4d62",
-    "sha256:1fe8ddfb8cbbdc5855c68e22392842a3bf0c0bf8d87eb204c158c96f664e2182",
-    "sha256:ff13255a981b23e12e8a9c280a29ba23dcfd066500231f0fda0200d4a1314a7f",
-    "sha256:3634f8258f7a1c7d6a39d89ead1c23218f16d88d64fbe6be2a2093726ae046a7",
-)
-EXPECTED_ARM64_DIFF_IDS = (
-    "sha256:e5593b7179d10a64cfe451e886e3ab13ccd476f906dc670865322ae1dbdf969f",
-    "sha256:30b514fe84180ee4eb558f242e215cb351e323595f38d88bead3d3170324b7b3",
-    "sha256:c2b5c2a98ecbee949b1f9c3168d8070233dadd1abb5afb42f7c93fc05f9995a8",
-    "sha256:947c04d2828ec2bfe4d3f77439f60771fe5b4865825ee58a3daed257150e7950",
-)
+EXPECTED_ARM64_LAYER_DIGESTS = ('sha256:2b70e040f7d132c8d366ee0223462552686510fb372ea5a83822973c30f19e36',
+ 'sha256:0922d1fc1a5f7baa280015c744bb0be989e6e146a9181c04d2971e1273416844',
+ 'sha256:b41621e272b0b306c196fabab6f5e0132d1c13f3c929bfb63455191fa509e311',
+ 'sha256:64074ecd150a3526f7ef1af3128b9186744abfb9dc3d1c3e87c11c1ea880cbd0')
+EXPECTED_ARM64_DIFF_IDS = ('sha256:685889762157cefb6370119253b3c709f70bb2622402052065c92243e3d9105f',
+ 'sha256:5c0bc5ee0491a1a68853ceaecd26669d4e40028743b5ae987ee7ca5f9537680f',
+ 'sha256:e3af5abbdc37fa9b5b795480004e631040ad0b537c2174d07352e25c43d1d0ed',
+ 'sha256:013d8fa6cec40683d59b02f867200c97732ee03b6ce0a5816df5702a353ffedc')
 RETAINED_ARM64_MANIFEST_BYTES = (
-    b'{\n  "schemaVersion": 2,\n  "mediaType": "application/vnd.oci.image.manifest.v1+json",\n'
-    b'  "config": {\n    "mediaType": "application/vnd.oci.image.config.v1+json",\n'
-    b'    "digest": "sha256:7d0134fc196a9daa289acd038dd1c95b6873cacfaa4d6ea97c51501e0af515a3",\n'
-    b'    "size": 5679\n  },\n  "layers": [\n    {\n'
+    b'{\n' b'  "schemaVersion": 2,\n'
+    b'  "mediaType": "application/vnd.oci.image.manifest.v1+json",\n' b'  "config": {\n'
+    b'    "mediaType": "application/vnd.oci.image.config.v1+json",\n'
+    b'    "digest": "sha256:ff710677e697054c516f12c53c92166f1aef075f21b2a593f4c615e522112b4e",\n'
+    b'    "size": 5679\n' b'  },\n'
+    b'  "layers": [\n' b'    {\n'
     b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
-    b'      "digest": "sha256:ddc0c1e36a6793411b6c8d48e1ddad2987405d377da92bcf532ed3181c2e4d62",\n'
-    b'      "size": 30200478\n    },\n    {\n'
-    b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
-    b'      "digest": "sha256:1fe8ddfb8cbbdc5855c68e22392842a3bf0c0bf8d87eb204c158c96f664e2182",\n'
-    b'      "size": 1534088\n    },\n    {\n'
-    b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
-    b'      "digest": "sha256:ff13255a981b23e12e8a9c280a29ba23dcfd066500231f0fda0200d4a1314a7f",\n'
-    b'      "size": 12059492\n    },\n    {\n'
-    b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
-    b'      "digest": "sha256:3634f8258f7a1c7d6a39d89ead1c23218f16d88d64fbe6be2a2093726ae046a7",\n'
-    b'      "size": 248\n    }\n  ],\n  "annotations": {\n'
+    b'      "digest": "sha256:2b70e040f7d132c8d366ee0223462552686510fb372ea5a83822973c30f19e36",\n'
+    b'      "size": 30213496\n' b'    },\n'
+    b'    {\n' b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
+    b'      "digest": "sha256:0922d1fc1a5f7baa280015c744bb0be989e6e146a9181c04d2971e1273416844",\n'
+    b'      "size": 1270171\n' b'    },\n'
+    b'    {\n' b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
+    b'      "digest": "sha256:b41621e272b0b306c196fabab6f5e0132d1c13f3c929bfb63455191fa509e311",\n'
+    b'      "size": 12060033\n' b'    },\n'
+    b'    {\n' b'      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",\n'
+    b'      "digest": "sha256:64074ecd150a3526f7ef1af3128b9186744abfb9dc3d1c3e87c11c1ea880cbd0",\n'
+    b'      "size": 251\n' b'    }\n'
+    b'  ],\n' b'  "annotations": {\n'
     b'    "com.docker.official-images.bashbrew.arch": "arm64v8",\n'
-    b'    "org.opencontainers.image.base.digest": "sha256:'
-    b'a66b19aa552f595b4ab276c6b4f9b24fa4546632c5ecd88cccdced4a6866323a",\n'
+    b'    "org.opencontainers.image.base.digest": "sha256:1470991b497d26788dc4d6f438bf5690c6ba0d499235d237e55f4b43caea7a75",\n'
     b'    "org.opencontainers.image.base.name": "debian:trixie-slim",\n'
-    b'    "org.opencontainers.image.created": "2026-10-26T22:47:43Z",\n'
+    b'    "org.opencontainers.image.created": "2026-10-28T01:58:03Z",\n'
     b'    "org.opencontainers.image.revision": "3d7e95597e56a415d9e4abc0f15877e005d2cb2e",\n'
-    b'    "org.opencontainers.image.source": "https://github.com/docker-library/python.git#'
-    b'3d7e95597e56a415d9e4abc0f15877e005d2cb2e:3.12/slim-trixie",\n'
+    b'    "org.opencontainers.image.source": "https://github.com/docker-library/python.git#3d7e95597e56a415d9e4abc0f15877e005d2cb2e:3.12/slim-trixie",\n'
     b'    "org.opencontainers.image.url": "https://hub.docker.com/_/python",\n'
-    b'    "org.opencontainers.image.version": "3.12.16-slim-trixie"\n  }\n}'
+    b'    "org.opencontainers.image.version": "3.12.16-slim-trixie"\n' b'  }\n'
+    b'}'
 )
 
 class Python31216ProofError(ValueError):

@@ -25,6 +25,7 @@ class SandboxArgumentsResult(tuple):
     report_destination: Path | None
     gate_request_bytes: bytes | None
     d12_proof_bytes: bytes | None
+    d12_host_proof_path: Path | None
 
     def __new__(
         cls,
@@ -32,12 +33,14 @@ class SandboxArgumentsResult(tuple):
         report_destination: Path | None,
         gate_request_bytes: bytes | None = None,
         d12_proof_bytes: bytes | None = None,
+        d12_host_proof_path: Path | None = None,
     ) -> SandboxArgumentsResult:
         res = super().__new__(cls, (inner_argv, report_destination))
         res.inner_argv = inner_argv
         res.report_destination = report_destination
         res.gate_request_bytes = gate_request_bytes
         res.d12_proof_bytes = d12_proof_bytes
+        res.d12_host_proof_path = d12_host_proof_path
         return res
 
 
@@ -143,6 +146,7 @@ def sandbox_report_arguments(
     suite = _selected_suite(runner_argv)
     gate_request_bytes: bytes | None = None
     d12_proof_bytes: bytes | None = None
+    d12_host_proof_path: Path | None = None
     seen_d12_proof = False
     gate_index = 0
     while gate_index < len(runner_argv):
@@ -236,6 +240,8 @@ def sandbox_report_arguments(
                 repo_root=repo_root,
                 max_proof_bytes=max_d12_proof_bytes,
             )
+            raw_proof_path = Path(host_proof_path_str)
+            d12_host_proof_path = raw_proof_path if raw_proof_path.is_absolute() else repo_root / raw_proof_path
             runner_argv[gate_index] = (
                 f"--d12-system-proof-json={inner_d12_proof_path}"
                 if proof_equals
@@ -250,7 +256,7 @@ def sandbox_report_arguments(
 
     if "--report" not in runner_argv and "--d12-core-image-preflight" not in runner_argv:
         return SandboxArgumentsResult(
-            [*runner_argv, *forwarded], None, gate_request_bytes, d12_proof_bytes
+            [*runner_argv, *forwarded], None, gate_request_bytes, d12_proof_bytes, d12_host_proof_path
         )
 
     destination, injected_report_dir, index = Path(".test-reports"), True, 0
@@ -283,7 +289,7 @@ def sandbox_report_arguments(
             "specify an unused destination with --report-dir"
         )
     return SandboxArgumentsResult(
-        [*runner_argv, *forwarded], destination, gate_request_bytes, d12_proof_bytes
+        [*runner_argv, *forwarded], destination, gate_request_bytes, d12_proof_bytes, d12_host_proof_path
     )
 
 

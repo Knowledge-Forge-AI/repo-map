@@ -1,12 +1,8 @@
-"""Containerized native linux/arm64 Trixie glibc disposition component proof (ADR 0101).
+"""Native ARM component proof for ADR0105's Debian responsibility boundary.
 
-Like the ADR 0100 owner, this never pulls, builds or materializes. It reads the exact raw Python 3.12.16 base the
-canonical inner harness preloaded, validates native ARM64 config, manifest and rootfs provenance before any image
-execution, and runs the production D12 inventory probe once in a network-less run-owned container. The real libc6
-observation feeds the production assessor; one bounded changed assessor input then demonstrates a genuine refusal
-without mutating container bytes or running another probe. This is component proof only: no AMD, application-image,
-P3 or image qualification is inferred. A native AMD daemon proves the ARM admission refusal before image access;
-that explicitly reported refusal is separate from a positive native ARM component observation.
+Use the current exact harness-preloaded slim image and complete production collector. Prove real supplier bytes,
+retain the historical glibc-record refusal as information, and reject an introduced package mismatch. This is
+component evidence, not native AMD or application-image qualification. The AMD host proves ARM admission refusal.
 """
 
 from __future__ import annotations
@@ -22,7 +18,9 @@ from repomap_kg.runtime import python_payload as payload
 from repomap_kg.runtime import release
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support import d12_python31216 as proof
-from repomap_test_support.d12_image_probes import _inventory
+from repomap_test_support.d12_complete_inventory import complete_inventory
+from repomap_test_support.d12_image_probes import _hashes
+from tools.system.d12_debian_policy import DebianDeltaError, assess_debian_delta
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_ledger import ResourceKind
 from repomap_test_support.resource_run import active_resource_run
@@ -31,7 +29,7 @@ from tools.system import d12_glibc_risk as risk
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
 OBSERVATION_PREFIX = "D12_GLIBC_DISPOSITION_JSON:"
-OBSERVATION_SCHEMA = "repomap-d12-glibc-native-component-v1"
+OBSERVATION_SCHEMA = "repomap-d12-debian-native-component-v2"
 MAX_OBSERVATION_BYTES = 16_384
 PROBE_ROLE = "d12-glibc-disposition-native"
 FUTURE_LIBC_VERSION = "2.41-12+deb13u5"
@@ -113,18 +111,29 @@ def test_native_trixie_glibc_disposition(capsys: pytest.CaptureFixture[str]) -> 
     )
     assert base_prov.image_id == provenance["image_id"], (base_prov.image_id, provenance["image_id"])
 
-    # Exactly one network-less probe: the production D12 inventory script on the exact config ID. _run_once removes
-    # its container in its own finally; any container left by a failed create readback is removed here.
+    # Complete inventory and independent hash probes of the two already-preloaded supplier bases.
+    # Each execution is network-less; exact cleanup also covers failed create/readback paths.
     current = CurrentRunDockerContainers(run, client)
     owner = _RecordingOwner(current)
     try:
-        inventory = _inventory(owner, client, provenance["image_id"], None, PROBE_ROLE)
+        inventory = complete_inventory(owner, client, provenance["image_id"], None, PROBE_ROLE)
+        paths = sorted({row["resolved"] for row in inventory["files"] if row["kind"] != "missing"})
+        supplier_hashes = _hashes(owner, client, provenance["image_id"], paths, None, PROBE_ROLE + "-hashes")
+        pg_base = d12.verify_bases(client, "linux/arm64", (release.POSTGRES_RELEASE_IMAGE,))[release.POSTGRES_RELEASE_IMAGE]
+        assert pg_base["config_digest_verified"] is True
+        pg_inventory = complete_inventory(owner, client, str(pg_base["id"]), None, PROBE_ROLE + "-postgres")
+        pg_paths = sorted({row["resolved"] for row in pg_inventory["files"] if row["kind"] != "missing"})
+        pg_hashes = _hashes(owner, client, str(pg_base["id"]), pg_paths, None, PROBE_ROLE + "-postgres-hashes")
     finally:
         for identity in owner.created:
             if current.api.inspect(ResourceKind.DOCKER_CONTAINER, identity) is not None:
                 current.cleanup(identity)
     current.verify_baseline()
-    assert len(owner.created) == 1, owner.created
+    assert inventory["package_verification"]["count"] == len(inventory["package_verification"]["rows"])
+    assert len(inventory["package_verification"]["checks"]) == len(inventory["packages"])
+    assert inventory["unowned_count"] == len(inventory["unowned_usr_lib"])
+    assert len(inventory["source_packages"]) == len(inventory["packages"])
+    assert len(owner.created) == 4, owner.created
     cid = owner.created[0]
     ledger_rec = run.ledger.get(ResourceKind.DOCKER_CONTAINER, cid)
     cleanup_details = proof.validate_container_cleanup(
@@ -139,14 +148,18 @@ def test_native_trixie_glibc_disposition(capsys: pytest.CaptureFixture[str]) -> 
     image = {"label": "python-31216-arm64-base", "base_reference": release.PYTHON_RELEASE_IMAGE,
              "image_id": provenance["image_id"], "platform": availability["platform"],
              "execution": availability["execution"], "inventory": inventory}
-    accepted = risk.evaluate_glibc_disposition([image])
-    # One bounded changed INPUT to the assessor: the same real observation claiming a future libc6 version.
+    legacy = risk.evaluate_glibc_disposition([image])
+    accepted = assess_debian_delta(copy.deepcopy(inventory), inventory, {"python": supplier_hashes})
+    pg_accepted = assess_debian_delta(copy.deepcopy(pg_inventory), pg_inventory, {"postgres": pg_hashes})
+    inventory_bytes = {name: len((json.dumps(value, indent=2, sort_keys=True) + "\n").encode())
+                       for name, value in (("python", inventory), ("postgres", pg_inventory))}
+    assert all(size <= d12.REPORT_PART_LIMIT for size in inventory_bytes.values()), inventory_bytes
     changed = copy.deepcopy(inventory)
     libc6_rows = [row for row in changed["packages"] if row[:1] == ["libc6"]]
     for row in libc6_rows:
         row[1] = FUTURE_LIBC_VERSION
-    refused = risk.evaluate_glibc_disposition([{**image, "inventory": changed}])
-    finding_ids = [item["id"] for item in accepted.get("findings", [])]
+    with pytest.raises(DebianDeltaError, match="packages changed"):
+        assess_debian_delta(changed, inventory, {"python": supplier_hashes})
 
     observation = {
         "schema": OBSERVATION_SCHEMA, "scope": "native linux/arm64 component proof only; AMD, application image, "
@@ -155,33 +168,31 @@ def test_native_trixie_glibc_disposition(capsys: pytest.CaptureFixture[str]) -> 
             "platform", "reference", "index_digest", "manifest_digest", "config_digest", "image_id",
             "rootfs_diff_ids_verified", "pulled_by_test_image_manager")},
         "availability": availability, "probe_role": PROBE_ROLE, "raw_libc": _libc_evidence(inventory),
-        "accepted": {key: accepted.get(key) for key in ("status", "refusal", "record_sha256", "images",
-                                                        "image_qualified", "accepts_image_or_other_findings")},
-        "accepted_finding_ids": finding_ids,
+        "complete_inventory": {
+            "schema": inventory["schema"], "packages": len(inventory["packages"]),
+            "verification_rows": inventory["package_verification"]["count"],
+            "package_checks": len(inventory["package_verification"]["checks"]),
+            "packages_without_md5sums": sum(r["md5sums_sha256"] == "absent" for r in inventory["package_verification"]["checks"]),
+            "dpkg_configs": inventory["dpkg_configs"], "path_filters": inventory["path_filters"],
+        },
+        "accepted": accepted,
+        "postgres_supplier": {"config_id": pg_base["id"], "complete_packages": len(pg_inventory["packages"]),
+            "enumerations": pg_inventory["enumerations"], "assessment": pg_accepted},
+        "complete_inventory_json_bytes": inventory_bytes,
+        "historical_glibc_record": {key: legacy.get(key) for key in ("status", "refusal", "record_sha256")},
         "changed_input": {"libc6_version": FUTURE_LIBC_VERSION, "rows_changed": len(libc6_rows),
-                          "status": refused["status"], "refusal": refused.get("refusal")},
+                          "status": "refused_introduced_package_mismatch"},
         "operations_before": operations_before, "operations_after": operations_after, "cleanup": cleanup_details,
     }
     encoded = json.dumps(observation, sort_keys=True, separators=(",", ":"))
-    # Capture is suspended so a passing run keeps the single bounded observation line.
-    with capsys.disabled():
-        print(OBSERVATION_PREFIX + encoded[:MAX_OBSERVATION_BYTES], flush=True)
     assert len(encoded.encode("utf-8")) <= MAX_OBSERVATION_BYTES, len(encoded)
+    # Capture is suspended so a passing run keeps the complete bounded observation line.
+    with capsys.disabled():
+        print(OBSERVATION_PREFIX + encoded, flush=True)
 
-    assert accepted["status"] == risk.ACCEPTED, accepted.get("refusal")
-    assert accepted["record_sha256"] == risk.APPROVED_RECORD_SHA256
-    assert accepted["image_qualified"] is False and accepted["accepts_image_or_other_findings"] is False
-    assert tuple(finding_ids) == risk.FINDING_IDS
-    (observed,) = accepted["images"]
-    assert (observed["image_id"], observed["platform"]) == (payload.PYTHON_31216_ARM64_CONFIG, "linux/arm64")
-    assert observed["package"] == ["libc6", "2.41-12+deb13u4", "arm64"]
-    assert observed["glibc_packages"] == [[name, "2.41-12+deb13u4", "arm64"] for name in risk.GLIBC_PACKAGES]
-    assert observed["os"] == ["Debian GNU/Linux 13 (trixie)", "aarch64", "arm64"]
-    assert observed["libc"]["path"] == "/usr/lib/aarch64-linux-gnu/libc.so.6"
-    assert (observed["libc"]["owner"], observed["libc"]["md5"]) == ("libc6", "match")
-    assert observed["libc"]["file_observations"] >= 1 and observed["libc"]["ldd_observations"] >= 1
-    assert observed["notice"]["path"] == risk.LIBC_NOTICE
-    assert len(libc6_rows) == 1 and refused["status"] == risk.REFUSED, refused
-    assert "libc6 package rows" in str(refused["refusal"]) and FUTURE_LIBC_VERSION in str(refused["refusal"])
-    assert refused["images"] == [{"label": image["label"], "base_reference": release.PYTHON_RELEASE_IMAGE,
-                                  "image_id": provenance["image_id"], "platform": "linux/arm64"}]
+    assert accepted["assembly_delta_verified"] is True
+    assert accepted["upstream_debian_findings_blocking"] is False
+    assert accepted["inherited_verification_rows"] == inventory["package_verification"]["count"]
+    assert len(libc6_rows) == 1
+    assert legacy["status"] == risk.REFUSED  # The old finite record does not apply to this refreshed base.
+    assert provenance["image_id"] == payload.PYTHON_31216_ARM64_CONFIG

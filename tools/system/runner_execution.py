@@ -19,6 +19,7 @@ from tools.system.d12_system_evidence import (
     run_post_build_candidate_probes,
 )
 from tools.system.d12_system_session import D12SystemSession
+from tools.system.d12_qualification import REFERENCE_KEY, write_qualification
 from tools.system.report import SystemStepResult
 from tools.system.scenario_journal import ScenarioJournal
 
@@ -49,6 +50,7 @@ def execute_system_run(
     run_post_build_candidate_probes_fn=run_post_build_candidate_probes,
     run_disposable_roundtrip_probe_fn=run_disposable_roundtrip_probe,
     build_and_write_d12_system_candidate_evidence_fn=build_and_write_d12_system_candidate_evidence,
+    write_qualification_fn=write_qualification,
 ) -> int:
     if execution_mode == "hosted_qualification" and d12_session is None:
         raise SystemTestError("hosted qualification system run requires an active D12SystemSession")
@@ -120,6 +122,7 @@ def execute_system_run(
                 "image_labels": candidate_image_labels,
                 "timeout_seconds": probe_timeout,
                 "deadline": deadline,
+                "upstream_informational": True,
             }
             if isinstance(rel_libpq, int) and not isinstance(rel_libpq, bool):
                 prb_kw["expected_libpq_version"] = rel_libpq
@@ -159,7 +162,7 @@ def execute_system_run(
             execute_all_scenarios_fn(compose_dir, repo_map_home, plan, config, timer, **scenario_kwargs)
         )
         diagnostic_steps_passed = True
-        passed = d12_session is None
+        passed = True
         print("        All system scenario phases completed successfully.")
 
     except Exception as exc:
@@ -275,7 +278,7 @@ def execute_system_run(
 
         if d12_session is not None:
             try:
-                build_and_write_d12_system_candidate_evidence_fn(
+                reference = write_qualification_fn(
                     d12_session, config=config, candidate_image_id=candidate_image_id,
                     candidate_image_digest=candidate_image_digest,
                     candidate_image_labels=candidate_image_labels, step_results=step_results,
@@ -284,17 +287,13 @@ def execute_system_run(
                     diagnostic_steps_passed=diagnostic_steps_passed,
                     error_message=error_message, evidence_dir=evidence_dir,
                 )
+                coordinator_evidence[REFERENCE_KEY] = reference
             except Exception as sidecar_exc:
                 passed = False
                 s_err = f"D12 candidate evidence sidecar failed: {sidecar_exc}"
                 error_message = f"{error_message}; {s_err}" if error_message else s_err
             finally:
                 d12_session.close_lock()
-            passed = False
-            if not error_message:
-                error_message = (
-                    "Route B candidate-only system run: P3 image/release acceptance remains unaccepted"
-                )
 
         projection: dict[str, int] = {}
         if docker_boundary is not None and hasattr(docker_boundary, "projection"):
@@ -329,7 +328,7 @@ def execute_system_run(
             passed=passed,
             conclusion="success" if passed else "failure",
             merge_authorized=(
-                passed if (config.execution_mode == "hosted_qualification" and d12_session is None) else False
+                passed if config.execution_mode == "hosted_qualification" else False
             ),
             total_duration_seconds=total_duration,
             step_results=step_results,

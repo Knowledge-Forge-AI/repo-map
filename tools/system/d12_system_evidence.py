@@ -9,19 +9,20 @@ from typing import Any
 from ci.d12_system_grant import EXPECTED_PHASE_ID
 import d12_dependency_preflight as inner
 from repomap_kg.runtime.release import (
-    POSTGRES_RELEASE_IMAGE, POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION,
-    PYTHON_RELEASE_IMAGE, PYTHON_RELEASE_VERSION,
+    POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE,
 )
 from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
 from repomap_test_support import d12_core_image as d12, d12_dynamic_linkage as linkage
+from repomap_test_support.d12_complete_inventory import complete_inventory
 from repomap_test_support.d12_image_probes import (
-    ADVISORIES, CLIENTS, NOTICES, PACKAGING_PY, ROUND_TRIP_PY, SERVER,
+    ADVISORIES, CLIENTS, PACKAGING_PY, ROUND_TRIP_PY, SERVER,
     _classify, _create, _hashes, _inventory, _libpq_findings, _run_once, _start_server, _version,
 )
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_run import active_resource_run
 from tools.system import d12_glibc_risk as glibc_risk
 from tools.system.config import SystemTestConfig, SystemTestError
+from tools.system.d12_debian_policy import assess_debian_delta
 from tools.system.d12_exec import wrap_create_with_bounded_exec
 from tools.system.d12_system_reports import (
     encode_sorted_json_bytes, redact_public_text as _redact_public_text,
@@ -33,17 +34,12 @@ from tools.system.d12_system_session import (
 SYSTEM_CANDIDATE_EVIDENCE_SCHEMA = "repomap-d12-system-candidate-evidence-v1"
 SYSTEM_CANDIDATE_EVIDENCE_FILENAME = "d12-system-candidate-evidence.json"
 MAX_SYSTEM_CANDIDATE_EVIDENCE_BYTES = d12.REPORT_PART_LIMIT
-APPROVED_DIAGNOSTIC_STOPS: tuple[str, str] = (
-    "vulnerability classification of every other package and distribution is not performed (unknown)",
-    "incumbent 16.14 application inventory is unavailable without an extra build or pull",
+from tools.system.d12_candidate_assessment import (
+    APPROVED_DIAGNOSTIC_STOPS as APPROVED_DIAGNOSTIC_STOPS,
+    D12CandidateAssessmentError as D12CandidateAssessmentError,
+    _require, _verify_candidate_assessment, _verify_round_trip,
 )
 
-class D12CandidateAssessmentError(SystemTestError, ValueError):
-    """Raised when D12 post-build candidate observation or assessment fails."""
-
-def _require(condition: object, message: str) -> None:
-    if not condition:
-        raise D12CandidateAssessmentError(message)
 def _check_deadline(deadline: Any | None, operation: str) -> None:
     if deadline is not None and hasattr(deadline, "check_test_budget"):
         deadline.check_test_budget(operation)
@@ -84,58 +80,6 @@ def _resolve_owner_client(owner: Any | None, client: Any | None) -> tuple[Any, A
         raise SystemTestError("D12 post-build probes require an active canonical resource run")
     resolved_client = boundary.client if client is None else client
     return (CurrentRunDockerContainers(run, resolved_client) if owner is None else owner), resolved_client
-def _verify_round_trip(round_trip: Mapping[str, Any]) -> None:
-    src, rst = round_trip.get("source"), round_trip.get("restored")
-    if not isinstance(src, Mapping) or not isinstance(rst, Mapping):
-        raise D12CandidateAssessmentError(f"round-trip missing source/restored observations: {round_trip!r}")
-    before, after = round_trip.get("archive_sha256_before"), round_trip.get("archive_sha256_after")
-    _require(bool(before) and before == after, f"round-trip archive SHA-256 mismatch: {round_trip!r}")
-    _require(src.get("fixture_md5") == rst.get("fixture_md5") and rst.get("fixture_rows") == 2000, "2000-row mismatch")
-    _require((src.get("graph_schema"), rst.get("graph_schema")) == ("CURRENT", "CURRENT"), "graph_schema != CURRENT")
-    _require((src.get("extensions"), rst.get("extensions")) == (["plpgsql"], ["plpgsql"]), "extensions != ['plpgsql']")
-    _require((src.get("replication_slots"), rst.get("replication_slots")) == (0, 0), "replication_slots != 0")
-    ams = (set(src.get("index_access_methods") or ()), set(rst.get("index_access_methods") or ()))
-    _require(ams == ({"btree"}, {"btree"}), f"round-trip index_access_methods must be {{'btree'}}: {round_trip!r}")
-
-def _verify_candidate_assessment(
-    *, packaging: Mapping[str, Any], linkage_report: dict[str, Any], candidate: Mapping[str, Any],
-    server_side: Mapping[str, str], round_trip: Mapping[str, Any], findings: Sequence[Mapping[str, Any]],
-    libpq: Sequence[Mapping[str, Any]], critical_unknown: Sequence[Any], stops: Sequence[str],
-    expected_libpq_version: int,
-) -> None:
-    expected_pg, versions = f"(PostgreSQL) {POSTGRES_RELEASE_VERSION}", packaging.get("versions")
-    if not isinstance(versions, Mapping) or any(
-            expected_pg not in str(versions.get(p, "")) for p in (SERVER, *CLIENTS)):
-        raise D12CandidateAssessmentError(f"candidate PostgreSQL binary versions mismatch: {versions!r}")
-    _require(bool(server_side) and all(expected_pg in str(t) for t in server_side.values()), "server binary mismatch")
-    source_obs = round_trip.get("source")
-    if not isinstance(source_obs, Mapping) or not str(source_obs.get("server_version", "")).startswith(
-            POSTGRES_RELEASE_VERSION):
-        raise D12CandidateAssessmentError(f"server process version mismatch: {source_obs!r}")
-    rt_tuple = (packaging.get("python"), packaging.get("psycopg"),
-                packaging.get("implementation"), packaging.get("libpq"))
-    exp_tuple = (PYTHON_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, "c", expected_libpq_version)
-    _require(rt_tuple == exp_tuple, f"candidate runtime tuple {rt_tuple!r} != {exp_tuple!r}")
-    residue_keys = ("pip_absent", "setuptools_absent", "ensurepip_absent", "go_absent")
-    _require(all(bool(packaging.get(k)) for k in residue_keys), f"build tool residue: {packaging!r}")
-    _require(packaging.get("has_cancel_safe"), "product libpq must keep the bounded cancel_safe (ADR 0089 D2)")
-    migs = packaging.get("migrations")
-    _require(isinstance(migs, Sequence) and len(migs) == 2 and all(isinstance(m, int) and m > 0 for m in migs), "migs")
-    _require(str(packaging.get("go_helper_protocol", "")).isdigit(), "go_helper_protocol invalid")
-    _require(not packaging.get("bundled_libpq"), f"bundled libpq present: {packaging.get('bundled_libpq')!r}")
-    if l_fail := linkage.assess(
-            linkage_report, psycopg_version=PSYCOPG_RELEASE_VERSION, libpq_version=expected_libpq_version):
-        raise D12CandidateAssessmentError(f"dynamic linkage assessment failed: {l_fail}")
-    notices = candidate.get("notices")
-    if not isinstance(notices, Mapping) or not all(notices.get(path, "absent") != "absent" for path in NOTICES[6:]):
-        raise D12CandidateAssessmentError(f"missing required candidate notices: {notices!r}")
-    _require(not critical_unknown, f"critical unknown files or links: {critical_unknown!r}")
-    _require(bool(findings) and all(f.get("class") == "outside_affected_range" for f in findings), "CVE findings fail")
-    _require(bool(libpq) and all(f.get("class") == "outside_affected_range" for f in libpq), "libpq findings fail")
-    if unapproved_stops := [s for s in stops if s not in APPROVED_DIAGNOSTIC_STOPS]:
-        raise D12CandidateAssessmentError(f"unapproved post-build diagnostic stops: {unapproved_stops}")
-    _verify_round_trip(round_trip)
-
 def observe_and_assess_candidate(
     owner: Any, client: Any, *, image_id: str, platform: str, server_id: str,
     server_env: Mapping[str, str], server_side: Mapping[str, str], server_inventory: Mapping[str, Any],
@@ -145,6 +89,7 @@ def observe_and_assess_candidate(
     run_once_fn: Callable[..., str] = _run_once, inventory_fn: Callable[..., dict[str, Any]] = _inventory,
     hashes_fn: Callable[..., dict[str, str]] = _hashes, deadline: Any | None = None,
     create_fn: Callable[..., tuple[str, Any]] | None = None, server_image_id: str | None,
+    upstream_informational: bool = False,
 ) -> dict[str, Any]:
     """Run candidate-image probes, stage attribution, 2000-row archive round-trip, and D2/P3 assessment."""
     if isinstance(expected_libpq_version, bool) or not isinstance(expected_libpq_version, int):
@@ -170,10 +115,19 @@ def observe_and_assess_candidate(
     for item in candidate["files"]:
         matches = [n for n, hashes in stages.items() if hashes.get(item["resolved"]) == item["sha256"]]
         pip = "/site-packages/" in item["resolved"] or ".libs/" in item["resolved"]
-        item["stage"] = "+".join(matches) or ("python-runtime-pip" if pip else "unattributed")
+        item["stage"] = "+".join(matches) or ("python-runtime-pip" if pip and not upstream_informational else "unattributed")
     inventory_report: dict[str, Any] = {
         "candidate": candidate, "server": dict(server_inventory), "packaging": packaging, "linkage": linkage_report}
+    if upstream_informational:
+        inventory_report["stage_hashes"] = stages
     if write_report is not None:
+        if upstream_informational:
+            write_report("candidate-inventory", candidate)
+            write_report("server-inventory", dict(server_inventory))
+            inventory_report = {**inventory_report, "candidate": {"notices": candidate["notices"]},
+                                "server": {"os": server_inventory["os"]},
+                                "complete_inventories": ["d12-post-build-candidate-inventory.json",
+                                                         "d12-post-build-server-inventory.json"]}
         write_report("inventory", inventory_report)
     rt_env = {"PGPASSWORD": server_env["POSTGRES_PASSWORD"], "PGUSER": server_env["POSTGRES_USER"],
               "PGDATABASE": server_env["POSTGRES_DB"]}
@@ -206,11 +160,23 @@ def observe_and_assess_candidate(
         "availability": dict(availability), "qualification": "stop_pending_disposition", "stops": stops}
     if write_report is not None:
         write_report("result", result_report)
+    delta = None
+    if upstream_informational:
+        _require(availability.get("execution") == "native" and availability.get("platform") == platform,
+                 "qualification requires native execution")
+        delta = assess_debian_delta(candidate, server_inventory, stages)
     _verify_candidate_assessment(
         packaging=packaging, linkage_report=linkage_report, candidate=candidate, server_side=server_side,
         round_trip=round_trip, findings=findings, libpq=libpq, critical_unknown=critical_unknown, stops=stops,
-        expected_libpq_version=expected_libpq_version)
-    _require(glibc["status"] == glibc_risk.ACCEPTED, f"glibc disposition refused: {glibc.get('refusal')}")
+        expected_libpq_version=expected_libpq_version, upstream_informational=upstream_informational)
+    if upstream_informational:
+        result_report.update(qualification="runtime_qualified", debian_policy=delta,
+                             stops=[], upstream_diagnostics=stops,
+                             catalogue_completeness="not claimed; Debian findings are informational under ADR0105")
+        if write_report is not None:
+            write_report("result", result_report)
+    else:
+        _require(glibc["status"] == glibc_risk.ACCEPTED, f"glibc disposition refused: {glibc.get('refusal')}")
     return {"inventory": inventory_report, "result": result_report}
 
 def _store_session_probe_report(session: D12SystemSession, name: str, payload: dict[str, Any]) -> None:
@@ -231,7 +197,7 @@ def _store_session_probe_report(session: D12SystemSession, name: str, payload: d
             "verify_count": c_map.get("verify_count"), "unowned_count": c_map.get("unowned_count")}
     elif name == "result":
         keys = ("observed_versions", "tls_runtime", "findings", "libpq_findings",
-                "critical_unknown", "availability", "qualification", "stops", "glibc_disposition")
+                "critical_unknown", "availability", "qualification", "stops", "glibc_disposition", "debian_policy")
         session.post_build_assessments = {"result_sha256": digest, **{k: payload.get(k) for k in keys}}
         if isinstance(payload.get("round_trip"), Mapping):
             session.roundtrip_evidence = dict(payload["round_trip"])
@@ -243,8 +209,11 @@ def run_post_build_candidate_probes(
     start_server_fn: Callable[..., tuple[str, Any]] = _start_server,
     inventory_fn: Callable[..., dict[str, Any]] = _inventory, hashes_fn: Callable[..., dict[str, str]] = _hashes,
     run_once_fn: Callable[..., str] = _run_once, expected_libpq_version: int | None = None,
+    upstream_informational: bool = False,
 ) -> dict[str, Any]:
     _check_deadline(deadline, "d12 post-build probes")
+    if upstream_informational and inventory_fn is _inventory:
+        inventory_fn = complete_inventory
     if expected_libpq_version is None:
         rel_m = session.proof.get("release_manifest")
         expected_libpq_version = rel_m.get("libpq_version") if isinstance(rel_m, Mapping) else None
@@ -283,7 +252,8 @@ def run_post_build_candidate_probes(
             server_env=server_env, server_side=srv_side, server_inventory=srv_inv, availability=avail,
             expected_libpq_version=expected_libpq_version, tls_header=inner.HEADER, write_report=rec,
             run_once_fn=run_once_fn, inventory_fn=inventory_fn, hashes_fn=hashes_fn, deadline=deadline,
-            create_fn=b_create, server_image_id=expected_pg_id)
+            create_fn=b_create, server_image_id=expected_pg_id,
+            **({"upstream_informational": True} if upstream_informational else {}))
         if session.post_build_probes is None and isinstance(assessed.get("inventory"), Mapping):
             rec("inventory", dict(assessed["inventory"]))
         if session.post_build_assessments is None and isinstance(assessed.get("result"), Mapping):

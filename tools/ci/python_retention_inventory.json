@@ -1952,6 +1952,55 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.ci84repair1.policy.tools",
+      "members": [
+        "tools/ci/debian_base_refresh.py",
+        "tools/system/d12_debian_policy.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.ci84repair1.qualification.tools",
+      "members": [
+        "tools/system/d12_candidate_assessment.py",
+        "tools/system/d12_export_manifest.py",
+        "tools/system/d12_qualification.py",
+        "tools/system/d12_qualification_export.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "product6.navigation47.ci84repair1.support",
+      "members": [
+        "src/test/support/python/repomap_test_support/d12_complete_inventory.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci84repair1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/debian_base_refresh.unit.test.py",
+        "src/test/unit/python/tools/d12_complete_inventory.unit.test.py",
+        "src/test/unit/python/tools/system/d12_debian_policy.unit.test.py",
+        "src/test/unit/python/tools/system/d12_qualification.unit.test.py",
+        "src/test/unit/python/tools/system/d12_qualification_fixtures.py",
+        "src/test/unit/python/tools/system/d12_qualification_orchestration.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
         "tools/ci/d12_system_grant.py",
@@ -17074,6 +17123,13 @@
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 cohesive helper extraction preserving original facade and test seams.",
       "to": [
         "tools/system/d12_system_reports.py"
+      ]
+    },
+    {
+      "from": "src/test/unit/python/tools/system/d12_system_evidence.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "to": [
+        "src/test/unit/python/tools/system/d12_qualification_fixtures.py"
       ]
     }
   ],
@@ -49391,6 +49447,123 @@
       "maintained_executable": true,
       "path": "tools/windows_async15_reporting.py",
       "rationale": "REVISE32 cohesive decomposition of tools/run_windows_async15_tests.py; same maintained responsibility and quality profile.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_complete_inventory.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/debian_base_refresh.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_complete_inventory.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_debian_policy.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_qualification.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_qualification_fixtures.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_qualification_orchestration.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/debian_base_refresh.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_candidate_assessment.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_debian_policy.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_export_manifest.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0105 host-retained export identity; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_qualification.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_qualification_export.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     }

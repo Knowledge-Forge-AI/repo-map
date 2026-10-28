@@ -215,10 +215,15 @@ def test_isolated_gate_resolve_verify_record(tmp_path: Path, gate_kind: str) -> 
         "--result-out", str(result_file),
         *extra_record_args,
     )
-    assert res_record.returncode == 0, f"record failed: {res_record.stderr}"
-    result_data = json.loads(result_file.read_text(encoding="utf-8"))
-    assert result_data["schema"] == RESULT_SCHEMA
-    assert result_data["merge_authorized"] is True
+    if gate_kind == "main-system":
+        assert res_record.returncode == 1
+        assert "retained expected host proof and export manifest" in res_record.stderr
+        assert not result_file.exists()
+    else:
+        assert res_record.returncode == 0, f"record failed: {res_record.stderr}"
+        result_data = json.loads(result_file.read_text(encoding="utf-8"))
+        assert result_data["schema"] == RESULT_SCHEMA
+        assert result_data["merge_authorized"] is True
 
     res_record_fail = _run_isolated(
         runner_temp,

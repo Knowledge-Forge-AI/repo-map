@@ -46,14 +46,14 @@ class PayloadExclusion(NamedTuple):
     missing: tuple[str, ...]
     baseline_imports: tuple[str, ...]
 
-# ADR 0100: the exact Python 3.12.16 index, its native children and their _tkinter bytes (unchanged from 3.12.15).
-# Each import tuple is its own native observation: ARM per ADR 0100, AMD per ADR 0103 (CI83 run 40612206734); neither
-# aliases the other. Historical 3.12.15 records remain separate in release_manifest; no import set transfers.
-PYTHON_31216_INDEX = "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
-PYTHON_31216_ARM64_MANIFEST = "sha256:0ced713d9b8336172d981d8f25f2422b6782bdad019fda4cb653c6ee187430de"
-PYTHON_31216_ARM64_CONFIG = "sha256:7d0134fc196a9daa289acd038dd1c95b6873cacfaa4d6ea97c51501e0af515a3"
-PYTHON_31216_AMD64_MANIFEST = "sha256:6d2b0577e6d1632f077331de8e4780535f54839d163ded7abb4b7dd37b5d37ac"
-PYTHON_31216_AMD64_CONFIG = "sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28"
+# ADR0105 refreshed OCI metadata. These separate literal import sets are the required native contracts:
+# originally observed on each architecture under ADR0100/0103, re-proved for each refreshed supplier before use.
+# Metadata or unchanged Tk bytes alone never transfer native qualification to a refreshed image.
+PYTHON_31216_INDEX = "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+PYTHON_31216_ARM64_MANIFEST = "sha256:b224e2fe306f9d303251ada22961635e5b52a69c0414a0050611be31c59f5f5b"
+PYTHON_31216_ARM64_CONFIG = "sha256:ff710677e697054c516f12c53c92166f1aef075f21b2a593f4c615e522112b4e"
+PYTHON_31216_AMD64_MANIFEST = "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b"
+PYTHON_31216_AMD64_CONFIG = "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e"
 ARM64_31216_NATIVE_BASELINE_IMPORTS: tuple[str, ...] = (
     "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp",
     "_codecs_kr", "_codecs_tw", "_contextvars", "_crypt", "_csv", "_ctypes", "_ctypes_test", "_curses",

@@ -33,7 +33,8 @@ from tools.system.compose_command import normalize_compose_args
 from tools.system.compose_topology import APPLICATION_SERVICES, prepare_system_compose_topology
 from tools.system.config import SystemDeadline, SystemTestConfig, SystemTestError
 from tools.system.d12_exec import wrap_create_with_bounded_exec
-from tools.system.d12_system_evidence import SYSTEM_CANDIDATE_EVIDENCE_FILENAME, validate_d12_system_candidate_evidence
+from tools.system.d12_system_evidence import SYSTEM_CANDIDATE_EVIDENCE_FILENAME
+from tools.system.d12_qualification import FILENAME as QUALIFICATION_FILENAME
 from tools.system.d12_system_session import D12SystemSession, SYSTEM_BUILD_LOCK_FILENAME
 from tools.system.report import SystemStepResult, SystemSuiteResult
 from tools.system.runner_execution import execute_system_run
@@ -321,12 +322,10 @@ def test_cross_process_flock_and_o_excl_race_and_execute_system_run(tmp_path: Pa
     assert rc == 1
     suite_result = write_report_mock.call_args.args[0]
     assert suite_result.passed is False and suite_result.merge_authorized is False
-    sidecar = json.loads((report_dir / SYSTEM_CANDIDATE_EVIDENCE_FILENAME).read_text(encoding="utf-8"))
-    assert sidecar["diagnostic_steps_passed"] is True and sidecar["cleanup_succeeded"] is True
-    assert sidecar["image_accepted"] is False and sidecar["p3_accepted"] is False
-    assert sidecar["merge_authorized"] is False and sidecar["qualified"] is False
-    with pytest.raises(SystemTestError, match="must remain False"):
-        validate_d12_system_candidate_evidence({**sidecar, "merge_authorized": True})
+    # Injected image/observations do not satisfy the conditional qualification.
+    assert "D12 qualification" in suite_result.error_message
+    assert not (report_dir / QUALIFICATION_FILENAME).exists()
+    assert not (report_dir / SYSTEM_CANDIDATE_EVIDENCE_FILENAME).exists()
 
 
 def test_real_container_bounded_exec_timeout_cleanup_and_merged_compose_no_build(tmp_path: Path) -> None:

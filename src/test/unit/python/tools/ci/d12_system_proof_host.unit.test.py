@@ -30,8 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[6]
 def _build_fixture_proof(
     tmp_path: Path,
 ) -> tuple[Path, Path, Path, dict[str, Any], dict[str, str], Any]:
-    # A coherent temporary CI72-era grant and candidate through the existing path seams. The real spent grant is
-    # copied unchanged and still refuses the live candidate (see the facade test); production bytes are untouched.
+    # Coherent copies of the current one-use grant and candidate; production bytes are untouched.
     (pair := tmp_path / "ci72-pair").mkdir()
     grant_path, cand_path = pair / "d12_system_build_grant.json", pair / "d12_hosted_candidate.json"
     grant_path.write_bytes((REPO_ROOT / DEFAULT_GRANT_RELPATH).read_bytes())
@@ -236,8 +235,11 @@ def test_direct_host_proof_verification_and_facade_equivalence(tmp_path: Path) -
     assert verified_lower["pull_request"] == 13
     production = {"grant_path": REPO_ROOT / DEFAULT_GRANT_RELPATH,
                   "expected_candidate_path": REPO_ROOT / DEFAULT_CANDIDATE_RELPATH}
-    with pytest.raises(D12SystemGrantError, match="d12_context disagrees with d12_hosted_candidate.json"):
-        verify_host_system_proof_for_dispatch(args, **{**common_kwargs, **production})  # spent grant: never rearmed
+    assert verify_host_system_proof_for_dispatch(args, **{**common_kwargs, **production}) == verified_lower
+    drift = {**d12_ctx, "source_sha256": "0" * 64}
+    with pytest.raises(D12SystemGrantError, match="d12_context.source_sha256 disagrees with live repository"):
+        verify_host_system_proof_for_dispatch(args,
+            **{**common_kwargs, **production, "frozen_identity_fn": lambda _r, _p: drift})
 
 
 def test_host_event_and_git_requires_exact_draft_true_and_strict_env_event_facts(

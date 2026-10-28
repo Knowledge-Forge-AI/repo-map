@@ -247,6 +247,7 @@ def run_in_sandbox(
     inner_argv, report_destination = arguments_result
     gate_request_bytes = getattr(arguments_result, "gate_request_bytes", None)
     d12_proof_bytes = getattr(arguments_result, "d12_proof_bytes", None)
+    d12_host_proof_path = getattr(arguments_result, "d12_host_proof_path", None)
     marker_token = secrets.token_hex(32)
     container_name = f"repomap-test-sandbox-{secrets.token_hex(8)}"
     before = snapshotter(runner)
@@ -341,8 +342,26 @@ def run_in_sandbox(
                         "integration sandbox report export source is unavailable"
                     )
                 if archive is not None:
+                    expected_manifest = None
+                    if report_required and d12_proof_bytes is not None:
+                        from tools.system.d12_export_manifest import retain_host_manifest
+
+                        if d12_host_proof_path is None:
+                            raise RuntimeError("D12 host proof origin is unavailable")
+                        expected_manifest = retain_host_manifest(archive, expected_proof_bytes=d12_proof_bytes,
+                                                                 host_proof_path=d12_host_proof_path)
                     export_report(archive, report_destination)
-            except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+                    if report_required and d12_proof_bytes is not None:
+                        try:
+                            from tools.system.d12_qualification_export import verify_exported_qualification
+
+                            if expected_manifest is None:
+                                raise RuntimeError("D12 host export manifest is unavailable")
+                            verify_exported_qualification(report_destination, repo_root=repo_root,
+                                expected_proof_bytes=d12_proof_bytes, expected_export_manifest_bytes=expected_manifest)
+                        except Exception as error:
+                            raise RuntimeError("D12 exported qualification verification failed") from error
+            except Exception as error:
                 if cleanup_error is None:
                     cleanup_error = cleanup_error_for(error)
         if container_id is not None:

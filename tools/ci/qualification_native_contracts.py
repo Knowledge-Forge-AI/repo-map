@@ -29,7 +29,7 @@ D12_SYSTEM_ADMISSION_HOLD_SUFFIX = "/repomap-d12-system-admission/hold.json"
 D12_SYSTEM_ADMISSION_PROOF_SUFFIX = "/repomap-d12-system-admission/proof.json"
 D12_SYSTEM_ADMISSION_UPLOAD_PATH = "${{ runner.temp }}/repomap-d12-system-admission"
 # ADR 0102: the one exact raw Python 3.12.16 AMD config selected for the native component diagnostic.
-D12_NATIVE_AMD64_RAW_PYTHON_CONFIG = "sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28"
+D12_NATIVE_AMD64_RAW_PYTHON_CONFIG = "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e"
 D12_NATIVE_AMD64_REQUIRED_TOKENS: tuple[str, ...] = (
     "python3 tools/run_tests.py", "--sandbox", "--suite int", "--no-coverage", "--jobs 1",
     "--pg-container-port 55433", "--d12-core-image-profile linux/amd64", "--d12-core-image-preflight",

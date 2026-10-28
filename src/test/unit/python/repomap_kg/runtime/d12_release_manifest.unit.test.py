@@ -36,7 +36,8 @@ def test_release_manifest_exports_ci68_amd64_candidate_closure() -> None:
 
     canonical_json = json.dumps(amd64_pkg._asdict(), sort_keys=True, separators=(",", ":"))
     actual_sha = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
-    assert actual_sha == release_manifest.CI68_MANIFEST_SHA256
+    assert actual_sha == release_manifest.D12_CANDIDATE_MANIFEST_SHA256
+    assert actual_sha != release_manifest.CI68_MANIFEST_SHA256
 
 
 def test_release_py_remains_unpromoted_in_candidate_only_mode() -> None:

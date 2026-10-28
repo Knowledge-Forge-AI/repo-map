@@ -1,4 +1,4 @@
-"""Synthetic historical CI72 session fixtures; no native or image qualification evidence."""
+"""Synthetic current-recipe session fixtures; no native or image qualification evidence."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from ci.d12_system_grant import (
     DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, build_system_admission_proof,
     load_and_validate_system_build_grant, write_system_admission_proof,
 )
+from repomap_test_support.d12_recipe import frozen_identity
 from repomap_kg.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
 from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from tools.system import d12_system_session as session_mod
@@ -30,6 +31,11 @@ def _active_run_id() -> str:
 def _make_valid_proof(tmp_path: Path) -> tuple[Path, dict[str, Any]]:
     live_cand_path, grant_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH, REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
+    raw_grant = {**raw_grant, "d12_context": frozen_identity(REPO_ROOT, "linux/amd64")}
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    grant_path = tmp_path / "unit-grant.json"
+    grant_bytes = (json.dumps(raw_grant, indent=2, sort_keys=True) + "\n").encode()
+    grant_path.write_bytes(grant_bytes)
     live_cand = validate_expected_candidate_record(json.loads(live_cand_path.read_text(encoding="utf-8")))
     expected_cand = validate_expected_candidate_record({**live_cand, "d12_context": dict(raw_grant["d12_context"])})
     tmp_path.mkdir(parents=True, exist_ok=True)
@@ -114,6 +120,7 @@ def _establish(
 ) -> tuple[D12SystemSession, dict[str, Any]]:
     proof_file, d12_ctx = _make_valid_proof(tmp_path)
     overrides.setdefault("expected_candidate_path", tmp_path / "ci72-candidate.json")
+    overrides.setdefault("grant_path", tmp_path / "unit-grant.json")
     return D12SystemSession.establish(
         repo_root=REPO_ROOT, config=_make_config(report_dir or (tmp_path / "report")),
         proof_json_arg=str(proof_file), target_arch_fn=lambda: "amd64", tree_sha_fn=lambda _r: "b" * 40,

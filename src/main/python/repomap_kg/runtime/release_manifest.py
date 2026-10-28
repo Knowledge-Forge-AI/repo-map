@@ -1,5 +1,8 @@
-"""Historical Python 3.12.15 records: the Trixie payload exclusions and the CI68 candidate-only AMD package
-observation. Neither transfers to 3.12.16, whose native baselines python_payload holds until adopted (ADR 0100)."""
+"""Historical Python 3.12.15 records and the maintained D12 candidate package contract.
+
+ADR0105 refreshes the supplier config; the CI68 observation hash remains historical. Native preflight must
+re-prove the current contract before any application build. Neither record grants release admission.
+"""
 
 from types import MappingProxyType
 from typing import Mapping
@@ -55,10 +58,11 @@ HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = Map
 
 D12_CANDIDATE_LIBPQ_VERSION = 180006
 CI68_MANIFEST_SHA256 = '13f616f876ebc6e2ef6c9772e55e39426184944a15cce61ef2690187b2ef0273'
+D12_CANDIDATE_MANIFEST_SHA256 = 'f55dafe560ee79b58d1c480e9d75d3f457fad705f0bf32dce1f44e35b90befa4'
 
 D12_CANDIDATE_PACKAGE_MANIFEST: Mapping[str, PlatformPackages] = MappingProxyType({
     "amd64": PlatformPackages(
-        postgres_config_digest='sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b',
+        postgres_config_digest='sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1',
         pgdg_source=(
             '/etc/apt/sources.list.d/pgdg.list',
             'c070ae8f9f72df1c4f03a4a4a04629b0546a9fa92be2620ebd92285722999805',

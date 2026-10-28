@@ -117,12 +117,12 @@ def test_release_dockerfile_uses_only_pinned_build_and_runtime_resources() -> No
 
     assert (
         "postgres:16.15-trixie@sha256:"
-        "9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
+        "1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c"
         in dockerfile
     )
     assert (
         "python:3.12-slim-trixie@sha256:"
-        "962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
+        "aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
         in dockerfile
     )
     # ADR 0090 D1: the exact approved Go index, tagged with its version.
@@ -384,7 +384,7 @@ def test_compose_uses_the_same_pinned_postgres_release_image(
 
     assert (
         "image: postgres:16.15-trixie@sha256:"
-        "9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
+        "1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c"
         in compose
     )
     assert "postgres:16-alpine" not in compose

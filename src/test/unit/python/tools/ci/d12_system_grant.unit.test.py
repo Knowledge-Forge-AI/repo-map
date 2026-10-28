@@ -28,6 +28,8 @@ from ci.d12_system_grant import (
     SPENT_CI70_RESERVATION_SHA256,
     SPENT_CI71_NONCE,
     SPENT_CI71_RESERVATION_SHA256,
+    SPENT_CI72_NONCE,
+    SPENT_CI72_RESERVATION_SHA256,
     D12SystemGrantError,
     SYSTEM_ADMISSION_PROOF_SCHEMA,
     SYSTEM_BUILD_GRANT_SCHEMA,
@@ -98,7 +100,7 @@ def _make_proof(
     )
 
 
-def _historical_ci72_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], bytes, str]:
+def _coherent_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], bytes, str]:
     live_cand = validate_expected_candidate_record(
         json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
     )
@@ -114,11 +116,11 @@ def _historical_ci72_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, 
     return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
 
 
-def test_load_tracked_system_build_grant_matches_historical_and_refuses_live_candidate() -> None:
+def test_load_tracked_system_build_grant_matches_ci85_and_refuses_drifted_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
-    expected_cand, _, _ = _historical_ci72_candidate_record(raw_grant)
+    expected_cand, _, _ = _coherent_candidate_record(raw_grant)
     grant, grant_sha = load_and_validate_system_build_grant(
         grant_path,
         expected_candidate=expected_cand,
@@ -127,13 +129,15 @@ def test_load_tracked_system_build_grant_matches_historical_and_refuses_live_can
     live_cand = validate_expected_candidate_record(
         json.loads(cand_path.read_text(encoding="utf-8"))
     )
+    assert live_cand == expected_cand
+    live_cand = {**live_cand, "d12_context": {**live_cand["d12_context"], "source_sha256": "0" * 64}}
     with pytest.raises(D12SystemGrantError, match="d12_context"):
         load_and_validate_system_build_grant(
             grant_path,
             expected_candidate=live_cand,
             frozen_identity=dict(live_cand["d12_context"]),
         )
-    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI71FIX1"
+    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1"
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
     assert SPENT_CI70_RESERVATION_SHA256 == (
         "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
@@ -145,10 +149,10 @@ def test_load_tracked_system_build_grant_matches_historical_and_refuses_live_can
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 72
+    assert grant["workflow_ordinal"] == 85
     assert grant["workflow_attempt"] == 1
-    assert grant["maximum_total"] == 4
-    assert grant["maximum_per_platform"] == 4
+    assert grant["maximum_total"] == 5
+    assert grant["maximum_per_platform"] == 5
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
@@ -185,7 +189,9 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI70_NONCE),
         ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
         ("nonce", SPENT_CI71_NONCE),
+        ("nonce", SPENT_CI72_NONCE),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256),
         ("nonce", str(grant["nonce"]) + "\n"),
         ("before", str(grant["before"]) + "\n"),
         ("reservation_sha256", str(grant["reservation_sha256"]) + "\n"),
@@ -221,7 +227,9 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI70_NONCE),
         ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
         ("nonce", SPENT_CI71_NONCE),
+        ("nonce", SPENT_CI72_NONCE),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256),
         ("nonce", str(proof["nonce"]) + "\n"),
         ("before", str(proof["before"]) + "\n"),
         ("reservation_sha256", str(proof["reservation_sha256"]) + "\n"),
@@ -283,7 +291,7 @@ def test_validate_system_admission_proof_rejects_non_native_host() -> None:
 def test_verify_host_system_proof_for_dispatch_validates_live_bindings(tmp_path: Path) -> None:
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     grant, grant_sha = load_and_validate_system_build_grant(grant_path)
-    expected_cand, cand_raw, cand_sha = _historical_ci72_candidate_record(grant)
+    expected_cand, cand_raw, cand_sha = _coherent_candidate_record(grant)
     cand_path = tmp_path / "ci72-candidate.json"
     cand_path.write_bytes(cand_raw)
     event_file = tmp_path / "event.json"

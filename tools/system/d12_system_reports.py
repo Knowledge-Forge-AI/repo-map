@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+import errno
 import hashlib
 import json
 import os
 from pathlib import Path
 import tempfile
 from typing import Any
+
+from tools.system.config import SystemTestError
 
 
 def redact_public_text(text: str, *, repo_root: Path | None = None) -> str:
@@ -158,3 +161,25 @@ def write_bounded_json_to_targets(
     for out_file in unique_targets:
         write_json_bytes_atomic(out_file, raw)
     return unique_targets[0]
+
+
+def write_exclusive_0600_json(path: Path, payload: Mapping[str, Any]) -> str:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    raw = (json.dumps(dict(payload), indent=2, sort_keys=True) + "\n").encode("utf-8")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags, 0o600)
+    except FileExistsError as exc:
+        raise SystemTestError(f"one-use D12 system build intent already exists: {path}") from exc
+    except OSError as exc:
+        msg = "must not be a symlink" if exc.errno == errno.ELOOP else f"cannot create ({exc})"
+        raise SystemTestError(f"D12 system build intent {msg}: {path}") from exc
+    for t_fd, sync_only in ((fd, False), (os.open(path.parent, os.O_RDONLY), True)):
+        try:
+            if not sync_only:
+                os.fchmod(t_fd, 0o600)
+                os.write(t_fd, raw)
+            os.fsync(t_fd)
+        finally:
+            os.close(t_fd)
+    return hashlib.sha256(raw).hexdigest()

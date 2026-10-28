@@ -18,6 +18,6 @@
   ],
   "postgres_abi": "16",
   "test_postgres_base_image": "postgres:16-alpine@sha256:e013e867e712fec275706a6c51c966f0bb0c93cfa8f51000f85a15f9865a28cb",
-  "production_postgres_base_image": "postgres:16.15-trixie@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97",
+  "production_postgres_base_image": "postgres:16.15-trixie@sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c",
   "pgvector_test_image": "repomap-test-postgres:16-pgvector087-v1"
 }

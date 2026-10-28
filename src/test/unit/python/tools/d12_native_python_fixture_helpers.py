@@ -25,6 +25,7 @@ ARM, AMD = "linux/arm64", "linux/amd64"
 ARM_TK = f"{payload.DYNLOAD}/_tkinter.cpython-312-aarch64-linux-gnu.so"
 CONTAINER_ID = "f" * 64
 ZERO = dict.fromkeys(DERIVED_OPERATION_FIELDS, 0)
+CURRENT_ARM_EXCLUSION = payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"]
 
 
 @lru_cache(maxsize=1)
@@ -35,7 +36,13 @@ def _loaded() -> dict[str, Any]:
 
 
 def observation() -> dict[str, Any]:
-    return copy.deepcopy(_loaded())
+    # A synthetic current-pin variant for validator mechanics. The historical fixture remains byte-for-byte intact.
+    result = copy.deepcopy(_loaded())
+    exclusion = result["trimmed_report"]["exclusion"]
+    entry = CURRENT_ARM_EXCLUSION
+    exclusion.update(python_index=entry.python_index, platform_manifest=entry.platform_manifest,
+                     python_config=entry.python_config)
+    return result
 
 
 def raw_and_inner() -> tuple[dict[str, Any], dict[str, Any]]:

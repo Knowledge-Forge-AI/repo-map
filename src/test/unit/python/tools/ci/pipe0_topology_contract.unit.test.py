@@ -86,7 +86,7 @@ def test_canonical_test_runner_appears_exactly_three_times() -> None:
     for token in (
         "--sandbox", "--suite int", "--no-coverage", "--d12-core-image-profile linux/amd64",
         "--d12-core-image-preflight",
-        "--smoke-image-reference sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28",
+        "--smoke-image-reference sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e",
         "-- src/test/int/python/repomap_kg/runtime/d12_core_image_refresh.int.test.py"
         "::test_d12_core_image_refresh_candidate_round_trip",
     ):
@@ -323,10 +323,10 @@ def test_pr_fast_preserves_the_aggregate_check_owner() -> None:
             "-- src/test/int/python/unapproved.int.test.py",
             "d12-native-amd64 must select exact node",
         ),
-        ("repomap-release-qualification.yml", "--smoke-image-reference sha256:3a1b",
-         "--smoke-image-ref sha256:3a1b", "unknown or abbreviated option '--smoke-image-ref'"),
-        ("repomap-release-qualification.yml", "--smoke-image-reference sha256:3a1b",
-         "--smoke-image-reference sha256:7d01", "must pass exactly one literal --smoke-image-reference"),
+        ("repomap-release-qualification.yml", "--smoke-image-reference sha256:ae4e",
+         "--smoke-image-ref sha256:ae4e", "unknown or abbreviated option '--smoke-image-ref'"),
+        ("repomap-release-qualification.yml", "--smoke-image-reference sha256:ae4e",
+         "--smoke-image-reference sha256:ff71", "must pass exactly one literal --smoke-image-reference"),
     ],
 )
 def test_topology_contracts_detect_their_own_violation(

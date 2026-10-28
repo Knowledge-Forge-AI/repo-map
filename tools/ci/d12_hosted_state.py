@@ -9,6 +9,23 @@ from pathlib import Path
 import stat as stat_mod
 from typing import Any
 
+from repomap_kg.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
+
+VERIFIED_AMD64_BASE_METADATA: dict[str, dict[str, str]] = {
+    "go": {"reference": GO_RELEASE_IMAGE, "platform": "linux/amd64",
+           "index": "sha256:632dff7351799a5a9954a48dc06670ade72ee44e8c351cdc0e5a57af2fea21af",
+           "manifest": "sha256:88750ccdd0f2a77fcc00a14b1a48d6409bd8ddb5d7c2dd6ec0b4a2e916daf9d9",
+           "config": "sha256:0d494ea9b5863337de0dfb4f938062bf0261a919016eb162d2be26381dbadafe"},
+    "python": {"reference": PYTHON_RELEASE_IMAGE, "platform": "linux/amd64",
+               "index": "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+               "manifest": "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b",
+               "config": "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e"},
+    "postgres": {"reference": POSTGRES_RELEASE_IMAGE, "platform": "linux/amd64",
+                 "index": "sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c",
+                 "manifest": "sha256:b95b87e93ceb7594715d5c71fb6e09f6fc878851ab537735d617325eb9ba8b1b",
+                 "config": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1"},
+}
+
 MAX_SAFE_JSON_REPORT_BYTES = 8 * 1024 * 1024
 PREPARE_REFUSAL_SCHEMA = "repomap-d12-prepare-refusal-v1"
 PREPARE_REFUSAL_FILENAME = "prepare-refusal.json"

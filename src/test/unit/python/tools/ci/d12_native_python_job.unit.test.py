@@ -60,7 +60,7 @@ def test_fragment_and_workflow_select_the_pin_once_in_their_one_unchanged_runner
 
 @pytest.mark.parametrize("old, new, expected", [
     (PIN, PIN.replace(payload.PYTHON_31216_AMD64_CONFIG, payload.PYTHON_31216_ARM64_CONFIG), [PIN_REQUIRED]),
-    (PIN, PIN.replace("sha256:3a1b", "sha256:3a1c"), [PIN_REQUIRED]),
+    (PIN, PIN.replace(payload.PYTHON_31216_AMD64_CONFIG, "sha256:" + "0" * 64), [PIN_REQUIRED]),
     (PIN, f"{PIN} \\\n            {PIN}", [PIN_REQUIRED]),
     (PIN, f"{PIN} \\\n            --smoke-image-reference {payload.PYTHON_31216_ARM64_CONFIG}", [PIN_REQUIRED]),
     (PIN, PIN.replace("--smoke-image-reference ", "--smoke-image-reference="), [PIN_REQUIRED]),

@@ -102,12 +102,29 @@ def _record_command(arguments: argparse.Namespace) -> int:
     candidate = _candidate_from_arguments(arguments)
     system_report_path = getattr(arguments, "system_report_json", None)
     system_binding_path = getattr(arguments, "system_binding_json", None)
+    proof_path = getattr(arguments, "d12_system_proof_json", None)
+    manifest_path = getattr(arguments, "d12_export_manifest_json", None)
+    proof_bytes = None
+    manifest_bytes = None
+    if proof_path is not None:
+        from ci.d12_system_grant import read_regular_json_object
+
+        _proof, proof_bytes, _digest = read_regular_json_object(
+            Path(proof_path), label="expected host D12 proof", max_bytes=16_384)
+    if manifest_path is not None:
+        from ci.d12_system_grant import read_regular_json_object
+
+        _manifest, manifest_bytes, _digest = read_regular_json_object(
+            Path(manifest_path), label="expected host D12 export manifest", max_bytes=16_384)
     result = build_result(
         request=request,
         candidate=candidate,
         conclusion=arguments.conclusion,
         system_report_path=system_report_path,
         system_binding_path=system_binding_path,
+        d12_expected_proof_bytes=proof_bytes,
+        d12_expected_export_manifest_bytes=manifest_bytes,
+        repo_root=Path(getattr(arguments, "repo_root", ".")),
     )
     Path(arguments.result_out).write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
@@ -152,6 +169,9 @@ def build_parser() -> argparse.ArgumentParser:
     record.add_argument("--result-out", required=True)
     record.add_argument("--system-report-json", default=None)
     record.add_argument("--system-binding-json", default=None)
+    record.add_argument("--d12-system-proof-json", default=None)
+    record.add_argument("--d12-export-manifest-json", default=None)
+    record.add_argument("--repo-root", default=".")
     record.set_defaults(handler=_record_command)
     return parser
 

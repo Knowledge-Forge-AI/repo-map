@@ -65,6 +65,9 @@ def build_result(
     conclusion: str,
     system_report_path: str | Path | None = None,
     system_binding_path: str | Path | None = None,
+    d12_expected_proof_bytes: bytes | None = None,
+    d12_expected_export_manifest_bytes: bytes | None = None,
+    repo_root: Path | None = None,
 ) -> dict[str, Any]:
     """Emit repomap-ci-gate-result-v1 for one qualified candidate."""
     _require(conclusion in CONCLUSIONS, f"unsupported conclusion {conclusion!r}")
@@ -178,6 +181,18 @@ def build_result(
                 binding_payload,
                 report_file=report_p.name,
             )
+            # Current hosted main-system execution always requires D12 admission. Report-selected markers
+            # cannot opt out of verification; historical v1 validation remains available separately.
+            if d12_expected_proof_bytes is None or d12_expected_export_manifest_bytes is None:
+                raise GateBindingError("D12 success requires retained expected host proof and export manifest")
+            from tools.system.d12_qualification_export import verify_exported_qualification
+            try:
+                verify_exported_qualification(report_p.parent,
+                    repo_root=repo_root or Path(__file__).resolve().parents[2],
+                    expected_proof_bytes=d12_expected_proof_bytes,
+                    expected_export_manifest_bytes=d12_expected_export_manifest_bytes)
+            except Exception as error:
+                raise GateBindingError("D12 exported qualification did not verify") from error
         else:
             merge_authorized = False
             if system_report_path is not None and Path(system_report_path).exists():

@@ -14,7 +14,10 @@ if __package__ in (None, ""):
         if (_p := str((_ROOT / _rel).resolve())) not in sys.path:
             sys.path.insert(0, _p)
 
-from ci.d12_hosted_state import MAX_SAFE_JSON_REPORT_BYTES, load_safe_json_report
+from ci.d12_hosted_state import (
+    MAX_SAFE_JSON_REPORT_BYTES, load_safe_json_report,
+    VERIFIED_AMD64_BASE_METADATA as VERIFIED_AMD64_BASE_METADATA,
+)
 import d12_libpq_runtime_probe
 import d12_python_closure
 from repomap_kg.runtime.release import (
@@ -23,21 +26,6 @@ from repomap_kg.runtime.release import (
 )
 from repomap_test_support import d12_core_image
 import test_sandbox_images
-
-VERIFIED_AMD64_BASE_METADATA: dict[str, dict[str, str]] = {
-    "go": {"reference": GO_RELEASE_IMAGE, "platform": "linux/amd64",
-           "index": "sha256:632dff7351799a5a9954a48dc06670ade72ee44e8c351cdc0e5a57af2fea21af",
-           "manifest": "sha256:88750ccdd0f2a77fcc00a14b1a48d6409bd8ddb5d7c2dd6ec0b4a2e916daf9d9",
-           "config": "sha256:0d494ea9b5863337de0dfb4f938062bf0261a919016eb162d2be26381dbadafe"},
-    "python": {"reference": PYTHON_RELEASE_IMAGE, "platform": "linux/amd64",
-               "index": "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e",
-               "manifest": "sha256:6d2b0577e6d1632f077331de8e4780535f54839d163ded7abb4b7dd37b5d37ac",
-               "config": "sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28"},
-    "postgres": {"reference": POSTGRES_RELEASE_IMAGE, "platform": "linux/amd64",
-                 "index": "sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97",
-                 "manifest": "sha256:f9d1e581cde3e4c8bc696b07e6f7b7aea1d41014b33a52b27990762daae61beb",
-                 "config": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b"},
-}
 
 APPLICATION_BUILD_COUNT_KEYS: tuple[str, ...] = (
     "managed_system_candidate_image_build_count", "product_or_build_profile_build_count",

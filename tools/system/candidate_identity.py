@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-import errno
 import hashlib
 import json
 import os
 from pathlib import Path
 import platform
-import re
 import subprocess
 import tempfile
 from typing import Any
@@ -22,19 +20,14 @@ from ci.d12_system_grant import (
     load_and_validate_system_admission_proof,
     load_and_validate_system_build_grant,
 )
-from repomap_kg.runtime.release import DebPackage, POSTGRES_RELEASE_IMAGE, PlatformPackages
-from repomap_kg.runtime.release_manifest import (
-    D12_CANDIDATE_LIBPQ_VERSION,
-    D12_CANDIDATE_PACKAGE_MANIFEST,
-)
 from tools.system.config import SystemTestConfig, SystemTestError
-
-CTX_IDENTITY_KEYS: tuple[str, str, str, str] = (
-    "source_sha256",
-    "recipe_sha256",
-    "dockerfile_sha256",
-    "context_file_count",
+from tools.system.d12_candidate_assessment import (
+    CTX_IDENTITY_KEYS as CTX_IDENTITY_KEYS,
+    normalize_candidate_manifest as normalize_candidate_manifest,
+    verify_preflight_matches_manifest as verify_preflight_matches_manifest,
 )
+from tools.system.d12_system_reports import write_exclusive_0600_json as write_exclusive_0600_json
+
 
 
 def get_current_tree_sha(repo_root: Path) -> str:
@@ -71,28 +64,6 @@ def resolve_target_arch(machine: str | None = None) -> str:
     return "arm64" if raw in ("arm64", "aarch64") else "amd64"
 
 
-def write_exclusive_0600_json(path: Path, payload: Mapping[str, Any]) -> str:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    raw = (json.dumps(dict(payload), indent=2, sort_keys=True) + "\n").encode("utf-8")
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        fd = os.open(path, flags, 0o600)
-    except FileExistsError as exc:
-        raise SystemTestError(f"one-use D12 system build intent already exists: {path}") from exc
-    except OSError as exc:
-        msg = "must not be a symlink" if exc.errno == errno.ELOOP else f"cannot create ({exc})"
-        raise SystemTestError(f"D12 system build intent {msg}: {path}") from exc
-    for t_fd, sync_only in ((fd, False), (os.open(path.parent, os.O_RDONLY), True)):
-        try:
-            if not sync_only:
-                os.fchmod(t_fd, 0o600)
-                os.write(t_fd, raw)
-            os.fsync(t_fd)
-        finally:
-            os.close(t_fd)
-    return hashlib.sha256(raw).hexdigest()
-
-
 def compute_session_binding_digest(
     *,
     proof: Mapping[str, Any],
@@ -108,97 +79,6 @@ def compute_session_binding_digest(
         proof_sha256, grant_sha256, expected_candidate_sha256,
     ]
     return hashlib.sha256(json.dumps(doc, sort_keys=True, default=str).encode("utf-8")).hexdigest()
-
-
-def normalize_candidate_manifest(manifest: Mapping[str, Any]) -> PlatformPackages:
-    try:
-        return PlatformPackages(
-            str(manifest["postgres_config_digest"]),
-            (str(manifest["pgdg_source"][0]), str(manifest["pgdg_source"][1])),
-            (str(manifest["pgdg_keyring"][0]), str(manifest["pgdg_keyring"][1])),
-            tuple(str(x) for x in manifest["key_fingerprints"]),
-            str(manifest["libpq_path"]),
-            str(manifest["libpq_sha256"]),
-            str(manifest["libpq5_version"]),
-            tuple(DebPackage(str(r[0]), str(r[1]), str(r[2]), str(r[3])) for r in manifest["builder"]),
-            tuple(DebPackage(str(r[0]), str(r[1]), str(r[2]), str(r[3])) for r in manifest["closure"]),
-            tuple(str(x) for x in manifest["lib_dynload"]),
-        )
-    except (KeyError, IndexError, TypeError, ValueError) as exc:
-        raise SystemTestError(f"malformed preflight candidate manifest: {exc}") from exc
-
-
-def verify_preflight_matches_manifest(
-    preflight: Mapping[str, Any],
-    *,
-    proof: Mapping[str, Any],
-    libpq_version: int = D12_CANDIDATE_LIBPQ_VERSION,
-    amd64_packages: PlatformPackages | None = None,
-) -> None:
-    pkg = D12_CANDIDATE_PACKAGE_MANIFEST["amd64"] if amd64_packages is None else amd64_packages
-    if "build" in preflight or "image_cleanup" in preflight:
-        raise SystemTestError("D12 same-daemon preflight is zero-build exploration and must not claim build/image")
-    if preflight.get("result") != "observed" or preflight.get("refusals") or preflight.get("failures"):
-        raise SystemTestError(f"D12 same-daemon preflight exploration failed: {preflight.get('result')!r}")
-    avail = preflight.get("availability")
-    if not isinstance(avail, Mapping) or avail.get("execution") != "native":
-        raise SystemTestError(f"D12 same-daemon preflight requires native execution: {avail!r}")
-    bases = preflight.get("bases")
-    pg_base = bases.get(POSTGRES_RELEASE_IMAGE) if isinstance(bases, Mapping) else None
-    pg_base_id = pg_base.get("id") if isinstance(pg_base, Mapping) else None
-    if not isinstance(pg_base_id, str) or not pg_base_id.startswith("sha256:"):
-        raise SystemTestError(f"D12 same-daemon preflight missing verified PostgreSQL base image ID: {bases!r}")
-    cleanup = preflight.get("cleanup")
-    if (
-        not isinstance(cleanup, Mapping) or cleanup.get("server") != "removed"
-        or cleanup.get("containers") != "baseline_verified"
-        or not isinstance(cleanup.get("zero_build"), Mapping)
-        or any(v != 0 for v in cleanup["zero_build"].values())
-    ):
-        raise SystemTestError(f"D12 same-daemon preflight cleanup/zero-build custody failed: {cleanup!r}")
-    ident, d12_ctx, rel_man = preflight.get("identity"), proof.get("d12_context"), proof.get("release_manifest")
-    if not isinstance(ident, Mapping) or not isinstance(d12_ctx, Mapping) or not isinstance(rel_man, Mapping):
-        raise SystemTestError("D12 same-daemon preflight missing identity, d12_context, or release_manifest")
-    if any(ident.get(k) != d12_ctx.get(k) for k in CTX_IDENTITY_KEYS):
-        raise SystemTestError(f"D12 same-daemon preflight identity mismatch against d12_context: {ident!r}")
-    if (
-        rel_man.get("libpq_version") != libpq_version or rel_man.get("libpq5_version") != pkg.libpq5_version
-        or rel_man.get("libpq_sha256") != pkg.libpq_sha256
-        or rel_man.get("postgres_config_digest") != pkg.postgres_config_digest
-    ):
-        raise SystemTestError("D12 same-daemon preflight proof.release_manifest mismatch against release_manifest")
-    steps = preflight.get("steps")
-    if not isinstance(steps, Mapping) or not isinstance(steps.get("candidate"), Mapping):
-        raise SystemTestError("D12 same-daemon preflight missing steps.candidate")
-    cand_step, rt_step = steps["candidate"], steps.get("libpq_runtime")
-    if cand_step.get("valid") is not True or cand_step.get("written_to_source") is not False:
-        raise SystemTestError("D12 same-daemon preflight steps.candidate is not a valid unwritten manifest")
-    if normalize_candidate_manifest(cand_step.get("manifest") or {}) != pkg or (
-        cand_step.get("libpq_version") != libpq_version
-    ):
-        raise SystemTestError("D12 same-daemon preflight candidate manifest mismatch against release_manifest")
-    if not isinstance(rt_step, Mapping) or rt_step.get("api") != libpq_version:
-        raise SystemTestError("D12 same-daemon preflight libpq_runtime.api mismatch")
-    lib_blk = rt_step.get("library")
-    if (
-        not isinstance(lib_blk, Mapping) or lib_blk.get("path") != pkg.libpq_path
-        or lib_blk.get("sha256") != pkg.libpq_sha256 or lib_blk.get("package") != "libpq5"
-        or lib_blk.get("version") != pkg.libpq5_version or lib_blk.get("architecture") not in (None, "amd64")
-    ):
-        raise SystemTestError("D12 same-daemon preflight libpq_runtime.library mismatch")
-    if not isinstance(srv_inv := preflight.get("server_inventory"), Mapping):
-        raise SystemTestError("D12 same-daemon preflight missing server_inventory")
-    srv_libs = {
-        (f.get("resolved"), f.get("sha256")) for f in (srv_inv.get("files") or ())
-        if isinstance(f, Mapping) and f.get("role") == "libpq" and f.get("owner") == "libpq5"
-    }
-    srv_vers = [
-        tuple(map(int, m)) for r in (srv_inv.get("packages") or ())
-        if isinstance(r, (list, tuple)) and len(r) >= 2 and r[0] == "libpq5"
-        for m in re.findall(r"^(\d+)\.(\d+)", str(r[1]))
-    ]
-    if srv_libs != {(pkg.libpq_path, pkg.libpq_sha256)} or [divmod(libpq_version, 10000)] != srv_vers:
-        raise SystemTestError("D12 same-daemon preflight server_inventory libpq5 oracle mismatch")
 
 
 def verify_live_git_and_config_identity(
