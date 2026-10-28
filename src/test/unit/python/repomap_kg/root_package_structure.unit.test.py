@@ -8,7 +8,7 @@ import repomap_kg
 STANDARD_ROOT_FILES = {"__init__.py", "__main__.py"}
 
 
-PHASED_ROOT_FILES: dict[str, str] = {}
+PHASED_ROOT_FILES: dict[str, str] = {"_temporary.py": "ADR0106 shared owned temporary cleanup"}
 
 
 COMPATIBILITY_HOLDS = {

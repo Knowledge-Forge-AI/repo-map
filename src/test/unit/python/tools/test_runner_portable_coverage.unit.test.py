@@ -246,6 +246,18 @@ class RunnerPortableCoverageUnitTests(unittest.TestCase):
             with self.assertRaisesRegex(CapabilityValidationError, "ambient coverage variable rejected"):
                 adapter(self._make_spec(extra_env={"COVERAGE_PROCESS_START": "injected_rc"}), self.identity, self.limits)
 
+    def test_relocated_package_does_not_inherit_source_measurement_authority(self) -> None:
+        copied = self.tmpdir / "package/src/main/python"
+        copied.mkdir(parents=True)
+        (copied / "repomap_kg").mkdir()
+        def unexpected_launch(*args, **kwargs):
+            self.fail("a foreign package root reached process launch")
+        adapter = make_portable_worker_spec_adapter(unexpected_launch, self.cap, self.session)
+        self.assertFalse(self.cap.launched_commands)
+        with self.assertRaisesRegex(CapabilityContainmentError, "unpermitted path in spec PYTHONPATH"):
+            adapter(self._make_spec(pypath=str(copied)), self.identity, self.limits)
+        self.assertFalse(self.cap.launched_commands)
+
     def _write_markers(self, token: str, shard: Path | None = None) -> None:
         mf = self.session.child_manifest_dir
         base = (

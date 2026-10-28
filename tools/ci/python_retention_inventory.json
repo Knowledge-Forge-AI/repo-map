@@ -2012,6 +2012,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_tooling",
+      "id": "product6.navigation47.ci86repair1.grant_io",
+      "members": [
+        "tools/ci/d12_system_grant_io.py"
+      ],
+      "rationale": "ADR0108 preserves strict IO interfaces and existing refusal bodies within the unchanged length limit.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
         "tools/ci/d12_system_grant.py",
@@ -49604,6 +49614,15 @@
       "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
       "root": "test_owners",
       "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/d12_system_grant_io.py",
+      "rationale": "ADR0108: unchanged strict D12 grant IO extraction; zero-debt tooling admission.",
+      "root": "tools",
+      "status": "active_tool"
     }
   ],
   "historical_revise10_counts": {

@@ -249,7 +249,7 @@ def test_workflow_missing_manifest_refusal_and_failure_receipt(
 
 
 def test_workflow_end_to_end_portable_worker_execution_and_cleanup(
-    tmp_path: Path, monkeypatch,
+    tmp_path: Path,
 ) -> None:
     """Complete workflow: admitted capability executes extraction and cleans attempt root."""
     store_dir = tmp_path / "art_store"
@@ -260,11 +260,6 @@ def test_workflow_end_to_end_portable_worker_execution_and_cleanup(
     workspace_dir.mkdir(mode=0o700)
     workspace_dir.chmod(0o700)
 
-    from repomap_test_support.portable_worker_scenarios import package_worker_code
-    monkeypatch.setattr("repomap_kg.coordinator._portable_worker_launch.__file__", package_worker_code(tmp_path / "package"))
-    seed = tmp_path / "sup_seed_src_job-r25-e2e"
-    seed.mkdir()
-    (seed / "helper.go").write_text("package main\nfunc Greet() string { return \"hello\" }\n", encoding="utf-8")
     cap = create_run25_test_capability(tmp_path, store, workspace_dir, job_id="job-r25-e2e")
     cap_path = create_portable_capability(tmp_path, cap)
     assert cap_path.exists()
