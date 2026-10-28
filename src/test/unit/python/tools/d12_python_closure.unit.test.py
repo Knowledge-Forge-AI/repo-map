@@ -1,4 +1,8 @@
-"""ADR 0089 D4 E-f host owner: canned contract reports and dpkg rows; the frozen arm64 entry is used as-is."""
+"""ADR 0089 D4 E-f host owner: canned contract reports and dpkg rows; the enrolled entries are used as-is.
+
+ADR 0103 enrolled the native AMD 3.12.16 default, so AMD positives use that actual entry and its config; held and
+foreign (historical 3.12.15 a33c10) AMD states are isolated doubles that must still refuse.
+"""
 
 from __future__ import annotations
 
@@ -19,7 +23,8 @@ from repomap_kg.runtime import python_payload as payload
 
 ENTRY, LIBC, REAL = payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"], "/lib/aarch64-linux-gnu/libc.so.6", "/usr/lib/libc.so.6"
 NAMES, OK = list(ENTRY.baseline_imports), "\tlibc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x2)\n"
-AMD_CFG = "sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1"
+AMD_CFG = payload.PYTHON_31216_AMD64_CONFIG
+FOREIGN_31215_AMD_CFG = "sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1"
 LIBC_AMD, REAL_AMD = "/lib/x86_64-linux-gnu/libc.so.6", "/usr/lib/x86_64-linux-gnu/libc.so.6"
 OK_AMD = f"\tlibc.so.6 => {LIBC_AMD} (0x2)\n"
 
@@ -31,6 +36,7 @@ class Refused(Exception):
 def _amd_entry() -> payload.PayloadExclusion:
     entry = payload.PYTHON_PAYLOAD_EXCLUSIONS.get("amd64")
     assert entry is not None, "frozen amd64 exclusion entry required"
+    assert entry == payload.build_31216_exclusion("amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)
     return entry
 
 
@@ -326,3 +332,20 @@ def test_validate_hosted_closure_rejects_non_mapping_and_clean_contract_drift() 
     clean = _amd_clean_closure()
     clean["elf_count"] = 999
     assert any("closure invalid" in v for v in _validate_hosted(clean, "sha256:" + "8" * 64))
+
+
+def test_foreign_31215_amd_config_and_held_amd_default_refuse_the_trim(monkeypatch: pytest.MonkeyPatch) -> None:
+    foreign = copy.deepcopy(_amd_closure())
+    foreign["contract"]["python_config"] = FOREIGN_31215_AMD_CFG  # metadata agrees; the enrolled entry does not
+    assert _validate_hosted(foreign, FOREIGN_31215_AMD_CFG) == [
+        "positive exploration steps.closure invalid: invalid trim contract or config"]
+    facts, honest = _amd_closure(), {
+        **_amd_report(), "result": "refused", "exclusion": None, "retained": None,
+        "reasons": ["PayloadRefusal: no frozen exclusion applies; unresolved or missing dynamic dependencies"]}
+    monkeypatch.setattr(payload, "PYTHON_PAYLOAD_EXCLUSIONS", {"arm64": ENTRY})  # isolated held-AMD double
+    assert _validate_hosted(facts, AMD_CFG) == [
+        "positive exploration steps.closure invalid: invalid trim contract or config"]
+    box = Box(honest, code=1, arch="amd64", real=REAL_AMD)
+    with pytest.raises(Refused, match="unresolved or missing dynamic dependencies"):
+        _facts(box, _steps(config=AMD_CFG, platform="linux/amd64"), "linux/amd64")
+    assert box.argv[0][-1] == "--no-exclusion", "a held default never applies the trim"

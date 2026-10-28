@@ -259,7 +259,8 @@ def test_real_walk_special_entries_and_main_guard_refusals(
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
     real_m = platform.machine()
     arch = payload.NATIVE[real_m]
-    assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion(
+        "amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS), "ADR 0103 admitted AMD default"
     assert set(historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64", "amd64"}
     for plat, ent in historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS.items():
         payload.validate_exclusion(ent, plat)

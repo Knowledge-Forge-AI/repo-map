@@ -101,7 +101,8 @@ LEGACY: dict[str, Any] = dict(python_index="sha256:d50fb7611f86d04a3b0471b46d755
 def test_frozen_entry_is_the_static_trixie_arm64_identity_and_all_77_imports() -> None:
     entry = historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS["arm64"]
     assert set(historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64", "amd64"}
-    assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS, "the 3.12.16 amd64 baseline is held"
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion(
+        "amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS), "ADR 0103: the admitted native AMD 3.12.16 entry"
     assert ("arm64" in payload.PYTHON_PAYLOAD_EXCLUSIONS) is (payload.ARM64_31216_NATIVE_BASELINE_IMPORTS is not None)
     assert not hasattr(payload, "ARM64_BASELINE_IMPORTS") and not hasattr(payload, "AMD64_BASELINE_IMPORTS")
     assert entry[1:10] == ("sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",

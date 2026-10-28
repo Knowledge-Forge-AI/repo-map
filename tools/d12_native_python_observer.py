@@ -110,7 +110,7 @@ def _probe(record: dict[str, Any], state: dict[str, Any], client: Any, owner: An
     architecture = proof.require_native(str((client.info() or {}).get("Architecture") or ""), platform)
     record["daemon"] = {"architecture": architecture, "native": True}
     _stage(record, "defaults")
-    record["defaults"] = proof.held_defaults(architecture)
+    record["defaults"] = proof.default_states()  # both configured defaults; the observation binds one later
     _stage(record, "envelope")
     hierarchy = proof.verify_hierarchy(proof.read_envelope(repo_root), platform)
     record["envelope"] = {"path": proof.ENVELOPE_PATH, "sha256": proof.ENVELOPE_SHA256, "verified": True}

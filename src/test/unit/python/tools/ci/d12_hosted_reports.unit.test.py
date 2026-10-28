@@ -18,9 +18,7 @@ from repomap_kg.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION, PYTHON_RELEASE_IMAGE,
 )
 from repomap_test_support import d12_core_image
-from src.test.unit.python.tools.ci.d12_hosted_fixtures import (
-    injected_amd64_31216_exclusion_fixture, make_positive_amd64_closure,
-)
+from src.test.unit.python.tools.ci.d12_hosted_fixtures import make_positive_amd64_closure
 import test_sandbox_images
 
 import ci.d12_hosted_reports as reports_mod
@@ -31,6 +29,9 @@ from ci.d12_hosted_reports import (
     validate_canonical_exploration_report, validate_canonical_freeze_report,
 )
 
+ADMITTED_AMD64 = payload.build_31216_exclusion("amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)
+FOREIGN_31215_AMD64 = ADMITTED_AMD64._replace(
+    python_config="sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1")
 REAL_HELPER_SHA256 = hashlib.sha256((ROOT / "tools/native_apt_prerequisites.py").read_bytes()).hexdigest()
 EXP_KW: dict[str, Any] = {
     "expected_source_sha256": "1" * 64,
@@ -324,76 +325,75 @@ def test_validate_canonical_exploration_report_refusal_prefixes_and_unknown_stag
     assert any("ambiguous or unknown refusal stage" in v for v in v_unknown)
 
 
-def test_validate_canonical_exploration_report_positive_real_consume_and_independent_manifest() -> None:
+def test_validate_canonical_exploration_report_positive_real_consume_and_independent_manifest(monkeypatch: Any) -> None:
     pos = make_exploration_report(refused=False)
-    assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
-    assert any(
-        "invalid trim contract or config" in v
-        for v in validate_canonical_exploration_report(
-            pos, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
-        )
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == ADMITTED_AMD64, "ADR 0103 admitted default, not injected"
+    assert pos["steps"]["libpq_runtime"]["verified"] == "host-rechecked builder result"
+    assert pos["steps"]["libpq_runtime"]["helper_sha256"] == REAL_HELPER_SHA256
+    assert validate_canonical_exploration_report(
+        pos, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
+    ) == []
+
+    tampered_manifest = make_exploration_report(refused=False)
+    tampered_manifest["steps"]["candidate"]["manifest"]["libpq_sha256"] = "e" * 64
+    v_tampered = validate_canonical_exploration_report(
+        tampered_manifest, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
     )
-    with injected_amd64_31216_exclusion_fixture():
-        assert pos["steps"]["libpq_runtime"]["verified"] == "host-rechecked builder result"
-        assert pos["steps"]["libpq_runtime"]["helper_sha256"] == REAL_HELPER_SHA256
-        assert validate_canonical_exploration_report(
-            pos, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
-        ) == []
+    assert any("libpq_runtime probe validation failed" in v for v in v_tampered)
 
-        tampered_manifest = make_exploration_report(refused=False)
-        tampered_manifest["steps"]["candidate"]["manifest"]["libpq_sha256"] = "e" * 64
-        v_tampered = validate_canonical_exploration_report(
-            tampered_manifest, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
-        )
-        assert any("libpq_runtime probe validation failed" in v for v in v_tampered)
+    low_api = make_exploration_report(refused=False, api=PRODUCT_MINIMUM_LIBPQ_VERSION - 1)
+    low_api["host_forecast_substituted"] = True
+    low_api["steps"]["candidate"]["written_to_source"] = True
+    low_api["steps"]["closure"]["elf_count"] = 0
+    v_pos = validate_canonical_exploration_report(
+        low_api, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
+    )
+    assert any("host_forecast_substituted" in v for v in v_pos)
+    assert any("candidate metadata flags" in v for v in v_pos)
+    assert any("closure invalid" in v for v in v_pos)
+    assert any(f"below {PRODUCT_MINIMUM_LIBPQ_VERSION}" in v for v in v_pos)
 
-        low_api = make_exploration_report(refused=False, api=PRODUCT_MINIMUM_LIBPQ_VERSION - 1)
-        low_api["host_forecast_substituted"] = True
-        low_api["steps"]["candidate"]["written_to_source"] = True
-        low_api["steps"]["closure"]["elf_count"] = 0
-        v_pos = validate_canonical_exploration_report(
-            low_api, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True
-        )
-        assert any("host_forecast_substituted" in v for v in v_pos)
-        assert any("candidate metadata flags" in v for v in v_pos)
-        assert any("closure invalid" in v for v in v_pos)
-        assert any(f"below {PRODUCT_MINIMUM_LIBPQ_VERSION}" in v for v in v_pos)
+    held = {k: v for k, v in payload.PYTHON_PAYLOAD_EXCLUSIONS.items() if k != "amd64"}
+    for doubled in (held, {**held, "amd64": FOREIGN_31215_AMD64}):  # isolated held and foreign source maps
+        monkeypatch.setattr(payload, "PYTHON_PAYLOAD_EXCLUSIONS", doubled)
+        assert any("invalid trim contract or config" in v for v in validate_canonical_exploration_report(
+            pos, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True))
 
 
 def test_validate_canonical_exploration_report_strict_amd64_trim_and_closure_mutations() -> None:
-    assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
-    with injected_amd64_31216_exclusion_fixture() as amd:
-        py_meta = VERIFIED_AMD64_BASE_METADATA["python"]
-        assert (amd.python_index, amd.platform_manifest, amd.python_config) == (
-            py_meta["index"], py_meta["manifest"], py_meta["config"])
+    amd = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    assert amd == ADMITTED_AMD64, "ADR 0103 admitted default, not injected"
+    py_meta = VERIFIED_AMD64_BASE_METADATA["python"]
+    assert (amd.python_index, amd.platform_manifest, amd.python_config) == (
+        py_meta["index"], py_meta["manifest"], py_meta["config"])
 
-        clean_legacy = make_exploration_report(refused=False)
-        clean_legacy["steps"]["closure"] = {
-            "unresolved": [], "baseline_failed": [], "elf_count": 42, "retained": {"preserved": True, "unresolved": []},
-            "imports": list(amd.baseline_imports), "packages": [["libpq5", "18.6-1.pgdg13+2", "amd64"]],
-        }
-        srv = {"files": [{"role": "libpq", "owner": "libpq5", "resolved": "/usr/lib/x86_64-linux-gnu/libpq.so.5.18",
-                          "sha256": "7" * 64}]}
-        exp_in, hashes = d12_libpq_runtime_probe.binding(clean_legacy["steps"], srv, "linux/amd64", "test-run-123")
-        clean_legacy["steps"]["libpq_runtime"] = d12_libpq_runtime_probe.record(
-            exp_in, hashes, api=180006, machine="x86_64",
-            selected=[["libpq5", "18.6-1.pgdg13+2", "amd64", "4" * 64]], digests=("b" * 64, "c" * 64))
-        assert validate_canonical_exploration_report(
-            clean_legacy, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True) == []
+    clean_legacy = make_exploration_report(refused=False)
+    clean_legacy["steps"]["closure"] = {
+        "unresolved": [], "baseline_failed": [], "elf_count": 42, "retained": {"preserved": True, "unresolved": []},
+        "imports": list(amd.baseline_imports), "packages": [["libpq5", "18.6-1.pgdg13+2", "amd64"]],
+    }
+    srv = {"files": [{"role": "libpq", "owner": "libpq5", "resolved": "/usr/lib/x86_64-linux-gnu/libpq.so.5.18",
+                      "sha256": "7" * 64}]}
+    exp_in, hashes = d12_libpq_runtime_probe.binding(clean_legacy["steps"], srv, "linux/amd64", "test-run-123")
+    clean_legacy["steps"]["libpq_runtime"] = d12_libpq_runtime_probe.record(
+        exp_in, hashes, api=180006, machine="x86_64",
+        selected=[["libpq5", "18.6-1.pgdg13+2", "amd64", "4" * 64]], digests=("b" * 64, "c" * 64))
+    assert validate_canonical_exploration_report(
+        clean_legacy, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True) == []
 
-        for mutate in (
-            lambda cl: cl.update(contract=None),
-            lambda cl: cl["contract"].update(exclusion_applies=False),
-            lambda cl: cl["contract"].update(python_config="sha256:" + "0" * 64),
-            lambda cl: cl["contract"].update(program_sha256="0" * 64),
-            lambda cl: cl.update(baseline_unresolved=sorted(cl["baseline_unresolved"])),
-            lambda cl: cl["retained"].update(excluded_absent=False),
-            lambda cl: cl["retained"].update(expected_digest="f" * 64),
-            lambda cl: cl.update(elf_count=82),
-            lambda cl: cl.update(baseline={}),
-        ):
-            rep = make_exploration_report(refused=False)
-            mutate(rep["steps"]["closure"])
-            v = validate_canonical_exploration_report(
-                rep, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True)
-            assert any("closure invalid" in item for item in v), v
+    for mutate in (
+        lambda cl: cl.update(contract=None),
+        lambda cl: cl["contract"].update(exclusion_applies=False),
+        lambda cl: cl["contract"].update(python_config="sha256:" + "0" * 64),
+        lambda cl: cl["contract"].update(program_sha256="0" * 64),
+        lambda cl: cl.update(baseline_unresolved=sorted(cl["baseline_unresolved"])),
+        lambda cl: cl["retained"].update(excluded_absent=False),
+        lambda cl: cl["retained"].update(expected_digest="f" * 64),
+        lambda cl: cl.update(elf_count=82),
+        lambda cl: cl.update(baseline={}),
+    ):
+        rep = make_exploration_report(refused=False)
+        mutate(rep["steps"]["closure"])
+        v = validate_canonical_exploration_report(
+            rep, **EXP_KW, expected_helper_sha256=REAL_HELPER_SHA256, require_positive_observation=True)
+        assert any("closure invalid" in item for item in v), v

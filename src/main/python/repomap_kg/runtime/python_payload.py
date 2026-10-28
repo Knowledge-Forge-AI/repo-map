@@ -30,10 +30,8 @@ _TARGET = re.compile(
     r"/usr/local/lib/python3\.12/lib-dynload/([A-Za-z_][A-Za-z0-9_]*)\.cpython-312-[a-z0-9_]+-linux-gnu\.so")
 Runner = Callable[..., "subprocess.CompletedProcess[str]"]
 
-
 class PayloadRefusal(ValueError):
     pass
-
 
 class PayloadExclusion(NamedTuple):
     architecture: str
@@ -48,10 +46,9 @@ class PayloadExclusion(NamedTuple):
     missing: tuple[str, ...]
     baseline_imports: tuple[str, ...]
 
-
 # ADR 0100: the exact Python 3.12.16 index, its native children and their _tkinter bytes (unchanged from 3.12.15).
-# ARM imports below are its own native observation; unobserved AMD has no default entry.
-# Historical 3.12.15 records remain separate in release_manifest; no import set transfers.
+# Each import tuple is its own native observation: ARM per ADR 0100, AMD per ADR 0103 (CI83 run 40612206734); neither
+# aliases the other. Historical 3.12.15 records remain separate in release_manifest; no import set transfers.
 PYTHON_31216_INDEX = "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e"
 PYTHON_31216_ARM64_MANIFEST = "sha256:0ced713d9b8336172d981d8f25f2422b6782bdad019fda4cb653c6ee187430de"
 PYTHON_31216_ARM64_CONFIG = "sha256:7d0134fc196a9daa289acd038dd1c95b6873cacfaa4d6ea97c51501e0af515a3"
@@ -69,7 +66,16 @@ ARM64_31216_NATIVE_BASELINE_IMPORTS: tuple[str, ...] = (
     "readline", "resource", "select", "spwd", "syslog", "termios", "unicodedata", "xxlimited", "xxlimited_35",
     "xxsubtype", "zlib",
 )
-AMD64_31216_NATIVE_BASELINE_IMPORTS: tuple[str, ...] | None = None
+AMD64_31216_NATIVE_BASELINE_IMPORTS: tuple[str, ...] = ("_asyncio", "_bisect", "_blake2", "_bz2", "_codecs_cn",
+    "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_contextvars", "_crypt", "_csv",
+    "_ctypes", "_ctypes_test", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_gdbm",
+    "_hashlib", "_heapq", "_json", "_lsprof", "_lzma", "_md5", "_multibytecodec", "_multiprocessing", "_opcode",
+    "_pickle", "_posixshmem", "_posixsubprocess", "_queue", "_random", "_sha1", "_sha2", "_sha3", "_socket", "_sqlite3",
+    "_ssl", "_statistics", "_struct", "_testbuffer", "_testcapi", "_testclinic", "_testimportmultiple",
+    "_testinternalcapi", "_testmultiphase", "_testsinglephase", "_uuid", "_xxinterpchannels", "_xxsubinterpreters",
+    "_xxtestfuzz", "_zoneinfo", "array", "audioop", "binascii", "cmath", "fcntl", "grp", "math", "mmap", "ossaudiodev",
+    "pyexpat", "readline", "resource", "select", "spwd", "syslog", "termios", "unicodedata", "xxlimited",
+    "xxlimited_35", "xxsubtype", "zlib")
 _TK_31216_SPECS: Mapping[str, tuple[str, str, str, str, int, int]] = MappingProxyType({
     "arm64": (PYTHON_31216_ARM64_MANIFEST, PYTHON_31216_ARM64_CONFIG,
               f"{DYNLOAD}/_tkinter.cpython-312-aarch64-linux-gnu.so",
@@ -78,7 +84,6 @@ _TK_31216_SPECS: Mapping[str, tuple[str, str, str, str, int, int]] = MappingProx
               f"{DYNLOAD}/_tkinter.cpython-312-x86_64-linux-gnu.so",
               "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8", 62448, 62),  # EM_X86_64
 })
-
 
 def validate_exclusion(entry: PayloadExclusion, architecture: str) -> None:
     match, names = _TARGET.fullmatch(entry.path), entry.baseline_imports
@@ -91,7 +96,6 @@ def validate_exclusion(entry: PayloadExclusion, architecture: str) -> None:
             or list(names) != sorted(set(names)) or not all(map(_MODULE.fullmatch, names)) or entry.module in names):
         raise PayloadRefusal(f"payload exclusion entry for {architecture!r} is not exact")
 
-
 def build_31216_exclusion(architecture: str, baseline_imports: Sequence[str]) -> PayloadExclusion:
     """The exact 3.12.16 entry for one native architecture and an import set observed on that architecture."""
     if (spec := _TK_31216_SPECS.get(architecture)) is None:
@@ -102,14 +106,12 @@ def build_31216_exclusion(architecture: str, baseline_imports: Sequence[str]) ->
     validate_exclusion(entry, architecture)
     return entry
 
-
-PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = MappingProxyType(
-    {"arm64": build_31216_exclusion("arm64", ARM64_31216_NATIVE_BASELINE_IMPORTS)})
-
+PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = MappingProxyType({
+    "arm64": build_31216_exclusion("arm64", ARM64_31216_NATIVE_BASELINE_IMPORTS),
+    "amd64": build_31216_exclusion("amd64", AMD64_31216_NATIVE_BASELINE_IMPORTS)})
 
 def _digest(entries: Mapping[str, Any]) -> str:
     return hashlib.sha256(json.dumps(entries, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-
 
 def _logical(mount: Path, path: Path) -> str:
     real, base = os.path.realpath(path), os.path.realpath(mount)
@@ -295,12 +297,10 @@ def main(argv: Sequence[str], *, run: Runner = subprocess.run, mount: Path = Pat
     return 0 if report["result"] != "refused" else 1
 
 
-# Fail-closed helpers of the final probe (ADR 0089 D2, M1). ``run`` accepts only
-# the documented exit codes, and stderr only with a documented non-zero outcome
-# (dpkg-query -S "no path found", dpkg --verify problems). ``dynamic`` reads the
-# ELF program headers without executing the file, so a static ELF such as the Go
-# helper is never handed to ldd, while every dynamic ELF needs ldd success.
-# ``LIBRARY_FILE`` names shared or static libraries, never Cython's libpq.pxd.
+# Fail-closed helpers of the final probe (ADR 0089 D2, M1). ``run`` accepts only the documented exit codes, and stderr
+# only with a documented non-zero outcome (dpkg-query -S "no path found", dpkg --verify problems). ``dynamic`` reads
+# ELF program headers without executing the file, so a static ELF such as the Go helper is never handed to ldd, while
+# every dynamic ELF needs ldd success. ``LIBRARY_FILE`` names shared or static libraries, never Cython's libpq.pxd.
 RELEASE_PROBE_HELPERS_PY = """\
 import fnmatch, glob, re, struct, subprocess
 LIBRARY_FILE = re.compile(r"libpq[^/]*\\.(?:so(?:\\.\\d+)*|a|dylib)\\Z")

@@ -39,14 +39,16 @@ def test_native_python31216_component(capsys: pytest.CaptureFixture[str]) -> Non
     observer.observe_component(record, client=client, owner=owner, run=run, boundary=boundary,
                                platform=ARM_PLATFORM, environ=os.environ, require_override=False,
                                repo_root=REPO_ROOT)
-    assert payload.AMD64_31216_NATIVE_BASELINE_IMPORTS is None and "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
+    amd64 = payload.build_31216_exclusion("amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == amd64, "ADR 0103 admitted AMD default; never qualified here"
     daemon = str(client.info().get("Architecture") or "").strip().lower()
     if daemon not in ("aarch64", "arm64"):
         with capsys.disabled():
             print(REFUSAL_PREFIX + json.dumps({
                 "schema": record["schema"], "daemon_arch": daemon, "result": "arm64_component_refused",
-                "stage": record["stage"], "amd64_qualified": False, "operations_delta": record["operations"].get(
-                    "delta"), "cleanup": record["cleanup"], "qualification": record["qualification"],
+                "stage": record["stage"], "amd64_qualified": False, "amd64_default_enrolled": True,
+                "operations_delta": record["operations"].get("delta"), "cleanup": record["cleanup"],
+                "qualification": record["qualification"],
             }, sort_keys=True, separators=(",", ":")), flush=True)
         assert record["status"] == "refused" and record["stage"] == "daemon", record["reasons"]
         assert "provenance" not in record and "container" not in record, "refusal precedes any image access"
@@ -58,7 +60,7 @@ def test_native_python31216_component(capsys: pytest.CaptureFixture[str]) -> Non
         print(RECORD_PREFIX + json.dumps(record, sort_keys=True, separators=(",", ":")), flush=True)
     assert record["status"] == "observed", record["reasons"]
     assert record["provenance"]["config"] == payload.PYTHON_31216_ARM64_CONFIG
-    assert record["summary"]["default_enrolled"] is True and record["defaults"]["amd64_default_held"] is True
+    assert record["summary"]["default_enrolled"] is True and record["defaults"]["amd64_default_enrolled"] is True
     assert record["cleanup"]["verified"] is True and record["operations"]["delta"] == {}
     assert record["qualification"] == {"image": False, "p3": False, "whole_preflight": False,
                                        "default_enrollment": False}

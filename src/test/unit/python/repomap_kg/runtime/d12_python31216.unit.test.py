@@ -49,8 +49,7 @@ def test_python_31216_payload_oci_identities_and_native_arm_baseline() -> None:
     declaration = next(n for n in tree.body if isinstance(n, ast.AnnAssign)
                        and isinstance(n.target, ast.Name) and n.target.id == "ARM64_31216_NATIVE_BASELINE_IMPORTS")
     assert isinstance(declaration.value, ast.Tuple) and ast.literal_eval(declaration.value) == baseline
-    assert payload.AMD64_31216_NATIVE_BASELINE_IMPORTS is None
-    assert set(payload.PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64"}
+    assert set(payload.PYTHON_PAYLOAD_EXCLUSIONS) == {"arm64", "amd64"}
     assert payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"].baseline_imports == baseline
     for name in ("ARM64_BASELINE_IMPORTS", "AMD64_BASELINE_IMPORTS",
                  "ARM64_31216_PREDICTED_IMPORTS_AWAITING_NATIVE_PROOF"):
@@ -69,6 +68,30 @@ def test_python_31216_payload_oci_identities_and_native_arm_baseline() -> None:
 
     with pytest.raises(payload.PayloadRefusal, match="unsupported 3.12.16 payload architecture"):
         payload.build_31216_exclusion("riscv64", ("math",))
+
+
+def test_admitted_amd64_default_is_its_own_ci83_native_literal_and_the_exact_accepted_entry() -> None:
+    import ast
+    import hashlib
+
+    from repomap_kg.runtime import python_payload as payload
+
+    tree = ast.parse(Path(str(payload.__file__)).read_text())
+    declared = {n.target.id: n.value for n in tree.body if isinstance(n, ast.AnnAssign)
+                and isinstance(n.target, ast.Name) and n.target.id.endswith("_31216_NATIVE_BASELINE_IMPORTS")}
+    amd = declared["AMD64_31216_NATIVE_BASELINE_IMPORTS"]
+    assert isinstance(amd, ast.Tuple) and all(isinstance(e, ast.Constant) for e in amd.elts), "a literal, no alias"
+    names = ast.literal_eval(amd)
+    assert names == payload.AMD64_31216_NATIVE_BASELINE_IMPORTS and len(names) == 77
+    assert hashlib.sha256(" ".join(names).encode()).hexdigest() == (
+        "049267074bee42d4449e7a3ed866076d6529b44106e0e3676f41a5e1da277a1b")
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion("amd64", names) == (
+        "amd64", "sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e",
+        "sha256:6d2b0577e6d1632f077331de8e4780535f54839d163ded7abb4b7dd37b5d37ac",
+        "sha256:3a1b98be05abc7ac60c8712a943688620a602c3e0e6bfbc567afbeabe2085b28",
+        "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+        "4505ea29e626d11865106c975d7bed84d472bc6a4c0f2aedd670c6a3ecf233a8", 62448, 62, "_tkinter",
+        ("libtcl8.6.so", "libtk8.6.so"), names)
 
 
 def test_default_exclusions_refuse_amd64_observation_with_unchanged_frozen_tkinter_bytes(
@@ -111,11 +134,14 @@ def test_default_exclusions_refuse_amd64_observation_with_unchanged_frozen_tkint
         bad = cmd[4] == "import _tkinter"
         return subprocess.CompletedProcess(cmd, int(bad), "", "ImportError: libtk8.6.so" * bad)
 
-    # Default PYTHON_PAYLOAD_EXCLUSIONS (omitted exclusions= argument) must refuse amd64 and leave _tkinter intact.
+    # The default map (omitted exclusions=) now applies the admitted AMD entry (ADR 0103); these synthetic Tk bytes
+    # and import set are not its frozen identity, so it refuses before removal and leaves _tkinter intact.
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion(
+        "amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)
     rc = payload.main(["amd64"], run=fake_run, mount=tmp_path, executable="py", machine=lambda: "x86_64")
     rep = json.loads(capsys.readouterr().out.splitlines()[-1])
     assert rc == 1 and rep["result"] == "refused" and rep["exclusion"] is None
-    assert "no frozen exclusion applies" in rep["reasons"][0]
+    assert "frozen exclusion refused: target hash, size or ELF class/machine differs" in rep["reasons"][0]
     assert (tmp_path / tk_rel.lstrip("/")).read_bytes() == tk_bytes
 
     # ARM enrollment never enrolls AMD; its default observation still refuses without changing bytes.
@@ -134,9 +160,22 @@ def test_default_exclusions_refuse_amd64_observation_with_unchanged_frozen_tkint
     assert (tmp_path / tk_rel.lstrip("/")).read_bytes() == tk_bytes
 
 
+def _amd_observed(entry: Any, *, raw: bool = True) -> dict[str, Any]:
+    from repomap_kg.runtime import python_payload as payload
+
+    names = sorted((*entry.baseline_imports, *(["_tkinter"] if raw else [])))
+    return {"machine": "x86_64", "dynload_real": payload.DYNLOAD, "targets": {}, "elves": {entry.path: {
+        "sha256": entry.sha256, "size": entry.size, "elf": [2, 1, entry.elf_machine], "ldd_exit": 0,
+        "ldd": "".join(f"\t{library} => not found\n" for library in entry.missing)}} if raw else {},
+        "dynload": [[f"{name}.cpython-312-x86_64-linux-gnu.so", "file"] for name in names],
+        "imports": list(entry.baseline_imports),
+        "failed": {"_tkinter": {"exit": 1, "error": "ImportError: libtk8.6.so"}} if raw else {}}
+
+
 def test_default_map_refuses_amd64_carrying_the_exact_frozen_tkinter_identity_and_keeps_raw_baseline(
     capsys: Any, monkeypatch: Any
 ) -> None:
+    """ADR 0103: the default map is admitted, so this refusal now uses explicit isolated held-map doubles."""
     import json
     import sys
 
@@ -145,22 +184,43 @@ def test_default_map_refuses_amd64_carrying_the_exact_frozen_tkinter_identity_an
 
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
     amd = historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
-    names = sorted((*amd.baseline_imports, "_tkinter"))
-    observed = {
-        "machine": "x86_64", "dynload_real": payload.DYNLOAD, "targets": {},
-        "elves": {amd.path: {"sha256": amd.sha256, "size": amd.size, "elf": [2, 1, amd.elf_machine], "ldd_exit": 0,
-                             "ldd": "".join(f"\t{library} => not found\n" for library in amd.missing)}},
-        "dynload": [[f"{name}.cpython-312-x86_64-linux-gnu.so", "file"] for name in names],
-        "imports": list(amd.baseline_imports), "failed": {"_tkinter": {"exit": 1, "error": "ImportError: libtk8.6.so"}},
-    }
+    observed = _amd_observed(amd)
     assert payload.classify(observed, amd) is not None, "the observation carries the exact frozen _tkinter bytes"
     monkeypatch.setattr(payload, "observe", lambda *_args: ({}, observed))
 
     def no_run(*_args: Any, **_kwargs: Any) -> Any:
         raise AssertionError("the refusal must precede any removal or ownership probe")
 
-    code = payload.main(["amd64"], run=no_run, mount=Path("/nonexistent"), executable="py", machine=lambda: "x86_64")
+    held_maps: tuple[dict[str, Any], ...] = ({}, {"amd64": None})
+    for held in held_maps:
+        code = payload.main(["amd64"], run=no_run, mount=Path("/nonexistent"), executable="py",
+                            machine=lambda: "x86_64", exclusions=held)
+        report = json.loads(capsys.readouterr().out.splitlines()[-1])
+        assert code == 1 and report["result"] == "refused" and report["exclusion"] is None
+        assert "no frozen exclusion applies" in report["reasons"][0]
+        assert report["baseline"] == observed, "the raw baseline is recorded before classification can refuse"
+
+
+def test_default_map_trims_exactly_the_admitted_amd64_entry(capsys: Any, monkeypatch: Any) -> None:
+    import json
+    import sys
+
+    from repomap_kg.runtime import python_payload as payload
+
+    monkeypatch.setattr(sys, "dont_write_bytecode", True)
+    entry = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
+    raw, after = _amd_observed(entry), _amd_observed(entry, raw=False)
+    views = iter([({entry.path: ["file", entry.sha256, entry.size, 33188]}, raw), ({}, after)])
+    removed: list[Any] = []
+    monkeypatch.setattr(payload, "observe", lambda *_args: next(views))  # canned raw and post-removal observations
+    monkeypatch.setattr(payload, "remove_exclusion", lambda _mount, found: removed.append(found))
+
+    def no_owner_probe(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("no retained target needs an ownership probe")
+
+    code = payload.main(["amd64"], run=no_owner_probe, mount=Path("/nonexistent"), executable="py",
+                        machine=lambda: "x86_64")
     report = json.loads(capsys.readouterr().out.splitlines()[-1])
-    assert code == 1 and report["result"] == "refused" and report["exclusion"] is None
-    assert "no frozen exclusion applies" in report["reasons"][0]
-    assert report["baseline"] == observed, "the raw baseline is recorded before classification can refuse"
+    assert code == 0 and report["result"] == "trimmed" and report["reasons"] == [], report["reasons"]
+    assert removed == [entry] and report["exclusion"]["python_config"] == payload.PYTHON_31216_AMD64_CONFIG
+    assert report["retained"]["imports"] == list(payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)

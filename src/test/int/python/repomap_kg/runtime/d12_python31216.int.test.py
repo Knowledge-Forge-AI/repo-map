@@ -38,12 +38,13 @@ def test_python_31216_native_arm64_component_proof(capsys: pytest.CaptureFixture
     if raw_arch.strip().lower() in ("amd64", "x86_64"):
         with pytest.raises(proof.Python31216ProofError, match="native linux/arm64 proof refuses"):
             proof.normalize_daemon_arch(raw_arch)
-        assert payload.AMD64_31216_NATIVE_BASELINE_IMPORTS is None
-        assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
+        amd64 = payload.build_31216_exclusion("amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)
+        assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == amd64  # ADR 0103 source fact; this ARM owner never vouches
         proof.validate_zero_docker_operations(boundary.projection(), baseline=operations_before)
         with capsys.disabled():
             print("PY31216_ARM_ADMISSION_REFUSAL_JSON:" + json.dumps({
-                "daemon_arch": raw_arch, "result": "arm64_proof_refused", "amd64_qualified": False}), flush=True)
+                "daemon_arch": raw_arch, "result": "arm64_proof_refused", "amd64_qualified": False,
+                "amd64_default_enrolled": True}), flush=True)
         return
     daemon_arch = proof.normalize_daemon_arch(raw_arch)
 
@@ -143,3 +144,4 @@ def test_python_31216_native_arm64_component_proof(capsys: pytest.CaptureFixture
     )
     with capsys.disabled():
         print(proof.format_native_proof_stdout(proof_record), flush=True)
+    assert proof_record["amd64_qualified"] is False and proof_record["amd64_default_enrolled"] is True

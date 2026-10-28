@@ -382,12 +382,12 @@ def build_native_proof_record(
         raise Python31216ProofError(f"container cleanup not verified: {cleanup_details!r}")
     before = validate_zero_docker_operations(operations_before, baseline=operations_before)
     after = validate_zero_docker_operations(operations_after, baseline=operations_before)
-    if "amd64" in payload.PYTHON_PAYLOAD_EXCLUSIONS or payload.AMD64_31216_NATIVE_BASELINE_IMPORTS is not None:
-        raise Python31216ProofError("amd64 3.12.16 baseline must remain held (None) during arm64 component proof")
+    amd64_enrolled = isinstance(payload.PYTHON_PAYLOAD_EXCLUSIONS.get("amd64"), payload.PayloadExclusion)  # ADR 0103
     return {
         "schema": PROOF_SCHEMA, "scope": "raw_native_arm64_component_proof", "python_version": EXPECTED_PYTHON_VERSION,
         "daemon_arch": provenance["daemon_arch"], "platform": provenance["platform"],
-        "amd64_qualified": False, "default_arm64_enrolled": bool(default_enrolled),
+        "amd64_qualified": False, "amd64_default_enrolled": amd64_enrolled,
+        "default_arm64_enrolled": bool(default_enrolled),
         "matches_predicted_arm64_imports": bool(trimmed_summary.get("matches_predicted_arm64_imports")),
         "oci_provenance": dict(provenance), "docker_operations": {"before_probe": before, "after_probe": after},
         "dependency_runtime_cache": {"qualification": "unexecuted", "reason": DEPENDENCY_CACHE_UNEXECUTED_REASON},

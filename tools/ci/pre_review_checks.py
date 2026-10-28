@@ -162,6 +162,7 @@ def checks(scratch_dir: Path, tool_root: Path | None = None) -> tuple[Check, ...
                 "AGENTS.md",
                 "CLAUDE.md",
                 "pyproject.toml",
+                "--config=tools/ci/betterleaks.toml",
                 "--no-banner",
                 "--redact=100",
                 "--report-format=json",

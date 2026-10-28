@@ -1941,6 +1941,16 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "product6.navigation47.ci83fix1.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/betterleaks_config.unit.test.py"
+      ],
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI83FIX1 ADR 0103 Betterleaks configuration bytes, exact public-fingerprint classification scope and explicit scanner command contract owner; strict zero-debt admission.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_tooling",
       "id": "product6.navigation47.d12system1.host_proof.tools",
       "members": [
@@ -44386,6 +44396,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/arch8_acceptance.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/betterleaks_config.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI83FIX1 ADR 0103 Betterleaks configuration bytes, exact public-fingerprint classification scope and explicit scanner command contract owner; strict zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

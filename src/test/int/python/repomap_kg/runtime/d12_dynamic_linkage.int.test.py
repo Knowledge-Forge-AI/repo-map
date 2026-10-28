@@ -237,6 +237,13 @@ def test_dependency_only_runtime_linker_cache_and_missing_soname_mechanism() -> 
     run = active_resource_run()
     assert run is not None, "the linker-cache mechanism probe requires the canonical resource run"
     client = boundary.client
+    # ADR 0103: the native daemon selects the enrolled default; the mechanism never derives one from its own
+    # observation. It proves cache/missing-SONAME linkage behavior, not the OCI Python config identity.
+    daemon = str(client.info().get("Architecture") or "").strip().lower()
+    host_arch = {"aarch64": "arm64", "arm64": "arm64", "x86_64": "amd64", "amd64": "amd64"}.get(daemon)
+    assert host_arch is not None, f"unsupported native daemon architecture {daemon!r}"
+    enrolled = python_payload.PYTHON_PAYLOAD_EXCLUSIONS.get(host_arch)
+    assert enrolled is not None, f"no enrolled 3.12.16 payload default for {host_arch!r}; nothing is derived"
     image_id = ensure_canonical_runtime_image(
         repo_root=REPO_ROOT, resource_run=run, client=client, boundary=boundary
     )
@@ -250,6 +257,7 @@ def test_dependency_only_runtime_linker_cache_and_missing_soname_mechanism() -> 
         + "\n"
         + "import contextlib, io, types\n"
         + f"_PAYLOAD_SOURCE_BYTES = {payload_source_bytes!r}\n"
+        + f"_HOST_ARCH = {host_arch!r}\n"
         + f"_ELF_BLOCK_SRC = {elf_block_src!r}\n"
         + "_ELF_BLOCK_CODE = compile(_ELF_BLOCK_SRC, '<release_final_probe_elf_block>', 'exec')\n"
         + "_ORIG_RUN = run\n"
@@ -275,18 +283,13 @@ def test_dependency_only_runtime_linker_cache_and_missing_soname_mechanism() -> 
         + "_native_machine = _payload_mod.platform.machine()\n"
         + "assert _native_machine in _payload_mod.NATIVE, f'unsupported machine: {_native_machine!r}'\n"
         + "_native_arch = _payload_mod.NATIVE[_native_machine]\n"
+        + "assert _native_arch == _HOST_ARCH, f'container {_native_arch!r} is not the native daemon {_HOST_ARCH!r}'\n"
         + "_expected_entry = _payload_mod.PYTHON_PAYLOAD_EXCLUSIONS.get(_native_arch)\n"
-        + "if _expected_entry is None:\n"
-        + "    assert _native_arch == 'arm64', f'3.12.16 native baseline is held for {_native_arch!r}'\n"
-        + "    _no_buf = io.StringIO()\n"
-        + "    with contextlib.redirect_stdout(_no_buf): _no_rc = _payload_mod.main(['arm64', '--no-exclusion'])\n"
-        + "    _no_rep = json.loads(_no_buf.getvalue().splitlines()[-1])\n"
-        + "    assert _no_rc == 1 and _no_rep.get('result') == 'refused', _no_rep\n"
-        + "    _expected_entry = _payload_mod.build_31216_exclusion('arm64', tuple(_no_rep['baseline']['imports']))\n"
+        + "assert _expected_entry is not None, f'no enrolled 3.12.16 payload default for {_native_arch!r}'\n"
         + "assert pathlib.Path(_expected_entry.path).is_file(), _expected_entry.path\n"
         + "_payload_stdout = io.StringIO()\n"
         + "with contextlib.redirect_stdout(_payload_stdout):\n"
-        + "    _payload_exit = _payload_mod.main([_native_arch], exclusions={_native_arch: _expected_entry})\n"
+        + "    _payload_exit = _payload_mod.main([_native_arch])  # the enrolled default map\n"
         + "_payload_lines = [line for line in _payload_stdout.getvalue().splitlines() if line.strip()]\n"
         + "assert len(_payload_lines) == 1, len(_payload_lines)\n"
         + "_payload_report = json.loads(_payload_lines[0])\n"
@@ -375,15 +378,11 @@ def test_dependency_only_runtime_linker_cache_and_missing_soname_mechanism() -> 
     assert mech_report["scope"] == "python_test_base_mechanism_only"
     assert mech_report["postgresql_assembled_runtime_observed"] is False
     prep = mech_report["payload_preparation"]
-    arch = prep["architecture"]
-    expected_exclusion = python_payload.PYTHON_PAYLOAD_EXCLUSIONS.get(arch)
-    if expected_exclusion is None:
-        assert arch == "arm64", f"3.12.16 native baseline is held for {arch!r}"
-        expected_exclusion = python_payload.build_31216_exclusion("arm64", prep["observed_imports"])
+    assert prep["architecture"] == host_arch, (prep["architecture"], host_arch)
     assert prep == {
-        "architecture": expected_exclusion.architecture, "result": "trimmed",
-        "excluded_module": expected_exclusion.module, "excluded_path": expected_exclusion.path,
-        "excluded_sha256": expected_exclusion.sha256, "observed_imports": list(expected_exclusion.baseline_imports),
+        "architecture": enrolled.architecture, "result": "trimmed",
+        "excluded_module": enrolled.module, "excluded_path": enrolled.path,
+        "excluded_sha256": enrolled.sha256, "observed_imports": list(enrolled.baseline_imports),
         "preserved": True, "excluded_absent": True,
     }
     assert mech_report["library_restored"] is True

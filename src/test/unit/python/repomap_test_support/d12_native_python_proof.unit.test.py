@@ -139,12 +139,30 @@ def test_override_is_exact_when_required_and_only_recorded_otherwise() -> None:
         assert proof.verify_override(value, hierarchy, required=False)["selected"] is False
 
 
+FOREIGN_31215_AMD = payload.build_31216_exclusion("amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)._replace(
+    python_config="sha256:a33c10a97f11005523814c6eee013986119fe41f3122f444518117536675c8e1")
+
+
 def test_amd_default_stays_held_and_unenrolled(monkeypatch: pytest.MonkeyPatch) -> None:
-    assert proof.held_defaults("amd64") == {"amd64_default_held": True, "selected_default_enrolled": False}
-    assert proof.held_defaults("arm64")["selected_default_enrolled"] is True
-    monkeypatch.setattr(payload, "AMD64_31216_NATIVE_BASELINE_IMPORTS", ("_ssl",))
-    with pytest.raises(proof.NativeComponentError, match="remain held"):
-        proof.held_defaults("amd64")
+    """ADR 0103 superseded the held default: both actual defaults are configured; held maps are isolated doubles."""
+    assert proof.default_states() == {"amd64_default_enrolled": True, "arm64_default_enrolled": True,
+                                      "bound_by": "raw native observation"}
+    for arch, names in (("amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS),
+                        ("arm64", payload.ARM64_31216_NATIVE_BASELINE_IMPORTS)):
+        assert proof.configured_default(arch) == payload.build_31216_exclusion(arch, names)
+    arm = payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"]
+    doubles: list[tuple[dict[str, Any], str]] = [
+        ({"arm64": arm}, "amd64 3.12.16 default is missing"),
+        ({"arm64": arm, "amd64": None}, "amd64 3.12.16 default is None"),
+        ({"arm64": arm, "amd64": ("_ssl",)}, "amd64 3.12.16 default is malformed"),
+        ({"arm64": arm, "amd64": arm}, "amd64 3.12.16 default is malformed"),
+        ({"arm64": arm, "amd64": FOREIGN_31215_AMD}, "amd64 3.12.16 default is foreign")]
+    for held, message in doubles:
+        with pytest.raises(proof.NativeComponentError, match=message):
+            proof.default_states(held)
+    monkeypatch.setattr(payload, "PYTHON_PAYLOAD_EXCLUSIONS", {"arm64": arm, "amd64": None})
+    with pytest.raises(proof.NativeComponentError, match="default is None"):
+        proof.default_states()  # the module default map is read at call time, never cached
 
 
 @pytest.mark.parametrize("architecture", ["arm64", "amd64"])
@@ -206,6 +224,22 @@ def test_retained_arm_observation_validates_from_its_own_raw_imports() -> None:
         proof.validate_observation(raw, inner, "amd64")  # the ARM fixture never stands in for AMD
 
 
+@pytest.mark.parametrize("arm, message", [
+    (None, "arm64 3.12.16 default is None"),
+    (FOREIGN_31215_AMD, "arm64 3.12.16 default is malformed"),
+    (payload.build_31216_exclusion("arm64", ("_ssl", "math")), "foreign to the raw native observation"),
+    (payload.build_31216_exclusion("arm64", payload.ARM64_31216_NATIVE_BASELINE_IMPORTS)._replace(
+        python_config=payload.PYTHON_31216_AMD64_CONFIG), "default is foreign to the frozen native Tk spec"),
+])
+def test_host_binds_the_configured_default_to_the_raw_observation(arm: Any, message: str) -> None:
+    raw, inner = raw_and_inner()
+    assert proof.validate_observation(raw, inner, "arm64", exclusions=dict(payload.PYTHON_PAYLOAD_EXCLUSIONS))
+    with pytest.raises(proof.NativeComponentError, match="arm64 3.12.16 default is missing"):
+        proof.validate_observation(raw, inner, "arm64", exclusions={})
+    with pytest.raises(proof.NativeComponentError, match=message):
+        proof.validate_observation(raw, inner, "arm64", exclusions={**payload.PYTHON_PAYLOAD_EXCLUSIONS, "arm64": arm})
+
+
 def _tk(r: dict[str, Any]) -> dict[str, Any]:
     return dict(r["report"]["baseline"]["elves"][ARM_TK])
 
@@ -221,6 +255,7 @@ def _tk(r: dict[str, Any]) -> dict[str, Any]:
     (lambda r, i: i.update(machine="x86_64"), "interpreter facts"),
     (lambda r, i: i.update(default_matches=False), "enrolled default differs"),
     (lambda r, i: i.update(default_enrolled=1, default_matches=1), "enrolled default differs"),
+    (lambda r, i: i.update(default_enrolled=False, default_matches=False), "inner flags must equal the host"),
     (lambda r, i: r["report"].update(result="clean"), "exact refusal"),
     (lambda r, i: r["report"].update(reasons=["PayloadRefusal: other"]), "unexpected raw refusal"),
     (lambda r, i: r["report"]["baseline"].update(machine="x86_64"), "not native"),
@@ -258,3 +293,25 @@ def test_public_reasons_remove_private_paths_and_container_ids_but_keep_digests(
     assert "/home/" not in reason and "/Users/" not in reason and payload.PYTHON_31216_INDEX in reason
     assert len(proof.public_reason("x", RuntimeError("y" * 5000))) == 600
     assert proof.integrity(b"abc") == {"bytes": 3, "sha256": hashlib.sha256(b"abc").hexdigest()}
+
+
+def test_ci83_amd_facts_validate_only_with_explicit_prospective_enrollment() -> None:
+    """Historical inner flags stay false; a copied prospective unit double is never fresh native evidence."""
+    fixture = ROOT / "src/test/unit/python/repomap_test_support/d12_native_amd_ci83_fixture.json"
+    record = json.loads(fixture.read_text(encoding="utf-8"))
+    raw, historical = record["raw"], record["inner"]
+    assert record["source"]["run_id"] == 40612206734 and record["source"]["attempt"] == 1
+    assert historical["default_enrolled"] is False and historical["default_matches"] is False
+    with pytest.raises(proof.NativeComponentError, match="inner flags must equal the host"):
+        proof.validate_observation(raw, historical, "amd64")
+    prospective = {**copy.deepcopy(historical), "default_enrolled": True, "default_matches": True}
+    summary = proof.validate_observation(raw, prospective, "amd64")
+    assert tuple(summary["baseline_imports"]) == payload.AMD64_31216_NATIVE_BASELINE_IMPORTS
+    assert (summary["before_entries"], summary["after_entries"], summary["retained_owner_count"]) == (1721, 1720, 21)
+    assert summary["default_enrolled"] is True and summary["unresolved"] == []
+    with pytest.raises(proof.NativeComponentError, match="amd64 3.12.16 default is missing"):
+        proof.validate_observation(raw, prospective, "amd64", exclusions={})
+    foreign = payload.build_31216_exclusion("amd64", ("_ssl", "math"))
+    with pytest.raises(proof.NativeComponentError, match="foreign to the raw native observation"):
+        proof.validate_observation(raw, prospective, "amd64", exclusions={"amd64": foreign})
+    assert historical["default_enrolled"] is False  # no retroactive rewrite of the retained CI83 observation

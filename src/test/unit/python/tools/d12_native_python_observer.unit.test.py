@@ -70,6 +70,7 @@ def test_observes_once_on_the_exact_config_and_succeeds_only_after_complete_cust
     assert record["summary"]["baseline_import_count"] == 77 and record["qualification"] == proof.NON_QUALIFICATION
     assert record["container"]["stderr"] == proof.integrity(world.stderr) and "stderr_text" not in record
     assert record["payload_source_sha256"] == hashlib.sha256(Path(payload.__file__).read_bytes()).hexdigest()
+    assert record["defaults"] == proof.default_states() and record["summary"]["default_enrolled"] is True
     _public(record)
 
 
@@ -173,10 +174,29 @@ def test_held_default_override_and_envelope_refuse_before_image_access(monkeypat
     target.parent.mkdir(parents=True)
     target.write_bytes((ROOT / proof.ENVELOPE_PATH).read_bytes().replace(b"3.12.16", b"3.12.99", 1))
     assert _observe(World(), repo_root=tmp_path)["stage"] == "envelope"
+    world = World(daemon="x86_64")  # ADR 0103: the admitted AMD default passes; the ARM image double then refuses
+    assert _observe(world, platform=AMD)["stage"] == "image" and "image" in world.events
     monkeypatch.setattr(payload, "PYTHON_PAYLOAD_EXCLUSIONS", {**payload.PYTHON_PAYLOAD_EXCLUSIONS, "amd64": None})
     world = World()
     assert _observe(world)["stage"] == "defaults" and "image" not in world.events
     assert _observe(World(daemon="x86_64"), platform=AMD)["stage"] == "defaults"
+
+
+@pytest.mark.parametrize("arch, value, reason", [
+    ("amd64", "missing", "default is missing"),
+    ("arm64", ("_ssl",), "default is malformed"),
+    ("amd64", payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]._replace(python_config=proof.CONFIGS["arm64"]), "foreign"),
+])
+def test_missing_malformed_or_foreign_defaults_refuse_before_image_access(
+        monkeypatch: pytest.MonkeyPatch, arch: str, value: Any, reason: str) -> None:
+    doubled: dict[str, Any] = {**payload.PYTHON_PAYLOAD_EXCLUSIONS, arch: value}
+    if value == "missing":
+        del doubled[arch]
+    monkeypatch.setattr(payload, "PYTHON_PAYLOAD_EXCLUSIONS", doubled)  # an isolated double of the source map
+    world = World()
+    record = _observe(world)
+    assert record["stage"] == "defaults" and reason in record["reasons"][0] and "image" not in world.events
+    assert record["status"] == "refused" and record["cleanup"]["verified"] is True
 
 
 @pytest.mark.parametrize("abort", [KeyboardInterrupt(), SystemExit(3)])

@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, MutableMapping, Sequence
-from contextlib import contextmanager
+from collections.abc import Mapping, MutableMapping, Sequence
 import copy, hashlib, json, subprocess, sys, tempfile
 from pathlib import Path
 from typing import Any
@@ -142,20 +141,9 @@ def make_zero_projection() -> dict[str, int]:
     return {**dict.fromkeys(keys, 0), "managed_test_runtime_image_build_count": 1}
 
 
-@contextmanager
-def injected_amd64_31216_exclusion_fixture() -> Iterator[payload.PayloadExclusion]:
-    orig, entry = (payload.PYTHON_PAYLOAD_EXCLUSIONS,
-                   payload.build_31216_exclusion("amd64", historical.AMD64_BASELINE_IMPORTS))
-    payload.PYTHON_PAYLOAD_EXCLUSIONS = {**orig, "amd64": entry}
-    try:
-        yield entry
-    finally:
-        payload.PYTHON_PAYLOAD_EXCLUSIONS = orig
-
 def make_positive_amd64_closure(ver: str = "18.6-1.pgdg13+2") -> dict[str, Any]:
-    py_meta = VERIFIED_AMD64_BASE_METADATA["python"]
-    entry = (payload.PYTHON_PAYLOAD_EXCLUSIONS.get("amd64")
-             or payload.build_31216_exclusion("amd64", historical.AMD64_BASELINE_IMPORTS))
+    """A trimmed closure under the actual admitted AMD default (ADR 0103); never a historical import set."""
+    py_meta, entry = VERIFIED_AMD64_BASE_METADATA["python"], payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
     libc, real = "/lib/x86_64-linux-gnu/libc.so.6", "/usr/lib/x86_64-linux-gnu/libc.so.6"
     ok, names = f"\tlibc.so.6 => {libc} (0x2)\n", list(entry.baseline_imports)
     elves = {f"{payload.DYNLOAD}/{n}.cpython-312-x86_64-linux-gnu.so": {

@@ -30,7 +30,7 @@ from repomap_kg.runtime import python_payload as payload
 from repomap_kg.runtime.release import PRODUCT_MINIMUM_LIBPQ_VERSION
 from src.test.unit.python.tools.ci.d12_hosted_fixtures import (
     BASE_PARENT_SHA, CANDIDATE_SHA, CANDIDATE_TREE, HEAD_PARENT_SHA,
-    SYNTHETIC_D12_SOURCE_SHA256, SYNTHETIC_SDK_RECIPE_SHA256, injected_amd64_31216_exclusion_fixture,
+    SYNTHETIC_D12_SOURCE_SHA256, SYNTHETIC_SDK_RECIPE_SHA256,
     make_fake_command_runner, make_frozen_identity, make_hosted_env,
     make_pr_event_payload, make_valid_amd64_packages, write_expected_candidate_file, write_inner_reports,
 )
@@ -154,21 +154,23 @@ def test_seal_positive_exploration_passes_only_when_clean_and_zero_exit(
     write_inner_reports(ctx["report_dir"], positive=True)
     (ctx["state_dir"] / "runner-exit-code.txt").write_text("0\n", encoding="utf-8")
     sealed_out = ctx["state_dir"] / "d12-native-amd64-sealed-evidence.json"
-    # Explicit synthetic AMD scope; it cannot enroll or qualify a production baseline.
-    with injected_amd64_31216_exclusion_fixture():
-        sealed, rc = seal_hosted_d12(
-            REPO_ROOT, state_dir=ctx["state_dir"], report_dir=ctx["report_dir"],
-            output_json=sealed_out, run_cmd=make_fake_command_runner(sdk_image_id=SDK_IMAGE_ID),
-            snapshot_fn=ctx["snapshot_fn"],
-        )
-        assert rc == 0
-        assert sealed["result"] == "passed"
-        assert sealed["qualified"] is True
-        assert sealed["validation_violations"] == []
-        assert sealed["seal_errors"] == []
-        assert sealed["application_builds"]["managed_system_candidate_image_build_count"] == 0
-        assert validate_sealed_d12_evidence(sealed, require_positive_qualification=True) == []
-    assert "amd64" not in payload.PYTHON_PAYLOAD_EXCLUSIONS
+    assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion(  # actual ADR 0103 default
+        "amd64", payload.AMD64_31216_NATIVE_BASELINE_IMPORTS)
+    sealed, rc = seal_hosted_d12(
+        REPO_ROOT, state_dir=ctx["state_dir"], report_dir=ctx["report_dir"],
+        output_json=sealed_out, run_cmd=make_fake_command_runner(sdk_image_id=SDK_IMAGE_ID),
+        snapshot_fn=ctx["snapshot_fn"],
+    )
+    assert rc == 0
+    assert sealed["result"] == "passed"
+    assert sealed["qualified"] is True
+    assert sealed["validation_violations"] == []
+    assert sealed["seal_errors"] == []
+    assert sealed["application_builds"]["managed_system_candidate_image_build_count"] == 0
+    assert validate_sealed_d12_evidence(sealed, require_positive_qualification=True) == []
+    monkeypatch.setattr(payload, "PYTHON_PAYLOAD_EXCLUSIONS", {**payload.PYTHON_PAYLOAD_EXCLUSIONS, "amd64": None})
+    assert any("invalid trim contract or config" in v
+               for v in validate_sealed_d12_evidence(sealed, require_positive_qualification=True))
 
 
 def test_seal_fails_when_outer_docker_snapshot_has_added_or_removed_resources(

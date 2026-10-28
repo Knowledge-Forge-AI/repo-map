@@ -2,8 +2,10 @@
 
 import json
 import io
+import os
 import stat
 import subprocess
+import time
 from types import SimpleNamespace
 
 import pytest
@@ -14,6 +16,7 @@ UPPER = "/var/lib/docker/overlay2/layer/diff"
 TOKEN = "a" * 64
 DIGEST = "b" * 64
 GIB = capacity.GIB
+SHARED_FSTAT, SHARED_TIME = os.fstat, time.time  # captured at import, before any fixture
 
 
 def evidence(free=10 * GIB):
@@ -26,6 +29,15 @@ def evidence(free=10 * GIB):
     }
 
 
+class ModuleProxy:
+    """Named overrides for the capacity module's own reference; all else delegates. Shared modules stay intact."""
+
+    def __init__(self, real, **overrides):
+        self._real = real
+        self.__dict__.update(overrides)
+
+    def __getattr__(self, name):
+        return getattr(self._real, name)
 
 
 @pytest.fixture
@@ -36,12 +48,9 @@ def binding(monkeypatch, tmp_path):
     monkeypatch.setattr(capacity, "BINDING_PATH", path)
     monkeypatch.setattr(capacity, "OWNER_PATH", owner)
     monkeypatch.setattr(capacity, "root_mount", lambda: (UPPER, DIGEST))
-    monkeypatch.setattr(capacity.time, "time", lambda: 1000)
-    monkeypatch.setattr(
-        capacity.os,
-        "fstat",
-        lambda fd: SimpleNamespace(st_uid=0, st_mode=stat.S_IFREG | 0o600),
-    )
+    monkeypatch.setattr(capacity, "time", ModuleProxy(time, time=lambda: 1000))
+    regular_0600 = SimpleNamespace(st_uid=0, st_mode=stat.S_IFREG | 0o600)
+    monkeypatch.setattr(capacity, "os", ModuleProxy(os, fstat=lambda fd: regular_0600))
     value = {
         "schema": capacity.SCHEMA,
         "token": TOKEN,
@@ -97,6 +106,18 @@ def test_binding_is_closed_current_and_bound(binding, change, reason):
     path.write_text(json.dumps(value | change))
     with pytest.raises(RuntimeError, match=reason):
         capacity.read_binding()
+
+
+def test_binding_doubles_stay_scoped_to_the_capacity_module(binding, tmp_path):
+    assert capacity.os is not os and capacity.time is not time and capacity.os.fdopen is os.fdopen
+    assert capacity.time.time() == 1000 and capacity.os.fstat(0).st_uid == 0 and capacity.os.O_RDONLY == os.O_RDONLY
+    assert os.fstat is SHARED_FSTAT and time.time is SHARED_TIME and time.time() != 1000
+    probe = tmp_path / "real-io"
+    probe.write_bytes(b"real file I/O")
+    with probe.open("rb") as stream:
+        assert os.fstat(stream.fileno()).st_size == 13 and stream.read() == b"real file I/O"
+    path, value = binding
+    assert json.loads(path.read_text()) == value and capacity.read_binding()["token"] == TOKEN
 
 
 def test_binding_uses_fresh_measurement_not_environment(binding, monkeypatch):
@@ -179,7 +200,7 @@ def test_space_translates_filesystem_failures(monkeypatch):
     def unavailable(path):
         raise PermissionError("/private/backing")
 
-    monkeypatch.setattr(capacity.os, "statvfs", unavailable)
+    monkeypatch.setattr(capacity, "os", ModuleProxy(os, statvfs=unavailable))  # never the shared os module
     with pytest.raises(
         RuntimeError,
         match="sandbox_capacity_refused: filesystem_measurement_unavailable",

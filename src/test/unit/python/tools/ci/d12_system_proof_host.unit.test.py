@@ -30,12 +30,20 @@ REPO_ROOT = Path(__file__).resolve().parents[6]
 def _build_fixture_proof(
     tmp_path: Path,
 ) -> tuple[Path, Path, Path, dict[str, Any], dict[str, str], Any]:
-    cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
-    grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
+    # A coherent temporary CI72-era grant and candidate through the existing path seams. The real spent grant is
+    # copied unchanged and still refuses the live candidate (see the facade test); production bytes are untouched.
+    (pair := tmp_path / "ci72-pair").mkdir()
+    grant_path, cand_path = pair / "d12_system_build_grant.json", pair / "d12_hosted_candidate.json"
+    grant_path.write_bytes((REPO_ROOT / DEFAULT_GRANT_RELPATH).read_bytes())
+    spent, _ = load_and_validate_system_build_grant(grant_path)
+    live_cand = d12_system_proof_host.validate_expected_candidate_record(
+        json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8")))
+    cand_path.write_text(json.dumps({**live_cand, "d12_context": dict(spent["d12_context"])}, indent=2,
+                                    sort_keys=True) + "\n", encoding="utf-8")
     cand_raw = json.loads(cand_path.read_text(encoding="utf-8"))
     expected_cand = d12_system_proof_host.validate_expected_candidate_record(cand_raw)
     cand_sha = hashlib.sha256(cand_path.read_bytes()).hexdigest()
-    grant, grant_sha = load_and_validate_system_build_grant(grant_path)
+    grant, grant_sha = load_and_validate_system_build_grant(grant_path, expected_candidate=expected_cand)
     event_file = tmp_path / "event.json"
     event_file.write_text(
         json.dumps(
@@ -226,6 +234,10 @@ def test_direct_host_proof_verification_and_facade_equivalence(tmp_path: Path) -
     verified_dispatch = verify_host_system_proof_for_dispatch(args, **common_kwargs)
     assert verified_lower == verified_hold == verified_dispatch
     assert verified_lower["pull_request"] == 13
+    production = {"grant_path": REPO_ROOT / DEFAULT_GRANT_RELPATH,
+                  "expected_candidate_path": REPO_ROOT / DEFAULT_CANDIDATE_RELPATH}
+    with pytest.raises(D12SystemGrantError, match="d12_context disagrees with d12_hosted_candidate.json"):
+        verify_host_system_proof_for_dispatch(args, **{**common_kwargs, **production})  # spent grant: never rearmed
 
 
 def test_host_event_and_git_requires_exact_draft_true_and_strict_env_event_facts(

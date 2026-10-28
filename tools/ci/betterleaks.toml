@@ -1,0 +1,37 @@
+# ADR 0103: exact public OpenPGP verification fingerprint in pinned OCI metadata.
+# Retain Betterleaks 1.8.1's complete built-in rules and global filter (MIT).
+# Global filter copied from github.com/betterleaks/betterleaks tag v1.8.1, config/config.go.
+# Copyright (c) 2026 Zachary Rice. Used under the MIT License.
+# No path prefilter, disabled rule, ignored finding baseline or validation callback.
+betterleaksMinVersion = "1.8.1"
+filter = '''
+((matchesAny(finding["secret"], [
+  `(?i)^true|false|null$`,
+  `^(?i:a+|b+|c+|d+|e+|f+|g+|h+|i+|j+|k+|l+|m+|n+|o+|p+|q+|r+|s+|t+|u+|v+|w+|x+|y+|z+|\*+|\.+)$`,
+  `^\$(?:\d+|{\d+})$`,
+  `^\$(?:[A-Z_]+|[a-z_]+)$`,
+  `^\${(?:[A-Z_]+|[a-z_]+)}$`,
+  `^\{\{[ \t]*[\w ().|]+[ \t]*}}$`,
+  `^\$\{\{[ \t]*(?:(?:env|github|secrets|vars)(?:\.[A-Za-z]\w+)+[\w "'&./=|]*)[ \t]*}}$`,
+  `^%(?:[A-Z_]+|[a-z_]+)%$`,
+  `^%[+\-# 0]?[bcdeEfFgGoOpqstTUvxX]$`,
+  `^\{\d{0,2}}$`,
+  `^@(?:[A-Z_]+|[a-z_]+)@$`,
+  `^/Users/(?i)[a-z0-9]+/[\w .-/]+$`,
+  `^/(?:bin|etc|home|opt|tmp|usr|var)/[\w ./-]+$`
+]) || containsAny(finding["secret"], [
+  "abcdefghijklmnopqrstuvwxyz",
+  "014df517-39d1-4453-b7b3-9930c563627c"
+]))
+
+) || (
+finding["rule_id"] == "generic-api-key" &&
+attributes["path"] == "tools/ci/d12_python31216_native_inputs.json" &&
+finding["secret"] == "7169605F62C751356D054A26A821E680E5FA6305" &&
+finding["match_start_idx"] >= 4 &&
+finding["fragment_raw"][finding["match_start_idx"]-4:finding["match_start_idx"]] == "GPG_"
+)
+'''
+
+[extend]
+useDefault = true

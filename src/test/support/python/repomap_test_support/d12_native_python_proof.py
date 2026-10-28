@@ -191,11 +191,28 @@ def verify_override(selected: str | None, hierarchy: Mapping[str, Any], *, requi
             "identity_source": "observed image attributes"}
 
 
-def held_defaults(architecture: str) -> dict[str, Any]:
-    if payload.AMD64_31216_NATIVE_BASELINE_IMPORTS is not None or "amd64" in payload.PYTHON_PAYLOAD_EXCLUSIONS:
-        raise NativeComponentError("the AMD 3.12.16 default must remain held (None) and un-enrolled")
-    enrolled = architecture in payload.PYTHON_PAYLOAD_EXCLUSIONS
-    return {"amd64_default_held": True, "selected_default_enrolled": enrolled}
+def configured_default(architecture: str, exclusions: Mapping[str, Any] | None = None) -> payload.PayloadExclusion:
+    """ADR 0103: the configured source default; missing, None, malformed and foreign refuse distinctly."""
+    found = payload.PYTHON_PAYLOAD_EXCLUSIONS if exclusions is None else exclusions
+    if architecture not in found:
+        raise NativeComponentError(f"the {architecture} 3.12.16 default is missing from the configured source map")
+    if (entry := found[architecture]) is None:
+        raise NativeComponentError(f"the {architecture} 3.12.16 default is None (held), not enrolled")
+    try:
+        if type(entry) is not payload.PayloadExclusion:
+            raise TypeError(f"a {type(entry).__name__}, not a PayloadExclusion")
+        payload.validate_exclusion(entry, architecture)
+    except (payload.PayloadRefusal, TypeError, AttributeError) as error:
+        raise NativeComponentError(f"the {architecture} 3.12.16 default is malformed: {error}") from error
+    if entry != payload.build_31216_exclusion(architecture, entry.baseline_imports):
+        raise NativeComponentError(f"the {architecture} 3.12.16 default is foreign to the frozen native Tk spec")
+    return entry
+
+
+def default_states(exclusions: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Pre-probe source facts for both native defaults; only ``validate_observation`` binds one to raw evidence."""
+    configured = {architecture: configured_default(architecture, exclusions) for architecture in sorted(MACHINES)}
+    return {**{f"{arch}_default_enrolled": True for arch in configured}, "bound_by": "raw native observation"}
 
 
 def build_inner_script(payload_source: bytes, architecture: str) -> str:
@@ -318,10 +335,11 @@ def derive_exclusion(raw_report: Mapping[str, Any], architecture: str) -> payloa
     return entry
 
 
-def validate_observation(raw: Mapping[str, Any], inner: Mapping[str, Any], architecture: str) -> dict[str, Any]:
-    """Host-side checks of the raw and trimmed contract facts and their preservation."""
+def validate_observation(raw: Mapping[str, Any], inner: Mapping[str, Any], architecture: str, *,
+                         exclusions: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Host-side checks of the raw and trimmed contract facts, their preservation and the configured default."""
     try:
-        return _validate(raw, inner, architecture)
+        return _validate(raw, inner, architecture, exclusions)
     except (KeyError, TypeError, AttributeError) as error:
         raise NativeComponentError(f"malformed component observation ({type(error).__name__})") from error
 
@@ -330,7 +348,8 @@ def _int(value: Any, expected: int) -> bool:
     return type(value) is int and value == expected
 
 
-def _validate(raw: Mapping[str, Any], inner: Mapping[str, Any], architecture: str) -> dict[str, Any]:
+def _validate(raw: Mapping[str, Any], inner: Mapping[str, Any], architecture: str,
+              exclusions: Mapping[str, Any] | None) -> dict[str, Any]:
     entry = derive_exclusion(raw["report"], architecture)
     expected = {**entry._asdict(), "missing": list(entry.missing), "baseline_imports": len(entry.baseline_imports),
                 "reason": TK_REASON}
@@ -341,9 +360,11 @@ def _validate(raw: Mapping[str, Any], inner: Mapping[str, Any], architecture: st
         raise NativeComponentError("the raw contract must refuse (1) and the trimmed contract must pass (0)")
     if not _int(inner["entry_delta"], -1) or inner["removed"] != [entry.path] or inner["modified_survivors"] != []:
         raise NativeComponentError("the trim is not exactly one Tk removal with unchanged survivors")
+    if configured_default(architecture, exclusions) != entry:  # host state: the source map against raw facts
+        raise NativeComponentError(f"the configured {architecture} default is foreign to the raw native observation")
     enrolled, matches = inner["default_enrolled"], inner["default_matches"]
-    if type(enrolled) is not bool or matches is not enrolled or (architecture == "amd64" and enrolled):
-        raise NativeComponentError("an enrolled default differs from the observation, or AMD is enrolled")
+    if enrolled is not True or matches is not True:
+        raise NativeComponentError("an enrolled default differs from the observation: inner flags must equal the host")
     trimmed = inner["trimmed_report"]
     if (not isinstance(trimmed, dict) or set(trimmed) != REPORT_KEYS or trimmed["schema"] != payload.SCHEMA
             or trimmed["architecture"] != architecture or trimmed["result"] != "trimmed"
