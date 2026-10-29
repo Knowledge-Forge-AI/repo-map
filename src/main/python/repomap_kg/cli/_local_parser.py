@@ -24,6 +24,10 @@ def add_local_commands(
     )
     add_local_runtime_arguments(local_setup)
     local_setup.add_argument(
+        "--config-format", choices=("legacy", "cloe"),
+        help="choose the new home's configuration format; existing homes must match",
+    )
+    local_setup.add_argument(
         "--dry-run",
         action="store_true",
         help="show setup plan without creating files",

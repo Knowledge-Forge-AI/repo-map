@@ -219,6 +219,7 @@ def dispatch_local_command(
             result = setup_local_runtime(
                 args.repo_map_home,
                 dry_run=args.dry_run,
+                config_format=args.config_format,
             )
         elif args.local_command == "up":
             result = up_local_runtime(

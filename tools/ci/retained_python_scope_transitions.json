@@ -4332,6 +4332,28 @@
       "source_commit": "5ad00d162ad8a04430874275246a53227578c533",
       "source_manifest_sha256": "cd794c217b9565f9a6eb5d84143c5ebb57c418e291c0e783a20b6fda9e522a14",
       "status_path": "tools/ci/cloe-config1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime.setup_config",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/setup_config.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
+      "new_selected_set_sha256": "473365ded39135f2333a986591f0ac9bfe267b71b649cc50c589a761dd677ff1",
+      "old_ownership_manifest_sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409",
+      "old_selected_set_sha256": "98e91497be91574e8b927c7fc4d99edc2b578a8b4174d2e599e7b797a0523209",
+      "phase": "REPOMAP-CLOE-RUNTIME1",
+      "reason": "ADR0112: one clean runtime producer authority owner; all prior selections/debt preserved.",
+      "source_commit": "bec838a210f3ffea84986ae85986e4081b2e8291",
+      "source_manifest_sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409",
+      "status_path": "tools/ci/cloe-runtime1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

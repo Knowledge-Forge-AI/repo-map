@@ -26,6 +26,17 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.runtime1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/cloe_runtime.int.test.py",
+        "src/test/unit/python/repomap_kg/runtime/cloe_setup.unit.test.py"
+      ],
+      "rationale": "ADR0112 format selection, exclusive target/refusal and real runtime setup/readback boundaries.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "fix21.int.run25_acquisition_wave",
       "members": [
         "src/test/int/python/repomap_kg/source_ingestion/run25_acquisition_wave.int.test.py"
@@ -49670,6 +49681,33 @@
       "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/setup_config.py",
+      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/cloe_setup.unit.test.py",
+      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_runtime.int.test.py",
+      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
     }
   ],
   "historical_revise10_counts": {

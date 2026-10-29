@@ -2605,6 +2605,15 @@
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0112: clean CLOE/legacy runtime producer preflight and exclusive target authority; no new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime.setup_config",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "REPAIR10 shared pause-window authority, admitted clean under retained Python enforcement.",
       "match": "exact",
       "module_prefix": "repomap_kg.runtime.system_test_pause",

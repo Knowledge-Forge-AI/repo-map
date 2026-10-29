@@ -201,7 +201,7 @@ def test_runtime_setup_refusal_preserves_cloe_home(tmp_path: Path) -> None:
     harness = LocalHarness(tmp_path / "guarded")
     result = harness.run("local", "setup", "--repo-map-home", str(home), "--json")
     assert result.returncode == 1, result.stderr
-    assert "cloe-runtime-setup-deferred" in result.stderr, result.stderr
+    assert "sqlite-local-home-requires-local-command" in result.stderr, result.stderr
     assert _snapshot(home) == before
     assert sorted(p.name for p in home.iterdir()) == ["00.cloe.toml"]
     assert not harness.forbidden_events() and not harness.shim_invocations()

@@ -46,6 +46,15 @@ under [ADR 0109](../adr/2026/10/0109-cloe-configuration-compatibility.md).
 Its usable new-format loader and inert filename planner are a preparatory
 milestone; full rebranding and live migration remain subsequent work.
 
+CI92 qualified the configuration compatibility/recovery milestone on staging
+`bec838a210f3ffea84986ae85986e4081b2e8291`, with all nine jobs passing and
+the retained same-attempt staging obligations verified. The next W1 milestone,
+[ADR 0112](../adr/2026/10/0112-cloe-runtime-configuration-producer.md), enables
+explicit CLOE runtime setup and existing-family detection, with guarded targets,
+dry-run replay and connected configuration/mount readback. It retains legacy
+empty-home defaults and is not the broad namespace/default-home/data migration.
+Hosted qualification for that successor remains pending.
+
 Keep SQLite Local useful without Server or enrichment dependencies. Search
 projections are derived from accepted captured material with privacy and
 publication identity; they are not another graph authority. Current MCP

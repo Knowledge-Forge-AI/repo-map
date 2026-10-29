@@ -35,12 +35,52 @@ backend declaration, graph identities,
 source roots and secret references. Other environment-variable names remain
 unchanged in this preparatory slice.
 
-Container-runtime `local setup` still produces `repomap.rpl.toml`. It refuses a
-CLOE-format home before writing runtime directories, credentials or configuration
-with `cloe-runtime-setup-deferred`; it does not silently create a mixed home.
-Use existing legacy runtime homes until the coordinated template conversion.
-Its existing dry-run remains a generic legacy-template preview, not admission
-to initialize a CLOE home.
+Container-runtime setup supports the same family selection:
+
+```sh
+repomap-kg local setup --repo-map-home ./new-home --config-format cloe --dry-run --json
+repomap-kg local setup --repo-map-home ./new-home --config-format cloe --json
+```
+
+An empty home defaults to legacy unless `--config-format cloe` is explicit.
+An existing home's active family is detected automatically. An explicit format
+must match it; this command does not convert a legacy home. Legacy setup creates
+`repomap.rpl.toml`; CLOE setup creates `repomap.local.cloe.toml`, with the same
+template payload and stable runtime/graph/database naming. Loaded CLOE files
+are mounted by their actual names for the container runtime.
+
+Setup never overwrites an existing generated target. Its default overlay uses
+the same bootstrap precedence as legacy setup: it can override base-file values,
+while later-sorting local overlays win. Keep intended settings in those later
+overlays or an already-converted canonical target. This is not a migration of
+an existing effective configuration.
+
+Format conflicts, mixed homes, unsafe generated targets and known SQLite Local
+homes are refused before runtime files or credentials are written. Container
+runtime setup is for PostgreSQL; continue using the `ops sqlite-*` commands for
+SQLite Local. CLOE input receives basic TOML/schema/backend preflight, without
+claiming full configuration or database readiness.
+
+Actual setup requires an owned ordinary private home. Generated targets must
+be owned ordinary files; directories, symlinks (including broken links),
+foreign-owned files and portable case aliases are refused in both families.
+This intentionally tightens legacy setup as well. Newly generated targets are
+private; existing ordinary targets keep their bytes and permissions under the
+private home. Setup does not repair ownership or chmod existing user files.
+
+Dry-run reports its selected family and pins it in the replayable API command.
+It creates no files or credentials and does not chmod a home. Its runtime plan
+is still a generic template preview. Repeating setup preserves configuration
+and existing secret bytes; its JSON setup diagnostics use stable labels and
+filenames rather than absolute home paths.
+CLI JSON omits replayable commands; the Python result retains an API command
+for local replay, including the caller-selected home.
+
+Partial setup is not an atomic home migration. If creating a new generated
+target fails partway through, preserve and inspect it before removing only that
+failed generated file and retrying. Existing malformed legacy bootstrap
+tolerance remains; unavailable traversal and undecodable input are bounded
+refusals. No malformed home is thereby certified usable.
 
 ## Read-only filename plan
 
@@ -91,4 +131,5 @@ The default `~/.cloe` cutover, package/executable/import rename, compatibility
 shim ownership, live backup/restore and rollback, and repository rename remain
 coordinated W1 work. Existing wire identifiers, checksummed migrations and
 historical receipts remain stable. [ADR 0109](../adr/2026/10/0109-cloe-configuration-compatibility.md)
-defines this milestone's implementation boundary.
+defines the loader/planner boundary; [ADR 0112](../adr/2026/10/0112-cloe-runtime-configuration-producer.md)
+defines runtime producer compatibility.

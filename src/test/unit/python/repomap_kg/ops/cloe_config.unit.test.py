@@ -185,15 +185,14 @@ def test_portable_occupied_name_refuses_unicode_normalization_alias() -> None:
     assert plan["refusals"][0]["code"] == "target-already-exists"
 
 
-def test_legacy_runtime_setup_refuses_cloe_home_before_writes(tmp_path: Path) -> None:
+def test_runtime_setup_uses_the_existing_cloe_family(tmp_path: Path) -> None:
     from repomap_kg.runtime.local import setup_local_runtime
-    from repomap_kg.runtime.plan import LocalRuntimeError
 
     home = tmp_path / "home"
     home.mkdir(mode=0o700)
     config = home / "00.cloe.toml"
     config.write_text("schema_version = 1\n")
-    with pytest.raises(LocalRuntimeError) as raised:
-        setup_local_runtime(home)
-    assert raised.value.diagnostics[0].code == "cloe-runtime-setup-deferred"
-    assert list(home.iterdir()) == [config]
+    assert setup_local_runtime(home).result == "success"
+    assert config.read_text() == "schema_version = 1\n"
+    assert (home / "repomap.local.cloe.toml").is_file()
+    assert not (home / "repomap.rpl.toml").exists()

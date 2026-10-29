@@ -279,6 +279,11 @@ environment with a pyenv-created virtualenv.
 
 The [CLOE compatibility milestone](docs/ops/cloe-config-compatibility.md) also accepts a nonempty `CLOE_HOME` ahead of `REPOMAP_HOME` and a separate CLOE configuration family. Explicit invocation homes win; the existing default remains unchanged. `ops config-migration-plan` prepares filenames without applying changes. See the [accepted transition roadmap](docs/specs/cloe-roadmap-transition-v1.md) for the coordinated rebrand.
 
+For a new container-runtime home, `local setup --config-format cloe` creates a
+CLOE overlay; existing homes are detected automatically and must match any
+explicit format. Empty homes retain the legacy default. Use `--dry-run` first
+to inspect the selected format without writing files or credentials.
+
 
 Local operations resolve configuration from `REPOMAP_HOME`, defaulting to
 `~/.repo-map`. You can also pass `--repo-map-home <dir>` to local and ops

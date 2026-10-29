@@ -29,6 +29,9 @@ from repomap_kg.runtime.commands import (
     render_server_dockerfile as render_server_dockerfile,
 )
 from repomap_kg.runtime.database_role_contract import ensure_role_secrets
+from repomap_kg.runtime.setup_config import (
+    prepare_setup_config as _prepare_setup_config, create_setup_config as _create_setup_config,
+)
 from repomap_kg.runtime._home_authority import (
     create_private_file, ensure_private_directory, validate_private_file,
 )
@@ -55,10 +58,16 @@ def setup_local_runtime(
     repo_map_home: str | Path | None = None,
     *,
     dry_run: bool = False,
+    config_format: str | None = None,
 ) -> LocalRuntimeResult:
     home = resolve_repo_map_home(repo_map_home)
+    config_path = _prepare_setup_config(home, config_format=config_format, dry_run=dry_run)
     identity = LocalRuntimeIdentity.from_home(home)
-    diagnostics: list[LocalRuntimeDiagnostic] = []
+    config_format = "cloe" if config_path.name.endswith(".cloe.toml") else "legacy"
+    diagnostics = [LocalRuntimeDiagnostic(
+        "info", f"setup-config-format-{config_format}", "config-home",
+        f"setup uses {config_path.name}",
+    )]
     created: list[Path] = []
     if dry_run:
         plan = default_local_runtime_plan(home)
@@ -66,21 +75,14 @@ def setup_local_runtime(
             command="setup",
             result="dry_run",
             plan=plan,
-            diagnostics=(LocalRuntimeDiagnostic(
-                "info", "setup-dry-run", str(home),
+            diagnostics=(*diagnostics, LocalRuntimeDiagnostic(
+                "info", "setup-dry-run", "config-home",
                 "local setup would create REPOMAP_HOME runtime files",
             ),),
-            planned_command=("local", "setup", "--repo-map-home", str(home)),
+            planned_command=("local", "setup", "--repo-map-home", str(home), "--config-format", config_format),
         )
 
     try:
-        ensure_private_directory(home)
-        if any(path.is_file() and path.name.endswith(".cloe.toml") for path in home.iterdir()):
-            raise LocalRuntimeError((LocalRuntimeDiagnostic(
-                "error", "cloe-runtime-setup-deferred", "config-home",
-                "cloe-runtime-setup-deferred: container setup still produces legacy "
-                "configuration; CLOE runtime-template conversion is a later transition",
-            ),))
         for directory in (home / "runtime", home / "logs", home / "status"):
             if ensure_private_directory(directory):
                 created.append(directory)
@@ -94,14 +96,12 @@ def setup_local_runtime(
             "error", "repo-map-home-unsafe", "REPOMAP_HOME",
             "Local home and runtime authority must be owned ordinary private objects",
         ),)) from None
-    config_path = home / "repomap.rpl.toml"
-    if not config_path.exists():
-        config_path.write_text(default_repomap_rpl_toml(), encoding="utf-8")
+    if _create_setup_config(config_path, default_repomap_rpl_toml()):
         created.append(config_path)
     else:
         diagnostics.append(LocalRuntimeDiagnostic(
-            "info", "config-exists", str(config_path),
-            "repomap.rpl.toml already exists and was not overwritten",
+            "info", "config-exists", config_path.name,
+            f"{config_path.name} already exists and was not overwritten",
         ))
     env_file = home / LOCAL_RUNTIME_ENV_FILE
     if not env_file.exists():
@@ -117,7 +117,7 @@ def setup_local_runtime(
         added_role_secrets = ensure_role_secrets(env_file)
         diagnostics.append(LocalRuntimeDiagnostic(
             "info", "env-role-secrets-added" if added_role_secrets else "env-exists",
-            str(env_file),
+            "runtime.env",
             (
                 "missing private database-role secrets were added"
                 if added_role_secrets
@@ -126,7 +126,7 @@ def setup_local_runtime(
         ))
     if ensure_runtime_home_hash(env_file, identity.home_hash):
         diagnostics.append(LocalRuntimeDiagnostic(
-            "info", "env-runtime-identity-aligned", str(env_file),
+            "info", "env-runtime-identity-aligned", "runtime.env",
             "private runtime identity authority was aligned",
         ))
     plan = build_local_runtime_plan(
