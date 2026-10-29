@@ -1,28 +1,28 @@
 {
-  "approval_sha256": "e5c98c36430a1ccb8c50d9500ee560a557c4a1eab229a1edad46873e875bfaa0",
+  "approval_sha256": "4d71c49dfbba1644f6327889e448a782cf3333546789ec35fe39b27049e41085",
   "base": "5ad00d162ad8a04430874275246a53227578c533",
   "base_ref": "main",
-  "before": "5ad00d162ad8a04430874275246a53227578c533",
+  "before": "4c913634eb1aca6f7de1941f0ec56ae7d3748924",
   "d12_context": {
     "context_file_count": 698,
     "dockerfile_sha256": "7f6e6421e2861db56e28ebe828bf5a7ee9c1d17129d3eb099385864e217bcfca",
     "recipe_sha256": "4e2b4ae39eb70a50dd5a2b828af9c645bef47a55c839a81a2715d7dc35f01183",
-    "source_sha256": "98bacae4ec70d501d84bccc7e403eeb32df3b48d2c1c657047bc51035ed40e14"
+    "source_sha256": "e33269cfc568b0e63411231fe63dc714a899bfb9ca14a8fab749f075ed26378f"
   },
-  "event_action": "opened",
+  "event_action": "synchronize",
   "head_ref": "staging",
-  "ledger_before_sha256": "1a9c327e98cc9985a99a431b6e312125ca16035451f74615b0c8e7ffc49229ad",
-  "maximum_per_platform": 8,
-  "maximum_total": 8,
-  "nonce": "60454e3a42db44d697f22e2d9654c1ba",
+  "ledger_before_sha256": "6c38dd6fc3f06b2c8d2b092d0620e9eabbc4357d7c9febe5ad6486dfa24bea35",
+  "maximum_per_platform": 9,
+  "maximum_total": 9,
+  "nonce": "ba621a38a1f74b6296f9d29bb703aeac",
   "owner": "main-system-gate",
   "platform": "linux/amd64",
   "pull_request": 23,
   "repository": "Knowledge-Forge-AI/repo-map",
-  "reservation_sha256": "8e43691e6a1e36030ceee05dcee444cfcd2b97005ff535e61f3cfcd4b235badf",
+  "reservation_sha256": "d3beeb1e8c29d47d05730786772f2a2807fa89b934ca315d96737860f921436d",
   "schema": "repomap-d12-system-build-grant-v1",
   "sdk_recipe_sha256": "24ddf31d8890922c012559d5cab4b1dffe4b41e5b19e9b3438555aabe22d2862",
   "workflow_attempt": 1,
-  "workflow_ordinal": 91,
+  "workflow_ordinal": 92,
   "workflow_path": ".github/workflows/repomap-release-qualification.yml"
 }

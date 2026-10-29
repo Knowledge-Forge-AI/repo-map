@@ -89,7 +89,7 @@ from repomap_kg.ops.config_status import (
     ops_graph_registry_status_to_jsonable as ops_graph_registry_status_to_jsonable,
 )
 from repomap_kg.ops.config_storage import refuse_sqlite_home as _refuse_sqlite_home
-from repomap_kg.ops.config_layout import discover_home_config_files
+from repomap_kg.ops.config_layout import discover_home_config_files as _discover_home_config_files
 from repomap_kg.ops.resolved_config import resolve_ops_config
 from repomap_kg.ops.config_loading_records import (
     SUPPORTED_SCHEMA_VERSION as SUPPORTED_SCHEMA_VERSION,
@@ -150,7 +150,7 @@ def _read_ops_config_home_payload(
             )
         )
 
-    ordered_files, ignored_files = discover_home_config_files(home)
+    ordered_files, ignored_files = _discover_home_config_files(home)
     diagnostics: list[OpsConfigDiagnostic] = [
         OpsConfigDiagnostic(
             "warning",
@@ -168,8 +168,8 @@ def _read_ops_config_home_payload(
                     "error",
                     "config-home-empty",
                     str(home),
-                    "configuration home contains no legacy (*.rp.toml or *.rpl.toml) "
-                    "or CLOE (*.cloe.toml) files",
+                    "configuration home contains no *.rp.toml or *.rpl.toml files "
+                    "and no CLOE (*.cloe.toml) files",
                 ),
             )
         )

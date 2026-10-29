@@ -47,8 +47,8 @@ BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
 def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]]:
     cand_doc = json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
     grant, _ = load_and_validate_system_build_grant(REPO_ROOT / DEFAULT_GRANT_RELPATH)
-    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (91, 8, 8)
-    assert grant["nonce"] != "8f2ad7e4086946c9818c8ba1bad4c4f7"
+    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (92, 9, 9)
+    assert grant["nonce"] != "60454e3a42db44d697f22e2d9654c1ba"
     expected_cand = validate_expected_candidate_record({**cand_doc, "d12_context": dict(grant["d12_context"])})
     (tmp_path / "ci72-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
     event_path = tmp_path / "github_event.json"
@@ -58,7 +58,7 @@ def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]
         "base": {"ref": "main", "sha": grant["base"], "repo": repo_info},
         "head": {"ref": "staging", "sha": "d" * 40, "repo": repo_info},
     }
-    event_doc = {"action": "opened",
+    event_doc = {"action": "synchronize", "before": grant["before"], "after": "d" * 40,
                  "number": 23, "pull_request": pr_payload}
     event_path.write_text(json.dumps(event_doc), encoding="utf-8")
     wf_ref = f"{grant['repository']}/{grant['workflow_path']}@refs/pull/23/merge"
