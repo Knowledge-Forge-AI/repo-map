@@ -418,7 +418,7 @@ jobs:
           output-file: "sbom.spdx.json"
 
       - name: Scan SBOM with Grype
-        uses: anchore/scan-action@7c05671ae9be166aeb155bad2d7df9121823df32 # v6.1.0
+        uses: anchore/scan-action@27805bf3b4e84b4a5c980df22ed233c00390a439 # v7.4.2
         with:
           sbom: "sbom.spdx.json"
           fail-build: true
