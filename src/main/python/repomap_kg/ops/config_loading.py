@@ -89,6 +89,7 @@ from repomap_kg.ops.config_status import (
     ops_graph_registry_status_to_jsonable as ops_graph_registry_status_to_jsonable,
 )
 from repomap_kg.ops.config_storage import refuse_sqlite_home as _refuse_sqlite_home
+from repomap_kg.ops.config_layout import discover_home_config_files
 from repomap_kg.ops.resolved_config import resolve_ops_config
 from repomap_kg.ops.config_loading_records import (
     SUPPORTED_SCHEMA_VERSION as SUPPORTED_SCHEMA_VERSION,
@@ -102,7 +103,7 @@ DEFAULT_REPOMAP_HOME = "~/.repo-map"
 def resolve_repo_map_home(value: str | Path | None = None) -> Path:
     if value is not None:
         return Path(value).expanduser()
-    env_value = os.environ.get("REPOMAP_HOME")
+    env_value = os.environ.get("CLOE_HOME") or os.environ.get("REPOMAP_HOME")
     if env_value:
         return Path(env_value).expanduser()
     return Path(DEFAULT_REPOMAP_HOME).expanduser()
@@ -149,20 +150,7 @@ def _read_ops_config_home_payload(
             )
         )
 
-    matched_files: list[Path] = []
-    ignored_files: list[Path] = []
-    for child in sorted(home.iterdir(), key=lambda item: item.name):
-        if not child.is_file():
-            continue
-        if child.name.endswith(".rp.toml") or child.name.endswith(".rpl.toml"):
-            matched_files.append(child)
-        elif child.suffix == ".toml":
-            ignored_files.append(child)
-
-    ordered_files = sorted(
-        matched_files,
-        key=lambda item: (0 if item.name.endswith(".rp.toml") else 1, item.name),
-    )
+    ordered_files, ignored_files = discover_home_config_files(home)
     diagnostics: list[OpsConfigDiagnostic] = [
         OpsConfigDiagnostic(
             "warning",
@@ -180,7 +168,8 @@ def _read_ops_config_home_payload(
                     "error",
                     "config-home-empty",
                     str(home),
-                    "REPOMAP_HOME contains no *.rp.toml or *.rpl.toml files",
+                    "configuration home contains no legacy (*.rp.toml or *.rpl.toml) "
+                    "or CLOE (*.cloe.toml) files",
                 ),
             )
         )

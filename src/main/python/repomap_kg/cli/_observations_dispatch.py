@@ -141,13 +141,21 @@ def dispatch_observation_commands(
         return 0
 
     if args.command == "mcp" and args.mcp_command == "serve":
-        if getattr(args, "repo_map_home", None):
+        explicit_home = getattr(args, "repo_map_home", None)
+        selected_cloe_home = os.environ.get("CLOE_HOME")
+        if explicit_home:
             os.environ["REPOMAP_HOME"] = args.repo_map_home
+            if selected_cloe_home:
+                os.environ["CLOE_HOME"] = args.repo_map_home
         if args.config:
             os.environ["REPOMAP_OPS_CONFIG"] = args.config
-        from repomap_kg.server.mcp import serve_stdio
+        try:
+            from repomap_kg.server.mcp import serve_stdio
 
-        return serve_stdio()
+            return serve_stdio()
+        finally:
+            if explicit_home and selected_cloe_home:
+                os.environ["CLOE_HOME"] = selected_cloe_home
 
     if args.command == "server" and args.server_command == "serve":
         try:

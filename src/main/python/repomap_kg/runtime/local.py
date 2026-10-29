@@ -75,12 +75,20 @@ def setup_local_runtime(
 
     try:
         ensure_private_directory(home)
+        if any(path.is_file() and path.name.endswith(".cloe.toml") for path in home.iterdir()):
+            raise LocalRuntimeError((LocalRuntimeDiagnostic(
+                "error", "cloe-runtime-setup-deferred", "config-home",
+                "cloe-runtime-setup-deferred: container setup still produces legacy "
+                "configuration; CLOE runtime-template conversion is a later transition",
+            ),))
         for directory in (home / "runtime", home / "logs", home / "status"):
             if ensure_private_directory(directory):
                 created.append(directory)
         env_file = home / LOCAL_RUNTIME_ENV_FILE
         if env_file.exists() or env_file.is_symlink():
             validate_private_file(env_file)
+    except LocalRuntimeError:
+        raise
     except (OSError, ValueError):
         raise LocalRuntimeError((LocalRuntimeDiagnostic(
             "error", "repo-map-home-unsafe", "REPOMAP_HOME",

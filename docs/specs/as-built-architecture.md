@@ -1234,6 +1234,15 @@ and leaves ordinary CLI startup fail-fast.
 
 ## Platform and service packaging
 
+Current release checkpoint (2026-10-29): public main v0.0.3 at `5ad00d1`
+passed all nine jobs in [CI87 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/40779161422).
+The native AMD assembled-system report, five scenarios, round trip, MCP,
+separate host authority/export and cleanup were verified for that candidate.
+Earlier D12/CI72 hold descriptions below are historical checkpoints, not the
+current core qualification state. Optional pgvector, hosted ARM/Windows and
+live deployment remain separate. The next [CLOE compatibility slice](../ops/cloe-config-compatibility.md)
+keeps packaging and runtime identities unchanged while preparing configuration.
+
 The Python distribution requires Python 3.12 or newer. Since LOCAL11 its base
 dependency set is only `typing-extensions==4.16.0`: the base wheel is the
 SQLite Local install and carries no PostgreSQL driver. Since

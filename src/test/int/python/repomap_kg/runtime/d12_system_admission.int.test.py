@@ -41,34 +41,34 @@ from tools.system.runner_execution import execute_system_run
 from tools.system.scenario import MonotonicTimer
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
-BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
+BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
 
 
 def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]]:
     cand_doc = json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
     grant, _ = load_and_validate_system_build_grant(REPO_ROOT / DEFAULT_GRANT_RELPATH)
-    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (87, 7, 7)
-    assert grant["nonce"] != "3777470657bc4361b42b3e4de8ba8586"
+    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (91, 8, 8)
+    assert grant["nonce"] != "8f2ad7e4086946c9818c8ba1bad4c4f7"
     expected_cand = validate_expected_candidate_record({**cand_doc, "d12_context": dict(grant["d12_context"])})
     (tmp_path / "ci72-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
     event_path = tmp_path / "github_event.json"
     repo_info = {"full_name": grant["repository"], "fork": False}
     pr_payload = {
-        "number": 13, "draft": True,
+        "number": 23, "draft": True,
         "base": {"ref": "main", "sha": grant["base"], "repo": repo_info},
         "head": {"ref": "staging", "sha": "d" * 40, "repo": repo_info},
     }
-    event_doc = {"action": "synchronize", "before": grant["before"], "after": "d" * 40,
-                 "number": 13, "pull_request": pr_payload}
+    event_doc = {"action": "opened",
+                 "number": 23, "pull_request": pr_payload}
     event_path.write_text(json.dumps(event_doc), encoding="utf-8")
-    wf_ref = f"{grant['repository']}/{grant['workflow_path']}@refs/pull/13/merge"
+    wf_ref = f"{grant['repository']}/{grant['workflow_path']}@refs/pull/23/merge"
     env = {
         "GITHUB_ACTIONS": "true", "GITHUB_EVENT_NAME": "pull_request",
         "GITHUB_REPOSITORY": str(grant["repository"]), "GITHUB_BASE_REF": "main",
         "GITHUB_HEAD_REF": "staging", "GITHUB_WORKFLOW_REF": wf_ref,
         "GITHUB_RUN_NUMBER": str(grant["workflow_ordinal"]), "GITHUB_RUN_ID": "87654321",
         "GITHUB_RUN_ATTEMPT": "1", "GITHUB_SHA": "a" * 40, "GITHUB_EVENT_PATH": str(event_path),
-        "RUNNER_OS": "Linux", "RUNNER_ARCH": "X64", "PR_NUMBER": "13",
+        "RUNNER_OS": "Linux", "RUNNER_ARCH": "X64", "PR_NUMBER": "23",
     }
     return env, dict(expected_cand["d12_context"])
 
@@ -130,7 +130,7 @@ def _matching_preflight_doc(d12_ctx: dict[str, Any]) -> dict[str, Any]:
 def _make_config(report_dir: Path, run_id: str | None = None) -> SystemTestConfig:
     return SystemTestConfig.create(
         timeout_seconds=1500, report_dir=report_dir, candidate_tree_sha="b" * 40,
-        run_id=run_id or _active_run_id(), gate_kind="main-system", approval_id="pr-13", pr_number="13",
+        run_id=run_id or _active_run_id(), gate_kind="main-system", approval_id="pr-23", pr_number="23",
         repository="Knowledge-Forge-AI/repo-map", approved_base_branch="main", approved_base_sha=BASE_SHA,
         approved_head_branch="staging", approved_head_sha="d" * 40, candidate_commit_sha="a" * 40,
         candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, execution_mode="hosted_qualification",
@@ -184,8 +184,8 @@ def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> No
     assert json.loads(proof_file.read_text(encoding="utf-8"))["schema"] == SYSTEM_ADMISSION_PROOF_SCHEMA
     args = SimpleNamespace(
         d12_system_proof_json=str(proof_file), candidate_sha="a" * 40, candidate_tree="b" * 40,
-        candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, approval_id="pr-13",
-        pr_number="13", repository="Knowledge-Forge-AI/repo-map",
+        candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, approval_id="pr-23",
+        pr_number="23", repository="Knowledge-Forge-AI/repo-map",
     )
     drift_root = tmp_path / "drift-repo"
     (drift_root / "tools/test_sandbox").mkdir(parents=True, exist_ok=True)
@@ -201,7 +201,7 @@ def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> No
         verify_host_system_proof_for_dispatch(args, **common_disp)
     (drift_root / "tools/test_sandbox/Dockerfile").write_bytes(sdk_df)
     verified = verify_host_system_proof_for_dispatch(args, **common_disp)
-    assert verified["pull_request"] == 13
+    assert verified["pull_request"] == 23
     arg_res = sandbox_report_arguments(
         ["--suite", "system", "--d12-system-proof-json", str(proof_file)], repo_root=REPO_ROOT)
     assert arg_res.d12_proof_bytes == proof_file.read_bytes()

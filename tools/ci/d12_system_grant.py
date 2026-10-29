@@ -22,13 +22,13 @@ from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12
 
 SYSTEM_BUILD_GRANT_SCHEMA = "repomap-d12-system-build-grant-v1"
 SYSTEM_ADMISSION_PROOF_SCHEMA = "repomap-d12-system-admission-proof-v1"
-EXPECTED_PHASE_ID = "REPOMAP-PRODUCT6-NAVIGATION47-CI86REPAIR1"
+EXPECTED_PHASE_ID = "REPOMAP-CLOE-CONFIG1"
 EXPECTED_WORKFLOW_PATH = ".github/workflows/repomap-release-qualification.yml"
 EXPECTED_SYSTEM_OWNER, EXPECTED_REPOSITORY = "main-system-gate", "Knowledge-Forge-AI/repo-map"
-EXPECTED_BEFORE_SHA = "a89592ffa2150974f81c640ced79035f5b8cd661"
-EXPECTED_BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
-EXPECTED_APPROVAL_SHA256 = "f7b7d57ee9f97aaca81e1835d15df005af8f5723c57586796f32fcaf1412f877"
-EXPECTED_LEDGER_BEFORE_SHA256 = "e0c6d17a376da15f6cfae89b228ece0eb99bfcbceb472360e767480b0c7ead7c"
+EXPECTED_BEFORE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
+EXPECTED_BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
+EXPECTED_APPROVAL_SHA256 = "e5c98c36430a1ccb8c50d9500ee560a557c4a1eab229a1edad46873e875bfaa0"
+EXPECTED_LEDGER_BEFORE_SHA256 = "1a9c327e98cc9985a99a431b6e312125ca16035451f74615b0c8e7ffc49229ad"
 SPENT_CI69_NONCE = "68920c8be2054bddaefba6ff1761b2e5"
 SPENT_CI69_RESERVATION_SHA256 = "60d67477702e81125b5fba737c182965a78bcb6865c4e267adb0d064a71ac595"
 SPENT_CI70_NONCE = "2ca8d5a3ad7645798437728db064e8d4"
@@ -41,6 +41,8 @@ SPENT_CI85_NONCE = "e2833d583de847a7859fb5250d5f37c6"
 SPENT_CI85_RESERVATION_SHA256 = "04c66536b5f655be479934d1086bec6895ac9015bdcf3da96c197a7f9d28bc4f"
 SPENT_CI86_NONCE = "3777470657bc4361b42b3e4de8ba8586"
 SPENT_CI86_RESERVATION_SHA256 = "dfa6d5670c156ce86a43fb45edf59d6f432bad71f11c139a09b2de864c6e5ba6"
+SPENT_CI87_NONCE = "8f2ad7e4086946c9818c8ba1bad4c4f7"
+SPENT_CI87_RESERVATION_SHA256 = "ac70c59663ff37177c5e072066d38d93d09caf7aca1aa8b0e90074dfaa849273"
 DEFAULT_GRANT_RELPATH = Path("tools/ci/d12_system_build_grant.json")
 DEFAULT_CANDIDATE_RELPATH = Path("tools/ci/d12_hosted_candidate.json")
 MAX_SYSTEM_GRANT_BYTES = MAX_SYSTEM_PROOF_BYTES = 16384
@@ -104,15 +106,15 @@ def validate_system_build_grant(
         raise D12SystemGrantError("system build grant keys do not match closed schema")
     for key, expected in (
         ("schema", SYSTEM_BUILD_GRANT_SCHEMA), ("repository", EXPECTED_REPOSITORY),
-        ("workflow_path", EXPECTED_WORKFLOW_PATH), ("event_action", "synchronize"),
+        ("workflow_path", EXPECTED_WORKFLOW_PATH), ("event_action", "opened"),
         ("head_ref", "staging"), ("base_ref", "main"), ("platform", "linux/amd64"),
         ("owner", EXPECTED_SYSTEM_OWNER),
     ):
         if record.get(key) != expected:
             raise D12SystemGrantError(f"system build grant {key}={record.get(key)!r} != {expected!r}")
     for key, expected_int in (
-        ("pull_request", 13), ("workflow_ordinal", 87), ("workflow_attempt", 1),
-        ("maximum_total", 7), ("maximum_per_platform", 7),
+        ("pull_request", 23), ("workflow_ordinal", 91), ("workflow_attempt", 1),
+        ("maximum_total", 8), ("maximum_per_platform", 8),
     ):
         val = record.get(key)
         if not _is_strict_int(val) or val != expected_int:
@@ -122,18 +124,18 @@ def validate_system_build_grant(
     for sha_key in ("reservation_sha256", "approval_sha256", "ledger_before_sha256", "sdk_recipe_sha256"):
         if not _is_hex64(record.get(sha_key)):
             raise D12SystemGrantError(f"system build grant {sha_key} must be 64 lowercase hex")
-    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE) or record["reservation_sha256"] in (
-        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256):
-        raise D12SystemGrantError("system build grant reuses spent CI69/CI70/CI71/CI72/CI85/CI86 nonce or reservation")
+    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE, SPENT_CI87_NONCE) or record["reservation_sha256"] in (
+        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256, SPENT_CI87_RESERVATION_SHA256):
+        raise D12SystemGrantError("system build grant reuses spent CI69/CI70/CI71/CI72/CI85/CI86/CI87 nonce or reservation")
     before, base = record.get("before"), record.get("base")
-    if not (_is_hex40(before) and _is_hex40(base)) or before == base:
-        raise D12SystemGrantError("system build grant before/base must be distinct 40-hex")
+    if not (_is_hex40(before) and _is_hex40(base)) or before != base:
+        raise D12SystemGrantError("system build grant opening-event before/base must be equal 40-hex")
     for pin_k, pin_v in (
         ("before", EXPECTED_BEFORE_SHA), ("base", EXPECTED_BASE_SHA),
         ("approval_sha256", EXPECTED_APPROVAL_SHA256), ("ledger_before_sha256", EXPECTED_LEDGER_BEFORE_SHA256),
     ):
         if record.get(pin_k) != pin_v:
-            raise D12SystemGrantError(f"system build grant {pin_k} does not match pinned CI87 authority")
+            raise D12SystemGrantError(f"system build grant {pin_k} does not match pinned CLOE-CONFIG1 CI91 authority")
     sdk_sha = str(record["sdk_recipe_sha256"])
     d12_ctx = _validate_d12_context(record.get("d12_context"), sdk_recipe_sha256=sdk_sha)
     if expected_candidate is not None:
@@ -204,12 +206,12 @@ def validate_system_admission_proof(
     for k, exp in (
         ("schema", SYSTEM_ADMISSION_PROOF_SCHEMA), ("repository", EXPECTED_REPOSITORY),
         ("workflow_path", EXPECTED_WORKFLOW_PATH), ("owner", EXPECTED_SYSTEM_OWNER),
-        ("platform", "linux/amd64"), ("event_action", "synchronize"),
-        ("head_ref", "staging"), ("base_ref", "main"), ("approval_id", "pr-13"),
+        ("platform", "linux/amd64"), ("event_action", "opened"),
+        ("head_ref", "staging"), ("base_ref", "main"), ("approval_id", "pr-23"),
     ):
         if record.get(k) != exp:
             raise D12SystemGrantError(f"system admission proof {k}={record.get(k)!r} != {exp!r}")
-    for k, exp_int in (("pull_request", 13), ("workflow_ordinal", 87), ("workflow_attempt", 1)):
+    for k, exp_int in (("pull_request", 23), ("workflow_ordinal", 91), ("workflow_attempt", 1)):
         val = record.get(k)
         if not _is_strict_int(val) or val != exp_int:
             raise D12SystemGrantError(f"system admission proof {k} must be strict int {exp_int}")
@@ -221,9 +223,9 @@ def validate_system_admission_proof(
     ):
         if not _is_hex64(record.get(sha_k)):
             raise D12SystemGrantError(f"system admission proof {sha_k} must be 64-hex")
-    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE) or record["reservation_sha256"] in (
-        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256):
-        raise D12SystemGrantError("system admission proof reuses spent CI69/CI70/CI71/CI72/CI85/CI86 nonce or reservation")
+    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE, SPENT_CI87_NONCE) or record["reservation_sha256"] in (
+        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256, SPENT_CI87_RESERVATION_SHA256):
+        raise D12SystemGrantError("system admission proof reuses spent CI69/CI70/CI71/CI72/CI85/CI86/CI87 nonce or reservation")
     for git_k in (
         "before", "after", "base", "candidate_sha", "candidate_tree",
         "candidate_base_parent", "candidate_head_parent",
@@ -231,14 +233,14 @@ def validate_system_admission_proof(
         if not _is_hex40(record.get(git_k)):
             raise D12SystemGrantError(f"system admission proof {git_k} must be 40-hex")
     if record["before"] != EXPECTED_BEFORE_SHA or record["base"] != EXPECTED_BASE_SHA:
-        raise D12SystemGrantError("system admission proof before/base does not match pinned CI87 authority")
+        raise D12SystemGrantError("system admission proof before/base does not match pinned CLOE-CONFIG1 CI91 authority")
     if (
         record["after"] == record["before"]
         or record["candidate_base_parent"] != record["base"]
         or record["candidate_head_parent"] != record["after"]
         or record["candidate_sha"] in {record["base"], record["after"]}
     ):
-        raise D12SystemGrantError("system admission proof Git parent/synchronize topology invalid")
+        raise D12SystemGrantError("system admission proof Git parent/opening topology invalid")
     run_id = record.get("run_id")
     if not isinstance(run_id, str) or not run_id.isdigit():
         raise D12SystemGrantError("system admission proof run_id must be digits-only string")

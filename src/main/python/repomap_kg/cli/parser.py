@@ -180,7 +180,7 @@ def add_storage_connection_arguments(command: argparse.ArgumentParser) -> None:
 def add_ops_config_arguments(command: argparse.ArgumentParser) -> None:
     command.add_argument(
         "--repo-map-home",
-        help="path to REPOMAP_HOME containing *.rp.toml and *.rpl.toml files",
+        help="configuration home (default: CLOE_HOME, REPOMAP_HOME, then ~/.repo-map)",
     )
     command.add_argument(
         "--config",

@@ -274,6 +274,15 @@
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0109: new clean CLOE configuration owner; adjacent retained Python ownership, no forecast change or new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.cli._config_migration",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
       "match": "exact",
       "module_prefix": "repomap_kg.cli._local_dispatch",
@@ -1474,6 +1483,15 @@
       "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
       "match": "exact",
       "module_prefix": "repomap_kg.ops.config_helpers",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0109: new clean CLOE configuration owner; adjacent retained Python ownership, no forecast change or new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.ops.config_layout",
       "ownership_class": "python_retained"
     },
     {

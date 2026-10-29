@@ -836,7 +836,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "cd794c217b9565f9a6eb5d84143c5ebb57c418e291c0e783a20b6fda9e522a14"
+    "sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409"
   },
   "ruff": {
     "findings": [
@@ -14656,6 +14656,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "repomap_kg.cli._config_migration",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/cli/_config_migration.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "repomap_kg.cli._local_dispatch",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/cli/_local_dispatch.py",
@@ -16303,6 +16309,12 @@
         "module": "repomap_kg.ops.config_helpers",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/ops/config_helpers.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.ops.config_layout",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/ops/config_layout.py",
         "tier": "T1-future"
       },
       {

@@ -197,7 +197,7 @@ def validate_host_system_event_and_git(
     ):
         raise D12SystemGrantError(f"event/pull_request.number {ev_num!r}/{pr_num!r} != {grant['pull_request']!r}")
     if pr.get("draft") is not True:
-        raise D12SystemGrantError("Route B PR13 diagnostic admission requires pull_request.draft is True")
+        raise D12SystemGrantError("CLOE-CONFIG1 draft admission requires pull_request.draft is True")
     base_blk, head_blk = pr.get("base"), pr.get("head")
     if not isinstance(base_blk, Mapping) or not isinstance(head_blk, Mapping):
         raise D12SystemGrantError("pull_request base/head blocks missing")
@@ -214,7 +214,9 @@ def validate_host_system_event_and_git(
     ):
         raise D12SystemGrantError("fork or foreign repository pull request refused")
     base_sha, head_sha = base_blk.get("sha"), head_blk.get("sha")
-    before_sha, after_sha = event.get("before"), event.get("after")
+    if grant["event_action"] != "opened" or "before" in event or "after" in event:
+        raise D12SystemGrantError("opening payload must omit synchronize before/after fields")
+    before_sha, after_sha = base_sha, head_sha
     for sha_label, sha_val in (
         ("pull_request.base.sha", base_sha),
         ("pull_request.head.sha", head_sha),
@@ -229,7 +231,7 @@ def validate_host_system_event_and_git(
         raise D12SystemGrantError(f"event before {before_sha!r} != grant before {grant['before']!r}")
     if after_sha != head_sha or after_sha == before_sha:
         raise D12SystemGrantError(
-            "synchronize event after SHA must equal head.sha and advance past before"
+            "opening event head SHA must equal head.sha and advance past before"
         )
     head_commit = _git_rev(repo_root, "HEAD", runner=eff_runner)
     tree_sha = _git_rev(repo_root, "HEAD^{tree}", runner=eff_runner)

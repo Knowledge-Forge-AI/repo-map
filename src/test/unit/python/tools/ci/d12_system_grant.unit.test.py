@@ -34,6 +34,8 @@ from ci.d12_system_grant import (
     SPENT_CI85_RESERVATION_SHA256,
     SPENT_CI86_NONCE,
     SPENT_CI86_RESERVATION_SHA256,
+    SPENT_CI87_NONCE,
+    SPENT_CI87_RESERVATION_SHA256,
     D12SystemGrantError,
     SYSTEM_ADMISSION_PROOF_SCHEMA,
     SYSTEM_BUILD_GRANT_SCHEMA,
@@ -51,7 +53,7 @@ REPO_ROOT = Path(__file__).resolve().parents[6]
 
 def _event_payload(grant: dict[str, Any], *, draft: object = True) -> dict[str, Any]:
     pr: dict[str, Any] = {
-        "number": 13,
+        "number": 23,
         "base": {
             "ref": "main",
             "sha": grant["base"],
@@ -66,10 +68,9 @@ def _event_payload(grant: dict[str, Any], *, draft: object = True) -> dict[str, 
     if draft is not ...:
         pr["draft"] = draft
     return {
-        "action": "synchronize",
-        "before": grant["before"],
-        "after": "d" * 40,
-        "number": 13,
+        "action": "opened",
+
+        "number": 23,
         "pull_request": pr,
     }
 
@@ -120,7 +121,7 @@ def _coherent_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], b
     return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
 
 
-def test_load_tracked_system_build_grant_matches_ci87_and_refuses_drifted_candidate() -> None:
+def test_load_tracked_system_build_grant_matches_ci91_and_refuses_drifted_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
@@ -141,7 +142,7 @@ def test_load_tracked_system_build_grant_matches_ci87_and_refuses_drifted_candid
             expected_candidate=live_cand,
             frozen_identity=dict(live_cand["d12_context"]),
         )
-    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI86REPAIR1"
+    assert EXPECTED_PHASE_ID == "REPOMAP-CLOE-CONFIG1"
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
     assert SPENT_CI70_RESERVATION_SHA256 == (
         "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
@@ -154,18 +155,20 @@ def test_load_tracked_system_build_grant_matches_ci87_and_refuses_drifted_candid
     assert SPENT_CI85_RESERVATION_SHA256 == "04c66536b5f655be479934d1086bec6895ac9015bdcf3da96c197a7f9d28bc4f"
     assert SPENT_CI86_NONCE == "3777470657bc4361b42b3e4de8ba8586"
     assert SPENT_CI86_RESERVATION_SHA256 == "dfa6d5670c156ce86a43fb45edf59d6f432bad71f11c139a09b2de864c6e5ba6"
+    assert SPENT_CI87_NONCE == "8f2ad7e4086946c9818c8ba1bad4c4f7"
+    assert SPENT_CI87_RESERVATION_SHA256 == "ac70c59663ff37177c5e072066d38d93d09caf7aca1aa8b0e90074dfaa849273"
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 87
+    assert grant["workflow_ordinal"] == 91
     assert grant["workflow_attempt"] == 1
-    assert grant["maximum_total"] == 7
-    assert grant["maximum_per_platform"] == 7
+    assert grant["maximum_total"] == 8
+    assert grant["maximum_per_platform"] == 8
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
     assert grant["ledger_before_sha256"] == EXPECTED_LEDGER_BEFORE_SHA256
-    assert grant["pull_request"] == 13
+    assert grant["pull_request"] == 23
     assert len(grant_sha) == 64
 
 
@@ -187,6 +190,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("workflow_ordinal", 73),
         ("workflow_ordinal", 85),
         ("workflow_ordinal", 86),
+        ("workflow_ordinal", 87),
         ("workflow_attempt", 2),
         ("maximum_per_platform", 1),
         ("maximum_per_platform", 2),
@@ -196,6 +200,8 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("maximum_total", 3),
         ("maximum_total", 5),
         ("maximum_total", 6),
+        ("maximum_total", 7),
+        ("maximum_per_platform", 7),
         ("maximum_per_platform", 6),
         ("maximum_per_platform", 5),
         ("nonce", SPENT_CI69_NONCE),
@@ -206,6 +212,8 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI72_NONCE),
         ("nonce", SPENT_CI85_NONCE),
         ("nonce", SPENT_CI86_NONCE),
+        ("nonce", SPENT_CI87_NONCE),
+        ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI86_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
@@ -241,6 +249,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("workflow_ordinal", 73),
         ("workflow_ordinal", 85),
         ("workflow_ordinal", 86),
+        ("workflow_ordinal", 87),
         ("workflow_attempt", 2),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
@@ -250,6 +259,8 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI72_NONCE),
         ("nonce", SPENT_CI85_NONCE),
         ("nonce", SPENT_CI86_NONCE),
+        ("nonce", SPENT_CI87_NONCE),
+        ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI86_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
@@ -294,7 +305,7 @@ def test_write_and_load_system_admission_proof_enforces_0600_and_no_overwrite(
         require_parent_mode_0700=True,
     )
     assert loaded_sha == written_sha
-    assert loaded["approval_id"] == "pr-13"
+    assert loaded["approval_id"] == "pr-23"
 
     os.chmod(proof_file, 0o644)
     with pytest.raises(D12SystemGrantError, match="mode 0600"):
@@ -330,7 +341,7 @@ def test_verify_host_system_proof_for_dispatch_validates_live_bindings(tmp_path:
         "GITHUB_REPOSITORY": str(grant["repository"]),
         "GITHUB_BASE_REF": "main",
         "GITHUB_HEAD_REF": "staging",
-        "GITHUB_WORKFLOW_REF": f"{grant['repository']}/{grant['workflow_path']}@refs/pull/13/merge",
+        "GITHUB_WORKFLOW_REF": f"{grant['repository']}/{grant['workflow_path']}@refs/pull/23/merge",
         "GITHUB_RUN_NUMBER": str(grant["workflow_ordinal"]),
         "GITHUB_RUN_ID": "12345678",
         "GITHUB_RUN_ATTEMPT": "1",
@@ -358,8 +369,8 @@ def test_verify_host_system_proof_for_dispatch_validates_live_bindings(tmp_path:
         candidate_tree="b" * 40,
         candidate_base_parent=str(grant["base"]),
         candidate_head_parent="d" * 40,
-        approval_id="pr-13",
-        pr_number="13",
+        approval_id="pr-23",
+        pr_number="23",
         repository=str(grant["repository"]),
     )
     verified = verify_host_system_proof_for_dispatch(

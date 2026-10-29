@@ -15,6 +15,17 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.config1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
+        "src/test/unit/python/repomap_kg/ops/cloe_config.unit.test.py"
+      ],
+      "rationale": "ADR0109 real CLI/configuration compatibility, filename refusal and inert planning boundaries.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "fix21.int.run25_acquisition_wave",
       "members": [
         "src/test/int/python/repomap_kg/source_ingestion/run25_acquisition_wave.int.test.py"
@@ -49623,6 +49634,42 @@
       "rationale": "ADR0108: unchanged strict D12 grant IO extraction; zero-debt tooling admission.",
       "root": "tools",
       "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/cli/_config_migration.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_layout.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/cloe_config.unit.test.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

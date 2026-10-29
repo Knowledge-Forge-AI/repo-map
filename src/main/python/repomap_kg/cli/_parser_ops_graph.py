@@ -32,6 +32,11 @@ def add_ops_graph_commands(
     ops_subcommands: argparse._SubParsersAction[argparse.ArgumentParser],
     add_ops_config_arguments: StorageArgumentHelper,
 ) -> None:
+    migration_plan = ops_subcommands.add_parser(
+        "config-migration-plan", help="plan CLOE configuration filenames without applying changes"
+    )
+    add_ops_config_arguments(migration_plan)
+    migration_plan.add_argument("--json", action="store_true", help="emit a read-only filename plan as JSON")
     config_check = ops_subcommands.add_parser(
         "config-check",
         help="validate a unified local operations TOML config",
