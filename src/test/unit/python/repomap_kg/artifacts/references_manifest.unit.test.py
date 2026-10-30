@@ -7,7 +7,7 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ArtifactLimits,
     ArtifactLocator,
     ArtifactReference,
@@ -15,7 +15,7 @@ from repomap_kg.artifacts import (
     ManifestBinding,
     PortableSnapshotManifest,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 DIGEST_A = "sha256:" + "a" * 64

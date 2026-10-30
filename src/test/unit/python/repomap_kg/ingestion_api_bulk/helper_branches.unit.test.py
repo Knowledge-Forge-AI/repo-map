@@ -13,10 +13,10 @@ from repomap_test_support.policy_helper_branches import (
     write_api_fixture,
 )
 
-from repomap_kg.ops.ingestion import api
-from repomap_kg.ops.ingestion import bulk
-from repomap_kg.ops import config as ops_config
-from repomap_kg.extractors.languages import python as python_extractor
+from common_lore_index.ops.ingestion import api
+from common_lore_index.ops.ingestion import bulk
+from common_lore_index.ops import config as ops_config
+from common_lore_index.extractors.languages import python as python_extractor
 
 FIXTURE_ROOT = Path(__file__).resolve().parents[4] / "support" / "python" / "repomap_test_support" / "contract_loader_fixtures"
 

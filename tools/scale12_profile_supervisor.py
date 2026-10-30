@@ -9,7 +9,7 @@ import subprocess
 import time
 from typing import Mapping, NoReturn
 
-from repomap_kg.storage.staging_operation_events import StagingOperationEventCategory
+from common_lore_index.storage.staging_operation_events import StagingOperationEventCategory
 from scale11_threshold_evaluator import IncrementalThresholdMonitor, MetricSample
 from scale12_event_transport import Scale12EventChannel, Scale12Frame, Scale12TransportError
 from scale12_operation_state import (

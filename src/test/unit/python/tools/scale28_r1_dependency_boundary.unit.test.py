@@ -7,7 +7,7 @@ import sys
 from unittest.mock import patch
 import tomllib
 
-import repomap_kg
+import common_lore_index
 
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
@@ -28,7 +28,7 @@ def test_scale_tools_extra_has_only_the_selected_exact_pins() -> None:
 
 
 def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
-    package_path = Path(repomap_kg.__file__)
+    package_path = Path(common_lore_index.__file__)
     module_name = "_repomap_without_scale_tools"
     real_import = builtins.__import__
 
@@ -48,8 +48,8 @@ def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
         module = importlib.util.module_from_spec(specification)
         sys.modules[module_name] = module
         specification.loader.exec_module(module)
-        assert module.DISTRIBUTION_NAME == "repomap-kg"
-        assert module.IMPORT_PACKAGE == "repomap_kg"
-        assert module.PREFERRED_CLI == "repomap-kg"
+        assert module.DISTRIBUTION_NAME == "common-lore-index"
+        assert module.IMPORT_PACKAGE == "common_lore_index"
+        assert module.PREFERRED_CLI == "cloe"
 # v0.0.2 dynamic target re-attestation.
 # v0.0.3 dynamic target re-attestation.

@@ -12,8 +12,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import commands, release_manifest
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime import commands, release_manifest
+from common_lore_index.runtime.release import (
     POSTGRES_RELEASE_IMAGE, RELEASE_FINAL_PACKAGE_CHECK_PY, RELEASE_FINAL_PROBE_PY, RELEASE_PROBE_HELPERS_PY,
 )
 from repomap_test_support import d12_core_image as d12

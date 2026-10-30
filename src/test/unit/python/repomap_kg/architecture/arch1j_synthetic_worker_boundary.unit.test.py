@@ -10,7 +10,7 @@ def _source(module: ModuleType) -> str:
 
 
 def test_arch1j_production_has_no_synthetic_test_adapter_ownership() -> None:
-    from repomap_kg.coordinator import _protocol_core, _worker_launch, core, protocol
+    from common_lore_index.coordinator import _protocol_core, _worker_launch, core, protocol
 
     combined = "\n".join(_source(module) for module in (_protocol_core, _worker_launch, core, protocol))
 
@@ -23,7 +23,7 @@ def test_arch1j_production_has_no_synthetic_test_adapter_ownership() -> None:
 
 def test_arch1j_test_support_owns_synthetic_worker_adapter() -> None:
     import repomap_test_support.synthetic_worker_adapter as adapter
-    import repomap_kg.coordinator.protocol as protocol
+    import common_lore_index.coordinator.protocol as protocol
 
     assert callable(adapter.run_synthetic_worker)
     assert callable(adapter.build_synthetic_coordinator)

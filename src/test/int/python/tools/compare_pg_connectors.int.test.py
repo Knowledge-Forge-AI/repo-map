@@ -6,7 +6,7 @@ import compare_pg_connectors as tool
 
 from repomap_test_support.postgres_harness import require_postgres_binaries
 
-from repomap_kg.storage.readback_driver import READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import READBACK_DRIVER_ENV
 
 
 def _restore_environment_variable(

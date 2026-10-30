@@ -32,7 +32,7 @@ from ci.run_pre_review import checks
 
 
 def test_retained_ruff_command_is_closed_read_only_and_complete() -> None:
-    targets = ("src/main/python/repomap_kg/a.py", "src/main/python/repomap_kg/b.py")
+    targets = ("src/main/python/common_lore_index/a.py", "src/main/python/common_lore_index/b.py")
 
     command = ruff_command(targets)
 
@@ -56,7 +56,7 @@ def test_retained_ruff_command_is_closed_read_only_and_complete() -> None:
 
 
 def test_retained_ruff_file_attestation_is_closed_and_complete() -> None:
-    targets = ("src/main/python/repomap_kg/a.py", "src/main/python/repomap_kg/b.py")
+    targets = ("src/main/python/common_lore_index/a.py", "src/main/python/common_lore_index/b.py")
 
     command = ruff_files_command(targets)
 
@@ -74,7 +74,7 @@ def test_retained_ruff_file_attestation_is_closed_and_complete() -> None:
 
 
 def test_t1_future_mypy_command_is_line_stable_and_cache_free() -> None:
-    targets = ("src/main/python/repomap_kg/future.py",)
+    targets = ("src/main/python/common_lore_index/future.py",)
 
     command = mypy_command(targets)
 

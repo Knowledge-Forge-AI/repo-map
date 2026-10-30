@@ -7,11 +7,11 @@ from unittest.mock import patch
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import main
-from repomap_kg.ops.graph_files import (
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import main
+from common_lore_index.ops.graph_files import (
     GraphFilePage,
     OpsRefreshError,
     graph_file_record_from_payload,
@@ -109,8 +109,8 @@ class OpsGraphFilesCliUnitTests(unittest.TestCase):
         )
         stdout = io.StringIO()
         with (
-            patch("repomap_kg.cli.load_ops_config_from_args", return_value="config"),
-            patch("repomap_kg.cli.query_graph_files", return_value=page) as query,
+            patch("common_lore_index.cli.load_ops_config_from_args", return_value="config"),
+            patch("common_lore_index.cli.query_graph_files", return_value=page) as query,
             redirect_stdout(stdout),
         ):
             exit_code = main(
@@ -157,8 +157,8 @@ class OpsGraphFilesCliUnitTests(unittest.TestCase):
         )
         stdout = io.StringIO()
         with (
-            patch("repomap_kg.cli.load_ops_config_from_args", return_value="config"),
-            patch("repomap_kg.cli.query_graph_files", return_value=page),
+            patch("common_lore_index.cli.load_ops_config_from_args", return_value="config"),
+            patch("common_lore_index.cli.query_graph_files", return_value=page),
             redirect_stdout(stdout),
         ):
             self.assertEqual(
@@ -170,9 +170,9 @@ class OpsGraphFilesCliUnitTests(unittest.TestCase):
 
         stderr = io.StringIO()
         with (
-            patch("repomap_kg.cli.load_ops_config_from_args", return_value="config"),
+            patch("common_lore_index.cli.load_ops_config_from_args", return_value="config"),
             patch(
-                "repomap_kg.cli.query_graph_files",
+                "common_lore_index.cli.query_graph_files",
                 side_effect=OpsRefreshError("failed at /Users/private/path"),
             ),
             redirect_stderr(stderr),

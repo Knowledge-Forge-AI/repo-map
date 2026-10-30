@@ -54,7 +54,7 @@ def test_cloe_setup_readback_status_and_plan_without_runtime_execution(tmp_path:
 
 
 def test_cloe_dry_run_replays_as_the_same_real_cli_format(tmp_path: Path) -> None:
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
 
     home = tmp_path / "absent"
     preview = setup_local_runtime(home, dry_run=True, config_format="cloe")

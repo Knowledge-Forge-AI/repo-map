@@ -7,11 +7,11 @@ from threading import Event
 import psycopg
 import pytest
 
-from repomap_kg.coordinator.client import LocalCoordinatorClient
-from repomap_kg.coordinator.local_mode import LocalCoordinatorRuntime, serve_configured_coordinator
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.coordinator.client import LocalCoordinatorClient
+from common_lore_index.coordinator.local_mode import LocalCoordinatorRuntime, serve_configured_coordinator
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator.storage import ControlStore
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.synthetic_worker_adapter import build_synthetic_coordinator
 from repomap_test_support.test_scratch import short_test_directory

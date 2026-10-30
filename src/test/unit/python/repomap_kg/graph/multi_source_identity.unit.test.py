@@ -2,7 +2,7 @@ from dataclasses import replace
 
 import pytest
 
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     GraphCandidate,
     GraphSourceBinding,
     MultiSourceIdentityError,
@@ -18,14 +18,14 @@ from repomap_kg.graph.multi_source import (
     source_definition_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_capture import MultiSourceCaptureError
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.graph.multi_source_capture import MultiSourceCaptureError
+from common_lore_index.graph.multi_source_pipeline import (
     _multi_source_source_generation,
     multi_source_config_generation,
     multi_source_semantic_identities,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def _binding(

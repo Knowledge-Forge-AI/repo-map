@@ -6,7 +6,7 @@ from repomap_test_support.cli_integration import (
     CliIntegrationTestCase,
 )
 
-from repomap_kg.observations import RawObservation, write_observations_jsonl
+from common_lore_index.observations import RawObservation, write_observations_jsonl
 
 
 class CliObservationsStorageIntegrationTests(CliIntegrationTestCase):

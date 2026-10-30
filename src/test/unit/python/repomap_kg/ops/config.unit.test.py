@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.ops.config import (
+from common_lore_index.ops.config import (
     OpsConfigError,
     load_ops_config,
     load_ops_config_home,

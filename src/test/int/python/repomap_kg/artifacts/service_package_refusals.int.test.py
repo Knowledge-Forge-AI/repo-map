@@ -9,23 +9,23 @@ import tempfile
 from typing import Mapping, Sequence
 import unittest
 
-from repomap_kg.artifacts._store_filesystem import FileSystemArtifactStore
-from repomap_kg.artifacts._store_common import ArtifactIntegrityError, ArtifactReference
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.validator import (
+from common_lore_index.artifacts._store_filesystem import FileSystemArtifactStore
+from common_lore_index.artifacts._store_common import ArtifactIntegrityError, ArtifactReference
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.validator import (
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
-from repomap_kg.service_package.operations import (
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.operations import (
     CoordinatorServiceOperations,
     ServicePackageError,
     ServiceActionResult,
 )
-from repomap_kg.service_package.systemd import SystemdUserAdapter
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.service_package.systemd import SystemdUserAdapter
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.test_scratch import select_scratch_root
 from repomap_test_support.service_publication_families import (
     sample_publication_families as _sample_publication_families,
@@ -302,7 +302,7 @@ class ServicePackageRefusalsIntegrationTests(unittest.TestCase):
         self.assertEqual(store.read(r_ref), receipt.canonical_bytes())
 
     def test_coordinator_service_operations_rollbacks_and_refusals(self) -> None:
-        from repomap_kg.runtime.local import setup_local_runtime
+        from common_lore_index.runtime.local import setup_local_runtime
 
         def native_home(home: Path) -> None:
             setup_local_runtime(home)

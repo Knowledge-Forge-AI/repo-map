@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import (
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config import (
     OpsConfigError,
     load_ops_config,
     resolve_ops_config,
@@ -237,7 +237,7 @@ def test_unknown_source_binding_field_diagnostic_code(tmp_path):
 
 
 def test_effective_source_bindings_total_on_arbitrary_dataclass():
-    from repomap_kg.ops.config_records import OpsGraphConfig
+    from common_lore_index.ops.config_records import OpsGraphConfig
 
     graph = OpsGraphConfig(
         id="fixture",
@@ -259,11 +259,11 @@ def test_effective_source_bindings_total_on_arbitrary_dataclass():
 
 
 def test_legacy_graph_effective_source_bindings_selection_policy_derivation():
-    from repomap_kg.graph.multi_source import (
+    from common_lore_index.graph.multi_source import (
         compatibility_source_selection_policy_id,
         source_selection_policy_id,
     )
-    from repomap_kg.ops.config_records import OpsGraphConfig
+    from common_lore_index.ops.config_records import OpsGraphConfig
 
     strict_graph = OpsGraphConfig(
         id="fixture",

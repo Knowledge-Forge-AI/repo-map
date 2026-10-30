@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.staging_launch_authority import DirectLaunchAuthorityEvent
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.staging_launch_authority import DirectLaunchAuthorityEvent
 
 
 class LaunchBindingError(RuntimeError):

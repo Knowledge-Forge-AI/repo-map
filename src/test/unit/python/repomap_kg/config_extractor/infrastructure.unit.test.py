@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations
 
 
 class ConfigExtractorInfrastructureUnitTests(unittest.TestCase):

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 
 import test_sandbox as sandbox_owner
-from repomap_kg.runtime import release
+from common_lore_index.runtime import release
 
 
 from pathlib import Path

@@ -9,13 +9,13 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.cli.main import main
-from repomap_kg.ops import config_migration
-from repomap_kg.ops.config_loading import _read_ops_config_home_payload
-from repomap_kg.ops.config_migration import (
+from common_lore_index.cli.main import main
+from common_lore_index.ops import config_migration
+from common_lore_index.ops.config_loading import _read_ops_config_home_payload
+from common_lore_index.ops.config_migration import (
     apply_cloe_config_migration, finalize_cloe_config_migration, rollback_cloe_config_migration,
 )
-from repomap_kg.ops.config_migration_fs import OPERATION_DIRECTORY, Home, MigrationRefusal, owned_regular, valid_name
+from common_lore_index.ops.config_migration_fs import OPERATION_DIRECTORY, Home, MigrationRefusal, owned_regular, valid_name
 from repomap_test_support.sqlite_local_fixtures import graph_toml, sqlite_home_toml
 
 SECRET = "migration-secret-sentinel"

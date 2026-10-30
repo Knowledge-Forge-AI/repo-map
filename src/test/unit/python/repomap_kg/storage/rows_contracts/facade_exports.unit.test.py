@@ -17,13 +17,13 @@ SUMMARY_ROW_MANIFEST_EXPORT_NAMES,
 SUMMARY_ROW_NIX_EXPORT_NAMES,
 )
 
-from repomap_kg.storage import rows
+from common_lore_index.storage import rows
 
 
 def test_storage_rows_export_surface_and_facade_identity_contracts() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     expected_names = {
         *CRITICAL_WRITE_ROW_FIELDS,
         "file_rows_from_observations",
@@ -49,10 +49,10 @@ def test_storage_rows_export_surface_and_facade_identity_contracts() -> None:
         assert getattr(storage_rows_facade, name) is getattr(rows, name)
 
 def test_storage_row_helpers_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.row_helpers as row_helpers
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.row_helpers as row_helpers
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert row_helpers.__all__ == PURE_HELPER_EXPORT_NAMES
 
     for name in PURE_HELPER_EXPORT_NAMES:
@@ -63,10 +63,10 @@ def test_storage_row_helpers_import_back_through_rows_and_facades() -> None:
         assert getattr(storage_rows_facade, name) is helper
 
 def test_storage_file_index_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.file_rows as file_index_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.file_rows as file_index_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert file_index_rows.__all__ == FILE_INDEX_ROW_EXPORT_NAMES
 
     for name in FILE_INDEX_ROW_EXPORT_NAMES:
@@ -77,10 +77,10 @@ def test_storage_file_index_rows_import_back_through_rows_and_facades() -> None:
         assert getattr(storage_rows_facade, name) is file_index_name
 
 def test_storage_canonical_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.canonical_rows as canonical_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.canonical_rows as canonical_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert canonical_rows.__all__ == CANONICAL_ROW_EXPORT_NAMES
 
     for name in CANONICAL_ROW_EXPORT_NAMES:
@@ -91,10 +91,10 @@ def test_storage_canonical_rows_import_back_through_rows_and_facades() -> None:
         assert getattr(storage_rows_facade, name) is canonical_name
 
 def test_storage_canonical_readback_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.canonical_readback_rows as canonical_readback_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.canonical_readback_rows as canonical_readback_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert canonical_readback_rows.__all__ == CANONICAL_READBACK_ROW_EXPORT_NAMES
 
     for name in CANONICAL_READBACK_ROW_EXPORT_NAMES:
@@ -105,10 +105,10 @@ def test_storage_canonical_readback_rows_import_back_through_rows_and_facades() 
         assert getattr(storage_rows_facade, name) is canonical_readback_name
 
 def test_storage_source_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.source_rows as source_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.source_rows as source_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert source_rows.__all__ == SOURCE_ROW_EXPORT_NAMES
 
     for name in SOURCE_ROW_EXPORT_NAMES:
@@ -119,10 +119,10 @@ def test_storage_source_rows_import_back_through_rows_and_facades() -> None:
         assert getattr(storage_rows_facade, name) is source_name
 
 def test_storage_summary_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert summary_rows.__all__ == SUMMARY_ROW_EXPORT_NAMES
 
     for name in SUMMARY_ROW_EXPORT_NAMES:
@@ -133,11 +133,11 @@ def test_storage_summary_rows_import_back_through_rows_and_facades() -> None:
         assert getattr(storage_rows_facade, name) is summary_name
 
 def test_storage_summary_rows_storage_imports_back_through_facades() -> None:
-    import repomap_kg.storage.summary_rows_storage as summary_rows_storage
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.summary_rows_storage as summary_rows_storage
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert summary_rows_storage.__all__ == SUMMARY_ROW_STORAGE_EXPORT_NAMES
     assert summary_rows.__all__ == SUMMARY_ROW_EXPORT_NAMES
 
@@ -150,11 +150,11 @@ def test_storage_summary_rows_storage_imports_back_through_facades() -> None:
         assert getattr(storage_rows_facade, name) is storage_summary_name
 
 def test_storage_summary_rows_languages_imports_back_through_facades() -> None:
-    import repomap_kg.storage.summary_rows_languages as summary_rows_languages
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.summary_rows_languages as summary_rows_languages
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert summary_rows_languages.__all__ == SUMMARY_ROW_LANGUAGE_EXPORT_NAMES
     assert summary_rows.__all__ == SUMMARY_ROW_EXPORT_NAMES
 
@@ -167,11 +167,11 @@ def test_storage_summary_rows_languages_imports_back_through_facades() -> None:
         assert getattr(storage_rows_facade, name) is language_summary_name
 
 def test_storage_summary_rows_domains_imports_back_through_facades() -> None:
-    import repomap_kg.storage.summary_rows_domains as summary_rows_domains
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.summary_rows_domains as summary_rows_domains
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert summary_rows_domains.__all__ == SUMMARY_ROW_DOMAIN_EXPORT_NAMES
     assert summary_rows.__all__ == SUMMARY_ROW_EXPORT_NAMES
 
@@ -184,11 +184,11 @@ def test_storage_summary_rows_domains_imports_back_through_facades() -> None:
         assert getattr(storage_rows_facade, name) is domain_summary_name
 
 def test_storage_summary_rows_manifest_imports_back_through_facades() -> None:
-    import repomap_kg.storage.summary_rows_manifest as summary_rows_manifest
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.summary_rows_manifest as summary_rows_manifest
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert summary_rows_manifest.__all__ == SUMMARY_ROW_MANIFEST_EXPORT_NAMES
     assert summary_rows.__all__ == SUMMARY_ROW_EXPORT_NAMES
 
@@ -201,11 +201,11 @@ def test_storage_summary_rows_manifest_imports_back_through_facades() -> None:
         assert getattr(storage_rows_facade, name) is manifest_summary_name
 
 def test_storage_summary_rows_nix_imports_back_through_facades() -> None:
-    import repomap_kg.storage.summary_rows_nix as summary_rows_nix
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.summary_rows_nix as summary_rows_nix
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert summary_rows_nix.__all__ == SUMMARY_ROW_NIX_EXPORT_NAMES
     assert summary_rows.__all__ == SUMMARY_ROW_EXPORT_NAMES
 

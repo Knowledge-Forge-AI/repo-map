@@ -6,24 +6,24 @@ import json
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, JobId
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage import publication
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import AttemptNumber, JobId
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage import publication
+from common_lore_index.storage.publication import (
     PortablePublicationBinding,
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.publication_readback import (
     read_latest_publication,
     read_run_publication,
 )
-from repomap_kg.storage.sql_load import (
+from common_lore_index.storage.sql_load import (
     file_load_summary_select_sql,
     repository_run_prefix_sql,
 )
-from repomap_kg.storage.summary_rows_storage import load_summary_from_payload
+from common_lore_index.storage.summary_rows_storage import load_summary_from_payload
 
 
 def generations(**updates: str) -> RunPublicationGenerations:
@@ -235,7 +235,7 @@ def test_publication_readback_is_exact_bounded_and_absence_is_none():
         stdout=json.dumps({"run_id": 9, **expected.to_mapping()}) + "\n"
     )
     with patch(
-        "repomap_kg.storage.publication_readback.run_psql", return_value=completed
+        "common_lore_index.storage.publication_readback.run_psql", return_value=completed
     ) as run:
         record = read_run_publication(
             ["-d", "postgres"],
@@ -253,7 +253,7 @@ def test_publication_readback_is_exact_bounded_and_absence_is_none():
     assert "status = 'complete'" in command[-1]
 
     with patch(
-        "repomap_kg.storage.publication_readback.run_psql",
+        "common_lore_index.storage.publication_readback.run_psql",
         return_value=SimpleNamespace(stdout="null\n"),
     ):
         assert (
@@ -270,7 +270,7 @@ def test_latest_publication_readback_uses_only_complete_full_receipts():
         stdout=json.dumps({"run_id": 11, **expected.to_mapping()}) + "\n"
     )
     with patch(
-        "repomap_kg.storage.publication_readback.run_psql", return_value=completed
+        "common_lore_index.storage.publication_readback.run_psql", return_value=completed
     ) as run:
         record = read_latest_publication(["-d", "postgres"])
 
@@ -285,7 +285,7 @@ def test_latest_publication_readback_uses_only_complete_full_receipts():
 
 
 def test_latest_publication_readback_has_explicit_canonical_name():
-    from repomap_kg.storage.publication_readback import (
+    from common_lore_index.storage.publication_readback import (
         read_latest_publication,
         read_latest_receipt_bearing_publication,
     )
@@ -322,7 +322,7 @@ def test_latest_publication_readback_reads_legacy_receipt_with_null_portable_col
     }
     completed = SimpleNamespace(stdout=json.dumps(legacy_payload) + "\n")
     with patch(
-        "repomap_kg.storage.publication_readback.run_psql", return_value=completed
+        "common_lore_index.storage.publication_readback.run_psql", return_value=completed
     ):
         record = read_latest_publication(["-d", "postgres"])
 
@@ -333,7 +333,7 @@ def test_latest_publication_readback_reads_legacy_receipt_with_null_portable_col
 
 
 def test_publication_run_with_portable_binding_enforces_portable_fields():
-    from repomap_kg.storage.staged_publication import publication_run
+    from common_lore_index.storage.staged_publication import publication_run
 
     class MockConnection:
         def __init__(self, row: tuple[object, ...]) -> None:

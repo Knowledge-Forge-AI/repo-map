@@ -11,19 +11,19 @@ from typing import Any, cast
 import unittest
 from unittest import mock
 
-from repomap_kg.coordinator.polling import PollingScheduler, PollOutcome
-from repomap_kg.ops.config import load_ops_config, load_ops_config_home
-from repomap_kg.ops.readback import (
+from common_lore_index.coordinator.polling import PollingScheduler, PollOutcome
+from common_lore_index.ops.config import load_ops_config, load_ops_config_home
+from common_lore_index.ops.readback import (
     OpsPsqlExecution,
     _OpsContainerReadbackPlan,
     execute_ops_json_readback,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
 )
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
 )
@@ -231,8 +231,8 @@ class Slice7ControlReadbackIntegrationTests(unittest.TestCase):
             # Under host_only, failure raises without attempting container fallback planning or execution
             with mock.patch.dict("os.environ", {PG_CONNECTOR_ENV: "psql"}):
                 os.environ.pop(READBACK_DRIVER_ENV, None)
-                with mock.patch("repomap_kg.storage.readback_driver.run_psql", side_effect=OSError("host connect refused")) as mock_run_psql:
-                    with mock.patch("repomap_kg.ops.readback._resolve_container_readback_plan") as mock_plan:
+                with mock.patch("common_lore_index.storage.readback_driver.run_psql", side_effect=OSError("host connect refused")) as mock_run_psql:
+                    with mock.patch("common_lore_index.ops.readback._resolve_container_readback_plan") as mock_plan:
                         with self.assertRaises(StorageSchemaError):
                             execute_ops_json_readback(
                                 config,
@@ -257,11 +257,11 @@ class Slice7ControlReadbackIntegrationTests(unittest.TestCase):
                     stderr="",
                 )
                 with mock.patch(
-                    "repomap_kg.storage.readback_driver.run_psql",
+                    "common_lore_index.storage.readback_driver.run_psql",
                     side_effect=[OSError("host connect refused"), mock_proc],
                 ) as mock_run_psql_paired:
                     with mock.patch(
-                        "repomap_kg.ops.readback._resolve_container_readback_plan",
+                        "common_lore_index.ops.readback._resolve_container_readback_plan",
                         return_value=container_plan,
                     ) as mock_plan_paired:
                         result = execute_ops_json_readback(
@@ -300,7 +300,7 @@ class Slice7ControlReadbackIntegrationTests(unittest.TestCase):
 
             with mock.patch.dict("os.environ", {PG_CONNECTOR_ENV: "psycopg"}):
                 os.environ.pop(READBACK_DRIVER_ENV, None)
-                with mock.patch("repomap_kg.storage.readback_driver._import_psycopg") as mock_import:
+                with mock.patch("common_lore_index.storage.readback_driver._import_psycopg") as mock_import:
                     mock_psycopg = mock.MagicMock()
                     mock_import.return_value = mock_psycopg
 

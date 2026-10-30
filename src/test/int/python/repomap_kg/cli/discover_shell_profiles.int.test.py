@@ -2,8 +2,8 @@ import json
 import tempfile
 from pathlib import Path
 
-from repomap_kg.extractors.config.nix import resolve_repo_path
-from repomap_kg.observations import RawObservation, write_observations_jsonl
+from common_lore_index.extractors.config.nix import resolve_repo_path
+from common_lore_index.observations import RawObservation, write_observations_jsonl
 from repomap_test_support.cli_integration import CliIntegrationTestCase
 
 

@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.service_package import artifacts
-from repomap_kg.service_package.artifacts import (
+from common_lore_index.service_package import artifacts
+from common_lore_index.service_package.artifacts import (
     ServiceArtifactError,
     ensure_private_directory,
     inspect_owned_artifact,
@@ -104,7 +104,7 @@ def test_inspection_rejects_wrong_owner_without_reading_content(tmp_path):
         )
     )
 
-    with patch("repomap_kg.service_package.artifacts.os.lstat", return_value=wrong_owner):
+    with patch("common_lore_index.service_package.artifacts.os.lstat", return_value=wrong_owner):
         with pytest.raises(ServiceArtifactError, match="service_definition_unsafe"):
             inspect_owned_artifact(target, _recognized)
 
@@ -129,7 +129,7 @@ def test_failed_atomic_replacement_leaves_the_prior_file_unchanged(tmp_path):
     _write(target, original)
 
     with patch(
-        "repomap_kg.service_package.artifacts.os.replace",
+        "common_lore_index.service_package.artifacts.os.replace",
         side_effect=OSError("synthetic replacement failure"),
     ):
         with pytest.raises(ServiceArtifactError, match="service_definition_write_failed"):
@@ -146,7 +146,7 @@ def test_install_directory_sync_failure_restores_absence(tmp_path):
     target = tmp_path / "service.definition"
 
     with patch(
-        "repomap_kg.service_package.artifacts._fsync_directory",
+        "common_lore_index.service_package.artifacts._fsync_directory",
         side_effect=[OSError("synthetic sync failure"), None],
     ):
         with pytest.raises(ServiceArtifactError, match="service_definition_write_failed"):
@@ -165,7 +165,7 @@ def test_replacement_directory_sync_failure_restores_prior_file(tmp_path):
     _write(target, original)
 
     with patch(
-        "repomap_kg.service_package.artifacts._fsync_directory",
+        "common_lore_index.service_package.artifacts._fsync_directory",
         side_effect=[OSError("synthetic sync failure"), None],
     ):
         with pytest.raises(ServiceArtifactError, match="service_definition_write_failed"):

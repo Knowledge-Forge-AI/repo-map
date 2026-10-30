@@ -2,8 +2,8 @@ import json
 import unittest
 from pathlib import Path
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.graph.keys import (
     env_key,
     external_key,
     file_key,
@@ -12,8 +12,8 @@ from repomap_kg.graph.keys import (
     zsh_function_key,
     zsh_script_key,
 )
-from repomap_kg.extractors.shell.zsh import extract_zsh_file_observations
-from repomap_kg.observations import RawObservation
+from common_lore_index.extractors.shell.zsh import extract_zsh_file_observations
+from common_lore_index.observations import RawObservation
 
 
 FIXTURE_ROOT = Path(__file__).parents[5] / "fixtures" / "shell" / "zsh"

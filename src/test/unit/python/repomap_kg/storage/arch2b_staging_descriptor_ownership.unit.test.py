@@ -2,24 +2,24 @@ from __future__ import annotations
 
 import inspect
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     publication_fencing,
     staged_rows,
     staged_validation,
     staging_cleanup,
     staging_copy,
 )
-from repomap_kg.storage.staging import STAGING_FAMILIES
-from repomap_kg.storage.staging_checksums import checksum_family
-from repomap_kg.storage.staging_family_catalog import (
+from common_lore_index.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging_checksums import checksum_family
+from common_lore_index.storage.staging_family_catalog import (
     family_privacy_classifications,
     merge_operations_for_scope,
 )
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.storage.staging_family_contracts import (
     PrivacyClassification,
     STAGING_FAMILY_DESCRIPTORS,
 )
-from repomap_kg.storage.staging_merge_operations import MergeOperation, MergeScope
+from common_lore_index.storage.staging_merge_operations import MergeOperation, MergeScope
 
 
 def test_arch2b_registry_owns_family_copy_and_privacy_catalogs() -> None:

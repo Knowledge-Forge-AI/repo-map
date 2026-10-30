@@ -49,7 +49,7 @@ def validate_candidate_path(path_str: str, repo_root: Path) -> tuple[Path, str]:
 
 
 FIRST_PARTY_PREFIXES = frozenset({
-    PRODUCT_MODULE_ROOT, "ci", "repomap_test_support", "tools",
+    PRODUCT_MODULE_ROOT, "repomap_kg", "ci", "repomap_test_support", "tools",
 })
 
 

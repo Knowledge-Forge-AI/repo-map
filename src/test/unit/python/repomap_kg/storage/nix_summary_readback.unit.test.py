@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     NixSummaryRecord,
     StorageSchemaError,
     build_nix_summary_query_sql,
@@ -42,11 +42,11 @@ def test_psycopg62_query_nix_summary_uses_object_readback_adapter() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             return_value=payload,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("Nix summary must use the adapter"),
         ),
     ):
@@ -72,7 +72,7 @@ def test_psycopg62_query_nix_summary_preserves_unknown_root_defaults() -> None:
     payload = _nix_summary_payload(zeroed=True)
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_nix_summary(
@@ -94,7 +94,7 @@ def test_psycopg62_query_nix_summary_propagates_adapter_shape_errors(
     invalid_payload,
 ) -> None:
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         side_effect=StorageSchemaError("psql returned a malformed nix summary"),
     ) as execute_json_readback:
         with pytest.raises(StorageSchemaError, match="malformed nix summary"):
@@ -131,7 +131,7 @@ def test_psycopg62_query_nix_summary_preserves_nested_schema_errors(
     mutate(payload)
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match=message):
@@ -178,7 +178,7 @@ def test_build_nix_summary_query_sql_invalid_identity() -> None:
 def test_query_nix_summary_forwards_identity() -> None:
     payload = _nix_summary_payload()
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ) as execute_json_readback:
         record = query_nix_summary(

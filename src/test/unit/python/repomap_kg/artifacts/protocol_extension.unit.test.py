@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.coordinator._protocol_core import ProtocolError, ProtocolSession
+from common_lore_index.coordinator._protocol_core import ProtocolError, ProtocolSession
 
 
 IDENTITY = {"job_id": "job-1", "attempt": 1}

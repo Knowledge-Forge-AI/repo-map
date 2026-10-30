@@ -10,7 +10,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.coordinator._refresh_execution import (
+from common_lore_index.coordinator._refresh_execution import (
     _is_safe_test_path,
     _run_system_test_pause,
 )
@@ -65,7 +65,7 @@ class RefreshExecutionPauseHookUnitTests(unittest.TestCase):
         import tempfile
         with tempfile.TemporaryDirectory() as raw_dir:
             fake_ready = Path(raw_dir) / "ready"
-            with patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", fake_ready):
+            with patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", fake_ready):
                 os.environ.pop("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", None)
                 cap = SimpleNamespace(job_id="job-1", attempt=1)
                 _run_system_test_pause(cap)
@@ -84,9 +84,9 @@ class RefreshExecutionPauseHookUnitTests(unittest.TestCase):
             mock_marker = MagicMock()
             mock_marker.is_file.return_value = False
             with (
-                patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", fake_pause),
-                patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", fake_ready),
-                patch("repomap_kg.coordinator._refresh_execution.CONTAINER_INTERNAL_MARKER", mock_marker),
+                patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", fake_pause),
+                patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", fake_ready),
+                patch("common_lore_index.coordinator._refresh_execution.CONTAINER_INTERNAL_MARKER", mock_marker),
             ):
                 _run_system_test_pause(cap)
                 self.assertFalse(fake_ready.exists())
@@ -106,9 +106,9 @@ class RefreshExecutionPauseHookUnitTests(unittest.TestCase):
             mock_marker = MagicMock()
             mock_marker.is_file.return_value = True
             with (
-                patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", fake_pause),
-                patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", fake_ready),
-                patch("repomap_kg.coordinator._refresh_execution.CONTAINER_INTERNAL_MARKER", mock_marker),
+                patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", fake_pause),
+                patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", fake_ready),
+                patch("common_lore_index.coordinator._refresh_execution.CONTAINER_INTERNAL_MARKER", mock_marker),
             ):
                 thread = threading.Thread(target=_run_system_test_pause, args=(cap,))
                 thread.start()

@@ -4,7 +4,7 @@ from typing import Any, cast
 
 import pytest
 
-from repomap_kg.coordinator.semantics import (
+from common_lore_index.coordinator.semantics import (
     AutomaticIntent,
     ProgressSnapshot,
     RetryPolicy,

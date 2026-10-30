@@ -6,20 +6,20 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.keys import nix_app_key, nix_package_key
-from repomap_kg.graph.multi_source import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.keys import nix_app_key, nix_package_key
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_definition_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
     capture_multi_source_candidate,
     scan_multi_source_generations,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
 from repomap_test_support.composition_extraction_fixtures import (
     create_composition_graph_config,
     populate_shell_project,

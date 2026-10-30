@@ -5,13 +5,13 @@ from pathlib import Path
 
 from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
 
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     format_backup_inspect_table,
     drop_database,
     inspect_backup,
     read_backup_info,
 )
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
 
 
 class LocalDbBackupReportsInspectUnitTests(LocalDbBackupUnitTestCase):

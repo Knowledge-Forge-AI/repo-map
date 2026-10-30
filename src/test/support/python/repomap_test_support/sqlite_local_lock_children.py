@@ -23,7 +23,7 @@ HANG_GUARD_SECONDS = 120
 HOLD = """
 import os, sys
 from pathlib import Path
-from repomap_kg.storage.sqlite_local.locking import hold_graph_lock
+from common_lore_index.storage.sqlite_local.locking import hold_graph_lock
 is_abrupt = os.environ.get("REPOMAP_TEST_SQLITE_ABRUPT_SETTLEMENT") == "1"
 if is_abrupt:
     coverage_armed = bool(os.environ.get("COVERAGE_PROCESS_START") or os.environ.get("COVERAGE_CHILD_MANIFEST_DIR"))
@@ -51,7 +51,7 @@ if is_abrupt:
 HOLD_AND_SPAWN = """
 import os, subprocess, sys
 from pathlib import Path
-from repomap_kg.storage.sqlite_local.locking import hold_graph_lock
+from common_lore_index.storage.sqlite_local.locking import hold_graph_lock
 is_abrupt = os.environ.get("REPOMAP_TEST_SQLITE_ABRUPT_SETTLEMENT") == "1"
 if is_abrupt:
     coverage_armed = bool(os.environ.get("COVERAGE_PROCESS_START") or os.environ.get("COVERAGE_CHILD_MANIFEST_DIR"))
@@ -79,8 +79,8 @@ if is_abrupt:
 ATTEMPT = """
 import sys
 from pathlib import Path
-from repomap_kg.storage.sqlite_local.locking import hold_graph_lock, probe_graph_lock
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.sqlite_local.locking import hold_graph_lock, probe_graph_lock
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 try:
     if sys.argv[2] == "probe":
         with probe_graph_lock(Path(sys.argv[1])) as held:

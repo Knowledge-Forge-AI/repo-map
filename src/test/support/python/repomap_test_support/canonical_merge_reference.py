@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.canonical_staging_merge import build_canonical_merge_statements
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.canonical_staging_merge import build_canonical_merge_statements
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
 
 __all__ = (
     "build_reference_edge_evidence_merge_statement",

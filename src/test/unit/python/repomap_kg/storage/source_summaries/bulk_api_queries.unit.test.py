@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_bulk_summary,
 )
@@ -45,7 +45,7 @@ class StorageSourceBulkApiQueryUnitTests(unittest.TestCase):
                 "redacted_observations": 2,
             }
             with patch(
-                "repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload
+                "common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload
             ) as readback:
                 summary = query_bulk_summary(
                     ["-d", "postgres"],
@@ -118,7 +118,7 @@ class StorageSourceBulkApiQueryUnitTests(unittest.TestCase):
                 "redacted_observations": 1,
             }
             with patch(
-                "repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload
+                "common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload
             ):
                 summary = query_bulk_summary(["-d", "postgres"], root_path=str(root))
 
@@ -146,7 +146,7 @@ class StorageSourceBulkApiQueryUnitTests(unittest.TestCase):
             }
 
             with patch(
-                "repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload
+                "common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload
             ):
                 summary = query_bulk_summary(["-d", "postgres"], root_path=tmpdir)
 
@@ -176,7 +176,7 @@ class StorageSourceBulkApiQueryUnitTests(unittest.TestCase):
                 }
 
                 with patch(
-                    "repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload
+                    "common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload
                 ):
                     summary = query_bulk_summary(["-d", "postgres"], root_path=tmpdir)
 
@@ -189,7 +189,7 @@ class StorageSourceBulkApiQueryUnitTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with patch(
-                "repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload
+                "common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload
             ):
                 with self.assertRaisesRegex(StorageSchemaError, "bulk summary"):
                     query_bulk_summary(["-d", "postgres"], root_path=tmpdir)

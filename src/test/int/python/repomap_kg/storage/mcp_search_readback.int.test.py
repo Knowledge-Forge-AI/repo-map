@@ -14,18 +14,18 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.server.mcp import (
+from common_lore_index.server.mcp import (
     RepoMapMcpError,
     repomap_search_files,
     repomap_search_nodes,
     repomap_search_observations,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     run_psql,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 
 def test_psycopg108_mcp_search_connector_pagination_raw_and_privacy_parity(
@@ -53,7 +53,7 @@ def test_psycopg108_mcp_search_connector_pagination_raw_and_privacy_parity(
             config_path = _write_config(base, postgres=postgres)
             os.environ["REPOMAP_OPS_CONFIG"] = str(config_path)
 
-            import repomap_kg.ops.readback as readback
+            import common_lore_index.ops.readback as readback
 
             def fail_topology(*args, **kwargs):
                 pytest.fail("successful host MCP search inspected topology")

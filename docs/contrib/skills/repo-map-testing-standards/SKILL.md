@@ -258,9 +258,9 @@ RepoMap operates five hosted CI lanes across three cost tiers:
   suppression visibility, offline Liquibase validation, Hadolint, and
   generated-output drift before one final result. Its global Ruff
   `E9`/`F821`/`F822`/`F823` correctness seed, one cumulative full-`F` production
-  ratchet over `src/main/python/repomap_kg/runtime`,
-  `src/main/python/repomap_kg/graph`, and
-  `src/main/python/repomap_kg/server`, and an ownership-manifest-derived mypy
+  ratchet over `src/main/python/common_lore_index/runtime`,
+  `src/main/python/common_lore_index/graph`, and
+  `src/main/python/common_lore_index/server`, and an ownership-manifest-derived mypy
   boundary over every T0 cross-language contract plus the declared T1
   retained-Python seed. The separate `retained-python-ratchets` aggregate
   check derives all T0, T1-seed, and T1-future retained modules from that same

@@ -15,8 +15,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     execute_json_readback,
     selected_json_readback_driver,
 )

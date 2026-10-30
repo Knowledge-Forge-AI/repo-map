@@ -5,10 +5,10 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-import repomap_kg.storage.readback_driver as storage_readback
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.report_records import OpsPsqlExecution
-from repomap_kg.storage.errors import StorageSchemaError
+import common_lore_index.storage.readback_driver as storage_readback
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.report_records import OpsPsqlExecution
+from common_lore_index.storage.errors import StorageSchemaError
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 
 
@@ -98,9 +98,9 @@ def test_psycopg94_named_driver_rejects_unknown_driver_before_execution(
 
 
 def test_psycopg94_operational_adapter_exposes_exact_api() -> None:
-    spec = importlib.util.find_spec("repomap_kg.ops.readback")
+    spec = importlib.util.find_spec("common_lore_index.ops.readback")
     assert spec is not None
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     assert readback.OpsJsonReadbackMode == inspect.get_annotations(readback.execute_ops_json_readback, eval_str=True)["mode"]
     assert tuple(inspect.signature(readback.execute_ops_json_readback).parameters) == (
         "config", "database", "sql", "label", "expected_shape", "mode", "psql_command",
@@ -125,7 +125,7 @@ def test_psycopg94_explicit_command_forces_psql_and_bypasses_selectors(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     calls: list[dict[str, Any]] = []
     monkeypatch.setenv(storage_readback.PG_CONNECTOR_ENV, "unsupported")
     monkeypatch.setattr(
@@ -162,7 +162,7 @@ def test_psycopg94_host_only_uses_selected_connector_without_container(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     calls: list[dict[str, Any]] = []
     monkeypatch.setattr(readback, "selected_json_readback_driver", lambda: "psycopg")
     monkeypatch.setattr(
@@ -190,7 +190,7 @@ def test_psycopg94_retryable_host_failure_uses_one_forced_psql_container_attempt
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     calls: list[dict[str, Any]] = []
 
     def resolve_container_plan(config, *, allow_loopback_host: bool):
@@ -249,7 +249,7 @@ def test_psycopg94_psycopg_failure_classification_is_structured(
     error: StorageSchemaError,
     retryable: bool,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
 
     assert readback._host_error_supports_container_fallback(
         error,
@@ -258,7 +258,7 @@ def test_psycopg94_psycopg_failure_classification_is_structured(
 
 
 def test_missing_database_errors_keep_a_distinct_typed_boundary() -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
 
     psycopg_error = readback._augment_host_error(
         _psycopg_storage_error("3D000"),
@@ -278,7 +278,7 @@ def test_missing_database_errors_keep_a_distinct_typed_boundary() -> None:
 
 
 def test_psycopg94_psycopg_public_error_does_not_leak_raw_cause() -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     error = _psycopg_storage_error("28P01")
 
     public_error = readback._augment_host_error(
@@ -307,7 +307,7 @@ def test_psycopg94_non_topology_psql_failures_are_terminal(
     tmp_path: Path,
     message: str,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     monkeypatch.setattr(readback, "selected_json_readback_driver", lambda: "psql")
     monkeypatch.setattr(
         readback,
@@ -335,7 +335,7 @@ def test_psycopg94_container_failure_is_terminal_after_exactly_two_attempts(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     calls: list[str] = []
 
     def resolve_container_plan(config, *, allow_loopback_host: bool):
@@ -374,7 +374,7 @@ def test_psycopg94_selector_failure_prevents_execution(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     monkeypatch.setenv(storage_readback.PG_CONNECTOR_ENV, "psql")
     monkeypatch.setenv(storage_readback.READBACK_DRIVER_ENV, "psycopg")
     monkeypatch.setattr(

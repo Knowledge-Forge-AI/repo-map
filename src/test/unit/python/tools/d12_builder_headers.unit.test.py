@@ -21,7 +21,7 @@ import pytest
 import d12_dependency_preflight as preflight
 import d12_libpq_runtime_probe as runtime
 import native_apt_prerequisites as apt
-from repomap_kg.runtime.release import DebPackage
+from common_lore_index.runtime.release import DebPackage
 from repomap_test_support import resource_test_image_commands as commands
 
 SSL, LIBPQ = "3.5.7-1~deb13u3", "18.6-1.pgdg12+2"

@@ -3,6 +3,7 @@ import copy
 import ast
 import hashlib
 import json
+from typing import Any
 
 import pytest
 
@@ -29,6 +30,39 @@ def test_current_root_import_scan_keeps_edges_and_refuses_lookalikes():
     assert not is_product_module(root + "x.retained")
     tree = ast.parse(f"import {root}.retained\nimport {root}x.lookalike\n")
     assert _project_imports(tree, root, {}) == (root + ".retained",)
+
+
+@pytest.mark.parametrize("defect", [None, "low-confidence", "missing-successor", "erased-split", "unmapped-owner"])
+def test_census_identity_projection_preserves_existing_split_and_protection(tmp_path, defect):
+    from ci.python_retention_history import validate_path_history
+    from ci.python_retention_history_git import HistoryContext, HistoryValidationError
+    case = namespace_case(tmp_path)
+    inventory = case.repo / "inventory.json"
+    old_entry = {"path": MODULE_PATH, "confidence": 0.95, "maintained_executable": True}
+    split = {"from": MODULE_PATH, "to": [MODULE_PATH], "rationale": "Existing living split owner"}
+    old: dict[str, Any] = {"files": [old_entry], "decompositions": [split]}
+    if defect == "unmapped-owner":
+        old["files"].append(dict(old_entry, path="tools/unmapped.py"))
+    write_json(inventory, old)
+    git(case.repo, "add", "inventory.json")
+    git(case.repo, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "Prior inventory")
+    current: dict[str, Any] = {"files": [dict(old_entry, path=case.new_path)], "decompositions": [split]}
+    if defect == "low-confidence":
+        current["files"][0]["confidence"] = 0.1
+    elif defect == "missing-successor":
+        current["files"] = []
+    elif defect == "erased-split":
+        current["decompositions"] = []
+    write_json(inventory, current)
+    paths = {row["path"] for row in current["files"]}
+    if defect:
+        with pytest.raises(HistoryValidationError):
+            validate_path_history(case.repo, inventory, paths, current, context=HistoryContext())
+    else:
+        result = validate_path_history(case.repo, inventory, paths, current, context=HistoryContext())
+        assert current["decompositions"] == old["decompositions"]
+        assert result.evidence["namespace_source_successors"] == {MODULE_PATH: case.new_path}
+        assert result[0]["to"] == case.new_path
 
 
 def audit(case):

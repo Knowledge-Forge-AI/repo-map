@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.languages.python import (
+from common_lore_index.extractors.languages.python import (
     PythonModuleIndex,
     extract_python_file_observations,
 )
@@ -316,7 +316,7 @@ class PythonWebProfileUnitTests(unittest.TestCase):
 
     def test_python_web_helpers_branches(self):
         import ast
-        import repomap_kg.extractors.languages.python_web_helpers as pw
+        import common_lore_index.extractors.languages.python_web_helpers as pw
 
         self.assertTrue(pw._looks_credentialed_url("https://token:secret@api.io"))
         self.assertFalse(pw._looks_credentialed_url("https://api.io"))

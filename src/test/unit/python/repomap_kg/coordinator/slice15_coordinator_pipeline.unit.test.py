@@ -4,21 +4,21 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 import tempfile
-from repomap_kg.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.service import CoordinatorService
 from typing import Any, cast
 import unittest
-from repomap_kg.artifacts.receipt import ExtractionReceipt, _validate_receipt
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.coordinator._protocol_core import PROTOCOL_VERSION, ProtocolError, ProtocolSession
-from repomap_kg.coordinator._protocol_validation import _validate_portable_snapshot_result_extension
-from repomap_kg.storage._staging_measurement_records import (
+from common_lore_index.artifacts.receipt import ExtractionReceipt, _validate_receipt
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.coordinator._protocol_core import PROTOCOL_VERSION, ProtocolError, ProtocolSession
+from common_lore_index.coordinator._protocol_validation import _validate_portable_snapshot_result_extension
+from common_lore_index.storage._staging_measurement_records import (
     SCHEMA_VERSION,
     StagingMeasurementAvailability,
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurementUnit,
 )
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.storage.staging_family_contracts import (
     STAGING_FAMILY_DESCRIPTORS,
     PrivacyClassification,
     ValidationRule,

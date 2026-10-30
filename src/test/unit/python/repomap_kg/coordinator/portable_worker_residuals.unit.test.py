@@ -5,14 +5,14 @@ import inspect
 
 import pytest
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.artifacts.parity_harness import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.artifacts.parity_harness import (
     ParityResult,
     _has_single_observed_worker_launch,
 )
-from repomap_kg.artifacts.store import ArtifactIntegrityError
-from repomap_kg.coordinator._portable_materialization import _remove_attempt_root
-from repomap_kg.coordinator._portable_semantic_adapter import _receipt_write_diagnostic
+from common_lore_index.artifacts.store import ArtifactIntegrityError
+from common_lore_index.coordinator._portable_materialization import _remove_attempt_root
+from common_lore_index.coordinator._portable_semantic_adapter import _receipt_write_diagnostic
 
 
 @pytest.mark.parametrize(
@@ -38,7 +38,7 @@ def test_parity_result_has_no_decorative_caller_source_authority_field() -> None
 
 
 def test_observed_worker_launch_evidence_detects_an_extra_launch() -> None:
-    launch = ("python", "-m", "repomap_kg.coordinator._portable_worker_entrypoint")
+    launch = ("python", "-m", "common_lore_index.coordinator._portable_worker_entrypoint")
 
     assert _has_single_observed_worker_launch((launch,))
     assert not _has_single_observed_worker_launch((launch, launch))

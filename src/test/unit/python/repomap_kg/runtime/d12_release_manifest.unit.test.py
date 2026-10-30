@@ -6,13 +6,13 @@ import hashlib
 import importlib.util
 import json
 
-from repomap_kg.runtime import commands, release
+from common_lore_index.runtime import commands, release
 from repomap_test_support import d12_core_image as d12
 
 
 def test_release_manifest_exports_ci68_amd64_candidate_closure() -> None:
-    assert importlib.util.find_spec("repomap_kg.runtime.release_manifest") is not None
-    from repomap_kg.runtime import release_manifest
+    assert importlib.util.find_spec("common_lore_index.runtime.release_manifest") is not None
+    from common_lore_index.runtime import release_manifest
 
     assert release_manifest.D12_CANDIDATE_LIBPQ_VERSION == 180006
     assert release_manifest.D12_CANDIDATE_LIBPQ_VERSION >= release.PRODUCT_MINIMUM_LIBPQ_VERSION
@@ -46,9 +46,9 @@ def test_release_py_remains_unpromoted_in_candidate_only_mode() -> None:
 
 
 def test_d12_recipe_renders_dockerfile_from_candidate_release_manifest() -> None:
-    assert importlib.util.find_spec("repomap_kg.runtime.release_manifest") is not None
+    assert importlib.util.find_spec("common_lore_index.runtime.release_manifest") is not None
     assert importlib.util.find_spec("repomap_test_support.d12_recipe") is not None
-    from repomap_kg.runtime import release_manifest
+    from common_lore_index.runtime import release_manifest
     from repomap_test_support import d12_recipe
 
     rendered = d12_recipe.recipe_text()
@@ -62,7 +62,7 @@ def test_d12_recipe_renders_dockerfile_from_candidate_release_manifest() -> None
 
 
 def test_runtime_stage_orders_closure_ldconfig_and_fail_closed_include_rmdir() -> None:
-    from repomap_kg.runtime import release_manifest
+    from common_lore_index.runtime import release_manifest
 
     amd64_pkg = release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST["amd64"]
     assert amd64_pkg.closure == ()
@@ -118,7 +118,7 @@ def test_runtime_stage_orders_closure_ldconfig_and_fail_closed_include_rmdir() -
         ldconfig_idx = runtime_stage.index("RUN ldconfig\n")
         rmdir_idx = runtime_stage.index("RUN rmdir /usr/local/include\n")
         license_copy_idx = runtime_stage.index(
-            "COPY --from=python-runtime /build/src/main/python/repomap_kg/third_party_licenses/ "
+            "COPY --from=python-runtime /build/src/main/python/common_lore_index/third_party_licenses/ "
             "/usr/share/doc/repomap-kg/psycopg/\n"
         )
         first_python_idx = runtime_stage.index('RUN package_root="$(python -c ')

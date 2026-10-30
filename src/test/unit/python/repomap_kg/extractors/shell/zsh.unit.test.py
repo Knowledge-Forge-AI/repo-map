@@ -6,11 +6,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.ops.ingestion.bulk import classify_bulk_route
-from repomap_kg.graph.discovery import classify_path, discover_observations
-from repomap_kg.ops.ingestion.source import _archive_extractor_route
-from repomap_kg.extractors.shell.zsh import extract_zsh_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.ops.ingestion.bulk import classify_bulk_route
+from common_lore_index.graph.discovery import classify_path, discover_observations
+from common_lore_index.ops.ingestion.source import _archive_extractor_route
+from common_lore_index.extractors.shell.zsh import extract_zsh_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 FIXTURE_ROOT = Path(__file__).parents[5] / "fixtures" / "shell" / "zsh"

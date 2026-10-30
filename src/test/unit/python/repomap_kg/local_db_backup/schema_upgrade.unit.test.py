@@ -7,11 +7,11 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
-from repomap_kg.runtime.plan import LocalRuntimePlan
-from repomap_kg.runtime.schema_manifest import query_schema_manifest
-from repomap_kg.runtime.schema_upgrade import (
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.runtime.plan import LocalRuntimePlan
+from common_lore_index.runtime.schema_manifest import query_schema_manifest
+from common_lore_index.runtime.schema_upgrade import (
     GraphSchemaUpgradeResult,
     bootstrap_schema_ledger,
     format_graph_schema_upgrade_table,
@@ -19,7 +19,7 @@ from repomap_kg.runtime.schema_upgrade import (
     schema_ledger_exists,
     upgrade_graph_schema,
 )
-from repomap_kg.storage import StorageSchemaError, discover_migrations
+from common_lore_index.storage import StorageSchemaError, discover_migrations
 
 
 def _plan() -> LocalRuntimePlan:
@@ -78,18 +78,18 @@ class TestGraphSchemaUpgradeUnit:
 
         with (
             patch(
-                "repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container"
+                "common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container"
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.database_exists",
+                "common_lore_index.runtime.schema_upgrade.database_exists",
                 side_effect=existence,
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.schema_ledger_exists",
+                "common_lore_index.runtime.schema_upgrade.schema_ledger_exists",
                 return_value=ledger_exists,
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+                "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
                 return_value=tuple(
                     (
                         migration.ordinal,
@@ -101,10 +101,10 @@ class TestGraphSchemaUpgradeUnit:
                 ),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade._repository_identity_target",
+                "common_lore_index.runtime.schema_upgrade._repository_identity_target",
                 return_value=None,
             ),
-            patch("repomap_kg.runtime.schema_upgrade.dump_database") as backup,
+            patch("common_lore_index.runtime.schema_upgrade.dump_database") as backup,
         ):
             with pytest.raises(LocalDbBackupError, match=message):
                 upgrade_graph_schema(
@@ -124,14 +124,14 @@ class TestGraphSchemaUpgradeUnit:
         plan = _plan()
 
         with patch(
-            "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command",
+            "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command",
             return_value=subprocess.CompletedProcess([], 0, stdout=b"t\n", stderr=b""),
         ):
             assert schema_ledger_exists(plan, "repomap", self.unexpected_runner)
 
         ledger_stdout = b"1\ttest:one\t2026/one.sql\t" + (b"a" * 64) + b"\n"
         with patch(
-            "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command",
+            "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command",
             return_value=subprocess.CompletedProcess(
                 [], 0, stdout=ledger_stdout, stderr=b""
             ),
@@ -140,7 +140,7 @@ class TestGraphSchemaUpgradeUnit:
         assert rows == ((1, "test:one", "2026/one.sql", "a" * 64),)
 
         with patch(
-            "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command",
+            "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command",
             return_value=subprocess.CompletedProcess(
                 [], 0, stdout=b"invalid\n", stderr=b""
             ),
@@ -149,7 +149,7 @@ class TestGraphSchemaUpgradeUnit:
                 query_schema_ledger(plan, "repomap", self.unexpected_runner)
 
         with patch(
-            "repomap_kg.runtime.schema_manifest.run_container_command",
+            "common_lore_index.runtime.schema_manifest.run_container_command",
             return_value=subprocess.CompletedProcess(
                 [], 0, stdout=b"one\n\ntwo\n", stderr=b""
             ),
@@ -162,7 +162,7 @@ class TestGraphSchemaUpgradeUnit:
         runner = self.unexpected_runner
 
         with patch(
-            "repomap_kg.runtime._schema_upgrade_ledger._default_graph_schema_ledger_bootstrap_sql",
+            "common_lore_index.runtime._schema_upgrade_ledger._default_graph_schema_ledger_bootstrap_sql",
             side_effect=StorageSchemaError("catalog unavailable"),
         ):
             with pytest.raises(LocalDbBackupError, match="catalog unavailable"):
@@ -170,11 +170,11 @@ class TestGraphSchemaUpgradeUnit:
 
         with (
             patch(
-                "repomap_kg.runtime._schema_upgrade_ledger._default_graph_schema_ledger_bootstrap_sql",
+                "common_lore_index.runtime._schema_upgrade_ledger._default_graph_schema_ledger_bootstrap_sql",
                 return_value="BEGIN;\nCOMMIT;\n",
             ),
             patch(
-                "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command"
+                "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command"
             ) as execute,
         ):
             bootstrap_schema_ledger(plan, "repomap", runner)
@@ -223,51 +223,51 @@ class TestGraphSchemaUpgradeUnit:
 
         with (
             patch(
-                "repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container",
+                "common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container",
                 record("inspect-runtime", object()),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.database_exists",
+                "common_lore_index.runtime.schema_upgrade.database_exists",
                 side_effect=[True, False],
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.schema_ledger_exists",
+                "common_lore_index.runtime.schema_upgrade.schema_ledger_exists",
                 return_value=False,
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.dump_database",
+                "common_lore_index.runtime.schema_upgrade.dump_database",
                 record("backup", backup),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.inspect_backup",
+                "common_lore_index.runtime.schema_upgrade.inspect_backup",
                 record("verify-backup", inspection),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.create_database",
+                "common_lore_index.runtime.schema_upgrade.create_database",
                 record("create-reference"),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.apply_source_schema",
+                "common_lore_index.runtime.schema_upgrade.apply_source_schema",
                 record("initialize-reference"),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.query_schema_manifest",
+                "common_lore_index.runtime.schema_upgrade.query_schema_manifest",
                 side_effect=_fingerprint,
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.bootstrap_schema_ledger",
+                "common_lore_index.runtime.schema_upgrade.bootstrap_schema_ledger",
                 record("bootstrap-ledger"),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+                "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
                 record("verify-ledger", expected_ledger),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.drop_runtime_database",
+                "common_lore_index.runtime.schema_upgrade.drop_runtime_database",
                 record("drop-reference"),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.reconcile_graph_database_roles",
+                "common_lore_index.runtime.schema_upgrade.reconcile_graph_database_roles",
                 record("reconcile-roles"),
             ),
         ):
@@ -310,35 +310,35 @@ class TestGraphSchemaUpgradeUnit:
 
         with (
             patch(
-                "repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container",
+                "common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container",
                 return_value=object(),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.database_exists",
+                "common_lore_index.runtime.schema_upgrade.database_exists",
                 side_effect=[True, False],
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.schema_ledger_exists",
+                "common_lore_index.runtime.schema_upgrade.schema_ledger_exists",
                 return_value=False,
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.dump_database",
+                "common_lore_index.runtime.schema_upgrade.dump_database",
                 return_value=backup,
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.inspect_backup",
+                "common_lore_index.runtime.schema_upgrade.inspect_backup",
                 return_value=inspection,
             ),
-            patch("repomap_kg.runtime.schema_upgrade.create_database"),
-            patch("repomap_kg.runtime.schema_upgrade.apply_source_schema"),
+            patch("common_lore_index.runtime.schema_upgrade.create_database"),
+            patch("common_lore_index.runtime.schema_upgrade.apply_source_schema"),
             patch(
-                "repomap_kg.runtime.schema_upgrade.query_schema_manifest",
+                "common_lore_index.runtime.schema_upgrade.query_schema_manifest",
                 side_effect=[("unknown",), ("expected",)],
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.bootstrap_schema_ledger"
+                "common_lore_index.runtime.schema_upgrade.bootstrap_schema_ledger"
             ) as bootstrap,
-            patch("repomap_kg.runtime.schema_upgrade.drop_runtime_database") as drop,
+            patch("common_lore_index.runtime.schema_upgrade.drop_runtime_database") as drop,
         ):
             with pytest.raises(LocalDbBackupError, match="not a supported pre-ledger"):
                 upgrade_graph_schema(

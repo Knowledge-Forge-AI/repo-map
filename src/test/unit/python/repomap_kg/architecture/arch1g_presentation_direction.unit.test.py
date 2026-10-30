@@ -3,11 +3,11 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-import repomap_kg.cli as cli
-import repomap_kg.server.mcp_core as mcp_core
-import repomap_kg.storage as storage
-import repomap_kg.storage.canonical_filters as filters
-from repomap_kg.cli.main import (
+import common_lore_index.cli as cli
+import common_lore_index.server.mcp_core as mcp_core
+import common_lore_index.storage as storage
+import common_lore_index.storage.canonical_filters as filters
+from common_lore_index.cli.main import (
     __file__ as cli_main_file,
     canonical_node_kind_from_args,
     canonical_edge_filters_from_args,
@@ -47,14 +47,14 @@ def test_canonical_filter_contract_has_stable_cli_and_mcp_exports() -> None:
 
 
 def test_canonical_filter_contract_removes_mcp_to_cli_dependency() -> None:
-    assert "repomap_kg.storage.canonical_filters" in _module_imports(cli_main_file)
-    assert "repomap_kg.storage.canonical_filters" in _module_imports(mcp_core.__file__)
+    assert "common_lore_index.storage.canonical_filters" in _module_imports(cli_main_file)
+    assert "common_lore_index.storage.canonical_filters" in _module_imports(mcp_core.__file__)
     assert not {
-        "repomap_kg.cli.main",
-        "repomap_kg.cli.dispatch",
-        "repomap_kg.server.mcp",
+        "common_lore_index.cli.main",
+        "common_lore_index.cli.dispatch",
+        "common_lore_index.server.mcp",
     } & _module_imports(filters.__file__)
     assert not {
-        "repomap_kg.cli.main",
-        "repomap_kg.cli.dispatch",
+        "common_lore_index.cli.main",
+        "common_lore_index.cli.dispatch",
     } & _module_imports(mcp_core.__file__)

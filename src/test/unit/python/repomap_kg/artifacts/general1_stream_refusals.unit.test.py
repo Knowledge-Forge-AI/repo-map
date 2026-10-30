@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.artifacts import PublicationExpectation
-from repomap_kg.artifacts._bundle_stream import StreamingBundleParser
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.artifacts import PublicationExpectation
+from common_lore_index.artifacts._bundle_stream import StreamingBundleParser
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
 from repomap_test_support.portable_publication_fixtures import _bundle
 
 

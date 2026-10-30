@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from repomap_kg.extractors.shell.zsh import extract_zsh_file_observations
+from common_lore_index.extractors.shell.zsh import extract_zsh_file_observations
 
 
 SCRIPT_PATH = "scripts/advanced.zsh"

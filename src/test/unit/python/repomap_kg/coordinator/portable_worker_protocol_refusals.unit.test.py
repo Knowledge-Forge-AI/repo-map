@@ -8,24 +8,24 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.artifacts.parity_harness import seal_graph
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.artifacts.parity_harness import seal_graph
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability,
 )
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator._protocol_core import SyntheticWorkerResult
-from repomap_kg.graph.multi_source import (
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator._protocol_core import SyntheticWorkerResult
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 from repomap_test_support.portable_worker_conformance import (
     run_portable_worker_conformance,
 )
@@ -327,11 +327,11 @@ def test_parent_removes_exact_capability_when_capability_load_fails(
         path.unlink()
 
     monkeypatch.setattr(
-        "repomap_kg.coordinator._portable_worker_launch.load_portable_capability",
+        "common_lore_index.coordinator._portable_worker_launch.load_portable_capability",
         fail_load,
     )
     monkeypatch.setattr(
-        "repomap_kg.coordinator._portable_worker_launch.remove_portable_capability",
+        "common_lore_index.coordinator._portable_worker_launch.remove_portable_capability",
         remove,
     )
 

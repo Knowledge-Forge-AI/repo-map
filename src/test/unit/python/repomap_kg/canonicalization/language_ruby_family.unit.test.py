@@ -2,14 +2,14 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import RawObservation
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import RawObservation
 
-from repomap_kg.canonicalization.records import canonical_edge_key
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization.records import canonical_edge_key
+from common_lore_index.graph.keys import (
     ruby_class_key,
     ruby_constant_key,
     ruby_file_key,

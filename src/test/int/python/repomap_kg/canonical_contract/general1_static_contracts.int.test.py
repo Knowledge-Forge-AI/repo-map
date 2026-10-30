@@ -7,8 +7,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.observations.raw import RawObservation
 from repomap_test_support.cli_integration import CliIntegrationTestCase
 
 

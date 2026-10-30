@@ -9,16 +9,16 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     FeedFetchResponse,
     ingest_feed_source,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_source_summary,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
 )
@@ -55,7 +55,7 @@ class StorageSourceSummaryPsycopgParityIntegrationTests(unittest.TestCase):
                 body=feed_body,
             )
 
-        from repomap_kg.server.mcp import repomap_source_summary
+        from common_lore_index.server.mcp import repomap_source_summary
 
         try:
             with tempfile.TemporaryDirectory() as tmpdir:

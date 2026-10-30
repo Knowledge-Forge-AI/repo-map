@@ -11,8 +11,8 @@ from unittest.mock import MagicMock
 from docker.errors import ImageNotFound
 import pytest
 
-from repomap_kg.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import d12_image_probes as probes_mod, resource_run as resource_run_mod
 from tools.system import d12_system_session as session_mod
 from tools.system.config import SystemDeadline, SystemTestError

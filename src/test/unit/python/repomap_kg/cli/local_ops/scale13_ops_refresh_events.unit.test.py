@@ -10,12 +10,12 @@ from unittest.mock import patch
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
-    from repomap_kg.storage.authority import RefreshResult
+    from common_lore_index.cli.parser import build_parser
+    from common_lore_index.storage.authority import RefreshResult
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import main
-from repomap_kg.ops.refresh import OpsRefreshGraphResult
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import main
+from common_lore_index.ops.refresh import OpsRefreshGraphResult
 
 
 _CONFIG = """\
@@ -103,12 +103,12 @@ def test_scale13_direct_dispatch_constructs_actual_path_measurements() -> None:
         Path(directory, "repo.rp.toml").write_text(_CONFIG, encoding="utf-8")
         with (
             patch(
-                "repomap_kg.cli.staging_event_channel_from_inherited_fd",
+                "common_lore_index.cli.staging_event_channel_from_inherited_fd",
                 return_value=channel,
             ),
-            patch("repomap_kg.cli.refresh_graph", side_effect=refresh_side_effect),
+            patch("common_lore_index.cli.refresh_graph", side_effect=refresh_side_effect),
             patch(
-                "repomap_kg.cli.maintenance_activity_for_home",
+                "common_lore_index.cli.maintenance_activity_for_home",
                 side_effect=admission,
             ),
             patch("sys.stdout", new=io.StringIO()),
@@ -141,7 +141,7 @@ def test_scale13_dispatch_closes_channel_when_config_loading_fails() -> None:
 
     with (
         patch(
-            "repomap_kg.cli.staging_event_channel_from_inherited_fd",
+            "common_lore_index.cli.staging_event_channel_from_inherited_fd",
             return_value=channel,
         ),
         patch("sys.stderr", new=io.StringIO()),

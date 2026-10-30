@@ -5,7 +5,7 @@ from typing import TypedDict
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ArtifactExtractionConformanceAdapter,
     ConformanceRequest,
     FileSystemArtifactStore,
@@ -15,8 +15,8 @@ from repomap_kg.artifacts import (
     PortableSnapshotManifest,
     PublicationBundle,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 EMPTY_FAMILIES: Mapping[StageFamily, Sequence[Mapping[str, object]]] = {
     "files": (),

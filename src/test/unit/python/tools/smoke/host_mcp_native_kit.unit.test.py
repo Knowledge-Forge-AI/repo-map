@@ -102,12 +102,12 @@ def test_kit_closure_ships_runner_helpers_and_fixture_inputs(kit: tuple[Path, di
 
 def test_kit_parent_imports_resolve_inside_the_kit(kit: tuple[Path, dict], tmp_path: Path) -> None:
     root = _extract(kit[0] / KIT_ZIP, tmp_path)
-    probe = ("import sys; sys.path[:0] = [sys.argv[1] + '/tools', sys.argv[1] + '/src/test/support/python']\n"
+    probe = ("import sys; sys.path[:0] = [sys.argv[1] + '/tools', sys.argv[1] + '/src/test/support/python', sys.argv[2]]\n"
              "import smoke.host_mcp_native, smoke.host_mcp_native_scenario\n"
              "bad = [n for n, m in sys.modules.items() if n.startswith(('smoke', 'repomap_test_support', 'runner_'))"
              " and getattr(m, '__file__', None) and not m.__file__.startswith(sys.argv[1])]\n"
              "print(bad)")
-    completed = subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(root)], capture_output=True, text=True,
+    completed = subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(root), str(REPO / "src/main/python")], capture_output=True, text=True,
                                timeout=120, check=False)
     assert completed.returncode == 0, completed.stderr[-2000:]
     assert completed.stdout.strip() == "[]"

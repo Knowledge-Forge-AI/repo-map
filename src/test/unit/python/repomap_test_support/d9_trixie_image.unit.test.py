@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import release
+from common_lore_index.runtime import release
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support import d9_extension_restore as d9
 from repomap_test_support.postgres_container import PostgresContainerHarness, TEST_POSTGRES_IMAGE

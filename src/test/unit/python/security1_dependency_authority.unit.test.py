@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.runtime.commands import render_server_dockerfile
-from repomap_kg.runtime.release import SETUPTOOLS_RELEASE_VERSION
+from common_lore_index.runtime.commands import render_server_dockerfile
+from common_lore_index.runtime.release import SETUPTOOLS_RELEASE_VERSION
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -14,7 +14,7 @@ VULNERABLE_SETUPTOOLS_VERSION = "80.9.0"
 def test_live_setuptools_authorities_use_one_exact_fixed_version() -> None:
     pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     release = (
-        REPO_ROOT / "src/main/python/repomap_kg/runtime/release.py"
+        REPO_ROOT / "src/main/python/common_lore_index/runtime/release.py"
     ).read_text(encoding="utf-8")
     notices = (
         REPO_ROOT / "docs/legal/third-party-notices.md"
@@ -54,7 +54,7 @@ def test_historical_statuses_are_not_live_dependency_authorities() -> None:
         "docs/status" not in path.as_posix()
         for path in (
             REPO_ROOT / "pyproject.toml",
-            REPO_ROOT / "src/main/python/repomap_kg/runtime/release.py",
+            REPO_ROOT / "src/main/python/common_lore_index/runtime/release.py",
             REPO_ROOT / "docs/legal/third-party-notices.md",
         )
     )

@@ -3,8 +3,8 @@ from types import SimpleNamespace
 from typing import Any, cast
 from unittest.mock import patch
 
-from repomap_kg.ops.config_records import OpsConfig
-from repomap_kg.ops.graph_files import (
+from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.ops.graph_files import (
     GraphFileFilters,
     GraphFilePage,
     OpsRefreshError,
@@ -12,7 +12,7 @@ from repomap_kg.ops.graph_files import (
     graph_file_record_from_payload,
     query_graph_files,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 
 def _payload(*, key="file:src/app.py", metadata=None, observed=1, links=None):
@@ -221,11 +221,11 @@ class GraphFileQueryUnitTests(unittest.TestCase):
         config = SimpleNamespace(graphs=(graph,))
         with (
             patch(
-                "repomap_kg.ops.graph_files.graph_database",
+                "common_lore_index.ops.graph_files.graph_database",
                 return_value="private-database",
             ),
             patch(
-                "repomap_kg.ops.graph_files.execute_ops_json_readback",
+                "common_lore_index.ops.graph_files.execute_ops_json_readback",
                 return_value=[
                     _payload(key="file:a"),
                     _payload(key="file:b"),
@@ -258,7 +258,7 @@ class GraphFileQueryUnitTests(unittest.TestCase):
         )
         config = SimpleNamespace(graphs=(graph,))
         with patch(
-            "repomap_kg.ops.graph_files.execute_ops_json_readback"
+            "common_lore_index.ops.graph_files.execute_ops_json_readback"
         ) as execute:
             with self.assertRaisesRegex(OpsRefreshError, "disabled"):
                 query_graph_files(
@@ -280,11 +280,11 @@ class GraphFileQueryUnitTests(unittest.TestCase):
         config = SimpleNamespace(graphs=(graph,))
         with (
             patch(
-                "repomap_kg.ops.graph_files.graph_database",
+                "common_lore_index.ops.graph_files.graph_database",
                 return_value="private-database",
             ),
             patch(
-                "repomap_kg.ops.graph_files.execute_ops_json_readback",
+                "common_lore_index.ops.graph_files.execute_ops_json_readback",
                 side_effect=StorageSchemaError(
                     "failed at /Users/private using private-database"
                 ),

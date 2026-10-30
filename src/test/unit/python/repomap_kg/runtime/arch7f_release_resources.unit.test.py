@@ -9,14 +9,14 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import release, release_manifest
-from repomap_kg.runtime.commands import (
+from common_lore_index.runtime import release, release_manifest
+from common_lore_index.runtime.commands import (
     render_compose_yaml,
     render_server_dockerfile,
 )
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import build_local_runtime_plan
-from repomap_kg.runtime.release import DebPackage, PlatformPackages, validate_package_manifest
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import build_local_runtime_plan
+from common_lore_index.runtime.release import DebPackage, PlatformPackages, validate_package_manifest
 from repomap_test_support import d12_dynamic_linkage as linkage
 
 
@@ -73,13 +73,13 @@ def test_release_metadata_pins_psycopg_and_preserves_migration_paths() -> None:
         for driver in ("psycopg", "libpq", "pg8000", "asyncpg")
     )
     for destination in (
-        '"share/repomap-kg/rdbms"',
-        '"share/repomap-kg/rdbms/2026/06"',
-        '"share/repomap-kg/rdbms/2026/07"',
-        '"share/repomap-kg/rdbms/2026/09"',
-        '"share/repomap-kg/coordinator-rdbms"',
-        '"share/repomap-kg/coordinator-rdbms/2026/07"',
-        '"share/repomap-kg/coordinator-rdbms/2026/10"',
+        '"share/common-lore-index/rdbms"',
+        '"share/common-lore-index/rdbms/2026/06"',
+        '"share/common-lore-index/rdbms/2026/07"',
+        '"share/common-lore-index/rdbms/2026/09"',
+        '"share/common-lore-index/coordinator-rdbms"',
+        '"share/common-lore-index/coordinator-rdbms/2026/07"',
+        '"share/common-lore-index/coordinator-rdbms/2026/10"',
     ):
         assert destination in metadata
 
@@ -101,13 +101,13 @@ def test_projected_public_metadata_preserves_migration_paths_and_psycopg_isolati
         for driver in ("psycopg", "libpq", "pg8000", "asyncpg")
     )
     for destination in (
-        '"share/repomap-kg/rdbms"',
-        '"share/repomap-kg/rdbms/2026/06"',
-        '"share/repomap-kg/rdbms/2026/07"',
-        '"share/repomap-kg/rdbms/2026/09"',
-        '"share/repomap-kg/coordinator-rdbms"',
-        '"share/repomap-kg/coordinator-rdbms/2026/07"',
-        '"share/repomap-kg/coordinator-rdbms/2026/10"',
+        '"share/common-lore-index/rdbms"',
+        '"share/common-lore-index/rdbms/2026/06"',
+        '"share/common-lore-index/rdbms/2026/07"',
+        '"share/common-lore-index/rdbms/2026/09"',
+        '"share/common-lore-index/coordinator-rdbms"',
+        '"share/common-lore-index/coordinator-rdbms/2026/07"',
+        '"share/common-lore-index/coordinator-rdbms/2026/10"',
     ):
         assert destination in public_metadata
 
@@ -303,8 +303,8 @@ def test_build_tool_closure_is_pip_checked_and_removed_before_the_final_image() 
 
 def test_license_assets_ship_in_the_wheel_and_the_image_with_the_inspected_source() -> None:
     package_data = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["tool"]["setuptools"][
-        "package-data"]["repomap_kg"]
-    assets = sorted(path.name for path in (REPO_ROOT / "src/main/python/repomap_kg/third_party_licenses").iterdir())
+        "package-data"]["common_lore_index"]
+    assets = sorted(path.name for path in (REPO_ROOT / "src/main/python/common_lore_index/third_party_licenses").iterdir())
     assert package_data == ["third_party_licenses/*.json", "third_party_licenses/*.txt"]
     assert assets == ["GPL-3.0.txt", "psycopg-LICENSE.txt", "psycopg-c-numutils-PostgreSQL.txt", "psycopg-source.json"]
     dockerfile = render_server_dockerfile()
@@ -312,7 +312,7 @@ def test_license_assets_ship_in_the_wheel_and_the_image_with_the_inspected_sourc
     assert "COPY --from=python-runtime /build/psycopg-c-source/ /usr/share/doc/repomap-kg/psycopg/source/" in dockerfile
     for asset in assets:
         assert f"test -s /usr/share/doc/repomap-kg/psycopg/{asset}" in dockerfile, asset
-    numutils = (REPO_ROOT / "src/main/python/repomap_kg/third_party_licenses/psycopg-c-numutils-PostgreSQL.txt")
+    numutils = (REPO_ROOT / "src/main/python/common_lore_index/third_party_licenses/psycopg-c-numutils-PostgreSQL.txt")
     text = numutils.read_text(encoding="utf-8")
     assert " * Portions Copyright (c) 1996-2020, PostgreSQL Global Development Group\n" in text
     assert " * Portions Copyright (c) 1994, Regents of the University of California\n" in text
@@ -320,7 +320,7 @@ def test_license_assets_ship_in_the_wheel_and_the_image_with_the_inspected_sourc
 
 
 def test_packaged_modules_import_only_the_postgres_extra_driver() -> None:
-    package_root = REPO_ROOT / "src/main/python/repomap_kg"
+    package_root = REPO_ROOT / "src/main/python/common_lore_index"
     third_party: set[str] = set()
     for path in package_root.rglob("*.py"):
         for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
@@ -343,7 +343,7 @@ def test_packaged_modules_import_only_the_postgres_extra_driver() -> None:
             third_party.update(
                 top
                 for top in (name.split(".")[0] for name in names)
-                if top and top not in sys.stdlib_module_names and top != "repomap_kg"
+                if top and top not in sys.stdlib_module_names and top != "common_lore_index"
             )
 
     assert third_party == {"psycopg"}

@@ -8,7 +8,7 @@ from typing import Any
 
 from ci.d12_system_grant import loads_strict_json_object, validate_system_admission_proof
 from ci.gate_contract_runtime import SYSTEM_BINDING_FIELDS, SYSTEM_REPORT_FIELDS, validate_successful_system_runtime
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_VERSION, POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION,
 )
 from tools.system.d12_candidate_assessment import _verify_round_trip

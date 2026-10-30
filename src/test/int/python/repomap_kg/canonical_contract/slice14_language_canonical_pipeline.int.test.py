@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.keys import (
     js_class_key,
     js_route_key,
     js_method_key,
@@ -16,8 +16,8 @@ from repomap_kg.graph.keys import (
     ruby_test_case_key,
     ruby_test_method_key,
 )
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.canonicalization.records import CanonicalizationResult
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.canonicalization.records import CanonicalizationResult
 
 
 class Slice14LanguageCanonicalPipelineIntegrationTests(unittest.TestCase):

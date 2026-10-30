@@ -8,10 +8,10 @@ from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.ops.config_loading import load_ops_config_home
-from repomap_kg.ops.config_records import OpsPostgresStatus
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.server.http import RepoMapLocalRequestHandler, RepoMapLocalServer, serve_local_http
+from common_lore_index.ops.config_loading import load_ops_config_home
+from common_lore_index.ops.config_records import OpsPostgresStatus
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.server.http import RepoMapLocalRequestHandler, RepoMapLocalServer, serve_local_http
 from repomap_test_support.cli_integration import OPS_CONFIG_TEMPLATE
 
 
@@ -40,7 +40,7 @@ class _TestHandler(RepoMapLocalRequestHandler):
 
 class LocalServerUnitTests(unittest.TestCase):
     def test_health_and_status_payloads_are_bounded_and_read_only(self):
-        from repomap_kg.server.http import (
+        from common_lore_index.server.http import (
             HTTP_RESPONSE_MAX_BYTES,
             build_health_payload,
             build_status_payload,
@@ -51,7 +51,7 @@ class LocalServerUnitTests(unittest.TestCase):
             setup_local_runtime(home)
 
             with patch(
-                "repomap_kg.server.http.check_ops_postgres_status",
+                "common_lore_index.server.http.check_ops_postgres_status",
                 return_value=OpsPostgresStatus(
                     db_checked=True,
                     connected=True,
@@ -86,7 +86,7 @@ class LocalServerUnitTests(unittest.TestCase):
         self.assertLessEqual(len(rendered.encode("utf-8")), HTTP_RESPONSE_MAX_BYTES)
 
     def test_public_bind_is_rejected_unless_container_internal(self):
-        from repomap_kg.server.http import (
+        from common_lore_index.server.http import (
             LocalServerError,
             serve_local_http,
             validate_server_bind_host,
@@ -102,14 +102,14 @@ class LocalServerUnitTests(unittest.TestCase):
             serve_local_http(None, host="0.0.0.0", port=55880)
 
     def test_health_reports_config_error_without_reading_roots(self):
-        from repomap_kg.server.http import build_health_payload, build_status_payload
+        from common_lore_index.server.http import build_health_payload, build_status_payload
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             home.mkdir()
 
             with patch(
-                "repomap_kg.server.http.check_ops_postgres_status"
+                "common_lore_index.server.http.check_ops_postgres_status"
             ) as postgres_status:
                 health = build_health_payload(home)
                 status = build_status_payload(home)
@@ -126,7 +126,7 @@ class LocalServerUnitTests(unittest.TestCase):
         postgres_status.assert_not_called()
 
     def test_status_uses_one_configuration_snapshot(self):
-        from repomap_kg.server.http import build_status_payload
+        from common_lore_index.server.http import build_status_payload
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
@@ -135,11 +135,11 @@ class LocalServerUnitTests(unittest.TestCase):
 
             with (
                 patch(
-                    "repomap_kg.server.http.load_config_for_server",
+                    "common_lore_index.server.http.load_config_for_server",
                     return_value=(config, 0, False),
                 ) as load_config,
                 patch(
-                    "repomap_kg.server.http.check_ops_postgres_status",
+                    "common_lore_index.server.http.check_ops_postgres_status",
                     return_value=OpsPostgresStatus(
                         db_checked=True,
                         connected=True,
@@ -154,14 +154,14 @@ class LocalServerUnitTests(unittest.TestCase):
         load_config.assert_called_once_with(home)
 
     def test_readiness_separates_storage_and_schema_failure(self):
-        from repomap_kg.server.http import build_readiness_payload
+        from common_lore_index.server.http import build_readiness_payload
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             setup_local_runtime(home)
 
             with patch(
-                "repomap_kg.server.http.check_ops_postgres_status",
+                "common_lore_index.server.http.check_ops_postgres_status",
                 return_value=OpsPostgresStatus(
                     db_checked=True,
                     connected=False,
@@ -172,7 +172,7 @@ class LocalServerUnitTests(unittest.TestCase):
             ):
                 storage_down = build_readiness_payload(home)
             with patch(
-                "repomap_kg.server.http.check_ops_postgres_status",
+                "common_lore_index.server.http.check_ops_postgres_status",
                 return_value=OpsPostgresStatus(
                     db_checked=True,
                     connected=True,
@@ -192,7 +192,7 @@ class LocalServerUnitTests(unittest.TestCase):
         self.assertNotIn("private schema detail", rendered)
 
     def test_readiness_caps_graph_probes(self):
-        from repomap_kg.server.http import HTTP_GRAPH_COUNT_MAX, build_readiness_payload
+        from common_lore_index.server.http import HTTP_GRAPH_COUNT_MAX, build_readiness_payload
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
@@ -212,11 +212,11 @@ class LocalServerUnitTests(unittest.TestCase):
 
             with (
                 patch(
-                    "repomap_kg.server.http.load_config_for_server",
+                    "common_lore_index.server.http.load_config_for_server",
                     return_value=(config, 0, False),
                 ),
                 patch(
-                    "repomap_kg.server.http.check_ops_postgres_status",
+                    "common_lore_index.server.http.check_ops_postgres_status",
                     return_value=OpsPostgresStatus(
                         db_checked=True,
                         connected=True,
@@ -238,7 +238,7 @@ class LocalServerUnitTests(unittest.TestCase):
             setup_local_runtime(home)
 
             with patch(
-                "repomap_kg.server.http.check_ops_postgres_status",
+                "common_lore_index.server.http.check_ops_postgres_status",
                 return_value=OpsPostgresStatus(
                     db_checked=True,
                     connected=True,
@@ -268,7 +268,7 @@ class LocalServerUnitTests(unittest.TestCase):
         self.assertFalse(missing_safety["destructive_db_actions"])
 
     def test_response_size_guard_replaces_oversized_payload(self):
-        from repomap_kg.server.http import HTTP_RESPONSE_MAX_BYTES
+        from common_lore_index.server.http import HTTP_RESPONSE_MAX_BYTES
 
         handler = self.new_handler("/missing", Path("/tmp/fixture"))
         handler.write_json({"value": "x" * HTTP_RESPONSE_MAX_BYTES}, status=200)
@@ -279,7 +279,7 @@ class LocalServerUnitTests(unittest.TestCase):
         self.assertLessEqual(len(handler.wfile.getvalue()), HTTP_RESPONSE_MAX_BYTES)
 
     def test_serve_local_http_starts_and_closes_server(self):
-        from repomap_kg.server.http import serve_local_http
+        from common_lore_index.server.http import serve_local_http
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
@@ -297,7 +297,7 @@ class LocalServerUnitTests(unittest.TestCase):
                 def server_close(self):
                     calls.append(("server_close", None))
 
-            with patch("repomap_kg.server.http.RepoMapLocalServer", FakeServer):
+            with patch("common_lore_index.server.http.RepoMapLocalServer", FakeServer):
                 result = serve_local_http(
                     home,
                     host="0.0.0.0",
@@ -328,7 +328,7 @@ class LocalServerUnitTests(unittest.TestCase):
                 def server_close(self):
                     calls.append(("server_close", None))
 
-            with patch("repomap_kg.server.http.RepoMapLocalServer", FakeServer):
+            with patch("common_lore_index.server.http.RepoMapLocalServer", FakeServer):
                 result = serve_local_http(home, host="127.0.0.1", port=55882)
 
         self.assertEqual(result, 0)
@@ -351,7 +351,7 @@ class LocalServerUnitTests(unittest.TestCase):
             )
             with session:
                 runner = session.create_coverage(coverage); runner.start()
-                cmd = [sys.executable, "-m", "repomap_kg", "server", "serve",
+                cmd = [sys.executable, "-m", "common_lore_index", "server", "serve",
                        "--repo-map-home", str(home), "--host", "127.0.0.1", "--port", str(port)]
                 process = subprocess.Popen(
                     cmd, cwd=repo_root, env=os.environ.copy(),

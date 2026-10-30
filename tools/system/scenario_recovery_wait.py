@@ -7,8 +7,8 @@ from pathlib import Path
 import time
 from typing import Any, Callable
 
-from repomap_kg.coordinator.contracts import JobState, LEGAL_TRANSITIONS, TERMINAL_JOB_STATES
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.contracts import JobState, LEGAL_TRANSITIONS, TERMINAL_JOB_STATES
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
 from tools.system.config import SystemTestError, SystemTimeoutError
 
 _PROGRESS_PHASE_ORDER: tuple[str, ...] = (
@@ -119,7 +119,7 @@ def wait_for_recovered_coordinator_job(
         "coordinator",
         "python",
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "coordinator-job-status",
         "--repo-map-home",

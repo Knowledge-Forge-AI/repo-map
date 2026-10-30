@@ -8,13 +8,13 @@ from unittest.mock import patch
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
-    from repomap_kg.storage.authority import RefreshResult
+    from common_lore_index.cli.parser import build_parser
+    from common_lore_index.storage.authority import RefreshResult
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import main
-from repomap_kg.ops.refresh import OpsRefreshGraphResult
-from repomap_kg.storage.backend_telemetry import ConnectionTelemetryError
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import main
+from common_lore_index.ops.refresh import OpsRefreshGraphResult
+from common_lore_index.storage.backend_telemetry import ConnectionTelemetryError
 
 
 def test_direct_refresh_parser_accepts_private_backend_telemetry_fds() -> None:
@@ -102,10 +102,10 @@ mode = "read_only"
 
     with (
         patch(
-            "repomap_kg.cli.telemetry_from_inherited_fds",
+            "common_lore_index.cli.telemetry_from_inherited_fds",
             return_value=telemetry,
         ) as create_telemetry,
-        patch("repomap_kg.cli.refresh_graph", return_value=result) as refresh,
+        patch("common_lore_index.cli.refresh_graph", return_value=result) as refresh,
         redirect_stdout(io.StringIO()),
     ):
         exit_code = main(
@@ -133,7 +133,7 @@ mode = "read_only"
 def test_coordinator_mode_rejects_private_backend_telemetry_fds() -> None:
     stderr = io.StringIO()
     with (
-        patch("repomap_kg.cli.run_coordinator_refresh") as coordinator,
+        patch("common_lore_index.cli.run_coordinator_refresh") as coordinator,
         redirect_stderr(stderr),
     ):
         exit_code = main(
@@ -164,7 +164,7 @@ def test_direct_telemetry_setup_error_does_not_disclose_the_fds() -> None:
     stderr = io.StringIO()
     with (
         patch(
-            "repomap_kg.cli.telemetry_from_inherited_fds",
+            "common_lore_index.cli.telemetry_from_inherited_fds",
             side_effect=ConnectionTelemetryError("backend telemetry channel is unavailable"),
         ),
         redirect_stderr(stderr),

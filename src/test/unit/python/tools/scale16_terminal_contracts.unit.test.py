@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, JobId, PublicationGenerations
-from repomap_kg.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.authority import AttemptNumber, JobId, PublicationGenerations
+from common_lore_index.storage.publication import RunPublicationAttempt
 from scale15_terminal_contracts import (
     BoundRefreshExpectation,
     ExpectedRefreshAuthority,

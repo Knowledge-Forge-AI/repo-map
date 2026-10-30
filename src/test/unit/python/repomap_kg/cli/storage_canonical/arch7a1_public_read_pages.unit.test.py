@@ -3,9 +3,9 @@ import json
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.server.mcp import repomap_canonical_nodes
-from repomap_kg.storage import CanonicalNodeRecord
+from common_lore_index.cli import main
+from common_lore_index.server.mcp import repomap_canonical_nodes
+from common_lore_index.storage import CanonicalNodeRecord
 
 
 def _node(key: str) -> CanonicalNodeRecord:
@@ -27,7 +27,7 @@ def test_arch7a1_cli_json_uses_versioned_bounded_page_envelope() -> None:
     stdout = io.StringIO()
 
     with patch(
-        "repomap_kg.cli.query_canonical_node_records",
+        "common_lore_index.cli.query_canonical_node_records",
         return_value=records,
     ) as query:
         with redirect_stdout(stdout):
@@ -97,7 +97,7 @@ def test_arch7a1_cli_table_and_json_share_page_membership() -> None:
     stdout = io.StringIO()
 
     with patch(
-        "repomap_kg.cli.query_canonical_node_records",
+        "common_lore_index.cli.query_canonical_node_records",
         return_value=records,
     ):
         with redirect_stdout(stdout):
@@ -123,7 +123,7 @@ def test_arch7a1_cli_table_and_json_share_page_membership() -> None:
 def test_arch7a1_cli_rejects_limit_above_public_maximum() -> None:
     stderr = io.StringIO()
 
-    with patch("repomap_kg.cli.query_canonical_node_records") as query:
+    with patch("common_lore_index.cli.query_canonical_node_records") as query:
         with redirect_stderr(stderr):
             exit_code = main(
                 [
@@ -146,7 +146,7 @@ def test_arch7a1_cli_retains_bounded_legacy_json_array_alias() -> None:
     stdout = io.StringIO()
 
     with patch(
-        "repomap_kg.cli.query_canonical_node_records",
+        "common_lore_index.cli.query_canonical_node_records",
         return_value=records,
     ):
         with redirect_stdout(stdout):
@@ -183,7 +183,7 @@ def test_arch7a1_mcp_uses_same_page_envelope_and_lookahead() -> None:
     records = (_node("tool:a"), _node("tool:b"), _node("tool:c"))
 
     with patch(
-        "repomap_kg.server.mcp.query_canonical_node_records",
+        "common_lore_index.server.mcp.query_canonical_node_records",
         return_value=records,
     ) as query:
         payload = repomap_canonical_nodes(

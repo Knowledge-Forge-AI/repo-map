@@ -17,27 +17,27 @@ import threading
 from unittest.mock import MagicMock, patch
 
 import pytest
-import repomap_kg
+import common_lore_index
 
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import PortableExecutionCapability
-from repomap_kg.coordinator._portable_semantic_adapter import execute_portable_extraction
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops._portable_retention import _write_retained_result
-from repomap_kg.ops.portable_refresh import (
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
+from common_lore_index.coordinator._portable_semantic_adapter import execute_portable_extraction
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops._portable_retention import _write_retained_result
+from common_lore_index.ops.portable_refresh import (
     PortableCapture,
     portable_publication_binding,
     validate_portable_capture,
 )
-from repomap_kg.ops.resolved_config import (
+from common_lore_index.ops.resolved_config import (
     configured_repository_identity,
     resolve_ops_config,
 )
-from repomap_kg.server.graph_selection import configured_graph_root_path
-from repomap_kg.storage.authority import GraphRunId
-from repomap_kg.storage.publication_readback import RunPublicationRecord
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.server.graph_selection import configured_graph_root_path
+from common_lore_index.storage.authority import GraphRunId
+from common_lore_index.storage.publication_readback import RunPublicationRecord
+from common_lore_index.storage.staged_ingestion import (
     new_direct_authority,
     stage_id_for_authority,
 )
@@ -270,10 +270,10 @@ def test_mcp_child_environment_and_real_module_lookup(
     with patch("subprocess.run", return_value=subprocess.CompletedProcess([], 0, "", "")) as launch:
         assert run_mcp_stdio_requests(config, "inert-psql", [], reader_role=reader_role, timeout=9) == []
     launch.assert_called_once()
-    assert launch.call_args.args[0] == [sys.executable, "-m", "repomap_kg.server.mcp"]
+    assert launch.call_args.args[0] == [sys.executable, "-m", "common_lore_index.server.mcp"]
     kwargs = launch.call_args.kwargs
     env = kwargs["env"]
-    root = Path(repomap_kg.__file__).resolve().parent.parent
+    root = Path(common_lore_index.__file__).resolve().parent.parent
     assert env["PYTHONPATH"] == str(root)
     assert env["REPOMAP_OPS_CONFIG"] == str(config)
     assert env["REPOMAP_PSQL_COMMAND"] == "inert-psql"
@@ -285,13 +285,13 @@ def test_mcp_child_environment_and_real_module_lookup(
     assert not {key for key in os.environ.keys() | parent_env.keys()
                 if os.environ.get(key) != parent_env.get(key)}
     # -S excludes any host installation; find_spec does not execute the MCP module.
-    lookup = "import importlib.util; spec = importlib.util.find_spec('repomap_kg.server.mcp'); "
-    lookup += f"assert spec is not None and spec.origin == {str(root / 'repomap_kg/server/mcp.py')!r}"
+    lookup = "import importlib.util; spec = importlib.util.find_spec('common_lore_index.server.mcp'); "
+    lookup += f"assert spec is not None and spec.origin == {str(root / 'common_lore_index/server/mcp.py')!r}"
     command = [sys.executable, "-S", "-c", lookup]
     isolated = dict(env)
     isolated.pop("PYTHONPATH")
     failed = subprocess.run(command, env=isolated, capture_output=True, text=True, timeout=9)
-    assert failed.returncode == 1 and "ModuleNotFoundError: No module named 'repomap_kg'" in failed.stderr
+    assert failed.returncode == 1 and "ModuleNotFoundError: No module named 'common_lore_index'" in failed.stderr
     assert "inert-auth-marker" not in failed.stdout + failed.stderr
     resolved = subprocess.run(command, env=env, capture_output=True, text=True, timeout=9)
     assert resolved.returncode == 0 and resolved.stdout == resolved.stderr == ""
@@ -301,7 +301,7 @@ def _inert_mcp_module(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, source: str | None,
 ) -> None:
     root = tmp_path / "import-root"
-    server = root / "repomap_kg" / "server"
+    server = root / "common_lore_index" / "server"
     server.mkdir(parents=True)
     (server.parent / "__init__.py").write_text("", encoding="utf-8")
     (server / "__init__.py").write_text("", encoding="utf-8")
@@ -309,7 +309,7 @@ def _inert_mcp_module(
         (server / "mcp.py").write_text(source, encoding="utf-8")
     alias = tmp_path / "import-alias"
     alias.symlink_to(root, target_is_directory=True)
-    monkeypatch.setattr(repomap_kg, "__file__", str(alias / "repomap_kg" / "__init__.py"))
+    monkeypatch.setattr(common_lore_index, "__file__", str(alias / "common_lore_index" / "__init__.py"))
     outside = tmp_path / "outside"
     outside.mkdir()
     monkeypatch.chdir(outside)
@@ -356,7 +356,7 @@ for request in reversed(requests):
 
 @pytest.mark.parametrize(("source", "error", "message", "timeout"), [
     ("import sys; sys.stderr.write('inert failure'); sys.exit(7)", RuntimeError, "code 7: inert failure", 9),
-    (None, RuntimeError, "code 1:.*No module named repomap_kg.server.mcp", 9),
+    (None, RuntimeError, "code 1:.*No module named common_lore_index.server.mcp", 9),
     ("import time; time.sleep(30)", subprocess.TimeoutExpired, "timed out", 0.2),
 ])
 def test_mcp_real_child_failures_do_not_retry(

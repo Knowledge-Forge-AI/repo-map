@@ -4,12 +4,12 @@ import unittest
 from collections.abc import Mapping
 from pathlib import Path
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.css_html_matching import extract_css_selector_match_observations
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.graph.discovery import extract_css_file_observations_from_file
-from repomap_kg.observations import RawObservation
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.css_html_matching import extract_css_selector_match_observations
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.graph.discovery import extract_css_file_observations_from_file
+from common_lore_index.observations import RawObservation
 
 
 def _obs(

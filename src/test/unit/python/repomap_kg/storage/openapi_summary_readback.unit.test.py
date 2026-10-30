@@ -8,7 +8,7 @@ from typing import TypedDict
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     OpenAPISummaryRecord,
     StorageSchemaError,
     build_openapi_summary_query_sql,
@@ -120,15 +120,15 @@ def test_psycopg74_query_openapi_summary_uses_object_readback_adapter() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             return_value=payload,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.openapi_summary_from_storage_payload",
+            "common_lore_index.storage.summaries.openapi_summary_from_storage_payload",
             wraps=openapi_summary_from_storage_payload,
         ) as convert,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("openapi summary must use the adapter"),
         ),
     ):
@@ -281,10 +281,10 @@ def test_psycopg74_adapter_shape_errors_propagate_without_fallback() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             side_effect=shape_error,
         ),
-        patch("repomap_kg.storage.summaries.run_psql") as run_psql,
+        patch("common_lore_index.storage.summaries.run_psql") as run_psql,
     ):
         with pytest.raises(StorageSchemaError) as raised:
             query_openapi_summary([], root_path="/tmp/psycopg74-public")
@@ -329,7 +329,7 @@ def test_build_openapi_summary_query_sql_invalid_identity() -> None:
 def test_query_openapi_summary_forwards_identity() -> None:
     payload = _summary_payload()
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ) as execute_json_readback:
         record = query_openapi_summary(

@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 import pytest
 
-import repomap_kg.storage.summaries as summaries
-import repomap_kg.storage.summary_rows_manifest as manifest_rows
-from repomap_kg.storage import (
+import common_lore_index.storage.summaries as summaries
+import common_lore_index.storage.summary_rows_manifest as manifest_rows
+from common_lore_index.storage import (
     APISummaryRecord,
     StorageSchemaError,
     api_manifest_summary_payload,
@@ -75,11 +75,11 @@ def test_psycopg90_query_api_summary_uses_adapter_in_exact_order(tmp_path: Path)
         return real_converter(payload)
 
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", side_effect=execute) as adapter,
-        patch("repomap_kg.storage.summaries.api_manifest_summary_payload", side_effect=aggregate),
-        patch("repomap_kg.storage.summaries.payload_int", side_effect=convert_int),
-        patch("repomap_kg.storage.summaries.payload_optional_text", side_effect=convert_identity),
-        patch("repomap_kg.storage.summaries.api_summary_from_storage_payload", side_effect=convert_final),
+        patch("common_lore_index.storage.summaries.execute_json_readback", side_effect=execute) as adapter,
+        patch("common_lore_index.storage.summaries.api_manifest_summary_payload", side_effect=aggregate),
+        patch("common_lore_index.storage.summaries.payload_int", side_effect=convert_int),
+        patch("common_lore_index.storage.summaries.payload_optional_text", side_effect=convert_identity),
+        patch("common_lore_index.storage.summaries.api_summary_from_storage_payload", side_effect=convert_final),
     ):
         record = query_api_summary(
             ["-h", "/tmp/postgres", "-d", "postgres"],
@@ -110,9 +110,9 @@ def test_psycopg90_adapter_failure_prevents_manifest_access(tmp_path: Path) -> N
     expected = StorageSchemaError("psycopg did not return api summary as a JSON object")
 
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", side_effect=expected) as adapter,
+        patch("common_lore_index.storage.summaries.execute_json_readback", side_effect=expected) as adapter,
         patch(
-            "repomap_kg.storage.summaries.api_manifest_summary_payload",
+            "common_lore_index.storage.summaries.api_manifest_summary_payload",
             side_effect=AssertionError("manifest access must not occur"),
         ),
     ):
@@ -194,8 +194,8 @@ def test_psycopg90_database_field_failures_follow_manifest_aggregation(
         return api_manifest_summary_payload(root)
 
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload),
-        patch("repomap_kg.storage.summaries.api_manifest_summary_payload", side_effect=aggregate),
+        patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload),
+        patch("common_lore_index.storage.summaries.api_manifest_summary_payload", side_effect=aggregate),
     ):
         with pytest.raises(StorageSchemaError, match=field):
             query_api_summary(["-d", "postgres"], root_path=str(tmp_path))
@@ -356,7 +356,7 @@ def test_psycopg90_api_drops_direct_psql_while_bulk_stays_facade_backed() -> Non
 
 def _query_payload(root: Path, storage_payload: dict[str, object]) -> APISummaryRecord:
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=storage_payload,
     ):
         return query_api_summary(["-d", "postgres"], root_path=str(root))

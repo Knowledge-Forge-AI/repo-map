@@ -4,19 +4,19 @@ from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.config_local import LocalSqliteConfig
-from repomap_kg.server._mcp_dispatch import TOOL_FUNCTIONS
-from repomap_kg.server._mcp_similar import _profiles_need_redaction, embedding_profiles_payload
-from repomap_kg.server.investigation_read_store import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.config_local import LocalSqliteConfig
+from common_lore_index.server._mcp_dispatch import TOOL_FUNCTIONS
+from common_lore_index.server._mcp_similar import _profiles_need_redaction, embedding_profiles_payload
+from common_lore_index.server.investigation_read_store import (
     InvestigationStorageQueries, LanguageSummaryQueries, PostgresInvestigationReadStore,
 )
-from repomap_kg.server.mcp import handle_jsonrpc_message, tool_definitions
-from repomap_kg.server.sqlite_read_binding import SqliteInvestigationReadStore, SqliteInvestigationStores
-from repomap_kg.storage.semantic_candidates import (
+from common_lore_index.server.mcp import handle_jsonrpc_message, tool_definitions
+from common_lore_index.server.sqlite_read_binding import SqliteInvestigationReadStore, SqliteInvestigationStores
+from common_lore_index.storage.semantic_candidates import (
     EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable, validated_profile_entry,
 )
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.storage.errors import StorageSchemaError
 from repomap_test_support.host_read_store_config import fail_if_reached, patched_guards
 from repomap_test_support.mcp_server import McpServerTestSupport
 from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, SNAPSHOT, candidate_query
@@ -59,7 +59,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
 
     def test_disabled_mcp_never_calls_an_investigation_store(self):
         with self._env(), patched_guards(), patch(
-            "repomap_kg.server.postgres_read_binding.PostgresInvestigationStores.investigation_store",
+            "common_lore_index.server.postgres_read_binding.PostgresInvestigationStores.investigation_store",
             fail_if_reached,
         ):
             result = self._call({"graph_id": "repo-map"})
@@ -89,14 +89,14 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
         mixed_graph = replace(public, source_bindings=(private_binding,), explicit_source_bindings=True)
         mixed = replace(store, config=replace(store.config, graphs=(mixed_graph,)))
         query = EmbeddingProfilesQuery(selected=True)
-        with patched_guards(), patch("repomap_kg.server.investigation_read_store.read_configured_graph", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.investigation_read_store.read_configured_graph", fail_if_reached):
             self.assertEqual(store.embedding_profiles("repo-map", EmbeddingProfilesQuery()).reason, "disabled")
             self.assertEqual(store.embedding_profiles("private-visible", query).reason, "private_graph_unsupported")
             self.assertEqual(mixed.embedding_profiles("repo-map", query).reason, "private_graph_unsupported")
             for graph_id in ("hidden", "disabled", "unknown"):
                 with self.assertRaises(ValueError):
                     store.embedding_profiles(graph_id, query)
-        with patched_guards(), patch("repomap_kg.server.sqlite_read_binding.read_transaction", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.sqlite_read_binding.read_transaction", fail_if_reached):
             local = SqliteInvestigationReadStore(self._local())
             self.assertEqual(local.embedding_profiles("repo-map", query).reason, "sqlite_unsupported")
             self.assertEqual(local.embedding_profiles("repo-map", EmbeddingProfilesQuery()).reason, "disabled")
@@ -104,7 +104,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
     def test_public_adapter_binds_only_configured_repository_and_read_owner(self):
         store = self._store()
         query = EmbeddingProfilesQuery(selected=True)
-        with patch("repomap_kg.server.investigation_read_store.read_configured_graph",
+        with patch("common_lore_index.server.investigation_read_store.read_configured_graph",
                    return_value=profiles_unavailable("extension_absent")) as read:
             self.assertEqual(store.embedding_profiles("repo-map", query).reason, "extension_absent")
         self.assertEqual(read.call_args.args[0].repository_identity, "repo1:repo-map")
@@ -112,7 +112,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
         self.assertIs(read.call_args.kwargs["query"], query)
 
     def test_local_rpc_remains_available_without_postgres(self):
-        with self._env(), patch("repomap_kg.server.ops.investigation_stores",
+        with self._env(), patch("common_lore_index.server.ops.investigation_stores",
                                return_value=SqliteInvestigationStores(self._local())), patched_guards():
             payload = self._call({"graph_id": "repo-map", "selected": True})["structuredContent"]
         self.assertEqual(payload["reason"], "sqlite_unsupported")
@@ -121,7 +121,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
     def test_public_rpc_output_and_error_redaction(self):
         entry = {"rebuild_id": "fixture", "profile_identity": PROFILE.identity, **PROFILE.__dict__, "row_count": 5}
         result = EmbeddingProfilesResult("ok", profiles=(entry,))
-        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
         with self._env(), patch(owner, return_value=result):
             response = self._call({"graph_id": "repo-map", "selected": True})
         self.assertEqual(response["structuredContent"]["profiles"][0]["profile_identity"], PROFILE.identity)
@@ -144,7 +144,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
     def test_username_substrings_in_opaque_digests_do_not_refuse_public_profiles(self):
         entry = {"rebuild_id": "fixture", "profile_identity": PROFILE.identity, **PROFILE.__dict__, "row_count": 5}
         result = EmbeddingProfilesResult("ok", profiles=(entry,))
-        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
         for username in ("a", PROFILE.identity[7:11]):
             with self.subTest(username=username), self._env(), patch(owner, return_value=result), patch(
                 "pathlib.Path.home", return_value=Path("/private/fixture-home") / username,
@@ -156,7 +156,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
     def test_private_username_in_model_metadata_refuses_the_whole_tuple(self):
         entry = {"rebuild_id": "fixture", "profile_identity": PROFILE.identity,
                  **PROFILE.__dict__, "model": "fixture-privateuser-model", "row_count": 5}
-        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
         with self._env(), patch(owner, return_value=EmbeddingProfilesResult("ok", profiles=(entry,))), patch(
             "pathlib.Path.home", return_value=Path("/private/fixture-home/privateuser"),
         ):
@@ -182,7 +182,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
             provenance = {"nested": [{field: private_digest}]}
             cases.append(("provenance-" + field, EmbeddingProfilesResult(
                 "ok", profiles=(public_entry,), provenance=provenance)))
-        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
         for label, result in cases:
             with self.subTest(case=label), self._env(), patch(owner, return_value=result), patch(
                 "pathlib.Path.home", return_value=Path("/private/fixture-home") / username,
@@ -237,7 +237,7 @@ class EmbeddingProfilesMcpTests(McpServerTestSupport):
                       "generations": dict(zip(generations.field_names(), generations.values(), strict=True)),
                       "privacy_class": "public", "pgvector_version": "0.8.7"}
         result = EmbeddingProfilesResult("ok", profiles=(entry,), provenance=provenance)
-        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
         usernames = (PROFILE.identity.split(":")[1], "sha256", "snapmanifest1", "receipt1", "bundle1", "cand1",
                      "bind1", "snap1", "sg1", "cg1", "eg1", "kg1", "3" * 64, "4" * 64, "a" * 64)
         for username in usernames:

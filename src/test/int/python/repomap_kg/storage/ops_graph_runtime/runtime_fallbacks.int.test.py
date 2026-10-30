@@ -7,9 +7,9 @@ from unittest.mock import patch
 
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import (
+from common_lore_index.runtime.local import LocalRuntimeIdentity
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import (
     StorageSchemaError,
 )
 
@@ -113,20 +113,20 @@ mode = "read_only"
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.run_psql",
+                    "common_lore_index.ops.refresh.run_psql",
                     side_effect=AssertionError("legacy JSON transport used"),
                 ) as run_psql_mock,
                 patch(
-                    "repomap_kg.ops.readback.execute_json_readback_with_driver",
+                    "common_lore_index.ops.readback.execute_json_readback_with_driver",
                     side_effect=fake_json_readback,
                 ),
                 patch(
-                    "repomap_kg.ops.readback.selected_json_readback_driver",
+                    "common_lore_index.ops.readback.selected_json_readback_driver",
                     return_value="psql",
                 ),
-                patch("repomap_kg.ops.readback.shutil.which", return_value="/bin/docker"),
+                patch("common_lore_index.ops.readback.shutil.which", return_value="/bin/docker"),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                 ) as inspect_container,
             ):
@@ -234,22 +234,22 @@ mode = "read_only"
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.discover_observations",
+                    "common_lore_index.ops.refresh.discover_observations",
                     return_value=observations,
                 ),
                 patch(
-                    "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                    "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                     side_effect=StorageSchemaError(
                         'could not translate host name "postgres" to address'
                     ),
                 ) as staged_refresh_mock,
                 patch(
-                    "repomap_kg.cli.maintenance_activity_for_home",
+                    "common_lore_index.cli.maintenance_activity_for_home",
                     return_value=nullcontext(),
                 ),
-                patch("repomap_kg.ops.readback.shutil.which", return_value="/bin/docker"),
+                patch("common_lore_index.ops.readback.shutil.which", return_value="/bin/docker"),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                 ) as inspect_container,
             ):
@@ -326,18 +326,18 @@ mode = "read_only"
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.execute_json_readback_with_driver",
+                    "common_lore_index.ops.readback.execute_json_readback_with_driver",
                     side_effect=StorageSchemaError(
                         'could not translate host name "postgres" to address'
                     ),
                 ) as execute_readback,
                 patch(
-                    "repomap_kg.ops.readback.selected_json_readback_driver",
+                    "common_lore_index.ops.readback.selected_json_readback_driver",
                     return_value="psql",
                 ),
-                patch("repomap_kg.ops.readback.shutil.which", return_value="/bin/docker"),
+                patch("common_lore_index.ops.readback.shutil.which", return_value="/bin/docker"),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                 ) as inspect_container,
             ):

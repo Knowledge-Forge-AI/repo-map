@@ -21,7 +21,7 @@ class ProjectIdentity:
 
 
 PROJECT_IDENTITY = ProjectIdentity(
-    name="RepoMap",
+    name="Common Lore Index",
     distribution=DISTRIBUTION_NAME,
     package=IMPORT_PACKAGE,
     cli=PREFERRED_CLI,

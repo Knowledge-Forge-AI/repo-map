@@ -13,7 +13,7 @@ from repomap_test_support.cli import (
     write_text_fixture,
 )
 
-from repomap_kg import __version__
+from common_lore_index import __version__
 from repomap_test_support import cli, cli_in_process
 
 
@@ -50,7 +50,7 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
             cli.runpy, "run_module", side_effect=capture_entrypoint
         ):
             self.assertEqual(run_module_entrypoint("--version"), (7, "", ""))
-        self.assertEqual(received, [("repomap_kg", "__main__", ["cloe", "--version"])])
+        self.assertEqual(received, [("common_lore_index", "__main__", ["cloe", "--version"])])
         self.assertEqual(sys.argv, original)
 
     def test_static_cli_capture_matches_the_compatibility_facade(self):

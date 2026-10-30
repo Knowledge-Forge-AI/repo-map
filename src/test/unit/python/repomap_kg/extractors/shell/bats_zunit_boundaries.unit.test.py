@@ -1,6 +1,6 @@
 import unittest
-from repomap_kg.extractors.shell.bats import extract_bats_file_observations
-from repomap_kg.extractors.shell.zunit import extract_zunit_file_observations
+from common_lore_index.extractors.shell.bats import extract_bats_file_observations
+from common_lore_index.extractors.shell.zunit import extract_zunit_file_observations
 
 class ShellBatsZunitBoundariesUnitTests(unittest.TestCase):
     def test_bats_extractor_test_cases_and_hooks(self):

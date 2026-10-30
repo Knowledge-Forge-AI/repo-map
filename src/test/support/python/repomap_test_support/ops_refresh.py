@@ -6,8 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.config import load_ops_config, load_ops_config_home
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.config import load_ops_config, load_ops_config_home
 
 
 VALID_REFRESH_CONFIG = """\

@@ -3,8 +3,8 @@ import threading
 
 import pytest
 
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.protocol import WorkerLaunchError
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.protocol import WorkerLaunchError
 from repomap_test_support.coordinator_core_fakes import Claim, FakeStore, terminal
 
 

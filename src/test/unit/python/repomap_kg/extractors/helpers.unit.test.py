@@ -1,17 +1,17 @@
 import unittest
 
-from repomap_kg import __version__
-from repomap_kg.extractors.shell.bash import (
+from common_lore_index import __version__
+from common_lore_index.extractors.shell.bash import (
     redaction_for_name as bash_redaction_for_name,
     redaction_for_value as bash_redaction_for_value,
 )
-from repomap_kg.extractors.shared.observations import secret_like_observation
-from repomap_kg.extractors.shared.redaction import (
+from common_lore_index.extractors.shared.observations import secret_like_observation
+from common_lore_index.extractors.shared.redaction import (
     secret_name_redaction_reason,
     secret_value_redaction_reason,
 )
-from repomap_kg.extractors.shared.scanner import identifier_parts
-from repomap_kg.extractors.shell.zsh import (
+from common_lore_index.extractors.shared.scanner import identifier_parts
+from common_lore_index.extractors.shell.zsh import (
     redaction_for_name as zsh_redaction_for_name,
     redaction_for_value as zsh_redaction_for_value,
 )

@@ -3,7 +3,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_canonical_storage_summary,

@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Any
 import unittest
 
-from repomap_kg.canonicalization import _shell_powershell_metadata as pm
-from repomap_kg.graph.keys import GraphKeyError
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.canonicalization import _shell_powershell_metadata as pm
+from common_lore_index.graph.keys import GraphKeyError
+from common_lore_index.observations.raw import RawObservation
 
 
 POWERSHELL_METADATA_EXPORTS = (
@@ -55,8 +55,8 @@ def _obs(
 
 class PowerShellMetadataUnitTests(unittest.TestCase):
     def test_rootpkg30_powershell_family_reexports_metadata_helpers(self) -> None:
-        import repomap_kg.canonicalization.shell_powershell_family as family
-        import repomap_kg.canonicalization._shell_powershell_metadata as metadata
+        import common_lore_index.canonicalization.shell_powershell_family as family
+        import common_lore_index.canonicalization._shell_powershell_metadata as metadata
         for name in POWERSHELL_METADATA_EXPORTS:
             self.assertIs(getattr(family, name), getattr(metadata, name))
 

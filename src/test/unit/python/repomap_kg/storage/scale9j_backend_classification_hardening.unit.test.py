@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from repomap_kg.storage.backend_ownership import (
+from common_lore_index.storage.backend_ownership import (
     BackendActivity,
     BackendClassification,
     BackendIdentity,
@@ -12,8 +12,8 @@ from repomap_kg.storage.backend_ownership import (
     OwnedBackend,
     classify_backend_activity,
 )
-from repomap_kg.storage.backend_ownership_registry import BackendOwnershipRegistry
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.backend_ownership_registry import BackendOwnershipRegistry
+from common_lore_index.storage.backend_telemetry import (
     ConnectionTelemetryError,
     ConnectionTelemetryEvent,
     TelemetryEventKind,

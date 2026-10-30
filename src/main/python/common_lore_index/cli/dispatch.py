@@ -76,7 +76,7 @@ def dispatch_command(
         return coordinator_service_exit
 
     if args.version:
-        print(f"repomap-kg {commands.__version__}")
+        print(f"{parser.prog} {commands.__version__}")
         return 0
 
     obs_result = dispatch_observation_commands(

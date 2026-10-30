@@ -12,19 +12,19 @@ import sys
 
 import pytest
 
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.endpoint import (
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.endpoint import (
     EndpointDescriptorError,
     LoopbackEndpointDescriptor,
     load_endpoint_descriptor,
     write_endpoint_descriptor,
 )
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.local_mode import _resolve_psql_executable
-from repomap_kg.coordinator.process_supervision import launch_managed_process
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.transport import LocalRequestDispatcher, LoopbackTcpService
-from repomap_kg.coordinator.windows_security import (
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.local_mode import _resolve_psql_executable
+from common_lore_index.coordinator.process_supervision import launch_managed_process
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.transport import LocalRequestDispatcher, LoopbackTcpService
+from common_lore_index.coordinator.windows_security import (
     apply_owner_private_acl,
     validate_owner_private_acl,
 )
@@ -194,7 +194,7 @@ def test_windows_psql_contract_requires_explicit_exe_name(tmp_path: Path, monkey
     psql = tmp_path / "psql.exe"
     psql.write_text("native-test", encoding="utf-8")
     monkeypatch.setattr(
-        "repomap_kg.coordinator.local_mode.validate_psql", lambda _path: None
+        "common_lore_index.coordinator.local_mode.validate_psql", lambda _path: None
     )
     assert psql.name.lower() == "psql.exe"
     assert _resolve_psql_executable(psql, platform_name="nt") == psql.resolve()

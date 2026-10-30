@@ -2,12 +2,12 @@
 import json
 from pathlib import Path
 import pytest
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import create_portable_capability
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator.limits import CoordinatorLimits
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import create_portable_capability
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator.limits import CoordinatorLimits
 from repomap_test_support.run25_portable_workflows import create_run25_test_capability
 
 

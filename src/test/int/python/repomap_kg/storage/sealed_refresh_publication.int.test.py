@@ -10,21 +10,21 @@ from types import SimpleNamespace
 
 import psycopg
 
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator import refresh_worker
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.protocol import encode_jsonl
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator import refresh_worker
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.protocol import encode_jsonl
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability, create_refresh_capability, load_refresh_capability,
 )
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.generations import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.generations import (
     canonicalizer_generation, configured_graph, extractor_generation,
 )
-from repomap_kg.ops.resolved_config import configured_repository_identity
-from repomap_kg.graph.multi_source_pipeline import scan_multi_source_generations
-from repomap_kg.runtime.postgres_route import effective_postgres_route
-from repomap_kg.storage import apply_migrations, default_rdbms_root, staged_ingestion
+from common_lore_index.ops.resolved_config import configured_repository_identity
+from common_lore_index.graph.multi_source_pipeline import scan_multi_source_generations
+from common_lore_index.runtime.postgres_route import effective_postgres_route
+from common_lore_index.storage import apply_migrations, default_rdbms_root, staged_ingestion
 from repomap_test_support.startup_recovery_scenarios import (
     _make_refresh_fixture, _refresh_harness, _req_norm,
     _run_real_refresh_attempt, _search_path,

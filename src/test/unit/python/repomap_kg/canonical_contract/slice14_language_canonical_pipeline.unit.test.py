@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import unittest
-from repomap_kg.extractors.config.terraform_hcl_helpers import _terraform_hcl_module_source
+from common_lore_index.extractors.config.terraform_hcl_helpers import _terraform_hcl_module_source
 
 
 class Slice14LanguageCanonicalPipelineUnitTests(unittest.TestCase):

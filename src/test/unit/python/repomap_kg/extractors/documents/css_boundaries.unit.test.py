@@ -1,7 +1,7 @@
 import unittest
 
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.graph.keys import file_key, unknown_key
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.graph.keys import file_key, unknown_key
 
 
 class CssExtractorBoundariesUnitTests(unittest.TestCase):
@@ -134,7 +134,7 @@ a, b, {
         props = {obs.name: obs for obs in by_kind.get("css.custom_property", [])}
         self.assertTrue(props["--secret-pass"].metadata["redacted"])
 
-        from repomap_kg.extractors.documents.css_support import (
+        from common_lore_index.extractors.documents.css_support import (
             _is_secret_name,
             _resolve_repo_path,
             _safe_summary,
@@ -147,7 +147,7 @@ a, b, {
         self.assertEqual(_resolve_repo_path("styles/app.css", "./sub/./icon.svg"), "styles/sub/icon.svg")
 
     def test_css_support_helpers_branches(self):
-        from repomap_kg.extractors.documents.css_support import (
+        from common_lore_index.extractors.documents.css_support import (
             _extract_url_values,
             _is_dynamic_value,
             _is_secret_name,

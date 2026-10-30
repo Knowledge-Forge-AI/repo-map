@@ -4,8 +4,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import (
+from common_lore_index.cli import main
+from common_lore_index.storage import (
     JSSummaryRecord,
     RubySummaryRecord,
     StorageSchemaError,
@@ -42,7 +42,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_ruby_summary",
+            "common_lore_index.cli.query_ruby_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -72,7 +72,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_ruby_summary",
+            "common_lore_index.cli.query_ruby_summary",
             side_effect=StorageSchemaError("psql did not return ruby summary"),
         ):
             with redirect_stderr(stderr):
@@ -118,7 +118,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_js_summary",
+            "common_lore_index.cli.query_js_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -149,7 +149,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_js_summary",
+            "common_lore_index.cli.query_js_summary",
             side_effect=StorageSchemaError("psql did not return js summary"),
         ):
             with redirect_stderr(stderr):
@@ -169,7 +169,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_js_framework_summary",
+            "common_lore_index.cli.query_js_framework_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -201,7 +201,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_js_framework_summary",
+            "common_lore_index.cli.query_js_framework_summary",
             return_value=js_framework_summary_fixture(),
         ):
             with redirect_stdout(stdout):
@@ -224,7 +224,7 @@ class CliStorageLanguageSummaryUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_js_framework_summary",
+            "common_lore_index.cli.query_js_framework_summary",
             side_effect=StorageSchemaError(
                 "psql did not return js framework summary"
             ),

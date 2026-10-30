@@ -9,12 +9,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from repomap_kg.coordinator.deployment import CoordinatorDeploymentError, coordinator_startup_lock
-from repomap_kg.coordinator.local_mode import CoordinatorModeError, serve_configured_coordinator
-from repomap_kg.runtime import local
-from repomap_kg.runtime._container_inspection import inspect_compose_coordinator, inspect_container
-from repomap_kg.runtime.coordinator_transition import native_coordinator_state
-from repomap_kg.runtime.plan import LocalContainerStatus, build_local_runtime_plan
+from common_lore_index.coordinator.deployment import CoordinatorDeploymentError, coordinator_startup_lock
+from common_lore_index.coordinator.local_mode import CoordinatorModeError, serve_configured_coordinator
+from common_lore_index.runtime import local
+from common_lore_index.runtime._container_inspection import inspect_compose_coordinator, inspect_container
+from common_lore_index.runtime.coordinator_transition import native_coordinator_state
+from common_lore_index.runtime.plan import LocalContainerStatus, build_local_runtime_plan
 
 
 def _home(tmp_path, mode="container"):
@@ -52,7 +52,7 @@ def test_owned_up_and_down_remove_orphans(tmp_path, runtime):
 def test_native_owner_refuses_before_compose_or_render(tmp_path, state, code):
     home = _home(tmp_path)
     before = (home / "runtime/compose.yaml").read_bytes()
-    with patch("repomap_kg.runtime.coordinator_transition.native_coordinator_state", return_value=state), patch.object(local, "_run_container_runtime") as run:
+    with patch("common_lore_index.runtime.coordinator_transition.native_coordinator_state", return_value=state), patch.object(local, "_run_container_runtime") as run:
         with pytest.raises(local.LocalRuntimeError) as raised:
             local.up_local_runtime(home)
     assert raised.value.diagnostics[0].code == code
@@ -105,7 +105,7 @@ def test_endpoint_absence_partial_unsafe_and_stale(tmp_path):
     with socket.socket(socket.AF_UNIX) as sock:
         sock.bind(str(directory / "coordinator.sock"))
     assert native_coordinator_state(tmp_path) == "unknown"
-    with patch("repomap_kg.runtime.coordinator_transition.LocalCoordinatorClient") as client:
+    with patch("common_lore_index.runtime.coordinator_transition.LocalCoordinatorClient") as client:
         client.return_value.health.return_value = {"status": "degraded"}
         assert native_coordinator_state(tmp_path) == "active"
         client.return_value.health.return_value = {}
@@ -144,9 +144,9 @@ def test_packaged_mode_gate_precedes_singleton_and_foreground_is_unchanged(tmp_p
 
 def test_inventory_failure_is_not_absence(tmp_path):
     plan = build_local_runtime_plan(_home(tmp_path))
-    with patch("repomap_kg.runtime._container_inspection.subprocess.run", return_value=Mock(returncode=1)):
+    with patch("common_lore_index.runtime._container_inspection.subprocess.run", return_value=Mock(returncode=1)):
         assert inspect_compose_coordinator(plan) == "unknown"
-    with patch("repomap_kg.runtime._container_inspection.subprocess.run", return_value=Mock(returncode=0, stdout="")):
+    with patch("common_lore_index.runtime._container_inspection.subprocess.run", return_value=Mock(returncode=0, stdout="")):
         assert inspect_compose_coordinator(plan) == "absent"
 
 
@@ -155,5 +155,5 @@ def test_occupied_port_reuse_requires_owned_exact_binding(tmp_path, owned, port,
     plan = replace(build_local_runtime_plan(_home(tmp_path)), server_host_port=55981)
     labels = plan.identity.labels("http") if owned else {}
     record = [{"Config": {"Labels": labels}, "State": {"Status": "running"}, "NetworkSettings": {"Ports": {"55880/tcp": None, "55981/tcp": [{"HostIp": "127.0.0.1", "HostPort": port}]}}}]
-    with patch("repomap_kg.runtime._container_inspection.subprocess.run", return_value=Mock(returncode=0, stdout=json.dumps(record))):
+    with patch("common_lore_index.runtime._container_inspection.subprocess.run", return_value=Mock(returncode=0, stdout=json.dumps(record))):
         assert inspect_container(plan, "server", plan.identity.server_container).host_binding_valid is valid

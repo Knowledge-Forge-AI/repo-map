@@ -5,7 +5,7 @@ import tomllib
 
 import sys
 
-import repomap_kg
+import common_lore_index
 
 repo_root = Path(__file__).resolve().parents[5]
 tools_dir = repo_root / "tools"
@@ -21,7 +21,7 @@ def test_version_consistency() -> None:
         pyproject = tomllib.load(f)
     pyproject_version = pyproject["project"]["version"]
     assert pyproject_version == "0.0.3"
-    assert repomap_kg.__version__ == "0.0.3"
+    assert common_lore_index.__version__ == "0.0.3"
     assert DEFAULT_TARGET_VERSION == "0.0.3"
-    assert repomap_kg.__version__ == pyproject_version
+    assert common_lore_index.__version__ == pyproject_version
     assert DEFAULT_TARGET_VERSION == pyproject_version

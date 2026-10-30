@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config import yaml as config_yaml
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config import yaml as config_yaml
 
 
 class ConfigExtractorYamlBoundariesUnitTests(unittest.TestCase):

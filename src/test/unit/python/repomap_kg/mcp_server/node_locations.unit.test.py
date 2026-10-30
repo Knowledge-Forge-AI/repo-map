@@ -11,9 +11,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.server import mcp
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.host_read_store_config import (
     NO_FALLBACK_GUARDS, PG_BINDING_TRIPWIRES, patched_guards, setup_owned_config,
 )
@@ -135,7 +135,7 @@ def test_historical_nodes_keep_evidence_and_never_claim_current_membership(store
 @pytest.mark.parametrize("graph, message", [("hidden", "not MCP-visible"), ("disabled", "not enabled"),
                                            ("unknown", "unknown graph_id")])
 def test_graph_selection_refuses_before_database_open(store: Path, graph: str, message: str) -> None:
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("open")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("open")):
         with pytest.raises(RepoMapMcpError, match=message):
             call(graph=graph)
 
@@ -149,7 +149,7 @@ def test_graph_and_repository_identity_isolation(store: Path) -> None:
 
 @pytest.mark.parametrize("limit", [0, 101, True, "2"])
 def test_limit_validation_precedes_io(store: Path, limit: object) -> None:
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("open")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("open")):
         with pytest.raises(RepoMapMcpError, match="between 1 and 100"):
             call(limit=limit)
 
@@ -261,7 +261,7 @@ def test_postgres_helper_is_explicitly_unsupported_without_readback(tmp_path: Pa
     monkeypatch.setenv("REPOMAP_HOME", str(home))
     monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
     with patched_guards(NO_FALLBACK_GUARDS), \
-            patch("repomap_kg.server.canonical_read_store.read_configured_graph", side_effect=AssertionError("read")):
+            patch("common_lore_index.server.canonical_read_store.read_configured_graph", side_effect=AssertionError("read")):
         result = call(graph="host-one")
     assert result["status"] == "unavailable" and result["reason"] == "backend_unsupported"
     assert result["locations"] == [] and result["fallback"] == "native_search"

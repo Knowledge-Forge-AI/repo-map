@@ -3,11 +3,11 @@ import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_email_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 class StorageDomainEmailSummaryUnitTests(unittest.TestCase):
     def test_query_email_summary_returns_safe_counts(self):
@@ -51,7 +51,7 @@ class StorageDomainEmailSummaryUnitTests(unittest.TestCase):
             os.environ,
             {PG_CONNECTOR_ENV: "psql", READBACK_DRIVER_ENV: "psql"},
         ), patch(
-            "repomap_kg.storage.subprocess.run", return_value=completed
+            "common_lore_index.storage.subprocess.run", return_value=completed
         ) as run:
             summary = query_email_summary(
                 ["-d", "postgres"],
@@ -84,7 +84,7 @@ class StorageDomainEmailSummaryUnitTests(unittest.TestCase):
             os.environ,
             {PG_CONNECTOR_ENV: "psql", READBACK_DRIVER_ENV: "psql"},
         ), patch(
-            "repomap_kg.storage.subprocess.run", return_value=completed
+            "common_lore_index.storage.subprocess.run", return_value=completed
         ):
             with self.assertRaisesRegex(StorageSchemaError, "email summary"):
                 query_email_summary(["-d", "postgres"], root_path="/tmp/fixture")

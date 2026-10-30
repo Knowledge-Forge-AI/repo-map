@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     RubySummaryRecord,
     StorageSchemaError,
     build_ruby_summary_query_sql,
@@ -49,15 +49,15 @@ def test_psycopg65_query_ruby_summary_uses_object_readback_adapter() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             return_value=payload,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.ruby_summary_from_storage_payload",
+            "common_lore_index.storage.summaries.ruby_summary_from_storage_payload",
             wraps=ruby_summary_from_storage_payload,
         ) as convert,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("Ruby summary must use the adapter"),
         ),
     ):
@@ -84,7 +84,7 @@ def test_psycopg65_query_ruby_summary_preserves_unknown_root_defaults() -> None:
     payload = _ruby_summary_payload(default=True, profile_counts={})
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_ruby_summary(
@@ -105,7 +105,7 @@ def test_psycopg65_query_ruby_summary_sorts_arbitrary_profile_labels() -> None:
     )
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_ruby_summary(
@@ -132,7 +132,7 @@ def test_psycopg65_query_ruby_summary_preserves_profile_count_errors(
     payload = _ruby_summary_payload(profile_counts=profile_counts)
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match="profile_counts"):
@@ -150,7 +150,7 @@ def test_psycopg65_query_ruby_summary_preserves_strict_no_execution_errors(
     payload["no_execution"] = no_execution
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match="no_execution"):
@@ -166,7 +166,7 @@ def test_psycopg65_query_ruby_summary_preserves_scalar_int_coercion() -> None:
     payload["modules"] = True
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_ruby_summary(
@@ -183,7 +183,7 @@ def test_psycopg65_query_ruby_summary_preserves_malformed_scalar_error() -> None
     payload["routes"] = "not-a-count"
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match="routes"):
@@ -198,11 +198,11 @@ def test_psycopg65_query_ruby_summary_propagates_adapter_shape_error() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             side_effect=expected,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("Ruby summary must not fall back"),
         ),
     ):

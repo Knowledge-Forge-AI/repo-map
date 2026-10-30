@@ -10,7 +10,7 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
@@ -31,7 +31,7 @@ class StorageMcpVisibleGraphsIntegrationTests(unittest.TestCase):
             "docs_text_table_basic",
             "raw_observations.jsonl",
         )
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             handle_jsonrpc_message,
             repomap_graph_status,
             repomap_list_graphs,

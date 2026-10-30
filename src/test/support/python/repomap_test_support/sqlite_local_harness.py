@@ -233,7 +233,7 @@ def interrupt_paused_child(process: subprocess.Popen[str] | ManagedChild) -> Non
 
 def await_ready(barrier: Path, process: subprocess.Popen[str] | ManagedChild) -> None:
     """Bound readiness and guarantee maintained cleanup on every failure."""
-    from repomap_kg.coordinator._transport_validation import public_diagnostic_summary
+    from common_lore_index.coordinator._transport_validation import public_diagnostic_summary
 
     try:
         deadline = time.monotonic() + BARRIER_DEADLINE_SECONDS

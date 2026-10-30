@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     build_api_summary_query_sql,
     query_api_summary,
@@ -61,7 +61,7 @@ class StorageSourceApiQueryUnitTests(unittest.TestCase):
                 "config_documents_from_api": 1,
             }
 
-            with patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload) as adapter:
+            with patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload) as adapter:
                 summary = query_api_summary(
                     ["-d", "postgres"],
                     root_path=str(root),
@@ -160,7 +160,7 @@ class StorageSourceApiQueryUnitTests(unittest.TestCase):
                 "config_documents_from_api": 2,
             }
 
-            with patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload):
+            with patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload):
                 summary = query_api_summary(["-d", "postgres"], root_path=str(root))
 
         self.assertEqual(summary.api_runs, 1)
@@ -189,7 +189,7 @@ class StorageSourceApiQueryUnitTests(unittest.TestCase):
                 "config_documents_from_api": 0,
             }
 
-            with patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload):
+            with patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload):
                 summary = query_api_summary(["-d", "postgres"], root_path=tmpdir)
 
         self.assertEqual(summary.api_runs, 0)
@@ -218,7 +218,7 @@ class StorageSourceApiQueryUnitTests(unittest.TestCase):
                     "config_documents_from_api": 0,
                 }
 
-                with patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload):
+                with patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload):
                     summary = query_api_summary(["-d", "postgres"], root_path=tmpdir)
 
         self.assertEqual(summary.api_runs, 0)
@@ -230,6 +230,6 @@ class StorageSourceApiQueryUnitTests(unittest.TestCase):
         storage_payload = {"repository_name": "fixture"}
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload):
+            with patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload):
                 with self.assertRaisesRegex(StorageSchemaError, "api summary"):
                     query_api_summary(["-d", "postgres"], root_path=tmpdir)

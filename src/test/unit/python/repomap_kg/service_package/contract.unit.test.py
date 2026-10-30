@@ -14,8 +14,8 @@ from repomap_test_support.executable_authority import (
     approved_psql,
     private_bin_directory,
 )
-from repomap_kg.service_package import contract
-from repomap_kg.service_package.contract import (
+from common_lore_index.service_package import contract
+from common_lore_index.service_package.contract import (
     SERVICE_ENVIRONMENT_ALLOWLIST,
     apply_service_environment,
     build_service_inspection_spec,
@@ -40,7 +40,7 @@ def test_service_spec_normalizes_one_portable_foreground_contract(
     assert spec.foreground_argv == (
         str(service_authority.python_path),
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "coordinator-serve",
         "--repo-map-home",
@@ -97,7 +97,7 @@ def test_service_spec_fails_when_the_fixed_psql_dependency_is_unavailable(
     tmp_path, service_authority
 ):
     with patch(
-        "repomap_kg.service_package.contract.shutil.which",
+        "common_lore_index.service_package.contract.shutil.which",
         return_value=None,
     ):
         with pytest.raises(RuntimeError, match="service_psql_unavailable"):

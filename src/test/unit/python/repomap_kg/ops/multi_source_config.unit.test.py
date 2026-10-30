@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import (
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config import (
     OpsConfigError,
     load_ops_config,
     ops_config_status_to_jsonable,

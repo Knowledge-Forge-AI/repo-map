@@ -15,15 +15,15 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.config import check_ops_graph_storage_status, load_ops_config
-from repomap_kg.storage import (
+from common_lore_index.ops.config import check_ops_graph_storage_status, load_ops_config
+from common_lore_index.storage import (
     StorageSchemaError,
     apply_migrations,
     default_rdbms_root,
     run_psql,
     sql_literal,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 
 SECOND_DATABASE = "public_second"
@@ -70,7 +70,7 @@ def test_psycopg101_graph_storage_connector_cli_failure_and_privacy_parity(
             config_path = _write_config(base, postgres=postgres)
             config = load_ops_config(config_path)
 
-            import repomap_kg.ops.readback as readback
+            import common_lore_index.ops.readback as readback
 
             def fail_topology(*args, **kwargs):
                 pytest.fail("host-only graph storage inspected topology")
@@ -146,7 +146,7 @@ def test_psycopg101_graph_storage_connector_cli_failure_and_privacy_parity(
             assert readiness_partial["unavailable"]["error"] is not None
             assert readiness_partial["after"]["repository_exists"] is True
 
-            import repomap_kg.ops.config as config_module
+            import common_lore_index.ops.config as config_module
 
             original_readback = config_module.execute_ops_json_readback
 
@@ -159,7 +159,7 @@ def test_psycopg101_graph_storage_connector_cli_failure_and_privacy_parity(
                 return original_readback(config_arg, **kwargs)
 
             with patch(
-                "repomap_kg.ops.config.execute_ops_json_readback",
+                "common_lore_index.ops.config.execute_ops_json_readback",
                 side_effect=fail_first_graph_stage,
             ):
                 graph_partial = _jsonable(

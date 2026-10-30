@@ -8,16 +8,16 @@ from pathlib import Path
 from typing import Any, Mapping, cast
 
 import pytest
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator._control_types import JobClaim, SingletonActiveError
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.startup_recovery import (
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator._control_types import JobClaim, SingletonActiveError
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.startup_recovery import (
     PublicationRouteChangedError,
     recover_startup,
 )
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.coordinator.storage import ControlStore
 from repomap_test_support.startup_recovery_scenarios import (
     _harness,
     _make_refresh_fixture,

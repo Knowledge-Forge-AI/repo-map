@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.staging_operation_contracts import operation_descriptor
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage.staging_operation_contracts import operation_descriptor
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
 from scale12_profile_delay import (
     ProfilingOperationDelay,
     Scale12ProfileDelayError,

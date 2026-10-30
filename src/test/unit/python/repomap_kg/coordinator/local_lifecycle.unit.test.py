@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     coordinator_control_status,
     derived_control_database,

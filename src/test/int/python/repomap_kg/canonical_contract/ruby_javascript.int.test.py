@@ -3,22 +3,22 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.keys import (
     js_class_key, js_function_key, js_method_key, js_module_key,
     ruby_class_key, ruby_method_key, ruby_module_key,
     ruby_singleton_method_key, unknown_key,
 )
-from repomap_kg.observations.raw import (
+from common_lore_index.observations.raw import (
     RawObservation,
     read_observations_jsonl,
     write_observations_jsonl,
 )
-from repomap_kg.extractors.languages import javascript as javascript_module
-from repomap_kg.extractors.languages import ruby as ruby_module
-from repomap_kg.extractors.languages.javascript import extract_javascript_file_observations
-from repomap_kg.extractors.languages.ruby import extract_ruby_file_observations
-from repomap_kg.extractors.languages.ruby_helpers import _Scope
+from common_lore_index.extractors.languages import javascript as javascript_module
+from common_lore_index.extractors.languages import ruby as ruby_module
+from common_lore_index.extractors.languages.javascript import extract_javascript_file_observations
+from common_lore_index.extractors.languages.ruby import extract_ruby_file_observations
+from common_lore_index.extractors.languages.ruby_helpers import _Scope
 
 
 class CanonicalRubyJavascriptIntegrationTests(unittest.TestCase):

@@ -9,13 +9,13 @@ from repomap_test_support.sqlite_local_harness import LocalHarness
 
 
 @pytest.mark.parametrize(("names", "state"), [
-    ([], "unverified"), (["repomap_kg"], "single-owner"),
-    (["common_lore_index"], "owner-mismatch"),
-    (["repomap_kg", "common_lore_index"], "conflicting"),
-    (["repomap_kg", "repomap.kg"], "conflicting"),
+    ([], "unverified"), (["common_lore_index"], "single-owner"),
+    (["repomap_kg"], "owner-mismatch"),
+    (["common_lore_index", "common_lore_index"], "conflicting"),
+    (["common_lore_index", "repomap.kg"], "conflicting"),
 ])
 def test_real_dist_info_discovery_is_read_only_and_categorical(tmp_path: Path, names, state):
-    from repomap_kg.runtime.installation_ownership import inspect_installation_ownership
+    from common_lore_index.runtime.installation_ownership import inspect_installation_ownership
     for index, name in enumerate(names):
         info = tmp_path / f"{name}-{index}.dist-info"
         info.mkdir()

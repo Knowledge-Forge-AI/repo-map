@@ -16,8 +16,8 @@ from ci.d12_system_grant import (
     DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, D12SystemGrantError,
     SYSTEM_ADMISSION_PROOF_SCHEMA, load_and_validate_system_build_grant, verify_host_system_proof_for_dispatch,
 )
-from repomap_kg.runtime import release as release_mod
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime import release as release_mod
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import d12_core_image as d12, d12_recipe
 from repomap_test_support.d12_image_probes import _create
 from repomap_test_support.d12_system_test_children import (
@@ -47,8 +47,8 @@ BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
 def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]]:
     cand_doc = json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
     grant, _ = load_and_validate_system_build_grant(REPO_ROOT / DEFAULT_GRANT_RELPATH)
-    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (98, 15, 15)
-    assert grant["nonce"] not in ("57a15c277787496bbfdaca7d8e47b439", "d4ea67e655f54742ac8ddc6a06174acf", "8cf0db5228e2467b991ff5a0a2eba5ea", "a3b8757061cd4f1881b2d2bf96340539")
+    assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (99, 16, 16)
+    assert grant["nonce"] not in ("57a15c277787496bbfdaca7d8e47b439", "d4ea67e655f54742ac8ddc6a06174acf", "8cf0db5228e2467b991ff5a0a2eba5ea", "a3b8757061cd4f1881b2d2bf96340539", "d20a514d6d3144edb9f1408d55cfd408")
     expected_cand = validate_expected_candidate_record({**cand_doc, "d12_context": dict(grant["d12_context"])})
     (tmp_path / "ci72-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
     event_path = tmp_path / "github_event.json"

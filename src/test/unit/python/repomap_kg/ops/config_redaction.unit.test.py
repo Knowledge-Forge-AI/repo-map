@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.ops.config import (
+from common_lore_index.ops.config import (
     OpsGraphStorageStatus,
     format_ops_config_status_table,
     format_ops_graph_registry_table,
@@ -107,8 +107,8 @@ EXPECTED_CONFIG_EXTRA_PUBLIC_NAMES = frozenset(
 
 class OpsConfigRedactionUnitTests(unittest.TestCase):
     def test_config_facade_preserves_eager_namespace_identity(self):
-        import repomap_kg.ops.config as config
-        import repomap_kg.ops.config_loading as loading
+        import common_lore_index.ops.config as config
+        import common_lore_index.ops.config_loading as loading
         loading_public_names = {
             name for name in vars(loading) if not name.startswith("_")
         }

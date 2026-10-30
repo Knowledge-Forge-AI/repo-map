@@ -6,16 +6,16 @@ from pathlib import Path
 import threading
 
 
-from repomap_kg.coordinator.client import LocalCoordinatorClient
-from repomap_kg.coordinator.contracts import JobRequest
-from repomap_kg.coordinator._control_types import JobListPage, JobStatus, SubmissionResult
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.startup_recovery import (
+from common_lore_index.coordinator.client import LocalCoordinatorClient
+from common_lore_index.coordinator.contracts import JobRequest
+from common_lore_index.coordinator._control_types import JobListPage, JobStatus, SubmissionResult
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.startup_recovery import (
     RecoveryDiagnostic,
     StartupRecoveryMixin,
     StartupRecoveryReport,
 )
-from repomap_kg.coordinator.transport import validate_public_result
+from common_lore_index.coordinator.transport import validate_public_result
 from repomap_test_support.test_scratch import short_test_directory
 
 

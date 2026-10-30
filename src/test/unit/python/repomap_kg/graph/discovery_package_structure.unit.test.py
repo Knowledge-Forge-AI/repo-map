@@ -31,19 +31,19 @@ DISCOVERY_EXTRACTOR_EXPORTS = (
 
 
 def test_rootpkg19_discovery_reexports_extractor_adapters() -> None:
-    import repomap_kg.graph.discovery as discovery
-    import repomap_kg.graph.discovery_extractors as adapters
+    import common_lore_index.graph.discovery as discovery
+    import common_lore_index.graph.discovery_extractors as adapters
     for name in DISCOVERY_EXTRACTOR_EXPORTS:
         assert getattr(discovery, name) is getattr(adapters, name)
 
 
 def test_arch1e_discovery_reexports_neutral_file_info() -> None:
-    import repomap_kg.graph.discovery as discovery
-    import repomap_kg.graph.discovery_records as records
+    import common_lore_index.graph.discovery as discovery
+    import common_lore_index.graph.discovery_records as records
     assert discovery.FileInfo is records.FileInfo
 
 def test_arch1e_extractor_routing_depends_on_neutral_records() -> None:
-    import repomap_kg.graph.discovery_extractors as adapters
+    import common_lore_index.graph.discovery_extractors as adapters
     assert adapters.__file__ is not None
     source = Path(adapters.__file__).read_text(encoding="utf-8")
     tree = ast.parse(source)
@@ -53,18 +53,18 @@ def test_arch1e_extractor_routing_depends_on_neutral_records() -> None:
         if isinstance(node, ast.ImportFrom) and node.module is not None
     }
 
-    assert "repomap_kg.graph.discovery_records" in imported_modules
-    assert "repomap_kg.graph.discovery" not in imported_modules
+    assert "common_lore_index.graph.discovery_records" in imported_modules
+    assert "common_lore_index.graph.discovery" not in imported_modules
 
 
 def test_pkg6_discovery_package_patch_target() -> None:
-    import repomap_kg.graph.discovery as package_discovery
-    with patch("repomap_kg.graph.discovery.classify_path") as patched_classify_path:
+    import common_lore_index.graph.discovery as package_discovery
+    with patch("common_lore_index.graph.discovery.classify_path") as patched_classify_path:
         assert package_discovery.classify_path is patched_classify_path
 
 
 def test_pkg6_discovery_classifies_representative_paths_from_package() -> None:
-    import repomap_kg.graph.discovery as discovery
+    import common_lore_index.graph.discovery as discovery
     with tempfile.TemporaryDirectory() as tmpdir:
         root = Path(tmpdir)
         script = root / "bin" / "repomap-kg"

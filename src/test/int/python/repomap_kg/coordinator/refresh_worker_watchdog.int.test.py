@@ -9,15 +9,15 @@ import pytest
 
 from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.runtime.postgres_route import effective_postgres_route
-from repomap_kg.graph.multi_source_pipeline import scan_multi_source_generations
-from repomap_kg.ops.generations import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.runtime.postgres_route import effective_postgres_route
+from common_lore_index.graph.multi_source_pipeline import scan_multi_source_generations
+from common_lore_index.ops.generations import (
     canonicalizer_generation,
     configured_graph,
     extractor_generation,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
@@ -26,8 +26,8 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.coordinator.protocol import run_refresh_worker
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.protocol import run_refresh_worker
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability,
     create_refresh_capability,
     execute_refresh,
@@ -248,9 +248,9 @@ def test_refresh_worker_leaf_and_outer_deadlines_observed_distinct_in_single_att
         cfg = configured_graph(load_ops_config(cfg_path), "synthetic-refresh")
         scan = scan_multi_source_generations(cfg)
 
-        from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-        from repomap_kg.coordinator.refresh_adapter import build_refresh_worker_runner
-        from repomap_kg.coordinator.limits import CoordinatorLimits, HARD_MAX_LIMITS
+        from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+        from common_lore_index.coordinator.refresh_adapter import build_refresh_worker_runner
+        from common_lore_index.coordinator.limits import CoordinatorLimits, HARD_MAX_LIMITS
         from types import SimpleNamespace
 
         resolver = ConfiguredRefreshResolver(
@@ -266,10 +266,10 @@ def test_refresh_worker_leaf_and_outer_deadlines_observed_distinct_in_single_att
         outer_spy_calls: list[dict[str, Any]] = []
         leaf_spy_calls: list[dict[str, Any]] = []
 
-        import repomap_kg.coordinator.refresh_adapter as ra
-        import repomap_kg.ops.portable_refresh as pr
-        from repomap_kg.coordinator._protocol_execution import SyntheticWorkerResult
-        from repomap_kg.coordinator import _publication_phase
+        import common_lore_index.coordinator.refresh_adapter as ra
+        import common_lore_index.ops.portable_refresh as pr
+        from common_lore_index.coordinator._protocol_execution import SyntheticWorkerResult
+        from common_lore_index.coordinator import _publication_phase
 
         orig_run_portable = pr.run_portable_worker
 

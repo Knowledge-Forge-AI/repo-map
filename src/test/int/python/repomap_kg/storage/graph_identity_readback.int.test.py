@@ -17,28 +17,28 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.server.mcp_search_sql import build_mcp_search_sql
-from repomap_kg.storage import apply_migrations, default_rdbms_root, run_psql
-from repomap_kg.storage._sql_summaries_domains import (
+from common_lore_index.server.mcp_search_sql import build_mcp_search_sql
+from common_lore_index.storage import apply_migrations, default_rdbms_root, run_psql
+from common_lore_index.storage._sql_summaries_domains import (
     build_openapi_summary_query_sql,
     build_terraform_summary_query_sql,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.graph_readback_sql import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.graph_readback_sql import (
     build_canonical_node_search_sql,
     build_file_source_search_sql,
     build_repository_filter_sql,
     escape_readback_like_pattern,
 )
-from repomap_kg.storage.readback_driver import execute_json_readback
-from repomap_kg.storage.sql_canonical import (
+from common_lore_index.storage.readback_driver import execute_json_readback
+from common_lore_index.storage.sql_canonical import (
     build_canonical_neighborhood_query_sql,
     build_canonical_storage_summary_query_sql,
 )
-from repomap_kg.storage.sql_core import sql_literal
-from repomap_kg.storage.sql_summaries import build_js_framework_summary_query_sql
-from repomap_kg.storage.sql_summaries_nix import build_nix_summary_query_sql
-from repomap_kg.storage.sql_summaries_python import build_python_summary_query_sql
+from common_lore_index.storage.sql_core import sql_literal
+from common_lore_index.storage.sql_summaries import build_js_framework_summary_query_sql
+from common_lore_index.storage.sql_summaries_nix import build_nix_summary_query_sql
+from common_lore_index.storage.sql_summaries_python import build_python_summary_query_sql
 from repomap_test_support.postgres_container_config import PostgresContainerDatabase
 from repomap_test_support.postgres_harness import active_or_new_postgres_session
 

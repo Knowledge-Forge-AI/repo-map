@@ -51,7 +51,7 @@ def test_h01_h02_h10_pure_unicode_roundtrip_order_and_markdown() -> None:
 
 
 def test_h03_h04_h07_actual_routed_locator_native_relocation_and_consumer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from repomap_kg.server import mcp
+    from common_lore_index.server import mcp
 
     ref, workspace, reply = routed_locator(tmp_path / "routed", monkeypatch)
     record = selected_record()
@@ -273,7 +273,7 @@ r=fixture['selected_record']()
 assert api['load'](api['export'](r))==r
 api['render'](r)
 assert api['recheck'](r,['native'],{('repo1:public-fixture','caller_mapping','checkout'):workspace})[0]['outcome']=='observed'
-assert not any(k.startswith('repomap_kg') for k in sys.modules)
+assert not any(k.startswith('common_lore_index') for k in sys.modules)
 assert not (workspace/'NEVER_EXECUTE').exists()
 '''
     subprocess.run([sys.executable, "-I", "-S", "-B", "-c", script,

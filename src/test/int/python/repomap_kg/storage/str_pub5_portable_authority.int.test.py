@@ -6,11 +6,11 @@ import psycopg
 from psycopg.abc import QueryNoTemplate
 import pytest
 
-from repomap_kg.storage import StorageSchemaError, apply_migrations, default_rdbms_root
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage import StorageSchemaError, apply_migrations, default_rdbms_root
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication, read_run_publication,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     _psycopg_connection_params_from_psql_args, run_staged_portable_refresh,
 )
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres

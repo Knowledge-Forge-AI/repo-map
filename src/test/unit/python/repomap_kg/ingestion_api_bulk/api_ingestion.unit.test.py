@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.api import (
+from common_lore_index.ops.ingestion.api import (
     ApiPolicyError,
     FixtureApiTransport,
     acquire_api_source,

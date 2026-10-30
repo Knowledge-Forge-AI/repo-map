@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     GraphSchemaStatus,
     StorageSchemaError,
     apply_migrations,
@@ -102,7 +102,7 @@ def test_arch5a1_readiness_classifies_exact_prefix_and_checksum_drift(
         )
     )
     monkeypatch.setattr(
-        "repomap_kg.storage.main.run_psql", lambda *args, **kwargs: next(outputs)
+        "common_lore_index.storage.main.run_psql", lambda *args, **kwargs: next(outputs)
     )
 
     behind = graph_schema_readiness(root, ["-d", "graph"])
@@ -139,7 +139,7 @@ def test_arch5a1_apply_uses_one_transaction_and_is_exact_current(
         calls.append((args, kwargs))
         return next(outputs)
 
-    monkeypatch.setattr("repomap_kg.storage.main.run_psql", run)
+    monkeypatch.setattr("common_lore_index.storage.main.run_psql", run)
 
     applied = apply_migrations(root, ["-d", "graph"], psql_command="psql")
 
@@ -159,7 +159,7 @@ def test_arch5a1_apply_refuses_unmanaged_nonempty_schema(
 ) -> None:
     root = _migration_root(tmp_path)
     monkeypatch.setattr(
-        "repomap_kg.storage.main.run_psql",
+        "common_lore_index.storage.main.run_psql",
         lambda *args, **kwargs: _result("repositories\n"),
     )
 
@@ -198,7 +198,7 @@ def test_arch5a1_apply_runs_only_pending_prefix_suffix(
             scripts.append(kwargs["input_text"])
         return next(outputs)
 
-    monkeypatch.setattr("repomap_kg.storage.main.run_psql", run)
+    monkeypatch.setattr("common_lore_index.storage.main.run_psql", run)
 
     apply_migrations(root, ["-d", "graph"])
 
@@ -219,7 +219,7 @@ def test_arch5a1_readiness_rejects_malformed_ledger_output(
         )
     )
     monkeypatch.setattr(
-        "repomap_kg.storage.main.run_psql", lambda *args, **kwargs: next(outputs)
+        "common_lore_index.storage.main.run_psql", lambda *args, **kwargs: next(outputs)
     )
 
     with pytest.raises(StorageSchemaError, match="invalid graph schema ledger"):
@@ -232,7 +232,7 @@ def test_arch5a1_apply_requires_exact_current_postcondition(
     root = _migration_root(tmp_path)
     outputs = iter((_result(""), _result(""), _result("")))
     monkeypatch.setattr(
-        "repomap_kg.storage.main.run_psql", lambda *args, **kwargs: next(outputs)
+        "common_lore_index.storage.main.run_psql", lambda *args, **kwargs: next(outputs)
     )
 
     with pytest.raises(StorageSchemaError, match="not exact-current"):

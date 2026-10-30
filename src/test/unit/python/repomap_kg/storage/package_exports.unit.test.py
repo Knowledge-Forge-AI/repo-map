@@ -5,52 +5,52 @@ from pathlib import Path
 
 
 STORAGE_MAIN_FACADE_OWNERSHIP = (
-    ("StorageSchemaError", "repomap_kg.storage.errors"),
-    ("run_psql", "repomap_kg.storage.psql"),
-    ("query_canonical_node_records", "repomap_kg.storage.canonical"),
-    ("CanonicalStorageSummaryRecord", "repomap_kg.storage.rows"),
-    ("format_canonical_storage_summary_table", "repomap_kg.storage.rows"),
-    ("build_canonical_storage_summary_query_sql", "repomap_kg.storage.sql"),
-    ("query_canonical_storage_summary", "repomap_kg.storage.canonical"),
+    ("StorageSchemaError", "common_lore_index.storage.errors"),
+    ("run_psql", "common_lore_index.storage.psql"),
+    ("query_canonical_node_records", "common_lore_index.storage.canonical"),
+    ("CanonicalStorageSummaryRecord", "common_lore_index.storage.rows"),
+    ("format_canonical_storage_summary_table", "common_lore_index.storage.rows"),
+    ("build_canonical_storage_summary_query_sql", "common_lore_index.storage.sql"),
+    ("query_canonical_storage_summary", "common_lore_index.storage.canonical"),
 )
 
 STORAGE_SQL_FACADE_OWNERSHIP = (
-    ("sql_literal", "repomap_kg.storage.sql_core"),
-    ("file_upsert_sql", "repomap_kg.storage.sql_load"),
-    ("build_canonical_node_query_sql", "repomap_kg.storage.sql_canonical"),
-    ("build_source_summary_query_sql", "repomap_kg.storage.sql_sources"),
-    ("build_python_summary_query_sql", "repomap_kg.storage.sql_summaries_python"),
-    ("build_nix_summary_query_sql", "repomap_kg.storage.sql_summaries_nix"),
+    ("sql_literal", "common_lore_index.storage.sql_core"),
+    ("file_upsert_sql", "common_lore_index.storage.sql_load"),
+    ("build_canonical_node_query_sql", "common_lore_index.storage.sql_canonical"),
+    ("build_source_summary_query_sql", "common_lore_index.storage.sql_sources"),
+    ("build_python_summary_query_sql", "common_lore_index.storage.sql_summaries_python"),
+    ("build_nix_summary_query_sql", "common_lore_index.storage.sql_summaries_nix"),
 )
 
 STORAGE_SUMMARY_ROWS_FACADE_OWNERSHIP = (
-    ("CanonicalStorageSummaryRecord", "repomap_kg.storage.summary_rows_storage"),
-    ("RubySummaryRecord", "repomap_kg.storage.summary_rows_languages"),
-    ("OpenAPISummaryRecord", "repomap_kg.storage.summary_rows_domains"),
-    ("BulkSummaryRecord", "repomap_kg.storage.summary_rows_manifest"),
-    ("NixSummaryRecord", "repomap_kg.storage.summary_rows_nix"),
-    ("nix_summary_from_storage_payload", "repomap_kg.storage.summary_rows_nix"),
+    ("CanonicalStorageSummaryRecord", "common_lore_index.storage.summary_rows_storage"),
+    ("RubySummaryRecord", "common_lore_index.storage.summary_rows_languages"),
+    ("OpenAPISummaryRecord", "common_lore_index.storage.summary_rows_domains"),
+    ("BulkSummaryRecord", "common_lore_index.storage.summary_rows_manifest"),
+    ("NixSummaryRecord", "common_lore_index.storage.summary_rows_nix"),
+    ("nix_summary_from_storage_payload", "common_lore_index.storage.summary_rows_nix"),
 )
 
 STORAGE_ROWS_FACADE_OWNERSHIP = (
-    ("payload_text", "repomap_kg.storage.row_helpers"),
-    ("FileRow", "repomap_kg.storage.file_rows"),
-    ("CanonicalNodeRow", "repomap_kg.storage.canonical_rows"),
-    ("CanonicalNodeRecord", "repomap_kg.storage.canonical_readback_rows"),
-    ("SourceSummaryRecord", "repomap_kg.storage.source_rows"),
-    ("CanonicalStorageSummaryRecord", "repomap_kg.storage.summary_rows"),
-    ("canonical_storage_summary_to_jsonable", "repomap_kg.storage.jsonable_rows"),
-    ("format_canonical_storage_summary_table", "repomap_kg.storage.table_rows"),
+    ("payload_text", "common_lore_index.storage.row_helpers"),
+    ("FileRow", "common_lore_index.storage.file_rows"),
+    ("CanonicalNodeRow", "common_lore_index.storage.canonical_rows"),
+    ("CanonicalNodeRecord", "common_lore_index.storage.canonical_readback_rows"),
+    ("SourceSummaryRecord", "common_lore_index.storage.source_rows"),
+    ("CanonicalStorageSummaryRecord", "common_lore_index.storage.summary_rows"),
+    ("canonical_storage_summary_to_jsonable", "common_lore_index.storage.jsonable_rows"),
+    ("format_canonical_storage_summary_table", "common_lore_index.storage.table_rows"),
 )
 
 
 def test_pkg3_storage_package_exports_compatibility_surface() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as main_module
-    import repomap_kg.storage.errors as errors_module
-    import repomap_kg.storage.rows as rows_module
-    import repomap_kg.storage.psql as psql_module
-    import repomap_kg.storage.sql as sql_module
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as main_module
+    import common_lore_index.storage.errors as errors_module
+    import common_lore_index.storage.rows as rows_module
+    import common_lore_index.storage.psql as psql_module
+    import common_lore_index.storage.sql as sql_module
 
     assert storage.StorageSchemaError is errors_module.StorageSchemaError
     assert storage.LoadSummary is rows_module.LoadSummary
@@ -65,20 +65,20 @@ def test_pkg3_storage_package_exports_compatibility_surface() -> None:
 
 
 def test_storage_facade_ownership_package_root_mirrors_main() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as main_module
-    import repomap_kg.storage.errors as errors_pkg
-    import repomap_kg.storage.psql as psql_pkg
-    import repomap_kg.storage.canonical as canonical_pkg
-    import repomap_kg.storage.rows as rows_pkg
-    import repomap_kg.storage.sql as sql_pkg
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as main_module
+    import common_lore_index.storage.errors as errors_pkg
+    import common_lore_index.storage.psql as psql_pkg
+    import common_lore_index.storage.canonical as canonical_pkg
+    import common_lore_index.storage.rows as rows_pkg
+    import common_lore_index.storage.sql as sql_pkg
 
     owner_modules = {
-        "repomap_kg.storage.errors": errors_pkg,
-        "repomap_kg.storage.psql": psql_pkg,
-        "repomap_kg.storage.canonical": canonical_pkg,
-        "repomap_kg.storage.rows": rows_pkg,
-        "repomap_kg.storage.sql": sql_pkg,
+        "common_lore_index.storage.errors": errors_pkg,
+        "common_lore_index.storage.psql": psql_pkg,
+        "common_lore_index.storage.canonical": canonical_pkg,
+        "common_lore_index.storage.rows": rows_pkg,
+        "common_lore_index.storage.sql": sql_pkg,
     }
 
     for name, owner_module_name in STORAGE_MAIN_FACADE_OWNERSHIP:
@@ -89,31 +89,31 @@ def test_storage_facade_ownership_package_root_mirrors_main() -> None:
 
 
 def test_storage_facade_ownership_rows_sql_and_summary_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as rows_module
-    import repomap_kg.storage.sql as sql_module
-    import repomap_kg.storage.rows as storage_rows
-    import repomap_kg.storage.sql as storage_sql
-    import repomap_kg.storage.summary_rows as summary_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as rows_module
+    import common_lore_index.storage.sql as sql_module
+    import common_lore_index.storage.rows as storage_rows
+    import common_lore_index.storage.sql as storage_sql
+    import common_lore_index.storage.summary_rows as summary_rows
 
-    import repomap_kg.storage.row_helpers as row_helpers_mod
-    import repomap_kg.storage.file_rows as file_rows_mod
-    import repomap_kg.storage.canonical_rows as canonical_rows_mod
-    import repomap_kg.storage.canonical_readback_rows as canonical_readback_rows_mod
-    import repomap_kg.storage.source_rows as source_rows_mod
-    import repomap_kg.storage.jsonable_rows as jsonable_rows_mod
-    import repomap_kg.storage.table_rows as table_rows_mod
+    import common_lore_index.storage.row_helpers as row_helpers_mod
+    import common_lore_index.storage.file_rows as file_rows_mod
+    import common_lore_index.storage.canonical_rows as canonical_rows_mod
+    import common_lore_index.storage.canonical_readback_rows as canonical_readback_rows_mod
+    import common_lore_index.storage.source_rows as source_rows_mod
+    import common_lore_index.storage.jsonable_rows as jsonable_rows_mod
+    import common_lore_index.storage.table_rows as table_rows_mod
 
     rows_owners = {
-        "repomap_kg.storage.row_helpers": row_helpers_mod,
-        "repomap_kg.storage.file_rows": file_rows_mod,
-        "repomap_kg.storage.canonical_rows": canonical_rows_mod,
-        "repomap_kg.storage.canonical_readback_rows": canonical_readback_rows_mod,
-        "repomap_kg.storage.source_rows": source_rows_mod,
-        "repomap_kg.storage.summary_rows": summary_rows,
-        "repomap_kg.storage.jsonable_rows": jsonable_rows_mod,
-        "repomap_kg.storage.table_rows": table_rows_mod,
+        "common_lore_index.storage.row_helpers": row_helpers_mod,
+        "common_lore_index.storage.file_rows": file_rows_mod,
+        "common_lore_index.storage.canonical_rows": canonical_rows_mod,
+        "common_lore_index.storage.canonical_readback_rows": canonical_readback_rows_mod,
+        "common_lore_index.storage.source_rows": source_rows_mod,
+        "common_lore_index.storage.summary_rows": summary_rows,
+        "common_lore_index.storage.jsonable_rows": jsonable_rows_mod,
+        "common_lore_index.storage.table_rows": table_rows_mod,
     }
 
     for name, owner_module_name in STORAGE_ROWS_FACADE_OWNERSHIP:
@@ -123,20 +123,20 @@ def test_storage_facade_ownership_rows_sql_and_summary_facades() -> None:
         assert getattr(storage_main, name) is owner
         assert getattr(storage, name) is owner
 
-    import repomap_kg.storage.sql_core as sql_core_mod
-    import repomap_kg.storage.sql_load as sql_load_mod
-    import repomap_kg.storage.sql_canonical as sql_canonical_mod
-    import repomap_kg.storage.sql_sources as sql_sources_mod
-    import repomap_kg.storage.sql_summaries_python as sql_summaries_python_mod
-    import repomap_kg.storage.sql_summaries_nix as sql_summaries_nix_mod
+    import common_lore_index.storage.sql_core as sql_core_mod
+    import common_lore_index.storage.sql_load as sql_load_mod
+    import common_lore_index.storage.sql_canonical as sql_canonical_mod
+    import common_lore_index.storage.sql_sources as sql_sources_mod
+    import common_lore_index.storage.sql_summaries_python as sql_summaries_python_mod
+    import common_lore_index.storage.sql_summaries_nix as sql_summaries_nix_mod
 
     sql_owners = {
-        "repomap_kg.storage.sql_core": sql_core_mod,
-        "repomap_kg.storage.sql_load": sql_load_mod,
-        "repomap_kg.storage.sql_canonical": sql_canonical_mod,
-        "repomap_kg.storage.sql_sources": sql_sources_mod,
-        "repomap_kg.storage.sql_summaries_python": sql_summaries_python_mod,
-        "repomap_kg.storage.sql_summaries_nix": sql_summaries_nix_mod,
+        "common_lore_index.storage.sql_core": sql_core_mod,
+        "common_lore_index.storage.sql_load": sql_load_mod,
+        "common_lore_index.storage.sql_canonical": sql_canonical_mod,
+        "common_lore_index.storage.sql_sources": sql_sources_mod,
+        "common_lore_index.storage.sql_summaries_python": sql_summaries_python_mod,
+        "common_lore_index.storage.sql_summaries_nix": sql_summaries_nix_mod,
     }
 
     for name, owner_module_name in STORAGE_SQL_FACADE_OWNERSHIP:
@@ -146,18 +146,18 @@ def test_storage_facade_ownership_rows_sql_and_summary_facades() -> None:
         assert getattr(storage_main, name) is owner
         assert getattr(storage, name) is owner
 
-    import repomap_kg.storage.summary_rows_storage as summary_rows_storage_mod
-    import repomap_kg.storage.summary_rows_languages as summary_rows_languages_mod
-    import repomap_kg.storage.summary_rows_domains as summary_rows_domains_mod
-    import repomap_kg.storage.summary_rows_manifest as summary_rows_manifest_mod
-    import repomap_kg.storage.summary_rows_nix as summary_rows_nix_mod
+    import common_lore_index.storage.summary_rows_storage as summary_rows_storage_mod
+    import common_lore_index.storage.summary_rows_languages as summary_rows_languages_mod
+    import common_lore_index.storage.summary_rows_domains as summary_rows_domains_mod
+    import common_lore_index.storage.summary_rows_manifest as summary_rows_manifest_mod
+    import common_lore_index.storage.summary_rows_nix as summary_rows_nix_mod
 
     summary_rows_owners = {
-        "repomap_kg.storage.summary_rows_storage": summary_rows_storage_mod,
-        "repomap_kg.storage.summary_rows_languages": summary_rows_languages_mod,
-        "repomap_kg.storage.summary_rows_domains": summary_rows_domains_mod,
-        "repomap_kg.storage.summary_rows_manifest": summary_rows_manifest_mod,
-        "repomap_kg.storage.summary_rows_nix": summary_rows_nix_mod,
+        "common_lore_index.storage.summary_rows_storage": summary_rows_storage_mod,
+        "common_lore_index.storage.summary_rows_languages": summary_rows_languages_mod,
+        "common_lore_index.storage.summary_rows_domains": summary_rows_domains_mod,
+        "common_lore_index.storage.summary_rows_manifest": summary_rows_manifest_mod,
+        "common_lore_index.storage.summary_rows_nix": summary_rows_nix_mod,
     }
 
     for name, owner_module_name in STORAGE_SUMMARY_ROWS_FACADE_OWNERSHIP:
@@ -170,8 +170,8 @@ def test_storage_facade_ownership_rows_sql_and_summary_facades() -> None:
 
 
 def test_storage_package_static_export_visibility() -> None:
-    import repomap_kg.storage as storage_pkg
-    import repomap_kg.storage.main as main_module
+    import common_lore_index.storage as storage_pkg
+    import common_lore_index.storage.main as main_module
     assert storage_pkg.__file__ is not None
     source_path = Path(storage_pkg.__file__)
     source_text = source_path.read_text(encoding="utf-8")
@@ -185,7 +185,7 @@ def test_storage_package_static_export_visibility() -> None:
 
     for node in tree.body:
         if isinstance(node, ast.ImportFrom):
-            if node.module == "repomap_kg.storage.main":
+            if node.module == "common_lore_index.storage.main":
                 for alias in node.names:
                     assert alias.asname is not None, f"Expected explicit alias for {alias.name}"
                     assert alias.name == alias.asname, f"Expected same-name alias for {alias.name}"
@@ -215,8 +215,8 @@ def test_storage_package_static_export_visibility() -> None:
 
 
 def test_storage_package_complete_positive_namespace_identity() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as main_module
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as main_module
     from importlib import import_module
 
     main_non_dunder = [
@@ -248,7 +248,7 @@ def test_storage_package_complete_positive_namespace_identity() -> None:
 
 
 def test_storage_package_negative_export_and_namespace_regression() -> None:
-    import repomap_kg.storage as storage
+    import common_lore_index.storage as storage
 
     absent_sql_load_names = (
         "run_completion_statements",

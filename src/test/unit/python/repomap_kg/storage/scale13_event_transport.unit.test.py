@@ -7,7 +7,7 @@ from threading import Event, Thread
 
 import pytest
 
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
     staging_event_channel_from_inherited_fd,

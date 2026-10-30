@@ -22,13 +22,13 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import migrations
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.storage.sqlite_local import migrations
+from common_lore_index.storage.sqlite_local.connection import (
     initialize_graph_database,
     open_writer,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.migrations import (
+from common_lore_index.storage.sqlite_local.migrations import (
     MIGRATION_V1,
     MIGRATION_V2,
     SchemaState,
@@ -38,8 +38,8 @@ from repomap_kg.storage.sqlite_local.migrations import (
     require_open_state,
     schema_objects_digest,
 )
-from repomap_kg.storage.sqlite_local.publisher import publish_generation, read_accepted_generation
-from repomap_kg.storage.sqlite_local.schema import (
+from common_lore_index.storage.sqlite_local.publisher import publish_generation, read_accepted_generation
+from common_lore_index.storage.sqlite_local.schema import (
     APPLICATION_ID,
     LEDGER_SQL,
     SCHEMA_V1_CHECKSUM,

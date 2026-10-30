@@ -7,35 +7,35 @@ from typing import TypedDict, cast
 
 import pytest
 
-from repomap_kg.storage import staged_publication, staging_cleanup
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage import staged_publication, staging_cleanup
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.staged_publication import _execute_measured_merge
-from repomap_kg.storage.staged_validation import validate_stage
-from repomap_kg.storage.staging_cleanup import CleanupRequest
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_merge_operations import MergeOperation, MergeScope
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.staged_publication import _execute_measured_merge
+from common_lore_index.storage.staged_validation import validate_stage
+from common_lore_index.storage.staging_cleanup import CleanupRequest
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_merge_operations import MergeOperation, MergeScope
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementEvent,
     StagingMeasurements,
 )
-from repomap_kg.storage.staging_family_contracts import StageFamily
-from repomap_kg.storage.staging_operation_contracts import (
+from common_lore_index.storage.staging_family_contracts import StageFamily
+from common_lore_index.storage.staging_operation_contracts import (
     STAGING_OPERATION_DESCRIPTORS,
     StagingOperationGroup,
     operation_code_for_merge,
     operation_descriptor,
 )
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEvent,
     StagingOperationEventCategory,
 )
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 FAMILIES = (
@@ -86,7 +86,7 @@ def test_scale12_operation_registry_is_closed_stable_and_source_owned() -> None:
             if d.operation_group is group
         } == set(FAMILIES)
     assert all(
-        d.source_module.startswith("repomap_kg.storage.")
+        d.source_module.startswith("common_lore_index.storage.")
         and d.source_symbol and d.expected_parent is None
         for d in STAGING_OPERATION_DESCRIPTORS.values()
     )

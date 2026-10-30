@@ -7,8 +7,8 @@ from repomap_test_support.storage_integration import (
     python_ecosystem_fixture,
     python_web_fixture,
 )
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage.sql_core import sql_literal
 
 
 
@@ -68,13 +68,13 @@ def _python_observations() -> tuple[RawObservation, ...]:
         "python.django_setting_reference",
     )
     observations = [
-        _observation(kind, index, path="synthetic/repomap_kg/profile.py")
+        _observation(kind, index, path="synthetic/common_lore_index/profile.py")
         for index, kind in enumerate(kinds)
     ]
     observations[0] = _observation(
         "python.package_file",
         0,
-        path="synthetic/repomap_kg/requirements.txt",
+        path="synthetic/common_lore_index/requirements.txt",
         file_family="requirements.txt",
         source_format="python-requirements",
         project_name="repo-map-synthetic",

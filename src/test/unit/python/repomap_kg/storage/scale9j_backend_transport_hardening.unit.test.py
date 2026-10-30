@@ -10,9 +10,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.backend_connection_telemetry import BackendTelemetry
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.backend_telemetry_events import (
+from common_lore_index.storage.backend_connection_telemetry import BackendTelemetry
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.backend_telemetry_events import (
     MAX_TELEMETRY_FRAME_BYTES,
     ConnectionTelemetryError,
     ConnectionTelemetryEvent,
@@ -22,8 +22,8 @@ from repomap_kg.storage.backend_telemetry_events import (
     read_telemetry_event,
     telemetry_from_inherited_fd,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.staged_connection_telemetry import open_owned_connection
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.staged_connection_telemetry import open_owned_connection
 
 
 def _event(
@@ -125,7 +125,7 @@ def test_parser_and_reader_reject_truncated_or_oversized_input() -> None:
 
 def test_framing_rejects_payloads_larger_than_its_fixed_bound(monkeypatch) -> None:
     monkeypatch.setattr(
-        "repomap_kg.storage.backend_telemetry_events.MAX_TELEMETRY_FRAME_BYTES",
+        "common_lore_index.storage.backend_telemetry_events.MAX_TELEMETRY_FRAME_BYTES",
         1,
     )
 
@@ -180,7 +180,7 @@ def test_pipe_write_failures_close_the_source_connection() -> None:
     try:
         telemetry = telemetry_from_inherited_fd(write_fd, monotonic_ns=lambda: 123)
         with patch(
-            "repomap_kg.storage.backend_telemetry_events.os.write",
+            "common_lore_index.storage.backend_telemetry_events.os.write",
             side_effect=OSError(),
         ):
             with pytest.raises(ConnectionTelemetryError, match="telemetry"):
@@ -198,7 +198,7 @@ def test_partial_pipe_write_is_a_bounded_transport_failure() -> None:
     try:
         telemetry = telemetry_from_inherited_fd(write_fd, monotonic_ns=lambda: 123)
         with patch(
-            "repomap_kg.storage.backend_telemetry_events.os.write",
+            "common_lore_index.storage.backend_telemetry_events.os.write",
             return_value=1,
         ):
             with pytest.raises(ConnectionTelemetryError, match="telemetry"):

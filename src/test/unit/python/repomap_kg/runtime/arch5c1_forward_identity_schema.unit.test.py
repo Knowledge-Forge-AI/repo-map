@@ -4,13 +4,13 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.schema_decommission import (
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.schema_decommission import (
     LEGACY_SCHEMA_REMOVAL_MIGRATION_PATH,
     REPOSITORY_IDENTITY_MIGRATION_PATH,
 )
-from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
-from repomap_kg.storage import (
+from common_lore_index.runtime.schema_upgrade import upgrade_graph_schema
+from common_lore_index.storage import (
     StorageSchemaError,
     discover_migrations,
     graph_schema_forward_sql,
@@ -77,41 +77,41 @@ def test_backup_first_upgrade_applies_exact_pending_ledger_prefix(
 
     with (
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container",
+            "common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container",
             record("inspect-runtime", object()),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.database_exists",
+            "common_lore_index.runtime.schema_upgrade.database_exists",
             return_value=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.schema_ledger_exists",
+            "common_lore_index.runtime.schema_upgrade.schema_ledger_exists",
             return_value=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+            "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
             side_effect=[applied, expected],
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.dump_database",
+            "common_lore_index.runtime.schema_upgrade.dump_database",
             record("backup", backup),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_backup",
+            "common_lore_index.runtime.schema_upgrade.inspect_backup",
             record("verify-backup", inspection),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.apply_forward_schema",
+            "common_lore_index.runtime.schema_upgrade.apply_forward_schema",
             record("apply-forward"),
             create=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade."
+            "common_lore_index.runtime.schema_upgrade."
             "reconcile_repository_identity_before_removal",
             record("reconcile-identity"),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.reconcile_graph_database_roles",
+            "common_lore_index.runtime.schema_upgrade.reconcile_graph_database_roles",
             record("reconcile-roles"),
         ),
     ):
@@ -177,41 +177,41 @@ def test_backup_first_upgrade_applies_interim_identity_prefix_when_behind_identi
 
     with (
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container",
+            "common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container",
             record("inspect-runtime", object()),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.database_exists",
+            "common_lore_index.runtime.schema_upgrade.database_exists",
             return_value=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.schema_ledger_exists",
+            "common_lore_index.runtime.schema_upgrade.schema_ledger_exists",
             return_value=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+            "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
             side_effect=[applied, expected[:identity_ordinal], expected],
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.dump_database",
+            "common_lore_index.runtime.schema_upgrade.dump_database",
             record("backup", backup),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_backup",
+            "common_lore_index.runtime.schema_upgrade.inspect_backup",
             record("verify-backup", inspection),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.apply_forward_schema",
+            "common_lore_index.runtime.schema_upgrade.apply_forward_schema",
             record("apply-forward"),
             create=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade."
+            "common_lore_index.runtime.schema_upgrade."
             "reconcile_repository_identity_before_removal",
             record("reconcile-identity"),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.reconcile_graph_database_roles",
+            "common_lore_index.runtime.schema_upgrade.reconcile_graph_database_roles",
             record("reconcile-roles"),
         ),
     ):
@@ -237,14 +237,14 @@ def test_diverged_managed_ledger_is_refused_before_backup(tmp_path: Path) -> Non
     home = tmp_path / "repo-map-home"
     setup_local_runtime(home)
     with (
-        patch("repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container"),
-        patch("repomap_kg.runtime.schema_upgrade.database_exists", return_value=True),
-        patch("repomap_kg.runtime.schema_upgrade.schema_ledger_exists", return_value=True),
+        patch("common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container"),
+        patch("common_lore_index.runtime.schema_upgrade.database_exists", return_value=True),
+        patch("common_lore_index.runtime.schema_upgrade.schema_ledger_exists", return_value=True),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+            "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
             return_value=((1, "wrong", "wrong.sql", "0" * 64),),
         ),
-        patch("repomap_kg.runtime.schema_upgrade.dump_database") as backup,
+        patch("common_lore_index.runtime.schema_upgrade.dump_database") as backup,
     ):
         with pytest.raises(Exception, match="diverged"):
             upgrade_graph_schema(

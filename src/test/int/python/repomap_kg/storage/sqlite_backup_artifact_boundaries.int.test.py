@@ -9,12 +9,12 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local.backup import check_backup_output, write_backup
-from repomap_kg.storage.sqlite_local.backup_manifest import BackupManifest
-from repomap_kg.storage.sqlite_local.connection import publisher_lock, read_transaction
-from repomap_kg.storage.sqlite_local.migrations import MIGRATION_V1
-from repomap_kg.storage.sqlite_local.restore import install_backup, verify_backup
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError, accepted_identity
+from common_lore_index.storage.sqlite_local.backup import check_backup_output, write_backup
+from common_lore_index.storage.sqlite_local.backup_manifest import BackupManifest
+from common_lore_index.storage.sqlite_local.connection import publisher_lock, read_transaction
+from common_lore_index.storage.sqlite_local.migrations import MIGRATION_V1
+from common_lore_index.storage.sqlite_local.restore import install_backup, verify_backup
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError, accepted_identity
 from repomap_test_support.sqlite_local_fixtures import (
     local_binding,
     published_sqlite_database,

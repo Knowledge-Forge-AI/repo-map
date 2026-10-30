@@ -293,8 +293,9 @@ def _home_selection_notice(args: argparse.Namespace) -> None:
         print(f"warning: legacy-default-home: {notice}", file=sys.stderr)
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
+def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
+    # An unspecified brand keeps the original no-argument parser seam.
+    parser = build_parser() if prog is None else build_parser(prog=prog)
     args = parser.parse_args(argv)
     try:
         _home_selection_notice(args)

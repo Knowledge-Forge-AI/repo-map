@@ -1,6 +1,6 @@
 import subprocess
 
-from repomap_kg.storage.psql import psql_failure_message
+from common_lore_index.storage.psql import psql_failure_message
 
 
 def _failure(*, stderr: str = "", stdout: str = "") -> subprocess.CalledProcessError:

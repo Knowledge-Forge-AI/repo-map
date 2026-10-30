@@ -5,10 +5,10 @@
 The operator authorized advancing the reviewed remaining-roadmap proposal on
 2026-10-29. The selected identity is Common Lore Index (CLOE), distribution
 `common-lore-index`, preferred executable `cloe`, home selector `CLOE_HOME`,
-future default `~/.cloe`, and base/local configuration suffixes `.cloe.toml`
+default `~/.cloe`, and base/local configuration suffixes `.cloe.toml`
 and `.local.cloe.toml`. These are target surfaces, not a claim that the full
-rename has shipped. Python import naming and compatibility ownership require
-their coordinated migration decision. Preserve the current license and
+rename has shipped. ADR0118 selects `common_lore_index` and installed ownership;
+ADR0123 defines their coordinated source cutover and finite compatibility. Preserve the current license and
 Samuel Leighton Lair <sam.lair@knowledge-forge.ai> as public commit identity.
 
 ## Starting point and working custody
@@ -88,8 +88,8 @@ milestone qualified by CI97 attempt 1 on staging
 compatibility corrections. All nine jobs and retained same-attempt smoke/M/A
 and system contracts pass; unit coverage is 88.0/87.6 and integration90.1/82.2,
 meeting both two-point margins. The canonical distribution/import/resource/entrypoint
-cutover remains atomic and subsequent; broad namespace implementation has not
-started. Current scoped proof and hosted successor qualification remain distinct.
+cutover remained atomic and subsequent at that checkpoint. Current scoped proof
+and hosted successor qualification remain distinct.
 
 [ADR0121](../adr/2026/10/0121-installed-ownership-diagnostics-and-service-upgrade-compatibility.md)
 adds the next two-part upgrade prerequisite: explicit categorical installed-owner
@@ -118,3 +118,21 @@ OpenSearch/Elasticsearch implementation, public corpus services, Cloud alpha,
 GUI/federation, a broad language rewrite and unqualified Windows claims remain
 outside required v0.1.0 delivery. Versions below v0.1.0 remain GitHub source
 previews; package-manager publication starts no earlier than v0.1.0.
+
+## Coordinated W1 namespace milestone
+
+CI98 attempt1 qualified staging `6d818ad6d43d38d47c64b8c474c2b64b853f631a`,
+including all nine jobs and retained same-attempt contracts. Unit coverage was
+88.1/87.7 and measured integration coverage90.1/82.2, meeting both two-point margins.
+That result qualifies the prerequisite, not the successor package cutover.
+
+[ADR0123](../adr/2026/10/0123-coordinated-cloe-package-and-namespace-cutover.md)
+coordinates canonical source, distribution, resources, commands, finite documented
+compatibility and installed ownership proof. Its strict source/document projection
+preserves every historical authority and numerical debt ceiling. Local preparation
+and exact source-edge checkpoints are combined with current consumer work before
+one larger public campaign. Hosted qualification of this successor remains pending.
+Live home/service migration, package-manager publication, repository rename and
+release promotion remain separate. W2 follows the accepted dependency order after
+this W1 milestone is qualified; preserved private experiments are not automatically
+accepted or overwritten.

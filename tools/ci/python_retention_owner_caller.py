@@ -1,6 +1,7 @@
 """Maintained complete owner AST; parsed but never executed."""
 SOURCE = r'''
-"""Unit tests for child coverage collection, deterministic combination, and path mapping."""
+"""CLOE cutover re-attests the unchanged closed measurement fixture against current dependencies.
+Unit tests for child coverage collection, deterministic combination, and path mapping."""
 from __future__ import annotations
 from functools import partial
 import json

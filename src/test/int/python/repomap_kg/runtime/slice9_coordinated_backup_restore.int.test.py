@@ -14,15 +14,15 @@ from repomap_test_support.local_db_backup import (
     default_baseline_server_provenance,
     maybe_provenance_runner_result,
 )
-from repomap_kg.runtime.backup_manifests import BACKUP_FORMAT_VERSION
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.backup_restore_sets import (
+from common_lore_index.runtime.backup_manifests import BACKUP_FORMAT_VERSION
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.backup_restore_sets import (
     COORDINATED_SCOPE,
     STABLE_RECOVERY_POINT,
     format_coordinated_restore_table,
     restore_coordinated_backup,
 )
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
 
 
 class Slice9CoordinatedBackupRestoreIntegrationTests(unittest.TestCase):

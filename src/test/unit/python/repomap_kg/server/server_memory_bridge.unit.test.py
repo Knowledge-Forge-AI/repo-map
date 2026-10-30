@@ -53,7 +53,7 @@ mode = "read_only"
         return config_path
 
     def test_summary_reports_counts_and_does_not_expose_raw_payloads(self):
-        from repomap_kg.server.memory_bridge import server_memory_summary_payload
+        from common_lore_index.server.memory_bridge import server_memory_summary_payload
 
         config_path = self.write_ops_config(FIXTURE_ROOT / "basic" / "memory.jsonl")
 
@@ -75,7 +75,7 @@ mode = "read_only"
         self.assertNotIn("raw_payload", serialized)
 
     def test_disabled_config_returns_safe_diagnostic_without_reading_path(self):
-        from repomap_kg.server.memory_bridge import server_memory_summary_payload
+        from common_lore_index.server.memory_bridge import server_memory_summary_payload
 
         missing_path = Path("/no/such/server-memory.jsonl")
         config_path = self.write_ops_config(missing_path, enabled=False)
@@ -91,7 +91,7 @@ mode = "read_only"
         )
 
     def test_directory_layout_parses_jsonl_files_conservatively(self):
-        from repomap_kg.server.memory_bridge import server_memory_summary_payload
+        from common_lore_index.server.memory_bridge import server_memory_summary_payload
 
         config_path = self.write_ops_config(FIXTURE_ROOT / "paths")
 
@@ -105,7 +105,7 @@ mode = "read_only"
         self.assertGreaterEqual(payload["summary"]["local_path_pointer_count"], 2)
 
     def test_malformed_jsonl_lines_are_bounded_diagnostics(self):
-        from repomap_kg.server.memory_bridge import server_memory_summary_payload
+        from common_lore_index.server.memory_bridge import server_memory_summary_payload
 
         config_path = self.write_ops_config(
             FIXTURE_ROOT / "malformed" / "memory.jsonl"
@@ -119,7 +119,7 @@ mode = "read_only"
         self.assertNotIn('{"type":"entity","name":', json.dumps(payload))
 
     def test_redacts_secret_like_fields_and_credentialed_urls(self):
-        from repomap_kg.server.memory_bridge import (
+        from common_lore_index.server.memory_bridge import (
             server_memory_search_payload,
             server_memory_summary_payload,
         )
@@ -143,7 +143,7 @@ mode = "read_only"
         self.assertNotIn("agent:", serialized)
 
     def test_search_is_bounded_paginated_and_omits_raw_payloads(self):
-        from repomap_kg.server.memory_bridge import server_memory_search_payload
+        from common_lore_index.server.memory_bridge import server_memory_search_payload
 
         config_path = self.write_ops_config(FIXTURE_ROOT / "basic" / "memory.jsonl")
 
@@ -172,7 +172,7 @@ mode = "read_only"
         self.assertNotIn("observations", serialized)
 
     def test_path_pointer_extraction_is_safe_and_bounded(self):
-        from repomap_kg.server.memory_bridge import server_memory_search_payload
+        from common_lore_index.server.memory_bridge import server_memory_search_payload
 
         config_path = self.write_ops_config(FIXTURE_ROOT / "paths")
 
@@ -184,13 +184,13 @@ mode = "read_only"
 
         self.assertEqual(payload["result_count"], 1)
         self.assertIn(
-            "./src/main/python/repomap_kg/mcp_server.py",
+            "./src/main/python/common_lore_index/mcp_server.py",
             payload["results"][0]["local_paths"],
         )
         self.assertTrue(payload["linking"]["implemented"] is False)
 
     def test_missing_empty_and_non_object_paths_produce_safe_diagnostics(self):
-        from repomap_kg.server.memory_bridge import server_memory_summary_payload
+        from common_lore_index.server.memory_bridge import server_memory_summary_payload
 
         missing_config = self.write_ops_config("/no/such/server-memory.jsonl")
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -217,7 +217,7 @@ mode = "read_only"
         self.assertEqual(mixed["summary"]["local_path_pointer_count"], 1)
 
     def test_validation_and_table_helpers_are_bounded(self):
-        from repomap_kg.server.memory_bridge import (
+        from common_lore_index.server.memory_bridge import (
             format_server_memory_search_table,
             format_server_memory_summary_table,
             server_memory_search_payload,
@@ -248,7 +248,7 @@ mode = "read_only"
         self.assertIn("server_memory_search:", format_server_memory_search_table(search))
 
     def test_file_size_limit_and_missing_config_are_safe(self):
-        from repomap_kg.server.memory_bridge import (
+        from common_lore_index.server.memory_bridge import (
             parse_server_memory_file,
             server_memory_summary_payload,
         )
@@ -256,7 +256,7 @@ mode = "read_only"
         with tempfile.TemporaryDirectory() as tmpdir:
             jsonl_path = Path(tmpdir) / "memory.jsonl"
             jsonl_path.write_text('{"name":"Large"}\n', encoding="utf-8")
-            with patch("repomap_kg.server.memory_bridge.MAX_JSONL_FILE_BYTES", 1):
+            with patch("common_lore_index.server.memory_bridge.MAX_JSONL_FILE_BYTES", 1):
                 entries, diagnostics, malformed = parse_server_memory_file(jsonl_path)
 
         self.assertEqual(entries, [])

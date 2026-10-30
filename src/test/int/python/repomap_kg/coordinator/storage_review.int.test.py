@@ -6,13 +6,13 @@ from typing import cast
 
 import psycopg
 
-from repomap_kg.coordinator import JobRequest
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator import JobRequest
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver, build_configured_refresh_coordinator,
 )
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.storage import (
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.storage import (
     ControlSchemaError,
     ControlStore,
 )

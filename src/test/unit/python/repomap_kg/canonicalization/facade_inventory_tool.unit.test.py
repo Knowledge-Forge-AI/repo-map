@@ -33,8 +33,8 @@ def test_canon_facade2_inventory_reports_current_static_ledger() -> None:
     assert "_nix_multi_source" not in inventory.all_names
     assert "_nix_multi_source" not in inventory.public_names
 
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -42,8 +42,8 @@ def test_canon_facade2_inventory_reports_current_static_ledger() -> None:
     assert not hasattr(canonicalization, "nix_multi_source")
     assert all(hasattr(canonicalization, name) for name in inventory.ledger_names)
 
-    import repomap_kg.canonicalization.nix_family as nix_family
-    import repomap_kg.canonicalization._nix_multi_source as private_helper
+    import common_lore_index.canonicalization.nix_family as nix_family
+    import common_lore_index.canonicalization._nix_multi_source as private_helper
     assert (
         nix_family.multi_source_opaque_target_key
         is private_helper.multi_source_opaque_target_key

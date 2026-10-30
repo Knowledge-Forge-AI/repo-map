@@ -12,24 +12,24 @@ from unittest.mock import patch
 import psycopg
 import pytest
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.errors import StorageCommitUnknownError, StorageSchemaError
-from repomap_kg.storage.publication import PortablePublicationBinding
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.errors import StorageCommitUnknownError, StorageSchemaError
+from common_lore_index.storage.publication import PortablePublicationBinding
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     new_direct_authority,
     run_staged_full_refresh,
     run_staged_portable_refresh,
     stage_id_for_authority,
 )
-from repomap_kg.storage.staged_rows import PreparedStageRows, build_staged_rows
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staged_rows import PreparedStageRows, build_staged_rows
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
 
 from src.test.unit.python.repomap_kg.storage.scale8_staged_helpers_fixtures import _portable_binding
 
-_CONNECT = "repomap_kg.storage.staged_ingestion.psycopg.connect"
+_CONNECT = "common_lore_index.storage.staged_ingestion.psycopg.connect"
 _ROOT = "/fixture/general1-root"
 _TABLES = [descriptor.stage_table for descriptor in STAGING_FAMILY_DESCRIPTORS.values()]
 class _Generations(TypedDict):

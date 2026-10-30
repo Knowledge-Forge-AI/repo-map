@@ -26,7 +26,7 @@ from src.test.unit.python.tools.ci.d12_hosted_fixtures import (
     make_sealed_evidence,
     make_system_hold_refusal_report,
 )
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 
 
 def test_private_hash_literals_absent_and_expected_candidate_record_domains_distinct() -> None:

@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.coordinator import _publication_phase as phase
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._restart_fencing import (
+from common_lore_index.coordinator import _publication_phase as phase
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._restart_fencing import (
     StaleDurableAuthorityError, build_store_fencing_proof, execute_durable_closure,
 )
-from repomap_kg.coordinator.startup_recovery import PublicationRouteChangedError
+from common_lore_index.coordinator.startup_recovery import PublicationRouteChangedError
 from repomap_test_support.fencing_control_fakes import FencingControl
 
 
@@ -145,7 +145,7 @@ def test_route_change_is_preserved_for_recovery_classification() -> None:
 def test_pending_restart_reconciliation_retries_after_successful_heartbeat(renewed) -> None:
     from types import SimpleNamespace
     from unittest.mock import Mock
-    from repomap_kg.coordinator.core import SyntheticCoordinator
+    from common_lore_index.coordinator.core import SyntheticCoordinator
 
     store = Mock()
     store.heartbeat_singleton.return_value = renewed
@@ -195,7 +195,7 @@ def test_contention_query_canceled_refuses_closure_safely(tmp_path) -> None:
 
 
 def test_quarantine_legacy_attempt_fence_before_release() -> None:
-    from repomap_kg.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
 
     legacy = replace(claim(), graph_lease_fencing_epoch=0)
     control = FencingControl(legacy, restart=True)
@@ -227,7 +227,7 @@ def test_quarantine_legacy_attempt_fence_before_release() -> None:
 
 
 def test_quarantine_legacy_attempt_unavailable_fence_preserves() -> None:
-    from repomap_kg.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
 
     legacy = replace(claim(), graph_lease_fencing_epoch=0)
     control = FencingControl(legacy, restart=True)
@@ -250,7 +250,7 @@ def test_quarantine_legacy_attempt_unavailable_fence_preserves() -> None:
     ["claim_positive", "attempt_positive", "lease_positive", "stale_replacement_epoch", "lease_active"],
 )
 def test_quarantine_legacy_attempt_zeroexact_validation(invalid: str) -> None:
-    from repomap_kg.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
 
     legacy = replace(claim(), graph_lease_fencing_epoch=0)
     control = FencingControl(legacy, restart=True)

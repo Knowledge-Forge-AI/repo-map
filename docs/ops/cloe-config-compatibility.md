@@ -159,7 +159,7 @@ and no `CLOE_HOME`/`REPOMAP_HOME`/default fallback. Without `--yes` a command is
 a dry run: it writes nothing, creates no lock or directory, and chmods nothing.
 `--dry-run` and `--yes` cannot be combined.
 
-The Python API is `repomap_kg.ops.config_migration`:
+The Python API is `common_lore_index.ops.config_migration`:
 `apply_cloe_config_migration`, `rollback_cloe_config_migration` and
 `finalize_cloe_config_migration`. Each takes `(home, *, confirmed=False,
 dry_run=False)`. Without either flag it refuses with `confirmation-required`.

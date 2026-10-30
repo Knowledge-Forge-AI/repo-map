@@ -10,12 +10,12 @@ from repomap_test_support.local_db_backup import (
     maybe_provenance_runner_result,
 )
 
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     LocalDbBackupError,
     format_drop_result_table,
     drop_database,
 )
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
 
 
 class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
@@ -183,7 +183,7 @@ class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
                 raise AssertionError(command)
 
-            from repomap_kg.runtime.backup_manifests import (
+            from common_lore_index.runtime.backup_manifests import (
                 write_manifest_and_restore_docs as original_manifest_writer,
             )
 
@@ -196,7 +196,7 @@ class LocalDbBackupDropLifecycleUnitTests(LocalDbBackupUnitTestCase):
                 manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
             with patch(
-                "repomap_kg.runtime._backup_lifecycle.write_manifest_and_restore_docs",
+                "common_lore_index.runtime._backup_lifecycle.write_manifest_and_restore_docs",
                 side_effect=corrupt_manifest,
             ):
                 with self.assertRaises(LocalDbBackupError) as corrupt:

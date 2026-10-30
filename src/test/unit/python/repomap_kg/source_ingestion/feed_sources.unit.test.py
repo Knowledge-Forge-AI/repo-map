@@ -14,7 +14,7 @@ from repomap_test_support.source_ingestion import (
     SourceIngestionUnitTestCase,
 )
 
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourceAcquisitionError,
     SourcePolicyError,
     fetch_feed_source,

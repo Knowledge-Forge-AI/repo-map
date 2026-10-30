@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import unittest
 
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     _run_staged_full_refresh_admitted,
     _run_system_test_post_publication_pause,
 )

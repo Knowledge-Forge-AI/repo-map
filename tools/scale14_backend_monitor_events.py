@@ -7,8 +7,8 @@ from typing import Callable, Mapping, Protocol
 from typing_extensions import TypeVar
 
 from actual_refresh_failure_causality import FailureCausalityAuthority
-from repomap_kg.storage.backend_telemetry import TelemetryEventKind
-from repomap_kg.storage.backend_telemetry_contracts import ConnectionTelemetryEvent
+from common_lore_index.storage.backend_telemetry import TelemetryEventKind
+from common_lore_index.storage.backend_telemetry_contracts import ConnectionTelemetryEvent
 from scale28_backend_observer_session import (
     BackendMonitorError,
     BackendObserverProtocol,

@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.ops.config import (
+from common_lore_index.ops.config import (
     OpsConfigError,
     OpsGraphStorageStatus,
     build_graph_storage_status_sql,
@@ -311,7 +311,7 @@ refresh_policy = "watch"
     def test_check_db_status_uses_read_only_schema_probe(self):
         config = load_ops_config(self.write_config(VALID_CONFIG))
 
-        with patch("repomap_kg.ops.config.execute_ops_json_readback") as readback:
+        with patch("common_lore_index.ops.config.execute_ops_json_readback") as readback:
             readback.return_value = {
                 "connected": True,
                 "schema_available": True,
@@ -339,7 +339,7 @@ refresh_policy = "watch"
     def test_check_graph_storage_status_uses_read_only_queries(self):
         config = load_ops_config(self.write_config(VALID_CONFIG))
 
-        with patch("repomap_kg.ops.config.execute_ops_json_readback") as readback:
+        with patch("common_lore_index.ops.config.execute_ops_json_readback") as readback:
             readback.side_effect = (
                 {
                     "connected": True,

@@ -8,15 +8,15 @@ from pathlib import Path
 from repomap_test_support.source_ingestion_integration import (
     publish_acquisition_summary as publish_acquisition_summary,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     query_canonical_edge_explanation,
     query_canonical_edge_records,
     query_canonical_node_records,
 )
-from repomap_kg.storage.canonical import query_canonical_storage_summary
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.canonical import query_canonical_storage_summary
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
 )
@@ -86,12 +86,12 @@ def _psycopg5_summary_parity_observations() -> list[RawObservation]:
             path="src/app.py",
             start_line=3,
             end_line=3,
-            name="python -m repomap_kg",
+            name="python -m common_lore_index",
             target="tool:python",
             confidence="heuristic",
             extractor="psycopg5-fixture-shell",
             extractor_version="0.1.0",
-            metadata={"argv": ["python", "-m", "repomap_kg"]},
+            metadata={"argv": ["python", "-m", "common_lore_index"]},
         ),
         RawObservation(
             kind="python.import",

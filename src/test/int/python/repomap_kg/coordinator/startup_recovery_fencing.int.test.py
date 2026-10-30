@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import cast
 import psycopg
 
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
 
 
 from repomap_test_support.startup_recovery_scenarios import (
@@ -92,7 +92,7 @@ def test_connected_startup_recovery_closes_superseded_fenced_dead_attempt() -> N
             with connect() as connection:
                 assert connection.execute("SELECT finished_at IS NOT NULL FROM job_attempts WHERE job_id = %s", (sub.job_id,)).fetchone() == (True,)
             # The timestamp stamped by startup still has not authorized closure.
-            from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
+            from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
             resolver = ConfiguredRefreshResolver(config, Path(postgres.psql_command))
             store.set_durable_fence_callback(resolver.install_graph_publication_fence)
             report = coord.recover_startup()
@@ -102,12 +102,12 @@ def test_connected_startup_recovery_closes_superseded_fenced_dead_attempt() -> N
                 assert connection.execute("SELECT publication_state FROM job_attempts WHERE job_id = %s", (sub.job_id,)).fetchone() == ("not_started",)
             # Resume the real validated handoff retained at interruption, so
             # the assertion exercises the final durable publication fence.
-            from repomap_kg.storage.staged_ingestion import IngestionAuthority
-            from repomap_kg.storage.authority import OperationId, JobId, AttemptNumber
-            from repomap_kg.storage.publication import publication_receipt_from_mapping
-            from repomap_kg.storage.publication_fencing import PublicationHandoff
-            from repomap_kg.storage.staging_merge import MergeContext
-            from repomap_kg.storage.staged_publication import execute_final_transaction, existing_stage_state
+            from common_lore_index.storage.staged_ingestion import IngestionAuthority
+            from common_lore_index.storage.authority import OperationId, JobId, AttemptNumber
+            from common_lore_index.storage.publication import publication_receipt_from_mapping
+            from common_lore_index.storage.publication_fencing import PublicationHandoff
+            from common_lore_index.storage.staging_merge import MergeContext
+            from common_lore_index.storage.staged_publication import execute_final_transaction, existing_stage_state
             import pytest
 
             authority = IngestionAuthority(
@@ -238,7 +238,7 @@ def test_connected_startup_recovery_contention_preserves_singleton_liveness() ->
             connection.execute("UPDATE coordinator_instances SET expires_at = now() - interval '1 second'")
             connection.execute("UPDATE graph_leases SET expires_at = now() - interval '1 second' WHERE job_id = %s", (sub.job_id,))
 
-        from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
+        from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
         resolver = ConfiguredRefreshResolver(config, Path(postgres.psql_command))
         store.set_durable_fence_callback(resolver.install_graph_publication_fence)
 

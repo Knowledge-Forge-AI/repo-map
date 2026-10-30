@@ -2,10 +2,10 @@ import json
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.extractors.documents.office import (
+from common_lore_index.extractors.documents.office import (
     extract_document_file_observations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 def by_kind(observations: tuple[RawObservation, ...]) -> dict[str, list[RawObservation]]:

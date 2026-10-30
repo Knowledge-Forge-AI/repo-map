@@ -6,8 +6,8 @@ import shutil
 
 import pytest
 
-from repomap_kg.ops.ingestion.api import ApiPolicyError, acquire_api_source
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.ops.ingestion.api import ApiPolicyError, acquire_api_source
+from common_lore_index.storage.staged_rows import build_staged_rows
 from repomap_test_support.source_ingestion_integration import api_fixture_root
 from repomap_test_support.run25_acquisition_fixtures import snapshot_directory_state
 

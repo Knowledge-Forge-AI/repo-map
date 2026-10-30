@@ -13,12 +13,12 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.ops import config_migration
-from repomap_kg.ops.config_migration import (
+from common_lore_index.ops import config_migration
+from common_lore_index.ops.config_migration import (
     apply_cloe_config_migration as apply, finalize_cloe_config_migration as finalize,
     rollback_cloe_config_migration as rollback,
 )
-from repomap_kg.ops.config_migration_fs import OPERATION_DIRECTORY, Home
+from common_lore_index.ops.config_migration_fs import OPERATION_DIRECTORY, Home
 
 SERVER = 'schema_version = 1\n[postgres]\nhost = "127.0.0.1"\npassword = "recovery-secret-sentinel"\n'
 OVERLAY = 'schema_version = 1\n[service]\nlog_level = "debug"\n'

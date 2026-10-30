@@ -8,8 +8,8 @@ from textwrap import dedent
 
 import pytest
 
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator.core import SyntheticCoordinator
 from repomap_test_support.coordinator_core_fakes import FakeStore, terminal
 from repomap_test_support.run25_portable_workflows import build_clean_explicit_pythonpath
 from runner_coverage_execution import prepare_child_coverage_environment
@@ -143,7 +143,7 @@ def test_retirement_error_settles_terminal_disposal_without_deadlock() -> None:
     )
     script = dedent("""
         import json
-        from repomap_kg.coordinator.core import SyntheticCoordinator
+        from common_lore_index.coordinator.core import SyntheticCoordinator
         from repomap_test_support.coordinator_core_fakes import FakeStore
 
         store = FakeStore()

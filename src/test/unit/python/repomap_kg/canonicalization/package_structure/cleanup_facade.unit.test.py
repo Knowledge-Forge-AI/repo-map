@@ -4,10 +4,10 @@ from pathlib import Path
 
 
 def test_canon_clean0_selected_families_drop_main_scaffold() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.feed_family as feed_family
-    import repomap_kg.canonicalization.nix_family as nix_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.feed_family as feed_family
+    import common_lore_index.canonicalization.nix_family as nix_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -33,19 +33,19 @@ def test_canon_clean0_selected_families_drop_main_scaffold() -> None:
         is nix_family._canonicalize_nix_output_section_observation
     )
 
-    root = Path("src/main/python/repomap_kg/canonicalization")
+    root = Path("src/main/python/common_lore_index/canonicalization")
     for family_path in (root / "feed_family.py", root / "nix_family.py"):
         source = family_path.read_text()
-        assert 'sys.modules["repomap_kg.canonicalization.main"]' not in source
+        assert 'sys.modules["common_lore_index.canonicalization.main"]' not in source
         assert "globals().update" not in source
 
 
 def test_canon_clean1_selected_families_drop_main_scaffold() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.file_family as file_family
-    import repomap_kg.canonicalization.config_family as config_family
-    import repomap_kg.canonicalization.file_helpers as file_helpers
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.file_family as file_family
+    import common_lore_index.canonicalization.config_family as config_family
+    import common_lore_index.canonicalization.file_helpers as file_helpers
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -67,18 +67,18 @@ def test_canon_clean1_selected_families_drop_main_scaffold() -> None:
     assert main.FILE_METADATA_KEYS is file_helpers.FILE_METADATA_KEYS
     assert getattr(canonicalization, "FILE_METADATA_KEYS") is getattr(file_helpers, "FILE_METADATA_KEYS")
 
-    root = Path("src/main/python/repomap_kg/canonicalization")
+    root = Path("src/main/python/common_lore_index/canonicalization")
     for family_path in (root / "file_family.py", root / "config_family.py"):
         source = family_path.read_text()
-        assert 'sys.modules["repomap_kg.canonicalization.main"]' not in source
+        assert 'sys.modules["common_lore_index.canonicalization.main"]' not in source
         assert "globals().update" not in source
 
 
 def test_canon_clean2_selected_families_drop_main_scaffold() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.email_family as email_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.email_family as email_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -100,17 +100,17 @@ def test_canon_clean2_selected_families_drop_main_scaffold() -> None:
         is email_family._canonicalize_email_reference_observation
     )
 
-    root = Path("src/main/python/repomap_kg/canonicalization")
+    root = Path("src/main/python/common_lore_index/canonicalization")
     for family_path in (root / "document_family.py", root / "email_family.py"):
         source = family_path.read_text()
-        assert 'sys.modules["repomap_kg.canonicalization.main"]' not in source
+        assert 'sys.modules["common_lore_index.canonicalization.main"]' not in source
         assert "globals().update" not in source
 
 
 def test_canon_clean3_selected_family_drops_main_scaffold() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.language_family as language_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.language_family as language_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -129,16 +129,16 @@ def test_canon_clean3_selected_family_drops_main_scaffold() -> None:
     )
 
     source = Path(
-        "src/main/python/repomap_kg/canonicalization/language_family.py"
+        "src/main/python/common_lore_index/canonicalization/language_family.py"
     ).read_text()
-    assert 'sys.modules["repomap_kg.canonicalization.main"]' not in source
+    assert 'sys.modules["common_lore_index.canonicalization.main"]' not in source
     assert "globals().update" not in source
 
 
 def test_canon_clean4_shell_facade_drops_final_main_scaffold() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.shell_family as shell_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.shell_family as shell_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -170,15 +170,15 @@ def test_canon_clean4_shell_facade_drops_final_main_scaffold() -> None:
     )
 
     source = Path(
-        "src/main/python/repomap_kg/canonicalization/shell_family.py"
+        "src/main/python/common_lore_index/canonicalization/shell_family.py"
     ).read_text()
-    assert 'sys.modules["repomap_kg.canonicalization.main"]' not in source
+    assert 'sys.modules["common_lore_index.canonicalization.main"]' not in source
     assert "globals().update" not in source
 
 
 def test_canon_facade0_package_root_all_preserves_current_surface() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -213,23 +213,23 @@ def test_canon_facade0_package_root_all_preserves_current_surface() -> None:
     assert "_nix_multi_source" not in public_names
     assert not hasattr(canonicalization, "nix_multi_source")
 
-    import repomap_kg.canonicalization.nix_family as nix_family
-    import repomap_kg.canonicalization._nix_multi_source as private_helper
+    import common_lore_index.canonicalization.nix_family as nix_family
+    import common_lore_index.canonicalization._nix_multi_source as private_helper
     assert (
         nix_family.multi_source_opaque_target_key
         is private_helper.multi_source_opaque_target_key
     )
 
-    root = Path("src/main/python/repomap_kg/canonicalization")
+    root = Path("src/main/python/common_lore_index/canonicalization")
     for family_path in root.glob("*_family.py"):
         source = family_path.read_text()
-        assert 'sys.modules["repomap_kg.canonicalization.main"]' not in source
+        assert 'sys.modules["common_lore_index.canonicalization.main"]' not in source
         assert "globals().update" not in source
 
 
 def test_canon_facade1_package_root_static_surface_preserves_main_exports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
     compat_names = canonicalization._COMPATIBILITY_EXPORT_NAMES
     generated_main_surface = tuple(
         name
@@ -278,21 +278,21 @@ def test_canon_facade1_package_root_static_surface_preserves_main_exports() -> N
     }
     assert set(canonicalization.__all__) == public_names
 
-    source = Path("src/main/python/repomap_kg/canonicalization/__init__.py").read_text()
+    source = Path("src/main/python/common_lore_index/canonicalization/__init__.py").read_text()
     assert "_COMPATIBILITY_EXPORT_NAMES = (" in source
     assert "dir(_impl)" not in source
 
 
 def test_canon1_family_handlers_remain_on_compatibility_surface() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.file_family as file_family
-    import repomap_kg.canonicalization.config_family as config_family
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.feed_family as feed_family
-    import repomap_kg.canonicalization.shell_family as shell_family
-    import repomap_kg.canonicalization.language_family as language_family
-    import repomap_kg.canonicalization.nix_family as nix_family
-    import repomap_kg.canonicalization.email_family as email_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.file_family as file_family
+    import common_lore_index.canonicalization.config_family as config_family
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.feed_family as feed_family
+    import common_lore_index.canonicalization.shell_family as shell_family
+    import common_lore_index.canonicalization.language_family as language_family
+    import common_lore_index.canonicalization.nix_family as nix_family
+    import common_lore_index.canonicalization.email_family as email_family
     assert (
         getattr(canonicalization, "_canonicalize_file_observation")
         is file_family._canonicalize_file_observation

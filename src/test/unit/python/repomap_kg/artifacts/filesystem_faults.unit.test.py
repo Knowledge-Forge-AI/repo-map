@@ -7,8 +7,8 @@ from unittest import mock
 
 import pytest
 
-from repomap_kg.artifacts import _store_filesystem as filesystem
-from repomap_kg.artifacts.store import ArtifactIntegrityError, FileSystemArtifactStore
+from common_lore_index.artifacts import _store_filesystem as filesystem
+from common_lore_index.artifacts.store import ArtifactIntegrityError, FileSystemArtifactStore
 
 
 @pytest.mark.parametrize("boundary", ["open", "fsync"])

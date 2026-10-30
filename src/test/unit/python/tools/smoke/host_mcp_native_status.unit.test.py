@@ -15,12 +15,12 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.ops import portable_refresh
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.refresh import refresh_graph
+from common_lore_index.ops import portable_refresh
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.refresh import refresh_graph
 from smoke import host_mcp_native_fixture as fixture
 from smoke.host_mcp_native_checks import CATALOG_SHA256, NativePlan, catalog_digest, status_checks
-from repomap_kg.server.mcp import tool_definitions
+from common_lore_index.server.mcp import tool_definitions
 
 MULTI, FEED = "host-multi", "host-feed"
 

@@ -32,20 +32,20 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
-from repomap_kg.ops.local_refresh import LOCAL_STAGE_ID, initialize_local_graph
-from repomap_kg.ops.portable_refresh import (
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
+from common_lore_index.ops.local_refresh import LOCAL_STAGE_ID, initialize_local_graph
+from common_lore_index.ops.portable_refresh import (
     capture_portable_candidate,
     portable_publication_binding,
     validate_portable_capture,
 )
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.publication import RunPublicationReceipt
-from repomap_kg.storage.sqlite_local import queries
-from repomap_kg.storage.sqlite_local.connection import read_transaction
-from repomap_kg.storage.sqlite_local.publisher import FAMILY_ORDER, LocalPublication, publish_generation
-from repomap_kg.storage.staged_ingestion import run_staged_portable_refresh, stage_id_for_authority
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.sqlite_local import queries
+from common_lore_index.storage.sqlite_local.connection import read_transaction
+from common_lore_index.storage.sqlite_local.publisher import FAMILY_ORDER, LocalPublication, publish_generation
+from common_lore_index.storage.staged_ingestion import run_staged_portable_refresh, stage_id_for_authority
 from repomap_test_support.cli_in_process import FIXTURE_ROOT
 from repomap_test_support.host_mcp_publication import RESTORE_LOGIN_SQL, provision_roles, role_secrets
 from repomap_test_support.host_mcp_stdio import HostMcpHarness
@@ -150,8 +150,8 @@ def _publish_generation(
                 ).validate(),
                 privacy=sqlite_input.privacy.value,
             )
-            with patch("repomap_kg.storage.staged_ingestion.run_staged_portable_refresh", _pg_fail), \
-                    patch("repomap_kg.ops.portable_refresh.run_staged_portable_refresh", _pg_fail), \
+            with patch("common_lore_index.storage.staged_ingestion.run_staged_portable_refresh", _pg_fail), \
+                    patch("common_lore_index.ops.portable_refresh.run_staged_portable_refresh", _pg_fail), \
                     patch("psycopg.connect", _pg_fail):
                 result = publish_generation(
                     local.graph_store_root / f"{graph.id}.sqlite3", publication,

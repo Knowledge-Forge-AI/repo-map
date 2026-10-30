@@ -6,27 +6,27 @@ import io
 from pathlib import Path
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ArtifactIntegrityError,
     FileSystemArtifactStore,
     PublicationBundle,
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.artifacts._bundle_stream import (
+from common_lore_index.artifacts._bundle_stream import (
     BoundedExternalRowSorter,
     DiskFamilyLinkValidator,
     StreamingBundleEncoder,
     StreamingBundleParser,
 )
-from repomap_kg.artifacts._canonical import canonical_json
-from repomap_kg.artifacts.bundle import (
+from common_lore_index.artifacts._canonical import canonical_json
+from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_LINE_BYTES,
 )
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.storage.portable_ingestion import prepare_portable_bundle_rows
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 VECTOR = (("bind1:" + "1" * 64, 1, "snap1:" + "2" * 64),)
 

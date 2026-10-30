@@ -1,15 +1,15 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import (
+from common_lore_index.extractors.config.generic import (
     extract_config_file_observations,
 )
 
 
 class ConfigExtractorPythonJavascriptProfileUnitTests(unittest.TestCase):
     def test_rootpkg34_python_support_helpers_are_reexported(self):
-        import repomap_kg.extractors.config.python as python_config
-        import repomap_kg.extractors.config.python_support as python_support
+        import common_lore_index.extractors.config.python as python_config
+        import common_lore_index.extractors.config.python_support as python_support
         helper_names = (
             "_PythonRequirement",
             "_is_python_requirements_file_name",

@@ -14,21 +14,21 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.refresh import (
     OpsRefreshError,
     drift_check_to_jsonable,
     query_drift_check,
     query_graph_summary,
     save_graph_baselines,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     apply_migrations,
     default_rdbms_root,
     run_psql,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 MISSING_DATABASE = "repomap_test_missing"
 NO_RUN_DATABASE = "repomap_test_no_run"
@@ -81,7 +81,7 @@ def test_psycopg104_graph_summary_connector_cli_baseline_drift_and_privacy_parit
             )
             config = load_ops_config_home(_write_config(home, postgres=postgres))
 
-            import repomap_kg.ops.readback as readback
+            import common_lore_index.ops.readback as readback
 
             def fail_topology(*args, **kwargs):
                 pytest.fail("successful host graph summary inspected topology")
@@ -230,7 +230,7 @@ def test_psycopg104_graph_summary_connector_cli_baseline_drift_and_privacy_parit
 
             before_failure = sorted(stored_root.iterdir())
             with patch(
-                "repomap_kg.ops.refresh.execute_ops_json_readback",
+                "common_lore_index.ops.refresh.execute_ops_json_readback",
                 side_effect=StorageSchemaError("public summary unavailable"),
             ):
                 with pytest.raises(OpsRefreshError):

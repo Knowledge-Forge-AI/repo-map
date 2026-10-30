@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     NixSummaryRecord,
     build_nix_summary_query_sql,
     format_nix_summary_table,

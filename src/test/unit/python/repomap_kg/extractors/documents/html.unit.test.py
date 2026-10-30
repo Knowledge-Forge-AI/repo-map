@@ -1,11 +1,11 @@
 import json
 import unittest
 
-from repomap_kg.extractors.documents.html import (
+from common_lore_index.extractors.documents.html import (
     MAX_HTML_STRUCTURAL_BYTES,
     extract_html_file_observations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 HTML_FIXTURE = """\

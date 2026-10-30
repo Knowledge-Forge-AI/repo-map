@@ -10,19 +10,19 @@ from typing import Any, cast
 
 import pytest
 
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.service_package._artifact_contracts import (
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.service_package._artifact_contracts import (
     _MAX_DEFINITION_BYTES,
     ServiceArtifactError,
 )
-from repomap_kg.service_package._artifacts_io import (
+from common_lore_index.service_package._artifacts_io import (
     _absolute_path,
     _validate_new_content,
     _validate_parent,
     inspect_owned_artifact,
 )
-from repomap_kg.service_package._artifacts_locking import _mutation_lock
-from repomap_kg.service_package.artifacts import (
+from common_lore_index.service_package._artifacts_locking import _mutation_lock
+from common_lore_index.service_package.artifacts import (
     _remove_linked_target,
     _remove_owned_artifact_unlocked,
     _require_unchanged_target,
@@ -32,7 +32,7 @@ from repomap_kg.service_package.artifacts import (
     replace_owned_artifact,
     require_owner_directory,
 )
-from repomap_kg.service_package.contract import (
+from common_lore_index.service_package.contract import (
     _executable_sha256,
     _is_missing_executable_reference,
     _normalize_home,
@@ -42,15 +42,15 @@ from repomap_kg.service_package.contract import (
     build_service_package_spec,
     is_approved_psql_executable,
 )
-from repomap_kg.service_package.launchd import (
+from common_lore_index.service_package.launchd import (
     LaunchdUserAdapter,
     _recognized_foreground_argv as _launchd_recognized_argv,
 )
-from repomap_kg.service_package.platforms import (
+from common_lore_index.service_package.platforms import (
     NativeServiceUnavailable,
     select_service_adapter,
 )
-from repomap_kg.service_package.systemd import (
+from common_lore_index.service_package.systemd import (
     SystemdUserAdapter,
     _decode_systemd_value,
     _metadata_value,
@@ -159,7 +159,7 @@ def test_launchd_adapter_and_contract_executable_verification(
     with pytest.raises(ValueError, match="service_repo_map_home_invalid"):
         _normalize_home("/tmp/bad\x00home")
 
-    monkeypatch.setattr("repomap_kg.service_package.contract.is_approved_python_executable", lambda _p: False)
+    monkeypatch.setattr("common_lore_index.service_package.contract.is_approved_python_executable", lambda _p: False)
     with pytest.raises(RuntimeError, match="service_foreground_executable_invalid"):
         build_service_package_spec(tmp_path)
 
@@ -191,12 +191,12 @@ def test_launchd_adapter_and_contract_executable_verification(
 
     # psql resolution branches
     assert is_approved_psql_executable(tmp_path / "not_psql") is False
-    monkeypatch.setattr("repomap_kg.service_package.contract.shutil.which", lambda _name: None)
+    monkeypatch.setattr("common_lore_index.service_package.contract.shutil.which", lambda _name: None)
     assert is_approved_psql_executable(tmp_path / "psql") is False
     with pytest.raises(RuntimeError, match="service_psql_unavailable"):
         _resolve_psql_dependency()
 
-    monkeypatch.setattr("repomap_kg.service_package.contract.shutil.which", lambda _name: "relative/psql")
+    monkeypatch.setattr("common_lore_index.service_package.contract.shutil.which", lambda _name: "relative/psql")
     with pytest.raises(RuntimeError, match="service_psql_unavailable"):
         _resolve_psql_dependency()
 

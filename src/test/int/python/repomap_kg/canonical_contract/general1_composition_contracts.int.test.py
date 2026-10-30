@@ -5,22 +5,22 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.graph.keys import (
     config_document_key, config_path_key, css_custom_property_key, css_document_key,
     doc_page_key, doc_section_key, file_key, html_anchor_key, html_document_key,
     xml_document_key,
 )
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     SourceKind, graph_source_binding_id, source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError, SealedSourceBinding, capture_multi_source_candidate,
     capture_sealed_multi_source_candidate,
 )
-from repomap_kg.graph import multi_source_pipeline as pipeline
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.graph import multi_source_pipeline as pipeline
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def _make_binding(

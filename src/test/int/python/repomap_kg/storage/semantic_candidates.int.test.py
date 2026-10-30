@@ -13,15 +13,15 @@ import tempfile
 
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root, query_canonical_node_records
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.authority import GraphRunId
-from repomap_kg.storage.psql import run_psql
-from repomap_kg.storage.publication_readback import read_latest_publication
-from repomap_kg.storage.semantic_candidates import CandidatePublication, CandidateQuery, EmbeddingEntry
-from repomap_kg.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
-from repomap_kg.storage.semantic_candidate_readback import query_semantic_candidates
-from repomap_kg.storage.staged_ingestion import run_staged_portable_refresh
+from common_lore_index.storage import apply_migrations, default_rdbms_root, query_canonical_node_records
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.authority import GraphRunId
+from common_lore_index.storage.psql import run_psql
+from common_lore_index.storage.publication_readback import read_latest_publication
+from common_lore_index.storage.semantic_candidates import CandidatePublication, CandidateQuery, EmbeddingEntry
+from common_lore_index.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
+from common_lore_index.storage.semantic_candidate_readback import query_semantic_candidates
+from common_lore_index.storage.staged_ingestion import run_staged_portable_refresh
 from repomap_test_support.portable_publication_fixtures import _authority, _binding
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, candidate_query

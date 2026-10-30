@@ -26,23 +26,23 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import backup, migrations, upgrade
-from repomap_kg.storage.sqlite_local.backup_manifest import BackupPublication, read_publication
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.storage.sqlite_local import backup, migrations, upgrade
+from common_lore_index.storage.sqlite_local.backup_manifest import BackupPublication, read_publication
+from common_lore_index.storage.sqlite_local.connection import (
     initialize_graph_database,
     publisher_lock,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.migrations import MIGRATION_V1, MIGRATION_V2, SchemaState, classify
-from repomap_kg.storage.sqlite_local.publisher import (
+from common_lore_index.storage.sqlite_local.migrations import MIGRATION_V1, MIGRATION_V2, SchemaState, classify
+from common_lore_index.storage.sqlite_local.publisher import (
     COMMIT_UNKNOWN,
     NOT_COMMITTED,
     publication_not_committed,
     publish_generation,
 )
-from repomap_kg.storage.sqlite_local.restore import verify_backup
-from repomap_kg.storage.sqlite_local.schema import LocalGraphBinding, LocalStoreError
-from repomap_kg.storage.sqlite_local.upgrade import UpgradeResult, upgrade_graph_database
+from common_lore_index.storage.sqlite_local.restore import verify_backup
+from common_lore_index.storage.sqlite_local.schema import LocalGraphBinding, LocalStoreError
+from common_lore_index.storage.sqlite_local.upgrade import UpgradeResult, upgrade_graph_database
 from repomap_test_support.sqlite_local_fixtures import generation_bundle, local_binding, publication_for
 
 BINDING = local_binding()

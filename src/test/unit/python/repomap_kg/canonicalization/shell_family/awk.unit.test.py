@@ -7,20 +7,20 @@ from unittest.mock import patch
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
+    from common_lore_index.canonicalization import canonicalize_observations
 
-from repomap_kg.extractors.shell.awk import extract_awk_file_observations
-from repomap_kg.graph.readback.awk import summarize_awk_evidence
-from repomap_kg.graph.keys import (
+from common_lore_index.extractors.shell.awk import extract_awk_file_observations
+from common_lore_index.graph.readback.awk import summarize_awk_evidence
+from common_lore_index.graph.keys import (
     awk_function_key,
     awk_program_key,
     external_key,
     file_key,
 )
-from repomap_kg.storage import prepare_canonical_load
+from common_lore_index.storage import prepare_canonical_load
 
 
 FIXTURE_ROOT = Path(__file__).parents[5] / "fixtures" / "shell" / "awk"

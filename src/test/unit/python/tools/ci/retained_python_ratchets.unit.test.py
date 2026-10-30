@@ -50,13 +50,13 @@ def write_manifest(path: Path, entries: list[dict[str, str]]) -> None:
 
 
 def selection_fixture(tmp_path: Path):
-    source = tmp_path / "src/main/python/repomap_kg"
+    source = tmp_path / "src/main/python/common_lore_index"
     paths = {
-        "repomap_kg.contract": source / "contract.py",
-        "repomap_kg.future": source / "future.py",
-        "repomap_kg.future.override": source / "future/override.py",
-        "repomap_kg.transitional": source / "transitional.py",
-        "repomap_kg.planned": source / "planned.py",
+        "common_lore_index.contract": source / "contract.py",
+        "common_lore_index.future": source / "future.py",
+        "common_lore_index.future.override": source / "future/override.py",
+        "common_lore_index.transitional": source / "transitional.py",
+        "common_lore_index.planned": source / "planned.py",
     }
     for path in paths.values():
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -65,11 +65,11 @@ def selection_fixture(tmp_path: Path):
     write_manifest(
         manifest_path,
         [
-            ownership_entry("repomap_kg.contract", "cross_language_contract", "T0"),
-            ownership_entry("repomap_kg.future", "python_retained", "T1-future", match="subtree"),
-            ownership_entry("repomap_kg.future.override", "planned_go", "T3"),
-            ownership_entry("repomap_kg.planned", "planned_go_or_rust", "T3"),
-            ownership_entry("repomap_kg.transitional", "transitional_python", "T2"),
+            ownership_entry("common_lore_index.contract", "cross_language_contract", "T0"),
+            ownership_entry("common_lore_index.future", "python_retained", "T1-future", match="subtree"),
+            ownership_entry("common_lore_index.future.override", "planned_go", "T3"),
+            ownership_entry("common_lore_index.planned", "planned_go_or_rust", "T3"),
+            ownership_entry("common_lore_index.transitional", "transitional_python", "T2"),
         ],
     )
     return paths, load_manifest(manifest_path, modules=paths)
@@ -83,33 +83,33 @@ def test_retained_selection_uses_ownership_resolution_and_exact_overrides(
     selected = select_retained_modules(source_paths, manifest, tmp_path)
 
     assert [(item["module"], item["tier"]) for item in selected] == [
-        ("repomap_kg.contract", "T0"),
-        ("repomap_kg.future", "T1-future"),
+        ("common_lore_index.contract", "T0"),
+        ("common_lore_index.future", "T1-future"),
     ]
     assert all(item["path"].startswith("src/main/python/") for item in selected)
 
 
 def test_unclassified_maintained_module_is_rejected(tmp_path: Path) -> None:
-    module = tmp_path / "src/main/python/repomap_kg/unclassified.py"
+    module = tmp_path / "src/main/python/common_lore_index/unclassified.py"
     module.parent.mkdir(parents=True)
     module.write_text("value = 1\n", encoding="utf-8")
     manifest_path = tmp_path / "ownership.json"
     write_manifest(
         manifest_path,
-        [ownership_entry("repomap_kg.other", "python_retained", "T1-future")],
+        [ownership_entry("common_lore_index.other", "python_retained", "T1-future")],
     )
 
     with pytest.raises(ValueError, match="unclassified"):
         load_manifest(
             manifest_path,
-            modules={"repomap_kg.unclassified": module},
+            modules={"common_lore_index.unclassified": module},
         )
 
 
 def test_ruff_identity_ignores_line_and_column_but_preserves_semantics(
     tmp_path: Path,
 ) -> None:
-    path = "src/main/python/repomap_kg/future.py"
+    path = "src/main/python/common_lore_index/future.py"
     common = {"filename": path, "code": "F401", "message": "  `name` imported   but unused "}
     first = normalize_ruff_inventory(
         [{**common, "location": {"row": 2, "column": 1}}],
@@ -136,17 +136,17 @@ def test_ruff_identity_ignores_line_and_column_but_preserves_semantics(
 def test_mypy_identity_reuses_line_independent_normalized_fingerprint(
     tmp_path: Path,
 ) -> None:
-    path = "src/main/python/repomap_kg/future.py"
+    path = "src/main/python/common_lore_index/future.py"
     module_path = tmp_path / path
     module_path.parent.mkdir(parents=True)
     module_path.write_text("value = 1\n", encoding="utf-8")
     manifest_path = tmp_path / "ownership.json"
     write_manifest(
         manifest_path,
-        [ownership_entry("repomap_kg.future", "python_retained", "T1-future")],
+        [ownership_entry("common_lore_index.future", "python_retained", "T1-future")],
     )
     manifest = load_manifest(manifest_path)
-    selected = frozenset({"repomap_kg.future"})
+    selected = frozenset({"common_lore_index.future"})
 
     first = mypy_inventory(
         f"{path}:3:2: error: Bad value 7  [arg-type]\n",
@@ -198,31 +198,31 @@ def test_count_increase_and_decrease_are_distinct_policy_deltas() -> None:
 
 def test_t1_future_import_edges_into_t2_and_t3_are_ratcheted(tmp_path: Path) -> None:
     source_paths, manifest = selection_fixture(tmp_path)
-    future = source_paths["repomap_kg.future"]
+    future = source_paths["common_lore_index.future"]
     future.write_text(
-        "from repomap_kg import transitional\nimport repomap_kg.planned\n",
+        "from common_lore_index import transitional\nimport common_lore_index.planned\n",
         encoding="utf-8",
     )
 
     edges = migration_edges(manifest, source_paths, tmp_path)
 
     assert [(edge["target_module"], edge["target_tier"]) for edge in edges] == [
-        ("repomap_kg.planned", "T3"),
-        ("repomap_kg.transitional", "T2"),
+        ("common_lore_index.planned", "T3"),
+        ("common_lore_index.transitional", "T2"),
     ]
-    assert all(edge["source_module"] == "repomap_kg.future" for edge in edges)
+    assert all(edge["source_module"] == "common_lore_index.future" for edge in edges)
 
 
 def test_file_length_ratchet_rejects_growth_and_requires_downward_refresh(
     tmp_path: Path,
 ) -> None:
-    relative = "src/main/python/repomap_kg/future.py"
+    relative = "src/main/python/common_lore_index/future.py"
     path = tmp_path / relative
     path.parent.mkdir(parents=True)
     path.write_bytes(b"x\n" * 450)
     selection = (
         {
-            "module": "repomap_kg.future",
+            "module": "common_lore_index.future",
             "path": relative,
             "ownership_class": "python_retained",
             "tier": "T1-future",
@@ -249,13 +249,13 @@ def test_file_length_ratchet_rejects_growth_and_requires_downward_refresh(
 def test_selected_file_above_one_thousand_is_always_hard_failure(
     tmp_path: Path,
 ) -> None:
-    relative = "src/main/python/repomap_kg/future.py"
+    relative = "src/main/python/common_lore_index/future.py"
     path = tmp_path / relative
     path.parent.mkdir(parents=True)
     path.write_bytes(b"x\n" * 1001)
     selection = (
         {
-            "module": "repomap_kg.future",
+            "module": "common_lore_index.future",
             "path": relative,
             "ownership_class": "python_retained",
             "tier": "T1-future",

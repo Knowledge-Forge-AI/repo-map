@@ -241,7 +241,7 @@ def validate_actual_refresh_arguments(arguments: Sequence[str]) -> tuple[str, ..
     argv = tuple(arguments)
     ordinary_child = len(argv) >= 5 and argv[1:5] == (
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "refresh-graph",
     )

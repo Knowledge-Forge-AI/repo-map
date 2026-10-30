@@ -6,12 +6,12 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.refresh import (
+from common_lore_index.cli import main
+from common_lore_index.ops.refresh import (
     OpsRefreshGraphResult,
     OpsRefreshGraphStatus,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 
 
 class CliLocalOpsRefreshUnitTests(unittest.TestCase):
@@ -64,9 +64,9 @@ mode = "read_only"
                     maintenance_events.append("exit")
 
             with (
-                patch("repomap_kg.cli.refresh_graph") as refresh_one,
+                patch("common_lore_index.cli.refresh_graph") as refresh_one,
                 patch(
-                    "repomap_kg.cli.maintenance_activity_for_home",
+                    "common_lore_index.cli.maintenance_activity_for_home",
                     side_effect=maintenance_activity,
                 ),
             ):
@@ -146,7 +146,7 @@ mode = "read_only"
             )
             stdout = io.StringIO()
 
-            with patch("repomap_kg.cli.refresh_enabled_graphs") as refresh_enabled:
+            with patch("common_lore_index.cli.refresh_enabled_graphs") as refresh_enabled:
                 refresh_enabled.return_value = (
                     OpsRefreshGraphResult(
                         graph_id="repo-map",
@@ -215,7 +215,7 @@ mode = "read_only"
             stdout = io.StringIO()
 
             with (
-                patch("repomap_kg.cli.query_refresh_status") as refresh_status,
+                patch("common_lore_index.cli.query_refresh_status") as refresh_status,
                 patch("pathlib.Path.exists", side_effect=AssertionError("root read")),
             ):
                 refresh_status.return_value = {

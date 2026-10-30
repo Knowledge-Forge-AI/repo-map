@@ -6,13 +6,13 @@ from unittest.mock import patch
 from repomap_test_support.ops_mcp_validation_cases import assert_mcp_validation_cases
 
 
-from repomap_kg.runtime import backup as local_db_backup
-from repomap_kg.runtime import backup_commands
-from repomap_kg.runtime import backup_manifests
-from repomap_kg.runtime import local as local_runtime
-from repomap_kg.server import ops as mcp_ops
-from repomap_kg.ops import config as ops_config
-from repomap_kg.ops import refresh as ops_refresh
+from common_lore_index.runtime import backup as local_db_backup
+from common_lore_index.runtime import backup_commands
+from common_lore_index.runtime import backup_manifests
+from common_lore_index.runtime import local as local_runtime
+from common_lore_index.server import ops as mcp_ops
+from common_lore_index.ops import config as ops_config
+from common_lore_index.ops import refresh as ops_refresh
 
 
 class OpsRuntimeBackupMcpHelperBranchContract(unittest.TestCase):
@@ -179,8 +179,8 @@ class OpsRuntimeBackupMcpHelperBranchContract(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             source_root = Path(tmpdir) / "source"
-            (source_root / "src" / "main" / "python" / "repomap_kg").mkdir(parents=True)
-            (source_root / "src" / "main" / "python" / "repomap_kg" / "__main__.py").write_text(
+            (source_root / "src" / "main" / "python" / "common_lore_index").mkdir(parents=True)
+            (source_root / "src" / "main" / "python" / "common_lore_index" / "__main__.py").write_text(
                 "",
                 encoding="utf-8",
             )

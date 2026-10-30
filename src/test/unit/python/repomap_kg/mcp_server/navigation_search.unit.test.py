@@ -11,11 +11,11 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.storage.navigation_search import NavigationSearchQuery
-from repomap_kg.storage.sqlite_local.navigation_queries import navigation_candidates
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.server import mcp
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.storage.navigation_search import NavigationSearchQuery
+from common_lore_index.storage.sqlite_local.navigation_queries import navigation_candidates
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.navigation_search_fixtures import (
     ALPHA_DOC, BINDING, GRAPH, navigation_bundle, navigation_home, publish_navigation_generation,
 )
@@ -169,11 +169,11 @@ def test_scan_caps_fail_explicitly_and_use_constant_query_count(store: Path) -> 
     assert scan["scan"]["complete"] and len(statements) <= 5
     assert not any("payload_json" in statement for statement in statements)
     for cap in ("NODE_SCAN_LIMIT", "EVIDENCE_SCAN_LIMIT"):
-        with patch("repomap_kg.storage.sqlite_local.navigation_queries." + cap, 1):
+        with patch("common_lore_index.storage.sqlite_local.navigation_queries." + cap, 1):
             result = call(grouping="source_document")
         assert result["status"] == "incomplete" and result["has_more"]
         assert result["results"] == [] and not result["scan"]["complete"]
-    with patch("repomap_kg.storage.sqlite_local.navigation_queries.NODE_SCAN_LIMIT", 1):
+    with patch("common_lore_index.storage.sqlite_local.navigation_queries.NODE_SCAN_LIMIT", 1):
         narrow = call(source_binding_id=BINDING, source_path_prefix="docs/beta.md")
     assert narrow["status"] == "ok" and narrow["scan"]["nodes"] == 1 and not narrow["has_more"]
 
@@ -183,7 +183,7 @@ def test_scan_caps_fail_explicitly_and_use_constant_query_count(store: Path) -> 
                                     {"source_path_prefix": "src"}, {"source_binding_id": ""},
                                     {"source_binding_id": "b", "source_path_prefix": "../src"}])
 def test_invalid_options_precede_io(store: Path, options: dict[str, Any]) -> None:
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("IO")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("IO")):
         with pytest.raises(RepoMapMcpError):
             call(**options)
 

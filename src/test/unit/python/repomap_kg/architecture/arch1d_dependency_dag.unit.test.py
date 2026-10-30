@@ -56,10 +56,10 @@ def test_production_does_not_reference_test_support() -> None:
 
 
 def test_telemetry_contract_and_compatibility_facades_share_objects() -> None:
-    import repomap_kg.storage.backend_telemetry_contracts as contracts
-    import repomap_kg.storage.backend_telemetry_events as events
-    import repomap_kg.storage.backend_connection_telemetry as connection
-    import repomap_kg.storage.backend_telemetry as facade
+    import common_lore_index.storage.backend_telemetry_contracts as contracts
+    import common_lore_index.storage.backend_telemetry_events as events
+    import common_lore_index.storage.backend_connection_telemetry as connection
+    import common_lore_index.storage.backend_telemetry as facade
     for name in (
         "ConnectionTelemetryError",
         "ConnectionTelemetryEvent",

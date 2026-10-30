@@ -4,9 +4,9 @@ import os
 
 import pytest
 
-from repomap_kg.ops.config_loading import _resolve_home_selection, resolve_repo_map_home
-from repomap_kg.ops.config_records import OpsConfigError
-from repomap_kg.ops import home_selection
+from common_lore_index.ops.config_loading import _resolve_home_selection, resolve_repo_map_home
+from common_lore_index.ops.config_records import OpsConfigError
+from common_lore_index.ops import home_selection
 
 SQLITE = 'schema_version = 1\n[storage]\nbackend = "sqlite"\n'
 POSTGRES = 'schema_version = 1\n[postgres]\nhost = "localhost"\ndatabase = "fixture"\nuser = "fixture"\n'
@@ -137,14 +137,14 @@ def test_default_read_failure_is_bounded(defaults, monkeypatch: pytest.MonkeyPat
     assert "private sentinel" not in str(raised.value)
 
 
-def test_parser_brand_is_explicit_and_legacy_default_is_preserved() -> None:
-    from repomap_kg.cli.parser import build_parser
-    assert build_parser().prog == "repomap-kg"
+def test_parser_brand_is_explicit_and_canonical_default_is_selected() -> None:
+    from common_lore_index.cli.parser import build_parser
+    assert build_parser().prog == "cloe"
     assert build_parser(prog="cloe").format_help().startswith("usage: cloe ")
 
 
 def test_cli_default_refusal_retains_its_safe_code(defaults, capsys) -> None:
-    from repomap_kg.cli.main import main
+    from common_lore_index.cli.main import main
     current, _legacy = defaults
     populate(current, "foreign")
     assert main(["local", "setup", "--json"]) == 1
@@ -154,8 +154,8 @@ def test_cli_default_refusal_retains_its_safe_code(defaults, capsys) -> None:
 
 
 def test_mcp_explicit_config_environment_does_not_inspect_default_home(defaults, monkeypatch) -> None:
-    from repomap_kg.cli.main import _home_selection_notice
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.main import _home_selection_notice
+    from common_lore_index.cli.parser import build_parser
     current, _legacy = defaults
     populate(current, "foreign")
     args = build_parser().parse_args(["mcp", "serve"])
@@ -168,7 +168,7 @@ def test_mcp_explicit_config_environment_does_not_inspect_default_home(defaults,
 
 @pytest.mark.parametrize("operation", ["up_local_runtime", "down_local_runtime", "query_local_runtime_status"])
 def test_runtime_api_preserves_its_safe_error_family(defaults, operation: str) -> None:
-    from repomap_kg.runtime import local
+    from common_lore_index.runtime import local
     current, _legacy = defaults
     populate(current, "foreign")
     with pytest.raises(local.LocalRuntimeError) as raised:
@@ -178,8 +178,8 @@ def test_runtime_api_preserves_its_safe_error_family(defaults, operation: str) -
 
 
 def test_legacy_resolver_facades_keep_one_path_returning_function(defaults) -> None:
-    from repomap_kg.ops import config, config_loading
-    from repomap_kg.runtime import local
+    from common_lore_index.ops import config, config_loading
+    from common_lore_index.runtime import local
     current, legacy = defaults
     populate(legacy, "sqlite")
     assert local.resolve_repo_map_home is config.resolve_repo_map_home is config_loading.resolve_repo_map_home

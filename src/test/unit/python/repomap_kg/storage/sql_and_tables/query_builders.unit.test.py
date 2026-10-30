@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     build_canonical_storage_summary_query_sql,
     build_email_summary_query_sql,
     build_js_summary_query_sql,

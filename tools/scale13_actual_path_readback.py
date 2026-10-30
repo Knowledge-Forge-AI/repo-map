@@ -6,7 +6,7 @@ from typing import Sequence
 
 import psycopg
 
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 from semantic_digest_readback import read_semantic_digest

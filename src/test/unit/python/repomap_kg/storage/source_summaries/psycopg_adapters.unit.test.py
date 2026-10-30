@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     build_ingested_source_query_sql,
     build_source_run_query_sql,
     build_source_summary_query_sql,
@@ -55,11 +55,11 @@ class StorageSourcePsycopgAdapterUnitTests(unittest.TestCase):
 
         with (
             patch(
-                "repomap_kg.storage.source_readback.execute_json_readback",
+                "common_lore_index.storage.source_readback.execute_json_readback",
                 side_effect=fake_execute_json_readback,
             ) as execute_json_readback,
             patch(
-                "repomap_kg.storage.readback_driver.run_psql",
+                "common_lore_index.storage.readback_driver.run_psql",
                 side_effect=AssertionError("source summary must use the adapter"),
             ),
         ):
@@ -127,11 +127,11 @@ class StorageSourcePsycopgAdapterUnitTests(unittest.TestCase):
 
         with (
             patch(
-                "repomap_kg.storage.source_readback.execute_json_readback",
+                "common_lore_index.storage.source_readback.execute_json_readback",
                 side_effect=fake_execute_json_readback,
             ) as execute_json_readback,
             patch(
-                "repomap_kg.storage.readback_driver.run_psql",
+                "common_lore_index.storage.readback_driver.run_psql",
                 side_effect=AssertionError("ingested sources must use the adapter"),
             ),
         ):
@@ -205,11 +205,11 @@ class StorageSourcePsycopgAdapterUnitTests(unittest.TestCase):
 
         with (
             patch(
-                "repomap_kg.storage.source_readback.execute_json_readback",
+                "common_lore_index.storage.source_readback.execute_json_readback",
                 side_effect=fake_execute_json_readback,
             ) as execute_json_readback,
             patch(
-                "repomap_kg.storage.readback_driver.run_psql",
+                "common_lore_index.storage.readback_driver.run_psql",
                 side_effect=AssertionError("source runs must use the adapter"),
             ),
         ):

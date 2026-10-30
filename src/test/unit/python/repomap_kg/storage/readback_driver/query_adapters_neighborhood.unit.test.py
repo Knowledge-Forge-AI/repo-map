@@ -5,16 +5,16 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
 )
-from repomap_kg.storage.canonical import (
+from common_lore_index.storage.canonical import (
     query_canonical_edge_explanation,
     query_canonical_neighborhood,
 )
-from repomap_kg.storage.sql import (
+from common_lore_index.storage.sql import (
     build_canonical_neighborhood_query_sql,
     build_explain_canonical_edge_query_sql,
 )
@@ -103,7 +103,7 @@ class _RecordingConnector:
 
 
 def test_psycopg15_query_canonical_edge_explanation_preserves_missing_edge_object() -> None:
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         execute.return_value = {"edge": None, "evidence": []}
 
         record = query_canonical_edge_explanation(
@@ -177,7 +177,7 @@ def test_psycopg28_query_canonical_neighborhood_uses_readback_driver_without_cha
         ],
     }
 
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         execute.return_value = payload
 
         record = query_canonical_neighborhood(
@@ -209,7 +209,7 @@ def test_psycopg28_query_canonical_neighborhood_uses_readback_driver_without_cha
     )
 
 def test_psycopg28_query_canonical_neighborhood_preserves_validation() -> None:
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         with pytest.raises(
             StorageSchemaError,
             match="storage neighborhood only supports depth 1",

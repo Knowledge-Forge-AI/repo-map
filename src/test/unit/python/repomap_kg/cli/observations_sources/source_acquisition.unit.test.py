@@ -7,13 +7,13 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.ingestion.acquisition_contracts import non_publication_result
+from common_lore_index.cli import main
+from common_lore_index.ops.ingestion.acquisition_contracts import non_publication_result
 
 
 class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
     def test_sources_ingest_feed_prints_json_summary_from_config_only(self):
-        from repomap_kg.ops.ingestion.source import FeedIngestionSummary
+        from common_lore_index.ops.ingestion.source import FeedIngestionSummary
 
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "feed-source.toml"
@@ -34,7 +34,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
             )
 
             with patch(
-                "repomap_kg.cli.ingest_feed_source",
+                "common_lore_index.cli.ingest_feed_source",
                 return_value=expected,
             ) as ingest:
                 with redirect_stdout(stdout):
@@ -60,7 +60,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         self.assertEqual(ingest.call_args.kwargs["root_path"], "/tmp/fixture")
 
     def test_sources_import_warc_prints_json_summary_from_config_only(self):
-        from repomap_kg.ops.ingestion.source import WarcImportSummary
+        from common_lore_index.ops.ingestion.source import WarcImportSummary
 
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "warc-source.toml"
@@ -83,7 +83,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
             )
 
             with patch(
-                "repomap_kg.cli.import_warc_source",
+                "common_lore_index.cli.import_warc_source",
                 return_value=expected,
             ) as import_warc:
                 with redirect_stdout(stdout):
@@ -123,7 +123,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         )
 
         with patch(
-            "repomap_kg.cli.build_bulk_plan_from_config",
+            "common_lore_index.cli.build_bulk_plan_from_config",
             return_value=expected,
         ) as build_plan:
             with redirect_stdout(stdout):
@@ -157,7 +157,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         )
 
         with patch(
-            "repomap_kg.cli.import_bulk_source",
+            "common_lore_index.cli.import_bulk_source",
             return_value=expected,
         ) as import_bulk:
             with redirect_stdout(stdout):
@@ -194,7 +194,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         )
 
         with patch(
-            "repomap_kg.cli.build_api_plan_from_config",
+            "common_lore_index.cli.build_api_plan_from_config",
             return_value=expected,
         ) as build_plan:
             with redirect_stdout(stdout):
@@ -229,7 +229,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         )
 
         with patch(
-            "repomap_kg.cli.acquire_api_source",
+            "common_lore_index.cli.acquire_api_source",
             return_value=expected,
         ) as acquire:
             with redirect_stdout(stdout):
@@ -270,7 +270,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         )
 
         with patch(
-            "repomap_kg.cli.build_github_api_plan_from_config",
+            "common_lore_index.cli.build_github_api_plan_from_config",
             return_value=expected,
         ) as build_plan:
             with redirect_stdout(stdout):
@@ -312,7 +312,7 @@ class CliSourceAcquisitionCommandUnitTests(unittest.TestCase):
         )
 
         with patch(
-            "repomap_kg.cli.acquire_github_api_source",
+            "common_lore_index.cli.acquire_github_api_source",
             return_value=expected,
         ) as acquire:
             with redirect_stdout(stdout):

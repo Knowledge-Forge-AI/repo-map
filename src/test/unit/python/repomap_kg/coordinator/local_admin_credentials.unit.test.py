@@ -5,14 +5,14 @@ import os
 
 import pytest
 
-from repomap_kg.coordinator._local_admin_credentials import local_admin_password
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator._local_admin_credentials import local_admin_password
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError, coordinator_control_status, initialize_coordinator_control,
     maintenance_activity_for_home,
 )
-from repomap_kg.ops.config_loading import load_ops_config_home
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
+from common_lore_index.ops.config_loading import load_ops_config_home
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.maintenance import MaintenanceUnavailableError
 
 
 @pytest.fixture
@@ -98,7 +98,7 @@ def test_ineligible_authority_never_uses_runtime_file(local_config, monkeypatch,
     elif kind == "no-direct":
         config = replace(config, runtime=replace(config.runtime, postgres=replace(config.runtime.postgres, direct_host_port_enabled=False)))
     else:
-        monkeypatch.setattr("repomap_kg.runtime.postgres_route.CONTAINER_INTERNAL_MARKER", home)
+        monkeypatch.setattr("common_lore_index.runtime.postgres_route.CONTAINER_INTERNAL_MARKER", home)
         monkeypatch.setattr(type(home), "is_file", lambda p: True)
     with pytest.raises(ValueError):
         local_admin_password(config, home)
@@ -119,7 +119,7 @@ def test_control_and_maintenance_preserve_authority_class(local_config):
 def test_explicit_password_preserves_predecessor_validation(
     local_config, monkeypatch, authority, value,
 ):
-    from repomap_kg.coordinator.configured_refresh import _postgres_password
+    from common_lore_index.coordinator.configured_refresh import _postgres_password
 
     home, config = local_config
     postgres = replace(config.postgres, password_env=None)

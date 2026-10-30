@@ -5,13 +5,13 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.runtime.local import (
+from common_lore_index.runtime.local import (
     DEFAULT_POSTGRES_HOST_PORT, DEFAULT_SERVER_HOST_PORT, ENV_RUNTIME_SOURCE_ROOT,
     LocalRuntimeError, LocalRuntimeIdentity, down_local_runtime, format_local_runtime_table,
     render_server_dockerfile, resolve_runtime_source_root, setup_local_runtime,
     up_local_runtime, query_local_runtime_status,
 )
-from repomap_kg.runtime.plan import LocalContainerStatus, is_runtime_source_root
+from common_lore_index.runtime.plan import LocalContainerStatus, is_runtime_source_root
 
 
 class _FakeHttpResponse:
@@ -54,8 +54,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
                 self.assertNotIn(token, rendered)
 
     def test_ref5_local_runtime_facade_reexports_split_helpers(self):
-        from repomap_kg import local_runtime as facade
-        from repomap_kg.runtime import commands as cmds, plan
+        from common_lore_index import local_runtime as facade
+        from common_lore_index.runtime import commands as cmds, plan
         for name, target in (
             ("LocalRuntimePlan", plan.LocalRuntimePlan), ("LocalRuntimeIdentity", plan.LocalRuntimeIdentity),
             ("build_local_runtime_plan", plan.build_local_runtime_plan), ("render_server_dockerfile", cmds.render_server_dockerfile),
@@ -94,7 +94,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
         dockerfile = render_server_dockerfile()
         for token in ("COPY pyproject.toml README.md ./", "COPY src/main/python ./src/main/python",
                       "COPY src/main/resources ./src/main/resources", '--no-build-isolation ".[postgres]"',
-                      'ENTRYPOINT ["python", "-m", "repomap_kg"]', 'CMD ["server", "serve"',
+                      'ENTRYPOINT ["python", "-m", "common_lore_index"]', 'CMD ["server", "serve"',
                       "REPOMAP_PACKAGED_PSQL=/usr/lib/postgresql/16/bin/psql"):
             self.assertIn(token, dockerfile)
         for token in ("postgresql-client", 'CMD ["mcp", "serve"'): self.assertNotIn(token, dockerfile)
@@ -113,8 +113,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
     def test_compose_build_context_can_use_explicit_source_root(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             source_root = Path(tmpdir) / "source"
-            for d in ("src/main/python/repomap_kg", "src/main/resources"): (source_root / d).mkdir(parents=True)
-            (source_root / "src/main/python/repomap_kg/__main__.py").write_text("", encoding="utf-8")
+            for d in ("src/main/python/common_lore_index", "src/main/resources"): (source_root / d).mkdir(parents=True)
+            (source_root / "src/main/python/common_lore_index/__main__.py").write_text("", encoding="utf-8")
             (source_root / "pyproject.toml").write_text("[build-system]\n", encoding="utf-8")
             (source_root / "README.md").write_text("# fixture\n", encoding="utf-8")
             home = Path(tmpdir) / "repo-map-home"
@@ -129,8 +129,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
     def test_runtime_source_root_requires_package_metadata(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             source_root = Path(tmpdir) / "source"
-            for d in ("src/main/python/repomap_kg", "src/main/resources"): (source_root / d).mkdir(parents=True)
-            (source_root / "src/main/python/repomap_kg/__main__.py").write_text("", encoding="utf-8")
+            for d in ("src/main/python/common_lore_index", "src/main/resources"): (source_root / d).mkdir(parents=True)
+            (source_root / "src/main/python/common_lore_index/__main__.py").write_text("", encoding="utf-8")
             self.assertFalse(is_runtime_source_root(source_root))
             (source_root / "pyproject.toml").write_text("[build-system]\n", encoding="utf-8")
             self.assertFalse(is_runtime_source_root(source_root))
@@ -187,7 +187,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             setup_local_runtime(home)
-            with patch("repomap_kg.runtime.local.shutil.which", return_value=None):
+            with patch("common_lore_index.runtime.local.shutil.which", return_value=None):
                 status = query_local_runtime_status(home, check_containers=True)
         payload = status.to_jsonable()
         self.assertEqual(payload["result"], "not_running")
@@ -201,9 +201,9 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             setup_local_runtime(home)
             home_hash = LocalRuntimeIdentity.from_home(home).home_hash
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(home_hash)),
-                patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(home_hash)),
+                patch("common_lore_index.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
             ):
                 status = query_local_runtime_status(home, check_containers=True)
         payload = status.to_jsonable()
@@ -223,9 +223,9 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             labels = dict(line.strip().split(":", 1) for line in server.split("    labels:\n", 1)[1].splitlines())
             inspect = _fake_docker_inspect(labels["org.repomap.home_hash"].strip().strip('"'), labels["org.repomap.component"].strip().strip('"'))
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run", side_effect=inspect),
-                patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run", side_effect=inspect),
+                patch("common_lore_index.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
             ):
                 status = query_local_runtime_status(home, check_containers=True)
             self.assertEqual(status.to_jsonable()["result"], "running")
@@ -236,9 +236,9 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             setup_local_runtime(home)
             home_hash = LocalRuntimeIdentity.from_home(home).home_hash
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(home_hash)),
-                patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(home_hash)),
+                patch("common_lore_index.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
             ):
                 table = format_local_runtime_table(query_local_runtime_status(home, check_containers=True))
         for token in ("container: component=server status=running owned=true",
@@ -254,9 +254,9 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             for observed_home, service in (("unrelated", "http"), (home_hash, "coordinator")):
                 with (
                     self.subTest(home_matches=observed_home == home_hash, service=service),
-                    patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                    patch("repomap_kg.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(observed_home, service)),
-                    patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
+                    patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                    patch("common_lore_index.runtime.local.subprocess.run", side_effect=_fake_docker_inspect(observed_home, service)),
+                    patch("common_lore_index.runtime.local.urllib.request.urlopen", return_value=_FakeHttpResponse()),
                 ):
                     status = query_local_runtime_status(home, check_containers=True)
                     self.assertEqual(status.result, "not_running")
@@ -283,7 +283,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             self.write_runtime_server_port(home, 55982)
             config = home / "repomap.rpl.toml"
             config.write_text(config.read_text(encoding="utf-8").replace("direct_host_port_enabled = false", "direct_host_port_enabled = true"), encoding="utf-8")
-            with patch("repomap_kg.runtime.local.is_local_port_open", return_value=False):
+            with patch("common_lore_index.runtime.local.is_local_port_open", return_value=False):
                 result = up_local_runtime(home, dry_run=True)
             payload = result.to_jsonable()
             self.assertTrue(payload["runtime"]["direct_db_host_port_enabled"])
@@ -299,7 +299,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             home = Path(tmpdir) / "repo-map-home"
             setup_local_runtime(home)
             self.write_runtime_server_port(home, 55983)
-            with patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"), patch("repomap_kg.runtime.local.subprocess.run") as run, patch("repomap_kg.runtime.local.inspect_container", return_value=LocalContainerStatus("postgres", "postgres", postgres_host_binding_valid=True)):
+            with patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"), patch("common_lore_index.runtime.local.subprocess.run") as run, patch("common_lore_index.runtime.local.inspect_container", return_value=LocalContainerStatus("postgres", "postgres", postgres_host_binding_valid=True)):
                 result = up_local_runtime(home)
         payload = result.to_jsonable()
         self.assertEqual(payload["result"], "started")
@@ -318,8 +318,8 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             self.write_runtime_server_port(home, 55984)
             failure = subprocess.CalledProcessError(17, (private_value, "compose", "up"), output=private_value, stderr=private_value)
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run", side_effect=failure),
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run", side_effect=failure),
             ):
                 with self.assertRaises(LocalRuntimeError) as raised:
                     up_local_runtime(home)
@@ -344,7 +344,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
             setup_local_runtime(home)
-            with patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"), patch("repomap_kg.runtime.local.subprocess.run") as run:
+            with patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"), patch("common_lore_index.runtime.local.subprocess.run") as run:
                 result = down_local_runtime(home)
         payload = result.to_jsonable()
         self.assertEqual(payload["result"], "stopped")
@@ -379,7 +379,7 @@ class LocalRuntimeUnitTests(unittest.TestCase):
             setup_local_runtime(home)
             config = home / "repomap.rpl.toml"
             config.write_text(config.read_text(encoding="utf-8").replace(f"postgres_host_port = {DEFAULT_POSTGRES_HOST_PORT}", "postgres_host_port = 55433"), encoding="utf-8")
-            with patch("repomap_kg.runtime.local.is_local_port_open", return_value=True), patch("repomap_kg.runtime.local.inspect_container", return_value=LocalContainerStatus("server", "server")):
+            with patch("common_lore_index.runtime.local.is_local_port_open", return_value=True), patch("common_lore_index.runtime.local.inspect_container", return_value=LocalContainerStatus("server", "server")):
                 with self.assertRaises(LocalRuntimeError) as error:
                     up_local_runtime(home, dry_run=True)
             self.assertIn("port-conflict", [item.code for item in error.exception.diagnostics])

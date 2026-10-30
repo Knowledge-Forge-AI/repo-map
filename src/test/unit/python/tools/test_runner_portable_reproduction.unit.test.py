@@ -12,8 +12,8 @@ import unittest
 from unittest.mock import patch
 
 import coverage
-import repomap_kg.coordinator._portable_worker_launch as pwl
-from repomap_kg.coordinator._worker_launch import WorkerLaunchSpec
+import common_lore_index.coordinator._portable_worker_launch as pwl
+from common_lore_index.coordinator._worker_launch import WorkerLaunchSpec
 from repomap_test_support.run25_portable_workflows import (
     TINY_PORTABLE_CHILD_CODE,
     build_run25_worker_limits,
@@ -124,7 +124,7 @@ class RunnerPortableReproductionUnitTests(unittest.TestCase):
                 exit_p.unlink()
             return res
 
-        with patch("repomap_kg.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_missing):
+        with patch("common_lore_index.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_missing):
             with scoped_portable_coverage_adapter(self.session, self.cap):
                 res = pwl.run_worker_spec(spec, self.identity, self.limits)
         self.assertEqual(res.terminal.get("status"), "succeeded")
@@ -145,7 +145,7 @@ class RunnerPortableReproductionUnitTests(unittest.TestCase):
             exit_p.write_bytes(b"")
             return res
 
-        with patch("repomap_kg.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_empty):
+        with patch("common_lore_index.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_empty):
             with scoped_portable_coverage_adapter(self.session, self.cap):
                 res = pwl.run_worker_spec(spec, self.identity, self.limits)
         self.assertEqual(res.terminal.get("status"), "succeeded")
@@ -167,7 +167,7 @@ class RunnerPortableReproductionUnitTests(unittest.TestCase):
             exit_p.write_text(content.replace("complete=1", "complete=0"), encoding="utf-8")
             return res
 
-        with patch("repomap_kg.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_incomplete):
+        with patch("common_lore_index.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_incomplete):
             with scoped_portable_coverage_adapter(self.session, self.cap):
                 res = pwl.run_worker_spec(spec, self.identity, self.limits)
         self.assertEqual(res.terminal.get("status"), "succeeded")
@@ -188,7 +188,7 @@ class RunnerPortableReproductionUnitTests(unittest.TestCase):
                 shard.write_bytes(b"CORRUPT_NOT_SQLITE_DATA_HEADER")
             return res
 
-        with patch("repomap_kg.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_corrupt_shard):
+        with patch("common_lore_index.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_corrupt_shard):
             with scoped_portable_coverage_adapter(self.session, self.cap):
                 res = pwl.run_worker_spec(spec, self.identity, self.limits)
         self.assertEqual(res.terminal.get("status"), "succeeded")
@@ -214,7 +214,7 @@ class RunnerPortableReproductionUnitTests(unittest.TestCase):
                 exit_p.unlink()
             raise ParentWorkloadError("parent crashed during execution")
 
-        with patch("repomap_kg.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_crash):
+        with patch("common_lore_index.coordinator._portable_worker_launch.run_worker_spec", side_effect=intercept_crash):
             with scoped_portable_coverage_adapter(self.session, self.cap):
                 with self.assertRaises(ParentWorkloadError) as ctx:
                     pwl.run_worker_spec(spec, self.identity, self.limits)

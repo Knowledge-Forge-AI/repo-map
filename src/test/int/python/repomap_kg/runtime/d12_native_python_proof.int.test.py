@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 import d12_native_python_observer as observer
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_run import active_resource_run

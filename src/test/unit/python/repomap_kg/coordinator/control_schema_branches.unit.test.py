@@ -5,9 +5,9 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from repomap_kg.coordinator import _control_schema as schema
-from repomap_kg.coordinator._control_types import ControlSchemaError
-from repomap_kg.storage import Migration, StorageSchemaError
+from common_lore_index.coordinator import _control_schema as schema
+from common_lore_index.coordinator._control_types import ControlSchemaError
+from common_lore_index.storage import Migration, StorageSchemaError
 
 
 class Cursor:

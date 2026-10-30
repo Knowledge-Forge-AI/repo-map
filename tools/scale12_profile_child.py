@@ -18,7 +18,7 @@ for _candidate in (
     if _candidate_str not in sys.path:
         sys.path.insert(0, _candidate_str)
 
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEvent,
 )
 from scale11_profile_contracts import ProfileResult

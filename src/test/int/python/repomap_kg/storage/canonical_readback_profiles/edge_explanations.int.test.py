@@ -7,7 +7,7 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
@@ -159,8 +159,8 @@ class StorageCanonicalEdgeExplanationIntegrationTests(unittest.TestCase):
         )
 
     def test_polyglot_canonicalization_dispatch_and_edge_linking(self) -> None:
-        from repomap_kg.canonicalization.main import canonicalize_observations
-        from repomap_kg.observations.raw import RawObservation
+        from common_lore_index.canonicalization.main import canonicalize_observations
+        from common_lore_index.observations.raw import RawObservation
 
         observations = [
             RawObservation(
@@ -272,7 +272,7 @@ class StorageCanonicalEdgeExplanationIntegrationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         payload = result.to_dict()
 
-        import repomap_kg.graph.keys as graph_keys
+        import common_lore_index.graph.keys as graph_keys
 
         py_func_key = graph_keys.python_function_key("app", "build")
         py_class_key = graph_keys.python_class_key("app", "App")
@@ -306,9 +306,9 @@ class StorageCanonicalEdgeExplanationIntegrationTests(unittest.TestCase):
         self.assertIn((js_module_key, "defines", js_func_key), edge_triples)
 
     def test_polyglot_canonicalization_explicit_source_key_overrides(self) -> None:
-        from repomap_kg.canonicalization.main import canonicalize_observations
-        from repomap_kg.observations.raw import RawObservation
-        import repomap_kg.graph.keys as graph_keys
+        from common_lore_index.canonicalization.main import canonicalize_observations
+        from common_lore_index.observations.raw import RawObservation
+        import common_lore_index.graph.keys as graph_keys
 
         rb_override_key = graph_keys.ruby_module_key("CustomRunnerModule")
         valid_obs = [

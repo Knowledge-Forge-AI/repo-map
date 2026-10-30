@@ -1,6 +1,6 @@
-# RepoMap
+# Common Lore Index (CLOE)
 
-RepoMap is a deterministic knowledge graph system for polyglot software
+Common Lore Index (CLOE), formerly RepoMap, is a deterministic knowledge graph system for polyglot software
 repositories. Its implementation includes SQLite Local and PostgreSQL. The accepted
 product architecture has three surfaces: useful offline-capable SQLite Local,
 PostgreSQL Server Engine for reference/self-hosted operation, and managed Cloud.
@@ -20,15 +20,17 @@ and hosted qualification remain separate gates.
 
 ## Project Identity
 
-- Official name: RepoMap
+- Official name: Common Lore Index (CLOE)
 - Git repository: `repo-map`
-- Python distribution: `repomap-kg`
-- Python import package: `repomap_kg`
-- CLI: `repomap-kg`
+- Python distribution: `common-lore-index`
+- Python import package: `common_lore_index`
+- CLI: `cloe` (also `common-lore-index`; transitional `repomap-kg` through v0.1.x)
 - License: AGPL-3.0-or-later plus commercial licensing
 - Storage: SQLite Local and PostgreSQL; the reference Server deployment uses a local container
 - Product direction: [Local, Server Engine and Cloud](docs/adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
 - Release program: [private-main milestones and pre-v0.1.0 gates](docs/specs/roadmap.md#post-promotion-product-program)
+
+See [installed upgrade compatibility](docs/ops/cloe-installed-upgrade-compatibility.md) before replacing a legacy installation.
 
 ## Design Principles
 

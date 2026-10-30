@@ -17,16 +17,16 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.storage.sqlite_local import publisher
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.storage.sqlite_local import publisher
+from common_lore_index.storage.sqlite_local.connection import (
     initialize_graph_database,
     publisher_lock,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.migrations import MIGRATION_V2
-from repomap_kg.storage.sqlite_local.publisher import accepted_generation, publish_generation
-from repomap_kg.storage.sqlite_local.schema import (
+from common_lore_index.storage.sqlite_local.migrations import MIGRATION_V2
+from common_lore_index.storage.sqlite_local.publisher import accepted_generation, publish_generation
+from common_lore_index.storage.sqlite_local.schema import (
     APPLICATION_ID,
     SCHEMA_V1_CHECKSUM,
     LocalGraphBinding,

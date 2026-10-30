@@ -4,11 +4,11 @@ import json
 
 import pytest
 
-from repomap_kg.ops.config_loading import (
+from common_lore_index.ops.config_loading import (
     _read_ops_config_home_payload,
     resolve_repo_map_home,
 )
-from repomap_kg.ops.config_records import OpsConfigError
+from common_lore_index.ops.config_records import OpsConfigError
 
 
 def test_cloe_home_precedence_without_creation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -56,7 +56,7 @@ def test_mixed_home_is_refused_before_parsing_values(tmp_path: Path) -> None:
     ],
 )
 def test_unsafe_filename_conversion_is_refused(names: tuple[str, ...], codes: set[str]) -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     plan = plan_cloe_config_filenames(names)
     assert plan["filename_conversion_ready"] is False
@@ -66,7 +66,7 @@ def test_unsafe_filename_conversion_is_refused(names: tuple[str, ...], codes: se
 
 
 def test_safe_conversion_preserves_complete_layer_order() -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     plan = plan_cloe_config_filenames(("00-project.rp.toml", "90-private.rpl.toml"))
     assert plan["filename_conversion_ready"] is True
@@ -77,7 +77,7 @@ def test_safe_conversion_preserves_complete_layer_order() -> None:
 
 
 def test_cloe_plan_is_an_explicit_noop() -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     names = ("00-project.cloe.toml", "90-private.local.cloe.toml")
     plan = plan_cloe_config_filenames(names)
@@ -89,7 +89,7 @@ def test_cloe_plan_is_an_explicit_noop() -> None:
 
 @pytest.mark.parametrize("names", [(), ("unknown.toml",), ("../unsafe.rp.toml",), ("a.rp.toml", "b.cloe.toml")])
 def test_filename_planner_rejects_non_home_inputs(names: tuple[str, ...]) -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     with pytest.raises(ValueError):
         plan_cloe_config_filenames(names)
@@ -100,7 +100,7 @@ def test_filename_planner_rejects_non_home_inputs(names: tuple[str, ...]) -> Non
 def test_cli_plan_output_exit_and_no_contents(
     tmp_path: Path, capsys: pytest.CaptureFixture[str], as_json: bool, unsafe: bool,
 ) -> None:
-    from repomap_kg.cli.main import main
+    from common_lore_index.cli.main import main
 
     name = "x.local.rp.toml" if unsafe else "00-project.rp.toml"
     body = 'schema_version = 1\n[postgres]\npassword = "not-for-plan-output"\n'
@@ -124,7 +124,7 @@ def test_cli_plan_output_exit_and_no_contents(
 
 
 def test_cli_refuses_a_file_instead_of_a_home(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    from repomap_kg.cli.main import main
+    from common_lore_index.cli.main import main
 
     source = tmp_path / "config.rp.toml"
     source.write_text("schema_version = 1\n")
@@ -139,8 +139,8 @@ def test_explicit_mcp_home_temporarily_overrides_ambient_cloe_home(
 ) -> None:
     import argparse
     from types import ModuleType
-    from repomap_kg.cli._observations_dispatch import dispatch_observation_commands
-    from repomap_kg.server import mcp
+    from common_lore_index.cli._observations_dispatch import dispatch_observation_commands
+    from common_lore_index.server import mcp
 
     original, selected = str(tmp_path / "ambient"), str(tmp_path / "explicit")
     monkeypatch.setenv("CLOE_HOME", original)
@@ -163,7 +163,7 @@ def test_explicit_mcp_home_temporarily_overrides_ambient_cloe_home(
 
 
 def test_preexisting_target_name_refuses_conversion() -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     plan = plan_cloe_config_filenames(("00-project.rp.toml",), occupied_names={"00-project.cloe.toml"})
     assert not plan["filename_conversion_ready"]
@@ -172,7 +172,7 @@ def test_preexisting_target_name_refuses_conversion() -> None:
 
 @pytest.mark.parametrize("occupied", ["00-project.CLOE.toml", "00-project.cloe.toml"])
 def test_portable_occupied_name_refuses_case_aliases(occupied: str) -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     plan = plan_cloe_config_filenames(("00-project.rp.toml",), occupied_names={occupied})
     assert not plan["filename_conversion_ready"]
@@ -180,7 +180,7 @@ def test_portable_occupied_name_refuses_case_aliases(occupied: str) -> None:
 
 
 def test_portable_occupied_name_refuses_unicode_normalization_alias() -> None:
-    from repomap_kg.ops.config_layout import plan_cloe_config_filenames
+    from common_lore_index.ops.config_layout import plan_cloe_config_filenames
 
     plan = plan_cloe_config_filenames(("caf\u00e9.rp.toml",), occupied_names={"cafe\u0301.cloe.toml"})
     assert not plan["filename_conversion_ready"]
@@ -188,7 +188,7 @@ def test_portable_occupied_name_refuses_unicode_normalization_alias() -> None:
 
 
 def test_runtime_setup_uses_the_existing_cloe_family(tmp_path: Path) -> None:
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
 
     home = tmp_path / "home"
     home.mkdir(mode=0o700)

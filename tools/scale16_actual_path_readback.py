@@ -7,13 +7,13 @@ from typing import Sequence
 
 import psycopg
 
-from repomap_kg.storage.authority import AttemptNumber, JobId
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.authority import AttemptNumber, JobId
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.publication_readback import read_latest_receipt_bearing_publication
-from repomap_kg.storage.run_authority import read_run_authority
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.publication_readback import read_latest_receipt_bearing_publication
+from common_lore_index.storage.run_authority import read_run_authority
 from scale15_actual_path_readback import read_scale15_terminal_state
 from scale15_terminal_contracts import (
     BoundRefreshExpectation,

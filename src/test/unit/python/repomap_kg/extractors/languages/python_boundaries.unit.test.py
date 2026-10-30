@@ -1,10 +1,10 @@
 import unittest
-from repomap_kg.extractors.languages.python import (
+from common_lore_index.extractors.languages.python import (
     PythonModuleIndex,
     extract_python_file_observations,
 )
-from repomap_kg.extractors.languages.python_imports import resolve_relative_base
-from repomap_kg.extractors.languages.ruby import extract_ruby_file_observations
+from common_lore_index.extractors.languages.python_imports import resolve_relative_base
+from common_lore_index.extractors.languages.ruby import extract_ruby_file_observations
 
 class PythonLanguageBoundariesUnitTests(unittest.TestCase):
     def test_python_import_helpers(self):

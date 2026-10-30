@@ -11,7 +11,7 @@ def evidence_source(*, status: str = "passed", cohort_count: int = 2,
                     file_count: int = 10, regressions: list[str] | None = None,
                     root: str = "tools") -> dict[str, Any]:
     """Construct real result fields, with all paths covered by stable cohorts."""
-    prefix = "tools/tool_" if root == "tools" else "src/main/python/repomap_kg/module_"
+    prefix = "tools/tool_" if root == "tools" else "src/main/python/common_lore_index/module_"
     files = [f"{prefix}{i}.py" for i in range(file_count)]
     reg_list = sorted(regressions or [])
     cohorts: list[dict[str, Any]] = []

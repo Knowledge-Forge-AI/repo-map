@@ -1,7 +1,7 @@
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config.python_support import (
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.python_support import (
     _is_secret_key,
     _python_bounded_string,
     _python_sequence_count,

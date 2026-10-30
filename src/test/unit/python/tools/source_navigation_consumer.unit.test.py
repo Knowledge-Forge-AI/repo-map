@@ -12,8 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.server import mcp
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.node_location_fixtures import (
     BINDING, DOC, GRAPH, SYMBOL, locator_home, publish_locator_generation,
 )

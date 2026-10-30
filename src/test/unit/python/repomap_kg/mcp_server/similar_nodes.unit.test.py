@@ -8,17 +8,17 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.ops.config_local import LocalSqliteConfig
-from repomap_kg.server._mcp_dispatch import TOOL_FUNCTIONS
-from repomap_kg.server._mcp_similar import SimilarNodesQuery, similar_nodes_payload
-from repomap_kg.server.mcp import (
+from common_lore_index.ops.config_local import LocalSqliteConfig
+from common_lore_index.server._mcp_dispatch import TOOL_FUNCTIONS
+from common_lore_index.server._mcp_similar import SimilarNodesQuery, similar_nodes_payload
+from common_lore_index.server.mcp import (
     handle_jsonrpc_message, handle_tool_call,
     repomap_similar_nodes as facade_similar_nodes,
     similar_nodes_payload as facade_similar_nodes_payload,
 )
-from repomap_kg.server.sqlite_read_binding import SqliteInvestigationStores
-from repomap_kg.storage.semantic_candidate_readback import candidate_provenance
-from repomap_kg.storage.semantic_candidates import CandidateResult, EmbeddingProfilesResult, validated_profile_entry
+from common_lore_index.server.sqlite_read_binding import SqliteInvestigationStores
+from common_lore_index.storage.semantic_candidate_readback import candidate_provenance
+from common_lore_index.storage.semantic_candidates import CandidateResult, EmbeddingProfilesResult, validated_profile_entry
 from repomap_test_support.mcp_server import McpServerTestSupport
 from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, SNAPSHOT, candidate_query
 
@@ -101,7 +101,7 @@ class SimilarNodesUnitTest(McpServerTestSupport):
             )
             return SqliteInvestigationStores(local)
 
-        with env, patch("repomap_kg.server.ops.investigation_stores", sqlite_factory):
+        with env, patch("common_lore_index.server.ops.investigation_stores", sqlite_factory):
             disabled_resp = self._call_tool(self._valid_args(selected=False))
             unsupported_resp = self._call_tool(self._valid_args(selected=True))
 
@@ -263,7 +263,7 @@ class SimilarNodesUnitTest(McpServerTestSupport):
             def investigation_store(self) -> FakeStore:
                 return FakeStore()
 
-        with env, patch("repomap_kg.server.ops.investigation_stores", lambda cfg: FakeBinding()):
+        with env, patch("common_lore_index.server.ops.investigation_stores", lambda cfg: FakeBinding()):
             response = self._call_tool(
                 self._valid_args(
                     selected=True,
@@ -368,7 +368,7 @@ class SimilarNodesUnitTest(McpServerTestSupport):
             ("model-sha256", "sha256", replace(clean, provenance={**clean.provenance, "profile": {**clean.provenance["profile"], "model": "sha256:" + digest}})),
             ("nested-bind1", "bind1", replace(clean, provenance={**clean.provenance, "nested": {"source_binding_id": "bind1:" + digest}})),
         ]
-        owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.similar_nodes"
+        owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.similar_nodes"
         for label, user, candidate_res in cases:
             frozen = deepcopy((candidate_res.candidates, candidate_res.provenance))
             with self.subTest(case=label), self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config()), patch(owner, return_value=candidate_res), patch("pathlib.Path.home", return_value=Path("/private/fixture-home") / user):
@@ -379,8 +379,8 @@ class SimilarNodesUnitTest(McpServerTestSupport):
         prof_res, sim_res = self._fixture_results()
         expected_cands, expected_prov = deepcopy(list(sim_res.candidates)), deepcopy(sim_res.provenance)
         expected_ev = [ev["evidence_key"] for cand in expected_cands for ev in cand["evidence"]]
-        prof_owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
-        sim_owner = "repomap_kg.server.investigation_read_store.PostgresInvestigationReadStore.similar_nodes"
+        prof_owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.embedding_profiles"
+        sim_owner = "common_lore_index.server.investigation_read_store.PostgresInvestigationReadStore.similar_nodes"
         usernames = (prof_res.profiles[0]["profile_identity"].split(":")[1], "sha256", "snapmanifest1", "receipt1",
                      "bundle1", "cand1", "bind1", "snap1", "sg1", "cg1", "eg1", "kg1", "cosine", "exact", "public",
                      "canonical", "node", "l2", "unit", "enrichment_principal_assertion", "receipt", "fenced",

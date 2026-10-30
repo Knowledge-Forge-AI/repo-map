@@ -12,11 +12,11 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from repomap_kg import __version__
-from repomap_kg.graph.keys import GRAPH_KEY_VERSION
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.server._ops_sanitization import sanitize_summary_jsonable
-from repomap_kg.storage import (
+from common_lore_index import __version__
+from common_lore_index.graph.keys import GRAPH_KEY_VERSION
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.server._ops_sanitization import sanitize_summary_jsonable
+from common_lore_index.storage import (
     ingested_source_records_to_jsonable, js_framework_summary_to_jsonable, nix_summary_to_jsonable,
     openapi_summary_to_jsonable, python_summary_to_jsonable, query_canonical_storage_summary,
     query_ingested_source_records, query_js_framework_summary, query_nix_summary, query_openapi_summary,

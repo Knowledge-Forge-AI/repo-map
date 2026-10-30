@@ -11,8 +11,8 @@ from repomap_test_support.ops_refresh import (
     VALID_REFRESH_CONFIG,
 )
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import (
     OpsRefreshError,
     OpsGraphSummary,
     build_graph_summary_sql,
@@ -21,7 +21,7 @@ from repomap_kg.ops.refresh import (
     graph_summary_to_jsonable,
     query_graph_summary,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 
 
 class OpsRefreshFacadeSummaryUnitTests(OpsRefreshUnitTestCase):
@@ -53,10 +53,10 @@ class OpsRefreshFacadeSummaryUnitTests(OpsRefreshUnitTestCase):
                 self.assertNotIn(value, rendered, f"payload leaked the {label}")
 
     def test_ref5_ops_refresh_facade_reexports_split_helpers(self):
-        from repomap_kg import ops_refresh
-        from repomap_kg.ops import baselines as ops_baselines
-        from repomap_kg.ops import preflight as ops_preflight
-        from repomap_kg.ops import reports as ops_reports
+        from common_lore_index import ops_refresh
+        from common_lore_index.ops import baselines as ops_baselines
+        from common_lore_index.ops import preflight as ops_preflight
+        from common_lore_index.ops import reports as ops_reports
 
         self.assertIs(
             getattr(ops_refresh, "OpsRefreshError"),
@@ -134,7 +134,7 @@ class OpsRefreshFacadeSummaryUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.execute_ops_json_readback",
+                    "common_lore_index.ops.refresh.execute_ops_json_readback",
                     side_effect=[
                         {"connected": True, "schema_available": True},
                         summary_payload,
@@ -177,7 +177,7 @@ class OpsRefreshFacadeSummaryUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.execute_ops_json_readback"
+                    "common_lore_index.ops.refresh.execute_ops_json_readback"
                 ) as execute_readback,
                 patch("pathlib.Path.exists", side_effect=AssertionError("root read")),
             ):

@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.graph.keys import file_key
+from common_lore_index.graph.keys import file_key
 from repomap_test_support.navigation_search_fixtures import BETA_DOC, BINDING, GRAPH, navigation_home
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, refusal, structured, tool
 from repomap_test_support.navigation_pushdown_fixtures import pushdown_home

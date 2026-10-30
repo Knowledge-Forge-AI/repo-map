@@ -22,9 +22,9 @@ import unittest
 import psycopg
 from psycopg.conninfo import make_conninfo
 
-from repomap_kg.graph.discovery import classify_path
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.discovery_extractors import (
+from common_lore_index.graph.discovery import classify_path
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.discovery_extractors import (
     extract_awk_file_observations_from_file,
     extract_bash_file_observations_from_file,
     extract_bats_file_observations_from_file,
@@ -33,22 +33,22 @@ from repomap_kg.graph.discovery_extractors import (
     extract_zsh_file_observations_from_file,
     extract_zunit_file_observations_from_file,
 )
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.direct_publication import build_observation_publication_authority
-from repomap_kg.storage.authority import AttemptNumber
-from repomap_kg.storage.canonical import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.direct_publication import build_observation_publication_authority
+from common_lore_index.storage.authority import AttemptNumber
+from common_lore_index.storage.canonical import (
     query_canonical_edge_explanation,
     query_canonical_edge_records,
     query_canonical_neighborhood,
     query_canonical_node_records,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.main import apply_migrations, default_rdbms_root
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.main import apply_migrations, default_rdbms_root
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication,
     read_run_publication,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     _psycopg_connection_params_from_psql_args,
     run_staged_full_refresh,
     stage_id_for_authority,

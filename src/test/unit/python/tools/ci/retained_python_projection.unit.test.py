@@ -252,6 +252,7 @@ FORWARD_ADMISSIONS = (
     "REPOMAP-CLOE-MIGRATION1",
     "REPOMAP-CLOE-OWNERSHIP1",
     "REPOMAP-CLOE-INSTALL1",
+    "REPOMAP-CLOE-CUTOVER1-CONSUMERS1",
 )
 
 
@@ -263,7 +264,7 @@ def _prepare_direct_v2_admission(
     after = copy.deepcopy(before)
     after["ownership"]["sha256"] = "c" * 64
     after["selection"]["modules"].append(
-        selection_item("repomap_kg.projected2", "src/main/python/repomap_kg/projected2.py")
+        selection_item("common_lore_index.projected2", "src/main/python/common_lore_index/projected2.py")
     )
     status_rel = "tools/ci/direct-qualification.md"
     (fixture.repo / status_rel).write_text(
@@ -335,9 +336,20 @@ def test_inherited_public_edge_uses_the_exact_recovered_proof(pytestconfig: pyte
     expected = INHERITED_PROOF_HOPS + FORWARD_ADMISSIONS
     records = json.loads((repo / SCOPE_PATH).read_text())["records"][-len(expected) - 1:]
     assert tuple(record["phase"] for record in records[1:]) == expected
+    namespace = json.loads((repo / "tools/ci/retained_python_namespace_projections.json").read_text())["records"]
+    assert len(namespace) == 1 and namespace[0]["id"] == "cloe.namespace.cutover1"
+    bridge = namespace[0]
     for before, after in zip(records, records[1:]):
-        assert after["old_ownership_manifest_sha256"] == before["new_ownership_manifest_sha256"]
-        assert after["old_selected_set_sha256"] == before["new_selected_set_sha256"]
+        if after["phase"] == "REPOMAP-CLOE-CUTOVER1-CONSUMERS1":
+            assert before["phase"] == "REPOMAP-CLOE-INSTALL1"
+            assert bridge["before_manifest_sha256"] == before["new_ownership_manifest_sha256"]
+            assert bridge["before_selection_sha256"] == before["new_selected_set_sha256"]
+            assert bridge["after_manifest_sha256"] == after["old_ownership_manifest_sha256"]
+            assert bridge["after_selection_sha256"] == after["old_selected_set_sha256"]
+        else:
+            assert after["old_ownership_manifest_sha256"] == before["new_ownership_manifest_sha256"]
+            assert after["old_selected_set_sha256"] == before["new_selected_set_sha256"]
     # The audit consumes exactly that authority: one key per hop and per forward admission.
     assert result.scope_transitions == len(expected)
+    assert result.namespace_transitions == 1
     assert render_document(baseline).encode() == (repo / BASELINE_PATH).read_bytes()

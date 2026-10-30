@@ -23,9 +23,9 @@ import sys
 
 import pytest
 
-from repomap_kg.runtime import python_payload
-from repomap_kg.runtime.commands import PYTHON_PAYLOAD_SOURCE
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime import python_payload
+from common_lore_index.runtime.commands import PYTHON_PAYLOAD_SOURCE
+from common_lore_index.runtime.release import (
     PSYCOPG_RELEASE_VERSION,
     RELEASE_FINAL_PACKAGE_CHECK_PY,
     RELEASE_FINAL_PROBE_PY,

@@ -6,7 +6,7 @@ from threading import Event, Thread
 import pytest
 
 from actual_refresh_failure_causality import FailureCausalityAuthority
-from repomap_kg.storage.backend_telemetry_contracts import (
+from common_lore_index.storage.backend_telemetry_contracts import (
     ConnectionTelemetryError,
 )
 from scale28_backend_observer_session import (

@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import psycopg
 
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 from repomap_test_support.test_cov5k_r2_fix2_encoding import canonical_digest
 from repomap_test_support.test_cov5k_r2_fix2_evidence import (
     ExecutorEvidence,

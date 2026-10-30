@@ -3,7 +3,7 @@ import json
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
+from common_lore_index.cli import main
 
 
 def test_job_status_cli_emits_bounded_json():
@@ -13,7 +13,7 @@ def test_job_status_cli_emits_bounded_json():
         "job": {"job_id": "job-1", "graph_id": "repo-map", "state": "running"},
     }
     stdout = io.StringIO()
-    with patch("repomap_kg.cli.coordinator_job_status", return_value=payload) as status:
+    with patch("common_lore_index.cli.coordinator_job_status", return_value=payload) as status:
         with redirect_stdout(stdout):
             code = main([
                 "ops", "coordinator-job-status", "--repo-map-home", "/placeholder/home",
@@ -30,7 +30,7 @@ def test_job_wait_cli_returns_nonzero_for_terminal_failure():
         "result": "failure",
         "job": {"job_id": "job-1", "graph_id": "repo-map", "state": "failed"},
     }
-    with patch("repomap_kg.cli.wait_for_coordinator_job", return_value=payload) as wait:
+    with patch("common_lore_index.cli.wait_for_coordinator_job", return_value=payload) as wait:
         code = main([
             "ops", "coordinator-job-wait", "--repo-map-home", "/placeholder/home",
             "--job-id", "job-1", "--wait-timeout-seconds", "30", "--json",
@@ -47,7 +47,7 @@ def test_job_cancel_cli_uses_explicit_job_id():
         "result": "accepted",
         "job": {"job_id": "job-1", "state": "cancel_requested"},
     }
-    with patch("repomap_kg.cli.cancel_coordinator_job", return_value=payload) as cancel:
+    with patch("common_lore_index.cli.cancel_coordinator_job", return_value=payload) as cancel:
         code = main([
             "ops", "coordinator-job-cancel", "--repo-map-home", "/placeholder/home",
             "--job-id", "job-1", "--json",
@@ -63,7 +63,7 @@ def test_job_listing_cli_passes_only_bounded_filters():
         "jobs": [],
         "next_cursor": None,
     }
-    with patch("repomap_kg.cli.list_coordinator_jobs", return_value=payload) as listing:
+    with patch("common_lore_index.cli.list_coordinator_jobs", return_value=payload) as listing:
         code = main([
             "ops", "coordinator-jobs", "--repo-map-home", "/placeholder/home",
             "--limit", "12", "--graph-id", "repo-map", "--cursor", "opaque", "--json",
@@ -92,7 +92,7 @@ def test_coordinator_health_cli_is_read_only_and_neutral():
         },
     }
     stdout = io.StringIO()
-    with patch("repomap_kg.cli.coordinator_health", return_value=payload) as health:
+    with patch("common_lore_index.cli.coordinator_health", return_value=payload) as health:
         with redirect_stdout(stdout):
             code = main([
                 "ops", "coordinator-health", "--repo-map-home", "/placeholder/home",

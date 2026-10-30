@@ -8,7 +8,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
     def test_mcp_tools_list_contains_only_read_only_tools(self):
-        from repomap_kg.server.mcp import tool_definitions, tool_input_schema
+        from common_lore_index.server.mcp import tool_definitions, tool_input_schema
 
         names = [tool["name"] for tool in tool_definitions()]
 
@@ -65,14 +65,14 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         )
 
     def test_mcp_tool_schemas_do_not_expose_psql_command(self):
-        from repomap_kg.server.mcp import tool_definitions
+        from common_lore_index.server.mcp import tool_definitions
 
         for tool in tool_definitions():
             with self.subTest(tool=tool["name"]):
                 self.assert_tool_schema_omits_unsafe_arguments(tool["inputSchema"])
 
     def test_legacy_status_schema_names_its_count_model(self):
-        from repomap_kg.server.mcp import tool_definitions
+        from common_lore_index.server.mcp import tool_definitions
 
         status_tool = next(
             tool for tool in tool_definitions() if tool["name"] == "repomap_status"
@@ -95,7 +95,7 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         )
 
     def test_mcp_read_tools_accept_project_and_do_not_require_root_path(self):
-        from repomap_kg.server.mcp import tool_input_schema
+        from common_lore_index.server.mcp import tool_input_schema
 
         self.assertEqual(tool_input_schema("repomap_status")["required"], [])
         self.assertEqual(tool_input_schema("repomap_canonical_nodes")["required"], [])
@@ -120,7 +120,7 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
                 self.assertIn("root_path", tool_input_schema(name)["properties"])
 
     def test_handle_tool_call_rejects_unknown_tool_and_non_object_args(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         with self.assertRaisesRegex(RepoMapMcpError, "unknown RepoMap MCP tool"):
             handle_tool_call("repomap_discover", {})
@@ -135,7 +135,7 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
             handle_tool_call("repomap_status", raw_arguments)
 
     def test_jsonrpc_tools_call_reports_missing_required_arguments(self):
-        from repomap_kg.server.mcp import handle_jsonrpc_message
+        from common_lore_index.server.mcp import handle_jsonrpc_message
 
         response = handle_jsonrpc_message(
             {
@@ -157,7 +157,7 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         self.assertIn("node", response["result"]["structuredContent"]["error"])
 
     def test_jsonrpc_tools_call_reports_unexpected_arguments(self):
-        from repomap_kg.server.mcp import handle_jsonrpc_message
+        from common_lore_index.server.mcp import handle_jsonrpc_message
 
         response = handle_jsonrpc_message(
             {
@@ -186,22 +186,22 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         self.assertIn("psql_command", response["result"]["structuredContent"]["error"])
 
     def test_handle_tool_call_wraps_storage_schema_errors(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
-        from repomap_kg.storage import StorageSchemaError
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.storage import StorageSchemaError
 
         with patch(
-            "repomap_kg.server.mcp.repomap_status",
+            "common_lore_index.server.mcp.repomap_status",
             side_effect=StorageSchemaError("bad storage"),
         ):
             with self.assertRaisesRegex(RepoMapMcpError, "bad storage"):
                 handle_tool_call("repomap_status", {"root_path": "/tmp/fixture"})
 
     def test_handle_tool_call_returns_structured_content_and_text_json(self):
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
 
         with patch(
-            "repomap_kg.server.mcp.repomap_canonical_nodes",
-            return_value=[{"canonical_key": "python.module:repomap_kg.cli"}],
+            "common_lore_index.server.mcp.repomap_canonical_nodes",
+            return_value=[{"canonical_key": "python.module:common_lore_index.cli"}],
         ):
             result = handle_tool_call(
                 "repomap_canonical_nodes",
@@ -214,15 +214,15 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
 
         self.assertEqual(
             result["structuredContent"],
-            [{"canonical_key": "python.module:repomap_kg.cli"}],
+            [{"canonical_key": "python.module:common_lore_index.cli"}],
         )
         self.assertEqual(
             json.loads(result["content"][0]["text"]),
-            [{"canonical_key": "python.module:repomap_kg.cli"}],
+            [{"canonical_key": "python.module:common_lore_index.cli"}],
         )
 
     def test_jsonrpc_initialize_tools_list_and_unknown_method(self):
-        from repomap_kg.server.mcp import handle_jsonrpc_message
+        from common_lore_index.server.mcp import handle_jsonrpc_message
 
         initialized = handle_jsonrpc_message(
             {"jsonrpc": "2.0", "id": 1, "method": "initialize"}
@@ -252,10 +252,10 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         self.assertEqual(missing["error"]["code"], -32601)
 
     def test_jsonrpc_tools_call_returns_result_or_mcp_error_payload(self):
-        from repomap_kg.server.mcp import handle_jsonrpc_message
+        from common_lore_index.server.mcp import handle_jsonrpc_message
 
         with patch(
-            "repomap_kg.server.mcp.repomap_status",
+            "common_lore_index.server.mcp.repomap_status",
             return_value={"server": "repomap-kg"},
         ):
             response = handle_jsonrpc_message(
@@ -288,7 +288,7 @@ class McpServerSchemaJsonRpcUnitTests(McpServerTestSupport):
         self.assertIn("unknown RepoMap MCP tool", error["result"]["content"][0]["text"])
 
     def test_jsonrpc_helpers_and_stdio_server_loop(self):
-        from repomap_kg.server.mcp import jsonrpc_error, jsonrpc_result, serve_stdio
+        from common_lore_index.server.mcp import jsonrpc_error, jsonrpc_result, serve_stdio
 
         self.assertEqual(jsonrpc_result("a", {"ok": True})["id"], "a")
         self.assertEqual(jsonrpc_error("b", -1, "nope")["error"]["message"], "nope")

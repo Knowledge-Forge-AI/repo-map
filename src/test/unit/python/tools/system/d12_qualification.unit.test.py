@@ -14,8 +14,8 @@ import pytest
 from ci.d12_hosted_reports import VERIFIED_AMD64_BASE_METADATA
 from ci.gate_contract_bindings import GateBindingError, GateRequest, MergeCandidate
 from ci.gate_contract_results import build_result
-from repomap_kg.runtime.release import GO_RELEASE_VERSION, POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
+from common_lore_index.runtime.release import GO_RELEASE_VERSION, POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
 from tools.system.config import SystemTestError
 from tools.system.d12_debian_policy import assess_debian_delta
 from tools.system import d12_qualification as qualification

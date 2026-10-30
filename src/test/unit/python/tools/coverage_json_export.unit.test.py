@@ -1,4 +1,5 @@
-"""Retained coverage evidence preserves actual lines and branch outcomes."""
+"""CLOE cutover re-attests the unchanged closed measurement fixture against current dependencies.
+Retained coverage evidence preserves actual lines and branch outcomes."""
 
 from __future__ import annotations
 

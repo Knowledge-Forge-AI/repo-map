@@ -30,8 +30,8 @@ MCP is a separate read-only query surface.
 1. Configure one or more `[[graphs]]` entries under `REPOMAP_HOME`, each with
    a graph id, root path, repository name, optional graph-specific database,
    privacy level, and `exclude_paths`.
-2. Start or verify the local runtime (`repomap-kg local up`,
-   `repomap-kg local status --check-containers --json`).
+2. Start or verify the local runtime (`cloe local up`,
+   `cloe local status --check-containers --json`).
 3. Maintain graphs with graph-scoped ops commands.
 4. Prefer the configured graph identity over ad hoc root/database arguments.
 
@@ -39,13 +39,13 @@ MCP is a separate read-only query surface.
 
 ```sh
 export REPOMAP_HOME=/path/to/repo-map-home
-repomap-kg local status --repo-map-home "$REPOMAP_HOME" --check-containers --json
-repomap-kg ops config-check --repo-map-home "$REPOMAP_HOME" --json
-repomap-kg ops graphs --repo-map-home "$REPOMAP_HOME" --json
-repomap-kg ops refresh-preflight --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
-repomap-kg ops refresh-graph --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
-repomap-kg ops refresh-status --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
-repomap-kg ops graph-summary --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
+cloe local status --repo-map-home "$REPOMAP_HOME" --check-containers --json
+cloe ops config-check --repo-map-home "$REPOMAP_HOME" --json
+cloe ops graphs --repo-map-home "$REPOMAP_HOME" --json
+cloe ops refresh-preflight --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
+cloe ops refresh-graph --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
+cloe ops refresh-status --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
+cloe ops graph-summary --repo-map-home "$REPOMAP_HOME" --graph <graph-id> --json
 ```
 
 Refresh one selected graph at a time. Preflight walks the graph root, applies
@@ -133,7 +133,7 @@ last accepted stored summary and preflight candidate set under
 maintenance refresh, compare with:
 
 ```sh
-repomap-kg ops drift-check --repo-map-home "$REPOMAP_HOME" --graph <graph-id> \
+cloe ops drift-check --repo-map-home "$REPOMAP_HOME" --graph <graph-id> \
   --baseline-file "$REPOMAP_HOME/status/baselines/<graph-id>/stored/latest.json" \
   --include-preflight \
   --preflight-baseline-file "$REPOMAP_HOME/status/baselines/<graph-id>/preflight/latest.json" \
@@ -160,8 +160,8 @@ Manual discovery/load remains useful for disposable tests, fixtures,
 debugging, and source development — not for routine folder-backed operation:
 
 ```sh
-repomap-kg discover <repo-root> --jsonl > <workdir>/observations.jsonl
-repomap-kg storage load-files <workdir>/observations.jsonl \
+cloe discover <repo-root> --jsonl > <workdir>/observations.jsonl
+cloe storage load-files <workdir>/observations.jsonl \
   --repository-name <name> \
   --root-path <repo-root> \
   --pg-database <database>
@@ -172,14 +172,14 @@ repomap-kg storage load-files <workdir>/observations.jsonl \
 Canonical graph identity is the default output model:
 
 ```sh
-repomap-kg storage summary --root-path <repo-root> --json
-repomap-kg storage nodes --root-path <repo-root> --kind <node-kind> --json
-repomap-kg storage edges --root-path <repo-root> --kind <edge-kind> --json
-repomap-kg storage neighborhood --root-path <repo-root> --node <canonical-key> --direction both --json
-repomap-kg storage file-neighborhood --root-path <repo-root> --path <repo-relative-path> --direction both --json
-repomap-kg storage host-mutators --root-path <repo-root> --category <category> --json
-repomap-kg storage host-mutators-summary --root-path <repo-root> --category <category> --json
-repomap-kg storage explain-canonical-edge --root-path <repo-root> --source-key <key> --kind <kind> --target-key <key> --json
+cloe storage summary --root-path <repo-root> --json
+cloe storage nodes --root-path <repo-root> --kind <node-kind> --json
+cloe storage edges --root-path <repo-root> --kind <edge-kind> --json
+cloe storage neighborhood --root-path <repo-root> --node <canonical-key> --direction both --json
+cloe storage file-neighborhood --root-path <repo-root> --path <repo-relative-path> --direction both --json
+cloe storage host-mutators --root-path <repo-root> --category <category> --json
+cloe storage host-mutators-summary --root-path <repo-root> --category <category> --json
+cloe storage explain-canonical-edge --root-path <repo-root> --source-key <key> --kind <kind> --target-key <key> --json
 ```
 
 Pass `--legacy` on `summary`, `nodes`, `edges`, `neighborhood`,
@@ -207,15 +207,15 @@ Database lifecycle commands are local administrative operations scoped to
 RepoMap-owned runtime containers:
 
 ```sh
-repomap-kg local db dump --repo-map-home <home> --database <database>
-repomap-kg local db dump-all --repo-map-home <home>
-repomap-kg local db backups --repo-map-home <home>
-repomap-kg local db backup-info <backup-id-or-path> --repo-map-home <home>
-repomap-kg local db backup-inspect <backup-id-or-path> --repo-map-home <home>
-repomap-kg local db restore-all --repo-map-home <home> --from-dump <backup-dir>
-repomap-kg local db init --repo-map-home <home> --database <database> --from-source
-repomap-kg local db upgrade-schema --repo-map-home <home> --database <database> --backup-first --yes
-repomap-kg local db drop --repo-map-home <home> --database <database> --backup-first --yes
+cloe local db dump --repo-map-home <home> --database <database>
+cloe local db dump-all --repo-map-home <home>
+cloe local db backups --repo-map-home <home>
+cloe local db backup-info <backup-id-or-path> --repo-map-home <home>
+cloe local db backup-inspect <backup-id-or-path> --repo-map-home <home>
+cloe local db restore-all --repo-map-home <home> --from-dump <backup-dir>
+cloe local db init --repo-map-home <home> --database <database> --from-source
+cloe local db upgrade-schema --repo-map-home <home> --database <database> --backup-first --yes
+cloe local db drop --repo-map-home <home> --database <database> --backup-first --yes
 ```
 
 `drop` is backup-first only: RepoMap creates and verifies a dump, manifest,

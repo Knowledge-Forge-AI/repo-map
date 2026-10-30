@@ -2,14 +2,14 @@ import json
 import tempfile
 import unittest
 
-import repomap_kg.extractors.config.nix as nix
+import common_lore_index.extractors.config.nix as nix
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
 )
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
@@ -216,7 +216,7 @@ class StorageNixProfileReadbackIntegrationTests(unittest.TestCase):
         self.assertEqual(raw_path_refs, "2")
 
     def test_nix_extractor_to_canonical_graph_pipeline(self) -> None:
-        from repomap_kg.canonicalization import canonicalize_observations
+        from common_lore_index.canonicalization import canonicalize_observations
 
         content = """{
   inputs = {
@@ -242,7 +242,7 @@ class StorageNixProfileReadbackIntegrationTests(unittest.TestCase):
         self.assertTrue(canon_result.ok)
         payload = canon_result.to_dict()
 
-        import repomap_kg.graph.keys as graph_keys
+        import common_lore_index.graph.keys as graph_keys
 
         flake_file_key = graph_keys.file_key("flake.nix")
         package_key = graph_keys.nix_package_key(

@@ -3,12 +3,12 @@ import os
 
 import pytest
 
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.service_package import contract, operations as owner
-from repomap_kg.service_package.artifacts import ServiceArtifactError
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
-from repomap_kg.service_package.operations import CoordinatorServiceOperations, ServiceActionResult, ServicePackageError
-from repomap_kg.service_package.systemd import SystemdUserAdapter
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.service_package import contract, operations as owner
+from common_lore_index.service_package.artifacts import ServiceArtifactError
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.operations import CoordinatorServiceOperations, ServiceActionResult, ServicePackageError
+from common_lore_index.service_package.systemd import SystemdUserAdapter
 from repomap_test_support.executable_authority import controlled_service_authority
 
 
@@ -20,6 +20,7 @@ def test_persisted_legacy_definition_is_inspected_and_removed_without_activation
     config = home / "repomap.rpl.toml"
     config.write_text(config.read_text().replace("[runtime]", '[runtime]\ncoordinator_mode = "native"'))
     with controlled_service_authority(tmp_path / "executables"):
+        monkeypatch.setattr(contract, "_IMPORT_PACKAGE", "repomap_kg")
         old_spec = contract.build_service_package_spec(home)
         adapter = adapter_type(user_home=tmp_path / "user", uid=os.getuid())
         calls: list[tuple[str, ...]] = []

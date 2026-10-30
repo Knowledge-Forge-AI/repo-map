@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config.terraform_hcl_helpers import (
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.terraform_hcl_helpers import (
     _terraform_hcl_bool_literal,
     _terraform_hcl_bounded_string,
     _terraform_hcl_credentialed_url,

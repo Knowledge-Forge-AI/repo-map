@@ -3,7 +3,7 @@ requires = ["setuptools==83.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "repomap-kg"
+name = "common-lore-index"
 version = "0.0.3"
 description = "Deterministic knowledge graph builder for polyglot repositories."
 readme = "README.md"
@@ -36,7 +36,9 @@ postgres = [
 ]
 
 [project.scripts]
-repomap-kg = "repomap_kg.cli:main"
+cloe = "common_lore_index.entrypoints:cloe_main"
+common-lore-index = "common_lore_index.entrypoints:long_main"
+repomap-kg = "common_lore_index.entrypoints:legacy_main"
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -64,31 +66,32 @@ package-dir = { "" = "src/main/python" }
 
 [tool.setuptools.packages.find]
 where = ["src/main/python"]
+include = ["common_lore_index", "common_lore_index.*", "repomap_kg", "repomap_kg.ops", "repomap_kg.server"]
 
 # ADR 0089 D7: third-party license and source records ship inside the wheel.
 [tool.setuptools.package-data]
-repomap_kg = ["third_party_licenses/*.json", "third_party_licenses/*.txt"]
+common_lore_index = ["third_party_licenses/*.json", "third_party_licenses/*.txt"]
 
 [tool.setuptools.data-files]
-"share/repomap-kg/rdbms" = [
+"share/common-lore-index/rdbms" = [
   "src/main/resources/rdbms/changelog.yaml",
 ]
-"share/repomap-kg/rdbms/2026/06" = [
+"share/common-lore-index/rdbms/2026/06" = [
   "src/main/resources/rdbms/2026/06/*.sql",
 ]
-"share/repomap-kg/rdbms/2026/07" = [
+"share/common-lore-index/rdbms/2026/07" = [
   "src/main/resources/rdbms/2026/07/*.sql",
 ]
-"share/repomap-kg/rdbms/2026/09" = [
+"share/common-lore-index/rdbms/2026/09" = [
   "src/main/resources/rdbms/2026/09/*.sql",
 ]
-"share/repomap-kg/coordinator-rdbms" = [
+"share/common-lore-index/coordinator-rdbms" = [
   "src/main/resources/coordinator-rdbms/changelog.yaml",
 ]
-"share/repomap-kg/coordinator-rdbms/2026/07" = [
+"share/common-lore-index/coordinator-rdbms/2026/07" = [
   "src/main/resources/coordinator-rdbms/2026/07/*.sql",
 ]
-"share/repomap-kg/coordinator-rdbms/2026/10" = [
+"share/common-lore-index/coordinator-rdbms/2026/10" = [
   "src/main/resources/coordinator-rdbms/2026/10/*.sql",
 ]
 

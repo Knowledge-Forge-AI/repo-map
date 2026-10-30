@@ -2,14 +2,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.css_html_matching import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.css_html_matching import (
     extract_css_selector_match_observations,
 )
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.observations.raw import RawObservation
 
 HTML_FIXTURE = """\
 <!doctype html>

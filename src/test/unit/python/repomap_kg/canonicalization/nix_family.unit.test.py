@@ -2,7 +2,7 @@ import json
 import unittest
 from collections import Counter
 
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     nix_output_key,
 )
 

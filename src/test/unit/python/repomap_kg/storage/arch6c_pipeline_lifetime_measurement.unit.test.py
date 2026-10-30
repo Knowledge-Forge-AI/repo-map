@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.observations import RawObservation
-from repomap_kg.storage import row_spool as row_spool_module
-from repomap_kg.storage import staged_rows as staged_rows_module
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_observability import (
+    from common_lore_index.observations import RawObservation
+from common_lore_index.storage import row_spool as row_spool_module
+from common_lore_index.storage import staged_rows as staged_rows_module
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurements,

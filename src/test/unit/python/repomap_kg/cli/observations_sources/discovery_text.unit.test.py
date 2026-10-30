@@ -7,7 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.cli import main
+from common_lore_index.cli import main
 
 class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
     def test_discover_prints_text_summary(self):
@@ -68,7 +68,7 @@ class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
 
         patch_cases = (
             (
-                "repomap_kg.cli.ingest_feed_source",
+                "common_lore_index.cli.ingest_feed_source",
                 [
                     "sources",
                     "ingest-feed",
@@ -81,7 +81,7 @@ class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
                 "ingested feed source source-fixture",
             ),
             (
-                "repomap_kg.cli.import_archive_source",
+                "common_lore_index.cli.import_archive_source",
                 [
                     "sources",
                     "import-archive",
@@ -94,7 +94,7 @@ class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
                 "imported local artifact source source-fixture",
             ),
             (
-                "repomap_kg.cli.import_warc_source",
+                "common_lore_index.cli.import_warc_source",
                 [
                     "sources",
                     "import-warc",
@@ -107,13 +107,13 @@ class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
                 "imported local WARC source source-fixture",
             ),
             (
-                "repomap_kg.cli.build_bulk_plan_from_config",
+                "common_lore_index.cli.build_bulk_plan_from_config",
                 ["bulk", "plan", "--config", "/tmp/bulk.toml"],
                 plan_manifest,
                 "planned bulk source plan-fixture",
             ),
             (
-                "repomap_kg.cli.import_bulk_source",
+                "common_lore_index.cli.import_bulk_source",
                 [
                     "bulk",
                     "import",
@@ -126,13 +126,13 @@ class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
                 "imported bulk source source-fixture",
             ),
             (
-                "repomap_kg.cli.build_api_plan_from_config",
+                "common_lore_index.cli.build_api_plan_from_config",
                 ["api", "plan", "--config", "/tmp/api.toml"],
                 plan_manifest,
                 "planned API source plan-fixture",
             ),
             (
-                "repomap_kg.cli.acquire_api_source",
+                "common_lore_index.cli.acquire_api_source",
                 [
                     "api",
                     "acquire",
@@ -145,13 +145,13 @@ class CliDiscoveryTextCommandUnitTests(unittest.TestCase):
                 "acquired API source source-fixture",
             ),
             (
-                "repomap_kg.cli.build_github_api_plan_from_config",
+                "common_lore_index.cli.build_github_api_plan_from_config",
                 ["github", "plan", "--config", "/tmp/github.toml"],
                 plan_manifest,
                 "planned GitHub API source plan-fixture",
             ),
             (
-                "repomap_kg.cli.acquire_github_api_source",
+                "common_lore_index.cli.acquire_github_api_source",
                 [
                     "github",
                     "acquire",

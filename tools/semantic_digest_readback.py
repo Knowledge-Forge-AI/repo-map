@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 
-from repomap_kg.storage.structural_digest import (
+from common_lore_index.storage.structural_digest import (
     STRUCTURAL_DIGEST_FAMILY_CODES,
     StructuralDigestFamily,
     structural_digest,

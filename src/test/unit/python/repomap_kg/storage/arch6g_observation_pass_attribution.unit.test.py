@@ -9,12 +9,12 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.canonicalization import _go_context as go_context_module
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage import staged_rows as staged_rows_module
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage._staged_row_adapters import _MeasuredObservationReplay
-from repomap_kg.storage.staging_observability import StagingMeasurementCategory, StagingMeasurements
+from common_lore_index.canonicalization import _go_context as go_context_module
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage import staged_rows as staged_rows_module
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage._staged_row_adapters import _MeasuredObservationReplay
+from common_lore_index.storage.staging_observability import StagingMeasurementCategory, StagingMeasurements
 
 
 @pytest.mark.parametrize("sized", [True, False])

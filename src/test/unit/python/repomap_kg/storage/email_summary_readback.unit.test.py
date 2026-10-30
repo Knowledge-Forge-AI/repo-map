@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     EmailSummaryRecord,
     StorageSchemaError,
     build_email_summary_query_sql,
@@ -59,15 +59,15 @@ def test_psycopg83_query_email_summary_uses_object_readback_adapter() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             return_value=payload,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.email_summary_from_storage_payload",
+            "common_lore_index.storage.summaries.email_summary_from_storage_payload",
             wraps=email_summary_from_storage_payload,
         ) as convert,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("email summary must use the adapter"),
         ),
     ):
@@ -225,11 +225,11 @@ def test_psycopg83_adapter_shape_error_propagates_without_fallback() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             side_effect=expected,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("email summary must not fall back"),
         ),
     ):
@@ -253,7 +253,7 @@ def _query_payload(
     root_path: str = "/tmp/fixture",
 ) -> EmailSummaryRecord:
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         return query_email_summary(["-d", "postgres"], root_path=root_path)

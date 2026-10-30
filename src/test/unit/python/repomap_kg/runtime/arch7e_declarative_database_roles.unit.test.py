@@ -5,12 +5,12 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.ops.config_records import OpsConfig
-from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority
-from repomap_kg.runtime.backup import init_database_from_source
-from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
-from repomap_kg.runtime.commands import default_env_text, render_compose_yaml
-from repomap_kg.runtime.database_roles import (
+from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.coordinator.local_lifecycle import LocalControlAuthority
+from common_lore_index.runtime.backup import init_database_from_source
+from common_lore_index.runtime.backup_restore_sets import restore_coordinated_backup
+from common_lore_index.runtime.commands import default_env_text, render_compose_yaml
+from common_lore_index.runtime.database_roles import (
     COORDINATOR_CONTROL_ROLE,
     READ_STATUS_ROLE,
     REFRESH_PUBLICATION_ROLE,
@@ -19,10 +19,10 @@ from repomap_kg.runtime.database_roles import (
     read_role_secrets,
     render_database_role_sql,
 )
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import build_local_runtime_plan
-from repomap_kg.server.http import load_config_for_server
-from repomap_kg.server.ops import load_mcp_ops_config
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import build_local_runtime_plan
+from common_lore_index.server.http import load_config_for_server
+from common_lore_index.server.ops import load_mcp_ops_config
 from repomap_test_support.local_db_backup import maybe_provenance_runner_result
 
 
@@ -183,10 +183,10 @@ def test_coordinator_authority_never_loads_admin_secret_and_routes_exact_roles(
 
     with (
         patch(
-            "repomap_kg.coordinator._lifecycle_authority.local_admin_password",
+            "common_lore_index.coordinator._lifecycle_authority.local_admin_password",
             side_effect=AssertionError("administrator secret must not be loaded"),
         ),
-        patch("repomap_kg.coordinator.local_lifecycle.psycopg.connect") as connect,
+        patch("common_lore_index.coordinator.local_lifecycle.psycopg.connect") as connect,
     ):
         authority = LocalControlAuthority(home, capability="coordinator")
         authority._connect(authority.database_name)
@@ -285,19 +285,19 @@ def test_fresh_graph_init_reconciles_roles_inside_cleanup_boundary(tmp_path: Pat
     events: list[str] = []
 
     with (
-        patch("repomap_kg.runtime._backup_lifecycle.inspect_owned_postgres_container"),
-        patch("repomap_kg.runtime._backup_lifecycle.database_exists", return_value=False),
-        patch("repomap_kg.runtime._backup_lifecycle.create_database"),
+        patch("common_lore_index.runtime._backup_lifecycle.inspect_owned_postgres_container"),
+        patch("common_lore_index.runtime._backup_lifecycle.database_exists", return_value=False),
+        patch("common_lore_index.runtime._backup_lifecycle.create_database"),
         patch(
-            "repomap_kg.runtime._backup_lifecycle.apply_source_schema",
+            "common_lore_index.runtime._backup_lifecycle.apply_source_schema",
             side_effect=lambda *_args: events.append("schema"),
         ),
         patch(
-            "repomap_kg.runtime._backup_lifecycle.reconcile_graph_database_roles",
+            "common_lore_index.runtime._backup_lifecycle.reconcile_graph_database_roles",
             side_effect=lambda *_args: events.append("roles"),
         ),
         patch(
-            "repomap_kg.runtime.provisioning.require_graph_schema_ready",
+            "common_lore_index.runtime.provisioning.require_graph_schema_ready",
             side_effect=lambda *_args: events.append("ready"),
         ),
     ):
@@ -315,22 +315,22 @@ def test_coordinated_restore_reconciles_graphs_then_control(tmp_path: Path) -> N
 
     with (
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container"
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container"
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             return_value=False,
         ),
-        patch("repomap_kg.runtime.backup_restore_sets.create_database"),
-        patch("repomap_kg.runtime.backup_restore_sets.run_pg_restore"),
+        patch("common_lore_index.runtime.backup_restore_sets.create_database"),
+        patch("common_lore_index.runtime.backup_restore_sets.run_pg_restore"),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.reconcile_graph_database_roles",
+            "common_lore_index.runtime.backup_restore_sets.reconcile_graph_database_roles",
             side_effect=lambda _plan, database, _runner: events.append(
                 ("graph", database)
             ),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.reconcile_control_database_roles",
+            "common_lore_index.runtime.backup_restore_sets.reconcile_control_database_roles",
             side_effect=lambda _plan, database, _runner: events.append(
                 ("control", database)
             ),

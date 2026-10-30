@@ -25,23 +25,23 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg import cli
-from repomap_kg.cli import _postgres_facade
-from repomap_kg.coordinator import local_mode
-from repomap_kg.ops import refresh as ops_refresh
+from common_lore_index import cli
+from common_lore_index.cli import _postgres_facade
+from common_lore_index.coordinator import local_mode
+from common_lore_index.ops import refresh as ops_refresh
 from repomap_test_support import sqlite_local_guard
 from repomap_test_support.host_read_store_config import setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_shell_source, write_sqlite_home
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, remove_database, tool
 
 POSTGRES_IMPLEMENTATION = {
-    "repomap_kg.coordinator.local_mode",
-    "repomap_kg.coordinator.local_lifecycle",
-    "repomap_kg.service_package.api",
-    "repomap_kg.storage.staged_ingestion",
-    "repomap_kg.runtime.maintenance",
-    "repomap_kg.runtime.release_cluster",
-    "repomap_kg.ops.refresh",
+    "common_lore_index.coordinator.local_mode",
+    "common_lore_index.coordinator.local_lifecycle",
+    "common_lore_index.service_package.api",
+    "common_lore_index.storage.staged_ingestion",
+    "common_lore_index.runtime.maintenance",
+    "common_lore_index.runtime.release_cluster",
+    "common_lore_index.ops.refresh",
     "psycopg",
 }
 
@@ -95,9 +95,9 @@ def test_extension_restore_custody_defers_maintenance_until_postgresql_use(tmp_p
     code = (
         "import runpy, sys, types\n"
         f"runpy.run_path({str(Path(sqlite_local_guard.__file__))!r})['_install_psycopg_blocker']()\n"
-        "from repomap_kg.cli._postgres_facade import is_postgres_driver_missing\n"
-        "from repomap_kg.runtime import _backup_lifecycle, _extension_restore_custody as custody\n"
-        "assert 'repomap_kg.runtime.maintenance' not in sys.modules\n"
+        "from common_lore_index.cli._postgres_facade import is_postgres_driver_missing\n"
+        "from common_lore_index.runtime import _backup_lifecycle, _extension_restore_custody as custody\n"
+        "assert 'common_lore_index.runtime.maintenance' not in sys.modules\n"
         "plan = types.SimpleNamespace()\n"
         "authority = custody.RestoreLifecycleAuthority(plan, lambda _database: None, namespace='n')\n"
         "intent = custody.DatabaseCreationIntent('target', 'token')\n"
@@ -192,13 +192,13 @@ def test_coordinator_refusal_never_loads_the_coordinator(tmp_path: Path, key: tu
     assert completed.returncode == 1, completed.stderr
     assert "sqlite-local-refresh-rejects-coordinator-mode" in completed.stderr, completed.stderr
     assert harness.forbidden_events() == [], harness.forbidden_events()
-    assert "repomap_kg.coordinator.local_mode" not in harness.imported_modules(), harness.imported_modules()
+    assert "common_lore_index.coordinator.local_mode" not in harness.imported_modules(), harness.imported_modules()
     assert not (home / "state").exists(), "coordinator refusal touched the store"
 
 
 def test_facade_names_resolve_to_their_source_objects(monkeypatch: pytest.MonkeyPatch) -> None:
     main_module = inspect.getmodule(cli.main)
-    assert main_module is not None and main_module.__name__ == "repomap_kg.cli.main"
+    assert main_module is not None and main_module.__name__ == "common_lore_index.cli.main"
     for name in sorted(_postgres_facade.POSTGRES_FACADE_NAMES):
         source = _postgres_facade.load_postgres_facade_name(name)
         assert getattr(cli, name) is source, name

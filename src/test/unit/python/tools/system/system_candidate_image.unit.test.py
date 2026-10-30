@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE,
     PRODUCT_MINIMUM_LIBPQ_VERSION,
     DebPackage,

@@ -19,12 +19,12 @@ and resolution behavior. It does not own the query procedure
 The MCP server is the stdio command:
 
 ```sh
-repomap-kg mcp serve
+cloe mcp serve
 ```
 
 MCP clients launch that command directly (or the equivalent
-`python -m repomap_kg.server.mcp` from a source checkout with
-`PYTHONPATH=<checkout>/src/main/python`). `repomap-kg server serve` is the
+`python -m common_lore_index.server.mcp` from a source checkout with
+`PYTHONPATH=<checkout>/src/main/python`). `cloe server serve` is the
 separate long-running HTTP health/status runtime; do not configure it as the
 stdio MCP command, and do not run stdio MCP as a detached container command.
 
@@ -35,7 +35,7 @@ the interpreter's console script explicitly. From a checkout virtual
 environment (not a wheel or installed-package qualification):
 
 ```sh
-<checkout>/.venv/bin/repomap-kg mcp serve --repo-map-home <REPOMAP_HOME>
+<checkout>/.venv/bin/cloe mcp serve --repo-map-home <REPOMAP_HOME>
 ```
 
 Client-neutral stdio entry; map the fields onto the client's own format, and
@@ -43,7 +43,7 @@ point `REPOMAP_MCP_CONFIG` at a file containing `{"projects": {}}`:
 
 ```json
 {
-  "command": "/abs/checkout/.venv/bin/repomap-kg",
+  "command": "/abs/checkout/.venv/bin/cloe",
   "args": ["mcp", "serve", "--repo-map-home", "/abs/repo-map-home"],
   "env": {"REPOMAP_MCP_CONFIG": "/abs/repo-map-home/empty-mcp-registry.json"}
 }
@@ -133,7 +133,7 @@ Missing-database and failure text depends on the operation and the driver:
   Without a password, `psql` shows its bounded error or the missing-database
   mapping.
 
-Run `repomap-kg storage` or the local ops CLI directly when you need the
+Run `cloe storage` or the local ops CLI directly when you need the
 detailed diagnosis.
 
 ## SQLite Local Homes

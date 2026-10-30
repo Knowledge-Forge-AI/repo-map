@@ -6,14 +6,14 @@ from datetime import timedelta
 
 import psycopg
 
-from repomap_kg.coordinator import JobRequest, normalize_request
-from repomap_kg.coordinator.storage import (
+from common_lore_index.coordinator import JobRequest, normalize_request
+from common_lore_index.coordinator.storage import (
     CONTROL_SCHEMA_VERSION,
     ControlSchemaError,
     ControlStore,
     JobClaim,
 )
-from repomap_kg.coordinator._control_schema import (
+from common_lore_index.coordinator._control_schema import (
     ControlSchemaStatus,
     discover_control_migrations,
     migration_text,
@@ -211,8 +211,8 @@ class ControlStoreIntegrationTests(unittest.TestCase):
 
     def test_singleton_takeover_recovers_safely_unpublished_attempt(self):
         from pathlib import Path
-        from repomap_kg.coordinator import _publication_phase as phase
-        from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
+        from common_lore_index.coordinator import _publication_phase as phase
+        from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
         from repomap_test_support.startup_recovery_scenarios import _make_refresh_fixture, _refresh_harness, _req_norm, _run_real_refresh_attempt
 
         # Graph migrations require their own database, separate from control tables.

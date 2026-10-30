@@ -6,13 +6,13 @@ import json
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     external_row_sort,
     structural_digest as digest_module,
     structural_digest_encoding,
 )
-from repomap_kg.storage.staged_rows import PreparedStageRows
-from repomap_kg.storage.structural_digest import (
+from common_lore_index.storage.staged_rows import PreparedStageRows
+from common_lore_index.storage.structural_digest import (
     STRUCTURAL_DIGEST_FAMILY_CODES,
     STRUCTURAL_DIGEST_FIELDS,
     StructuralDigestError,

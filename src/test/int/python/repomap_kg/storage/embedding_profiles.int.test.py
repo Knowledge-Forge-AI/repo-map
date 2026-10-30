@@ -9,14 +9,14 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.semantic_candidates import EmbeddingProfilesQuery
-from repomap_kg.storage.semantic_candidate_readback import query_embedding_profiles
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.psql import run_psql
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.semantic_candidate_import import candidate_schema_sql
-from repomap_kg.storage.semantic_candidates import EmbeddingProfile
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.storage.semantic_candidates import EmbeddingProfilesQuery
+from common_lore_index.storage.semantic_candidate_readback import query_embedding_profiles
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.psql import run_psql
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.semantic_candidate_import import candidate_schema_sql
+from common_lore_index.storage.semantic_candidates import EmbeddingProfile
+from common_lore_index.storage.sql_core import sql_literal
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.semantic_candidate_restore import (
     optional_sql_fixture_cleanup,
@@ -175,7 +175,7 @@ def test_profile_discovery_publication_and_stdio_boundary():
             execute(postgres, f"GRANT SELECT ON repomap_enrichment.rebuilds TO {READER}")
 
             # Publish a real successor between receipt read and fenced metadata SQL.
-            from repomap_kg.storage import semantic_candidate_readback as owner
+            from common_lore_index.storage import semantic_candidate_readback as owner
             original = owner.execute_json_readback
             successors = []
 

@@ -11,9 +11,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.server import mcp
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.host_read_store_config import (
     NO_FALLBACK_GUARDS, patched_guards, setup_owned_config,
 )
@@ -214,7 +214,7 @@ def test_unknown_role_is_explicit_and_never_becomes_direct(store: Path, fault: s
 
 @pytest.mark.parametrize("role", ["definition", "", None, True, [], {}])
 def test_invalid_role_is_bounded_error_before_io(store: Path, role: Any) -> None:
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("open")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("open")):
         with pytest.raises(RepoMapMcpError, match="evidence_role must be"):
             call(evidence_role=role)
 
@@ -249,7 +249,7 @@ def test_direct_view_postgres_remains_unsupported_without_io(tmp_path: Path, mon
 
 
 def test_existing_tool_advertises_one_optional_role_selector() -> None:
-    from repomap_kg.server._mcp_locations import node_locations_tool_definition
+    from common_lore_index.server._mcp_locations import node_locations_tool_definition
 
     schema = node_locations_tool_definition()["inputSchema"]
     assert schema["required"] == ["graph_id", "canonical_key"]

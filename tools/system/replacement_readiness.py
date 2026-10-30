@@ -8,11 +8,11 @@ import re
 import subprocess
 from typing import Callable, Protocol, TypeVar
 
-from repomap_kg.coordinator.limits import (
+from common_lore_index.coordinator.limits import (
     DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS,
     DEFAULT_LIMITS,
 )
-from repomap_kg.ops.config_helpers import redact_text
+from common_lore_index.ops.config_helpers import redact_text
 from tools.system.config import SystemTestError
 
 
@@ -158,7 +158,7 @@ def _health_args() -> list[str]:
         "coordinator",
         "python",
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "coordinator-health",
         "--repo-map-home",

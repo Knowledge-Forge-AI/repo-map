@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import coverage
-from repomap_kg.coordinator._worker_launch import WorkerLaunchSpec
+from common_lore_index.coordinator._worker_launch import WorkerLaunchSpec
 from runner_coverage import ChildCoverageSession
 from runner_portable_coverage import make_portable_worker_spec_adapter
 from runner_portable_diagnostics import (

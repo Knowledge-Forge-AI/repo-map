@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.server.canonical_read_store import (
+from common_lore_index.server.canonical_read_store import (
     CanonicalEdgeExplanationQuery,
     CanonicalEdgeQuery,
     CanonicalNeighborhoodQuery,
@@ -16,7 +16,7 @@ from repomap_kg.server.canonical_read_store import (
     CanonicalStorageQueries,
     PostgresCanonicalReadStore,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalEdgeExplanationRecord,
     CanonicalEdgeRecord,
     CanonicalNeighborhoodRecord,
@@ -107,7 +107,7 @@ def _recording_queries(calls: list[tuple[tuple, dict]]) -> CanonicalStorageQueri
 
 class CanonicalReadStoreDispatchTests(McpServerTestSupport):
     def _call_all(self, *, schema_version: int) -> list[dict]:
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
 
         return [
             handle_tool_call(name, {"project": "repo-map", "result_schema_version": schema_version, **args})
@@ -124,10 +124,10 @@ class CanonicalReadStoreDispatchTests(McpServerTestSupport):
                 connections.append(connection)
                 return _fake
 
-            with env, patch("repomap_kg.server.mcp.canonical_read_store", factory):
+            with env, patch("common_lore_index.server.mcp.canonical_read_store", factory):
                 seam_results = self._call_all(schema_version=schema_version)
             with env, patch.multiple(
-                "repomap_kg.server.mcp",
+                "common_lore_index.server.mcp",
                 query_canonical_node_records=lambda *a, **k: (NODE,),
                 query_canonical_edge_records=lambda *a, **k: (EDGE,),
                 query_canonical_edge_explanation=lambda *a, **k: EXPLANATION,
@@ -143,7 +143,7 @@ class CanonicalReadStoreDispatchTests(McpServerTestSupport):
         self.assertEqual(seam_results[0]["structuredContent"][0]["canonical_key"], NODE.canonical_key)
 
     def test_invalid_arguments_and_graphs_refuse_before_store_access(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         a, b = "python.module:a", "python.module:b"
         edge_args = {"source_key": a, "kind": "imports", "target_key": b}
@@ -171,8 +171,8 @@ class CanonicalReadStoreDispatchTests(McpServerTestSupport):
             ("repomap_canonical_nodes", {"project": "hidden"}, "graph 'hidden' is not MCP-visible"),
         )
         env = self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config())
-        with env, patch("repomap_kg.server.mcp.canonical_read_store", _fail), patch(
-            "repomap_kg.server.canonical_read_store.readback_postgres_authority", _fail
+        with env, patch("common_lore_index.server.mcp.canonical_read_store", _fail), patch(
+            "common_lore_index.server.canonical_read_store.readback_postgres_authority", _fail
         ):
             for name, args, expected in cases:
                 with self.subTest(name=name, args=args), self.assertRaises(RepoMapMcpError) as raised:
@@ -183,7 +183,7 @@ class CanonicalReadStoreDispatchTests(McpServerTestSupport):
 class PostgresCanonicalReadStoreAdapterTests(McpServerTestSupport):
     def _connection(self, graph_id: str, **env: str):
         """Resolve a configured target and return its PostgreSQL-bound connection."""
-        from repomap_kg.server.mcp import storage_connection
+        from common_lore_index.server.mcp import storage_connection
 
         with patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()), **env}, clear=True):
             target: Any = storage_connection(project=graph_id)
@@ -193,7 +193,7 @@ class PostgresCanonicalReadStoreAdapterTests(McpServerTestSupport):
         return setup_owned_home(self)
 
     def test_setup_owned_home_reads_with_projected_read_status_role(self) -> None:
-        from repomap_kg.runtime.database_role_contract import read_read_status_password
+        from common_lore_index.runtime.database_role_contract import read_read_status_password
 
         home = self._setup_home()
         ambient = {"PGPASSWORD": "ambient-admin", "REPOMAP_PG_PASSWORD": "ambient-admin"}
@@ -258,7 +258,7 @@ class PostgresCanonicalReadStoreAdapterTests(McpServerTestSupport):
         self.assertEqual(calls[0][1]["repository_identity"], "repo1:repo-map")
 
     def test_legacy_explicit_connection_call_is_unchanged(self) -> None:
-        from repomap_kg.server.mcp_core import StorageConnection
+        from common_lore_index.server.mcp_core import StorageConnection
 
         connection = StorageConnection(
             root_path="/tmp/legacy", pg_database="legacy_db", root_path_display="[explicit-root]",
@@ -275,7 +275,7 @@ class PostgresCanonicalReadStoreAdapterTests(McpServerTestSupport):
         )])
 
     def test_host_failure_refuses_without_container_fallback_or_lifecycle(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         unresolved = 'could not translate host name "postgres" to address'
         guards = NO_FALLBACK_GUARDS
@@ -286,13 +286,13 @@ class PostgresCanonicalReadStoreAdapterTests(McpServerTestSupport):
             def failing(*_args, _error=error, **_kwargs):
                 raise _error
 
-            with env, patch("repomap_kg.server.mcp.query_canonical_node_records", failing):
+            with env, patch("common_lore_index.server.mcp.query_canonical_node_records", failing):
                 with _patched(guards), self.assertRaises(RepoMapMcpError) as raised:
                     handle_tool_call("repomap_canonical_nodes", {"project": "repo-map"})
             self.assertEqual(str(raised.exception), expected)
 
     def test_seam_import_boundary_and_pure_construction(self) -> None:
-        import repomap_kg.server.canonical_read_store as module
+        import common_lore_index.server.canonical_read_store as module
 
         tree = ast.parse(Path(module.__file__).read_text(encoding="utf-8"))
         imported = {
@@ -300,10 +300,10 @@ class PostgresCanonicalReadStoreAdapterTests(McpServerTestSupport):
             for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))
             for alias in node.names
         }
-        forbidden = ("subprocess", "shutil", "repomap_kg.runtime.local", "repomap_kg.ops.refresh",
-                     "repomap_kg.ops._refresh_psql", "repomap_kg.storage.staged_ingestion",
-                     "repomap_kg.ops.direct_publication", "repomap_kg.graph.multi_source_pipeline",
-                     "repomap_kg.coordinator")
+        forbidden = ("subprocess", "shutil", "common_lore_index.runtime.local", "common_lore_index.ops.refresh",
+                     "common_lore_index.ops._refresh_psql", "common_lore_index.storage.staged_ingestion",
+                     "common_lore_index.ops.direct_publication", "common_lore_index.graph.multi_source_pipeline",
+                     "common_lore_index.coordinator")
         self.assertFalse({name for name in imported if name and name.startswith(forbidden)})
         connection = self._connection(
             "repo-map", REPOMAP_OPS_CONFIG=str(self.write_visible_ops_config())

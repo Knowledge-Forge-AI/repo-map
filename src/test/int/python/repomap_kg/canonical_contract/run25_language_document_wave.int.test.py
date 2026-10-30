@@ -16,15 +16,15 @@ import shutil
 import tempfile
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.keys import (
     js_function_key,
     ruby_class_key,
     ruby_method_key,
     ruby_singleton_method_key,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.observations.raw import RawObservation
 from repomap_test_support.run25_wave2_corpus import (
     create_run25_wave2_graph_config,
     inject_malformed_plist,

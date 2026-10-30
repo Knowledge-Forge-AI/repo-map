@@ -5,7 +5,7 @@ from __future__ import annotations
 def test_bulk_manifest_summary_payload_read_bulk_manifest_payloads_api_manifest_summary_payload_read_api_manifest_payloads_bulk_summary_from_storage_payload_api_summary_from_storage_payload_manifest_records_contracts(
     tmp_path,
 ) -> None:
-    import repomap_kg.storage.summary_rows_manifest as summary_rows_manifest
+    import common_lore_index.storage.summary_rows_manifest as summary_rows_manifest
     bulk_manifest = tmp_path / ".repomap" / "bulk-runs" / "source" / "run" / "manifest.json"
     bulk_manifest.parent.mkdir(parents=True)
     bulk_manifest.write_text(

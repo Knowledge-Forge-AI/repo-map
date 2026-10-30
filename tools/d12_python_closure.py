@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping
 
 import native_apt_prerequisites as apt
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 
 KEYS = {"schema", "architecture", "result", "reasons", "baseline", "exclusion", "retained"}
 BASELINE = {"machine", "entries", "digest", "elves", "dynload", "dynload_real", "imports", "failed", "targets"}

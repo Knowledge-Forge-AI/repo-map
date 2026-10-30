@@ -5,10 +5,10 @@ from __future__ import annotations
 from threading import Event
 from typing import Callable
 
-from repomap_kg.storage.staging_operation_contracts import (
+from common_lore_index.storage.staging_operation_contracts import (
     STAGING_OPERATION_DESCRIPTORS,
 )
-from repomap_kg.storage.staging_phase_events import STAGING_PHASE_CODES
+from common_lore_index.storage.staging_phase_events import STAGING_PHASE_CODES
 
 
 _CONTROL_CODES = frozenset((*STAGING_PHASE_CODES, *STAGING_OPERATION_DESCRIPTORS))

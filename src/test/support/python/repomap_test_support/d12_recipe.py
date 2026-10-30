@@ -10,8 +10,8 @@ from pathlib import Path
 import subprocess
 from typing import Any
 
-from repomap_kg.runtime.commands import render_server_dockerfile
-from repomap_kg.runtime.release_manifest import (
+from common_lore_index.runtime.commands import render_server_dockerfile
+from common_lore_index.runtime.release_manifest import (
     D12_CANDIDATE_LIBPQ_VERSION,
     D12_CANDIDATE_PACKAGE_MANIFEST,
 )

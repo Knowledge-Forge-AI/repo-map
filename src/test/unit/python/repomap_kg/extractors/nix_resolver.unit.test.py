@@ -1,13 +1,13 @@
 from dataclasses import replace
 from hashlib import sha256
 
-from repomap_kg.extractors.config.nix import extract_nix_file_observations
-from repomap_kg.extractors.config.nix_resolver import (
+from common_lore_index.extractors.config.nix import extract_nix_file_observations
+from common_lore_index.extractors.config.nix_resolver import (
     NixBindingView,
     ResolutionOutcome,
     resolve_nix_relations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 def _identity(prefix: str, binding: str) -> str:

@@ -7,12 +7,12 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.ops.config_records import OpsConfigError
-from repomap_kg.graph.multi_source_pipeline import multi_source_config_generation
-from repomap_kg.ops.resolved_config import resolve_ops_config
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.runtime.plan import build_local_runtime_plan
+from common_lore_index.ops.config_records import OpsConfigError
+from common_lore_index.graph.multi_source_pipeline import multi_source_config_generation
+from common_lore_index.ops.resolved_config import resolve_ops_config
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.runtime.plan import build_local_runtime_plan
 from repomap_test_support.ops_refresh import (
     OpsRefreshUnitTestCase,
     VALID_REFRESH_CONFIG,

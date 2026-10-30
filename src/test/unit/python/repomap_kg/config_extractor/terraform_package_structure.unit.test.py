@@ -30,9 +30,9 @@ TERRAFORM_HCL_PROFILE_EXPORTS = (
 
 
 def test_rootpkg20_terraform_reexports_split_hcl_helpers() -> None:
-    import repomap_kg.extractors.config.terraform as terraform
-    import repomap_kg.extractors.config.terraform_hcl_observations as observations
-    import repomap_kg.extractors.config.terraform_hcl_profiles as profiles
+    import common_lore_index.extractors.config.terraform as terraform
+    import common_lore_index.extractors.config.terraform_hcl_observations as observations
+    import common_lore_index.extractors.config.terraform_hcl_profiles as profiles
     for name in TERRAFORM_HCL_OBSERVATION_EXPORTS:
         assert getattr(terraform, name) is getattr(observations, name)
     for name in TERRAFORM_HCL_PROFILE_EXPORTS:

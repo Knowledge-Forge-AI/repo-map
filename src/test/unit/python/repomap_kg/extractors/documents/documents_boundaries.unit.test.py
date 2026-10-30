@@ -3,8 +3,8 @@ import zipfile
 from io import BytesIO
 from unittest.mock import patch
 
-from repomap_kg.extractors.documents.office import extract_odf_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.documents.office import extract_odf_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 def by_kind(observations: tuple[RawObservation, ...]) -> dict[str, list[RawObservation]]:

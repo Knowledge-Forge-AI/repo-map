@@ -1,7 +1,7 @@
 import unittest
 from typing import cast
 
-from repomap_kg.canonicalization.diagnostics import (
+from common_lore_index.canonicalization.diagnostics import (
     CanonicalizationDiagnostic,
     diagnostic_sort_key,
     diagnostics_have_errors,

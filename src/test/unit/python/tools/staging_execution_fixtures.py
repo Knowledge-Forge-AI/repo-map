@@ -77,7 +77,7 @@ def _summary() -> CoverageSummary:
         branch_percent=100.0,
         files=(
             CoverageFileRecord(
-                path=Path("src/main/python/repomap_kg/synthetic.py"),
+                path=Path("src/main/python/common_lore_index/synthetic.py"),
                 executable_lines=100,
                 covered_lines=100,
                 line_percent=100.0,

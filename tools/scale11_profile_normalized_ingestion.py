@@ -24,19 +24,19 @@ for import_root in (SOURCE_ROOT, TEST_SUPPORT_ROOT, TOOL_ROOT):
     if import_root_text not in sys.path:
         sys.path.insert(0, import_root_text)
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementEvent,
     StagingMeasurements,
 )
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
 from repomap_test_support.postgres_harness import (
     DEFAULT_TEST_POSTGRES_PORT,
     DEFAULT_TEST_POSTGRES_RUNTIME,

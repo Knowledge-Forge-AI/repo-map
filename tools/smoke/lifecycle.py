@@ -12,8 +12,8 @@ import sys
 import time
 from typing import Any, Callable, Iterator
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
-from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE
+from common_lore_index.runtime.local import LocalRuntimeIdentity
+from common_lore_index.runtime.release import POSTGRES_RELEASE_IMAGE
 from repomap_test_support.resource_docker import (
     DockerBaseline,
     DockerResourceOwner,
@@ -95,7 +95,7 @@ def _run_cli(
     if private_env.is_file():
         env.update(_private_env(private_env))
     completed = subprocess.run(
-        [sys.executable, "-m", "repomap_kg", *arguments],
+        [sys.executable, "-m", "common_lore_index", *arguments],
         cwd=Path(__file__).resolve().parents[2],
         env=env,
         check=False,
@@ -161,8 +161,8 @@ def _run_runtime_probe(
     command = [
         "-c",
         (
-            "import psycopg, repomap_kg; "
-            "assert repomap_kg.__file__.startswith('/workspace/src/main/python/repomap_kg/'); "
+            "import psycopg, common_lore_index; "
+            "assert common_lore_index.__file__.startswith('/workspace/src/main/python/common_lore_index/'); "
             f"c=psycopg.connect(host={postgres_host!r},dbname='postgres',user='repomap',"
             "password=__import__('os').environ['REPOMAP_PG_PASSWORD']); "
             "assert c.execute('SELECT 1').fetchone()==(1,); c.close()"

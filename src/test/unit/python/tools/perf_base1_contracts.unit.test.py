@@ -30,9 +30,9 @@ from perf_base1_reporting import (
     require_small_equivalence,
 )
 from perf_base1_worker import _SpoolSequence
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.observations.spool import ObservationSpool
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.observations.spool import ObservationSpool
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
 
 
 class _TrackingSpool(ObservationSpool):

@@ -19,7 +19,7 @@ from ci.retained_python_ratchets import (
 BASELINE_PATH = Path("tools/ci/retained_python_ratchets.json")
 SCOPE_PATH = Path("tools/ci/retained_python_scope_transitions.json")
 STATUS_PATH = Path("docs/status/2099/01/01/99999-synthetic-scope-exit.md")
-MODULE_PATH = "src/main/python/repomap_kg/future.py"
+MODULE_PATH = "src/main/python/common_lore_index/future.py"
 
 
 def snapshot_fixture() -> SnapshotDocument:
@@ -52,7 +52,7 @@ def snapshot_fixture() -> SnapshotDocument:
 
 
 def selection_item(
-    module: str = "repomap_kg.future",
+    module: str = "common_lore_index.future",
     path: str = MODULE_PATH,
     ownership_class: str = "python_retained",
     tier: str = "T1-future",

@@ -9,24 +9,24 @@ from typing import Any
 import unittest
 from unittest import mock
 
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.refresh_adapter import (
     _truncate_bytes,
     _extract_diagnostic_summary,
     _nonnegative_count,
 )
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._core_disposition import CoreDispositionMixin
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._core_disposition import CoreDispositionMixin
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.local_mode import (
     _coordinator_endpoint_names,
     _resolve_psql_executable,
     serve_configured_coordinator,
     CoordinatorModeError as LocalCoordinatorModeError,
 )
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver,
 )
-from repomap_kg.coordinator.polling import (
+from common_lore_index.coordinator.polling import (
     PollingScheduler,
     PollOutcome,
 )

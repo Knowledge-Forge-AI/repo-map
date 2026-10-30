@@ -1,15 +1,15 @@
 import unittest
 
-from repomap_kg.canonicalization.shell_bash_family import _try_canonicalize_bash_observation
-from repomap_kg.canonicalization.diagnostics import CanonicalizationDiagnostic
-from repomap_kg.canonicalization.records import (
+from common_lore_index.canonicalization.shell_bash_family import _try_canonicalize_bash_observation
+from common_lore_index.canonicalization.diagnostics import CanonicalizationDiagnostic
+from common_lore_index.canonicalization.records import (
     CanonicalEdge,
     CanonicalEdgeEvidenceLink,
     CanonicalEvidence,
     CanonicalNode,
     CanonicalNodeEvidenceLink,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 class ShellCanonicalizationBoundariesUnitTests(unittest.TestCase):
     def test_canonicalize_bash_observations(self):

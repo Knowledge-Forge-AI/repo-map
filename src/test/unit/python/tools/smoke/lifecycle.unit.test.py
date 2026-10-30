@@ -71,7 +71,7 @@ def test_budget_accepts_values_above_legacy_clamp():
 
 
 def _completed(returncode: int, payload: object) -> subprocess.CompletedProcess[str]:
-    return subprocess.CompletedProcess(("python", "-m", "repomap_kg"), returncode, json.dumps(payload), "")
+    return subprocess.CompletedProcess(("python", "-m", "common_lore_index"), returncode, json.dumps(payload), "")
 
 
 def test_post_drop_readback_accepts_only_typed_missing_database_result() -> None:
@@ -246,7 +246,7 @@ def test_post_drop_readback_failure_summary_handles_malformed_and_unknown_shapes
     ),
 )
 def test_post_drop_readback_failure_summary_handles_invalid_json(raw_stdout: str) -> None:
-    proc = subprocess.CompletedProcess(("python", "-m", "repomap_kg"), 1, raw_stdout, "")
+    proc = subprocess.CompletedProcess(("python", "-m", "common_lore_index"), 1, raw_stdout, "")
     with pytest.raises(RuntimeError, match="product command did not prove typed target absence"):
         validate_target_database_absent(proc)
 

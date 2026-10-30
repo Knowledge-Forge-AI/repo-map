@@ -4,7 +4,7 @@ import json
 import os
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     build_ingested_source_query_sql,
     build_source_feed_item_explanation_query_sql,
     build_source_feed_item_query_sql,
@@ -24,7 +24,7 @@ from repomap_kg.storage import (
     query_source_run_records,
     query_source_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 class StorageSourceFeedHelperUnitTests(unittest.TestCase):
     def test_build_source_feed_queries_use_read_only_metadata_filters(self):
@@ -281,7 +281,7 @@ class StorageSourceFeedHelperUnitTests(unittest.TestCase):
                     READBACK_DRIVER_ENV: "psql",
                 },
             ),
-            patch("repomap_kg.storage.subprocess.run") as run,
+            patch("common_lore_index.storage.subprocess.run") as run,
         ):
             run.side_effect = [
                 subprocess.CompletedProcess(["psql"], 0, stdout=f"{payload}\n")
@@ -369,7 +369,7 @@ class StorageSourceFeedHelperUnitTests(unittest.TestCase):
         }) + "\n"
         payloads = ["[]\n", sum_p, "[]\n", "[]\n", "[]\n", "{}\n"]
         with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql", PG_CONNECTOR_ENV: "psql"}):
-            with patch("repomap_kg.storage.subprocess.run") as run:
+            with patch("common_lore_index.storage.subprocess.run") as run:
                 run.side_effect = [subprocess.CompletedProcess(["psql"], 0, stdout=p) for p in payloads]
                 query_ingested_source_records(["-d", "postgres"], root_path="/tmp/fixture", repository_identity="repo1:ident")
                 query_source_summary(["-d", "postgres"], root_path="/tmp/fixture", source_id="s1", repository_identity="repo1:ident")

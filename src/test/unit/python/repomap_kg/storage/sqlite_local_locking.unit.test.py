@@ -23,8 +23,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import locking
-from repomap_kg.storage.sqlite_local.locking import (
+from common_lore_index.storage.sqlite_local import locking
+from common_lore_index.storage.sqlite_local.locking import (
     LOCKING_UNAVAILABLE,
     _backend_for,
     _PosixBackend,
@@ -33,7 +33,7 @@ from repomap_kg.storage.sqlite_local.locking import (
     lock_path,
     probe_graph_lock,
 )
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.cli_in_process import module_process_environment
 from repomap_test_support.sqlite_local_lock_children import (
     HOLD_AND_SPAWN,
@@ -45,7 +45,7 @@ from repomap_test_support.sqlite_local_lock_children import (
 
 IN_PROGRESS = "graph-publication-in-progress"
 NOT_PRIVATE = "graph-database-unavailable: graph lock file is not private"
-PACKAGE = Path(locking.__file__).parents[2]  # src/main/python/repomap_kg
+PACKAGE = Path(locking.__file__).parents[2]  # src/main/python/common_lore_index
 
 
 def _code(caught: pytest.ExceptionInfo[LocalStoreError]) -> str:
@@ -135,13 +135,13 @@ sys.meta_path.insert(0, Blocker())
 package = Path(sys.argv[1]) / "storage" / "sqlite_local"
 stage = {}
 for module in sorted(p.stem for p in package.glob("*.py") if p.stem != "__init__"):
-    importlib.import_module(f"repomap_kg.storage.sqlite_local.{module}")
+    importlib.import_module(f"common_lore_index.storage.sqlite_local.{module}")
 stage["sqlite_local"] = list(attempts)
 for module in ("ops.local_state_layout", "ops.local_backup", "ops.local_cleanup", "ops.local_refresh",
                "ops.local_refresh_enabled", "cli._ops_sqlite_dispatch"):
-    importlib.import_module(f"repomap_kg.{module}")
+    importlib.import_module(f"common_lore_index.{module}")
 stage["entries"] = list(attempts)
-from repomap_kg.storage.sqlite_local import locking
+from common_lore_index.storage.sqlite_local import locking
 class Fake:
     LK_UNLCK, LK_NBLCK = 0, 2
     held = set()
@@ -183,13 +183,13 @@ def test_canary_local_closure_never_imports_fcntl(tmp_path: Path) -> None:
     assert completed.returncode == 0, completed.stderr
     report = json.loads(completed.stdout)
     stages = report["stages"]
-    # Guarded stdlib importers (subprocess) may try fcntl; no repomap_kg module in the package may.
-    assert not [name for name in stages["sqlite_local"] if str(name).startswith("repomap_kg")], stages
+    # Guarded stdlib importers (subprocess) may try fcntl; no common_lore_index module in the package may.
+    assert not [name for name in stages["sqlite_local"] if str(name).startswith("common_lore_index")], stages
     # The entry closure imports successfully with fcntl blocked. Only the guarded
     # non-Local try/except importers (disclosed deviation D3) may attempt it.
-    guarded = {"repomap_kg.coordinator.endpoint", "repomap_kg.coordinator._portable_authority",
-               "repomap_kg.service_package._artifacts_locking"}
-    assert {name for name in stages["entries"] if str(name).startswith("repomap_kg")} <= guarded, stages
+    guarded = {"common_lore_index.coordinator.endpoint", "common_lore_index.coordinator._portable_authority",
+               "common_lore_index.service_package._artifacts_locking"}
+    assert {name for name in stages["entries"] if str(name).startswith("common_lore_index")} <= guarded, stages
     assert stages["windows"] == [], stages
     assert report["outcomes"] == [False, IN_PROGRESS, True, LOCKING_UNAVAILABLE], report
 

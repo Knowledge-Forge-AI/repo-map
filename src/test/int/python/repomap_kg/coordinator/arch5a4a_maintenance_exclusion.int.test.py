@@ -9,18 +9,18 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from repomap_kg.coordinator.contracts import JobRequest
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.contracts import JobRequest
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.local_lifecycle import (
     initialize_coordinator_control,
     maintenance_activity_for_home,
     maintenance_window_for_database_drop,
     maintenance_window_for_graph_upgrade,
 )
-from repomap_kg.storage.authority import RequestId
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.storage.authority import RequestId
+from common_lore_index.coordinator.storage import ControlStore
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.runtime.maintenance import (
+from common_lore_index.runtime.maintenance import (
     MaintenanceUnavailableError,
     maintenance_activity,
     maintenance_ready,

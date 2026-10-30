@@ -6,18 +6,18 @@ from unittest.mock import patch
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.coordinator._refresh_generation import GenerationClaim
+    from common_lore_index.coordinator._refresh_generation import GenerationClaim
 
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator._refresh_generation import validate_configured_generations
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.graph import multi_source_pipeline
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.generations import source_generation
-from repomap_kg.ops.refresh import preflight_graph, refresh_enabled_graphs, refresh_graph
-from repomap_kg.ops.reports import refresh_result_to_jsonable
-from repomap_kg.server.ops import graph_context
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator._refresh_generation import validate_configured_generations
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.graph import multi_source_pipeline
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.generations import source_generation
+from common_lore_index.ops.refresh import preflight_graph, refresh_enabled_graphs, refresh_graph
+from common_lore_index.ops.reports import refresh_result_to_jsonable
+from common_lore_index.server.ops import graph_context
 
 
 def _config_text(first_root: Path, second_root: Path) -> str:
@@ -103,9 +103,9 @@ def _request() -> dict[str, object]:
 def test_direct_refresh_captures_all_bindings_before_one_database_call(tmp_path):
     _, config = _config(tmp_path)
     with (
-        patch("repomap_kg.ops.refresh.discover_observations") as discover,
+        patch("common_lore_index.ops.refresh.discover_observations") as discover,
         patch(
-            "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+            "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
             return_value=SimpleNamespace(repository_id=1, run_id=2, files=2),
         ) as publish,
     ):
@@ -138,7 +138,7 @@ def test_preflight_and_refresh_enabled_use_complete_public_safe_capture(tmp_path
     assert preflight.root_path_display == "[multi-source]"
 
     with patch(
-        "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+        "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
         return_value=SimpleNamespace(repository_id=1, run_id=2, files=2),
     ):
         result = refresh_enabled_graphs(config)[0]
@@ -160,7 +160,7 @@ def test_fractional_config_metadata_publishes_portably(tmp_path):
     )
     assert preflight_graph(config, "fixture-graph").result == "success"
     with patch(
-        "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+        "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
         return_value=SimpleNamespace(repository_id=1, run_id=2, files=3),
     ) as publish:
         result = refresh_graph(config, "fixture-graph")
@@ -181,7 +181,7 @@ def test_fractional_config_metadata_publishes_portably(tmp_path):
 
 def test_coordinator_resolution_uses_complete_candidate_generation(tmp_path):
     resolver, _, _ = _resolver(tmp_path)
-    with patch("repomap_kg.coordinator.configured_refresh._source_token") as source:
+    with patch("common_lore_index.coordinator.configured_refresh._source_token") as source:
         request = resolver.resolve_request(_request())
     source.assert_not_called()
     assert request.source_generation.startswith("sg1:")
@@ -191,7 +191,7 @@ def test_coordinator_resolution_uses_complete_candidate_generation(tmp_path):
 def test_coordinator_generation_scan_does_not_capture_semantics(tmp_path):
     resolver, _, _ = _resolver(tmp_path)
     with patch(
-        "repomap_kg.graph.multi_source_pipeline.capture_multi_source_candidate",
+        "common_lore_index.graph.multi_source_pipeline.capture_multi_source_candidate",
         side_effect=AssertionError("coordinator performed semantic capture"),
     ) as capture:
         request = resolver.resolve_request(_request())
@@ -210,7 +210,7 @@ def test_worker_generation_validation_does_not_capture_semantics(tmp_path):
     resolver, _, config = _resolver(tmp_path)
     request = resolver.resolve_request(_request())
     with patch(
-        "repomap_kg.graph.multi_source_pipeline.capture_multi_source_candidate",
+        "common_lore_index.graph.multi_source_pipeline.capture_multi_source_candidate",
         side_effect=AssertionError("worker performed semantic capture"),
     ) as capture:
         validate_configured_generations(config, cast("GenerationClaim", request))
@@ -310,7 +310,7 @@ def test_direct_multi_source_receipt_authority_uses_bound_bundle_generations(tmp
     _, config = _config(tmp_path)
     expected = capture_multi_source_candidate(config.graphs[0])
     with patch(
-        "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+        "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
         return_value=SimpleNamespace(repository_id=1, run_id=2, files=2),
     ) as publish:
         result = refresh_graph(config, "fixture-graph")
@@ -335,7 +335,7 @@ def test_multi_source_capture_source_unavailable_has_typed_classification(tmp_pa
 def test_multi_source_capture_failure_has_typed_classification(tmp_path):
     _, config = _config(tmp_path)
     with patch(
-        "repomap_kg.graph.multi_source_pipeline.discover_repository",
+        "common_lore_index.graph.multi_source_pipeline.discover_repository",
         side_effect=OSError("synthetic unreadable source"),
     ):
         with pytest.raises(ValueError) as raised:
@@ -356,8 +356,8 @@ def test_multi_source_readback_is_admitted_for_supported_bindings(tmp_path):
 def test_mcp_graph_context_admits_supported_multi_binding_readback(tmp_path):
     _, config = _config(tmp_path)
     with (
-        patch("repomap_kg.server.ops.load_mcp_ops_config", return_value=config),
-        patch("repomap_kg.server._ops_records.load_mcp_ops_config", return_value=config),
+        patch("common_lore_index.server.ops.load_mcp_ops_config", return_value=config),
+        patch("common_lore_index.server._ops_records.load_mcp_ops_config", return_value=config),
     ):
         context = graph_context("fixture-graph")
     assert context.graph.id == "fixture-graph"

@@ -3,11 +3,11 @@ from dataclasses import replace
 
 import pytest
 
-from repomap_kg.service_package import contract, operations as owner
-from repomap_kg.service_package.artifacts import ServiceArtifactError
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
-from repomap_kg.service_package.operations import CoordinatorServiceOperations, ServicePackageError
-from repomap_kg.service_package.systemd import SystemdUserAdapter
+from common_lore_index.service_package import contract, operations as owner
+from common_lore_index.service_package.artifacts import ServiceArtifactError
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.operations import CoordinatorServiceOperations, ServicePackageError
+from common_lore_index.service_package.systemd import SystemdUserAdapter
 
 
 def test_generation_uses_current_import_owner(tmp_path, service_authority, monkeypatch):
@@ -17,11 +17,12 @@ def test_generation_uses_current_import_owner(tmp_path, service_authority, monke
 
 @pytest.fixture(params=[SystemdUserAdapter, LaunchdUserAdapter])
 def installed_legacy(request, tmp_path, service_authority, monkeypatch):
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
     home = tmp_path / "product-home"
     setup_local_runtime(home)
     config = home / "repomap.rpl.toml"
     config.write_text(config.read_text().replace("[runtime]", '[runtime]\ncoordinator_mode = "native"'))
+    monkeypatch.setattr(contract, "_IMPORT_PACKAGE", "repomap_kg")
     old_spec = contract.build_service_package_spec(home)
     adapter = request.param(user_home=tmp_path / "user", uid=501)
     calls: list[tuple[str, ...]] = []

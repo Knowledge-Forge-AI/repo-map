@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.extractors.languages import go_protocol
-from repomap_kg.extractors.languages.go_protocol import (
+from common_lore_index.extractors.languages import go_protocol
+from common_lore_index.extractors.languages.go_protocol import (
     GoHelperUnavailableError,
     GoProtocolError,
     iter_go_protocol_observations,

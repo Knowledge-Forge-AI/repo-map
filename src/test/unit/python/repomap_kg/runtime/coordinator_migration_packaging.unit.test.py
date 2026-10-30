@@ -4,8 +4,8 @@ from pathlib import Path
 import shutil
 import tomllib
 
-from repomap_kg.coordinator._control_schema import discover_control_migrations
-from repomap_kg.runtime.commands import render_server_dockerfile
+from common_lore_index.coordinator._control_schema import discover_control_migrations
+from common_lore_index.runtime.commands import render_server_dockerfile
 
 
 ROOT = Path(__file__).resolve().parents[6]

@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from repomap_kg.canonicalization.records import (
+from common_lore_index.canonicalization.records import (
     CanonicalEdge,
     CanonicalEdgeEvidenceLink,
     CanonicalEvidence,
@@ -11,7 +11,7 @@ from repomap_kg.canonicalization.records import (
     CanonicalizationResult,
     canonical_edge_key,
 )
-from repomap_kg.canonicalization.diagnostics import CanonicalizationDiagnostic
+from common_lore_index.canonicalization.diagnostics import CanonicalizationDiagnostic
 
 
 class CanonicalUnitTests(unittest.TestCase):

@@ -4,15 +4,15 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.graph.multi_source import (
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def _graph(root):
@@ -77,7 +77,7 @@ def test_parent_seals_complete_inventory_without_source_locator_in_manifest(tmp_
 
 def test_seal_configured_sources_rejects_unsealable_file(tmp_path, monkeypatch):
     import os
-    import repomap_kg.artifacts.source_sealer as sealer_mod
+    import common_lore_index.artifacts.source_sealer as sealer_mod
 
     source = tmp_path / "source"
     source.mkdir()
@@ -143,7 +143,7 @@ def test_seal_configured_sources_detects_content_hash_mutation(tmp_path, monkeyp
 def test_seal_configured_sources_detects_generation_drift(tmp_path, monkeypatch):
     import pytest
     from dataclasses import replace
-    import repomap_kg.artifacts.source_sealer as sealer_mod
+    import common_lore_index.artifacts.source_sealer as sealer_mod
 
     source = tmp_path / "source"
     source.mkdir()

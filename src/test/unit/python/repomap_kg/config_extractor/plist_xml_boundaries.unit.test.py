@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations
 
 
 class ConfigExtractorPlistXmlBoundariesUnitTests(unittest.TestCase):
@@ -142,7 +142,7 @@ class ConfigExtractorPlistXmlBoundariesUnitTests(unittest.TestCase):
         )
         self.assertEqual(spring_obs[0].kind, "xml.document")
 
-        from repomap_kg.extractors.config.xml import _xml_parse_error_line
+        from common_lore_index.extractors.config.xml import _xml_parse_error_line
         import xml.etree.ElementTree as ET
         err_no_pos = ET.ParseError("err")
         self.assertIsNone(_xml_parse_error_line(err_no_pos))

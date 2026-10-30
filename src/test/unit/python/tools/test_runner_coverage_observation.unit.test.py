@@ -382,7 +382,7 @@ class TestRunnerCoverageObservation(unittest.TestCase):
             self.assertEqual(unmeas.returncode, 0)
             self.assertEqual(list(session.data_dir.glob(".coverage*")), [])
             mcp = launch_observed_process(
-                [sys.executable, "-m", "repomap_kg.server.mcp"], family="cli_module",
+                [sys.executable, "-m", "common_lore_index.server.mcp"], family="cli_module",
                 cwd=Path.cwd(), input_text='{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n',
                 pid_namespace_relation="shared", timeout=30,
             )

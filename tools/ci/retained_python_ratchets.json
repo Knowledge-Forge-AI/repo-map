@@ -836,7 +836,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "0679fa6b3f452fb5b679b0b5a5b7f179039e23a0bbdf476a0e284886a6cbfbe4"
+    "sha256": "9d530ac19861c0d8a8e8c4f027a144309b4657a3c2753688b8c01e7e79564243"
   },
   "ruff": {
     "findings": [
@@ -15232,6 +15232,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.entrypoints",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/entrypoints.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.extractors",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/extractors/__init__.py",
@@ -18139,6 +18145,42 @@
         "module": "common_lore_index.storage.table_rows",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/table_rows.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.__main__",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/__main__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.ops",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/ops/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.ops.config_migration",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/ops/config_migration.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.server",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.server.mcp",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/server/mcp.py",
         "tier": "T1-future"
       }
     ],

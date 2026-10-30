@@ -10,7 +10,7 @@ import pytest
 from repomap_test_support.cli_integration import OPS_CONFIG_TEMPLATE, run_cli_module
 from repomap_test_support.sqlite_local_fixtures import graph_toml, sqlite_home_toml
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, tool
-from repomap_kg.runtime.plan import LOCAL_RUNTIME_ENV_FILE
+from common_lore_index.runtime.plan import LOCAL_RUNTIME_ENV_FILE
 
 
 def snapshot(root: Path) -> dict[str, bytes]:
@@ -175,7 +175,7 @@ def test_mcp_explicit_config_environment_survives_foreign_default(tmp_path: Path
 
 @pytest.mark.parametrize("operation", ["up_local_runtime", "down_local_runtime", "query_local_runtime_status"])
 def test_runtime_api_refuses_implicit_foreign_home_before_runtime_work(tmp_path: Path, monkeypatch, operation: str) -> None:
-    from repomap_kg.runtime import local
+    from common_lore_index.runtime import local
     current, legacy = defaults(tmp_path, monkeypatch)
     current.mkdir(mode=0o700)
     (current / "foreign.txt").write_text("opaque private sentinel")
@@ -188,8 +188,8 @@ def test_runtime_api_refuses_implicit_foreign_home_before_runtime_work(tmp_path:
 
 
 def test_legacy_runtime_and_config_facades_select_the_same_original_home(tmp_path: Path, monkeypatch) -> None:
-    from repomap_kg.ops import config, config_loading
-    from repomap_kg.runtime import local
+    from common_lore_index.ops import config, config_loading
+    from common_lore_index.runtime import local
     current, legacy = defaults(tmp_path, monkeypatch)
     legacy.mkdir(mode=0o700)
     (legacy / "00.rp.toml").write_text(OPS_CONFIG_TEMPLATE)

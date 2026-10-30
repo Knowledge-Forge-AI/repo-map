@@ -10,8 +10,8 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_nix_summary,
@@ -218,7 +218,7 @@ class StorageNixDomainSummaryIntegrationTests(unittest.TestCase):
                 )
             )
 
-            from repomap_kg.server.mcp import repomap_nix_summary
+            from common_lore_index.server.mcp import repomap_nix_summary
 
             with tempfile.TemporaryDirectory() as ops_config_tmpdir:
                 ops_config_path = Path(ops_config_tmpdir) / "nix-summary4.local.toml"

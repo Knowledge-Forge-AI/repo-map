@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.extractors.documents.markdown import (
+from common_lore_index.extractors.documents.markdown import (
     extract_markdown_file_observations,
     markdown_anchor,
     markdown_anchors_for_content,

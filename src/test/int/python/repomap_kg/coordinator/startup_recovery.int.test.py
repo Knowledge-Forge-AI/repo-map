@@ -7,14 +7,14 @@ from typing import cast
 import psycopg
 import pytest
 
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._portable_capability import create_portable_capability
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
-from repomap_kg.coordinator.storage import SingletonActiveError
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._portable_capability import create_portable_capability
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator.storage import SingletonActiveError
 from repomap_test_support.portable_worker_scenarios import coordinator_test_limits, create_test_sealed_capability
 
 
@@ -149,7 +149,7 @@ def test_connected_interruption_before_publication_start_proof_yields_not_starte
             connection.execute("UPDATE graph_leases SET expires_at = now() - interval '1 second' WHERE job_id = %s", (sub.job_id,))
 
         # 3. Real configured resolver wires durable fence installation before file gate decision and requeues
-        from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
+        from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
 
         resolver = ConfiguredRefreshResolver(config_p, Path(postgres.psql_command))
         store.set_durable_fence_callback(

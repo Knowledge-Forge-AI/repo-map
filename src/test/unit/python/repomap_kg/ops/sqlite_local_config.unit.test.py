@@ -14,8 +14,8 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.ops.config import load_ops_config, load_ops_config_home
-from repomap_kg.ops.config_local import (
+from common_lore_index.ops.config import load_ops_config, load_ops_config_home
+from common_lore_index.ops.config_local import (
     LocalSqliteConfig,
     declared_storage_backend,
     load_graph_registry_config,
@@ -23,8 +23,8 @@ from repomap_kg.ops.config_local import (
     local_graph_binding,
     sqlite_graph_database_path,
 )
-from repomap_kg.ops.config_records import OpsConfig, OpsConfigError
-from repomap_kg.storage.sqlite_local.connection import graph_database_uri
+from common_lore_index.ops.config_records import OpsConfig, OpsConfigError
+from common_lore_index.storage.sqlite_local.connection import graph_database_uri
 from repomap_test_support.host_read_store_config import setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import (
     graph_toml,

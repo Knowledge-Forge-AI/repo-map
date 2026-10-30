@@ -5,7 +5,7 @@ from pathlib import Path
 
 from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
 
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     LocalDbBackupError,
     dump_database,
     format_backup_info_table,
@@ -14,7 +14,7 @@ from repomap_kg.runtime.backup import (
     list_backups,
     read_backup_info,
 )
-from repomap_kg.runtime.local import setup_local_runtime
+from common_lore_index.runtime.local import setup_local_runtime
 
 
 class LocalDbBackupDumpListingBoundariesUnitTests(LocalDbBackupUnitTestCase):

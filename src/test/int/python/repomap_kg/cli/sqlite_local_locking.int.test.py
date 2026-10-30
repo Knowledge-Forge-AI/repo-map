@@ -48,13 +48,13 @@ from repomap_test_support.sqlite_local_lock_children import (
 GRAPH = "vault"
 IN_PROGRESS = "graph-publication-in-progress"
 POSTGRES_IMPLEMENTATION = {
-    "repomap_kg.coordinator.local_mode",
-    "repomap_kg.coordinator.local_lifecycle",
-    "repomap_kg.service_package.api",
-    "repomap_kg.storage.staged_ingestion",
-    "repomap_kg.runtime.maintenance",
-    "repomap_kg.runtime.release_cluster",
-    "repomap_kg.ops.refresh",
+    "common_lore_index.coordinator.local_mode",
+    "common_lore_index.coordinator.local_lifecycle",
+    "common_lore_index.service_package.api",
+    "common_lore_index.storage.staged_ingestion",
+    "common_lore_index.runtime.maintenance",
+    "common_lore_index.runtime.release_cluster",
+    "common_lore_index.ops.refresh",
     "psycopg",
 }
 

@@ -8,8 +8,8 @@ import os
 import sys
 from threading import Event
 
-import repomap_kg.cli as cli_facade
-import repomap_kg.cli.main as _cli_main_callable
+import common_lore_index.cli as cli_facade
+import common_lore_index.cli.main as _cli_main_callable
 from repomap_test_support.scale14_event_control import TestEventControlChannel
 
 product_cli = sys.modules.get(_cli_main_callable.__module__)

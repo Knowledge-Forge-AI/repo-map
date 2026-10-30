@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.storage.errors import StorageSchemaError
 
 
 def test_storage_summary_from_payload_and_load_summary_from_payload_contracts_remain_stable() -> None:
-    import repomap_kg.storage.summary_rows_storage as summary_rows_storage
+    import common_lore_index.storage.summary_rows_storage as summary_rows_storage
     load_summary = summary_rows_storage.load_summary_from_payload(
         {"repository_id": "7", "run_id": "11", "files": "13"}
     )
@@ -92,8 +92,8 @@ def test_storage_summary_from_payload_and_load_summary_from_payload_contracts_re
     ] == 89
 
 def test_storage_summary_rows_core_private_helpers_remain_internal() -> None:
-    import repomap_kg.storage.summary_rows as summary_rows
-    import repomap_kg.storage.summary_rows_core as summary_rows_core
+    import common_lore_index.storage.summary_rows as summary_rows
+    import common_lore_index.storage.summary_rows_core as summary_rows_core
     assert summary_rows._count_from_mapping is summary_rows_core._count_from_mapping
     assert (
         summary_rows._required_count_map_from_mapping
@@ -136,7 +136,7 @@ def test_storage_summary_payload_parsers_reject_non_mapping_payloads(
     parser: str,
     label: str,
 ) -> None:
-    import repomap_kg.storage.summary_rows_storage as summary_rows_storage
+    import common_lore_index.storage.summary_rows_storage as summary_rows_storage
     with pytest.raises(
         StorageSchemaError,
         match=f"psql returned a malformed {label}",

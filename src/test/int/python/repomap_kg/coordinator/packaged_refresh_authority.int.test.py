@@ -14,33 +14,33 @@ from unittest.mock import patch
 import psycopg
 import pytest
 
-from repomap_kg.coordinator import refresh_adapter
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator import refresh_adapter
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver,
     build_configured_refresh_coordinator,
 )
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.refresh_adapter import (
     build_refresh_worker_runner,
     load_refresh_capability,
     remove_refresh_capability,
 )
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.graph_file_sql import GraphFileFilters
-from repomap_kg.ops.graph_files import query_graph_files
-from repomap_kg.runtime.database_role_contract import (
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.graph_file_sql import GraphFileFilters
+from common_lore_index.ops.graph_files import query_graph_files
+from common_lore_index.runtime.database_role_contract import (
     READ_STATUS_PASSWORD_ENV,
     project_read_status_config,
 )
-from repomap_kg.runtime.database_roles import (
+from common_lore_index.runtime.database_roles import (
     REFRESH_PUBLICATION_ROLE,
     RoleSecrets,
     render_database_role_sql,
 )
-from repomap_kg.service_package.environment import apply_service_environment
-from repomap_kg.storage import apply_migrations, default_rdbms_root, read_run_publication
+from common_lore_index.service_package.environment import apply_service_environment
+from common_lore_index.storage import apply_migrations, default_rdbms_root, read_run_publication
 from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
@@ -127,7 +127,7 @@ def test_packaged_authority_reaches_prelaunch_with_durable_claim(monkeypatch):
             monkeypatch.chdir(root)
             try:
                 with patch.dict(os.environ), patch(
-                    "repomap_kg.coordinator.refresh_adapter.run_refresh_worker",
+                    "common_lore_index.coordinator.refresh_adapter.run_refresh_worker",
                     side_effect=nonexecuting_worker,
                 ) as worker:
                     apply_service_environment(os.environ)
@@ -215,7 +215,7 @@ def test_packaged_worker_publishes_two_binding_fixture_through_real_protocol(mon
                 assert len(launches) == 1, launches
                 launch = launches[0]
                 result = launch["result"]
-                assert launch["argv"][:3] == (sys.executable, "-m", "repomap_kg.coordinator.refresh_worker")
+                assert launch["argv"][:3] == (sys.executable, "-m", "common_lore_index.coordinator.refresh_worker")
                 assert launch["keys"] <= _WORKER_ENVIRONMENT_KEYS and launch["path"] == str(psql.parent)
                 assert launch["cwd"] == root.resolve()
                 assert launch["endpoint"] == (pg.host, pg.port, "configured")

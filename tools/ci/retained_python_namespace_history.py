@@ -133,3 +133,15 @@ def namespace_governing_paths(root: Path) -> set[Path]:
         require(record["id"].encode() in decision, "decision lacks identifier")
         paths.add(root / record["decision"])
     return paths
+
+
+def namespace_path_successors(root: Path) -> dict[str, str]:
+    """Expose only the sealed source bijection to current census history checks.
+
+    The ratchet lineage owner must still replay each complete source edge.
+    This table connects a living predecessor owner to its exact current identity;
+    it never replaces or edits a historical decomposition record.
+    """
+    path = root / LEDGER_PATH
+    records = parse_records(read_file(root, LEDGER_PATH) if path.exists() or path.is_symlink() else None)
+    return {row["before_path"]: row["after_path"] for record in records for row in record["source_files"]}

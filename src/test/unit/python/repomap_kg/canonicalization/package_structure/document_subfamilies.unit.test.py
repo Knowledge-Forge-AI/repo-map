@@ -3,10 +3,10 @@ from __future__ import annotations
 
 
 def test_canon_doc_split0_warc_subfamily_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.document_warc_family as document_warc_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.document_warc_family as document_warc_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -30,10 +30,10 @@ def test_canon_doc_split0_warc_subfamily_module_imports() -> None:
 
 
 def test_canon_doc_split1_xml_subfamily_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.document_xml_family as document_xml_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.document_xml_family as document_xml_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -57,10 +57,10 @@ def test_canon_doc_split1_xml_subfamily_module_imports() -> None:
 
 
 def test_canon_doc_split2_html_subfamily_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.document_html_family as document_html_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.document_html_family as document_html_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -84,11 +84,11 @@ def test_canon_doc_split2_html_subfamily_module_imports() -> None:
 
 
 def test_canon_doc_split3_css_subfamily_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.edge_helpers as edge_helpers
-    import repomap_kg.canonicalization.document_css_family as document_css_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.edge_helpers as edge_helpers
+    import common_lore_index.canonicalization.document_css_family as document_css_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -114,10 +114,10 @@ def test_canon_doc_split3_css_subfamily_module_imports() -> None:
 
 
 def test_canon_doc_split4_markdown_subfamily_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.document_family as document_family
-    import repomap_kg.canonicalization.document_markdown_family as document_markdown_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization.document_markdown_family as document_markdown_family
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations

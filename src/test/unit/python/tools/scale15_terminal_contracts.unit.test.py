@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 from scale15_terminal_contracts import (
     CleanupState,
     ControlFailure,

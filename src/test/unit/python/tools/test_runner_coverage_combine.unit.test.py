@@ -374,7 +374,7 @@ def test_scale20_disk_space_wrapper_under_child_coverage_session(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     import os, scale18_digest_campaign as campaign
-    from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command
+    from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command
 
     free = 15 * 1024**3
     wrapper = tmp_path / "scale20_worker.py"

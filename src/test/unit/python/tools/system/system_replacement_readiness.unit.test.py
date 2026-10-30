@@ -17,7 +17,7 @@ TOOLS = ROOT / "tools"
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
-from repomap_kg.coordinator.limits import (
+from common_lore_index.coordinator.limits import (
     DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS,
     DEFAULT_LIMITS,
 )

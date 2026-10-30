@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from repomap_kg.storage.authority import AttemptNumber, JobId
-from repomap_kg.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.authority import AttemptNumber, JobId
+from common_lore_index.storage.publication import RunPublicationAttempt
 from scale15_terminal_contracts import (
     CleanupState,
     PublicationState,

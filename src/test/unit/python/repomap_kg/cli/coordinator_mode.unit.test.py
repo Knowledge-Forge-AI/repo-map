@@ -8,11 +8,11 @@ import pytest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import main
-from repomap_kg.coordinator.local_mode import CoordinatorModeError
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import main
+from common_lore_index.coordinator.local_mode import CoordinatorModeError
 
 
 def test_refresh_graph_parser_keeps_direct_mode_as_default():
@@ -43,7 +43,7 @@ def test_explicit_coordinator_mode_emits_durable_terminal_result():
         "replayed": False,
         "job": {"job_id": "job-1", "graph_id": "repo-map", "state": "succeeded"},
     }
-    with patch("repomap_kg.cli.run_coordinator_refresh", return_value=expected) as run:
+    with patch("common_lore_index.cli.run_coordinator_refresh", return_value=expected) as run:
         with redirect_stdout(stdout):
             exit_code = main(
                 [
@@ -93,7 +93,7 @@ def test_explicit_coordinator_mode_emits_durable_terminal_result():
 )
 def test_coordinator_mode_rejects_ambient_or_client_selected_authority(extra, category):
     stderr = io.StringIO()
-    with patch("repomap_kg.cli.run_coordinator_refresh") as run:
+    with patch("common_lore_index.cli.run_coordinator_refresh") as run:
         with redirect_stderr(stderr):
             exit_code = main(
                 ["ops", "refresh-graph", "--mode", "coordinator", "--graph", "repo-map", *extra]
@@ -107,10 +107,10 @@ def test_unavailable_coordinator_never_falls_back_to_direct_refresh():
     stderr = io.StringIO()
     with (
         patch(
-            "repomap_kg.cli.run_coordinator_refresh",
+            "common_lore_index.cli.run_coordinator_refresh",
             side_effect=CoordinatorModeError("coordinator_unavailable"),
         ),
-        patch("repomap_kg.cli.refresh_graph") as direct,
+        patch("common_lore_index.cli.refresh_graph") as direct,
         redirect_stderr(stderr),
     ):
         exit_code = main(
@@ -145,7 +145,7 @@ def test_foreground_coordinator_launch_emits_ready_json():
         assert home == "/placeholder/home"
         callback(ready)
 
-    with patch("repomap_kg.cli.serve_configured_coordinator", side_effect=serve):
+    with patch("common_lore_index.cli.serve_configured_coordinator", side_effect=serve):
         with redirect_stdout(stdout):
             exit_code = main(
                 [

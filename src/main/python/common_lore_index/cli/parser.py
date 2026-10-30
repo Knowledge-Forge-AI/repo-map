@@ -23,12 +23,12 @@ HOME_HELP = "configuration home (CLOE_HOME, REPOMAP_HOME, then recognized CLOE/l
 def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=prog,
-        description="RepoMap deterministic knowledge graph CLI.",
+        description="Common Lore Index deterministic knowledge graph CLI.",
     )
     parser.add_argument(
         "--version",
         action="store_true",
-        help="print the repomap-kg version and exit",
+        help="print the CLOE version and exit",
     )
     subparsers = parser.add_subparsers(dest="command")
 

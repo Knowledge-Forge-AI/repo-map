@@ -15,11 +15,11 @@ from ci.d12_system_grant import (
     DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, build_system_admission_proof,
     load_and_validate_system_build_grant, write_system_admission_proof,
 )
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, POSTGRES_RELEASE_VERSION,
     PYTHON_RELEASE_IMAGE,
 )
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import resource_run as resource_run_mod
 from repomap_test_support.d12_image_probes import CLIENTS, SERVER
 from tools.system import d12_system_evidence as evidence_mod, d12_system_session as session_mod

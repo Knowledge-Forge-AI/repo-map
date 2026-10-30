@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from types import SimpleNamespace
 
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 import scale18_digest_campaign as campaign
 from scale15_terminal_contracts import FINAL_FAMILY_CODES
 from scale20_prelaunch_handoff import (

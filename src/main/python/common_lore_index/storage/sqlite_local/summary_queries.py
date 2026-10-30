@@ -153,8 +153,11 @@ def python_summary(connection: sqlite3.Connection, *, root_path: str) -> PythonS
                 c["dynamic_constructs"] += 1
         if kind in ("python.pyproject", "python.package_file", "python.test_file") and (
             like(meta(p, "project_name"), "repo-map%")
+            or like(meta(p, "project_name"), "common-lore-index%")
             or like(text_at(p, "name"), "repo-map%")
+            or like(text_at(p, "name"), "common-lore-index%")
             or like(text_at(p, "path"), "%repomap_kg%")
+            or like(text_at(p, "path"), "%common_lore_index%")
         ):
             dogfooding = True
     canonical = canonical_counts(connection, (

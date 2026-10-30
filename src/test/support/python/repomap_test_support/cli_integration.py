@@ -28,7 +28,7 @@ def run_cli_module(*args: str, input_text: str | None = None) -> subprocess.Comp
     from runner_coverage_observer import launch_observed_process
 
     return launch_observed_process(
-        [sys.executable, "-m", "repomap_kg", *args],
+        [sys.executable, "-m", "common_lore_index", *args],
         family="cli_module",
         cwd=REPO_ROOT,
         env=_module_process_environment(),

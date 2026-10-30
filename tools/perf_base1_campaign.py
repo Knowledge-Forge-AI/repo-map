@@ -21,15 +21,15 @@ from perf_base1_reporting import (
     require_small_equivalence,
 )
 from perf_base1_workload import create_representative_source
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.canonical import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.canonical import (
     query_canonical_edge_explanation,
     query_canonical_edge_records,
     query_canonical_neighborhood,
     query_canonical_node_records,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 from repomap_test_support.performance_baseline import (

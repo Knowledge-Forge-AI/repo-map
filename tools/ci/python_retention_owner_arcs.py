@@ -1,7 +1,8 @@
 """Maintained complete export-owner context; parsed but never executed."""
 from ci.python_retention_owner_arcs_outcomes import SOURCE as OUTCOMES
 
-SOURCE = r'''"""Unit tests for child coverage runner export, reconciliation, and threshold regressions."""
+SOURCE = r'''"""CLOE cutover re-attests the unchanged closed measurement fixture against current dependencies.
+Unit tests for child coverage runner export, reconciliation, and threshold regressions."""
 
 from __future__ import annotations
 

@@ -7,19 +7,19 @@ from types import SimpleNamespace
 import pytest
 from psycopg import OperationalError
 
-from repomap_kg.storage.backend_observer import (
+from common_lore_index.storage.backend_observer import (
     BackendObservationError,
     BackendOwnershipObserver,
     current_backend_identity,
     read_backend_activity,
 )
-from repomap_kg.storage.backend_ownership import (
+from common_lore_index.storage.backend_ownership import (
     BackendActivity,
     BackendIdentity,
     ConnectionRole,
 )
-from repomap_kg.storage.backend_ownership_registry import BackendOwnershipRegistry
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.backend_ownership_registry import BackendOwnershipRegistry
+from common_lore_index.storage.backend_telemetry import (
     BackendTelemetry,
     ConnectionTelemetryError,
     ConnectionTelemetryEvent,

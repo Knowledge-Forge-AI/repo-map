@@ -3,12 +3,12 @@ from dataclasses import replace
 
 import pytest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.css_html_matching import extract_css_selector_match_observations
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.css_html_matching import extract_css_selector_match_observations
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.staged_rows import build_staged_rows
 
 
 @pytest.fixture

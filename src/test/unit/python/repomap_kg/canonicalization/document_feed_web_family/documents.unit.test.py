@@ -1,11 +1,11 @@
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.documents.office import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.documents.office import (
     extract_document_file_observations,
     extract_odf_file_observations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 from repomap_test_support.canonicalization import (
     odf_package,
     odf_spreadsheet_content,

@@ -27,14 +27,14 @@ import hashlib
 import json
 from typing import Any
 
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.refresh import query_refresh_status
-from repomap_kg.server._mcp_dispatch import MCP_PROTOCOL_VERSION
-from repomap_kg.server._ops_records import McpOpsGraphContext
-from repomap_kg.server._ops_sanitization import sanitize_jsonable
-from repomap_kg.server.mcp_schemas import tool_definitions
-from repomap_kg.server.ops import list_graphs_payload, refresh_graph_status_payload
-from repomap_kg.storage import (
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.refresh import query_refresh_status
+from common_lore_index.server._mcp_dispatch import MCP_PROTOCOL_VERSION
+from common_lore_index.server._ops_records import McpOpsGraphContext
+from common_lore_index.server._ops_sanitization import sanitize_jsonable
+from common_lore_index.server.mcp_schemas import tool_definitions
+from common_lore_index.server.ops import list_graphs_payload, refresh_graph_status_payload
+from common_lore_index.storage import (
     canonical_neighborhood_to_jsonable, canonical_node_records_to_jsonable, ingested_source_records_to_jsonable,
     public_embedded_read_result_to_jsonable, public_read_page, public_read_page_to_jsonable,
     query_canonical_neighborhood, query_canonical_node_records, query_canonical_storage_summary,

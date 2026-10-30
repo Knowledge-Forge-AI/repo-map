@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.ops.config_migration import (
+from common_lore_index.ops.config_migration import (
     apply_cloe_config_migration, finalize_cloe_config_migration, rollback_cloe_config_migration,
 )
 from repomap_test_support.cli_integration import OPS_CONFIG_TEMPLATE, run_cli_module
@@ -43,8 +43,8 @@ class Blocker(importlib.abc.MetaPathFinder):
 blocker = Blocker()
 sys.meta_path.insert(0, blocker)
 try:
-    from repomap_kg.cli import main
-    from repomap_kg.ops.config_migration import apply_cloe_config_migration
+    from common_lore_index.cli import main
+    from common_lore_index.ops.config_migration import apply_cloe_config_migration
     before = list(attempts)
     result = apply_cloe_config_migration(sys.argv[1], confirmed=True)
 finally:
@@ -60,7 +60,7 @@ print(json.dumps({'before': before, 'after': attempts, 'result': result}))
     )
     assert done.returncode == 0, done.stderr
     value = json.loads(done.stdout)
-    owner = "repomap_kg.ops.config_migration_fs"
+    owner = "common_lore_index.ops.config_migration_fs"
     assert owner not in value["before"] and owner in value["after"]
     assert value["result"]["refusals"] == [{"code": "config-migration-platform-unsupported", "file": ""}]
     assert value["result"]["writes_performed"] == 0 and not home.exists()

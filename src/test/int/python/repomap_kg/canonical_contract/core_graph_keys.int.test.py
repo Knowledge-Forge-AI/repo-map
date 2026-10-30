@@ -6,15 +6,15 @@ from collections.abc import Mapping
 from pathlib import PurePosixPath
 
 from repomap_test_support.canonical_contract import FIXTURE_ROOT
-from repomap_kg.canonicalization.records import (
+from common_lore_index.canonicalization.records import (
     CanonicalEdge, CanonicalEdgeEvidenceLink, CanonicalEvidence,
     CanonicalGraph, CanonicalNode, CanonicalNodeEvidenceLink,
     CanonicalizationResult, canonical_edge_key,
 )
-from repomap_kg.canonicalization.diagnostics import CanonicalizationDiagnostic
-from repomap_kg.canonicalization import canonicalize_observations
-import repomap_kg.graph.keys as graph_keys
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization.diagnostics import CanonicalizationDiagnostic
+from common_lore_index.canonicalization import canonicalize_observations
+import common_lore_index.graph.keys as graph_keys
+from common_lore_index.graph.keys import (
     GRAPH_KEY_VERSION, GraphKeyError, config_document_key, config_path_key,
     dynamic_key, env_key, external_key, feed_author_key, feed_category_key,
     feed_channel_key, feed_document_key, feed_item_key, file_key,
@@ -29,7 +29,7 @@ from repomap_kg.graph.keys import (
     ruby_test_method_key, tool_key, unknown_key, validate_key,
     xml_attribute_key, xml_document_key, xml_element_key,
 )
-from repomap_kg.observations import RawObservation, read_observations_jsonl
+from common_lore_index.observations import RawObservation, read_observations_jsonl
 
 
 def _obs(
@@ -72,9 +72,9 @@ class CanonicalCoreGraphKeysIntegrationTests(unittest.TestCase):
         keys = [
             file_key("scripts/../bin/tool"), file_key(PurePosixPath("./docs/My Tool:guide#1.md")),
             file_key("."), tool_key("my tool"), env_key("PATH"), host_category_key("package-management"),
-            python_module_key("repomap_kg.cli"), python_class_key("repomap_kg.cli", "CliError"),
-            python_function_key("repomap_kg.cli", "main:debug"),
-            python_method_key("repomap_kg.storage", "Record", "to_dict"),
+            python_module_key("common_lore_index.cli"), python_class_key("common_lore_index.cli", "CliError"),
+            python_function_key("common_lore_index.cli", "main:debug"),
+            python_method_key("common_lore_index.storage", "Record", "to_dict"),
             nix_app_key("repo-map", "aarch64-darwin", "tool#debug"),
             nix_package_key("repo-map", "aarch64-darwin", "default"),
             nix_dev_shell_key("repo-map", "aarch64-darwin", "default"),
@@ -110,7 +110,7 @@ class CanonicalCoreGraphKeysIntegrationTests(unittest.TestCase):
 
         expected_map = {
             0: "file:bin/tool", 1: "file:docs/My%20Tool%3Aguide%231.md", 2: "file:.", 3: "tool:my%20tool",
-            8: "python.function:repomap_kg.cli:main%3Adebug",
+            8: "python.function:common_lore_index.cli:main%3Adebug",
             14: "nix.output:repo-map:packages%2Faarch64-darwin%2Fdefault",
             16: "ruby.class:RepoMap%3A%3ARunner", 24: "js.file:file%3Asrc%2Findex.js",
             26: "js.function:file%3Asrc%2Findex.js:main", 27: "js.class:file%3Asrc%2Findex.js:Runner",
@@ -149,7 +149,7 @@ class CanonicalCoreGraphKeysIntegrationTests(unittest.TestCase):
     def test_canonical_key_parser_rejects_malformed_examples(self):
         cases = (
             ("tool:nix%2", "percent"), ("tool:nix%2fbuild", "uppercase"),
-            ("tool:nix#build", "reserved"), ("python.module:repomap_kg.cli:extra", "segments"),
+            ("tool:nix#build", "reserved"), ("python.module:common_lore_index.cli:extra", "segments"),
             ("file:../outside", "escape"), ("file:docs//guide.md", "empty"),
             ("not-a-key", "separator"), ("unknown.namespace:value", "namespace"),
             ("tool:%FF", "UTF-8"), ("tool:", "required"),

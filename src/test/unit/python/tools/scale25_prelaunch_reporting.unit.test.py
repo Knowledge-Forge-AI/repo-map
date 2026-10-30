@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 from scale15_terminal_contracts import FINAL_FAMILY_CODES
 from scale20_prelaunch_handoff import (
     FinalFamilyCountRecord,

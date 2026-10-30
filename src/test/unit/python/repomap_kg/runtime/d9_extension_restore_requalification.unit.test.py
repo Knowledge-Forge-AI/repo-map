@@ -18,15 +18,15 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime._backup_provenance import parse_toc_entries
-from repomap_kg.runtime._backup_support import derive_manifest_support, evaluate_backup_restore_support
-from repomap_kg.runtime._extension_restore_policy import DECLARATION_FORMAT, ExtensionReplayBounds, TrustedExtensionRestorePolicy
-from repomap_kg.runtime._extension_restore_preflight import preflight_extension_v2_restore_set
-from repomap_kg.runtime._extension_restore_qualification import (
+from common_lore_index.runtime._backup_provenance import parse_toc_entries
+from common_lore_index.runtime._backup_support import derive_manifest_support, evaluate_backup_restore_support
+from common_lore_index.runtime._extension_restore_policy import DECLARATION_FORMAT, ExtensionReplayBounds, TrustedExtensionRestorePolicy
+from common_lore_index.runtime._extension_restore_preflight import preflight_extension_v2_restore_set
+from common_lore_index.runtime._extension_restore_qualification import (
     TARGET_CLIENT_KEYS, TrustedArtifactQualification, qualify_server_provenance)
-from repomap_kg.runtime._extension_restore_template import BASELINE_CATALOGS, BASELINE_INDIRECT_CATALOGS
-from repomap_kg.runtime.backup_records import LocalDbBackupError, RuntimeContainerMetadata
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime._extension_restore_template import BASELINE_CATALOGS, BASELINE_INDIRECT_CATALOGS
+from common_lore_index.runtime.backup_records import LocalDbBackupError, RuntimeContainerMetadata
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
 from repomap_test_support.d9_extension_policies import (
     DEFAULT_ARTIFACT_QUALIFICATION, DEFAULT_TEST_ENGINE_IMAGE_ID, DEFAULT_TEST_INSPECT_IMAGE,
     UNIT_VECTOR_CONTROL_SHA256, UNIT_VECTOR_LIBRARY_SHA256, UNIT_VECTOR_SCRIPT_SHA256, adr0077_pgvector_extension_policy,

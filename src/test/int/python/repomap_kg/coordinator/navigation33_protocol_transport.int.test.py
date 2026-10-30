@@ -11,21 +11,21 @@ import time
 from typing import Any, cast
 import unittest
 
-from repomap_kg.coordinator._protocol_session import ProtocolSession
-from repomap_kg.coordinator._protocol_validation import (
+from common_lore_index.coordinator._protocol_session import ProtocolSession
+from common_lore_index.coordinator._protocol_validation import (
     ProtocolError,
     decode_jsonl,
     encode_jsonl,
 )
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.contracts import normalize_request
-from repomap_kg.coordinator.limits import (
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.contracts import normalize_request
+from common_lore_index.coordinator.limits import (
     SUBMIT_ADMISSION_CEILING_SECONDS,
     AdmissionDeadline,
     CoordinatorLimits,
 )
-from repomap_kg.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
-from repomap_kg.coordinator.transport import (
+from common_lore_index.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
+from common_lore_index.coordinator.transport import (
     LocalRequestDispatcher,
     LoopbackTcpService,
     TransportError,

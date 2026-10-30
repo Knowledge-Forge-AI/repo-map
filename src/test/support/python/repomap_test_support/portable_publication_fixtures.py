@@ -6,8 +6,8 @@ from pathlib import Path
 
 from psycopg import Connection
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.graph.multi_source import (
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
@@ -17,19 +17,19 @@ from repomap_test_support.portable_worker_scenarios import (
     coordinator_test_limits as coordinator_test_limits,
     make_missing_manifest_reference as make_missing_manifest_reference,
 )
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.main import LoadSummary
-from repomap_kg.storage.publication import PortablePublicationBinding
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.main import LoadSummary
+from common_lore_index.storage.publication import PortablePublicationBinding
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     build_staged_rows,
     run_staged_portable_refresh,
     stage_id_for_authority,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 def _bundle() -> PublicationBundle:
     prepared = build_staged_rows(

@@ -9,15 +9,15 @@ JSONABLE_ROW_EXPORT_NAMES,
 TABLE_ROW_EXPORT_NAMES,
 )
 
-from repomap_kg.storage import rows
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.storage import rows
+from common_lore_index.storage.errors import StorageSchemaError
 
 
 def test_storage_jsonable_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.jsonable_rows as jsonable_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.jsonable_rows as jsonable_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert jsonable_rows.__all__ == JSONABLE_ROW_EXPORT_NAMES
 
     for name in JSONABLE_ROW_EXPORT_NAMES:
@@ -28,10 +28,10 @@ def test_storage_jsonable_rows_import_back_through_rows_and_facades() -> None:
         assert getattr(storage_rows_facade, name) is jsonable_name
 
 def test_storage_table_rows_import_back_through_rows_and_facades() -> None:
-    import repomap_kg.storage.table_rows as table_rows
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.rows as storage_rows_facade
+    import common_lore_index.storage.table_rows as table_rows
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.rows as storage_rows_facade
     assert table_rows.__all__ == TABLE_ROW_EXPORT_NAMES
 
     for name in TABLE_ROW_EXPORT_NAMES:
@@ -141,7 +141,7 @@ def test_jsonable_projection_and_formatter_edge_cases_are_pinned() -> None:
     )
 
 def test_storage_sql_facing_active_row_surfaces_remain_available() -> None:
-    import repomap_kg.storage.sql as sql_module
+    import common_lore_index.storage.sql as sql_module
     assert sql_module.FileRow is rows.FileRow
     assert sql_module.RawObservationRow is rows.RawObservationRow
     assert sql_module.CanonicalLoadRows is rows.CanonicalLoadRows
@@ -149,7 +149,7 @@ def test_storage_sql_facing_active_row_surfaces_remain_available() -> None:
 
 @pytest.mark.parametrize("invalid", [False, True])
 def test_prepare_load_preserves_raw_rows_and_withholds_failed_canonical_rows(invalid: bool) -> None:
-    from repomap_kg.storage import canonicalization_error_message, prepare_canonical_load
+    from common_lore_index.storage import canonicalization_error_message, prepare_canonical_load
     from repomap_test_support.storage_rows_contracts import _file_observation
 
     observations = [_file_observation("README.md")]

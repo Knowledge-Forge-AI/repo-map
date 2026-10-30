@@ -6,27 +6,27 @@ from dataclasses import replace
 import psycopg
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.publication import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     PublicationHandoff,
     PublicationReconciliationOutcome,
     build_graph_publication_claim_statements,
     build_publication_prepare_statements,
     build_publication_reconciliation_statements,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_publication import execute_final_transaction
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staged_publication import execute_final_transaction
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

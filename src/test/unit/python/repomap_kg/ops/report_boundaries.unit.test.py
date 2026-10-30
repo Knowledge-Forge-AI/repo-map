@@ -3,11 +3,11 @@ from dataclasses import replace
 
 import pytest
 
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.ops.refresh_graphs import _result_from_graph
-from repomap_kg.ops.reports import (
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.refresh_graphs import _result_from_graph
+from common_lore_index.ops.reports import (
     _private_safe_root_path_display,
     _status_from_graph,
     refresh_result_to_jsonable,

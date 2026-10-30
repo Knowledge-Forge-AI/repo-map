@@ -6,14 +6,14 @@ from unittest.mock import patch
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.observations import RawObservation
-from repomap_kg.ops.direct_publication import (
+    from common_lore_index.observations import RawObservation
+from common_lore_index.ops.direct_publication import (
     build_observation_publication_authority,
     publish_observation_generation,
 )
-from repomap_kg.storage.main import LoadSummary
+from common_lore_index.storage.main import LoadSummary
 
 
 def _observations() -> tuple[RawObservation, ...]:
@@ -53,7 +53,7 @@ def test_arch4a_external_observation_authority_has_deterministic_generations() -
 def test_arch4a_direct_observation_publication_delegates_to_staged_refresh() -> None:
     expected = LoadSummary(repository_id=7, run_id=11, files=1)
     with patch(
-        "repomap_kg.ops.direct_publication.run_staged_full_refresh",
+        "common_lore_index.ops.direct_publication.run_staged_full_refresh",
         return_value=expected,
     ) as staged:
         actual = publish_observation_generation(

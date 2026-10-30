@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 
-from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority
+from common_lore_index.coordinator.local_lifecycle import LocalControlAuthority
 
 
 class _Store:

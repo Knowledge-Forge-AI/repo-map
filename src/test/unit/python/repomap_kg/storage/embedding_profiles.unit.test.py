@@ -5,14 +5,14 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.semantic_candidates import EmbeddingProfilesQuery
-from repomap_kg.storage.semantic_candidate_readback import query_embedding_profiles
-from repomap_kg.storage.semantic_candidate_sql import build_embedding_profiles_sql
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.storage.semantic_candidates import EmbeddingProfilesQuery
+from common_lore_index.storage.semantic_candidate_readback import query_embedding_profiles
+from common_lore_index.storage.semantic_candidate_sql import build_embedding_profiles_sql
+from common_lore_index.storage.errors import StorageSchemaError
 from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, SNAPSHOT, candidate_query
 
-OWNER = "repomap_kg.storage.semantic_candidate_readback.execute_json_readback"
-PROBE = "repomap_kg.storage.semantic_candidate_readback.observe_candidate_capability"
+OWNER = "common_lore_index.storage.semantic_candidate_readback.execute_json_readback"
+PROBE = "common_lore_index.storage.semantic_candidate_readback.observe_candidate_capability"
 PUBLICATION = candidate_query().publication
 RECORD = {"run_id": PUBLICATION.publication.run_id, **PUBLICATION.publication.receipt.to_mapping()}
 

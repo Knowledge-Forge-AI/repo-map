@@ -7,21 +7,21 @@ from unittest.mock import patch
 
 
 RETIRED_STORAGE_ALIAS_MODULES = (
-    ("repomap_kg.storage_errors", "repomap_kg.storage.errors"),
-    ("repomap_kg.storage_psql", "repomap_kg.storage.psql"),
-    ("repomap_kg.storage_summaries", "repomap_kg.storage.summaries"),
-    ("repomap_kg.storage_canonical", "repomap_kg.storage.canonical"),
-    ("repomap_kg.storage_source_readback", "repomap_kg.storage.source_readback"),
-    ("repomap_kg.storage_rows", "repomap_kg.storage.rows"),
-    ("repomap_kg.storage_sql", "repomap_kg.storage.sql"),
+    ("common_lore_index.storage_errors", "common_lore_index.storage.errors"),
+    ("common_lore_index.storage_psql", "common_lore_index.storage.psql"),
+    ("common_lore_index.storage_summaries", "common_lore_index.storage.summaries"),
+    ("common_lore_index.storage_canonical", "common_lore_index.storage.canonical"),
+    ("common_lore_index.storage_source_readback", "common_lore_index.storage.source_readback"),
+    ("common_lore_index.storage_rows", "common_lore_index.storage.rows"),
+    ("common_lore_index.storage_sql", "common_lore_index.storage.sql"),
 )
 
 SUMMARY_ROW_IMPLEMENTATION_MODULES = {
-    "repomap_kg.storage.summary_rows_storage",
-    "repomap_kg.storage.summary_rows_languages",
-    "repomap_kg.storage.summary_rows_domains",
-    "repomap_kg.storage.summary_rows_manifest",
-    "repomap_kg.storage.summary_rows_nix",
+    "common_lore_index.storage.summary_rows_storage",
+    "common_lore_index.storage.summary_rows_languages",
+    "common_lore_index.storage.summary_rows_domains",
+    "common_lore_index.storage.summary_rows_manifest",
+    "common_lore_index.storage.summary_rows_nix",
 }
 
 
@@ -37,44 +37,44 @@ def _source_imported_modules(module: ModuleType) -> set[str]:
 
 
 def test_pkg3_storage_submodules_import() -> None:
-    import repomap_kg.storage.main as storage_main
-    import repomap_kg.storage.errors as storage_errors
-    import repomap_kg.storage.rows as storage_rows
-    import repomap_kg.storage.canonical_readback_rows as storage_canonical_readback_rows
-    import repomap_kg.storage.canonical_rows as storage_canonical_rows
-    import repomap_kg.storage.jsonable_rows as storage_jsonable_rows
-    import repomap_kg.storage.file_rows as storage_file_rows
-    import repomap_kg.storage.row_helpers as storage_row_helpers
-    import repomap_kg.storage.source_rows as storage_source_rows
-    import repomap_kg.storage.summary_rows_core as storage_summary_rows_core
-    import repomap_kg.storage.summary_rows_storage as storage_summary_rows_storage
-    import repomap_kg.storage.summary_rows_languages as storage_summary_rows_languages
-    import repomap_kg.storage.summary_rows_domains as storage_summary_rows_domains
-    import repomap_kg.storage.summary_rows_manifest as storage_summary_rows_manifest
-    import repomap_kg.storage.summary_rows_nix as storage_summary_rows_nix
-    import repomap_kg.storage.summary_rows as storage_summary_rows
-    import repomap_kg.storage.table_rows as storage_table_rows
-    import repomap_kg.storage.sql_core as storage_sql_core
-    import repomap_kg.storage.sql_load as storage_sql_load
-    import repomap_kg.storage.sql_canonical as storage_sql_canonical
-    import repomap_kg.storage.sql_sources as storage_sql_sources
-    import repomap_kg.storage.sql_summaries as storage_sql_summaries
-    import repomap_kg.storage.sql_summaries_nix as storage_sql_summaries_nix
-    import repomap_kg.storage.sql_summaries_python as storage_sql_summaries_python
-    import repomap_kg.storage.sql as storage_sql
-    import repomap_kg.storage.psql as storage_psql
-    import repomap_kg.storage.readback_driver as storage_readback_driver
-    import repomap_kg.storage.source_readback as storage_source_readback
-    import repomap_kg.storage.canonical as storage_canonical
-    import repomap_kg.storage.summaries as storage_summaries
-    import repomap_kg.storage.staging as storage_staging
-    import repomap_kg.storage.staging_ownership as storage_staging_ownership
-    import repomap_kg.storage.staging_checksums as storage_staging_checksums
-    import repomap_kg.storage.staging_copy as storage_staging_copy
-    import repomap_kg.storage.staging_merge as storage_staging_merge
-    import repomap_kg.storage.canonical_staging_merge as storage_canonical_staging_merge
-    import repomap_kg.storage.publication_fencing as storage_publication_fencing
-    import repomap_kg.storage.staging_cleanup as storage_staging_cleanup
+    import common_lore_index.storage.main as storage_main
+    import common_lore_index.storage.errors as storage_errors
+    import common_lore_index.storage.rows as storage_rows
+    import common_lore_index.storage.canonical_readback_rows as storage_canonical_readback_rows
+    import common_lore_index.storage.canonical_rows as storage_canonical_rows
+    import common_lore_index.storage.jsonable_rows as storage_jsonable_rows
+    import common_lore_index.storage.file_rows as storage_file_rows
+    import common_lore_index.storage.row_helpers as storage_row_helpers
+    import common_lore_index.storage.source_rows as storage_source_rows
+    import common_lore_index.storage.summary_rows_core as storage_summary_rows_core
+    import common_lore_index.storage.summary_rows_storage as storage_summary_rows_storage
+    import common_lore_index.storage.summary_rows_languages as storage_summary_rows_languages
+    import common_lore_index.storage.summary_rows_domains as storage_summary_rows_domains
+    import common_lore_index.storage.summary_rows_manifest as storage_summary_rows_manifest
+    import common_lore_index.storage.summary_rows_nix as storage_summary_rows_nix
+    import common_lore_index.storage.summary_rows as storage_summary_rows
+    import common_lore_index.storage.table_rows as storage_table_rows
+    import common_lore_index.storage.sql_core as storage_sql_core
+    import common_lore_index.storage.sql_load as storage_sql_load
+    import common_lore_index.storage.sql_canonical as storage_sql_canonical
+    import common_lore_index.storage.sql_sources as storage_sql_sources
+    import common_lore_index.storage.sql_summaries as storage_sql_summaries
+    import common_lore_index.storage.sql_summaries_nix as storage_sql_summaries_nix
+    import common_lore_index.storage.sql_summaries_python as storage_sql_summaries_python
+    import common_lore_index.storage.sql as storage_sql
+    import common_lore_index.storage.psql as storage_psql
+    import common_lore_index.storage.readback_driver as storage_readback_driver
+    import common_lore_index.storage.source_readback as storage_source_readback
+    import common_lore_index.storage.canonical as storage_canonical
+    import common_lore_index.storage.summaries as storage_summaries
+    import common_lore_index.storage.staging as storage_staging
+    import common_lore_index.storage.staging_ownership as storage_staging_ownership
+    import common_lore_index.storage.staging_checksums as storage_staging_checksums
+    import common_lore_index.storage.staging_copy as storage_staging_copy
+    import common_lore_index.storage.staging_merge as storage_staging_merge
+    import common_lore_index.storage.canonical_staging_merge as storage_canonical_staging_merge
+    import common_lore_index.storage.publication_fencing as storage_publication_fencing
+    import common_lore_index.storage.staging_cleanup as storage_staging_cleanup
 
     submodules = (
         storage_main, storage_errors, storage_rows, storage_canonical_readback_rows,
@@ -93,47 +93,47 @@ def test_pkg3_storage_submodules_import() -> None:
         storage_staging_cleanup,
     )
     expected_names = {
-        "repomap_kg.storage.main", "repomap_kg.storage.errors",
-        "repomap_kg.storage.rows", "repomap_kg.storage.canonical_readback_rows",
-        "repomap_kg.storage.canonical_rows", "repomap_kg.storage.jsonable_rows",
-        "repomap_kg.storage.file_rows", "repomap_kg.storage.row_helpers",
-        "repomap_kg.storage.source_rows", "repomap_kg.storage.summary_rows_core",
-        "repomap_kg.storage.summary_rows_storage", "repomap_kg.storage.summary_rows_languages",
-        "repomap_kg.storage.summary_rows_domains", "repomap_kg.storage.summary_rows_manifest",
-        "repomap_kg.storage.summary_rows_nix", "repomap_kg.storage.summary_rows",
-        "repomap_kg.storage.table_rows", "repomap_kg.storage.sql_core",
-        "repomap_kg.storage.sql_load", "repomap_kg.storage.sql_canonical",
-        "repomap_kg.storage.sql_sources", "repomap_kg.storage.sql_summaries",
-        "repomap_kg.storage.sql_summaries_nix", "repomap_kg.storage.sql_summaries_python",
-        "repomap_kg.storage.sql", "repomap_kg.storage.psql",
-        "repomap_kg.storage.readback_driver", "repomap_kg.storage.source_readback",
-        "repomap_kg.storage.canonical", "repomap_kg.storage.summaries",
-        "repomap_kg.storage.staging", "repomap_kg.storage.staging_ownership",
-        "repomap_kg.storage.staging_checksums", "repomap_kg.storage.staging_copy",
-        "repomap_kg.storage.staging_merge", "repomap_kg.storage.canonical_staging_merge",
-        "repomap_kg.storage.publication_fencing", "repomap_kg.storage.staging_cleanup",
+        "common_lore_index.storage.main", "common_lore_index.storage.errors",
+        "common_lore_index.storage.rows", "common_lore_index.storage.canonical_readback_rows",
+        "common_lore_index.storage.canonical_rows", "common_lore_index.storage.jsonable_rows",
+        "common_lore_index.storage.file_rows", "common_lore_index.storage.row_helpers",
+        "common_lore_index.storage.source_rows", "common_lore_index.storage.summary_rows_core",
+        "common_lore_index.storage.summary_rows_storage", "common_lore_index.storage.summary_rows_languages",
+        "common_lore_index.storage.summary_rows_domains", "common_lore_index.storage.summary_rows_manifest",
+        "common_lore_index.storage.summary_rows_nix", "common_lore_index.storage.summary_rows",
+        "common_lore_index.storage.table_rows", "common_lore_index.storage.sql_core",
+        "common_lore_index.storage.sql_load", "common_lore_index.storage.sql_canonical",
+        "common_lore_index.storage.sql_sources", "common_lore_index.storage.sql_summaries",
+        "common_lore_index.storage.sql_summaries_nix", "common_lore_index.storage.sql_summaries_python",
+        "common_lore_index.storage.sql", "common_lore_index.storage.psql",
+        "common_lore_index.storage.readback_driver", "common_lore_index.storage.source_readback",
+        "common_lore_index.storage.canonical", "common_lore_index.storage.summaries",
+        "common_lore_index.storage.staging", "common_lore_index.storage.staging_ownership",
+        "common_lore_index.storage.staging_checksums", "common_lore_index.storage.staging_copy",
+        "common_lore_index.storage.staging_merge", "common_lore_index.storage.canonical_staging_merge",
+        "common_lore_index.storage.publication_fencing", "common_lore_index.storage.staging_cleanup",
     }
     assert {module.__name__ for module in submodules} == expected_names
 
 
 def test_rootalias_retired_storage_aliases_use_package_modules() -> None:
-    import repomap_kg as module
-    import repomap_kg.storage.errors as storage_errors
-    import repomap_kg.storage.psql as storage_psql
-    import repomap_kg.storage.summaries as storage_summaries
-    import repomap_kg.storage.canonical as storage_canonical
-    import repomap_kg.storage.source_readback as storage_source_readback
-    import repomap_kg.storage.rows as storage_rows
-    import repomap_kg.storage.sql as storage_sql
+    import common_lore_index as module
+    import common_lore_index.storage.errors as storage_errors
+    import common_lore_index.storage.psql as storage_psql
+    import common_lore_index.storage.summaries as storage_summaries
+    import common_lore_index.storage.canonical as storage_canonical
+    import common_lore_index.storage.source_readback as storage_source_readback
+    import common_lore_index.storage.rows as storage_rows
+    import common_lore_index.storage.sql as storage_sql
 
     package_modules = {
-        "repomap_kg.storage.errors": storage_errors,
-        "repomap_kg.storage.psql": storage_psql,
-        "repomap_kg.storage.summaries": storage_summaries,
-        "repomap_kg.storage.canonical": storage_canonical,
-        "repomap_kg.storage.source_readback": storage_source_readback,
-        "repomap_kg.storage.rows": storage_rows,
-        "repomap_kg.storage.sql": storage_sql,
+        "common_lore_index.storage.errors": storage_errors,
+        "common_lore_index.storage.psql": storage_psql,
+        "common_lore_index.storage.summaries": storage_summaries,
+        "common_lore_index.storage.canonical": storage_canonical,
+        "common_lore_index.storage.source_readback": storage_source_readback,
+        "common_lore_index.storage.rows": storage_rows,
+        "common_lore_index.storage.sql": storage_sql,
     }
 
     assert module.__file__ is not None
@@ -147,26 +147,26 @@ def test_rootalias_retired_storage_aliases_use_package_modules() -> None:
 
 
 def test_storage_jsonable_rows_imports_summary_records_from_implementation_modules() -> None:
-    import repomap_kg.storage.jsonable_rows as jsonable_rows
+    import common_lore_index.storage.jsonable_rows as jsonable_rows
     imported_modules = _source_imported_modules(jsonable_rows)
 
-    assert "repomap_kg.storage.summary_rows" not in imported_modules
+    assert "common_lore_index.storage.summary_rows" not in imported_modules
     assert SUMMARY_ROW_IMPLEMENTATION_MODULES <= imported_modules
 
 
 def test_storage_table_rows_imports_summary_records_from_implementation_modules() -> None:
-    import repomap_kg.storage.table_rows as table_rows
+    import common_lore_index.storage.table_rows as table_rows
     imported_modules = _source_imported_modules(table_rows)
 
-    assert "repomap_kg.storage.summary_rows" not in imported_modules
+    assert "common_lore_index.storage.summary_rows" not in imported_modules
     assert SUMMARY_ROW_IMPLEMENTATION_MODULES <= imported_modules
 
 
 def test_storage_sql_core_helpers_remain_available_through_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.sql_core as sql_core
-    import repomap_kg.storage.sql as sql_module
-    import repomap_kg.storage.sql as storage_sql
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.sql_core as sql_core
+    import common_lore_index.storage.sql as sql_module
+    import common_lore_index.storage.sql as storage_sql
 
     helper_names = (
         "positive_limit",
@@ -187,10 +187,10 @@ def test_storage_sql_core_helpers_remain_available_through_facades() -> None:
 
 
 def test_storage_active_sql_load_builders_remain_available_through_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.sql_load as sql_load
-    import repomap_kg.storage.sql as sql_module
-    import repomap_kg.storage.sql as storage_sql
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.sql_load as sql_load
+    import common_lore_index.storage.sql as sql_module
+    import common_lore_index.storage.sql as storage_sql
 
     load_names = (
         "build_canonical_ingest_sql",
@@ -220,9 +220,9 @@ def test_storage_active_sql_load_builders_remain_available_through_facades() -> 
 
 
 def test_storage_legacy_write_sql_is_absent_from_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.sql as storage_sql
-    import repomap_kg.storage.sql_load as storage_sql_load
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.sql as storage_sql
+    import common_lore_index.storage.sql_load as storage_sql_load
 
     modules = (storage, storage_sql, storage_sql_load)
     retired = (
@@ -242,8 +242,8 @@ def test_storage_legacy_write_sql_is_absent_from_facades() -> None:
 
 
 def test_local38_file_node_compatibility_names_are_removed() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.main as storage_main
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.main as storage_main
 
     removed_names = (
         "FileNodeRecord",
@@ -260,10 +260,10 @@ def test_local38_file_node_compatibility_names_are_removed() -> None:
 
 
 def test_storage_sql_canonical_builders_remain_available_through_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.sql_canonical as sql_canonical
-    import repomap_kg.storage.sql as sql_module
-    import repomap_kg.storage.sql as storage_sql
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.sql_canonical as sql_canonical
+    import common_lore_index.storage.sql as sql_module
+    import common_lore_index.storage.sql as storage_sql
 
     canonical_names = (
         "build_canonical_node_query_sql",
@@ -282,10 +282,10 @@ def test_storage_sql_canonical_builders_remain_available_through_facades() -> No
 
 
 def test_storage_sql_sources_builders_remain_available_through_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.sql_sources as sql_sources
-    import repomap_kg.storage.sql as sql_module
-    import repomap_kg.storage.sql as storage_sql
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.sql_sources as sql_sources
+    import common_lore_index.storage.sql as sql_module
+    import common_lore_index.storage.sql as storage_sql
 
     source_names = (
         "build_ingested_source_query_sql",
@@ -306,10 +306,10 @@ def test_storage_sql_sources_builders_remain_available_through_facades() -> None
 
 
 def test_storage_sql_summaries_builders_remain_available_through_facades() -> None:
-    import repomap_kg.storage as storage
-    import repomap_kg.storage.sql_summaries as sql_summaries
-    import repomap_kg.storage.sql as sql_module
-    import repomap_kg.storage.sql as storage_sql
+    import common_lore_index.storage as storage
+    import common_lore_index.storage.sql_summaries as sql_summaries
+    import common_lore_index.storage.sql as sql_module
+    import common_lore_index.storage.sql as storage_sql
 
     summary_names = (
         "build_ruby_summary_query_sql",
@@ -333,7 +333,7 @@ def test_storage_sql_summaries_builders_remain_available_through_facades() -> No
 
 
 def test_pkg3_storage_migration_discovery_keeps_resource_root() -> None:
-    import repomap_kg.storage as storage
+    import common_lore_index.storage as storage
 
     migrations = storage.discover_migrations()
 
@@ -342,9 +342,9 @@ def test_pkg3_storage_migration_discovery_keeps_resource_root() -> None:
 
 
 def test_pkg3_storage_root_subprocess_patch_target_still_drives_run_psql() -> None:
-    import repomap_kg.storage as storage
+    import common_lore_index.storage as storage
 
-    with patch("repomap_kg.storage.subprocess.run") as run:
+    with patch("common_lore_index.storage.subprocess.run") as run:
         storage.run_psql(["psql", "-c", "select 1"])
 
     run.assert_called_once()

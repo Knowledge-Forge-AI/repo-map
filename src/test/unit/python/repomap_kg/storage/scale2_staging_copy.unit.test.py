@@ -4,7 +4,7 @@ from collections.abc import Iterable, Mapping
 
 import pytest
 
-from repomap_kg.storage.staging_copy import (
+from common_lore_index.storage.staging_copy import (
     STAGING_COPY_TABLES,
     CopyContractError,
     CopyTransferResult,

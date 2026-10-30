@@ -11,7 +11,8 @@ from typing import Mapping, Sequence
 
 from ci.public_author_correction_history import author_correction_governing_paths
 from ci.retained_python_projection_history import projection_governing_paths
-from ci.retained_python_namespace_history import namespace_governing_paths
+from ci.retained_python_namespace_history import LEDGER_PATH, namespace_governing_paths, parse_records
+from ci.retained_python_namespace_contract import rewrite_module
 from ci.python_type_ownership import (
     OwnershipManifest, OwnershipRule, load_manifest, module_name_for_path, resolve_rule,
 )
@@ -46,6 +47,25 @@ def read_document(path: Path) -> dict:
     return document
 
 
+def _namespace_predecessors(repo_root: Path) -> dict[str, str]:
+    """Use only explicit bijective source successors, never a generic root alias.
+
+    Full source-edge replay remains mandatory in the ratchet lineage owner.
+    Here the same sealed path table connects current census owners to their
+    immutable historical rationale; missing successor coverage stays visible.
+    """
+    path = repo_root / LEDGER_PATH
+    records = parse_records(path.read_bytes() if path.exists() else None)
+    return {row["after_path"]: row["before_path"]
+            for record in records for row in record["source_files"]}
+
+
+def _successor_rule(rule: dict) -> dict:
+    result = dict(rule)
+    result["module_prefix"] = rewrite_module(result["module_prefix"])
+    return result
+
+
 def validate_consistency(repo_root: Path, files: Sequence[dict], selected: Sequence[dict]) -> None:
     """A migration forecast preserves maintenance obligations until explicit admission."""
     manifest = load_manifest(repo_root / "tools/ci/python_type_ownership.json")
@@ -54,6 +74,7 @@ def validate_consistency(repo_root: Path, files: Sequence[dict], selected: Seque
         raise RetentionAuthorityError("invalid retention transition authority")
     records = ledger["records"]
     by_path: dict[str, list[dict]] = {}
+    predecessors = _namespace_predecessors(repo_root)
     for record in records:
         if (not isinstance(record, dict) or not isinstance(record.get("path"), str)
                 or record.get("disposition") not in {"pending_admission", "retained_python"}
@@ -84,8 +105,13 @@ def validate_consistency(repo_root: Path, files: Sequence[dict], selected: Seque
                 raise RetentionAuthorityError(f"selection disagrees with effective ownership: {path}")
         else:
             history = by_path.get(path, [])
+            mapped_history = False
+            if not history and path in predecessors:
+                history = by_path.get(predecessors[path], [])
+                mapped_history = True
             if (not history or history[-1]["disposition"] != "pending_admission"
-                    or history[-1]["superseded_rule"] != asdict(rule)):
+                    or (_successor_rule(history[-1]["superseded_rule"]) if mapped_history
+                        else history[-1]["superseded_rule"]) != asdict(rule)):
                 raise RetentionAuthorityError(f"migration forecast lacks compatible maintenance transition: {path}")
 
 
@@ -164,6 +190,7 @@ def validate_ownership_transitions(repo_root: Path, files: Sequence[dict], revis
     authority_path = "tools/ci/python_type_ownership.json"
     current = load_manifest(repo_root / authority_path)
     records = read_document(repo_root / TRANSITIONS)["records"]
+    predecessors = _namespace_predecessors(repo_root)
     for revision in revisions:
         listed = subprocess.run(["git", "ls-tree", revision, "--", authority_path],
                                 cwd=repo_root, capture_output=True, check=False, timeout=30)
@@ -186,12 +213,20 @@ def validate_ownership_transitions(repo_root: Path, files: Sequence[dict], revis
                 continue
             module = module_name_for_path(repo_root / entry["path"], repo_root / "src/main/python")
             before, after = resolve_rule(module, prior), resolve_rule(module, current)
+            prior_path = entry["path"]
+            mapped = False
+            if before is None and prior_path in predecessors:
+                prior_path = predecessors[prior_path]
+                old_module = module_name_for_path(repo_root / prior_path, repo_root / "src/main/python")
+                before = resolve_rule(old_module, prior)
+                mapped = before is not None
             if before is None or before.ownership_class in RETAINED:
                 continue
             if after is None or not any(
-                record["path"] == entry["path"] and record["disposition"] == "retained_python"
+                record["path"] == prior_path and record["disposition"] == "retained_python"
                 and record["superseded_rule"] == asdict(before)
-                and record.get("current_rule") == asdict(after)
+                and (_successor_rule(record["current_rule"]) if mapped and record.get("current_rule")
+                     else record.get("current_rule")) == asdict(after)
                 for record in records
             ):
                 raise RetentionAuthorityError(f"retained admission lost specific superseded rationale: {entry['path']}")

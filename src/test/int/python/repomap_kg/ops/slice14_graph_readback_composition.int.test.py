@@ -9,14 +9,14 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.server._ops_records import McpOpsError
-from repomap_kg.server.mcp import (
+from common_lore_index.server._ops_records import McpOpsError
+from common_lore_index.server.mcp import (
     RepoMapMcpError,
     repomap_search_files,
     repomap_search_nodes,
     repomap_search_observations,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

@@ -1,7 +1,7 @@
 """Configured acquisition refuses unsafe policy before transport and preserves artifacts."""
 from pathlib import Path
 import pytest
-from repomap_kg.ops.ingestion.github_api import acquire_github_api_source, GitHubApiPolicyError
+from common_lore_index.ops.ingestion.github_api import acquire_github_api_source, GitHubApiPolicyError
 from repomap_test_support.run25_acquisition_fixtures import (
     Run25DeterministicGitHubTransport, make_run25_github_source_toml, snapshot_directory_state,
 )

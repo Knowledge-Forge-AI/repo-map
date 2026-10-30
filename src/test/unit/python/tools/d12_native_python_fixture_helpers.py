@@ -13,7 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 from repomap_test_support import d12_native_python_proof as proof
 from repomap_test_support.resource_docker_operation_records import DERIVED_OPERATION_FIELDS
 from repomap_test_support.resource_ledger import CleanupResult, FinalPresence, ResourceKind

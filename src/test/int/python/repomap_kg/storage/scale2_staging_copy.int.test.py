@@ -7,24 +7,24 @@ from threading import Thread
 import psycopg
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.readback_driver import _psycopg_connection_params_from_psql_args
-from repomap_kg.storage.staging_cleanup import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
+from common_lore_index.storage.staging_cleanup import (
     CleanupRequest,
     execute_stage_cleanup,
 )
-from repomap_kg.storage.staging_copy import (
+from common_lore_index.storage.staging_copy import (
     CopyContractError,
     STAGING_COPY_TABLES,
     copy_stage_rows,
 )
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventFrame,
 )
-from repomap_kg.storage.staging_observability import StagingMeasurements
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_observability import StagingMeasurements
+from common_lore_index.storage.staging_ownership import StageOwner
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
 

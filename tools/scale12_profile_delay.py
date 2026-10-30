@@ -8,10 +8,10 @@ from threading import current_thread, main_thread
 import time
 from typing import Callable
 
-from repomap_kg.storage.staging_operation_contracts import (
+from common_lore_index.storage.staging_operation_contracts import (
     STAGING_OPERATION_DESCRIPTORS,
 )
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEvent,
     StagingOperationEventCategory,
 )

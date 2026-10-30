@@ -12,31 +12,31 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.coordinator.local_lifecycle import initialize_coordinator_control
-from repomap_kg.runtime._backup_observation import observe_database_provenance
-from repomap_kg.runtime._backup_provenance import parse_toc_entries
-from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
-from repomap_kg.runtime._extension_restore_native import run_bounded_ext_command
-from repomap_kg.runtime._extension_restore_grants import (
+from common_lore_index.coordinator.local_lifecycle import initialize_coordinator_control
+from common_lore_index.runtime._backup_observation import observe_database_provenance
+from common_lore_index.runtime._backup_provenance import parse_toc_entries
+from common_lore_index.runtime._extension_restore_exec import bound_exec_custody
+from common_lore_index.runtime._extension_restore_native import run_bounded_ext_command
+from common_lore_index.runtime._extension_restore_grants import (
     canonical_grant_statements,
 )
-from repomap_kg.runtime._extension_restore_toc import (
+from common_lore_index.runtime._extension_restore_toc import (
     build_derived_toc_plan,
 )
-from repomap_kg.runtime._extension_restore_toc_custody import (
+from common_lore_index.runtime._extension_restore_toc_custody import (
     private_derived_toc_custody,
 )
-from repomap_kg.runtime.backup import dump_all_databases, dump_database, init_database_from_dump, inspect_backup
-from repomap_kg.runtime.backup_commands import planned_pg_restore_command
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
-from repomap_kg.runtime.local import build_local_runtime_plan
-from repomap_kg.storage import apply_migrations, default_rdbms_root, query_canonical_node_records, run_psql
-from repomap_kg.storage.publication_readback import read_latest_publication
-from repomap_kg.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
-from repomap_kg.storage.semantic_candidate_readback import query_semantic_candidates
-from repomap_kg.storage.semantic_candidates import CandidatePublication, EmbeddingEntry
-from repomap_kg.storage.staged_ingestion import run_staged_portable_refresh
+from common_lore_index.runtime.backup import dump_all_databases, dump_database, init_database_from_dump, inspect_backup
+from common_lore_index.runtime.backup_commands import planned_pg_restore_command
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.backup_restore_sets import restore_coordinated_backup
+from common_lore_index.runtime.local import build_local_runtime_plan
+from common_lore_index.storage import apply_migrations, default_rdbms_root, query_canonical_node_records, run_psql
+from common_lore_index.storage.publication_readback import read_latest_publication
+from common_lore_index.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
+from common_lore_index.storage.semantic_candidate_readback import query_semantic_candidates
+from common_lore_index.storage.semantic_candidates import CandidatePublication, EmbeddingEntry
+from common_lore_index.storage.staged_ingestion import run_staged_portable_refresh
 from repomap_test_support.d9_extension_policies import DEFAULT_REPLAY_BOUNDS, adr0077_pgvector_extension_policy, probe_live_container_qualification
 from repomap_test_support.d9_extension_restore import (
     clean_template_reference, database_names, engine_container_id, owned_d9_postgres_cluster, seed_adr0077_roles_on_cluster,

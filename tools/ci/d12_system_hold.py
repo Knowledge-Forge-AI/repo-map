@@ -29,8 +29,8 @@ from ci.d12_system_proof_host import (
     validate_host_system_event_and_git as _lower_validate_host_system_event_and_git,
     verify_host_proof_against_live_environment as _lower_verify_host_proof_against_live_environment,
 )
-from repomap_kg.runtime.release import DYNAMIC_PACKAGE_MANIFEST, PSYCOPG_LIBPQ_VERSION
-from repomap_kg.runtime.release_manifest import (
+from common_lore_index.runtime.release import DYNAMIC_PACKAGE_MANIFEST, PSYCOPG_LIBPQ_VERSION
+from common_lore_index.runtime.release_manifest import (
     D12_CANDIDATE_LIBPQ_VERSION,
     D12_CANDIDATE_PACKAGE_MANIFEST,
 )

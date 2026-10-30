@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.ops.config_loading import load_ops_config_home
-from repomap_kg.runtime.local import query_local_runtime_status, setup_local_runtime
-from repomap_kg.runtime.plan import LocalRuntimeError
+from common_lore_index.ops.config_loading import load_ops_config_home
+from common_lore_index.runtime.local import query_local_runtime_status, setup_local_runtime
+from common_lore_index.runtime.plan import LocalRuntimeError
 
 
 def snapshot(home: Path) -> dict[str, bytes]:
@@ -154,7 +154,7 @@ def test_invalid_cloe_input_is_refused_without_echoing_values(tmp_path: Path, pa
 
 
 def test_existing_target_with_foreign_owner_is_not_written(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from repomap_kg.runtime.setup_config import create_setup_config
+    from common_lore_index.runtime.setup_config import create_setup_config
 
     target = tmp_path / "repomap.local.cloe.toml"
     target.write_text("unchanged")
@@ -166,7 +166,7 @@ def test_existing_target_with_foreign_owner_is_not_written(tmp_path: Path, monke
 
 @pytest.mark.parametrize("family", ["legacy", "cloe"])
 def test_dry_run_command_replays_the_selected_format(tmp_path: Path, family: str) -> None:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 
     home = tmp_path / "absent"
     result = setup_local_runtime(home, dry_run=True, config_format=family)
@@ -226,7 +226,7 @@ def test_undecodable_configuration_is_bounded_before_runtime_writes(tmp_path: Pa
 
 
 def test_later_cloe_overlay_preserves_effective_operator_settings(tmp_path: Path) -> None:
-    from repomap_kg.runtime.plan import default_repomap_rpl_toml
+    from common_lore_index.runtime.plan import default_repomap_rpl_toml
 
     (tmp_path / "00.cloe.toml").write_text(default_repomap_rpl_toml())
     override = tmp_path / "zz.local.cloe.toml"
@@ -253,7 +253,7 @@ def test_owned_existing_target_permissions_are_preserved(tmp_path: Path, family:
 
 @pytest.mark.parametrize("dry_run", [True, False])
 def test_unfinished_config_migration_blocks_setup_before_writes(tmp_path: Path, dry_run: bool) -> None:
-    from repomap_kg.ops.config_migration import apply_cloe_config_migration
+    from common_lore_index.ops.config_migration import apply_cloe_config_migration
 
     home = tmp_path / "home"
     home.mkdir(mode=0o700)
