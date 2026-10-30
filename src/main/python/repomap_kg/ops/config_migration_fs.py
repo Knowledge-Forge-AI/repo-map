@@ -39,14 +39,10 @@ def restore_name(index: int) -> str:
     return f"restore-{index:04d}.tmp"
 
 
-def _qualified_platform() -> bool:
+def _primitive_platform_supported() -> bool:
     if os.name != "posix" or not sys.platform.startswith(("linux", "darwin")):
         return False
-    try:
-        import fcntl
-    except ImportError:
-        return False
-    if not all(hasattr(os, flag) for flag in ("O_NOFOLLOW", "O_DIRECTORY")) or not hasattr(fcntl, "flock"):
+    if not all(hasattr(os, flag) for flag in ("O_NOFOLLOW", "O_DIRECTORY")):
         return False
     relative = (os.open, os.stat, os.link, os.unlink, os.rename, os.mkdir, os.rmdir)
     return (
@@ -57,12 +53,18 @@ def _qualified_platform() -> bool:
     )
 
 
-_QUALIFIED_PLATFORM = _qualified_platform()
+_QUALIFIED_PRIMITIVES = _primitive_platform_supported()
 
 
 def platform_supported() -> bool:
-    """Linux/macOS with no-follow, descriptor-relative link/stat/rename and flock (probed at import)."""
-    return _QUALIFIED_PLATFORM
+    """Probe migration capabilities on demand; importing Local entrypoints stays neutral."""
+    if not _QUALIFIED_PRIMITIVES:
+        return False
+    try:
+        import fcntl
+    except ImportError:
+        return False
+    return hasattr(fcntl, "flock")
 
 
 def ident(info: os.stat_result) -> tuple[int, int]:

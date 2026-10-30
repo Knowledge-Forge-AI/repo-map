@@ -5,29 +5,67 @@ from pathlib import Path
 import subprocess
 import sys
 from types import SimpleNamespace
+from typing import Any
 
+import coverage
 import pytest
 
 from repomap_test_support.test_scratch import establish_run
 from runner_failure_evidence import CHILD_SCHEMA, DISCOVERY_SCHEMA, FAILURE_SCHEMA, read_diagnostic
 import runner_staging_discovery as discovery
+from runner_coverage import ChildCoverageSession, get_active_bootstrap_capability
+from runner_coverage_execution import scrub_coverage_environment
 from staging_report_contract import execution_succeeded, qualifies
 
 REPO = Path(__file__).resolve().parents[5]
 IDENTITY = {"commit": "a" * 40, "source_sha256": "b" * 64}
 
 
+def _diagnostic_child(argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[bytes]:
+    """Diagnostic tooling has no measurement authority; preserve the caller's environment."""
+    environment = scrub_coverage_environment(kwargs.pop("env", os.environ))
+    return subprocess.run(argv, env=environment, **kwargs)
+
+
+@pytest.mark.parametrize("flag", ["-I", "-B"])
+def test_diagnostic_children_do_not_inherit_measurement_authority(tmp_path: Path, monkeypatch, flag: str):
+    """Synthetic source only: no local RepoMap project coverage is collected."""
+    outer_env, outer_cap = dict(os.environ), get_active_bootstrap_capability()
+    source = tmp_path / "synthetic-source"
+    source.mkdir()
+    (source / "fixture.py").write_text("VALUE = 1\n")
+    session = ChildCoverageSession(coverage_module=coverage, scratch_dir=tmp_path / "session", source_root=source)
+    try:
+        with session, monkeypatch.context() as patch:
+            patch.setenv("COVERAGE_UNRECOGNIZED_SENTINEL", "fixture")
+            before = dict(os.environ)
+            done = _diagnostic_child(
+                [sys.executable, flag, "-c", "import json, os, sys; sys.path.insert(0, sys.argv[1]); import fixture; print(json.dumps({'keys': sorted(k for k in os.environ if k.startswith('COVERAGE_')), 'paths': sys.path}))", str(source)],
+                stdin=subprocess.DEVNULL, capture_output=True, timeout=20,
+            )
+            assert done.returncode == 0, done.stderr
+            observed = json.loads(done.stdout)
+            assert observed["keys"] == []
+            if flag == "-B":  # -I independently ignores PYTHONPATH at interpreter startup.
+                assert str(session.bootstrap_dir) not in observed["paths"]
+            assert dict(os.environ) == before
+            assert not list(session.data_dir.glob(".coverage*"))
+    finally:
+        session.cleanup()
+    assert dict(os.environ) == outer_env
+    assert get_active_bootstrap_capability() is outer_cap
+
+
 def test_canonical_invalid_exact_selector_retains_unestablished_failure(tmp_path: Path):
     """The child runs the real canonical CLI within the authenticated container."""
     reports = tmp_path / "reports"
     environment = os.environ.copy()
-    for key in ("REPOMAP_TEST_RUN_ROOT", "COVERAGE_PROCESS_START", "COVERAGE_PROCESS_CONFIG",
-                "COVERAGE_CHILD_MANIFEST_DIR", "GOCOVERDIR"):
+    for key in ("REPOMAP_TEST_RUN_ROOT", "GOCOVERDIR"):
         environment.pop(key, None)
     environment.update(REPOMAP_TEST_SCRATCH_ROOT=str(tmp_path / "scratch"),
                        REPOMAP_TEST_PHASE="CLOE-RUNNER-RECOVERY1-invalid-selector")
     selector = "src/test/int/python/tools/runner_failure_recovery.int.test.py::test_missing_recovery_probe"
-    result = subprocess.run(
+    result = _diagnostic_child(
         [sys.executable, "-B", str(REPO / "tools/run_tests.py"), "--suite", "int", "--no-coverage",
          "--jobs", "1", "--report-dir", str(reports), "--", selector],
         cwd=REPO, env=environment, stdin=subprocess.DEVNULL, capture_output=True, timeout=150,
@@ -91,7 +129,8 @@ def test_real_child_failure_retains_safe_record_and_settles_process_group(tmp_pa
 def test_real_child_request_refusal_retains_typed_startup_failure(tmp_path: Path):
     request, receipt = tmp_path / "request.json", tmp_path / "receipt.json"
     request.write_text('{"unrecognized": "opaque-fixture"}')
-    done = subprocess.run(
+    request.chmod(0o600)
+    done = _diagnostic_child(
         [sys.executable, "-I", str(REPO / "tools/runner_staging_discovery_child.py"),
          str(request), str(receipt)], cwd=REPO, stdin=subprocess.DEVNULL,
         capture_output=True, timeout=15,

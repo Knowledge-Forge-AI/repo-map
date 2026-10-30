@@ -17,12 +17,71 @@ from repomap_kg.ops.config_migration import (
     apply_cloe_config_migration, finalize_cloe_config_migration, rollback_cloe_config_migration,
 )
 from repomap_test_support.cli_integration import OPS_CONFIG_TEMPLATE, run_cli_module
+from repomap_test_support.cli_in_process import REPO_ROOT, module_process_environment
+from runner_coverage_observer import launch_observed_process
 from repomap_test_support.sqlite_local_fixtures import graph_toml, sqlite_home_toml
 from repomap_test_support.sqlite_local_harness import LocalHarness
 
 SECRET = "migration-int-secret-sentinel"
 OVERLAY = 'schema_version = 1\n[service]\nlog_level = "debug"\n'
 OPERATION = ".cloe-config-migration"
+
+
+def test_cli_import_defers_fcntl_and_migration_refuses_before_home_writes(tmp_path: Path) -> None:
+    program = """
+import importlib.abc, json, sys
+original_fcntl = sys.modules.pop('fcntl', None)
+attempts = []
+class Blocker(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path, target=None):
+        if fullname == 'fcntl':
+            frame = sys._getframe(1)
+            while frame and frame.f_globals.get('__name__', '').startswith(('importlib', '_frozen')):
+                frame = frame.f_back
+            attempts.append(None if frame is None else frame.f_globals.get('__name__'))
+            raise ImportError('fixture blocks POSIX capability')
+blocker = Blocker()
+sys.meta_path.insert(0, blocker)
+try:
+    from repomap_kg.cli import main
+    from repomap_kg.ops.config_migration import apply_cloe_config_migration
+    before = list(attempts)
+    result = apply_cloe_config_migration(sys.argv[1], confirmed=True)
+finally:
+    sys.meta_path.remove(blocker)
+    if original_fcntl is not None:
+        sys.modules['fcntl'] = original_fcntl
+print(json.dumps({'before': before, 'after': attempts, 'result': result}))
+"""
+    home = tmp_path / "not-created"
+    done = launch_observed_process(
+        [sys.executable, "-c", program, str(home)], family="cli_module", pid_namespace_relation="shared",
+        env=module_process_environment(), cwd=REPO_ROOT, timeout=30,
+    )
+    assert done.returncode == 0, done.stderr
+    value = json.loads(done.stdout)
+    owner = "repomap_kg.ops.config_migration_fs"
+    assert owner not in value["before"] and owner in value["after"]
+    assert value["result"]["refusals"] == [{"code": "config-migration-platform-unsupported", "file": ""}]
+    assert value["result"]["writes_performed"] == 0 and not home.exists()
+
+
+@pytest.mark.parametrize("backend", ["postgresql", "sqlite"])
+def test_real_cli_distinct_replacement_refuses_all_recovery_commands(tmp_path: Path, backend: str) -> None:
+    home = make_home(tmp_path, backend)
+    assert cli(home, "apply", "--yes")["result"] == "applied"
+    target, replacement = home / "00-project.cloe.toml", home / "replacement.tmp"
+    original = target.stat()
+    replacement.write_bytes(target.read_bytes())
+    replacement.chmod(stat.S_IMODE(original.st_mode))
+    assert replacement.stat().st_ino != original.st_ino
+    replacement.replace(target)
+    assert target.stat().st_ino != original.st_ino
+    before = tree(home)
+    for command, flags in (("rollback", ("--dry-run",)), ("rollback", ("--yes",)), ("finalize", ("--yes",))):
+        result = cli(home, command, *flags, code=1)
+        assert result["refusals"] == [{"code": "config-migration-drift", "file": "00-project.rp.toml"}]
+        assert result["writes_performed"] == 0 and tree(home) == before
 
 
 @pytest.mark.parametrize("backend", ["postgresql", "sqlite"])

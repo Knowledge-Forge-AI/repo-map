@@ -68,7 +68,8 @@ def boundaries(fail_at: int | None = None, error: BaseException | None = None) -
                 return function(*args, **kwargs)
             calls.append(name)
             if len(calls) - 1 == fail_at:
-                raise error  # type: ignore[misc]
+                assert error is not None
+                raise error
             return function(*args, **kwargs)
         return wrapper
 
@@ -186,8 +187,10 @@ def _edit(home: Path, kind: str) -> None:
     if kind == "edited":
         (home / "00-project.cloe.toml").write_text(SERVER.replace("127.0.0.1", "127.0.0.2"))
     elif kind == "replaced":
-        (home / "00-project.cloe.toml").unlink()
-        (home / "00-project.cloe.toml").write_text(SERVER)
+        target, replacement = home / "00-project.cloe.toml", home / "replacement.tmp"
+        replacement.write_text(SERVER)
+        assert replacement.stat().st_ino != target.stat().st_ino
+        replacement.replace(target)
     elif kind == "foreign":
         (home / "zz.cloe.toml").write_text(OVERLAY)
     elif kind == "alias":
