@@ -114,6 +114,7 @@ class _CoordinatorExecutionBase:
         *,
         action: str,
         disable_unknown: bool,
+        restore_on_failure: bool = True,
     ) -> tuple[bool, bool]:
         stopped = False
         disabled = False
@@ -125,6 +126,8 @@ class _CoordinatorExecutionBase:
                 self._run_commands(self.adapter.disable_commands())
                 disabled = True
         except ServicePackageError:
+            if not restore_on_failure:
+                raise ServicePackageError(f"{action}_legacy_recovery_required") from None
             try:
                 self._restore_native_state(stopped, disabled)
             except ServicePackageError:
@@ -141,6 +144,7 @@ class _CoordinatorExecutionBase:
         enabled: bool | None = None,
         ready: bool | None = None,
         changed: bool = False,
+        result: str = "success",
     ) -> ServiceActionResult:
         return ServiceActionResult(
             action=action,
@@ -152,4 +156,5 @@ class _CoordinatorExecutionBase:
             enabled=enabled,
             ready=ready,
             changed=changed,
+            result=result,
         )

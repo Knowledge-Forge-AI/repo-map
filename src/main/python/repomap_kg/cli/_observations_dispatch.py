@@ -18,6 +18,16 @@ def dispatch_observation_commands(
     print_cli_error: Callable[..., None],
 ) -> int | None:
     if args.command == "identity":
+        if getattr(args, "installation_check", False):
+            from repomap_kg.runtime.installation_ownership import inspect_installation_ownership
+            ownership = inspect_installation_ownership()
+            if args.json:
+                print(json.dumps(ownership.as_dict(), sort_keys=True))
+            else:
+                print(f"installation ownership: {ownership.state}")
+                for diagnostic in ownership.diagnostics:
+                    print(f"diagnostic: {diagnostic}")
+            return ownership.exit_code
         identity = commands.PROJECT_IDENTITY.as_dict()
         if args.json:
             print(json.dumps(identity, sort_keys=True))

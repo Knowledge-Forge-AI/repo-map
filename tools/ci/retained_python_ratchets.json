@@ -836,7 +836,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325"
+    "sha256": "0056c5299d8f230e578e22180b11889b6ef01ca36aaf5f3e7d8d62afb0da50d2"
   },
   "ruff": {
     "findings": [
@@ -16999,6 +16999,12 @@
         "module": "repomap_kg.runtime.database_roles",
         "ownership_class": "python_retained",
         "path": "src/main/python/repomap_kg/runtime/database_roles.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "repomap_kg.runtime.installation_ownership",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/repomap_kg/runtime/installation_ownership.py",
         "tier": "T1-future"
       },
       {

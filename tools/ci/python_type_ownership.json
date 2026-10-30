@@ -2521,6 +2521,15 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0121: clean read-only installed-distribution ownership diagnostics; no new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.runtime.installation_ownership",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",

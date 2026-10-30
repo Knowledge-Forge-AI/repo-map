@@ -7,9 +7,11 @@ import plistlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
+from xml.parsers.expat import ExpatError as _ExpatError
 
 from repomap_kg.service_package.contract import (
     ServicePackageSpec,
+    _foreground_module_class,
     is_recognizable_psql_reference,
     is_recognizable_python_reference,
     service_semantics,
@@ -67,7 +69,7 @@ class LaunchdUserAdapter:
         try:
             actual = plistlib.loads(content)
             expected = plistlib.loads(self.render(spec))
-        except (ValueError, plistlib.InvalidFileException):
+        except (ValueError, plistlib.InvalidFileException, _ExpatError, AttributeError, IndexError, KeyError):
             raise ValueError("service_definition_invalid") from None
         if actual != expected:
             raise ValueError("service_definition_invalid")
@@ -77,7 +79,7 @@ class LaunchdUserAdapter:
             return False
         try:
             payload = plistlib.loads(content)
-        except (ValueError, plistlib.InvalidFileException, TypeError, OverflowError):
+        except (ValueError, plistlib.InvalidFileException, TypeError, OverflowError, _ExpatError, AttributeError, IndexError, KeyError):
             return False
         if not isinstance(payload, dict) or payload.get("Label") != _LABEL:
             return False
@@ -125,6 +127,11 @@ class LaunchdUserAdapter:
             "X-RepoMap-Psql-SHA256": psql_sha256,
             "X-RepoMap-Python-SHA256": python_sha256,
         }
+
+    def module_classification(self, content: bytes) -> str:
+        if not self.recognizes(content):
+            return "unrecognized"
+        return _foreground_module_class(plistlib.loads(content)["ProgramArguments"][2])
 
     def semantic_values(self, spec: ServicePackageSpec) -> dict[str, object]:
         return service_semantics(spec)
@@ -177,9 +184,9 @@ def _recognized_foreground_argv(
         or not is_recognizable_python_reference(value[0], python_sha256)
     ):
         return False
-    if value[1:6] != [
+    if _foreground_module_class(value[2]) == "unrecognized" or value[1:6] != [
         "-m",
-        "repomap_kg",
+        value[2],
         "ops",
         "coordinator-serve",
         "--repo-map-home",

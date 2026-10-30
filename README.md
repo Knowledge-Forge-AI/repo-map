@@ -278,6 +278,12 @@ environment with a pyenv-created virtualenv.
 
 ## Configuration homes
 
+Before replacing an installed distribution, `repomap-kg identity --installation-check --json`
+reports metadata ownership conflicts without loading entrypoints or inspecting
+homes. Ordinary `identity --json` remains unchanged. See
+[installed upgrade compatibility](docs/ops/cloe-installed-upgrade-compatibility.md)
+for its limits and persisted native-service recovery.
+
 The [CLOE compatibility milestone](docs/ops/cloe-config-compatibility.md) accepts a nonempty `CLOE_HOME` ahead of `REPOMAP_HOME` and a separate CLOE configuration family. Explicit invocation homes win. Without a selector, a recognizable private `~/.cloe` wins, while a recognizable legacy `~/.repo-map` remains a safe fallback. Fresh defaults use `~/.cloe`; unrelated or unsafe homes are never silently initialized. `ops config-migration-plan` prepares filenames without applying changes. See the [accepted transition roadmap](docs/specs/cloe-roadmap-transition-v1.md) for the coordinated rebrand.
 
 For a new container-runtime home, `local setup --config-format cloe` creates a

@@ -9,6 +9,7 @@ from pathlib import Path
 
 from repomap_kg.service_package.contract import (
     ServicePackageSpec,
+    _foreground_module_class,
     is_recognizable_psql_reference,
     is_recognizable_python_reference,
     service_semantics,
@@ -86,6 +87,11 @@ class SystemdUserAdapter:
             shutdown_timeout_seconds=30,
         )
         return content == expected
+
+    def module_classification(self, content: bytes) -> str:
+        if not self.recognizes(content):
+            return "unrecognized"
+        return _foreground_module_class(decode_systemd_exec_argv(content)[2])
 
     def semantic_values(self, spec: ServicePackageSpec) -> dict[str, object]:
         return service_semantics(spec)
@@ -259,10 +265,10 @@ def _recognized_foreground_argv(
     if any("\x00" in item or "\n" in item or "\r" in item for item in value):
         return False
     return (
-        value[1:6]
+        _foreground_module_class(value[2]) != "unrecognized" and value[1:6]
         == (
             "-m",
-            "repomap_kg",
+            value[2],
             "ops",
             "coordinator-serve",
             "--repo-map-home",

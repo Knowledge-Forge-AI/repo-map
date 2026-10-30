@@ -190,6 +190,9 @@ class CoordinatorServiceOperations(_CoordinatorExecutionBase):
                 enabled=False if self.adapter.enabled_probe_argv() is not None else None,
                 ready=False,
             )
+        if self.adapter.module_classification(existing.content) == "legacy":
+            return self._result("status", installed=True, ready=False,
+                                result="service_legacy_module_reinstall_required")
         active, enabled = self._native_state()
         ready = False
         if active:
@@ -208,6 +211,8 @@ class CoordinatorServiceOperations(_CoordinatorExecutionBase):
     def _upgrade(self) -> ServiceActionResult:
         content = self._render()
         prior = self._require_installed()
+        if self.adapter.module_classification(prior.content) == "legacy":
+            raise ServicePackageError("service_legacy_module_reinstall_required")
         active, enabled = self._native_state()
         stopped, disabled = self._suspend_native_state(
             active,
@@ -254,12 +259,14 @@ class CoordinatorServiceOperations(_CoordinatorExecutionBase):
                 active=False,
                 enabled=False if self.adapter.enabled_probe_argv() is not None else None,
             )
+        legacy = self.adapter.module_classification(prior.content) == "legacy"
         active, enabled = self._native_state()
         stopped, disabled = self._suspend_native_state(
             active,
             enabled,
             action="service_uninstall",
             disable_unknown=True,
+            restore_on_failure=not legacy,
         )
         remove_fn = remove_owned_artifact
         restore_fn = restore_owned_artifact
@@ -274,9 +281,12 @@ class CoordinatorServiceOperations(_CoordinatorExecutionBase):
                     self.adapter.recognizes,
                 )
                 self._run_commands(self.adapter.reload_commands())
-                self._restore_native_state(stopped, disabled)
+                if not legacy:
+                    self._restore_native_state(stopped, disabled)
             except (ServiceArtifactError, ServicePackageError):
                 raise ServicePackageError("service_uninstall_rollback_failed") from None
+            if legacy:
+                raise ServicePackageError("service_uninstall_legacy_recovery_required") from None
             raise ServicePackageError("service_uninstall_rolled_back") from None
         return self._result(
             "uninstall",
@@ -303,6 +313,8 @@ class CoordinatorServiceOperations(_CoordinatorExecutionBase):
         return existing
 
     def _require_current(self, existing: OwnedArtifact) -> None:
+        if self.adapter.module_classification(existing.content) == "legacy":
+            raise ServicePackageError("service_legacy_module_reinstall_required")
         try:
             self.adapter.validate(existing.content, self.spec)
         except ValueError:

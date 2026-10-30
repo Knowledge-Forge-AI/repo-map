@@ -125,6 +125,10 @@ def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
         action="store_true",
         help="emit identity metadata as JSON",
     )
+    identity.add_argument(
+        "--installation-check", action="store_true",
+        help="report installation ownership and upgrade conflicts",
+    )
     observations = subparsers.add_parser(
         "observations",
         help="work with raw observation JSONL",

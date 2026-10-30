@@ -26,6 +26,19 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.install1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/installation_ownership.int.test.py",
+        "src/test/int/python/repomap_kg/service_package/cloe_module_compatibility.int.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installation_ownership.unit.test.py",
+        "src/test/unit/python/repomap_kg/service_package/cloe_module_compatibility.unit.test.py"
+      ],
+      "rationale": "ADR0121 categorical metadata ownership and exact persisted-service parsing, status, refusals, uninstall and no-reactivation recovery boundaries.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.migration1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config_migration.int.test.py",
@@ -50205,6 +50218,51 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/cloe_ownership.int.test.py",
       "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/installation_ownership.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installation_ownership.unit.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/installation_ownership.int.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/service_package/cloe_module_compatibility.unit.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/service_package/cloe_module_compatibility.int.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
       "root": "test_owners",
       "status": "active_integration_test"
     }

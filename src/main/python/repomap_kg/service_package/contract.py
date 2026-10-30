@@ -11,6 +11,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from repomap_kg import IMPORT_PACKAGE as _IMPORT_PACKAGE
 from repomap_kg.service_package.environment import (
     SERVICE_ENVIRONMENT_ALLOWLIST,
     apply_service_environment,
@@ -73,7 +74,7 @@ def build_service_package_spec(repo_map_home: str | Path) -> ServicePackageSpec:
         foreground_argv=(
             str(executable),
             "-m",
-            "repomap_kg",
+            _IMPORT_PACKAGE,
             "ops",
             "coordinator-serve",
             "--repo-map-home",
@@ -99,6 +100,12 @@ def build_service_inspection_spec(repo_map_home: str | Path) -> ServicePackageSp
         python_sha256=None,
         psql_sha256=None,
     )
+
+
+def _foreground_module_class(value: str) -> str:
+    if value == _IMPORT_PACKAGE:
+        return "current"
+    return "legacy" if value == "repomap_kg" else "unrecognized"
 
 
 def _normalize_home(repo_map_home: str | Path) -> Path:

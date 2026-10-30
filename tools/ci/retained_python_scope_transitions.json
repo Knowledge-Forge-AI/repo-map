@@ -4425,6 +4425,28 @@
       "source_commit": "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe",
       "source_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
       "status_path": "tools/ci/cloe-ownership1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime.installation_ownership",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/installation_ownership.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "0056c5299d8f230e578e22180b11889b6ef01ca36aaf5f3e7d8d62afb0da50d2",
+      "new_selected_set_sha256": "a2f49f054a9efaadd06916db66436a95799de25b0b84c19b857536c72b1cdf63",
+      "old_ownership_manifest_sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325",
+      "old_selected_set_sha256": "3ac96bebcddc42d1706a0753f9fa6f761327617ff30b915a3156bf4583858691",
+      "phase": "REPOMAP-CLOE-INSTALL1",
+      "reason": "ADR0121: one clean installed-ownership diagnostic owner; all prior selections/debt preserved.",
+      "source_commit": "b90fa8e9c8126be2eac73620001c3869b2cf8e33",
+      "source_manifest_sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325",
+      "status_path": "tools/ci/cloe-install1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

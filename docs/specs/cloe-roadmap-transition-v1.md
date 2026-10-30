@@ -83,9 +83,24 @@ private-line reintegration and hosted successor qualification are not implied.
 [ADR0118](../adr/2026/10/0118-cloe-installed-ownership-and-safe-home-selection.md)
 settles the coordinated W1 distribution/import/resource/command ownership direction.
 Safe default-home selection and current resource-ownership preparation form the
-next source milestone. The canonical distribution/import/resource/entrypoint
+milestone qualified by CI97 attempt 1 on staging
+`b90fa8e9c8126be2eac73620001c3869b2cf8e33`, including its two eager-facade
+compatibility corrections. All nine jobs and retained same-attempt smoke/M/A
+and system contracts pass; unit coverage is 88.0/87.6 and integration90.1/82.2,
+meeting both two-point margins. The canonical distribution/import/resource/entrypoint
 cutover remains atomic and subsequent; broad namespace implementation has not
 started. Current scoped proof and hosted successor qualification remain distinct.
+
+[ADR0121](../adr/2026/10/0121-installed-ownership-diagnostics-and-service-upgrade-compatibility.md)
+adds the next two-part upgrade prerequisite: explicit categorical installed-owner
+diagnostics and exact persisted-service module recognition/reinstallation recovery.
+The ordinary identity payload stays stable; legacy definitions never become
+healthy or reactivate during failed uninstall. This is source preparation for
+the atomic move, not installed-package qualification. The
+[consumer inventory](../ops/cloe-installed-upgrade-compatibility.md) preserves the
+documented configuration-migration Python API and names the remaining facade,
+module-path projection and disposable install-order obligations. No blanket
+no-facade policy or historical-authority rewrite is accepted.
 
 Keep SQLite Local useful without Server or enrichment dependencies. Search
 projections are derived from accepted captured material with privacy and
