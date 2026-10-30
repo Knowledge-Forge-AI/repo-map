@@ -12,8 +12,11 @@ with scoped proof and independent review. Its hosted qualification remains pendi
 
 REPOMAP-CLOE-CUSTODY1 records a reviewed W0 reconciliation audit and restores
 existing test contracts. It does not claim wholesale private-line reintegration
-or authorize the broad package/import/default-home cutover. The source-recovery
-follow-up below remains a prerequisite to declaring W0 implementation complete.
+or authorize the broad package/import/default-home cutover.
+REPOMAP-CLOE-RUNNER-RECOVERY1 subsequently completes the required bounded W0
+source-recovery disposition under [ADR 0115](../adr/2026/10/0115-bounded-runner-failure-diagnostics.md).
+W0 is locally reconciled for continuing development from this public candidate;
+private experiments and historical material remain preserved under their owners.
 
 The protected development checkout remains intact, including uncommitted and
 untracked work. No reset, mirror, deletion or mechanical adoption is used.
@@ -31,7 +34,7 @@ public documentation does not reproduce private operational material.
 | Command-contract characterization | Restore specific cross-job-leakage assertions and invalid dependency variants against the projected public workflow, plus loop refusal and quoted-keyword acceptance using its native runner command. |
 | Extension restore characterization | Require a nonempty observed ICU collation version as well as equality with the actual version. |
 | Current product description | Describe implemented SQLite Local and PostgreSQL, with bounded host-native MCP acceptance; managed Cloud remains a target. |
-| Private runner failure evidence | Preserve the diagnostic/recovery family for the named W0 follow-up below. It is meaningful unincorporated work, not obsolete history or a retrieval feature. |
+| Private runner failure evidence | Integrate typed first-error retention, guarded cleanup and safe discovery diagnostics under ADR0115. Preserve the precursor's arbitrary-text capture prototype without adopting it. |
 | Retrieval utility prototypes | Preserve for W2 evaluation design and W5 comparison. Synthetic fixture consistency is not measured product usefulness, held-out quality or live cost evidence. |
 | Optional pgvector companions | Preserve for W5 tooling/admission work. No production pgvector admission or usefulness follows from these prototypes. |
 | Private status, design and operational evidence | Preserve in place. Public companion notes and accepted ADRs retain their own scope; historical operational prose is not copied into the public namespace. |
@@ -43,7 +46,7 @@ The historical and candidate D12 records retain different ownership and hash
 domains. The informational treatment of inherited Debian findings follows
 [ADR 0105](../adr/2026/10/0105-debian-stable-slim-maintenance-and-ci-responsibility.md).
 
-## Required W0 source-recovery follow-up
+## W0 source-recovery disposition
 
 The private precursor contains a coherent failure-evidence family spanning
 `runner_failure_evidence.py`, `runner_integration_execution.py`,
@@ -65,11 +68,20 @@ record must never fabricate a partition, counts, coverage or successful executio
 Optional pgvector profile propagation and companion-specific interpretation
 remain separately owned where they affect the deferred W5 work.
 
-Only after that source slice's reviewed disposition may W0 implementation be
-closed and the coordinated W1 namespace move proceed. W1 design can continue
-meanwhile. Installed old/new distribution ownership, import compatibility,
-home recognition and frozen protocol/migration identities still need their
-coordinated decision; configuration filename conversion alone does not settle them.
+The bounded source slice now preserves actual candidate/discovery failures across
+later report and cleanup exceptions, with invocation-bound typed diagnostics.
+Real canonical CLI and child-process cases prove unestablished population
+reporting and owned process cleanup; positive qualification contracts stay strict.
+Its local checkpoint passes 78 scoped unit and three containerized integration
+cases, clean static enforcement and independent native source review. Python
+project coverage is disabled for scoped runs; the canonical runner's fixed Go
+helper component checks retain their own component coverage output.
+
+This closes the named mandatory W0 source-recovery follow-up locally. It does not
+claim blanket private-line reintegration, execution of preserved experiments or
+hosted successor qualification. W1's coordinated installed-distribution, import,
+resource, command and home ownership decision remains separate; configuration
+filename conversion alone does not settle it.
 
 ## Qualification and publication
 

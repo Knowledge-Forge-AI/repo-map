@@ -38,6 +38,29 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.runner.recovery1.test_owners",
+      "members": [
+        "src/test/int/python/tools/runner_failure_recovery.int.test.py",
+        "src/test/unit/python/tools/runner_discovery_failure.unit.test.py",
+        "src/test/unit/python/tools/runner_failure_diagnostics.unit.test.py",
+        "src/test/unit/python/tools/runner_failure_recovery.unit.test.py"
+      ],
+      "rationale": "ADR0115 safe diagnostics and first-error recovery; complete clean-profile enforcement.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.runner.recovery1.tools",
+      "members": [
+        "tools/runner_failure_evidence.py"
+      ],
+      "rationale": "ADR0115 safe diagnostics and first-error recovery; complete clean-profile enforcement.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.runtime1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_runtime.int.test.py",
@@ -49783,6 +49806,51 @@
       "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/runner_failure_recovery.int.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_discovery_failure.unit.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_failure_diagnostics.unit.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_failure_recovery.unit.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_failure_evidence.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "tools",
+      "status": "active_tool"
     }
   ],
   "historical_revise10_counts": {

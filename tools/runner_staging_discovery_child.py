@@ -6,20 +6,25 @@ from dataclasses import asdict
 import os
 from pathlib import Path
 import sys
+from typing import Any
 
 # -I prevents inherited PYTHONPATH/user-site bootstrap before request validation.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
-def main(argv: list[str] | None = None) -> int:
+def _retain_error(record: dict[str, Any], receipt_path: Path) -> None:
+    from runner_failure_evidence import CHILD_SCHEMA, error_record, persist_diagnostic, print_diagnostic
+    try:
+        persist_diagnostic(receipt_path.with_name("child_error.json"), {"schema": CHILD_SCHEMA, "error": record})
+    except Exception as persistence_error:
+        print_diagnostic(error_record(persistence_error, "diagnostic_persistence"), primary=False)
+
+
+def _collect(request_path: Path, receipt_path: Path) -> int:
     from runner_staging_discovery_contract import (
         DISCOVERY_RECEIPT_SCHEMA, digest, read_document, validate_request, write_document,
     )
 
-    arguments = sys.argv[1:] if argv is None else argv
-    if len(arguments) != 2:
-        return 2
-    request_path, receipt_path = map(Path, arguments)
     request = read_document(request_path)
     validate_request(request)
     # The installed interpreter/macOS runtime can inject these two startup
@@ -73,7 +78,10 @@ def main(argv: list[str] | None = None) -> int:
         code = int(pytest.main(["--collect-only", "-q", *request["pytest_args"]],
                                plugins=[collector, optional]))
     except BaseException as error:
-        code, error_name = 2, type(error).__name__
+        from runner_failure_evidence import error_record
+        record = error_record(error, "child_collection")
+        _retain_error(record, receipt_path)
+        code, error_name = 2, record["type"]
     receipt = {
         "schema": DISCOVERY_RECEIPT_SCHEMA, "request_sha256": digest(request),
         "exit_code": code, "error": error_name,
@@ -84,6 +92,22 @@ def main(argv: list[str] | None = None) -> int:
     receipt["sha256"] = digest(receipt)
     write_document(receipt_path, receipt)
     return code
+
+
+def main(argv: list[str] | None = None) -> int:
+    arguments = sys.argv[1:] if argv is None else argv
+    if len(arguments) != 2:
+        return 2
+    request_path, receipt_path = map(Path, arguments)
+    try:
+        return _collect(request_path, receipt_path)
+    except BaseException as error:
+        # Normal startup validates the request before importing the diagnostic helper.
+        from runner_failure_evidence import error_record
+        _retain_error(error_record(error, "child_startup"), receipt_path)
+        if not isinstance(error, Exception):
+            raise
+        return 2
 
 
 if __name__ == "__main__":

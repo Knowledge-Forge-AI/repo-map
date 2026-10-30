@@ -68,11 +68,15 @@ hosted qualification has not been requested.
 REPOMAP-CLOE-CUSTODY1, preserves private work and distinguishes public successor
 fixes from meaningful unincorporated harness work. It restores command-contract
 characterization, the nonempty ICU-version assertion and accurate current
-Local/Server descriptions. The runner failure-evidence/recovery follow-up
-remains required before W0 implementation closure and the broad namespace move.
-W1 compatibility/ownership design can continue while that source slice is
-completed. Private-line reintegration and hosted successor qualification are
-not implied by the audit.
+Local/Server descriptions. The subsequent
+[ADR 0115](../adr/2026/10/0115-bounded-runner-failure-diagnostics.md) source slice
+integrates typed first-cause retention, safe discovery diagnostics and guarded
+cleanup, closing that mandatory W0 follow-up with scoped proof and independent
+review. Preserved private experiments retain their W2/W5 owners; blanket
+private-line reintegration and hosted successor qualification are not implied.
+The coordinated W1 distribution/import/resource/command/home ownership decision
+is next; broad namespace implementation has not started. Migration and runner
+recovery form the next useful batched publication milestone.
 
 Keep SQLite Local useful without Server or enrichment dependencies. Search
 projections are derived from accepted captured material with privacy and

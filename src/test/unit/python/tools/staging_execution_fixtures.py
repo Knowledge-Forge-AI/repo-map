@@ -112,7 +112,7 @@ def _args(tmp_path: Path, *, no_coverage: bool = False, report: bool = False):
 
 def _install_fakes(monkeypatch, *, collection_exit=0, failure_leg=None,
                    incomplete_leg=None, interrupt_leg=None, teardown_leg=None,
-                   source_values=None, go_tmp=None, report=False):
+                   source_values=None, go_tmp=None, report=False, instrumentation_value=None):
     FakeLegPlugin.instances = []
     run_order: list[str] = []
     coverage_env: list[tuple[str, str | None]] = []
@@ -141,7 +141,8 @@ def _install_fakes(monkeypatch, *, collection_exit=0, failure_leg=None,
         coverage_env.append((plugin.leg, os.environ.get("GOCOVERDIR")))
         if plugin.leg == incomplete_leg:
             code = fake_run(_pytest_module, _pytest_args, plugin)
-            return code, SimpleNamespace(_instrumentation_error=RuntimeError("missing shard"))
+            error = RuntimeError("missing shard") if instrumentation_value is None else instrumentation_value
+            return code, SimpleNamespace(_instrumentation_error=error)
         return fake_run(_pytest_module, _pytest_args, plugin), SimpleNamespace()
 
     class Session(FakeSession):
