@@ -249,3 +249,19 @@ def test_owned_existing_target_permissions_are_preserved(tmp_path: Path, family:
     result = setup_local_runtime(tmp_path)
     assert target.read_bytes() == before and target.stat().st_mode & 0o777 == 0o644
     assert str(tmp_path) not in json.dumps(result.to_jsonable())
+
+
+@pytest.mark.parametrize("dry_run", [True, False])
+def test_unfinished_config_migration_blocks_setup_before_writes(tmp_path: Path, dry_run: bool) -> None:
+    from repomap_kg.ops.config_migration import apply_cloe_config_migration
+
+    home = tmp_path / "home"
+    home.mkdir(mode=0o700)
+    (home / "00.rp.toml").write_text("schema_version = 1\n")
+    assert apply_cloe_config_migration(home, confirmed=True)["result"] == "applied"
+    before = {str(p.relative_to(home)): p.lstat().st_mode for p in home.rglob("*")}
+    with pytest.raises(LocalRuntimeError) as raised:
+        setup_local_runtime(home, dry_run=dry_run)
+    assert raised.value.diagnostics[0].code == "config-migration-in-progress"
+    assert {str(p.relative_to(home)): p.lstat().st_mode for p in home.rglob("*")} == before
+    assert not (home / "runtime").exists() and not (home / "repomap.local.cloe.toml").exists()

@@ -26,6 +26,18 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.migration1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/cloe_config_migration.int.test.py",
+        "src/test/unit/python/repomap_kg/ops/cloe_config_migration.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/cloe_config_recovery.unit.test.py"
+      ],
+      "rationale": "ADR0114 apply/rollback/finalize, crash-boundary recovery, refusal/redaction and real CLI/API lifecycle boundaries.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.runtime1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_runtime.int.test.py",
@@ -49708,6 +49720,69 @@
       "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
       "root": "test_owners",
       "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration_fs.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration_journal.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration_recovery.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_config_migration.int.test.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/cloe_config_migration.unit.test.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/cloe_config_recovery.unit.test.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

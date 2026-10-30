@@ -55,6 +55,12 @@ dry-run replay and connected configuration/mount readback. It retains legacy
 empty-home defaults and is not the broad namespace/default-home/data migration.
 Hosted qualification for that successor remains pending.
 
+[ADR 0114](../adr/2026/10/0114-cloe-config-migration-apply-recovery.md) adds
+explicit, confirmed configuration filename apply, rollback and finalize for an
+owned private home. It uses durable journaled backups, crash recovery and
+drift refusal. It does not change the default home, namespaces or data. Its
+hosted qualification has not been requested.
+
 Keep SQLite Local useful without Server or enrichment dependencies. Search
 projections are derived from accepted captured material with privacy and
 publication identity; they are not another graph authority. Current MCP

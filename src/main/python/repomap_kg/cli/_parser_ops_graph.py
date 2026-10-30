@@ -37,6 +37,17 @@ def add_ops_graph_commands(
     )
     add_ops_config_arguments(migration_plan)
     migration_plan.add_argument("--json", action="store_true", help="emit a read-only filename plan as JSON")
+    for name, summary in (
+        ("config-migration-apply", "convert an explicit legacy home's configuration filenames to CLOE"),
+        ("config-migration-rollback", "recover an interrupted apply or revert an unfinalized one"),
+        ("config-migration-finalize", "discard retained migration backups; rollback ends"),
+    ):
+        migration = ops_subcommands.add_parser(name, help=summary + " (dry run unless --yes)")
+        migration.add_argument("--repo-map-home", required=True, help="explicit owner-private home to change")
+        mode = migration.add_mutually_exclusive_group()
+        mode.add_argument("--dry-run", action="store_true", help="report the outcome without writing (default)")
+        mode.add_argument("--yes", action="store_true", help="confirm and perform the operation")
+        migration.add_argument("--json", action="store_true", help="emit the bounded result as JSON")
     config_check = ops_subcommands.add_parser(
         "config-check",
         help="validate a unified local operations TOML config",

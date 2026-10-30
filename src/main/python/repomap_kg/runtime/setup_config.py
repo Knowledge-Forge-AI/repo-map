@@ -9,6 +9,7 @@ import unicodedata
 
 from repomap_kg.ops.config_layout import discover_home_config_files
 from repomap_kg.ops.config_loading import _read_ops_config_home_payload
+from repomap_kg.ops.config_migration_fs import OPERATION_DIRECTORY
 from repomap_kg.ops.config_records import OpsConfigError
 from repomap_kg.ops.config_storage import refuse_sqlite_home
 from repomap_kg.runtime._home_authority import create_private_file, ensure_private_directory
@@ -44,6 +45,14 @@ def prepare_setup_config(
     """Select without changing configuration; actual setup validates home custody first."""
     if config_format not in (None, "legacy", "cloe"):
         _refuse("runtime-config-format-invalid", "choose legacy or cloe")
+    try:
+        (home / OPERATION_DIRECTORY).lstat()
+    except (FileNotFoundError, NotADirectoryError):
+        pass
+    except OSError:
+        _refuse("runtime-config-unavailable", "configuration preflight could not inspect the selected home")
+    else:
+        _refuse("config-migration-in-progress", "finalize or roll back the configuration migration first")
     if not dry_run:
         try:
             ensure_private_directory(home)

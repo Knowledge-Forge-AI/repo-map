@@ -25,6 +25,16 @@ def _classification(name: str) -> tuple[str, int] | None:
     return None
 
 
+def portable_config_name(name: str) -> str:
+    """The conservative NFC/case-folded comparison key used for collisions."""
+    return _portable_name(name)
+
+
+def classify_config_filename(name: str) -> tuple[str, int] | None:
+    """Return ``(family, layer)`` for a configuration filename, where layer 1 is local."""
+    return _classification(name)
+
+
 def discover_home_config_files(home: Path) -> tuple[list[Path], list[Path]]:
     """Keep top-level discovery and ordering; refuse competing format families."""
     matched: list[tuple[int, Path]] = []

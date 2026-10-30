@@ -4354,6 +4354,55 @@
       "source_commit": "bec838a210f3ffea84986ae85986e4081b2e8291",
       "source_manifest_sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409",
       "status_path": "tools/ci/cloe-runtime1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration_fs",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration_fs.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration_journal",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration_journal.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration_recovery",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration_recovery.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
+      "new_selected_set_sha256": "f744f6ff7fcbeba4df97a9cec675a8cd6c135ec31f1938911f0f7050d19b1571",
+      "old_ownership_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
+      "old_selected_set_sha256": "473365ded39135f2333a986591f0ac9bfe267b71b649cc50c589a761dd677ff1",
+      "phase": "REPOMAP-CLOE-MIGRATION1",
+      "reason": "ADR0114: four clean configuration migration apply/recovery owners; all prior selections/debt preserved.",
+      "source_commit": "433a2edf89284f71f10996d20c88bcf3e311c9de",
+      "source_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
+      "status_path": "tools/ci/cloe-migration1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

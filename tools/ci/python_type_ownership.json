@@ -1525,6 +1525,42 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0114: clean CLOE configuration migration apply/rollback/finalize owner; adjacent retained Python ownership, no forecast change or new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.ops.config_migration",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0114: clean CLOE configuration migration apply/rollback/finalize owner; adjacent retained Python ownership, no forecast change or new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.ops.config_migration_fs",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0114: clean CLOE configuration migration apply/rollback/finalize owner; adjacent retained Python ownership, no forecast change or new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.ops.config_migration_journal",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0114: clean CLOE configuration migration apply/rollback/finalize owner; adjacent retained Python ownership, no forecast change or new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.ops.config_migration_recovery",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
       "match": "exact",
       "module_prefix": "repomap_kg.ops.config_records",

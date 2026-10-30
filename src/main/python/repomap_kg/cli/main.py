@@ -203,7 +203,7 @@ from repomap_kg.storage import (
     terraform_summary_to_jsonable as terraform_summary_to_jsonable,
 )
 from repomap_kg.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
-from repomap_kg.cli._config_migration import dispatch_config_migration_plan
+from repomap_kg.cli._config_migration import dispatch_config_migration
 from repomap_kg.cli._postgres_facade import (
     POSTGRES_DRIVER_UNAVAILABLE,
     POSTGRES_FACADE_NAMES,
@@ -282,7 +282,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     if not args.version:
-        migration_result = dispatch_config_migration_plan(args, _print_cli_error)
+        migration_result = dispatch_config_migration(args, _print_cli_error)
         if migration_result is not None:
             return migration_result
         # SQLite Local ops commands route before the PostgreSQL dispatcher loads.

@@ -116,7 +116,8 @@ def test_cli_plan_output_exit_and_no_contents(
         assert json.loads(rendered.out)["filename_conversion_ready"] is not unsafe
     else:
         assert ("refused" if unsafe else "ready") in rendered.out
-        assert "Read-only plan" in rendered.out
+        assert "Read-only plan" in rendered.out and "A plan is not apply authority" in rendered.out
+        assert "apply is unavailable" not in rendered.out
     assert original.read_text() == body
     assert list(tmp_path.iterdir()) == [original]
 

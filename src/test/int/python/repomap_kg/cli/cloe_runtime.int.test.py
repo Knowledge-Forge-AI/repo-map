@@ -135,3 +135,18 @@ def test_cli_preflight_failures_preserve_home_without_secret_output(tmp_path: Pa
     assert "private-sentinel" not in result.stdout + result.stderr
     assert snapshot(home) == before and not (home / "runtime").exists()
     assert not harness.forbidden_events() and not harness.shim_invocations()
+
+
+@pytest.mark.parametrize("dry_run", [True, False])
+def test_cli_setup_refuses_an_unfinished_config_migration(tmp_path: Path, dry_run: bool) -> None:
+    home = tmp_path / "home"
+    home.mkdir(mode=0o700)
+    (home / "00.rp.toml").write_text("schema_version = 1\n")
+    applied = run_cli_module("ops", "config-migration-apply", "--repo-map-home", str(home), "--yes", "--json")
+    assert applied.returncode == 0, applied.stderr
+    before = snapshot(home)
+    harness = LocalHarness(tmp_path / "guard")
+    result = harness.run("local", "setup", "--repo-map-home", str(home), *(("--dry-run",) if dry_run else ()), "--json")
+    assert result.returncode == 1 and "config-migration-in-progress" in result.stderr
+    assert snapshot(home) == before and not (home / "runtime").exists()
+    assert not harness.forbidden_events() and not harness.shim_invocations()
