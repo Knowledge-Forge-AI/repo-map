@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from repomap_kg.ops.config_loading import resolve_home_selection, resolve_repo_map_home
+from repomap_kg.ops.config_loading import _resolve_home_selection, resolve_repo_map_home
 from repomap_kg.ops.config_records import OpsConfigError
 from repomap_kg.ops import home_selection
 
@@ -52,7 +52,7 @@ def test_default_selection_table(defaults: tuple[Path, Path], new: str, old: str
     populate(current, new)
     populate(legacy, old)
     before = {p: p.read_bytes() for root in defaults if root.is_dir() for p in root.iterdir() if p.is_file()}
-    selection = resolve_home_selection()
+    selection = _resolve_home_selection()
     assert selection.source == source
     assert selection.path == (legacy if source == "legacy-default" else current)
     assert bool(selection.notices) == (source == "legacy-default")
@@ -90,7 +90,7 @@ def test_explicit_precedence_does_not_inspect_defaults(defaults, monkeypatch: py
     monkeypatch.setenv("REPOMAP_HOME", str(legacy))
     monkeypatch.setenv("CLOE_HOME", str(current))
     assert resolve_repo_map_home() == current
-    assert resolve_home_selection(legacy).source == "explicit"
+    assert _resolve_home_selection(legacy).source == "explicit"
     monkeypatch.setenv("CLOE_HOME", "")
     assert resolve_repo_map_home() == legacy
 
@@ -175,3 +175,14 @@ def test_runtime_api_preserves_its_safe_error_family(defaults, operation: str) -
         getattr(local, operation)()
     assert raised.value.diagnostics[0].code == "default-home-unrecognized"
     assert str(current.parent) not in str(raised.value)
+
+
+def test_legacy_resolver_facades_keep_one_path_returning_function(defaults) -> None:
+    from repomap_kg.ops import config, config_loading
+    from repomap_kg.runtime import local
+    current, legacy = defaults
+    populate(legacy, "sqlite")
+    assert local.resolve_repo_map_home is config.resolve_repo_map_home is config_loading.resolve_repo_map_home
+    assert local.resolve_repo_map_home() == legacy
+    assert local.resolve_repo_map_home(current) == current
+    assert not current.exists()

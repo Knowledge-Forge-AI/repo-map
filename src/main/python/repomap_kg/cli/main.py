@@ -109,7 +109,7 @@ from repomap_kg.ops.config import (
     ops_graph_registry_status_to_jsonable as ops_graph_registry_status_to_jsonable,
     ops_config_status_to_jsonable as ops_config_status_to_jsonable,
 )
-from repomap_kg.ops.config_loading import resolve_home_selection
+from repomap_kg.ops.config_loading import _resolve_home_selection
 from repomap_kg.ops.policy_dogfood import (
     format_policy_dogfood_table as format_policy_dogfood_table,
     policy_dogfood_payload as policy_dogfood_payload,
@@ -288,7 +288,7 @@ def _home_selection_notice(args: argparse.Namespace) -> None:
         "config-migration-apply", "config-migration-rollback", "config-migration-finalize",
     ):
         return  # Their explicit-home requirement is independent authority.
-    selection = resolve_home_selection(args.repo_map_home)
+    selection = _resolve_home_selection(args.repo_map_home)
     for notice in selection.notices:
         print(f"warning: legacy-default-home: {notice}", file=sys.stderr)
 

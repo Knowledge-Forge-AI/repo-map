@@ -8,7 +8,7 @@ import tomllib as tomllib
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from repomap_kg.ops.home_selection import HomeSelection, select_home
+from repomap_kg.ops.home_selection import HomeSelection as _HomeSelection, select_home as _select_home
 
 from repomap_kg.ops.config_helpers import (
     KNOWN_POSTGRES_FIELDS as KNOWN_POSTGRES_FIELDS,
@@ -103,11 +103,11 @@ DEFAULT_REPOMAP_HOME = "~/.repo-map"
 
 
 def resolve_repo_map_home(value: str | Path | None = None) -> Path:
-    return resolve_home_selection(value).path
+    return _resolve_home_selection(value).path
 
 
-def resolve_home_selection(value: str | Path | None = None) -> HomeSelection:
-    return select_home(value, recognize=_recognize_home_payloads)
+def _resolve_home_selection(value: str | Path | None = None) -> _HomeSelection:
+    return _select_home(value, recognize=_recognize_home_payloads)
 
 
 def _recognize_home_payloads(files: Sequence[tuple[str, bytes]]) -> bool:

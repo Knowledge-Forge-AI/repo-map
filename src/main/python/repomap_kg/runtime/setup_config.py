@@ -8,7 +8,7 @@ from typing import NoReturn
 import unicodedata
 
 from repomap_kg.ops.config_layout import discover_home_config_files
-from repomap_kg.ops.config_loading import _read_ops_config_home_payload, resolve_home_selection
+from repomap_kg.ops.config_loading import _read_ops_config_home_payload, _resolve_home_selection
 from repomap_kg.ops.config_migration_fs import OPERATION_DIRECTORY
 from repomap_kg.ops.config_records import OpsConfigError
 from repomap_kg.ops.config_storage import refuse_sqlite_home
@@ -30,7 +30,7 @@ def _config_refusal(error: OpsConfigError) -> NoReturn:
 def resolve_setup_home(value: str | Path | None, config_format: str | None) -> tuple[Path, str | None]:
     """Use CLOE filenames only for a fresh implicit new default; preserve explicit choices."""
     try:
-        selection = resolve_home_selection(value)
+        selection = _resolve_home_selection(value)
     except OpsConfigError as error:
         _config_refusal(error)
     return selection.path, config_format or ("cloe" if selection.source == "fresh-default" else None)
@@ -39,7 +39,7 @@ def resolve_setup_home(value: str | Path | None, config_format: str | None) -> t
 def resolve_runtime_home(value: str | Path | None = None) -> Path:
     """Keep lifecycle API selection failures in the runtime diagnostic family."""
     try:
-        return resolve_home_selection(value).path
+        return _resolve_home_selection(value).path
     except OpsConfigError as error:
         _config_refusal(error)
 

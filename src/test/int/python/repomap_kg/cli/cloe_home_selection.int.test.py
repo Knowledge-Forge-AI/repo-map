@@ -185,3 +185,17 @@ def test_runtime_api_refuses_implicit_foreign_home_before_runtime_work(tmp_path:
     assert raised.value.diagnostics[0].code == "default-home-unrecognized"
     assert "opaque private sentinel" not in str(raised.value) and str(tmp_path) not in str(raised.value)
     assert snapshot(current) == before and not legacy.exists()
+
+
+def test_legacy_runtime_and_config_facades_select_the_same_original_home(tmp_path: Path, monkeypatch) -> None:
+    from repomap_kg.ops import config, config_loading
+    from repomap_kg.runtime import local
+    current, legacy = defaults(tmp_path, monkeypatch)
+    legacy.mkdir(mode=0o700)
+    (legacy / "00.rp.toml").write_text(OPS_CONFIG_TEMPLATE)
+    before = snapshot(legacy)
+    assert local.resolve_repo_map_home is config.resolve_repo_map_home is config_loading.resolve_repo_map_home
+    assert local.resolve_repo_map_home() == legacy
+    loaded = config.load_ops_config_home()
+    assert loaded.config_home == str(legacy)
+    assert snapshot(legacy) == before and not current.exists()

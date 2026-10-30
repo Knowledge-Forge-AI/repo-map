@@ -17,6 +17,7 @@ from pathlib import Path
 import urllib.error
 import urllib.request
 
+from repomap_kg.ops.config_loading import resolve_repo_map_home as resolve_repo_map_home
 from repomap_kg.runtime.commands import (
     default_env_text,
     ensure_runtime_home_hash,
@@ -29,7 +30,7 @@ from repomap_kg.runtime.database_role_contract import ensure_role_secrets
 from repomap_kg.runtime.setup_config import (
     prepare_setup_config as _prepare_setup_config, create_setup_config as _create_setup_config,
     resolve_setup_home as _resolve_setup_home,
-    resolve_runtime_home as resolve_repo_map_home,
+    resolve_runtime_home as _resolve_runtime_home,
 )
 from repomap_kg.runtime._home_authority import (
     create_private_file, ensure_private_directory, validate_private_file,
@@ -155,7 +156,7 @@ def up_local_runtime(
     *,
     dry_run: bool = False,
 ) -> LocalRuntimeResult:
-    plan = build_local_runtime_plan(resolve_repo_map_home(repo_map_home))
+    plan = build_local_runtime_plan(_resolve_runtime_home(repo_map_home))
     ensure_runtime_files_exist(plan)
     command = tuple(plan.compose_command("up", "-d", "--build", "--remove-orphans"))
     if dry_run:
@@ -222,7 +223,7 @@ def down_local_runtime(
     *,
     dry_run: bool = False,
 ) -> LocalRuntimeResult:
-    plan = build_local_runtime_plan(resolve_repo_map_home(repo_map_home))
+    plan = build_local_runtime_plan(_resolve_runtime_home(repo_map_home))
     ensure_runtime_files_exist(plan)
     command = tuple(plan.compose_command("down", "--remove-orphans"))
     if dry_run:
@@ -274,7 +275,7 @@ def query_local_runtime_status(
     check_containers: bool = False,
 ) -> LocalRuntimeResult:
     plan = build_local_runtime_plan(
-        resolve_repo_map_home(repo_map_home),
+        _resolve_runtime_home(repo_map_home),
         allow_invalid_config=True,
     )
     diagnostics: list[LocalRuntimeDiagnostic] = []
