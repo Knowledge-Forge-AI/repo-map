@@ -24,6 +24,41 @@
       "root": "test_owners"
     },
     {
+      "id": "cloe.cutover1.proof1.test_owners",
+      "root": "test_owners",
+      "governing_profile": "clean_test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/retained_python_namespace_contract.unit.test.py",
+        "src/test/unit/python/tools/ci/retained_python_namespace_history.unit.test.py",
+        "src/test/unit/python/tools/ci/retained_python_namespace_source.unit.test.py"
+      ],
+      "admission": "admitted",
+      "rationale": "Clean namespace-proof owners with no debt or historical authority relaxation."
+    },
+    {
+      "id": "cloe.cutover1.proof1.test_support",
+      "root": "test_support",
+      "governing_profile": "clean_test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/namespace_projection_fixture.py"
+      ],
+      "admission": "admitted",
+      "rationale": "Clean namespace-proof owners with no debt or historical authority relaxation."
+    },
+    {
+      "id": "cloe.cutover1.proof1.tools",
+      "root": "tools",
+      "governing_profile": "clean_tooling",
+      "members": [
+        "tools/ci/retained_python_namespace_contract.py",
+        "tools/ci/retained_python_namespace_evidence.py",
+        "tools/ci/retained_python_namespace_history.py",
+        "tools/ci/retained_python_namespace_source.py"
+      ],
+      "admission": "admitted",
+      "rationale": "Clean namespace-proof owners with no debt or historical authority relaxation."
+    },
+    {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "cloe.install1.test_owners",
@@ -25403,6 +25438,15 @@
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/_temporary.py",
+      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/repomap_kg/artifacts/__init__.py",
       "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
       "root": "product",
@@ -26071,6 +26115,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/cli/__init__.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/cli/_config_migration.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -28550,6 +28603,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_layout.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -28573,6 +28635,42 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/config_local.py",
       "rationale": "Product3 SQLite Local home configuration and registry loaders.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration_fs.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration_journal.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/config_migration_recovery.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -28699,6 +28797,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/ops/graph_registry.py",
       "rationale": "Product3 backend-neutral graph registry protocol.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/ops/home_selection.py",
+      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -29531,6 +29638,15 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/installation_ownership.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -29653,6 +29769,15 @@
       "maintained_executable": true,
       "path": "src/main/python/repomap_kg/runtime/schema_upgrade.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/repomap_kg/runtime/setup_config.py",
+      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -31910,6 +32035,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_config_migration.int.test.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_home_selection.int.test.py",
+      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/cloe_runtime.int.test.py",
+      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/cli/discover_core.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -32272,6 +32433,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/coordinator/navigation33_worker_disposition.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/packaged_python_worker.int.test.py",
+      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -32900,6 +33070,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/cloe_ownership.int.test.py",
+      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/container_pid_namespace_correlation.int.test.py",
       "rationale": "REPOMAP-PUBLIC-V002-FIX7 real container PID namespace correlation integration test.",
       "root": "test_owners",
@@ -33041,6 +33220,15 @@
       "status": "active_int_test"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/installation_ownership.int.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
       "confidence": 1.0,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -33075,6 +33263,15 @@
       "rationale": "First-party integration test owner for Slice 9 complete coordinated backup and restore sets.",
       "root": "test_owners",
       "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/service_package/cloe_module_compatibility.int.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
     },
     {
       "confidence": 0.95,
@@ -34817,6 +35014,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/tools/runner_failure_recovery.int.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/tools/scale20_prelaunch_handoff.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -35008,6 +35214,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/coordinator_core_fakes.py",
       "rationale": "Shared typed coordinator core fixtures for bounded core and diagnostics owners.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/d12_complete_inventory.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -35271,6 +35486,15 @@
       "rationale": "Responsibility-preserving decomposition within the original src-test-support-python-repomap_test_support.mcp_server cohort.",
       "root": "test_support",
       "status": "active_test_support"
+    },
+    {
+      "path": "src/test/support/python/repomap_test_support/namespace_projection_fixture.py",
+      "root": "test_support",
+      "status": "active_test_support",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_test_support",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
     },
     {
       "confidence": 0.95,
@@ -41009,6 +41233,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/cloe_config.unit.test.py",
+      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/cloe_config_migration.unit.test.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/cloe_config_recovery.unit.test.py",
+      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/ops/config.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -41092,6 +41343,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/ops/helper_branches_runtime_backup_mcp.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/home_selection.unit.test.py",
+      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -41468,6 +41728,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/owned_temporary.unit.test.py",
+      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/package_structure.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -41630,6 +41899,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/cloe_ownership.unit.test.py",
+      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/cloe_setup.unit.test.py",
+      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/coordinator_migration_packaging.unit.test.py",
       "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
       "root": "test_owners",
@@ -41765,6 +42052,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installation_ownership.unit.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/runtime/local_home_authority.unit.test.py",
       "rationale": "Focused local home and administrator authority repair owner.",
       "root": "test_owners",
@@ -41857,6 +42153,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/service_package/artifacts.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/service_package/cloe_module_compatibility.unit.test.py",
+      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -44987,6 +45292,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/debian_base_refresh.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/ci/file_length_policy.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -45407,6 +45721,33 @@
       "status": "active_unit_test"
     },
     {
+      "path": "src/test/unit/python/tools/ci/retained_python_namespace_contract.unit.test.py",
+      "root": "test_owners",
+      "status": "active_unit_test",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_test_owners",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
+      "path": "src/test/unit/python/tools/ci/retained_python_namespace_history.unit.test.py",
+      "root": "test_owners",
+      "status": "active_unit_test",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_test_owners",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
+      "path": "src/test/unit/python/tools/ci/retained_python_namespace_source.unit.test.py",
+      "root": "test_owners",
+      "status": "active_unit_test",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_test_owners",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
@@ -45653,6 +45994,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/d12_complete_inventory.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/d12_core_image_cleanup.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION45-D12DYNAMIC1 ADR 0089 dynamically linked C Psycopg owner; strict zero-debt admission.",
       "root": "test_owners",
@@ -45880,6 +46230,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_inventory_metadata.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 unit owner for fixed A/B metadata transport, identity-chain verification and sanitization, streaming byte/entry caps, JSON/tree validation and non-claim invariants.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_discovery_failure.unit.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_failure_diagnostics.unit.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_failure_recovery.unit.test.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -46661,6 +47038,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_debian_policy.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/system/d12_exec.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "test_owners",
@@ -46672,6 +47058,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/system/d12_glibc_risk.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_qualification.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_qualification_fixtures.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/system/d12_qualification_orchestration.unit.test.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -47462,6 +47875,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/ci/d12_system_grant_io.py",
+      "rationale": "ADR0108: unchanged strict D12 grant IO extraction; zero-debt tooling admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/ci/d12_system_hold.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "tools",
@@ -47473,6 +47895,15 @@
       "maintained_executable": true,
       "path": "tools/ci/d12_system_proof_host.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/debian_base_refresh.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -48107,6 +48538,42 @@
       "status": "active_tool"
     },
     {
+      "path": "tools/ci/retained_python_namespace_contract.py",
+      "root": "tools",
+      "status": "active_tool",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_tooling",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
+      "path": "tools/ci/retained_python_namespace_evidence.py",
+      "root": "tools",
+      "status": "active_tool",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_tooling",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
+      "path": "tools/ci/retained_python_namespace_history.py",
+      "root": "tools",
+      "status": "active_tool",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_tooling",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
+      "path": "tools/ci/retained_python_namespace_source.py",
+      "root": "tools",
+      "status": "active_tool",
+      "confidence": 0.95,
+      "maintained_executable": true,
+      "governing_profile": "clean_tooling",
+      "rationale": "ADR0123 exact forward-only namespace projection, actual Git/source binding and adverse proof."
+    },
+    {
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
@@ -48562,6 +49029,15 @@
       "maintained_executable": true,
       "path": "tools/runner_dependencies.py",
       "rationale": "Repository CI and developer tooling infrastructure.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_failure_evidence.py",
+      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -49505,6 +49981,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/system/d12_candidate_assessment.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_debian_policy.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/system/d12_exec.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-D12SYSTEM1 ADR 0095 Route B one-use AMD system candidate and diagnostic evidence; strict zero-debt admission.",
       "root": "tools",
@@ -49514,8 +50008,35 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/system/d12_export_manifest.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0105 host-retained export identity; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/system/d12_glibc_risk.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI73TRIXIE1 ADR 0101 finite Trixie glibc risk disposition assessor and native component proof; strict zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_qualification.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/system/d12_qualification_export.py",
+      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -49851,420 +50372,6 @@
       "rationale": "REVISE32 cohesive decomposition of tools/run_windows_async15_tests.py; same maintained responsibility and quality profile.",
       "root": "tools",
       "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_support",
-      "maintained_executable": true,
-      "path": "src/test/support/python/repomap_test_support/d12_complete_inventory.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_support",
-      "status": "active_test_support"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/ci/debian_base_refresh.unit.test.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/d12_complete_inventory.unit.test.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/system/d12_debian_policy.unit.test.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/system/d12_qualification.unit.test.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/system/d12_qualification_fixtures.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/system/d12_qualification_orchestration.unit.test.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/ci/debian_base_refresh.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/system/d12_candidate_assessment.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/system/d12_debian_policy.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/system/d12_export_manifest.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0105 host-retained export identity; zero-debt admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/system/d12_qualification.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/system/d12_qualification_export.py",
-      "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-CI84REPAIR1 ADR0104/0105 conditional qualification, complete evidence and current stable-slim maintenance; zero-debt admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.85,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/_temporary.py",
-      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/coordinator/packaged_python_worker.int.test.py",
-      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/owned_temporary.unit.test.py",
-      "rationale": "CI85 remediation / ADR0106: exact owned-cleanup and native worker regression owner; zero added debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/ci/d12_system_grant_io.py",
-      "rationale": "ADR0108: unchanged strict D12 grant IO extraction; zero-debt tooling admission.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/cli/_config_migration.py",
-      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/ops/config_layout.py",
-      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
-      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/ops/cloe_config.unit.test.py",
-      "rationale": "ADR0109 REPOMAP-CLOE-CONFIG1: scoped configuration compatibility and read-only filename planning; no new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/runtime/setup_config.py",
-      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/runtime/cloe_setup.unit.test.py",
-      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/cli/cloe_runtime.int.test.py",
-      "rationale": "ADR0112 REPOMAP-CLOE-RUNTIME1: configuration-family producer/target authority and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_integration_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/ops/config_migration.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/ops/config_migration_fs.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/ops/config_migration_journal.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/ops/config_migration_recovery.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/cli/cloe_config_migration.int.test.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_integration_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/ops/cloe_config_migration.unit.test.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/ops/cloe_config_recovery.unit.test.py",
-      "rationale": "ADR0114 REPOMAP-CLOE-MIGRATION1: explicit configuration migration apply/recovery and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/tools/runner_failure_recovery.int.test.py",
-      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
-      "root": "test_owners",
-      "status": "active_int_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/runner_discovery_failure.unit.test.py",
-      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/runner_failure_diagnostics.unit.test.py",
-      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/tools/runner_failure_recovery.unit.test.py",
-      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_tooling",
-      "maintained_executable": true,
-      "path": "tools/runner_failure_evidence.py",
-      "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
-      "root": "tools",
-      "status": "active_tool"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/ops/home_selection.py",
-      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/ops/home_selection.unit.test.py",
-      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/cli/cloe_home_selection.int.test.py",
-      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_integration_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/runtime/cloe_ownership.unit.test.py",
-      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/runtime/cloe_ownership.int.test.py",
-      "rationale": "ADR0118 REPOMAP-CLOE-OWNERSHIP1: safe home selection, frozen resource ownership and real CLI proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_integration_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "retained_python_ratchets",
-      "maintained_executable": true,
-      "path": "src/main/python/repomap_kg/runtime/installation_ownership.py",
-      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
-      "root": "product",
-      "status": "retained_ratchet"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/runtime/installation_ownership.unit.test.py",
-      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/runtime/installation_ownership.int.test.py",
-      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_integration_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/unit/python/repomap_kg/service_package/cloe_module_compatibility.unit.test.py",
-      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_unit_test"
-    },
-    {
-      "confidence": 0.95,
-      "governing_profile": "clean_test_owners",
-      "maintained_executable": true,
-      "path": "src/test/int/python/repomap_kg/service_package/cloe_module_compatibility.int.test.py",
-      "rationale": "ADR0121 REPOMAP-CLOE-INSTALL1: installed metadata diagnostics and persisted-service upgrade/refusal/recovery proof; zero new quality debt.",
-      "root": "test_owners",
-      "status": "active_integration_test"
     }
   ],
   "historical_revise10_counts": {

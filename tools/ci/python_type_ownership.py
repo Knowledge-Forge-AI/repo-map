@@ -12,6 +12,8 @@ from typing import Mapping
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE_ROOT = ROOT / "src/main/python"
+PRODUCT_MODULE_ROOT = "repomap_kg"
+PRODUCT_SOURCE_PATH = "src/main/python/" + PRODUCT_MODULE_ROOT
 DEFAULT_MANIFEST = Path(__file__).with_name("python_type_ownership.json")
 SCHEMA = "repomap-python-type-ownership-v1"
 RESOLUTION = "longest-component-prefix-wins"
@@ -44,6 +46,11 @@ class OwnershipManifest:
     entries: tuple[OwnershipRule, ...]
 
 
+def is_product_module(name: str) -> bool:
+    """Recognize the exact current component root, never a look-alike prefix."""
+    return name == PRODUCT_MODULE_ROOT or name.startswith(PRODUCT_MODULE_ROOT + ".")
+
+
 def module_name_for_path(path: Path, source_root: Path = SOURCE_ROOT) -> str:
     relative = path.resolve().relative_to(source_root.resolve())
     parts = list(relative.with_suffix("").parts)
@@ -61,7 +68,7 @@ def maintained_modules(repo_root: Path = ROOT) -> dict[str, Path]:
             "--others",
             "--exclude-standard",
             "--",
-            "src/main/python/repomap_kg",
+            PRODUCT_SOURCE_PATH,
         ],
         cwd=repo_root,
         check=True,
@@ -127,7 +134,7 @@ def _rule(raw: object) -> OwnershipRule:
     if raw["match"] not in {"exact", "subtree"}:
         raise OwnershipManifestError("ownership match is invalid")
     prefix = raw["module_prefix"]
-    if not prefix.startswith("repomap_kg") or any(not part for part in prefix.split(".")):
+    if not is_product_module(prefix) or any(not part for part in prefix.split(".")):
         raise OwnershipManifestError("module prefix is invalid")
     return OwnershipRule(**{field: raw[field] for field in fields})
 

@@ -11,6 +11,7 @@ from typing import Mapping, Sequence
 
 from ci.public_author_correction_history import author_correction_governing_paths
 from ci.retained_python_projection_history import projection_governing_paths
+from ci.retained_python_namespace_history import namespace_governing_paths
 from ci.python_type_ownership import (
     OwnershipManifest, OwnershipRule, load_manifest, module_name_for_path, resolve_rule,
 )
@@ -26,6 +27,8 @@ CHECKERS = (
     "python_type_check.py", "python_type_ownership.py", "retained_python_ratchets.py",
     "retained_python_ratchet_lineage.py", "retained_python_comparison.py",
     "retained_python_records.py", "file_length_policy.py", "check_file_lengths.py",
+    "retained_python_namespace_contract.py", "retained_python_namespace_source.py",
+    "retained_python_namespace_history.py", "retained_python_namespace_evidence.py",
 )
 
 
@@ -207,6 +210,7 @@ def bind_inputs(repo_root: Path, inventory_path: Path, ratchet_path: Path) -> di
     required.update((repo_root / "tools/ci").glob("retained_python_*.py"))
     required.update(repo_root / "tools/ci" / name for name in CHECKERS)
     required.update(projection_governing_paths(repo_root))
+    required.update(namespace_governing_paths(repo_root))
     required.update((repo_root / "tools/ci").glob("public_author_correction*.py"))
     required.update(author_correction_governing_paths(repo_root))
     fixture_document = read_document(repo_root / "tools/ci/python_fixture_authority.json")
