@@ -376,7 +376,7 @@ def test_d12_trixie_backup_restore_and_collation_refusals(monkeypatch: pytest.Mo
                 with closing(_connect(postgres, graph_db, autocommit=True)) as conn:
                     conn.execute(SYNTHETIC_GRAPH_SQL)
                 provider, _collate, _ctype, icu_locale, icu_version, actual = _creation_facts(postgres, graph_db)
-                assert provider == "i" and icu_locale and icu_version == actual, (icu_locale, icu_version, actual)
+                assert provider == "i" and icu_locale and icu_version and icu_version == actual, (icu_locale, icu_version, actual)
                 icu_dump = dump_database(
                     home, database=graph_db, timestamp="20261023T011000Z",
                     command_runner=runner, extension_restore_policy=policy)

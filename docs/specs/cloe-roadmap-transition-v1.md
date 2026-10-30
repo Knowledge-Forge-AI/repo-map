@@ -53,13 +53,26 @@ the retained same-attempt staging obligations verified. The next W1 milestone,
 explicit CLOE runtime setup and existing-family detection, with guarded targets,
 dry-run replay and connected configuration/mount readback. It retains legacy
 empty-home defaults and is not the broad namespace/default-home/data migration.
-Hosted qualification for that successor remains pending.
+CI93 attempt 1 qualified that runtime-setup candidate at
+`433a2edf89284f71f10996d20c88bcf3e311c9de`, including all nine jobs and the
+retained same-attempt staging/system obligations. That result does not qualify
+the local successors described below.
 
 [ADR 0114](../adr/2026/10/0114-cloe-config-migration-apply-recovery.md) adds
 explicit, confirmed configuration filename apply, rollback and finalize for an
 owned private home. It uses durable journaled backups, crash recovery and
 drift refusal. It does not change the default home, namespaces or data. Its
 hosted qualification has not been requested.
+
+[The W0 custody audit](cloe-development-custody-v1.md),
+REPOMAP-CLOE-CUSTODY1, preserves private work and distinguishes public successor
+fixes from meaningful unincorporated harness work. It restores command-contract
+characterization, the nonempty ICU-version assertion and accurate current
+Local/Server descriptions. The runner failure-evidence/recovery follow-up
+remains required before W0 implementation closure and the broad namespace move.
+W1 compatibility/ownership design can continue while that source slice is
+completed. Private-line reintegration and hosted successor qualification are
+not implied by the audit.
 
 Keep SQLite Local useful without Server or enrichment dependencies. Search
 projections are derived from accepted captured material with privacy and

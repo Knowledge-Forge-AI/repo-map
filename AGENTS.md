@@ -6,10 +6,10 @@ entrypoint; agent-specific adapters such as `CLAUDE.md` supplement it and
 must not weaken it.
 
 RepoMap is a deterministic knowledge graph system for polyglot software
-repositories. The current implementation is PostgreSQL-backed with multi-source
+repositories. The implementation includes SQLite Local and PostgreSQL with multi-source
 composition. ADR 0071 defines one product: SQLite Local, PostgreSQL Server Engine,
-and managed Cloud. Local SQLite has a first bounded slice (ADR 0075; step 4 in
-progress); the containerized PostgreSQL system remains the current
+and managed Cloud. SQLite Local and host-native MCP are manager-accepted for
+their bounded scopes (roadmap steps 3–4); the containerized PostgreSQL system remains the current
 as-built/reference implementation.
 Its Python distribution is `repomap-kg`, its import package is `repomap_kg`,
 and its CLI is `repomap-kg`.

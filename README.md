@@ -1,11 +1,12 @@
 # RepoMap
 
 RepoMap is a deterministic knowledge graph system for polyglot software
-repositories. Its current implementation is PostgreSQL-backed. The accepted
+repositories. Its implementation includes SQLite Local and PostgreSQL. The accepted
 product architecture has three surfaces: useful offline-capable SQLite Local,
 PostgreSQL Server Engine for reference/self-hosted operation, and managed Cloud.
-SQLite Local and host-native MCP remain targets; current setup instructions
-describe the supported containerized PostgreSQL reference distribution.
+SQLite Local and host-native MCP have manager acceptance for their bounded
+scopes; current runtime setup instructions describe the containerized PostgreSQL
+reference distribution.
 
 The first goal is to map how a repository actually works: entry points, scripts,
 source/include relationships, imports, generated artifacts, tests, coverage
@@ -25,7 +26,7 @@ and hosted qualification remain separate gates.
 - Python import package: `repomap_kg`
 - CLI: `repomap-kg`
 - License: AGPL-3.0-or-later plus commercial licensing
-- Current database: PostgreSQL; the reference deployment uses a local container
+- Storage: SQLite Local and PostgreSQL; the reference Server deployment uses a local container
 - Product direction: [Local, Server Engine and Cloud](docs/adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
 - Release program: [private-main milestones and pre-v0.1.0 gates](docs/specs/roadmap.md#post-promotion-product-program)
 
@@ -36,7 +37,7 @@ and hosted qualification remain separate gates.
 - Mark confidence explicitly: extracted, heuristic, manual, or unknown.
 - Treat shell, Nix, and process orchestration as first-class concerns.
 - Keep raw extractor output exportable as JSONL.
-- Store normalized graph data in Postgres.
+- Store normalized graph data in an explicitly owned SQLite or PostgreSQL store.
 - Keep logical graph and source identity independent of checkout, worker,
   container, region, and physical database location.
 - Keep project-specific conventions in profiles rather than hardcoding them.
