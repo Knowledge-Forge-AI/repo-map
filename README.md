@@ -276,19 +276,27 @@ before creating `.venv`. A pyenv-managed Python can still be invoked through a
 separate local alias or explicit shim path, but avoid accidentally mixing a Nix
 environment with a pyenv-created virtualenv.
 
-## `REPOMAP_HOME`
+## Configuration homes
 
-The [CLOE compatibility milestone](docs/ops/cloe-config-compatibility.md) also accepts a nonempty `CLOE_HOME` ahead of `REPOMAP_HOME` and a separate CLOE configuration family. Explicit invocation homes win; the existing default remains unchanged. `ops config-migration-plan` prepares filenames without applying changes. See the [accepted transition roadmap](docs/specs/cloe-roadmap-transition-v1.md) for the coordinated rebrand.
+The [CLOE compatibility milestone](docs/ops/cloe-config-compatibility.md) accepts a nonempty `CLOE_HOME` ahead of `REPOMAP_HOME` and a separate CLOE configuration family. Explicit invocation homes win. Without a selector, a recognizable private `~/.cloe` wins, while a recognizable legacy `~/.repo-map` remains a safe fallback. Fresh defaults use `~/.cloe`; unrelated or unsafe homes are never silently initialized. `ops config-migration-plan` prepares filenames without applying changes. See the [accepted transition roadmap](docs/specs/cloe-roadmap-transition-v1.md) for the coordinated rebrand.
 
 For a new container-runtime home, `local setup --config-format cloe` creates a
 CLOE overlay; existing homes are detected automatically and must match any
-explicit format. Empty homes retain the legacy default. Use `--dry-run` first
+explicit format. Fresh implicit defaults use CLOE files; explicit custom empty
+homes retain legacy bootstrap behavior. Use `--dry-run` first
 to inspect the selected format without writing files or credentials.
 
 
-Local operations resolve configuration from `REPOMAP_HOME`, defaulting to
-`~/.repo-map`. You can also pass `--repo-map-home <dir>` to local and ops
-commands.
+Use `--repo-map-home <dir>` with local and ops commands for an explicit home.
+Home selection creates no files and never moves or merges existing graph data.
+
+Implicit recognition requires a private owned home. For an older manually created
+legacy home with broader permissions, inspect it and use `chmod 700 ~/.repo-map`,
+or select it explicitly through `REPOMAP_HOME`, `CLOE_HOME` or `--repo-map-home`.
+If fresh setup stopped after creating runtime directories but before creating its
+configuration, inspect the partial home, then resume with
+`local setup --repo-map-home ~/.cloe --config-format cloe`. The explicit format
+preserves CLOE filenames during recovery.
 
 The config home is a folder, not one giant config file. RepoMap loads TOML files
 matching:
@@ -297,8 +305,9 @@ matching:
 - `*.rpl.toml` for local/private machine configuration.
 
 `*.rp.toml` files load first in lexicographic order. `*.rpl.toml` files load
-second and overlay local/private values. The generated local setup file name is
-`repomap.rpl.toml`.
+second and overlay local/private values. Legacy setup generates `repomap.rpl.toml`.
+CLOE homes use `*.cloe.toml` followed by `*.local.cloe.toml`; fresh implicit setup
+generates `repomap.local.cloe.toml`. Each home uses one family.
 
 Do not commit a real local config home, generated runtime secrets, backups,
 status artifacts, or private graph data.
@@ -312,7 +321,7 @@ RepoMap's intended local runtime is an isolated container cluster:
 - `REPOMAP_HOME` mounted for config and runtime state;
 - localhost-only, configurable, non-standard ports.
 
-Basic lifecycle:
+Basic lifecycle for an explicitly selected legacy home:
 
 ```sh
 repomap-kg local setup --repo-map-home ~/.repo-map

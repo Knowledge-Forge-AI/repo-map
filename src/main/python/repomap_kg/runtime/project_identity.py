@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 
+from repomap_kg import DISTRIBUTION_NAME, IMPORT_PACKAGE, PREFERRED_CLI
+
 
 @dataclass(frozen=True)
 class ProjectIdentity:
@@ -20,9 +22,9 @@ class ProjectIdentity:
 
 PROJECT_IDENTITY = ProjectIdentity(
     name="RepoMap",
-    distribution="repomap-kg",
-    package="repomap_kg",
-    cli="repomap-kg",
-    license="Apache-2.0",
+    distribution=DISTRIBUTION_NAME,
+    package=IMPORT_PACKAGE,
+    cli=PREFERRED_CLI,
+    license="AGPL-3.0-or-later",
     database="Postgres",
 )

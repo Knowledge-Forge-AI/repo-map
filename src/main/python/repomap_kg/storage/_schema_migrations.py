@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
+from repomap_kg import DISTRIBUTION_NAME
 from repomap_kg.storage.errors import StorageSchemaError
 from repomap_kg.storage.row_helpers import clean_yaml_value
 
@@ -50,7 +51,7 @@ def default_rdbms_root() -> Path:
     source_root = Path(__file__).resolve().parents[3] / "resources" / "rdbms"
     if source_root.is_dir():
         return source_root
-    return Path(sysconfig.get_path("data")) / "share" / "repomap-kg" / "rdbms"
+    return Path(sysconfig.get_path("data")) / "share" / DISTRIBUTION_NAME / "rdbms"
 
 
 def discover_migrations(rdbms_root: Path | str | None = None) -> tuple[Migration, ...]:

@@ -1,0 +1,121 @@
+{
+  "control": [
+    {
+      "changeset_id": "repomap:2026_07_13-001-async2-create-control-schema",
+      "checksum": "f77cfdce18099999988465e26c421cd44a9952e6721d968ecc431ab1fc461879",
+      "ordinal": 1,
+      "relative_path": "2026/07/13-001-async2-create-control-schema.sql"
+    },
+    {
+      "changeset_id": "repomap:repair4-persist-graph-lease-epoch",
+      "checksum": "18c26133d2d9a92b364ef786131315dfaf4aad750ccfab0d48856abf5ac5cdd1",
+      "ordinal": 2,
+      "relative_path": "2026/10/02-001-repair4-persist-graph-lease-epoch.sql"
+    },
+    {
+      "changeset_id": "repomap:repair6-persist-supervisor-digest",
+      "checksum": "9f965db84f22d50350baecf09f94f33d1c396f5b7dd54a4da68eef343b4d8963",
+      "ordinal": 3,
+      "relative_path": "2026/10/03-001-repair6-persist-supervisor-digest.sql"
+    }
+  ],
+  "graph": [
+    {
+      "changeset_id": "slair:2026_06_28-001-core-create_graph_tables",
+      "checksum": "cd1f959cca5ea45ce742f65a4333e427847fa9e8882ffd2a1b9a7dcf744d1681",
+      "ordinal": 1,
+      "relative_path": "2026/06/28-001-core-create_graph_tables.sql"
+    },
+    {
+      "changeset_id": "slair:2026_06_28-002-core-add_file_run_tracking",
+      "checksum": "39f37ae17384330a82bc6817ea904ab3d9120e39f9f681a4d29fbc0137fac9a4",
+      "ordinal": 2,
+      "relative_path": "2026/06/28-002-core-add_file_run_tracking.sql"
+    },
+    {
+      "changeset_id": "slair:2026_06_28-003-core-add_evidence_stable_key",
+      "checksum": "37b0a1b9d381bc0ea37d3b29ced71c47a48dea96828fdd6c7c2f7e0e7c39fc23",
+      "ordinal": 3,
+      "relative_path": "2026/06/28-003-core-add_evidence_stable_key.sql"
+    },
+    {
+      "changeset_id": "slair:2026_06_28-004-core-add_edge_stable_key",
+      "checksum": "71d5acdf200939f1c5b327616c1c673e400ad1b637611ae3295552cb0a6cd172",
+      "ordinal": 4,
+      "relative_path": "2026/06/28-004-core-add_edge_stable_key.sql"
+    },
+    {
+      "changeset_id": "slair:2026_06_29-001-core-create_raw_observations",
+      "checksum": "ffa7392ee1b0cc8728245c94aa75580780e268a1c6ed8f828680577706df39e7",
+      "ordinal": 5,
+      "relative_path": "2026/06/29-001-core-create_raw_observations.sql"
+    },
+    {
+      "changeset_id": "slair:2026_06_29-002-core-create_canonical_graph_tables",
+      "checksum": "bbb210bdf84d7dfe9d1f1ff864a974f6c038211ee844cbc6ed9513ad5abb180e",
+      "ordinal": 6,
+      "relative_path": "2026/06/29-002-core-create_canonical_graph_tables.sql"
+    },
+    {
+      "changeset_id": "slair:2026_06_30-001-core-add_styles_edge_kind",
+      "checksum": "c7dd1f315f873a9f906518bcc671be0b97f067904486f6742f4a0f9d02039bae",
+      "ordinal": 7,
+      "relative_path": "2026/06/30-001-core-add_styles_edge_kind.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_04-001-core-extend_canonical_edge_kinds",
+      "checksum": "9fbf8cf64bf97f25abaf00ae9384242fb7115f840ca7b22afd0dac946961f5b4",
+      "ordinal": 8,
+      "relative_path": "2026/07/04-001-core-extend_canonical_edge_kinds.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_12-001-core-add_go_canonical_edge_kinds",
+      "checksum": "9192360948b9b2cf90d5f1009b98d3a5b0afee9cde7a73ebc94a6a4a42408864",
+      "ordinal": 9,
+      "relative_path": "2026/07/12-001-core-add-go-canonical-edge-kinds.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_12-002-core-add_go_source_instance_edge_kind",
+      "checksum": "dc8dcb5b372c24804e37749fed68773c9a4032a9575ea562a7b683beed48fc7f",
+      "ordinal": 10,
+      "relative_path": "2026/07/12-002-core-add-go-source-instance-edge-kind.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_13-001-core-add-run-publication-generations",
+      "checksum": "1408861ece552a09f34ef214673887dd9d9beaf793b39259b2e290860d64de1d",
+      "ordinal": 11,
+      "relative_path": "2026/07/13-001-core-add-run-publication-generations.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_13-002-core-add-run-publication-attempts",
+      "checksum": "04751a1e6e4aa66f0ca46b64d4e75d3cc6802f16d72df4e32fa9dc5589173aec",
+      "ordinal": 12,
+      "relative_path": "2026/07/13-002-core-add-run-publication-attempts.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_14-001-scale1-create_staging_contract",
+      "checksum": "af3197db5aa42df11a29b35c7d3f4bda276051772e89df52a0b49264dfb36865",
+      "ordinal": 13,
+      "relative_path": "2026/07/14-001-scale1-create_staging_contract.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_16-001-arch5c-add-repository-identity",
+      "checksum": "3f1e6f547bb7dd37880e6dbb0cf977d4f1a241587e8b84e05945afce6dd91e98",
+      "ordinal": 14,
+      "relative_path": "2026/07/16-001-arch5c-add-repository-identity.sql"
+    },
+    {
+      "changeset_id": "slair:2026_07_16-002-arch5d-drop-legacy-graph-schema",
+      "checksum": "ef2611e0c71fc27d6bb0cb80ad27839c53e471f0991e996d5f2dc2edf5bcfaa8",
+      "ordinal": 15,
+      "relative_path": "2026/07/16-002-arch5d-drop-legacy-graph-schema.sql"
+    },
+    {
+      "changeset_id": "slair:2026_09_02-001-str-pub5-add-portable-publication-binding",
+      "checksum": "deda9b508f32497eaa0ca6b39793638e3d060191d6d0359d64a3e943e257ab96",
+      "ordinal": 16,
+      "relative_path": "2026/09/02-001-str-pub5-add-portable-publication-binding.sql"
+    }
+  ],
+  "schema": "cloe-migration-continuity-v1"
+}

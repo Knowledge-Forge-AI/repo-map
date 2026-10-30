@@ -1684,6 +1684,15 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0118: clean read-only default-home recognition and ownership selection; no new debt.",
+      "match": "exact",
+      "module_prefix": "repomap_kg.ops.home_selection",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",

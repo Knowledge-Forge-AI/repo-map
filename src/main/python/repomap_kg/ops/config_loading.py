@@ -8,6 +8,8 @@ import tomllib as tomllib
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from repomap_kg.ops.home_selection import HomeSelection, select_home
+
 from repomap_kg.ops.config_helpers import (
     KNOWN_POSTGRES_FIELDS as KNOWN_POSTGRES_FIELDS,
     KNOWN_RUNTIME_FIELDS as KNOWN_RUNTIME_FIELDS,
@@ -101,12 +103,33 @@ DEFAULT_REPOMAP_HOME = "~/.repo-map"
 
 
 def resolve_repo_map_home(value: str | Path | None = None) -> Path:
-    if value is not None:
-        return Path(value).expanduser()
-    env_value = os.environ.get("CLOE_HOME") or os.environ.get("REPOMAP_HOME")
-    if env_value:
-        return Path(env_value).expanduser()
-    return Path(DEFAULT_REPOMAP_HOME).expanduser()
+    return resolve_home_selection(value).path
+
+
+def resolve_home_selection(value: str | Path | None = None) -> HomeSelection:
+    return select_home(value, recognize=_recognize_home_payloads)
+
+
+def _recognize_home_payloads(files: Sequence[tuple[str, bytes]]) -> bool:
+    try:
+        payloads = [(name, tomllib.loads(raw.decode("utf-8"))) for name, raw in files]
+        for name, payload in payloads:
+            if type(payload.get("schema_version")) is not int:
+                return False
+            validate_file_schema(payload, name)
+        merged, diagnostics = merge_ops_config_payloads(payloads)
+        if any(item.severity == "error" for item in diagnostics):
+            return False
+        storage = merged.get("storage")
+        if isinstance(storage, dict) and storage.get("backend") in ("sqlite", "postgresql"):
+            return True
+        postgres = merged.get("postgres")
+        return isinstance(postgres, dict) and all(
+            isinstance(postgres.get(key), str) and bool(postgres[key].strip())
+            for key in ("host", "database", "user")
+        )
+    except (OpsConfigError, ValueError, UnicodeError, RecursionError):
+        return False
 
 
 def load_ops_config_home(config_home: str | Path | None = None) -> OpsConfig:

@@ -9,6 +9,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
 
+from repomap_kg import PREFERRED_CLI
 from repomap_kg.cli.main import main
 from repomap_test_support.cli_in_process import capture_cli
 from repomap_test_support.cli_in_process import source_environment
@@ -47,7 +48,7 @@ def run_module_entrypoint(*args: str) -> tuple[int, str, str]:
     stderr = StringIO()
 
     try:
-        sys.argv = ["repomap-kg", *args]
+        sys.argv = [PREFERRED_CLI, *args]
         with redirect_stdout(stdout), redirect_stderr(stderr):
             try:
                 runpy.run_module("repomap_kg", run_name="__main__")

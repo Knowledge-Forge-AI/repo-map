@@ -1,15 +1,27 @@
 # CLOE configuration compatibility
 
 Common Lore Index (CLOE) is RepoMap's selected successor identity. This first
-compatibility milestone keeps the existing `repomap-kg` distribution, executable,
-import namespace and default home while preparing configuration migration.
+compatibility sequence keeps the existing `repomap-kg` distribution, executable
+and import namespace while preparing the coordinated package cutover.
 It does not move an existing home or database.
 
 ## Home selection
 
 An explicit `--repo-map-home` wins. Otherwise a nonempty `CLOE_HOME` wins over
-nonempty `REPOMAP_HOME`; the fallback remains `~/.repo-map` for this milestone.
-`CLOE_PATH` is unrelated and is ignored. Selecting a home creates nothing.
+nonempty `REPOMAP_HOME`. Without an explicit selector, a recognizable owned private
+`~/.cloe` wins. Otherwise a recognizable private `~/.repo-map` remains selected,
+including when an unrelated ordinary `~/.cloe` directory exists. The CLI emits
+a bounded compatibility notice on stderr and leaves that unrelated directory
+untouched. Missing defaults select `~/.cloe` without creating it; read-only commands
+never initialize it. Other unsafe or unrecognized states refuse and suggest an
+explicit `CLOE_HOME`. `CLOE_PATH` is unrelated and is ignored.
+
+Implicit recognition requires an ordinary owned private directory, ordinary owned
+configuration files in one supported family, valid schema/layering and a storage
+or PostgreSQL configuration witness. It does not follow symlinks or read more than
+one MiB per configuration file. Explicit custom homes retain their existing
+command-specific validation. Selection does not move data, open databases, merge
+homes or fence independently running older binaries. See [ADR0118](../adr/2026/10/0118-cloe-installed-ownership-and-safe-home-selection.md).
 
 ## Supported files and order
 
@@ -42,7 +54,8 @@ repomap-kg local setup --repo-map-home ./new-home --config-format cloe --dry-run
 repomap-kg local setup --repo-map-home ./new-home --config-format cloe --json
 ```
 
-An empty home defaults to legacy unless `--config-format cloe` is explicit.
+A fresh implicit `~/.cloe` defaults to CLOE filenames. Explicit custom empty homes
+retain legacy bootstrap behavior unless `--config-format cloe` is selected.
 An existing home's active family is detected automatically. An explicit format
 must match it; this command does not convert a legacy home. Legacy setup creates
 `repomap.rpl.toml`; CLOE setup creates `repomap.local.cloe.toml`, with the same
@@ -274,9 +287,9 @@ No command deletes data it cannot prove it owns.
 
 ## Later transition work
 
-The default `~/.cloe` cutover, package/executable/import rename, compatibility
-shim ownership, live database backup/restore, and repository rename remain
-coordinated W1 work. Existing wire identifiers, checksummed migrations and
+Safe implicit `~/.cloe` selection and fresh setup are implemented by ADR0118.
+The package/executable/import cutover, compatibility facades, live database
+backup/restore, and repository rename remain coordinated W1 work. Existing wire identifiers, checksummed migrations and
 historical receipts remain stable. [ADR 0109](../adr/2026/10/0109-cloe-configuration-compatibility.md)
 defines the loader/planner boundary; [ADR 0112](../adr/2026/10/0112-cloe-runtime-configuration-producer.md)
 defines runtime producer compatibility; ADR 0114 defines configuration

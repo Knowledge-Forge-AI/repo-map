@@ -4403,6 +4403,28 @@
       "source_commit": "433a2edf89284f71f10996d20c88bcf3e311c9de",
       "source_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
       "status_path": "tools/ci/cloe-migration1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.ops.home_selection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/home_selection.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325",
+      "new_selected_set_sha256": "3ac96bebcddc42d1706a0753f9fa6f761327617ff30b915a3156bf4583858691",
+      "old_ownership_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
+      "old_selected_set_sha256": "f744f6ff7fcbeba4df97a9cec675a8cd6c135ec31f1938911f0f7050d19b1571",
+      "phase": "REPOMAP-CLOE-OWNERSHIP1",
+      "reason": "ADR0118: one clean default-home selection owner; all prior selections/debt preserved.",
+      "source_commit": "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe",
+      "source_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
+      "status_path": "tools/ci/cloe-ownership1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

@@ -48,5 +48,8 @@ def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
         module = importlib.util.module_from_spec(specification)
         sys.modules[module_name] = module
         specification.loader.exec_module(module)
+        assert module.DISTRIBUTION_NAME == "repomap-kg"
+        assert module.IMPORT_PACKAGE == "repomap_kg"
+        assert module.PREFERRED_CLI == "repomap-kg"
 # v0.0.2 dynamic target re-attestation.
 # v0.0.3 dynamic target re-attestation.

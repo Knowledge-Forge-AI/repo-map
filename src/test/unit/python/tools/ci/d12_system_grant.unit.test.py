@@ -24,6 +24,7 @@ from ci.d12_system_grant import (
     SPENT_CI87_NONCE, SPENT_CI87_RESERVATION_SHA256, SPENT_CI91_NONCE, SPENT_CI91_RESERVATION_SHA256,
     SPENT_CI92_NONCE, SPENT_CI92_RESERVATION_SHA256, SPENT_CI93_NONCE, SPENT_CI93_RESERVATION_SHA256,
     SPENT_CI94_NONCE, SPENT_CI94_RESERVATION_SHA256,
+    SPENT_CI95_NONCE, SPENT_CI95_RESERVATION_SHA256,
     D12SystemGrantError, SYSTEM_ADMISSION_PROOF_SCHEMA, SYSTEM_BUILD_GRANT_SCHEMA,
     build_system_admission_proof,
     load_and_validate_system_admission_proof, load_and_validate_system_build_grant,
@@ -105,7 +106,7 @@ def _coherent_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], b
     return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
 
 
-def test_load_tracked_system_build_grant_matches_ci95_and_refuses_drifted_candidate() -> None:
+def test_load_tracked_system_build_grant_matches_ci96_and_refuses_drifted_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
@@ -126,7 +127,7 @@ def test_load_tracked_system_build_grant_matches_ci95_and_refuses_drifted_candid
             expected_candidate=live_cand,
             frozen_identity=dict(live_cand["d12_context"]),
         )
-    assert EXPECTED_PHASE_ID == "REPOMAP-CLOE-CI94REPAIR1"
+    assert EXPECTED_PHASE_ID == "REPOMAP-CLOE-OWNERSHIP1"
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
     assert SPENT_CI70_RESERVATION_SHA256 == "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
     assert SPENT_CI71_NONCE == "549ee11fd8a44b4f8723030412032fa3"
@@ -145,12 +146,14 @@ def test_load_tracked_system_build_grant_matches_ci95_and_refuses_drifted_candid
     assert SPENT_CI93_RESERVATION_SHA256 == "955ea803325ac5486092824740c6c648146b4a110e6dcd447272d09f1773bd11"
     assert SPENT_CI94_NONCE == "57a15c277787496bbfdaca7d8e47b439"
     assert SPENT_CI94_RESERVATION_SHA256 == "99b66797facf70177b057a644d74d9b9214b49bde2fbaee89ef680552ada244e"
+    assert SPENT_CI95_NONCE == "d4ea67e655f54742ac8ddc6a06174acf"
+    assert SPENT_CI95_RESERVATION_SHA256 == "ea75f3855f0e1fdb0246e8850511a8ec227d173b614f885401183f7db1a8f85e"
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 95
+    assert grant["workflow_ordinal"] == 96
     assert grant["workflow_attempt"] == 1
-    assert (grant["maximum_total"], grant["maximum_per_platform"]) == (12, 12)
+    assert (grant["maximum_total"], grant["maximum_per_platform"]) == (13, 13)
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
@@ -172,20 +175,11 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
 
     for field, bad_val in (
         ("workflow_ordinal", 69), ("workflow_ordinal", 70), ("workflow_ordinal", 71), ("workflow_ordinal", 73), ("workflow_ordinal", 85), ("workflow_ordinal", 86), ("workflow_ordinal", 87),
-        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_attempt", 2), ("maximum_per_platform", 1), ("maximum_per_platform", 2), ("maximum_per_platform", 3),
-        ("maximum_total", 1),
-        ("maximum_total", 2),
-        ("maximum_total", 3),
-        ("maximum_total", 5),
-        ("maximum_total", 6),
-        ("maximum_total", 7),
-        ("maximum_total", 8),
-        ("maximum_total", 9), ("maximum_per_platform", 9),
+        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 95), ("workflow_attempt", 2), ("maximum_per_platform", 1), ("maximum_per_platform", 2), ("maximum_per_platform", 3),
+        ("maximum_total", 1), ("maximum_total", 2), ("maximum_total", 3), ("maximum_total", 5), ("maximum_total", 6), ("maximum_total", 7), ("maximum_total", 8), ("maximum_total", 9), ("maximum_per_platform", 9),
         ("maximum_total", 10), ("maximum_per_platform", 10),
-        ("maximum_total", 11), ("maximum_per_platform", 11), ("maximum_total", 13), ("maximum_per_platform", 13), ("workflow_ordinal", 96),
-        ("maximum_per_platform", 8),
-        ("maximum_per_platform", 7),
-        ("maximum_per_platform", 6),
+        ("maximum_total", 11), ("maximum_per_platform", 11), ("maximum_total", 12), ("maximum_per_platform", 12), ("maximum_total", 14), ("maximum_per_platform", 14), ("workflow_ordinal", 97), ("maximum_per_platform", 8),
+        ("maximum_per_platform", 7), ("maximum_per_platform", 6),
         ("maximum_per_platform", 5),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
@@ -200,6 +194,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI92_NONCE),
         ("nonce", SPENT_CI93_NONCE), ("reservation_sha256", SPENT_CI93_RESERVATION_SHA256),
         ("nonce", SPENT_CI94_NONCE), ("reservation_sha256", SPENT_CI94_RESERVATION_SHA256),
+        ("nonce", SPENT_CI95_NONCE), ("reservation_sha256", SPENT_CI95_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI92_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI91_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256),
@@ -213,15 +208,18 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"),
         ("before", "a0c1f1d99b24fb26a4bf6041356187249d726ee9"),
         ("before", "433a2edf89284f71f10996d20c88bcf3e311c9de"), ("before", "bec838a210f3ffea84986ae85986e4081b2e8291"),
+        ("before", "35d9235cefd740e13ae7228a791338d5a5fcf9ee"),
         ("before", "1" * 40),
         ("base", "2" * 40),
         ("approval_sha256", "88a3672196430bf30091672621771af4160fa22c28fe35b671145e2ed4e870b1"),
         ("approval_sha256", "36aabdbb9b35dcd540d88cb67b8054e8c89fecc92b9f24fb1c9a569b8fd3544c"),
         ("approval_sha256", "afb7670b0a5353d112a5ee161b2c2518a829147940f889ab923560b0c31a015f"), ("approval_sha256", "94d71498c0cccaea469394b9ab7b76677659daba16dd99eff5300acf90e4e831"),
+        ("approval_sha256", "fb8c1490d7d8f630b667a508022fcb56716741ee4e0b53fcb667f107445f3795"),
         ("approval_sha256", "3" * 64),
         ("ledger_before_sha256", "1cc8dea0eed060628e427f052df5968118e91d015b8fc3c8792516314b84f6d5"),
         ("ledger_before_sha256", "cc8f1d659c10d4d3ed36bd38daf8cc95ddb21cf2781026a89d30061e85af8ed6"),
         ("ledger_before_sha256", "54787ff8a0f8692bff0a2d47221bc20ac12be67610f8e937b770ef8671c24fc7"), ("ledger_before_sha256", "2129c892344ea4e276c0fcc01059fae7871493a36e27c1ae2bfdb51f35edc383"),
+        ("ledger_before_sha256", "dea9cb989fbf576ca127158ee1940c223abe8293dcbfecba0c3a24e11578665e"),
         ("ledger_before_sha256", "4" * 64),
     ):
         with pytest.raises(D12SystemGrantError):
@@ -242,7 +240,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("workflow_ordinal", 85),
         ("workflow_ordinal", 86),
         ("workflow_ordinal", 87),
-        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 96),
+        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 95), ("workflow_ordinal", 97),
         ("workflow_attempt", 2),
         ("nonce", SPENT_CI69_NONCE),
         ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
@@ -257,6 +255,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI92_NONCE),
         ("nonce", SPENT_CI93_NONCE), ("reservation_sha256", SPENT_CI93_RESERVATION_SHA256),
         ("nonce", SPENT_CI94_NONCE), ("reservation_sha256", SPENT_CI94_RESERVATION_SHA256),
+        ("nonce", SPENT_CI95_NONCE), ("reservation_sha256", SPENT_CI95_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI92_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI91_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256),
@@ -270,6 +269,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"),
         ("before", "a0c1f1d99b24fb26a4bf6041356187249d726ee9"),
         ("before", "433a2edf89284f71f10996d20c88bcf3e311c9de"), ("before", "bec838a210f3ffea84986ae85986e4081b2e8291"),
+        ("before", "35d9235cefd740e13ae7228a791338d5a5fcf9ee"),
         ("before", "1" * 40),
         ("base", "2" * 40),
     ):

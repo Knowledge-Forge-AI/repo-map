@@ -40,7 +40,7 @@ class CliCoreUnitTests(unittest.TestCase):
         self.assertEqual(payload["distribution"], "repomap-kg")
         self.assertEqual(payload["package"], "repomap_kg")
         self.assertEqual(payload["cli"], "repomap-kg")
-        self.assertEqual(payload["license"], "Apache-2.0")
+        self.assertEqual(payload["license"], "AGPL-3.0-or-later")
         self.assertEqual(payload["database"], "Postgres")
 
     def test_identity_text_outputs_key_value_metadata(self):

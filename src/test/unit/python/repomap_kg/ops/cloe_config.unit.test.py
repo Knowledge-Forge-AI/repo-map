@@ -12,6 +12,7 @@ from repomap_kg.ops.config_records import OpsConfigError
 
 
 def test_cloe_home_precedence_without_creation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
     old, new, explicit = (tmp_path / name for name in ("old", "new", "explicit"))
     monkeypatch.setenv("REPOMAP_HOME", str(old))
     monkeypatch.setenv("CLOE_HOME", str(new))
@@ -21,7 +22,7 @@ def test_cloe_home_precedence_without_creation(tmp_path: Path, monkeypatch: pyte
     assert resolve_repo_map_home() == old
     monkeypatch.delenv("REPOMAP_HOME")
     monkeypatch.setenv("CLOE_PATH", str(new))
-    assert resolve_repo_map_home() == Path("~/.repo-map").expanduser()
+    assert resolve_repo_map_home() == tmp_path / ".cloe"
     assert not any(path.exists() for path in (old, new, explicit))
 
 

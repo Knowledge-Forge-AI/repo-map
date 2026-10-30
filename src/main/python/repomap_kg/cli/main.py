@@ -109,6 +109,7 @@ from repomap_kg.ops.config import (
     ops_graph_registry_status_to_jsonable as ops_graph_registry_status_to_jsonable,
     ops_config_status_to_jsonable as ops_config_status_to_jsonable,
 )
+from repomap_kg.ops.config_loading import resolve_home_selection
 from repomap_kg.ops.policy_dogfood import (
     format_policy_dogfood_table as format_policy_dogfood_table,
     policy_dogfood_payload as policy_dogfood_payload,
@@ -278,9 +279,29 @@ def __dir__() -> list[str]:
     return sorted(set(globals()) | POSTGRES_FACADE_NAMES)
 
 
+def _home_selection_notice(args: argparse.Namespace) -> None:
+    if args.version or not hasattr(args, "repo_map_home") or getattr(args, "config", None) is not None:
+        return
+    if args.command == "mcp" and getattr(args, "mcp_command", None) == "serve" and os.environ.get("REPOMAP_OPS_CONFIG"):
+        return  # MCP's explicit single-file setting owns selection, including with a home option.
+    if args.command == "ops" and getattr(args, "ops_command", None) in (
+        "config-migration-apply", "config-migration-rollback", "config-migration-finalize",
+    ):
+        return  # Their explicit-home requirement is independent authority.
+    selection = resolve_home_selection(args.repo_map_home)
+    for notice in selection.notices:
+        print(f"warning: legacy-default-home: {notice}", file=sys.stderr)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    try:
+        _home_selection_notice(args)
+    except OpsConfigError as error:
+        for diagnostic in error.diagnostics:
+            print(f"{diagnostic.code}: {diagnostic.message}", file=sys.stderr)
+        return 1
     if not args.version:
         migration_result = dispatch_config_migration(args, _print_cli_error)
         if migration_result is not None:

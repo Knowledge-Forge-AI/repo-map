@@ -17,9 +17,6 @@ from pathlib import Path
 import urllib.error
 import urllib.request
 
-from repomap_kg.ops.config_loading import (
-    resolve_repo_map_home,
-)
 from repomap_kg.runtime.commands import (
     default_env_text,
     ensure_runtime_home_hash,
@@ -31,6 +28,8 @@ from repomap_kg.runtime.commands import (
 from repomap_kg.runtime.database_role_contract import ensure_role_secrets
 from repomap_kg.runtime.setup_config import (
     prepare_setup_config as _prepare_setup_config, create_setup_config as _create_setup_config,
+    resolve_setup_home as _resolve_setup_home,
+    resolve_runtime_home as resolve_repo_map_home,
 )
 from repomap_kg.runtime._home_authority import (
     create_private_file, ensure_private_directory, validate_private_file,
@@ -60,7 +59,7 @@ def setup_local_runtime(
     dry_run: bool = False,
     config_format: str | None = None,
 ) -> LocalRuntimeResult:
-    home = resolve_repo_map_home(repo_map_home)
+    home, config_format = _resolve_setup_home(repo_map_home, config_format)
     config_path = _prepare_setup_config(home, config_format=config_format, dry_run=dry_run)
     identity = LocalRuntimeIdentity.from_home(home)
     config_format = "cloe" if config_path.name.endswith(".cloe.toml") else "legacy"

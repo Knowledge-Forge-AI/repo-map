@@ -62,7 +62,13 @@ the local successors described below.
 explicit, confirmed configuration filename apply, rollback and finalize for an
 owned private home. It uses durable journaled backups, crash recovery and
 drift refusal. It does not change the default home, namespaces or data. Its
-hosted qualification has not been requested.
+hosted qualification is now established by CI95 attempt 1 on staging
+`ed23f6fff49b7796ee70e50e29d6e4db4779d6fe`, together with the W0 runner recovery
+and its CI94 corrections. All nine jobs passed. Retained same-attempt smoke/M/A
+and system contracts validate against independently derived committed source;
+unit coverage is 88.1/87.6 and measured integration coverage 90.1/82.1, exceeding
+the hard floors by at least two percentage points. This does not qualify later
+local successors or perform a main promotion.
 
 [The W0 custody audit](cloe-development-custody-v1.md),
 REPOMAP-CLOE-CUSTODY1, preserves private work and distinguishes public successor
@@ -74,9 +80,12 @@ integrates typed first-cause retention, safe discovery diagnostics and guarded
 cleanup, closing that mandatory W0 follow-up with scoped proof and independent
 review. Preserved private experiments retain their W2/W5 owners; blanket
 private-line reintegration and hosted successor qualification are not implied.
-The coordinated W1 distribution/import/resource/command/home ownership decision
-is next; broad namespace implementation has not started. Migration and runner
-recovery form the next useful batched publication milestone.
+[ADR0118](../adr/2026/10/0118-cloe-installed-ownership-and-safe-home-selection.md)
+settles the coordinated W1 distribution/import/resource/command ownership direction.
+Safe default-home selection and current resource-ownership preparation form the
+next source milestone. The canonical distribution/import/resource/entrypoint
+cutover remains atomic and subsequent; broad namespace implementation has not
+started. Current scoped proof and hosted successor qualification remain distinct.
 
 Keep SQLite Local useful without Server or enrichment dependencies. Search
 projections are derived from accepted captured material with privacy and

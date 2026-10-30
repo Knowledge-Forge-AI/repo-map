@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 
+from repomap_kg import PREFERRED_CLI
 from repomap_kg.cli._local_parser import add_local_commands
 from repomap_kg.cli._parser_ops_control import add_ops_control_commands
 from repomap_kg.cli._parser_ops_graph import (
@@ -16,11 +17,12 @@ from repomap_kg.cli.storage_parser import add_storage_commands
 
 _graph_file_limit = _graph_file_limit
 _non_negative_offset = _non_negative_offset
+HOME_HELP = "configuration home (CLOE_HOME, REPOMAP_HOME, then recognized CLOE/legacy defaults)"
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="repomap-kg",
+        prog=prog,
         description="RepoMap deterministic knowledge graph CLI.",
     )
     parser.add_argument(
@@ -180,7 +182,7 @@ def add_storage_connection_arguments(command: argparse.ArgumentParser) -> None:
 def add_ops_config_arguments(command: argparse.ArgumentParser) -> None:
     command.add_argument(
         "--repo-map-home",
-        help="configuration home (default: CLOE_HOME, REPOMAP_HOME, then ~/.repo-map)",
+        help=HOME_HELP,
     )
     command.add_argument(
         "--config",
@@ -191,5 +193,5 @@ def add_ops_config_arguments(command: argparse.ArgumentParser) -> None:
 def add_local_runtime_arguments(command: argparse.ArgumentParser) -> None:
     command.add_argument(
         "--repo-map-home",
-        help="path to REPOMAP_HOME for local runtime files",
+        help=HOME_HELP,
     )
