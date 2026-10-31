@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config.openapi_helpers import (
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.openapi_helpers import (
     _is_openapi_document,
     _is_url,
     _openapi_bounded_string,

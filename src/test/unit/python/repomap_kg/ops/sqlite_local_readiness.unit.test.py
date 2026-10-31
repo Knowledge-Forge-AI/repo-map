@@ -20,20 +20,20 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.ops import local_readiness
-from repomap_kg.ops.config_local import (
+from common_lore_index.ops import local_readiness
+from common_lore_index.ops.config_local import (
     SQLITE_DATABASE_SOURCE,
     SQLITE_GRAPH_DATABASE_DISPLAY,
     LocalSqliteConfig,
     load_graph_registry_config_home,
     local_graph_binding,
 )
-from repomap_kg.ops.local_readiness import probe_local_graph, probe_local_graphs
-from repomap_kg.ops.local_refresh import initialize_local_graph
-from repomap_kg.server import _ops_sanitization, sqlite_read_binding
-from repomap_kg.storage.sqlite_local import connection, migrations
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.schema import DATABASE_BUSY, LocalStoreError
+from common_lore_index.ops.local_readiness import probe_local_graph, probe_local_graphs
+from common_lore_index.ops.local_refresh import initialize_local_graph
+from common_lore_index.server import _ops_sanitization, sqlite_read_binding
+from common_lore_index.storage.sqlite_local import connection, migrations
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.schema import DATABASE_BUSY, LocalStoreError
 from repomap_test_support.host_read_store_config import fail_if_reached
 from repomap_test_support.sqlite_local_fixtures import (
     generation_bundle,

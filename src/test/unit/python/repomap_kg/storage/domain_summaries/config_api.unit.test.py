@@ -3,7 +3,7 @@ import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_openapi_summary,
     query_terraform_summary,
@@ -12,7 +12,7 @@ from repomap_kg.storage import (
     openapi_summary_to_jsonable,
     terraform_summary_to_jsonable,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV
 
 class StorageDomainConfigApiSummaryUnitTests(unittest.TestCase):
     def test_query_openapi_summary_returns_safe_counts(self):
@@ -47,7 +47,7 @@ class StorageDomainConfigApiSummaryUnitTests(unittest.TestCase):
         )
 
         with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch(
-            "repomap_kg.storage.subprocess.run", return_value=completed
+            "common_lore_index.storage.subprocess.run", return_value=completed
         ) as run:
             summary = query_openapi_summary(
                 ["-d", "postgres"],
@@ -75,7 +75,7 @@ class StorageDomainConfigApiSummaryUnitTests(unittest.TestCase):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
         with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch(
-            "repomap_kg.storage.subprocess.run", return_value=completed
+            "common_lore_index.storage.subprocess.run", return_value=completed
         ):
             with self.assertRaisesRegex(StorageSchemaError, "openapi summary"):
                 query_openapi_summary(["-d", "postgres"], root_path="/tmp/fixture")
@@ -194,7 +194,7 @@ class StorageDomainConfigApiSummaryUnitTests(unittest.TestCase):
             )
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed) as run:
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed) as run:
             summary = query_terraform_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -224,7 +224,7 @@ class StorageDomainConfigApiSummaryUnitTests(unittest.TestCase):
     def test_query_terraform_summary_rejects_malformed_json(self):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             with self.assertRaisesRegex(StorageSchemaError, "terraform summary"):
                 query_terraform_summary(["-d", "postgres"], root_path="/tmp/fixture")
     def test_terraform_summary_empty_payload_keeps_safety_markers(self):

@@ -10,7 +10,7 @@ from typing import Any, Callable
 
 import pytest
 
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 from repomap_test_support import d12_native_python_proof as proof
 from repomap_test_support import d12_python31216 as older
 from src.test.unit.python.tools.d12_native_python_fixture_helpers import (
@@ -167,7 +167,7 @@ def test_amd_default_stays_held_and_unenrolled(monkeypatch: pytest.MonkeyPatch) 
 
 @pytest.mark.parametrize("architecture", ["arm64", "amd64"])
 def test_inner_script_prints_raw_first_and_passes_only_an_explicit_derived_mapping(architecture: str) -> None:
-    source = (ROOT / "src/main/python/repomap_kg/runtime/python_payload.py").read_bytes()
+    source = (ROOT / "src/main/python/common_lore_index/runtime/python_payload.py").read_bytes()
     script = proof.build_inner_script(source, architecture)
     assign = ast.parse(script).body[1]  # syntax only: the inner script is never executed on the host
     assert isinstance(assign, ast.Assign)

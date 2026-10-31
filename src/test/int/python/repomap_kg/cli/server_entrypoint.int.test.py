@@ -12,7 +12,7 @@ from repomap_test_support.cli_integration import (
 )
 from runner_coverage_observer import launch_observed_process, popen_observed_process
 
-from repomap_kg.ops.config_records import OpsPostgresStatus
+from common_lore_index.ops.config_records import OpsPostgresStatus
 
 
 class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
@@ -20,14 +20,14 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
         result = self.run_cli("--version")
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertRegex(result.stdout.strip(), r"^repomap-kg \d+\.\d+\.\d+$")
+        self.assertRegex(result.stdout.strip(), r"^cloe \d+\.\d+\.\d+$")
         self.assertEqual(result.stderr, "")
 
     def test_module_entrypoint_can_run_in_process(self):
         exit_code, stdout, stderr = self.run_module_entrypoint("--version")
 
         self.assertEqual(exit_code, 0)
-        self.assertRegex(stdout.strip(), r"^repomap-kg \d+\.\d+\.\d+$")
+        self.assertRegex(stdout.strip(), r"^cloe \d+\.\d+\.\d+$")
         self.assertEqual(stderr, "")
 
     def test_mcp_server_package_module_entrypoint_runs_jsonrpc(self):
@@ -35,7 +35,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
             {"jsonrpc": "2.0", "id": 1, "method": "initialize"}
         )
         result = launch_observed_process(
-            [sys.executable, "-m", "repomap_kg.server.mcp"],
+            [sys.executable, "-m", "common_lore_index.server.mcp"],
             family="cli_module",
             cwd=REPO_ROOT,
             env=module_process_environment(),
@@ -59,7 +59,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
                 [
                     sys.executable,
                     "-m",
-                    "repomap_kg",
+                    "common_lore_index",
                     "server",
                     "serve",
                     "--repo-map-home",
@@ -118,7 +118,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
         self.assertFalse(status["safety"]["destructive_db_actions"])
 
     def test_server_payload_helpers_are_read_only_in_process(self):
-        from repomap_kg.server.http import (
+        from common_lore_index.server.http import (
             RepoMapLocalRequestHandler,
             build_health_payload,
             build_status_payload,
@@ -132,7 +132,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
 
             health = build_health_payload(home)
             with patch(
-                "repomap_kg.server.http.check_ops_postgres_status",
+                "common_lore_index.server.http.check_ops_postgres_status",
                 return_value=OpsPostgresStatus(
                     db_checked=True,
                     connected=False,
@@ -163,7 +163,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
                 def server_close(self):
                     return None
 
-            with patch("repomap_kg.server.http.RepoMapLocalServer", FakeServer):
+            with patch("common_lore_index.server.http.RepoMapLocalServer", FakeServer):
                 serve_result = serve_local_http(
                     home,
                     host="0.0.0.0",
@@ -187,7 +187,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
 
         self.assertEqual(exit_code, 0)
         payload = json.loads(stdout)
-        self.assertEqual(payload["name"], "RepoMap")
-        self.assertEqual(payload["cli"], "repomap-kg")
+        self.assertEqual(payload["name"], "Common Lore Index")
+        self.assertEqual(payload["cli"], "cloe")
         self.assertEqual(payload["database"], "Postgres")
         self.assertEqual(stderr, "")

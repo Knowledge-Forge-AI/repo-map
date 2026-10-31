@@ -2,10 +2,10 @@ import unittest
 
 from repomap_test_support.canonical_contract import DISCOVERY_FIXTURE_ROOT
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.config.generic import extract_config_file_observations, json_pointer
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.observations import RawObservation
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations, json_pointer
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.observations import RawObservation
 
 
 class CanonicalConfigYamlIntegrationTests(unittest.TestCase):

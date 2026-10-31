@@ -23,7 +23,7 @@ def test_actual_refresh_launcher_uses_argv_no_shell_and_suppressed_output() -> N
     arguments = (
         "/public/python",
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "refresh-graph",
         "--config",
@@ -94,7 +94,7 @@ def test_actual_refresh_launcher_gates_unchanged_product_arguments() -> None:
     arguments = (
         "/public/python",
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "refresh-graph",
         "--graph",
@@ -161,7 +161,7 @@ def test_actual_refresh_launcher_reaps_child_when_gate_handoff_fails() -> None:
     arguments = (
         "/public/python",
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "refresh-graph",
         "--graph",

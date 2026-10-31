@@ -3,7 +3,7 @@ from __future__ import annotations
 
 
 def test_openapi_summary_from_storage_payload_terraform_summary_from_storage_payload_email_summary_from_storage_payload_domain_records_contracts() -> None:
-    import repomap_kg.storage.summary_rows_domains as summary_rows_domains
+    import common_lore_index.storage.summary_rows_domains as summary_rows_domains
     openapi_summary = summary_rows_domains.openapi_summary_from_storage_payload(
         {
             "root_path": "/tmp/repo's root",

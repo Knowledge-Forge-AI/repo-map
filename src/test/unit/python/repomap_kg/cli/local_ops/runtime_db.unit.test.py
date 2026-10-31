@@ -6,8 +6,8 @@ from contextlib import contextmanager, redirect_stdout
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.runtime.local import setup_local_runtime
+from common_lore_index.cli import main
+from common_lore_index.runtime.local import setup_local_runtime
 
 class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
     def test_local_runtime_and_db_json_commands_delegate_to_safe_helpers(self):
@@ -178,7 +178,7 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
             with self.subTest(helper=helper_name):
                 stdout = io.StringIO()
                 with patch(
-                    f"repomap_kg.cli.{helper_name}",
+                    f"common_lore_index.cli.{helper_name}",
                     return_value=result(payload["command"]),
                 ) as helper:
                     with redirect_stdout(stdout):
@@ -207,8 +207,8 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
             )
 
         with (
-            patch("repomap_kg.cli.maintenance_window_for_graph_upgrade", side_effect=maintenance_window),
-            patch("repomap_kg.cli.upgrade_graph_schema", side_effect=upgrade),
+            patch("common_lore_index.cli.maintenance_window_for_graph_upgrade", side_effect=maintenance_window),
+            patch("common_lore_index.cli.upgrade_graph_schema", side_effect=upgrade),
             redirect_stdout(io.StringIO()),
         ):
             exit_code = main(
@@ -239,8 +239,8 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
                 return SimpleNamespace(to_jsonable=lambda: {"command": "dump", "result": "ok"})
 
             with (
-                patch("repomap_kg.cli.maintenance_window_for_database_drop", side_effect=dump_window),
-                patch("repomap_kg.cli.dump_database", side_effect=dump_result),
+                patch("common_lore_index.cli.maintenance_window_for_database_drop", side_effect=dump_window),
+                patch("common_lore_index.cli.dump_database", side_effect=dump_result),
                 redirect_stdout(io.StringIO()),
             ):
                 dump_code = main(
@@ -382,11 +382,11 @@ class CliLocalOpsRuntimeDbUnitTests(unittest.TestCase):
                 command = " ".join(argv[:3])
                 with (
                     patch(
-                        f"repomap_kg.cli.{helper_name}",
+                        f"common_lore_index.cli.{helper_name}",
                         return_value=result(command),
                     ) as helper,
                     patch(
-                        f"repomap_kg.cli.{formatter_name}",
+                        f"common_lore_index.cli.{formatter_name}",
                         return_value=table_text,
                     ) as formatter,
                     redirect_stdout(stdout),

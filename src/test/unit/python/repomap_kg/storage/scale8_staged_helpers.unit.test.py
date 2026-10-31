@@ -4,24 +4,24 @@ from datetime import timedelta
 from unittest.mock import Mock, patch
 import psycopg
 import pytest
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.staged_ingestion import (
     _create_run,
     _ensure_repository,
     _mark_prepared,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staged_publication import (
+from common_lore_index.storage.staged_publication import (
     _execute,
     existing_stage_state,
     publication_run,
 )
-from repomap_kg.storage.staged_validation import (
+from common_lore_index.storage.staged_validation import (
     mark_validated,
     mark_validating,
     validate_stage,
 )
-from repomap_kg.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging import STAGING_FAMILIES
 
 from src.test.unit.python.repomap_kg.storage.scale8_staged_helpers_fixtures import (
     _authority,
@@ -120,11 +120,11 @@ def test_staged_ingestion_rejects_invalid_expiry_and_connection_failure() -> Non
 
     with (
         patch(
-            "repomap_kg.storage.staged_ingestion._psycopg_connection_params_from_psql_args",
+            "common_lore_index.storage.staged_ingestion._psycopg_connection_params_from_psql_args",
             return_value={},
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.maintenance_activity",
+            "common_lore_index.storage.staged_ingestion.maintenance_activity",
             return_value=nullcontext(),
         ),
         pytest.raises(StorageSchemaError, match="connection failed"),
@@ -162,62 +162,62 @@ def test_staged_ingestion_refreshes_node_evidence_statistics_before_prepare() ->
 
     with (
         patch(
-            "repomap_kg.storage.staged_ingestion.build_staged_rows",
+            "common_lore_index.storage.staged_ingestion.build_staged_rows",
             return_value=prepared,
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion._psycopg_connection_params_from_psql_args",
+            "common_lore_index.storage.staged_ingestion._psycopg_connection_params_from_psql_args",
             return_value={},
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.maintenance_activity",
+            "common_lore_index.storage.staged_ingestion.maintenance_activity",
             return_value=nullcontext(),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.open_owned_connection",
+            "common_lore_index.storage.staged_ingestion.open_owned_connection",
             return_value=connection,
         ),
-        patch("repomap_kg.storage.staged_ingestion.close_owned_connection"),
+        patch("common_lore_index.storage.staged_ingestion.close_owned_connection"),
         patch(
-            "repomap_kg.storage.staged_ingestion._install_connection_signal_handlers",
+            "common_lore_index.storage.staged_ingestion._install_connection_signal_handlers",
             return_value={},
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion._restore_connection_signal_handlers"
+            "common_lore_index.storage.staged_ingestion._restore_connection_signal_handlers"
         ),
-        patch("repomap_kg.storage.staged_ingestion._ensure_repository", return_value=7),
+        patch("common_lore_index.storage.staged_ingestion._ensure_repository", return_value=7),
         patch(
-            "repomap_kg.storage.staged_ingestion.existing_stage_state",
+            "common_lore_index.storage.staged_ingestion.existing_stage_state",
             return_value=None,
         ),
-        patch("repomap_kg.storage.staged_ingestion._create_run", return_value=11),
-        patch("repomap_kg.storage.staged_ingestion._create_stage"),
+        patch("common_lore_index.storage.staged_ingestion._create_run", return_value=11),
+        patch("common_lore_index.storage.staged_ingestion._create_stage"),
         patch(
-            "repomap_kg.storage.staged_ingestion._copy_families",
+            "common_lore_index.storage.staged_ingestion._copy_families",
             side_effect=record("copy"),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion._refresh_canonical_node_evidence_statistics",
+            "common_lore_index.storage.staged_ingestion._refresh_canonical_node_evidence_statistics",
             side_effect=record("statistics"),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion._mark_prepared",
+            "common_lore_index.storage.staged_ingestion._mark_prepared",
             side_effect=record("prepared"),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.mark_validating",
+            "common_lore_index.storage.staged_ingestion.mark_validating",
             side_effect=record("validating"),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.validate_stage",
+            "common_lore_index.storage.staged_ingestion.validate_stage",
             side_effect=record("validate"),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.mark_validated",
+            "common_lore_index.storage.staged_ingestion.mark_validated",
             side_effect=record("validated"),
         ),
         patch(
-            "repomap_kg.storage.staged_ingestion.execute_final_transaction",
+            "common_lore_index.storage.staged_ingestion.execute_final_transaction",
             side_effect=record("final"),
         ),
     ):

@@ -23,13 +23,13 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.ops import local_refresh, local_state_layout
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
-from repomap_kg.ops.local_backup import backup_local_graph, restore_local_graph, upgrade_local_graph
-from repomap_kg.ops.local_cleanup import cleanup_local_graph
-from repomap_kg.ops.local_readiness import probe_local_graphs
-from repomap_kg.server import sqlite_read_binding
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.ops import local_refresh, local_state_layout
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
+from common_lore_index.ops.local_backup import backup_local_graph, restore_local_graph, upgrade_local_graph
+from common_lore_index.ops.local_cleanup import cleanup_local_graph
+from common_lore_index.ops.local_readiness import probe_local_graphs
+from common_lore_index.server import sqlite_read_binding
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.host_read_store_config import fail_if_reached
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_sqlite_home
 

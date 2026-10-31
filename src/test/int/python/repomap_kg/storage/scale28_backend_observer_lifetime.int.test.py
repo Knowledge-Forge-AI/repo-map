@@ -7,7 +7,7 @@ import pytest
 pytestmark = pytest.mark.requires_build_profile
 
 from actual_refresh_failure_causality import FailureCandidate
-from repomap_kg.storage.run_authority import read_run_authority
+from common_lore_index.storage.run_authority import read_run_authority
 from repomap_test_support.postgres_harness import require_postgres_binaries
 from repomap_test_support.scale15_runtime_campaign import (
     Scale15RuntimeFixture,

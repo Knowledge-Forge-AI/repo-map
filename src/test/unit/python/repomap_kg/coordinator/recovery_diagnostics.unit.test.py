@@ -1,8 +1,8 @@
 """Heartbeat recovery diagnostics, acknowledgement and fail-closed contention."""
 import pytest
 
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.startup_recovery import RecoveryDiagnostic
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.startup_recovery import RecoveryDiagnostic
 from repomap_test_support.coordinator_core_fakes import FakeStore, terminal
 
 
@@ -30,7 +30,7 @@ def test_expected_closure_contention_retains_publication_uncertainty(error_type)
 
 
 def test_recovery_error_survives_successful_heartbeat_until_acknowledged():
-    from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
+    from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
 
     store = FakeStore()
     coordinator = SyntheticCoordinator(store, "coordinator-a", lambda *_: terminal())
@@ -63,7 +63,7 @@ def test_recovery_error_survives_successful_heartbeat_until_acknowledged():
 
 def test_recovery_diagnostic_logger_is_safe_and_structured(caplog):
     import logging
-    from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
+    from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
 
     store = FakeStore()
     coordinator = SyntheticCoordinator(store, "coordinator-a", lambda *_: terminal())
@@ -79,7 +79,7 @@ def test_recovery_diagnostic_logger_is_safe_and_structured(caplog):
         assert diags[1].category == "unexpected_recovery_error"
         assert diags[1].summary == "Exception"
 
-        records = [r for r in caplog.records if r.name == "repomap_kg.coordinator.startup_recovery"]
+        records = [r for r in caplog.records if r.name == "common_lore_index.coordinator.startup_recovery"]
         assert len(records) == 2
         for r in records:
             assert "secret" not in r.message
@@ -96,7 +96,7 @@ def test_recovery_diagnostic_logger_is_safe_and_structured(caplog):
 
 
 def test_recovery_diagnostics_are_bounded_redacted_and_contention_is_separate():
-    from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
+    from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
 
     coordinator = SyntheticCoordinator(FakeStore(), "coordinator-a", lambda *_: terminal())
     coordinator.startup(coordinator.recover_startup)
@@ -123,8 +123,8 @@ def test_recovery_diagnostics_are_bounded_redacted_and_contention_is_separate():
 def test_programming_errors_reach_health_and_log_without_raw_messages(tmp_path, monkeypatch, caplog, site):
     from dataclasses import replace
     from unittest.mock import create_autospec
-    from repomap_kg.coordinator._coordinator_protocols import ServiceStore
-    from repomap_kg.coordinator.service import CoordinatorService
+    from common_lore_index.coordinator._coordinator_protocols import ServiceStore
+    from common_lore_index.coordinator.service import CoordinatorService
     from repomap_test_support.coordinator_core_fakes import Claim
 
     store = FakeStore()
@@ -160,7 +160,7 @@ def test_programming_errors_reach_health_and_log_without_raw_messages(tmp_path, 
 
 
 def test_structured_log_handlers_can_read_diagnostics_without_lock_reentrancy(monkeypatch):
-    from repomap_kg.coordinator import startup_recovery as recovery
+    from common_lore_index.coordinator import startup_recovery as recovery
 
     coordinator = SyntheticCoordinator(FakeStore(), "coordinator-a", lambda *_: terminal())
     seen = []

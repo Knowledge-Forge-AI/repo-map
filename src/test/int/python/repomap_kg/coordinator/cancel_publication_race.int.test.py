@@ -9,13 +9,13 @@ import time
 
 import pytest
 
-from repomap_kg.coordinator import _publication_phase, refresh_adapter
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.process_supervision import ManagedProcess
-from repomap_kg.coordinator.refresh_adapter import build_refresh_worker_runner
-from repomap_kg.coordinator.semantics import reconcile_publication as model_reconcile
+from common_lore_index.coordinator import _publication_phase, refresh_adapter
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.process_supervision import ManagedProcess
+from common_lore_index.coordinator.refresh_adapter import build_refresh_worker_runner
+from common_lore_index.coordinator.semantics import reconcile_publication as model_reconcile
 from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
 from repomap_test_support.startup_recovery_scenarios import _make_refresh_fixture, _refresh_harness, _req_norm
 

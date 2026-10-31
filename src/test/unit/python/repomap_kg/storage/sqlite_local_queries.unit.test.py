@@ -14,12 +14,12 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.sql_core import canonical_file_path_prefix
-from repomap_kg.storage.sqlite_local import investigation_queries, queries
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.sql_core import canonical_file_path_prefix
+from common_lore_index.storage.sqlite_local import investigation_queries, queries
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.sqlite_local_fixtures import generation_bundle, local_binding, publication_for
 from repomap_test_support.sqlite_local_read_corpus import CORPUS_ROWS, read_corpus_bundle
 

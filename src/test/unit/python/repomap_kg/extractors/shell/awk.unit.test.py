@@ -13,10 +13,10 @@ from repomap_test_support.awk import (
     observations_by_kind,
 )
 
-from repomap_kg.ops.ingestion.bulk import classify_bulk_route
-from repomap_kg.graph.discovery import classify_path, discover_observations
-from repomap_kg.ops.ingestion.source import _archive_extractor_route
-from repomap_kg.extractors.shell.awk import extract_awk_file_observations
+from common_lore_index.ops.ingestion.bulk import classify_bulk_route
+from common_lore_index.graph.discovery import classify_path, discover_observations
+from common_lore_index.ops.ingestion.source import _archive_extractor_route
+from common_lore_index.extractors.shell.awk import extract_awk_file_observations
 
 
 class AwkExtractorUnitTests(unittest.TestCase):

@@ -8,26 +8,26 @@ import sys
 from types import SimpleNamespace
 from typing import Mapping
 
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability as create_portable_capability,
 )
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.protocol import (
     SyntheticWorkerResult,
     WorkerLaunchSpec,
     run_worker_spec,
 )
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 # Mandatory coordinator limits pinned to exact protocol timing: hello .5, heartbeat .15, process .8
 RUN25_MANDATORY_LIMITS: dict[str, object] = {
@@ -44,7 +44,7 @@ RUN25_MANDATORY_LIMITS: dict[str, object] = {
 
 TINY_PORTABLE_CHILD_CODE = '''"""Tiny maintained portable child fixture."""
 import argparse, sys
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.protocol import (
     MAX_JSONL_LINE_BYTES,
     ProtocolSession,
     decode_jsonl,
@@ -59,7 +59,7 @@ def branch_function(flag: bool) -> int:
     return chosen
 
 def main() -> int:
-    from repomap_kg.coordinator import _portable_authority as authority
+    from common_lore_index.coordinator import _portable_authority as authority
     assert authority.install_portable_authority_guard.__module__ == authority.__name__
     from pathlib import Path
     workspace = Path.cwd() / 'guarded-workspace'

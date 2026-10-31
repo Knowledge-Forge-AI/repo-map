@@ -12,7 +12,7 @@ from runner_abrupt_evidence import active_abrupt_context
 
 @contextmanager
 def observe_go_hang(command):
-    import repomap_kg.extractors.languages.go_protocol as owner
+    import common_lore_index.extractors.languages.go_protocol as owner
     context = active_abrupt_context()
     launch = context.begin("go-helper-hang")
     popen = owner.subprocess.Popen

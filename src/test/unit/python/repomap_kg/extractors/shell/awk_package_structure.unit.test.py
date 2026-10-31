@@ -13,7 +13,7 @@ AWK_CALL_EXPORTS = (
 
 
 def test_rootpkg28_awk_reexports_call_observation_builders() -> None:
-    import repomap_kg.extractors.shell.awk as awk
-    import repomap_kg.extractors.shell.awk_calls as calls
+    import common_lore_index.extractors.shell.awk as awk
+    import common_lore_index.extractors.shell.awk_calls as calls
     for name in AWK_CALL_EXPORTS:
         assert getattr(awk, name) is getattr(calls, name)

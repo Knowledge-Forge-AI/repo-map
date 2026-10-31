@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from repomap_kg.coordinator.transport import LocalRequestDispatcher, TransportError
+from common_lore_index.coordinator.transport import LocalRequestDispatcher, TransportError
 
 
 def dispatcher():
@@ -120,7 +120,7 @@ def test_transport_rejects_private_response_strings(private_value):
 
 
 def test_transport_list_accepts_valid_options_and_cursor():
-    from repomap_kg.coordinator.job_listing import JobListCursor, encode_job_cursor
+    from common_lore_index.coordinator.job_listing import JobListCursor, encode_job_cursor
 
     cursor = encode_job_cursor(
         JobListCursor("2026-09-08T12:00:00.000000Z", "job-1")

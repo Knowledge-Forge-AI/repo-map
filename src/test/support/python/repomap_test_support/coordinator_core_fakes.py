@@ -4,8 +4,8 @@ from contextlib import contextmanager
 from datetime import timedelta
 from types import SimpleNamespace
 
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._coordinator_protocols import CleanupReport, CoordinatorStore
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._coordinator_protocols import CleanupReport, CoordinatorStore
 
 
 def Claim(*, priority_class: str = "automatic") -> JobClaim:

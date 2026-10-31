@@ -16,22 +16,22 @@ from typing import Any, Iterator
 
 import pytest
 
-from repomap_kg.runtime import _extension_restore_custody as custody_mod
-from repomap_kg.runtime import _extension_restore_preflight as preflight_mod
-from repomap_kg.runtime._backup_provenance import parse_toc_entries
-from repomap_kg.runtime._backup_support import derive_manifest_support
-from repomap_kg.runtime._extension_restore_custody import DatabaseCreationIntent, RestoreLifecycleAuthority, canonical_restore_authority
-from repomap_kg.runtime._extension_restore_exec import ExecOutcome, active_exec_custody
-from repomap_kg.runtime._extension_restore_preflight import (
+from common_lore_index.runtime import _extension_restore_custody as custody_mod
+from common_lore_index.runtime import _extension_restore_preflight as preflight_mod
+from common_lore_index.runtime._backup_provenance import parse_toc_entries
+from common_lore_index.runtime._backup_support import derive_manifest_support
+from common_lore_index.runtime._extension_restore_custody import DatabaseCreationIntent, RestoreLifecycleAuthority, canonical_restore_authority
+from common_lore_index.runtime._extension_restore_exec import ExecOutcome, active_exec_custody
+from common_lore_index.runtime._extension_restore_preflight import (
     preflight_extension_v2_restore_set,
 )
-from repomap_kg.runtime._extension_restore_target import (
+from common_lore_index.runtime._extension_restore_target import (
     observe_engine_identity,
 )
-from repomap_kg.runtime._extension_restore_template import BASELINE_CATALOGS, BASELINE_INDIRECT_CATALOGS
-from repomap_kg.runtime.backup_records import LocalDbBackupError, RuntimeContainerMetadata
-from repomap_kg.runtime.local import LocalRuntimeDiagnostic, build_local_runtime_plan, setup_local_runtime
-from repomap_kg.runtime.maintenance import MAINTENANCE_LOCK_KEY, held_maintenance_custody_for
+from common_lore_index.runtime._extension_restore_template import BASELINE_CATALOGS, BASELINE_INDIRECT_CATALOGS
+from common_lore_index.runtime.backup_records import LocalDbBackupError, RuntimeContainerMetadata
+from common_lore_index.runtime.local import LocalRuntimeDiagnostic, build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.maintenance import MAINTENANCE_LOCK_KEY, held_maintenance_custody_for
 from repomap_test_support.d9_extension_policies import (
     DEFAULT_TEST_ENGINE_IMAGE_ID, DEFAULT_TEST_INSPECT_IMAGE, UNIT_TEMPLATE_BASELINE, UNIT_VECTOR_CONTROL_SHA256,
     UNIT_VECTOR_LIBRARY_SHA256, UNIT_VECTOR_SCRIPT_SHA256, adr0077_pgvector_extension_policy,

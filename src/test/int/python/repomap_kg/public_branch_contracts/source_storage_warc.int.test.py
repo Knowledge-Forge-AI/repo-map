@@ -9,8 +9,8 @@ from repomap_test_support.public_branch_contracts import (
     warc_record,
     write_warc_config,
 )
-from repomap_kg.ops.ingestion.source import build_warc_manifest, load_warc_source_config
-from repomap_kg.storage import query_api_summary, query_bulk_summary
+from common_lore_index.ops.ingestion.source import build_warc_manifest, load_warc_source_config
+from common_lore_index.storage import query_api_summary, query_bulk_summary
 
 
 class PublicBranchSourceStorageWarcIntegrationTests(unittest.TestCase):
@@ -122,7 +122,7 @@ class PublicBranchSourceStorageWarcIntegrationTests(unittest.TestCase):
 
             with (
                 patch(
-                    "repomap_kg.storage.summaries.execute_json_readback",
+                    "common_lore_index.storage.summaries.execute_json_readback",
                     side_effect=(bulk_payload, api_payload),
                 ),
             ):

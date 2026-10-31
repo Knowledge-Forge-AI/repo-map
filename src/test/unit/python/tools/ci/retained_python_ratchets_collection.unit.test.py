@@ -19,7 +19,7 @@ from ci.retained_python_ratchets import (
 
 def _ownership_entry() -> dict[str, str]:
     return {
-        "module_prefix": "repomap_kg.future",
+        "module_prefix": "common_lore_index.future",
         "match": "exact",
         "ownership_class": "python_retained",
         "architecture_box": "synthetic_public_fixture",
@@ -30,7 +30,7 @@ def _ownership_entry() -> dict[str, str]:
 
 
 def _synthetic_repository(tmp_path: Path) -> tuple[Path, Path]:
-    source = tmp_path / "src/main/python/repomap_kg/future.py"
+    source = tmp_path / "src/main/python/common_lore_index/future.py"
     source.parent.mkdir(parents=True)
     source.write_text("value = 1\n", encoding="utf-8")
     manifest = tmp_path / "tools/ci/python_type_ownership.json"
@@ -67,7 +67,7 @@ def _install_collection_boundaries(
     calls: list[tuple[tuple[str, ...], Path]] = []
     monkeypatch.setattr(
         "ci.retained_python_ratchets.maintained_modules",
-        lambda repo_root: {"repomap_kg.future": source},
+        lambda repo_root: {"common_lore_index.future": source},
     )
     monkeypatch.setattr(
         "ci.retained_python_ratchets._attest_environment",
@@ -107,13 +107,13 @@ def test_collect_snapshot_attests_tool_argv_and_selected_file_execution(
 
     snapshot = collect_snapshot(manifest, repo_root=tmp_path)
 
-    selected_path = "src/main/python/repomap_kg/future.py"
+    selected_path = "src/main/python/common_lore_index/future.py"
     commands = [call[0] for call in calls]
     assert tuple(ruff_files_command((selected_path,))) in commands
     assert tuple(ruff_command((selected_path,))) in commands
     assert tuple(mypy_command((selected_path,))) in commands
     assert all(repo_root == tmp_path for _, repo_root in calls)
-    assert snapshot["selection"]["modules"][0]["module"] == "repomap_kg.future"
+    assert snapshot["selection"]["modules"][0]["module"] == "common_lore_index.future"
     assert snapshot["mypy"]["findings"][0]["count"] == 1
 
 
@@ -146,12 +146,12 @@ def test_collect_snapshot_rejects_silent_ruff_file_omission(
 def test_retained_file_lengths_reject_tracked_symlinks(tmp_path: Path) -> None:
     target = tmp_path / "target.py"
     target.write_text("value = 1\n", encoding="utf-8")
-    selected = tmp_path / "src/main/python/repomap_kg/future.py"
+    selected = tmp_path / "src/main/python/common_lore_index/future.py"
     selected.parent.mkdir(parents=True)
     selected.symlink_to(target)
 
     with pytest.raises(RatchetContractError, match="retained file path"):
         file_length_inventory(
-            ({"path": "src/main/python/repomap_kg/future.py"},),
+            ({"path": "src/main/python/common_lore_index/future.py"},),
             repo_root=tmp_path,
         )

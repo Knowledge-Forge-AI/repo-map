@@ -46,7 +46,7 @@ SHIMS = (
 _SCRUBBED_MARKERS = ("PASSWORD", "PGPASS", "SECRET", "TOKEN", "REPOMAP_PG", "REPOMAP_STORAGE")
 _SCRUBBED_KEYS = frozenset(
     {"PGHOST", "PGPORT", "PGUSER", "PGDATABASE", "PGSERVICE", "DATABASE_URL", "DOCKER_HOST",
-     "REPOMAP_OPS_CONFIG", "REPOMAP_PSQL_COMMAND", "REPOMAP_HOME"}
+     "REPOMAP_OPS_CONFIG", "REPOMAP_PSQL_COMMAND", "REPOMAP_HOME", "CLOE_HOME"}
 )
 CHILD_DEADLINE_SECONDS = 300
 BARRIER_DEADLINE_SECONDS = 240
@@ -141,14 +141,9 @@ class LocalHarness:
 
     def mcp(self, home: Path, requests: Sequence[dict[str, Any]],
             extra_env: Mapping[str, str] | None = None) -> dict[int, dict[str, Any]]:
-        payload = "".join(json.dumps(request) + "\n" for request in requests)
-        completed = self.run(
-            "mcp", "serve", "--repo-map-home", str(home), input_text=payload, extra_env=extra_env
-        )
-        if completed.returncode != 0:
-            raise AssertionError(f"mcp serve failed: {completed.stderr}")
-        responses = [json.loads(line) for line in completed.stdout.splitlines() if line.strip()]
-        return {int(response["id"]): response for response in responses}
+        from repomap_test_support.sqlite_mcp_transport import run_mcp_session
+
+        return run_mcp_session(self, home, requests, extra_env=extra_env)
 
     def guard_events(self) -> list[dict[str, Any]]:
         if not self.guard_log.exists():
@@ -233,7 +228,7 @@ def interrupt_paused_child(process: subprocess.Popen[str] | ManagedChild) -> Non
 
 def await_ready(barrier: Path, process: subprocess.Popen[str] | ManagedChild) -> None:
     """Bound readiness and guarantee maintained cleanup on every failure."""
-    from repomap_kg.coordinator._transport_validation import public_diagnostic_summary
+    from common_lore_index.coordinator._transport_validation import public_diagnostic_summary
 
     try:
         deadline = time.monotonic() + BARRIER_DEADLINE_SECONDS

@@ -1,7 +1,7 @@
 """Maintained complete optional-dependency function contracts."""
 
 BASE_PACKAGE_IMPORT_TEMPLATE = r'''def test_base_package_import_does_not_require_scale_tools(monkeypatch) -> None:
-    package_path = Path(repomap_kg.__file__)
+    package_path = Path(common_lore_index.__file__)
     module_name = '_repomap_without_scale_tools'
     real_import = builtins.__import__
 
@@ -15,7 +15,11 @@ BASE_PACKAGE_IMPORT_TEMPLATE = r'''def test_base_package_import_does_not_require
         assert specification is not None and specification.loader is not None
         module = importlib.util.module_from_spec(specification)
         sys.modules[module_name] = module
-        specification.loader.exec_module(module)'''
+        specification.loader.exec_module(module)
+        assert module.DISTRIBUTION_NAME == 'common-lore-index'
+        assert module.IMPORT_PACKAGE == 'common_lore_index'
+        assert module.PREFERRED_CLI == 'cloe'
+'''
 
 SAMPLING_MISSING_DEPENDENCY_TEMPLATE = r'''@pytest.mark.parametrize('missing_name', ['psutil', 'docker'])
 def test_sampling_module_fails_fast_when_scale_dependency_is_missing(monkeypatch: pytest.MonkeyPatch, missing_name: str) -> None:

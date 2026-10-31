@@ -1,18 +1,18 @@
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.extractors.documents.email import (
+from common_lore_index.extractors.documents.email import (
     extract_eml_file_observations,
 )
-from repomap_kg.extractors.documents.email_common import (
+from common_lore_index.extractors.documents.email_common import (
     _is_secret_prone,
     _redact_url,
     _redacted_filename,
 )
-from repomap_kg.extractors.documents.feed import (
+from common_lore_index.extractors.documents.feed import (
     extract_feed_file_observations,
 )
-from repomap_kg.extractors.documents.feed_support import (
+from common_lore_index.extractors.documents.feed_support import (
     _parse_date,
     _reference_target,
     _safe_summary,
@@ -28,7 +28,7 @@ class EmailFeedExtractorBoundariesUnitTests(unittest.TestCase):
             b"Content-Type: text/plain\n\n"
             b"Body text\n"
         )
-        with patch("repomap_kg.extractors.documents.email.MAX_HEADER_BYTES", 10):
+        with patch("common_lore_index.extractors.documents.email.MAX_HEADER_BYTES", 10):
             obs = extract_eml_file_observations("mail/test.eml", eml_bytes)
             error_kinds = {o.metadata["error_kind"] for o in obs if o.kind == "email.parse_error"}
             self.assertIn("header-size-limit", error_kinds)
@@ -100,8 +100,8 @@ class EmailFeedExtractorBoundariesUnitTests(unittest.TestCase):
         ch3 = next(o for o in obs3 if o.kind == "feed.channel")
         self.assertEqual(ch3.metadata["identity_source"], "title+document")
 
-        from repomap_kg.extractors.documents.feed_data import _json_channel_info
-        from repomap_kg.graph.keys import feed_document_key
+        from common_lore_index.extractors.documents.feed_data import _json_channel_info
+        from common_lore_index.graph.keys import feed_document_key
         doc_key = feed_document_key("feeds/j.json")
         # home_page_url only
         ch_home = _json_channel_info("feeds/j.json", doc_key, {"home_page_url": "https://example.com"})

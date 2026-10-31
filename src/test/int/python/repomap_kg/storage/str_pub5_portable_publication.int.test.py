@@ -8,29 +8,29 @@ from psycopg import sql
 from psycopg.abc import QueryNoTemplate
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     FileSystemArtifactStore,
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.artifacts._bundle_stream import StreamingBundleEncoder
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import refresh_graph
-from repomap_kg.storage import apply_migrations, default_rdbms_root, staged_ingestion
-from repomap_kg.storage.publication import RunPublicationReceipt
-from repomap_kg.storage.publication_fencing import MergeContext, PublicationHandoff
-from repomap_kg.storage.publication_readback import read_latest_receipt_bearing_publication, read_run_publication
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.artifacts._bundle_stream import StreamingBundleEncoder
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import refresh_graph
+from common_lore_index.storage import apply_migrations, default_rdbms_root, staged_ingestion
+from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.publication_fencing import MergeContext, PublicationHandoff
+from common_lore_index.storage.publication_readback import read_latest_receipt_bearing_publication, read_run_publication
+from common_lore_index.storage.staged_ingestion import (
     _psycopg_connection_params_from_psql_args,
     run_staged_portable_refresh,
     stage_id_for_authority,
 )
-from repomap_kg.storage.staged_publication import reconcile_commit_unknown
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES
-from repomap_kg.storage.staging_observability import StagingMeasurements
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage.staged_publication import reconcile_commit_unknown
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES
+from common_lore_index.storage.staging_observability import StagingMeasurements
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
 from repomap_test_support.portable_publication_fixtures import (
     _authority,
     _binding,

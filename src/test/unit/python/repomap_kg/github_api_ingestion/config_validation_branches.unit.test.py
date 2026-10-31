@@ -1,8 +1,8 @@
 import unittest
 from typing import TypedDict
 
-from repomap_kg.ops.ingestion import github_api as github
-from repomap_kg.ops.ingestion import github_api_config as github_config
+from common_lore_index.ops.ingestion import github_api as github
+from common_lore_index.ops.ingestion import github_api_config as github_config
 
 
 class _SourceIdentity(TypedDict):

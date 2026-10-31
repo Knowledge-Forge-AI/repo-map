@@ -18,9 +18,9 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime._extension_restore_qualification import TrustedArtifactQualification
-from repomap_kg.runtime.backup import dump_database, init_database_from_dump
-from repomap_kg.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime._extension_restore_qualification import TrustedArtifactQualification
+from common_lore_index.runtime.backup import dump_database, init_database_from_dump
+from common_lore_index.runtime.backup_records import LocalDbBackupError
 from repomap_test_support.d9_extension_policies import (
     installed_synthetic_extensions, probe_live_container_qualification, synthetic_multilevel_extension_policy,
 )

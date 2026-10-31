@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from repomap_kg.ops.ingestion.api import (
+from common_lore_index.ops.ingestion.api import (
     ApiPolicyError, ApiSourceConfig, build_api_plan, count_response_items,
     parse_endpoint, parse_json_response, redact_value,
 )

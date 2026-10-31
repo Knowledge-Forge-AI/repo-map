@@ -210,7 +210,7 @@ def test_execute_off_macos_is_not_run_and_creates_no_resource(tmp_path: Path, mo
 def test_local_prerequisite_refusals_never_probe_docker(tmp_path: Path) -> None:
     checkout = tmp_path / "checkout"
     (checkout / ".venv" / "bin").mkdir(parents=True)
-    runner = Recorder({"status --porcelain": (0, " M src/main/python/repomap_kg/cli.py\n"),
+    runner = Recorder({"status --porcelain": (0, " M src/main/python/common_lore_index/cli.py\n"),
                        "rev-parse": (0, "abc\ndef\n")})
     pre = cli.check_prerequisites(checkout, tmp_path, platform="darwin", runner=runner)
     statuses = {item["name"]: item["status"] for item in pre.items}

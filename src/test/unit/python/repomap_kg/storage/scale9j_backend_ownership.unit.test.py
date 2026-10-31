@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.storage.backend_ownership import (
+from common_lore_index.storage.backend_ownership import (
     BackendActivity,
     BackendClassification,
     BackendIdentity,
@@ -16,7 +16,7 @@ from repomap_kg.storage.backend_ownership import (
     classify_backend_activity,
     public_backend_summary,
 )
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.backend_telemetry import (
     MAX_TELEMETRY_FRAME_BYTES,
     BackendOwnershipRegistry,
     BackendTelemetry,

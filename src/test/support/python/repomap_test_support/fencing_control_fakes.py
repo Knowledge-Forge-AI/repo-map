@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from repomap_kg.coordinator._publication_phase import _fencing_identity
+from common_lore_index.coordinator._publication_phase import _fencing_identity
 
 
 class FencingControl:

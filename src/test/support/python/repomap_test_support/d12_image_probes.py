@@ -7,7 +7,7 @@ import re
 import time
 from typing import Any
 
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     PACKAGED_PG_DUMP,
     PACKAGED_PG_RESTORE,
     PACKAGED_PSQL,
@@ -77,9 +77,9 @@ PACKAGING_PY = r"""
 import hashlib, importlib.metadata as md, importlib.util as iu, json, os, pathlib, platform, re, shutil, subprocess
 import psycopg
 from psycopg import pq
-from repomap_kg.storage import discover_migrations
-from repomap_kg.coordinator._control_schema import discover_control_migrations
-from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command
+from common_lore_index.storage import discover_migrations
+from common_lore_index.coordinator._control_schema import discover_control_migrations
+from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command
 run = lambda *c: subprocess.run(list(c), capture_output=True, text=True, check=False)
 paths = json.loads(os.environ["D12_PATHS"]) + [w for w in map(shutil.which, ("psql", "pg_dump", "pg_restore")) if w]
 root = pathlib.Path(psycopg.__file__).parent.parent
@@ -104,7 +104,7 @@ print(json.dumps({"versions": {p: run(p, "--version").stdout.strip() for p in pa
 ROUND_TRIP_PY = r"""
 import hashlib, json, os, subprocess
 import psycopg
-from repomap_kg.storage import apply_migrations, graph_schema_readiness
+from common_lore_index.storage import apply_migrations, graph_schema_readiness
 env_keys = ("REPOMAP_PACKAGED_PSQL", "REPOMAP_PACKAGED_PG_DUMP", "REPOMAP_PACKAGED_PG_RESTORE")
 psql, dump, restore = (os.environ[k] for k in env_keys)
 base = ["-h", "127.0.0.1", "-p", "5432", "-U", os.environ["PGUSER"]]

@@ -5,23 +5,23 @@ import tomllib
 import psycopg
 import pytest
 
-from repomap_kg.runtime.database_roles import (
+from common_lore_index.runtime.database_roles import (
     COORDINATOR_CONTROL_ROLE,
     READ_STATUS_ROLE,
     REFRESH_PUBLICATION_ROLE,
     RoleSecrets,
     render_database_role_sql,
 )
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.release_cluster import (
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.release_cluster import (
     ReleaseClusterError,
     ReleaseGraphOperator,
     _backup_graph_before_upgrade,
     initialize_release_cluster,
     release_cluster_status,
 )
-from repomap_kg.storage import default_rdbms_root, discover_migrations
-from repomap_kg.storage.main import _migration_script
+from common_lore_index.storage import default_rdbms_root, discover_migrations
+from common_lore_index.storage.main import _migration_script
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

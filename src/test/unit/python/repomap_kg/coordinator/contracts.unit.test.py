@@ -4,13 +4,13 @@ from dataclasses import fields, replace
 from collections.abc import MutableMapping
 from typing import cast
 import pytest
-from repomap_kg.coordinator import (
+from common_lore_index.coordinator import (
     DEFAULT_LIMITS, HARD_MAX_LIMITS, CoordinatorLimits, JobRequest, JobState, PublicationState,
     is_public_safe_text, normalize_request, project_public_error, project_public_status,
     validate_generation, validate_transition,
 )
-from repomap_kg.coordinator.contracts import LEGAL_TRANSITIONS, _PUBLIC_ERROR_SUMMARIES
-from repomap_kg.storage.authority import RequestId
+from common_lore_index.coordinator.contracts import LEGAL_TRANSITIONS, _PUBLIC_ERROR_SUMMARIES
+from common_lore_index.storage.authority import RequestId
 
 EXPECTED_PUBLIC_ERROR_SUMMARIES = {
     "cancelled": "operation cancelled", "authorization": "request is unauthorized",

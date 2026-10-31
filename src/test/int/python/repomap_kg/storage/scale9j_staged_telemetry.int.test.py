@@ -4,28 +4,28 @@ import io
 import psycopg
 import pytest
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import (
     StorageSchemaError,
     apply_migrations,
     default_rdbms_root,
 )
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.backend_telemetry import (
     BackendTelemetry,
     ConnectionTelemetryEvent,
     TelemetryEventKind,
 )
-from repomap_kg.storage.backend_telemetry_events import frame_telemetry_event, read_telemetry_event
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.backend_telemetry_events import frame_telemetry_event, read_telemetry_event
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staged_publication import _DIRECT_LOCK_CLASS
+from common_lore_index.storage.staged_publication import _DIRECT_LOCK_CLASS
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

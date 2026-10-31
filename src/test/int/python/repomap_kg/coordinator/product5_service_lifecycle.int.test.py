@@ -10,13 +10,13 @@ import time
 import unittest
 from typing import Callable, TypeVar, cast
 
-from repomap_kg.coordinator.client import LocalCoordinatorClient
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.endpoint import load_endpoint_descriptor
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.service import CoordinatorService, default_transport_factory
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
-from repomap_kg.coordinator.transport import LoopbackTcpService, UnixSocketService
+from common_lore_index.coordinator.client import LocalCoordinatorClient
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.endpoint import load_endpoint_descriptor
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.service import CoordinatorService, default_transport_factory
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator.transport import LoopbackTcpService, UnixSocketService
 from repomap_test_support.test_scratch import short_test_directory
 from repomap_test_support.startup_recovery_scenarios import _harness, _req
 

@@ -1,18 +1,18 @@
 import unittest
 
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.documents.email import (
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.documents.email import (
     MAX_EML_BYTES,
     MAX_HEADER_BYTES,
     MAX_MIME_PARTS,
     extract_eml_file_observations,
     extract_mbox_file_observations,
 )
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     email_message_key,
 )
-from repomap_kg.observations import RawObservation
+from common_lore_index.observations import RawObservation
 
 class CanonicalEmailIntegrationTests(unittest.TestCase):
     def test_static_eml_extraction_and_canonicalization_contract(self):

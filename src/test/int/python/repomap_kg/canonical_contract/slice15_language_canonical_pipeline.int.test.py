@@ -6,9 +6,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.schema_upgrade import upgrade_graph_schema
 
 
 class Slice15LanguageCanonicalPipelineIntegrationTests(unittest.TestCase):

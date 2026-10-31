@@ -12,25 +12,25 @@ import hashlib
 from dataclasses import replace
 from pathlib import Path
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.extractors.documents.markdown import extract_markdown_file_observations
-from repomap_kg.extractors.languages.python import extract_python_file_observations
-from repomap_kg.extractors.languages.python_modules import PythonModuleIndex
-from repomap_kg.graph.keys import doc_page_key
-from repomap_kg.graph.multi_source import (
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.extractors.documents.markdown import extract_markdown_file_observations
+from common_lore_index.extractors.languages.python import extract_python_file_observations
+from common_lore_index.extractors.languages.python_modules import PythonModuleIndex
+from common_lore_index.graph.keys import doc_page_key
+from common_lore_index.graph.multi_source import (
     SnapshotManifestEntry,
     SourceSnapshot,
     graph_source_binding_id,
 )
-from repomap_kg.graph.multi_source_capture import _CapturedSource
-from repomap_kg.graph.multi_source_routing import _namespaced_observation, _validate_provenance
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.staged_ingestion import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.graph.multi_source_capture import _CapturedSource
+from common_lore_index.graph.multi_source_routing import _namespaced_observation, _validate_provenance
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.staged_ingestion import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.sqlite_local_fixtures import (
     graph_toml,
     local_binding,

@@ -12,15 +12,15 @@ import socket
 import subprocess
 import time
 
-from repomap_kg.ops.config_loading import load_ops_config
-from repomap_kg.ops.config_records import OpsConfig
-from repomap_kg.runtime.backup_commands import read_runtime_password
-from repomap_kg.runtime.local import (
+from common_lore_index.ops.config_loading import load_ops_config
+from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.runtime.backup_commands import read_runtime_password
+from common_lore_index.runtime.local import (
     down_local_runtime,
     setup_local_runtime,
     up_local_runtime,
 )
-from repomap_kg.runtime.plan import LocalRuntimePlan, LocalRuntimeResult, build_local_runtime_plan
+from common_lore_index.runtime.plan import LocalRuntimePlan, LocalRuntimeResult, build_local_runtime_plan
 
 
 @dataclass(frozen=True)

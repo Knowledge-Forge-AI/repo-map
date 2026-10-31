@@ -6,8 +6,8 @@ from contextlib import ExitStack
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.server.graph_selection import McpOpsError, select_graph
-from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+from common_lore_index.server.graph_selection import McpOpsError, select_graph
+from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 from repomap_test_support.host_read_store_config import (
     INVALID_PSQL_COMMAND,
     PG_BINDING_TRIPWIRES,
@@ -21,7 +21,7 @@ G = "repo-map"
 
 class GraphSelectionRefusalsTests(McpServerTestSupport):
     def _config(self, body: str | None = None) -> Any:
-        from repomap_kg.ops.config import load_ops_config
+        from common_lore_index.ops.config import load_ops_config
 
         return load_ops_config(self.write_ops_config(body or self.visible_ops_config()))
 
@@ -29,15 +29,15 @@ class GraphSelectionRefusalsTests(McpServerTestSupport):
         stack = ExitStack()
         stack.enter_context(patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()),
                                                       "REPOMAP_PSQL_COMMAND": INVALID_PSQL_COMMAND}, clear=True))
-        stack.enter_context(patch("repomap_kg.server.ops.load_mcp_ops_config", lambda *_a: config))
-        stack.enter_context(patch("repomap_kg.server.mcp_core.load_mcp_ops_config", lambda *_a: config))
-        stack.enter_context(patch("repomap_kg.server.ops.investigation_stores", investigation))
-        stack.enter_context(patch("repomap_kg.server.mcp.graph_stores", graph))
+        stack.enter_context(patch("common_lore_index.server.ops.load_mcp_ops_config", lambda *_a: config))
+        stack.enter_context(patch("common_lore_index.server.mcp_core.load_mcp_ops_config", lambda *_a: config))
+        stack.enter_context(patch("common_lore_index.server.ops.investigation_stores", investigation))
+        stack.enter_context(patch("common_lore_index.server.mcp.graph_stores", graph))
         stack.enter_context(patched_guards(PG_BINDING_TRIPWIRES))
         return stack
 
     def _parsed_config(self) -> Any:
-        from repomap_kg.server.ops import load_mcp_ops_config
+        from common_lore_index.server.ops import load_mcp_ops_config
 
         with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(self.write_visible_ops_config())}, clear=True):
             return load_mcp_ops_config()

@@ -7,8 +7,8 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     raw_observation_rows_from_observations,

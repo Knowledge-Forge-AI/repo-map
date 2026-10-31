@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import (
     STAGING_FAMILY_DESCRIPTORS,
 )
 import scale11_profile_workloads as scale11_profile_workloads

@@ -10,15 +10,15 @@ from typing import Any
 
 import psycopg
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.canonical_staging_merge import build_canonical_merge_statements
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.canonical_staging_merge import build_canonical_merge_statements
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
     diagnose_psycopg_database_presence,
     execute_json_readback,
 )
-from repomap_kg.storage.staging import (
+from common_lore_index.storage.staging import (
     CleanupEligibility,
     MergeStatus,
     PublicationReconciliationState,
@@ -28,19 +28,19 @@ from repomap_kg.storage.staging import (
     cleanup_eligibility,
     validate_stage_transition,
 )
-from repomap_kg.storage.staging_copy import (
+from common_lore_index.storage.staging_copy import (
     CopyContractError,
     STAGING_COPY_TABLES,
     copy_stage_rows,
 )
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventFrame,
     StagingEventTransportError,
     staging_event_channel_from_inherited_fd,
 )
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

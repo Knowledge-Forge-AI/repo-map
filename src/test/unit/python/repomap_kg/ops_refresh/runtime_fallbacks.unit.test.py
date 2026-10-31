@@ -6,13 +6,13 @@ from repomap_test_support.ops_refresh import (
     OpsRefreshUnitTestCase,
 )
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
-from repomap_kg.ops.refresh import (
+from common_lore_index.runtime.local import LocalRuntimeIdentity
+from common_lore_index.ops.refresh import (
     query_graph_summary,
     query_refresh_status,
     run_storage_readback_with_ops_psql,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 
 class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
@@ -23,7 +23,7 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with patch(
-                "repomap_kg.ops.refresh.execute_ops_json_readback"
+                "common_lore_index.ops.refresh.execute_ops_json_readback"
             ) as execute_readback:
                 execute_readback.side_effect = [
                     {"connected": True, "schema_available": True},
@@ -42,10 +42,10 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.execute_ops_json_readback"
+                    "common_lore_index.ops.refresh.execute_ops_json_readback"
                 ) as execute_readback,
                 patch(
-                    "repomap_kg.ops.readback._container_psql_execution",
+                    "common_lore_index.ops.readback._container_psql_execution",
                     side_effect=AssertionError("container fallback should be lazy"),
                 ),
             ):
@@ -65,10 +65,10 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.execute_ops_json_readback"
+                    "common_lore_index.ops.refresh.execute_ops_json_readback"
                 ) as execute_readback,
                 patch(
-                    "repomap_kg.ops.readback._container_psql_execution",
+                    "common_lore_index.ops.readback._container_psql_execution",
                     side_effect=AssertionError("container fallback should not inspect"),
                 ),
             ):
@@ -119,19 +119,19 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.execute_json_readback_with_driver",
+                    "common_lore_index.ops.readback.execute_json_readback_with_driver",
                     side_effect=fake_readback,
                 ) as execute_readback,
                 patch(
-                    "repomap_kg.ops.readback.selected_json_readback_driver",
+                    "common_lore_index.ops.readback.selected_json_readback_driver",
                     return_value="psql",
                 ),
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     return_value="/usr/bin/docker",
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                 ),
             ):
@@ -156,21 +156,21 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.execute_json_readback_with_driver",
+                    "common_lore_index.ops.readback.execute_json_readback_with_driver",
                     side_effect=StorageSchemaError(
                         'could not translate host name "postgres" to address'
                     ),
                 ) as execute_readback,
                 patch(
-                    "repomap_kg.ops.readback.selected_json_readback_driver",
+                    "common_lore_index.ops.readback.selected_json_readback_driver",
                     return_value="psql",
                 ),
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     return_value="/usr/bin/docker",
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                 ),
             ):
@@ -221,20 +221,20 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.execute_json_readback_with_driver",
+                    "common_lore_index.ops.readback.execute_json_readback_with_driver",
                     side_effect=fake_readback,
                 ) as execute_readback,
                 patch(
-                    "repomap_kg.ops.readback.selected_json_readback_driver",
+                    "common_lore_index.ops.readback.selected_json_readback_driver",
                     return_value="psql",
                 ),
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     return_value="/usr/bin/docker",
                     create=True,
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                     create=True,
                 ),
@@ -277,12 +277,12 @@ class OpsRefreshRuntimeFallbackUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     return_value="/usr/bin/docker",
                     create=True,
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                     create=True,
                 ),

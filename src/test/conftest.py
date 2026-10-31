@@ -55,7 +55,17 @@ from repomap_test_support.resource_run_test_support import (  # noqa: E402
 # Reuses an inherited REPOMAP_TEST_RUN_ROOT when the runner already allocated
 # one, so a direct pytest invocation under the runner never creates a second
 # run root.
+os.environ.pop("CLOE_HOME", None)  # Isolate collection/session fixtures as well as tests.
 _LAYOUT = establish_run().apply()
+
+
+@pytest.fixture(autouse=True)
+def isolate_cloe_home():
+    """A caller's new home selector must not redirect test-owned state."""
+    # Own this patch without moving a test's shared monkeypatch teardown.
+    with pytest.MonkeyPatch.context() as patch:
+        patch.delenv("CLOE_HOME", raising=False)
+        yield
 
 
 def pytest_configure(config):

@@ -5,13 +5,13 @@ import tempfile
 from typing import cast
 from unittest.mock import patch
 
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.refresh import _load_file_observations_with_ops_psql
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.storage import LoadSummary
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.backend_telemetry import BackendTelemetry
-from repomap_kg.storage.staged_ingestion import IngestionAuthority
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.refresh import _load_file_observations_with_ops_psql
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.storage import LoadSummary
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.backend_telemetry import BackendTelemetry
+from common_lore_index.storage.staged_ingestion import IngestionAuthority
 
 
 def _authority() -> IngestionAuthority:
@@ -34,7 +34,7 @@ def test_staged_loader_forwards_opt_in_backend_telemetry() -> None:
         config = load_ops_config_home(home)
 
         with patch(
-            "repomap_kg.ops.refresh.run_staged_full_refresh",
+            "common_lore_index.ops.refresh.run_staged_full_refresh",
             return_value=LoadSummary(repository_id=1, run_id=2, files=3),
         ) as load:
             result = _load_file_observations_with_ops_psql(

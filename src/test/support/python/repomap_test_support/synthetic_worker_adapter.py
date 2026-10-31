@@ -9,9 +9,9 @@ import sys
 import threading
 from typing import Mapping
 
-from repomap_kg.coordinator.core import CoordinatorStore, SyntheticCoordinator, _Claim
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS, CoordinatorLimits
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.core import CoordinatorStore, SyntheticCoordinator, _Claim
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS, CoordinatorLimits
+from common_lore_index.coordinator.protocol import (
     SyntheticWorkerResult,
     WorkerLaunchSpec,
     run_worker_spec,
@@ -32,7 +32,7 @@ def run_synthetic_worker(
     """Run one allowlisted synthetic fixture through production supervision."""
 
     if mode not in ALLOWED_SYNTHETIC_WORKER_MODES:
-        from repomap_kg.coordinator.protocol import ProtocolError
+        from common_lore_index.coordinator.protocol import ProtocolError
 
         raise ProtocolError("unsupported_worker_mode")
     repo_root = Path(__file__).resolve().parents[5]

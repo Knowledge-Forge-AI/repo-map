@@ -98,7 +98,7 @@ def test_new_clean_retained_module_succeeds(tmp_path: Path) -> None:
     repo = initialize_repository(tmp_path, before)
     after = copy.deepcopy(before)
     after["selection"]["modules"].append(
-        selection_item("repomap_kg.new_clean", "src/main/python/repomap_kg/new_clean.py")
+        selection_item("common_lore_index.new_clean", "src/main/python/common_lore_index/new_clean.py")
     )
 
     _audit(repo, after, before)
@@ -108,8 +108,8 @@ def test_new_retained_module_with_debt_fails(tmp_path: Path) -> None:
     before = baseline_fixture()
     repo = initialize_repository(tmp_path, before)
     after = copy.deepcopy(before)
-    path = "src/main/python/repomap_kg/new_debt.py"
-    after["selection"]["modules"].append(selection_item("repomap_kg.new_debt", path))
+    path = "src/main/python/common_lore_index/new_debt.py"
+    after["selection"]["modules"].append(selection_item("common_lore_index.new_debt", path))
     after["ruff"]["findings"] = [{
         "path": path, "code": "F401", "message": "unused",
         "fingerprint": "f" * 64, "count": 1,
@@ -139,8 +139,8 @@ def test_clean_additions_with_authorized_scope_transition_succeeds(tmp_path: Pat
     repo = initialize_repository(tmp_path, before)
     after = copy.deepcopy(before)
     admitted = selection_item(
-        "repomap_kg.artifacts.bundle",
-        "src/main/python/repomap_kg/artifacts/bundle.py",
+        "common_lore_index.artifacts.bundle",
+        "src/main/python/common_lore_index/artifacts/bundle.py",
     )
     after["selection"]["modules"].append(admitted)
     after["selection"]["modules"].sort(key=lambda item: item["module"])
@@ -159,8 +159,8 @@ def test_scope_transition_with_mismatched_manifest_digest_fails(tmp_path: Path) 
     repo = initialize_repository(tmp_path, before)
     after = copy.deepcopy(before)
     admitted = selection_item(
-        "repomap_kg.artifacts.bundle",
-        "src/main/python/repomap_kg/artifacts/bundle.py",
+        "common_lore_index.artifacts.bundle",
+        "src/main/python/common_lore_index/artifacts/bundle.py",
     )
     after["selection"]["modules"].append(admitted)
     after["selection"]["modules"].sort(key=lambda item: item["module"])
@@ -180,7 +180,7 @@ def test_second_appended_scope_record_need_not_sort_by_digest(tmp_path: Path) ->
     before = baseline_fixture()
     before["ownership"]["sha256"] = "f" * 64
     before["selection"]["modules"].append(
-        selection_item("repomap_kg.second", "src/main/python/repomap_kg/second.py")
+        selection_item("common_lore_index.second", "src/main/python/common_lore_index/second.py")
     )
     repo = initialize_repository(tmp_path, before)
     write_status(repo)
@@ -283,7 +283,7 @@ def test_malformed_or_overbroad_scope_record_fails(
         assert isinstance(record_changes, list)
         record_changes.append({
             "old": None,
-            "new": selection_item("repomap_kg.unrelated", "src/main/python/repomap_kg/unrelated.py"),
+            "new": selection_item("common_lore_index.unrelated", "src/main/python/common_lore_index/unrelated.py"),
         })
     write_json(repo / SCOPE_PATH, {
         "schema": "repomap-retained-python-scope-transitions-v1",

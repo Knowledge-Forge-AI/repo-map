@@ -38,7 +38,7 @@ def coverage_summary(
         branch_percent=branch_percent,
         files=(
             run_tests.CoverageFileRecord(
-                path=REPO_ROOT / "src/main/python/repomap_kg/example.py",
+                path=REPO_ROOT / "src/main/python/common_lore_index/example.py",
                 executable_lines=100,
                 covered_lines=int(line_percent),
                 line_percent=line_percent,

@@ -4,15 +4,15 @@ from dataclasses import replace
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ExtractionReceipt,
     MemoryArtifactStore,
     PublicationBundle,
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 
 VECTOR = (("bind1:" + "1" * 64, 1, "snap1:" + "2" * 64),)
@@ -79,7 +79,7 @@ def bundle(
 
 
 def receipt(bundle_ref: object, value: PublicationBundle, *, outcome: str = "completed") -> ExtractionReceipt:
-    from repomap_kg.artifacts.references import ArtifactReference
+    from common_lore_index.artifacts.references import ArtifactReference
 
     return ExtractionReceipt.create(
         request_id="request-1", job_id="job-1", attempt=1, graph_id="graph-a",

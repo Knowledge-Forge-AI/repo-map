@@ -4,15 +4,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.staging import STAGING_FAMILIES
-from repomap_kg.storage.staging_cleanup import (
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging_cleanup import (
     CleanupContractError,
     CleanupRequest,
     build_stage_cleanup_statements,
     execute_stage_cleanup,
 )
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 def _owner(*, mode: str = "coordinator") -> StageOwner:

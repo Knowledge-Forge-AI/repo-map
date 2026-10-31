@@ -152,7 +152,7 @@ def make_portable_worker_spec_adapter(
         # 7. Synchronous launch and reap under original run_worker_spec
         workload_exc: BaseException | None = None
         result: Any = None
-        from repomap_kg.coordinator.process_supervision import launch_managed_process
+        from common_lore_index.coordinator.process_supervision import launch_managed_process
         launcher = _launch_process or launch_managed_process
 
         def registered_launch(*args: Any, **kwargs: Any) -> Any:
@@ -258,8 +258,8 @@ def make_portable_worker_spec_adapter(
 def scoped_portable_coverage_adapter(
     session: Any, capability: ChildCoverageCapability,
 ) -> Iterator[Callable[..., Any]]:
-    """Context manager installing runner-owned scoped adapter at repomap_kg.coordinator._portable_worker_launch.run_worker_spec."""
-    import repomap_kg.coordinator._portable_worker_launch as pwl
+    """Context manager installing runner-owned scoped adapter at common_lore_index.coordinator._portable_worker_launch.run_worker_spec."""
+    import common_lore_index.coordinator._portable_worker_launch as pwl
 
     original_fn = pwl.run_worker_spec
     adapter = make_portable_worker_spec_adapter(original_fn, capability, session)

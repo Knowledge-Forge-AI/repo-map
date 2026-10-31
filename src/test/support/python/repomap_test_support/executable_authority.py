@@ -73,7 +73,7 @@ def controlled_service_authority(root: Path) -> Iterator[ControlledServiceAuthor
     stdlib modules mutated.
     """
 
-    from repomap_kg.service_package import contract
+    from common_lore_index.service_package import contract
 
     python_path = _real(approved_python(root))
     psql_path = _real(approved_psql(root))

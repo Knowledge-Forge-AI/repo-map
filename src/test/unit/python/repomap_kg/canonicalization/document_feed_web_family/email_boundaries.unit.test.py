@@ -3,18 +3,18 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import RawObservation
-from repomap_kg.canonicalization.email_family import (
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import RawObservation
+from common_lore_index.canonicalization.email_family import (
     _email_address_target_key,
     _email_definition_source_key,
     _email_definition_target_key,
     _email_reference_source_key,
 )
-from repomap_kg.graph.keys import GraphKeyError
+from common_lore_index.graph.keys import GraphKeyError
 
 
 class CanonicalizationEmailBoundaryUnitTests(unittest.TestCase):

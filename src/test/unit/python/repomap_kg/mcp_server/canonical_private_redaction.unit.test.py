@@ -4,7 +4,7 @@ from typing import Any, cast
 from unittest.mock import patch
 
 from repomap_test_support.mcp_server import McpServerTestSupport
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalEdgeExplanationRecord,
     CanonicalNeighborhoodRecord,
 )
@@ -12,7 +12,7 @@ from repomap_kg.storage import (
 
 class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
     def test_private_canonical_payloads_redact_configured_path_markers(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_canonical_edges,
             repomap_canonical_neighborhood,
             repomap_canonical_nodes,
@@ -71,8 +71,8 @@ class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
         cases = (
             (
                 "nodes",
-                "repomap_kg.server.mcp.query_canonical_node_records",
-                "repomap_kg.server.mcp.canonical_node_records_to_jsonable",
+                "common_lore_index.server.mcp.query_canonical_node_records",
+                "common_lore_index.server.mcp.canonical_node_records_to_jsonable",
                 (object(),),
                 [node],
                 lambda: repomap_canonical_nodes(
@@ -83,8 +83,8 @@ class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
             ),
             (
                 "edges",
-                "repomap_kg.server.mcp.query_canonical_edge_records",
-                "repomap_kg.server.mcp.canonical_edge_records_to_jsonable",
+                "common_lore_index.server.mcp.query_canonical_edge_records",
+                "common_lore_index.server.mcp.canonical_edge_records_to_jsonable",
                 (object(),),
                 [edge],
                 lambda: repomap_canonical_edges(
@@ -96,8 +96,8 @@ class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
             ),
             (
                 "explanation",
-                "repomap_kg.server.mcp.query_canonical_edge_explanation",
-                "repomap_kg.server.mcp.canonical_edge_explanation_to_jsonable",
+                "common_lore_index.server.mcp.query_canonical_edge_explanation",
+                "common_lore_index.server.mcp.canonical_edge_explanation_to_jsonable",
                 CanonicalEdgeExplanationRecord(edge=None, evidence=cast(Any, (object(),))),
                 explanation,
                 lambda: repomap_explain_canonical_edge(
@@ -109,8 +109,8 @@ class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
             ),
             (
                 "neighborhood",
-                "repomap_kg.server.mcp.query_canonical_neighborhood",
-                "repomap_kg.server.mcp.canonical_neighborhood_to_jsonable",
+                "common_lore_index.server.mcp.query_canonical_neighborhood",
+                "common_lore_index.server.mcp.canonical_neighborhood_to_jsonable",
                 CanonicalNeighborhoodRecord(
                     center=None,
                     nodes=cast(Any, (object(),)),
@@ -151,7 +151,7 @@ class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(edge["target_key"], node_key)
 
     def test_public_graph_canonical_payload_preserves_non_sensitive_metadata(self):
-        from repomap_kg.server.mcp import repomap_canonical_edges
+        from common_lore_index.server.mcp import repomap_canonical_edges
 
         config_path = self.write_visible_ops_config()
         public_value = "/tmp/fixture/bin/tool"
@@ -164,11 +164,11 @@ class McpServerCanonicalPrivateRedactionUnitTests(McpServerTestSupport):
         with self.patch_ops_config(config_path):
             with (
                 patch(
-                    "repomap_kg.server.mcp.query_canonical_edge_records",
+                    "common_lore_index.server.mcp.query_canonical_edge_records",
                     return_value=(object(),),
                 ),
                 patch(
-                    "repomap_kg.server.mcp.canonical_edge_records_to_jsonable",
+                    "common_lore_index.server.mcp.canonical_edge_records_to_jsonable",
                     return_value=[edge],
                 ),
             ):

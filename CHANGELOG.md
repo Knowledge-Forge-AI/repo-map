@@ -13,6 +13,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Public `staging` is the prospective next-version branch; release promotions to `main` are squash merges where each resulting commit represents one version release.
 - Exception for v0.0.3 only: `main` is fast-forwarded to the exact qualified staging commit so that it keeps the history required by the author-correction proof ([ADR 0086](docs/adr/2026/10/0086-preview-003-staging-ancestry.md)). Later releases return to squash merges.
 
+## [Unreleased]
+
+### Changed
+- Prepare CLOE's coordinated installed ownership while retaining the current
+  distribution, imports and command. Keep migration catalogs under one owner
+  and freeze their historical identity/checksum prefix.
+- Select recognizable default homes without moving data: new `~/.cloe`, safe
+  legacy fallback and refusal of remaining unrecognized or unsafe candidates.
+  Fresh default setup uses CLOE filenames; explicit custom-home behavior remains.
+- Correct CLI identity's stale licence string to the existing AGPL-3.0-or-later
+  licence. Preserve its keys and the remaining current identity values.
+
 ## [0.0.3] - 2026-10-22
 
 Public source preview. Like earlier previews, it is not published to any package

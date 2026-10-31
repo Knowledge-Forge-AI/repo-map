@@ -5,12 +5,12 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import TypedDict
 import pytest
-import repomap_kg.ops.readback as readback
-import repomap_kg.ops.refresh as refresh
-import repomap_kg.runtime.local as runtime_local
-import repomap_kg.storage.readback_driver as storage_readback
-from repomap_kg.ops.config import OpsConfig, load_ops_config_home
-from repomap_kg.storage import StorageSchemaError
+import common_lore_index.ops.readback as readback
+import common_lore_index.ops.refresh as refresh
+import common_lore_index.runtime.local as runtime_local
+import common_lore_index.storage.readback_driver as storage_readback
+from common_lore_index.ops.config import OpsConfig, load_ops_config_home
+from common_lore_index.storage import StorageSchemaError
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 
 _LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")

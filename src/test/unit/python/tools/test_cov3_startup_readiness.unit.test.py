@@ -26,7 +26,7 @@ def _ready(startup: ActualRefreshStartup) -> None:
 
 
 def _write_probe_product(root: Path) -> None:
-    package = root / "repomap_kg"
+    package = root / "common_lore_index"
     package.mkdir()
     package.joinpath("__init__.py").write_text("", encoding="utf-8")
     package.joinpath("__main__.py").write_text(
@@ -52,7 +52,7 @@ def _probe_arguments(marker: Path, descriptor: int) -> tuple[str, ...]:
     return (
         sys.executable,
         "-m",
-        "repomap_kg",
+        "common_lore_index",
         "ops",
         "refresh-graph",
         "--marker",

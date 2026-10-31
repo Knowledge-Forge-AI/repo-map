@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.extractors.languages.python import (
+from common_lore_index.extractors.languages.python import (
     PythonModuleIndex,
     extract_python_file_observations,
     importable_module_name,
@@ -15,12 +15,12 @@ from repomap_kg.extractors.languages.python import (
 class PythonExtractorUnitTests(unittest.TestCase):
     def test_importable_module_name_supports_src_main_package_layout(self):
         self.assertEqual(
-            importable_module_name("src/main/python/repomap_kg/cli.py"),
-            "repomap_kg.cli",
+            importable_module_name("src/main/python/common_lore_index/cli.py"),
+            "common_lore_index.cli",
         )
         self.assertEqual(
-            importable_module_name("src/main/python/repomap_kg/__init__.py"),
-            "repomap_kg",
+            importable_module_name("src/main/python/common_lore_index/__init__.py"),
+            "common_lore_index",
         )
 
     def test_importable_module_name_supports_src_test_python_layout(self):
@@ -100,7 +100,7 @@ class PythonExtractorUnitTests(unittest.TestCase):
     def test_extract_python_file_observations_finds_symbols_and_imports(self):
         content = (
             "import os\n"
-            "from repomap_kg import storage as storage_mod\n"
+            "from common_lore_index import storage as storage_mod\n"
             "from . import sibling\n"
             "from .subpackage import helper\n"
             "\n"
@@ -113,17 +113,17 @@ class PythonExtractorUnitTests(unittest.TestCase):
         )
         module_index = PythonModuleIndex.from_modules(
             {
-                "repomap_kg.cli": "src/main/python/repomap_kg/cli.py",
-                "repomap_kg.storage": "src/main/python/repomap_kg/storage.py",
-                "repomap_kg.sibling": "src/main/python/repomap_kg/sibling.py",
-                "repomap_kg.subpackage.helper": (
-                    "src/main/python/repomap_kg/subpackage/helper.py"
+                "common_lore_index.cli": "src/main/python/common_lore_index/cli.py",
+                "common_lore_index.storage": "src/main/python/common_lore_index/storage.py",
+                "common_lore_index.sibling": "src/main/python/common_lore_index/sibling.py",
+                "common_lore_index.subpackage.helper": (
+                    "src/main/python/common_lore_index/subpackage/helper.py"
                 ),
             }
         )
 
         observations = extract_python_file_observations(
-            "src/main/python/repomap_kg/cli.py",
+            "src/main/python/common_lore_index/cli.py",
             content,
             module_index=module_index,
         )
@@ -141,7 +141,7 @@ class PythonExtractorUnitTests(unittest.TestCase):
                 "python.function",
             ],
         )
-        self.assertEqual(observations[0].name, "repomap_kg.cli")
+        self.assertEqual(observations[0].name, "common_lore_index.cli")
         self.assertEqual(observations[0].start_line, 1)
         self.assertEqual(observations[0].end_line, 11)
 
@@ -151,18 +151,18 @@ class PythonExtractorUnitTests(unittest.TestCase):
             [
                 ("os", "external:python.module:os", "external"),
                 (
-                    "repomap_kg.storage",
-                    "python.module:repomap_kg.storage",
+                    "common_lore_index.storage",
+                    "python.module:common_lore_index.storage",
                     "local",
                 ),
                 (
-                    "repomap_kg.sibling",
-                    "python.module:repomap_kg.sibling",
+                    "common_lore_index.sibling",
+                    "python.module:common_lore_index.sibling",
                     "local",
                 ),
                 (
-                    "repomap_kg.subpackage.helper",
-                    "python.module:repomap_kg.subpackage.helper",
+                    "common_lore_index.subpackage.helper",
+                    "python.module:common_lore_index.subpackage.helper",
                     "local",
                 ),
             ],
@@ -176,12 +176,12 @@ class PythonExtractorUnitTests(unittest.TestCase):
         self.assertEqual(
             symbol_targets,
             {
-                "python.class": "python.class:repomap_kg.cli:Demo",
-                "python.function": "python.function:repomap_kg.cli:build",
+                "python.class": "python.class:common_lore_index.cli:Demo",
+                "python.function": "python.function:common_lore_index.cli:build",
             },
         )
         method = next(item for item in observations if item.kind == "python.method")
-        self.assertEqual(method.target, "python.method:repomap_kg.cli:Demo:method")
+        self.assertEqual(method.target, "python.method:common_lore_index.cli:Demo:method")
         self.assertEqual(method.metadata["class"], "Demo")
 
     def test_extract_python_file_observations_reports_unresolved_relative_import(self):

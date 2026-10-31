@@ -1,11 +1,11 @@
 import unittest
 
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.css_html_matching import (
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.css_html_matching import (
     extract_css_selector_match_observations,
 )
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 class CssHtmlMatchingBoundariesUnitTests(unittest.TestCase):
@@ -227,7 +227,7 @@ divdiv {
         matches = extract_css_selector_match_observations((*html_obs, *css_obs))
         self.assertIsInstance(matches, tuple)
 
-        from repomap_kg.extractors.documents.css_html_matching import _parse_compound_selector
+        from common_lore_index.extractors.documents.css_html_matching import _parse_compound_selector
         self.assertIsNone(_parse_compound_selector(""))
         self.assertIsNone(_parse_compound_selector(".cls div"))
         self.assertIsNotNone(_parse_compound_selector("div.cls#id"))

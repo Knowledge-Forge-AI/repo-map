@@ -10,8 +10,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.staging_operation_contracts import operation_descriptor
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_operation_contracts import operation_descriptor
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEvent,
     StagingOperationEventCategory,
 )

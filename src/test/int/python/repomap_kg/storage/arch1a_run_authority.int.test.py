@@ -6,11 +6,11 @@ from typing import TypeVar
 
 import psycopg
 
-from repomap_kg.ops.config import build_graph_storage_status_sql
-from repomap_kg.ops.refresh_sql import build_graph_summary_sql, build_refresh_status_sql
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.sql_canonical import build_canonical_storage_summary_query_sql
-from repomap_kg.storage.run_authority import (
+from common_lore_index.ops.config import build_graph_storage_status_sql
+from common_lore_index.ops.refresh_sql import build_graph_summary_sql, build_refresh_status_sql
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.sql_canonical import build_canonical_storage_summary_query_sql
+from common_lore_index.storage.run_authority import (
     build_run_authority_query_sql,
     parse_run_authority,
 )
@@ -26,7 +26,7 @@ def _first(row: tuple[_RowValue, ...] | None) -> _RowValue:
 
 
 def test_arch1a_receiptless_run_diverges_from_publication_freshness() -> None:
-    spec = importlib.util.find_spec("repomap_kg.storage.run_authority")
+    spec = importlib.util.find_spec("common_lore_index.storage.run_authority")
     assert spec is not None, "ARCH1A requires typed run authority readback"
 
     with temporary_postgres() as postgres:

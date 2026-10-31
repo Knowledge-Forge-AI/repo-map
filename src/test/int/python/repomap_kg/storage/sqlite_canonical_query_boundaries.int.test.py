@@ -8,14 +8,14 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.storage import StorageSchemaError
-from repomap_kg.storage.sqlite_local.queries import (
+from common_lore_index.storage import StorageSchemaError
+from common_lore_index.storage.sqlite_local.queries import (
     canonical_edge_explanation,
     canonical_edges,
     canonical_neighborhood,
     canonical_nodes,
 )
-from repomap_kg.storage.sqlite_local.schema import PUBLICATION_ABSENT, LocalStoreError
+from common_lore_index.storage.sqlite_local.schema import PUBLICATION_ABSENT, LocalStoreError
 from repomap_test_support.navigation_search_fixtures import BETA_DOC, GRAPH, navigation_home
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, refusal, structured, tool
 

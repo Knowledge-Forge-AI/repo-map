@@ -10,6 +10,7 @@ import sys
 from typing import Any, Mapping, Sequence
 
 from ci.python_retention_operations import detect_dynamic_calls, dynamic_operations
+from ci.python_type_ownership import PRODUCT_MODULE_ROOT
 
 
 PACKAGE_ROOTS = (
@@ -48,7 +49,7 @@ def validate_candidate_path(path_str: str, repo_root: Path) -> tuple[Path, str]:
 
 
 FIRST_PARTY_PREFIXES = frozenset({
-    "repomap_kg", "ci", "repomap_test_support", "tools",
+    PRODUCT_MODULE_ROOT, "repomap_kg", "ci", "repomap_test_support", "tools",
 })
 
 
@@ -65,7 +66,7 @@ def is_external_name(name: str) -> bool:
         return True
     try:
         dist = importlib.metadata.distribution(top)
-        if dist.metadata.get("Name") in ("repomap-kg", "repomap_kg"):
+        if dist.metadata.get("Name") in ("repomap-kg", "repomap_kg", "common-lore-index", "common_lore_index"):
             return False
         return True
     except (importlib.metadata.PackageNotFoundError, ValueError):

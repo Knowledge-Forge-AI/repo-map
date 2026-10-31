@@ -10,22 +10,22 @@ import unittest
 
 import ast
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.documents.css_support import _parse_declarations
-from repomap_kg.extractors.languages.python_web_helpers import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.documents.css_support import _parse_declarations
+from common_lore_index.extractors.languages.python_web_helpers import (
     _fastapi_dependencies,
     _python_web_import_aliases,
 )
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability, create_portable_capability,
 )
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.graph.discovery_extractors import (
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.graph.discovery_extractors import (
     extract_awk_file_observations_from_file,
     extract_bash_file_observations_from_file,
     extract_bats_file_observations_from_file,
@@ -34,9 +34,9 @@ from repomap_kg.graph.discovery_extractors import (
     extract_zsh_file_observations_from_file,
     extract_zunit_file_observations_from_file,
 )
-from repomap_kg.graph.keys import bash_script_key
-from repomap_kg.graph.readback.bash import summarize_bash_evidence
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.graph.keys import bash_script_key
+from common_lore_index.graph.readback.bash import summarize_bash_evidence
+from common_lore_index.observations.raw import RawObservation
 from repomap_test_support.portable_publication_fixtures import create_single_source_graph_config
 from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
 from repomap_test_support.test_scratch import select_scratch_root

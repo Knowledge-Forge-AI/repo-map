@@ -92,7 +92,7 @@ mode = "read_only"
 
 class OpsPolicyDogfoodUnitTests(unittest.TestCase):
     def test_payload_classifies_policy_boundaries_and_redacts_secrets(self):
-        from repomap_kg.ops.policy_dogfood import policy_dogfood_payload
+        from common_lore_index.ops.policy_dogfood import policy_dogfood_payload
 
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_map_home, _ = write_policy_fixture(tmpdir)
@@ -124,7 +124,7 @@ class OpsPolicyDogfoodUnitTests(unittest.TestCase):
         self.assertNotIn("observations", serialized)
 
     def test_agents_suggestions_are_public_safe_and_non_mutating(self):
-        from repomap_kg.ops.policy_dogfood import (
+        from common_lore_index.ops.policy_dogfood import (
             format_policy_dogfood_table,
             policy_dogfood_payload,
         )
@@ -147,7 +147,7 @@ class OpsPolicyDogfoodUnitTests(unittest.TestCase):
         self.assertNotIn("mcp-ops6-fake-token", table)
 
     def test_disabled_or_hidden_graph_does_not_read_private_root(self):
-        from repomap_kg.ops.policy_dogfood import policy_dogfood_payload
+        from common_lore_index.ops.policy_dogfood import policy_dogfood_payload
 
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_map_home, _ = write_policy_fixture(tmpdir)

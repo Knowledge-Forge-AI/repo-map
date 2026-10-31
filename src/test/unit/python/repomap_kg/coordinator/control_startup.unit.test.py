@@ -6,11 +6,11 @@ from typing import Any, cast
 import unittest
 from unittest.mock import MagicMock
 
-from repomap_kg.coordinator._control_startup import (
+from common_lore_index.coordinator._control_startup import (
     reconciliation_claims,
     recover_abandoned_attempts,
 )
-from repomap_kg.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._control_types import JobClaim
 
 
 def _connection_factory(cursor: MagicMock) -> MagicMock:

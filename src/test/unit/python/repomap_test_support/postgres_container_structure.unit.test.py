@@ -317,7 +317,7 @@ def test_build_psql_wrapper_restores_docker_host_under_sanitized_psql_environmen
     import json
     import subprocess
     import sys
-    from repomap_kg.coordinator.configured_refresh import _psql_environment
+    from common_lore_index.coordinator.configured_refresh import _psql_environment
     from repomap_test_support.postgres_container_config import build_psql_wrapper_script
 
     bin_dir = tmp_path / "bin"

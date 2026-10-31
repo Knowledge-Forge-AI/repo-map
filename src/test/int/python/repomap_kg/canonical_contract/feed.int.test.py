@@ -8,12 +8,12 @@ from repomap_test_support.canonical_contract import (
     observations_by_kind as _observations_by_kind,
 )
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.discovery import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.discovery import (
     extract_feed_file_observations_from_file,
 )
-from repomap_kg.extractors.documents.feed import extract_feed_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.documents.feed import extract_feed_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 class CanonicalFeedIntegrationTests(unittest.TestCase):

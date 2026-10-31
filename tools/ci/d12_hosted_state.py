@@ -9,7 +9,7 @@ from pathlib import Path
 import stat as stat_mod
 from typing import Any
 
-from repomap_kg.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
+from common_lore_index.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
 
 VERIFIED_AMD64_BASE_METADATA: dict[str, dict[str, str]] = {
     "go": {"reference": GO_RELEASE_IMAGE, "platform": "linux/amd64",

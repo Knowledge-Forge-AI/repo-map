@@ -16,25 +16,25 @@ from unittest.mock import patch
 
 import pytest
 
-import repomap_kg.server.mcp as mcp
-import repomap_kg.runtime.plan as runtime_plan
-import repomap_kg.server.ops as server_ops
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.server._ops_records import McpOpsError, graph_context, load_mcp_ops_config
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.server.graph_selection import select_graph
-from repomap_kg.server.postgres_read_binding import PostgresGraphStores, PostgresInvestigationStores
-from repomap_kg.server.source_read_store import PostgresSourceReadStore
-from repomap_kg.server.sqlite_read_binding import (
+import common_lore_index.server.mcp as mcp
+import common_lore_index.runtime.plan as runtime_plan
+import common_lore_index.server.ops as server_ops
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.server._ops_records import McpOpsError, graph_context, load_mcp_ops_config
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.server.graph_selection import select_graph
+from common_lore_index.server.postgres_read_binding import PostgresGraphStores, PostgresInvestigationStores
+from common_lore_index.server.source_read_store import PostgresSourceReadStore
+from common_lore_index.server.sqlite_read_binding import (
     SUPPORTED_TOOLS,
     OPTIONAL_POSTGRES_TOOLS,
     SqliteGraphStores,
     SqliteInvestigationStores,
     SqliteSourceReadStore,
 )
-from repomap_kg.storage import CanonicalStorageSummaryRecord
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage import CanonicalStorageSummaryRecord
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.host_read_store_config import (
     PG_BINDING_TRIPWIRES,
     fail_if_reached,
@@ -66,9 +66,9 @@ REAL_RESOLVE_OPS_CONFIG = runtime_plan.resolve_ops_config
 GRAPH = "portable-fixture"
 CORPUS = "read-corpus"
 FEEDS = "feeds"
-PG_STATUS = "repomap_kg.server.mcp.query_canonical_storage_summary"
+PG_STATUS = "common_lore_index.server.mcp.query_canonical_storage_summary"
 ITEM_KEY = "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Aself:item-1"
-READ_TRANSACTION = "repomap_kg.server.sqlite_read_binding.read_transaction"
+READ_TRANSACTION = "common_lore_index.server.sqlite_read_binding.read_transaction"
 
 
 @pytest.fixture

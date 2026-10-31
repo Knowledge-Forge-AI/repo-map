@@ -16,7 +16,7 @@ def _source_root() -> Path:
 def _production_modules() -> dict[str, Path]:
     source_root = _source_root()
     module_paths: dict[str, Path] = {}
-    for path in (source_root / "repomap_kg").rglob("*.py"):
+    for path in (source_root / "common_lore_index").rglob("*.py"):
         parts = list(path.relative_to(source_root).with_suffix("").parts)
         if parts[-1] == "__init__":
             parts.pop()

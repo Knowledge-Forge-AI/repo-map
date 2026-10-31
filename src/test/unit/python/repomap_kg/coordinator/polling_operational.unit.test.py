@@ -4,8 +4,8 @@ from collections import defaultdict
 from threading import Event, Lock
 import time
 
-from repomap_kg.coordinator.desired_state import DesiredStateReconciler, PollOutcome
-from repomap_kg.coordinator.polling import PollingScheduler
+from common_lore_index.coordinator.desired_state import DesiredStateReconciler, PollOutcome
+from common_lore_index.coordinator.polling import PollingScheduler
 
 
 class _DynamicResolver:

@@ -1,11 +1,11 @@
 import unittest
 
-from repomap_kg.canonicalization.dispatch import (
+from common_lore_index.canonicalization.dispatch import (
     CanonicalizationState,
     append_unsupported_observation_diagnostic,
     canonicalization_result_from_state,
 )
-from repomap_kg.canonicalization import (
+from common_lore_index.canonicalization import (
     _display_name_from_key,
     _evidence_key,
     _node_kind_from_key,
@@ -13,12 +13,12 @@ from repomap_kg.canonicalization import (
     _upsert_node,
     canonicalize_observations,
 )
-from repomap_kg.extractors.documents.email import (
+from common_lore_index.extractors.documents.email import (
     extract_eml_file_observations,
     extract_mbox_file_observations,
 )
-from repomap_kg.canonicalization.records import CanonicalNode
-from repomap_kg.observations import RawObservation
+from common_lore_index.canonicalization.records import CanonicalNode
+from common_lore_index.observations import RawObservation
 
 
 

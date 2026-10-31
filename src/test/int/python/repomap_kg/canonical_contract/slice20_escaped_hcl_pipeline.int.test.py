@@ -2,9 +2,9 @@
 
 import json
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.storage.staged_rows import build_staged_rows
 from repomap_test_support.composition_extraction_fixtures import create_composition_graph_config
 
 

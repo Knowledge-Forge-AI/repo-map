@@ -2,39 +2,39 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import RawObservation
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import RawObservation
 
-from repomap_kg.canonicalization.records import canonical_edge_key
+from common_lore_index.canonicalization.records import canonical_edge_key
 
 
 class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
     def test_python_module_creates_file_defines_module_edge(self):
         observation = RawObservation(
             kind="python.module",
-            source_id="src/main/python/repomap_kg/cli.py#module:repomap_kg.cli",
-            path="src/main/python/repomap_kg/cli.py",
+            source_id="src/main/python/common_lore_index/cli.py#module:common_lore_index.cli",
+            path="src/main/python/common_lore_index/cli.py",
             start_line=1,
             end_line=5,
-            name="repomap_kg.cli",
-            target="python.module:repomap_kg.cli",
+            name="common_lore_index.cli",
+            target="python.module:common_lore_index.cli",
             confidence="extracted",
             extractor="repo-python",
             extractor_version="0.1.0",
             metadata={
-                "module": "repomap_kg.cli",
+                "module": "common_lore_index.cli",
                 "package_root": "src/main/python",
                 "parser": "ast",
             },
         )
         edge_key = canonical_edge_key(
             graph_key_version=1,
-            source_key="file:src/main/python/repomap_kg/cli.py",
+            source_key="file:src/main/python/common_lore_index/cli.py",
             kind="defines",
-            target_key="python.module:repomap_kg.cli",
+            target_key="python.module:common_lore_index.cli",
             identity_metadata={},
         )
 
@@ -46,8 +46,8 @@ class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
         self.assertEqual(
             [node["canonical_key"] for node in payload["nodes"]],
             [
-                "file:src/main/python/repomap_kg/cli.py",
-                "python.module:repomap_kg.cli",
+                "file:src/main/python/common_lore_index/cli.py",
+                "python.module:common_lore_index.cli",
             ],
         )
         self.assertEqual(
@@ -56,11 +56,11 @@ class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
                 {
                     "edge_key": edge_key,
                     "graph_key_version": 1,
-                    "source_key": "file:src/main/python/repomap_kg/cli.py",
+                    "source_key": "file:src/main/python/common_lore_index/cli.py",
                     "kind": "defines",
-                    "target_key": "python.module:repomap_kg.cli",
+                    "target_key": "python.module:common_lore_index.cli",
                     "identity_metadata": {},
-                    "metadata": {"modules": ["repomap_kg.cli"]},
+                    "metadata": {"modules": ["common_lore_index.cli"]},
                     "confidence": "extracted",
                     "conflict": False,
                 }
@@ -147,18 +147,18 @@ class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
     def test_python_import_creates_module_imports_edge(self):
         observation = RawObservation(
             kind="python.import",
-            source_id="src/main/python/repomap_kg/cli.py#import:storage",
-            path="src/main/python/repomap_kg/cli.py",
+            source_id="src/main/python/common_lore_index/cli.py#import:storage",
+            path="src/main/python/common_lore_index/cli.py",
             start_line=4,
             end_line=4,
-            name="repomap_kg.storage",
+            name="common_lore_index.storage",
             confidence="extracted",
             extractor="repo-python",
             extractor_version="0.1.0",
-            target="python.module:repomap_kg.storage",
+            target="python.module:common_lore_index.storage",
             metadata={
-                "module": "repomap_kg.cli",
-                "imported_module": "repomap_kg.storage",
+                "module": "common_lore_index.cli",
+                "imported_module": "common_lore_index.storage",
                 "imported_names": ["storage"],
                 "level": 0,
                 "resolution": "local",
@@ -166,9 +166,9 @@ class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
         )
         edge_key = canonical_edge_key(
             graph_key_version=1,
-            source_key="python.module:repomap_kg.cli",
+            source_key="python.module:common_lore_index.cli",
             kind="imports",
-            target_key="python.module:repomap_kg.storage",
+            target_key="python.module:common_lore_index.storage",
             identity_metadata={},
         )
 
@@ -180,8 +180,8 @@ class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
         self.assertEqual(
             [node["canonical_key"] for node in payload["nodes"]],
             [
-                "python.module:repomap_kg.cli",
-                "python.module:repomap_kg.storage",
+                "python.module:common_lore_index.cli",
+                "python.module:common_lore_index.storage",
             ],
         )
         self.assertEqual(
@@ -190,12 +190,12 @@ class CanonicalizationPythonLanguageFamilyUnitTests(unittest.TestCase):
                 {
                     "edge_key": edge_key,
                     "graph_key_version": 1,
-                    "source_key": "python.module:repomap_kg.cli",
+                    "source_key": "python.module:common_lore_index.cli",
                     "kind": "imports",
-                    "target_key": "python.module:repomap_kg.storage",
+                    "target_key": "python.module:common_lore_index.storage",
                     "identity_metadata": {},
                     "metadata": {
-                        "imported_modules": ["repomap_kg.storage"],
+                        "imported_modules": ["common_lore_index.storage"],
                         "resolutions": ["local"],
                     },
                     "confidence": "extracted",

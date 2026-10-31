@@ -12,8 +12,8 @@ from typing import cast
 import psycopg
 import pytest
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
-from repomap_kg.ops.config_sections import parse_server_memory_section
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.ops.config_sections import parse_server_memory_section
 from repomap_test_support import cli_integration
 from repomap_test_support.local_db_backup import (
     LocalDbBackupUnitTestCase,
@@ -73,7 +73,7 @@ def test_in_process_cli_capture_does_not_invoke_module_launcher(
     )
 
     assert result[0] == 0
-    assert result[1].startswith("repomap-kg ")
+    assert result[1].startswith("cloe ")
     assert result[2] == ""
 
 
@@ -121,10 +121,10 @@ def test_in_process_cli_routes_dump_to_recording_runner_and_reports_failure(
         raise AssertionError(command)
 
     monkeypatch.setattr(
-        "repomap_kg.runtime.backup.subprocess.run", recording_runner
+        "common_lore_index.runtime.backup.subprocess.run", recording_runner
     )
     monkeypatch.setattr(
-        "repomap_kg.cli.maintenance_window_for_database_drop",
+        "common_lore_index.cli.maintenance_window_for_database_drop",
         lambda *_args, **_kwargs: nullcontext(),
     )
     with unit_maintenance_window_patch():

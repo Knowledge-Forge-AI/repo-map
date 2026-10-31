@@ -14,7 +14,7 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     api_manifest_summary_payload,
     api_summary_to_jsonable,
@@ -22,8 +22,8 @@ from repomap_kg.storage import (
     default_rdbms_root,
     query_api_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.sql_core import sql_literal
 
 
 EXPECTED_FIELDS = tuple(
@@ -141,8 +141,8 @@ def test_psycopg90_api_full_function_connector_cli_and_privacy_parity() -> None:
 def test_psycopg90_database_failures_surround_manifest_work(tmp_path: Path) -> None:
     adapter_error = StorageSchemaError("api adapter failure")
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", side_effect=adapter_error),
-        patch("repomap_kg.storage.summaries.api_manifest_summary_payload") as manifests,
+        patch("common_lore_index.storage.summaries.execute_json_readback", side_effect=adapter_error),
+        patch("common_lore_index.storage.summaries.api_manifest_summary_payload") as manifests,
     ):
         with pytest.raises(StorageSchemaError) as raised:
             query_api_summary(["-d", "postgres"], root_path=str(tmp_path))
@@ -155,9 +155,9 @@ def test_psycopg90_database_failures_surround_manifest_work(tmp_path: Path) -> N
         "config_documents_from_api": 0,
     }
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", return_value=malformed),
+        patch("common_lore_index.storage.summaries.execute_json_readback", return_value=malformed),
         patch(
-            "repomap_kg.storage.summaries.api_manifest_summary_payload",
+            "common_lore_index.storage.summaries.api_manifest_summary_payload",
             wraps=api_manifest_summary_payload,
         ) as manifests,
     ):

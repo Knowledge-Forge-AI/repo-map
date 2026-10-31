@@ -1,12 +1,12 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.service_package import contract
+from common_lore_index.service_package import contract
 
 import pytest
 
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.systemd import (
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.systemd import (
     SystemdUserAdapter,
     decode_systemd_exec_argv,
 )
@@ -168,7 +168,7 @@ def test_systemd_rejects_unrecognized_or_shell_definitions(
 
 
 def test_systemd_quote_token_and_decode_error_branches():
-    from repomap_kg.service_package.systemd import _quote_systemd_exec_token
+    from common_lore_index.service_package.systemd import _quote_systemd_exec_token
 
     assert _quote_systemd_exec_token("token") == '"token"'
     assert _quote_systemd_exec_token("with space") == '"with space"'

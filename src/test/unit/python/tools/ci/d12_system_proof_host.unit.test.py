@@ -50,9 +50,9 @@ def _build_fixture_proof(
                 "action": "synchronize",
                 "before": grant["before"],
                 "after": "d" * 40,
-                "number": 13,
+                "number": 23,
                 "pull_request": {
-                    "number": 13,
+                    "number": 23,
                     "draft": True,
                     "base": {
                         "ref": "main",
@@ -96,7 +96,7 @@ def _build_fixture_proof(
         "GITHUB_REPOSITORY": str(grant["repository"]),
         "GITHUB_BASE_REF": "main",
         "GITHUB_HEAD_REF": "staging",
-        "GITHUB_WORKFLOW_REF": f"{grant['repository']}/{grant['workflow_path']}@refs/pull/13/merge",
+        "GITHUB_WORKFLOW_REF": f"{grant['repository']}/{grant['workflow_path']}@refs/pull/23/merge",
         "GITHUB_RUN_NUMBER": str(grant["workflow_ordinal"]),
         "GITHUB_RUN_ID": "12345678",
         "GITHUB_RUN_ATTEMPT": "1",
@@ -211,8 +211,8 @@ def test_direct_host_proof_verification_and_facade_equivalence(tmp_path: Path) -
         candidate_tree="b" * 40,
         candidate_base_parent=str(json.loads(grant_path.read_text(encoding="utf-8"))["base"]),
         candidate_head_parent="d" * 40,
-        approval_id="pr-13",
-        pr_number="13",
+        approval_id="pr-23",
+        pr_number="23",
         repository="Knowledge-Forge-AI/repo-map",
     )
     common_kwargs: dict[str, Any] = {
@@ -232,7 +232,7 @@ def test_direct_host_proof_verification_and_facade_equivalence(tmp_path: Path) -
     )
     verified_dispatch = verify_host_system_proof_for_dispatch(args, **common_kwargs)
     assert verified_lower == verified_hold == verified_dispatch
-    assert verified_lower["pull_request"] == 13
+    assert verified_lower["pull_request"] == 23
     production = {"grant_path": REPO_ROOT / DEFAULT_GRANT_RELPATH,
                   "expected_candidate_path": REPO_ROOT / DEFAULT_CANDIDATE_RELPATH}
     assert verify_host_system_proof_for_dispatch(args, **{**common_kwargs, **production}) == verified_lower
@@ -285,6 +285,8 @@ def test_host_event_and_git_requires_exact_draft_true_and_strict_env_event_facts
         ({**valid_event, "number": 14}, "number"),
         ({k: v for k, v in valid_event.items() if k != "before"}, "event\\.before"),
         ({k: v for k, v in valid_event.items() if k != "after"}, "event\\.after"),
+        ({**valid_event, "action": "opened"}, "action"),
+        ({**valid_event, "number": 13}, "number"),
         (
             {
                 **valid_event,
@@ -324,7 +326,7 @@ def test_host_event_and_git_requires_exact_draft_true_and_strict_env_event_facts
         ({"GITHUB_WORKFLOW_REF": ""}, "GITHUB_WORKFLOW_REF"),
         ({"GITHUB_WORKFLOW_REF": str(grant["workflow_path"])}, "GITHUB_WORKFLOW_REF"),
         (
-            {"GITHUB_WORKFLOW_REF": f"{grant['workflow_path']}@refs/pull/13/merge"},
+            {"GITHUB_WORKFLOW_REF": f"{grant['workflow_path']}@refs/pull/23/merge"},
             "GITHUB_WORKFLOW_REF",
         ),
         (
@@ -336,11 +338,11 @@ def test_host_event_and_git_requires_exact_draft_true_and_strict_env_event_facts
             "GITHUB_WORKFLOW_REF",
         ),
         (
-            {"GITHUB_WORKFLOW_REF": f"{grant['workflow_path']}.bak@refs/pull/13/merge"},
+            {"GITHUB_WORKFLOW_REF": f"{grant['workflow_path']}.bak@refs/pull/23/merge"},
             "GITHUB_WORKFLOW_REF",
         ),
         (
-            {"GITHUB_WORKFLOW_REF": f"evil/repo/{grant['workflow_path']}@refs/pull/13/merge"},
+            {"GITHUB_WORKFLOW_REF": f"evil/repo/{grant['workflow_path']}@refs/pull/23/merge"},
             "GITHUB_WORKFLOW_REF",
         ),
         ({"GITHUB_WORKFLOW_REF": f"{grant['workflow_path']}@"}, "GITHUB_WORKFLOW_REF"),

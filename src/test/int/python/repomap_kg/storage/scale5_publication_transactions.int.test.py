@@ -4,34 +4,34 @@ from typing import Any
 import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.publication import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.publication import (
     PortablePublicationBinding,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     PublicationHandoff,
     PublicationReconciliationOutcome,
     build_publication_finalize_statements,
     build_publication_prepare_statements,
     classify_publication_marker,
 )
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication,
     read_run_publication,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_publication import (
+from common_lore_index.storage.staged_publication import (
     execute_final_transaction,
     existing_stage_state,
     mark_failed_before_publication,
     publication_run,
 )
-from repomap_kg.storage.staging_observability import StagingMeasurements
-from repomap_kg.storage.staging_merge import (
+from common_lore_index.storage.staging_observability import StagingMeasurements
+from common_lore_index.storage.staging_merge import (
     build_source_index_merge_statements,
 )
 from repomap_test_support.postgres_harness import (

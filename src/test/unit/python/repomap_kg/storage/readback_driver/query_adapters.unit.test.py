@@ -6,18 +6,18 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
     execute_json_readback_with_driver,
 )
-from repomap_kg.storage.canonical import (
+from common_lore_index.storage.canonical import (
     query_canonical_edge_explanation,
     query_canonical_edge_records,
     query_canonical_node_records,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.sql import (
+from common_lore_index.storage.sql import (
     build_canonical_edge_query_sql,
     build_canonical_node_query_sql,
     build_canonical_storage_summary_query_sql,
@@ -32,7 +32,7 @@ def _completed(stdout: str) -> SimpleNamespace:
 def test_psql_readback_uses_private_child_password_environment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import repomap_kg.storage.readback_driver as readback_driver
+    import common_lore_index.storage.readback_driver as readback_driver
 
     captured: dict[str, object] = {}
 
@@ -185,7 +185,7 @@ def test_psycopg3_query_canonical_storage_summary_uses_readback_driver_without_c
         "canonical_evidence": 37,
     }
 
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         execute.return_value = payload
 
         summary = query_canonical_storage_summary(
@@ -227,7 +227,7 @@ def test_psycopg11_query_canonical_node_records_uses_readback_driver_without_cha
         }
     ]
 
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         execute.return_value = payload
 
         records = query_canonical_node_records(
@@ -276,7 +276,7 @@ def test_psycopg13_query_canonical_edge_records_uses_readback_driver_without_cha
         }
     ]
 
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         execute.return_value = payload
 
         records = query_canonical_edge_records(
@@ -352,7 +352,7 @@ def test_psycopg15_query_canonical_edge_explanation_uses_readback_driver_without
         ],
     }
 
-    with patch("repomap_kg.storage.canonical.execute_json_readback") as execute:
+    with patch("common_lore_index.storage.canonical.execute_json_readback") as execute:
         execute.return_value = payload
 
         record = query_canonical_edge_explanation(

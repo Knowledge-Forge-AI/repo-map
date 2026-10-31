@@ -60,17 +60,17 @@ def projection_fixture(tmp_path: Path, variant: str = "clean") -> ProjectionFixt
         state["ownership"]["sha256"] = hashlib.sha256(ownership[i]).hexdigest()
         for number in range(i):
             state["selection"]["modules"].append(selection_item(
-                f"repomap_kg.projected{number}", f"src/main/python/repomap_kg/projected{number}.py"))
+                f"common_lore_index.projected{number}", f"src/main/python/common_lore_index/projected{number}.py"))
     if variant in {"hidden_debt", "dirty_addition"}:
-        path = MODULE_PATH if variant == "hidden_debt" else "src/main/python/repomap_kg/projected0.py"
+        path = MODULE_PATH if variant == "hidden_debt" else "src/main/python/common_lore_index/projected0.py"
         states[1]["ruff"]["findings"] = [{"path": path, "code": "F401", "message": "unused",
                                            "fingerprint": "f" * 64, "count": 1}]
     if variant == "hidden_mypy":
-        states[1]["mypy"]["findings"] = [{"module": "repomap_kg.future", "path": MODULE_PATH,
+        states[1]["mypy"]["findings"] = [{"module": "common_lore_index.future", "path": MODULE_PATH,
             "error_code": "arg-type", "normalized_fingerprint": "e" * 64, "count": 1}]
     if variant == "hidden_imports":
-        states[1]["migration_direction_imports"]["edges"] = [{"source_module": "repomap_kg.future",
-            "source_path": MODULE_PATH, "target_module": "repomap_kg.planned", "target_tier": "T3"}]
+        states[1]["migration_direction_imports"]["edges"] = [{"source_module": "common_lore_index.future",
+            "source_path": MODULE_PATH, "target_module": "common_lore_index.planned", "target_tier": "T3"}]
     if variant == "hidden_length":
         states[1]["file_length"]["ceilings"] = [{"path": MODULE_PATH, "line_count": 401}]
     if variant == "tool_policy":

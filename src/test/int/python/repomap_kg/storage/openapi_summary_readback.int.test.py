@@ -15,14 +15,14 @@ from repomap_test_support.storage_integration import (
     openapi_fixture,
 )
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     openapi_summary_to_jsonable,
     query_openapi_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 
 EXPECTED_FIELDS = tuple("root_path repository_name openapi_observations "
@@ -265,7 +265,7 @@ def _cli_connection_args(postgres, *, root_path: str) -> tuple[str, ...]:
     )
 
 def _mcp_payloads(postgres, *, public_root: str, private_root: str):
-    from repomap_kg.server.mcp import repomap_openapi_summary
+    from common_lore_index.server.mcp import repomap_openapi_summary
 
     with tempfile.TemporaryDirectory() as tmpdir:
         config_path = Path(tmpdir) / "psycopg74.local.toml"

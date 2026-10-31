@@ -106,7 +106,7 @@ ambiguous internal freshness selection with three explicit concepts:
 - latest receipt-bearing publication: the highest complete run with every
   publication receipt field present.
 
-`repomap_kg.storage.authority` owns typed request, operation, job, attempt,
+`common_lore_index.storage.authority` owns typed request, operation, job, attempt,
 graph-run, and stage identities; the shared publication-generation tuple; and
 closed refresh and publication result vocabularies. `storage/run_authority.py`
 owns typed readback records and the standard SQL projection. Status, graph and
@@ -122,7 +122,7 @@ final-state mutation path and therefore keep `ARCH0-AUTH-002` in progress.
 ### ARCH1B topology and repository authority update
 
 ARCH1B adds one pure resolved configuration contract in
-`repomap_kg.ops.resolved_config`. It resolves every configured graph database,
+`common_lore_index.ops.resolved_config`. It resolves every configured graph database,
 derives a distinct control database, keeps the `postgres` maintenance target
 outside product ownership, and rejects duplicate effective graph databases,
 template or maintenance targets, control collisions, and configured repository
@@ -157,7 +157,7 @@ remain intact.
 ### MS-ID1 source and candidate identity update
 
 MS-ID1 adds four distinct, deployment-neutral domain records under
-`repomap_kg.graph.multi_source`: source definition (`src1:`), graph-source
+`common_lore_index.graph.multi_source`: source definition (`src1:`), graph-source
 binding (`bind1:`), immutable source snapshot (`snap1:`), and unaccepted graph
 candidate (`cand1:`). Canonical SHA-256 framing also versions source-selection,
 selected-content manifest, multi-source configuration, and candidate inputs.
@@ -330,10 +330,10 @@ flowchart LR
 ```
 
 The system context is supported by `pyproject.toml`,
-`src/main/python/repomap_kg/__main__.py`,
-`src/main/python/repomap_kg/cli/main.py`,
-`src/main/python/repomap_kg/server/mcp.py`, and
-`src/main/python/repomap_kg/server/http.py`. Entrypoint coverage includes
+`src/main/python/common_lore_index/__main__.py`,
+`src/main/python/common_lore_index/cli/main.py`,
+`src/main/python/common_lore_index/server/mcp.py`, and
+`src/main/python/common_lore_index/server/http.py`. Entrypoint coverage includes
 `src/test/unit/python/repomap_kg/cli/local_ops/mcp_serve.unit.test.py` and
 `src/test/int/python/repomap_kg/cli/server_entrypoint.int.test.py`.
 
@@ -383,13 +383,13 @@ flowchart TB
     CSTATUS -. "readiness probe without startup gating" .-> CPG
 ```
 
-`src/main/python/repomap_kg/runtime/commands.py::render_compose_yaml` creates
+`src/main/python/common_lore_index/runtime/commands.py::render_compose_yaml` creates
 the current two-service topology. Its RepoMap service runs `server serve`, and
-`src/main/python/repomap_kg/server/http.py::RepoMapLocalRequestHandler`
+`src/main/python/common_lore_index/server/http.py::RepoMapLocalRequestHandler`
 implements `GET /livez`, `GET /healthz`, `GET /readyz`, and `GET /status`. On the
 main thread, `serve_local_http` handles `SIGTERM` gracefully by closing the server
 and exiting 0. It has no MCP request method.
-`src/main/python/repomap_kg/server/mcp.py::serve_stdio` is the implemented MCP
+`src/main/python/common_lore_index/server/mcp.py::serve_stdio` is the implemented MCP
 transport.
 
 The current runtime behavior is covered by:
@@ -401,17 +401,19 @@ The current runtime behavior is covered by:
 
 ## Product and internal entrypoints
 
-The installed Python product has one console script:
+The installed Python product has three console scripts declared in `pyproject.toml`:
 
-- `repomap-kg`, declared in `pyproject.toml` as
-  `repomap_kg.cli:main`.
+- `cloe` targets `common_lore_index.entrypoints:cloe_main`;
+- `common-lore-index` targets `common_lore_index.entrypoints:long_main`;
+- transitional `repomap-kg` targets `common_lore_index.entrypoints:legacy_main`
+  through v0.1.x, with a bounded stderr notice.
 
 Equivalent or specialized module entrypoints are:
 
-- `python -m repomap_kg`, implemented by
-  `src/main/python/repomap_kg/__main__.py`;
+- `python -m common_lore_index`, implemented by
+  `src/main/python/common_lore_index/__main__.py`;
 - `repomap-kg mcp serve`, which delegates to the stdio MCP server;
-- `python -m repomap_kg.server.mcp`, which also starts stdio MCP;
+- `python -m common_lore_index.server.mcp`, which also starts stdio MCP;
 - `repomap-kg server serve`, which starts HTTP health/status;
 - `repomap-kg ops refresh-graph --mode direct`, the default refresh mode;
 - `repomap-kg ops refresh-graph --mode coordinator`, the explicit durable
@@ -428,8 +430,8 @@ Equivalent or specialized module entrypoints are:
 `src/main/go/cmd/repomap-go-extract/main.go` is an internal helper executable,
 not a second user-facing RepoMap product. Python resolves it only through the
 controlled contract in
-`src/main/python/repomap_kg/extractors/languages/go_helper.py` and invokes it
-through `src/main/python/repomap_kg/extractors/languages/go_protocol.py`.
+`src/main/python/common_lore_index/extractors/languages/go_helper.py` and invokes it
+through `src/main/python/common_lore_index/extractors/languages/go_protocol.py`.
 
 ## Public and quasi-public contract inventory
 
@@ -439,7 +441,7 @@ inventing a common envelope that source does not implement.
 
 | Surface | Current names | Argument and result contract | Exit/error contract | Evidence and classification |
 | --- | --- | --- | --- | --- |
-| Installed entrypoint | `repomap-kg`; equivalent `python -m repomap_kg` | `argparse` command tree; table/text by default and `--json` on supported commands | Dispatch returns `0` on success and `1` on handled validation/operation/storage failure; parser usage errors use the standard `argparse` exit | `pyproject.toml`; `repomap_kg/__main__.py`; `cli/parser.py`; `cli/dispatch.py`; current authoritative product entrypoint |
+| Installed entrypoint | `cloe`, `common-lore-index`, transitional `repomap-kg`; equivalent `python -m common_lore_index` | `argparse` command tree; table/text by default and `--json` on supported commands | Dispatch returns `0` on success and `1` on handled validation/operation/storage failure; parser usage errors use the standard `argparse` exit | `pyproject.toml`; `common_lore_index/entrypoints.py`; `common_lore_index/__main__.py`; `cli/parser.py`; `cli/dispatch.py`; current authoritative product entrypoint |
 | Static source inspection | `discover`, `files`, `entrypoints`, `host-mutators`, `host-mutators-summary`, `identity`, `observations normalize` | Root/profile/filter or JSONL arguments are command-specific; these commands read or transform source artifacts without PostgreSQL publication | Bounded diagnostics through CLI; no target code execution authority | `cli/parser.py`; extractor/discovery tests; current product commands |
 | Source planning | `bulk plan`, `api plan`, `github plan` | Required source configuration plus JSON/table plan projection; plans do not acquire or publish | Policy/configuration errors return handled failure | `cli/parser.py`; `cli/source_commands.py`; current read-only planning surfaces |
 | Complete-generation publication | `storage load-files` | JSONL path, repository name, root path, optional commit, storage selector, and optional JSON summary; the command derives complete generations and uses the receipt-bearing staged publication transaction | Handled observation/storage error is `1`; success is `0` | `cli/storage_parser.py`; `ops/direct_publication.py`; staged-publication tests; current final graph mutation authority |
@@ -450,7 +452,7 @@ inventing a common envelope that source does not implement.
 | Storage graph reads | `storage nodes`, `edges`, `neighborhood`, `file-neighborhood`, `host-mutators`, `host-mutators-summary`, and canonical explanation operations | Canonical-only vocabulary; public lists and embedded neighborhood/evidence collections use schema-version 1 envelopes, deterministic ordering, independent limit/offset windows, defaults of 50, and maxima of 200; bounded legacy-shape aliases do not restore removed graph semantics | Storage/schema or invalid-window error is `1`; successful truncation returns continuation metadata | `cli/storage_parser.py`; storage readback dispatch; ARCH5E and ARCH7A tests; current bounded canonical API |
 | Storage summaries | `storage summary`, `ruby-summary`, `js-summary`, `js-framework-summary`, `openapi-summary`, `terraform-summary`, `python-summary`, `nix-summary`, `email-summary`, `bulk-summary`, `api-summary` | Root and connector selection plus JSON/table; `summary --legacy` exposes compatibility fields | Shape validation and handled storage failure | `cli/storage_parser.py`; `cli/storage_summary_commands.py`; current derived readback contracts |
 | Local runtime/lifecycle | `local setup`, `up`, `down`, `status`; `local db dump`, `dump-all`, `restore-all`, `backups`, `backup-info`, `backup-inspect`, `init`, `drop` | Exact RepoMap home/runtime selector and resolved graph/control target allowlist; dry-run/confirmation; init source/dump choice; backup identity; optional JSON. `dump-all` captures the exact resolved graph/control ownership set; `restore-all` requires the matching stable complete set and empty topology | Lifecycle refuses unrelated safe names before external access; destructive drop requires `--backup-first` and confirmation; coordinated capture holds stable exclusion; coordinated restore verifies every checksum and target before mutation, restores control last, and cleans invocation-created targets after failure | `cli/_local_dispatch.py`; `coordinator/local_lifecycle.py::maintenance_window_for_coordinated_backup`; `runtime/backup.py::dump_all_databases`; `runtime/backup_restore_sets.py`; current CLI-owned coordinated backup/restore authority |
-| MCP transport | `mcp serve` and `python -m repomap_kg.server.mcp` | MCP protocol `2024-11-05`; newline-delimited JSON-RPC over stdio; `tools/list` and `tools/call`; result contains text plus `structuredContent` | Schema rejects unknown methods, tools, fields, and invalid bounds; mutation/lifecycle tools are absent | `server/mcp.py`; `server/mcp_schemas.py`; current read-only transport |
+| MCP transport | `mcp serve` and `python -m common_lore_index.server.mcp` | MCP protocol `2024-11-05`; newline-delimited JSON-RPC over stdio; `tools/list` and `tools/call`; result contains text plus `structuredContent` | Schema rejects unknown methods, tools, fields, and invalid bounds; mutation/lifecycle tools are absent | `server/mcp.py`; `server/mcp_schemas.py`; current read-only transport |
 | MCP tools | Project/status, canonical graph and explanation reads, source/feed reads, configured-graph reads, search and summary operations, refresh-status reads, and server-memory reads | Per-tool JSON Schema declares required fields, graph visibility, privacy projection, deterministic default/maximum limits, offsets, and collection-specific continuation metadata | Read-only; unknown tools/fields and invalid bounds fail closed; every list and embedded graph collection is bounded | `server/mcp.py::TOOL_FUNCTIONS`; `server/mcp_schemas.py::tool_definitions`; ARCH7A/ARCH7B tests; current bounded read-only API |
 | HTTP health/status | `server serve`; `GET /livez`; `GET /healthz`; `GET /readyz`; `GET /status` | Schema-version 1 path-free JSON: process liveness, configuration health, storage readiness, required-schema readiness, bounded counts, and fixed safety metadata; no graph/repository/database identifiers or raw diagnostics | Local bind enforced unless explicit container-internal bind; failed health/readiness is HTTP 503, aggregate status is informational HTTP 200, unknown path is 404, graph probes cap at 200, and every response caps at 8 KiB | `server/http.py`; current bounded read-only status surface, not MCP |
 | Coordinator client protocol | Local authenticated request/response schema version 1 over Unix socket or Windows loopback | Operation allowlist, typed payload, bounded error category, endpoint ownership and auth token | Unknown schema/operation or invalid ownership fails closed | `coordinator/transport.py`; `coordinator/client.py`; `coordinator/endpoint.py`; current internal/quasi-public service contract |
@@ -541,17 +543,17 @@ Representative boundaries are:
 
 - distributed domain records: canonicalization, storage, coordinator, and
   operations contract modules rather than one owned domain package;
-- CLI presentation: `src/main/python/repomap_kg/cli/`;
-- MCP/HTTP presentation: `src/main/python/repomap_kg/server/mcp.py` and
-  `src/main/python/repomap_kg/server/http.py`;
-- operations: `src/main/python/repomap_kg/ops/`;
-- coordination: `src/main/python/repomap_kg/coordinator/`;
-- runtime: `src/main/python/repomap_kg/runtime/`;
-- service packaging: `src/main/python/repomap_kg/service_package/`;
-- extraction and discovery: `src/main/python/repomap_kg/extractors/` and
-  `src/main/python/repomap_kg/graph/`;
-- canonicalization: `src/main/python/repomap_kg/canonicalization/`;
-- storage: `src/main/python/repomap_kg/storage/`;
+- CLI presentation: `src/main/python/common_lore_index/cli/`;
+- MCP/HTTP presentation: `src/main/python/common_lore_index/server/mcp.py` and
+  `src/main/python/common_lore_index/server/http.py`;
+- operations: `src/main/python/common_lore_index/ops/`;
+- coordination: `src/main/python/common_lore_index/coordinator/`;
+- runtime: `src/main/python/common_lore_index/runtime/`;
+- service packaging: `src/main/python/common_lore_index/service_package/`;
+- extraction and discovery: `src/main/python/common_lore_index/extractors/` and
+  `src/main/python/common_lore_index/graph/`;
+- canonicalization: `src/main/python/common_lore_index/canonicalization/`;
+- storage: `src/main/python/common_lore_index/storage/`;
 - test support: `src/test/support/python/`;
 - repository tools: `tools/`;
 - graph migrations: `src/main/resources/rdbms/changelog.yaml`;
@@ -568,7 +570,7 @@ allowlists are empty and enforced by the repository-owned AST guard.
 
 ## Configuration and credential flows
 
-`src/main/python/repomap_kg/ops/config.py::resolve_repo_map_home` resolves the
+`src/main/python/common_lore_index/ops/config.py::resolve_repo_map_home` resolves the
 configuration home from an explicit command argument, the `REPOMAP_HOME`
 environment variable, or the platform default. The unified TOML configuration
 describes enabled graphs, source roots, storage, service transport, and local
@@ -590,12 +592,12 @@ reconciliation and is not projected into long-running units.
 
 Relevant implementations are:
 
-- `src/main/python/repomap_kg/ops/config.py`
-- `src/main/python/repomap_kg/runtime/plan.py::default_repomap_rpl_toml`
-- `src/main/python/repomap_kg/runtime/commands.py::render_compose_yaml`
-- `src/main/python/repomap_kg/coordinator/configured_refresh.py`
-- `src/main/python/repomap_kg/service_package/contract.py`
-- `src/main/python/repomap_kg/service_package/environment.py`
+- `src/main/python/common_lore_index/ops/config.py`
+- `src/main/python/common_lore_index/runtime/plan.py::default_repomap_rpl_toml`
+- `src/main/python/common_lore_index/runtime/commands.py::render_compose_yaml`
+- `src/main/python/common_lore_index/coordinator/configured_refresh.py`
+- `src/main/python/common_lore_index/service_package/contract.py`
+- `src/main/python/common_lore_index/service_package/environment.py`
 
 Credential values must not enter images, committed configuration, generated
 service definitions, logs, status responses, MCP payloads, or durable reports.
@@ -645,9 +647,9 @@ flowchart LR
 ```
 
 The refresh pipeline is implemented in
-`src/main/python/repomap_kg/ops/refresh.py`, while coordinator adaptation is in
-`src/main/python/repomap_kg/coordinator/refresh_adapter.py` and
-`src/main/python/repomap_kg/coordinator/_refresh_execution.py`. Go helper
+`src/main/python/common_lore_index/ops/refresh.py`, while coordinator adaptation is in
+`src/main/python/common_lore_index/coordinator/refresh_adapter.py` and
+`src/main/python/common_lore_index/coordinator/_refresh_execution.py`. Go helper
 resolution and bounded protocol behavior are covered by:
 
 - `src/test/unit/python/repomap_kg/extractors/languages/go_protocol.unit.test.py`
@@ -702,8 +704,8 @@ sequenceDiagram
 ```
 
 The path is implemented by
-`src/main/python/repomap_kg/storage/staged_ingestion.py::run_staged_full_refresh`
-and `src/main/python/repomap_kg/storage/staged_publication.py`. Integration
+`src/main/python/common_lore_index/storage/staged_ingestion.py::run_staged_full_refresh`
+and `src/main/python/common_lore_index/storage/staged_publication.py`. Integration
 coverage includes
 `src/test/int/python/repomap_kg/storage/scale8_staged_ingestion.int.test.py`.
 The staged-production closure is recorded in
@@ -743,9 +745,9 @@ sequenceDiagram
 
 Key source and test evidence is:
 
-- `src/main/python/repomap_kg/coordinator/local_mode.py`
-- `src/main/python/repomap_kg/coordinator/_worker_launch.py`
-- `src/main/python/repomap_kg/coordinator/refresh_worker.py`
+- `src/main/python/common_lore_index/coordinator/local_mode.py`
+- `src/main/python/common_lore_index/coordinator/_worker_launch.py`
+- `src/main/python/common_lore_index/coordinator/refresh_worker.py`
 - `src/test/unit/python/repomap_kg/coordinator/local_mode.unit.test.py`
 - `src/test/int/python/repomap_kg/coordinator/local_mode.int.test.py`
 - `src/test/int/python/repomap_kg/coordinator/local_lifecycle.int.test.py`
@@ -769,7 +771,7 @@ RepoMap fails closed at authority boundaries:
   preconditions.
 
 A lost connection during final publication can make the client-side commit
-outcome unknown. `src/main/python/repomap_kg/storage/staged_publication.py::reconcile_commit_unknown`
+outcome unknown. `src/main/python/common_lore_index/storage/staged_publication.py::reconcile_commit_unknown`
 reconnects and reads authoritative publication markers rather than blindly
 repeating the final mutation.
 
@@ -814,10 +816,10 @@ redaction, and tool-specific presentation bounds remain outside the connector.
 
 Relevant source and parity evidence includes:
 
-- `src/main/python/repomap_kg/storage/readback_driver.py`
-- `src/main/python/repomap_kg/storage/canonical.py`
-- `src/main/python/repomap_kg/storage/legacy.py`
-- `src/main/python/repomap_kg/ops/readback.py`
+- `src/main/python/common_lore_index/storage/readback_driver.py`
+- `src/main/python/common_lore_index/storage/canonical.py`
+- `src/main/python/common_lore_index/storage/legacy.py`
+- `src/main/python/common_lore_index/ops/readback.py`
 - `src/test/unit/python/repomap_kg/storage/readback_driver/driver_selection.unit.test.py`
 - `src/test/unit/python/repomap_kg/storage/readback_driver/connector_selection.unit.test.py`
 - `src/test/int/python/repomap_kg/storage/psycopg_parity/summary.int.test.py`
@@ -830,7 +832,7 @@ databases, install services, or mutate source roots.
 `repomap_canonical_nodes`, `repomap_canonical_edges`,
 `repomap_explain_canonical_edge`, and `repomap_canonical_neighborhood` read
 through the named canonical read-store seam in
-`src/main/python/repomap_kg/server/canonical_read_store.py`. The payload
+`src/main/python/common_lore_index/server/canonical_read_store.py`. The payload
 functions in `server/mcp_canonical.py` resolve the graph, apply visibility,
 and validate arguments first. They then hand typed query records (validated
 filters plus a `limit + 1` fetch window) to `CanonicalReadStore`. The seam
@@ -851,7 +853,7 @@ see `docs/status/2026/09/28/00970-product2-host-mcp-readstore1-exit.md`.
 
 Seven configured-graph investigation tools read through the named
 investigation read-store seam in
-`src/main/python/repomap_kg/server/investigation_read_store.py`:
+`src/main/python/common_lore_index/server/investigation_read_store.py`:
 `repomap_graph_status`, `repomap_refresh_status`, `repomap_search_nodes`,
 `repomap_search_files`, `repomap_search_observations`,
 `repomap_project_summary` and `repomap_neighborhood`. The payload owners in
@@ -881,7 +883,7 @@ READSTORE3 finishes the remaining twelve database readers on the same seams:
   (`IngestedSourcesQuery`, `SourceSummaryQuery`, `SourceRunsQuery`,
   `SourceFeedItemsQuery`, `SourceFeedItemExplanationQuery`,
   `SourceReferencesQuery`) to `SourceReadStore` in
-  `src/main/python/repomap_kg/server/source_read_store.py`, whose only adapter
+  `src/main/python/common_lore_index/server/source_read_store.py`, whose only adapter
   delegates to the maintained `storage/source_readback.py` owners;
 - legacy `repomap_status` calls
   `CanonicalReadStore.canonical_storage_summary()`; its payload is unchanged.
@@ -895,7 +897,7 @@ through `read_configured_graph`.
 RESOLVE1 separates logical graph selection from backend binding on every
 configured tool path:
 
-- `src/main/python/repomap_kg/server/graph_selection.py` owns the public
+- `src/main/python/common_lore_index/server/graph_selection.py` owns the public
   selection refusals (`checked_graph`, `visible_graphs`, `McpOpsError`) and the
   frozen `GraphSelection` record. It holds only the maintained graph record and
   the config file locations used as private path markers; identity, root,
@@ -908,7 +910,7 @@ configured tool path:
   `mcp_core.storage_connection` (canonical and source tools; it returns a
   `ConfiguredGraphTarget`) select first, then call the facade factory
   `ops.investigation_stores(config)` or `mcp.graph_stores(config)`;
-- `src/main/python/repomap_kg/server/postgres_read_binding.py` is the only
+- `src/main/python/common_lore_index/server/postgres_read_binding.py` is the only
   production binding. It alone selects the psql command, names the database
   (`graph_database`, also the redacted `database` display label), builds
   `McpOpsGraphContext` and constructs the three read stores. Credentials and
@@ -1140,9 +1142,9 @@ flowchart TB
 The authority contract is documented by
 `docs/adr/2026/07/0033-backup-first-database-lifecycle.md` and
 `docs/adr/2026/07/0038-local-operations-and-canonical-readback-architecture.md`.
-Implementations include `src/main/python/repomap_kg/cli/_local_parser.py`,
-`src/main/python/repomap_kg/runtime/local.py`, and
-`src/main/python/repomap_kg/coordinator/local_lifecycle.py`.
+Implementations include `src/main/python/common_lore_index/cli/_local_parser.py`,
+`src/main/python/common_lore_index/runtime/local.py`, and
+`src/main/python/common_lore_index/coordinator/local_lifecycle.py`.
 
 ## Storage and data authority
 
@@ -1234,6 +1236,17 @@ and leaves ordinary CLI startup fail-fast.
 
 ## Platform and service packaging
 
+Current release checkpoint (2026-10-29): public main v0.0.3 at `5ad00d1`
+passed all nine jobs in [CI87 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/40779161422).
+The native AMD assembled-system report, five scenarios, round trip, MCP,
+separate host authority/export and cleanup were verified for that candidate.
+Earlier D12/CI72 hold descriptions below are historical checkpoints, not the
+current core qualification state. Optional pgvector, hosted ARM/Windows and
+live deployment remain separate. The earlier [CLOE compatibility slice](../ops/cloe-config-compatibility.md)
+prepared configuration while preserving packaging and runtime identities. The
+coordinated cutover in ADR0123 now changes packaging and the canonical namespace;
+persisted configuration and runtime identities remain stable.
+
 The Python distribution requires Python 3.12 or newer. Since LOCAL11 its base
 dependency set is only `typing-extensions==4.16.0`: the base wheel is the
 SQLite Local install and carries no PostgreSQL driver. Since
@@ -1250,7 +1263,7 @@ data and resolves them from the distribution data root outside a checkout.
 The generated Linux runtime recipe pins official PostgreSQL 16.15
 Trixie ([ADR 0091](../adr/2026/10/0091-d12-tls-p3-disposition-and-trixie-remediation.md); earlier 16.15 Bookworm under [ADR 0087](../adr/2026/10/0087-d12-image-evidence-and-core-security-prerequisite.md) and 16.14 Bookworm), Python 3.12.16 slim Trixie ([ADR 0100](../adr/2026/10/0100-exact-python-31216-remediation-and-native-proof-hold.md); local ARM64 payload baseline observed; AMD64 remains held until native proof, historical 3.12.15 payload records kept in `release_manifest.py`), and Go 1.26.10 Bookworm indexes ([ADR 0090](../adr/2026/10/0090-d12-application-go-supported-toolchain.md); earlier 1.25.12). The final application image inherits the PostgreSQL `psql`, `pg_dump`, and `pg_restore` clients of the database image; under [ADR 0089](../adr/2026/10/0089-d12-dynamic-psycopg-and-system-libpq.md) Psycopg loads that image's own `libpq5` (the earlier binary pin bundled libpq 17.6). Fixed executable paths and image labels make the matrix explicit. ARCH7G accepted the 16.14 clients against the live release cluster for query, private dump creation, and restore-catalog inspection. The separate `d12-native-amd64` workflow job configures the first native `linux/amd64` D12 hosted checkpoint under [ADR 0092](../adr/2026/10/0092-public-native-d12-qualification.md); ARM64 hosted qualification is deferred, and hosted image acceptance remains pending. The `d12-system-hold` step in `main-system-gate` invokes `system-hold` before SDK or application work and refuses unresolved prerequisites; the Alpine 16.14 test pin and pgvector 0.8.7 test image are unchanged, so test and production minor versions now differ.
 
-`src/main/python/repomap_kg/service_package/platforms.py::select_service_adapter`
+`src/main/python/common_lore_index/service_package/platforms.py::select_service_adapter`
 selects a user LaunchAgent on macOS and a systemd user unit on Linux. Windows
 foreground coordinator operation is supported through the portable command and
 loopback transport, while a native Windows background-service adapter remains
@@ -1265,7 +1278,7 @@ user unit must not be assumed to keep the WSL distribution alive. Status 00533
 records the operating guidance and absence of a native WSL canary; ASYNC-CLOSE
 preserves this boundary.
 
-`src/main/python/repomap_kg/service_package/contract.py::build_service_package_spec`
+`src/main/python/common_lore_index/service_package/contract.py::build_service_package_spec`
 builds one portable foreground command. Its contracts are covered by:
 
 - `src/test/unit/python/repomap_kg/service_package/contract.unit.test.py`
@@ -1275,7 +1288,7 @@ builds one portable foreground command. Its contracts are covered by:
 
 The Go helper is platform-specific. `tools/build_go_helper.py` remains the
 development build path, while
-`src/main/python/repomap_kg/extractors/languages/go_helper.py` accepts only an
+`src/main/python/common_lore_index/extractors/languages/go_helper.py` accepts only an
 explicit absolute executable or the controlled package-local platform
 location. ARCH7F builds Linux arm64 or amd64 with CGO disabled in the pinned Go
 builder stage, installs the executable under `_bin/linux-<architecture>`, and
@@ -1752,3 +1765,18 @@ error. Checked status reports observed truth without retaining raw Engine
 payloads. Native and container execution select their PostgreSQL route at
 connection boundaries without changing loaded configuration or generations.
 Live proof for this repair is Docker-only; Podman live parity is not claimed.
+
+### Internal retrieval query contracts and captured-input projection reference (W2)
+
+Under accepted [ADR 0127](../adr/2026/10/0127-cloe-retrieval-contracts-and-evaluation.md)
+and [cloe-retrieval-evaluation-v1.md](cloe-retrieval-evaluation-v1.md)
+(`REPOMAP-CLOE-RETRIEVAL1`, [exit](../../tools/ci/cloe-retrieval1-exit.md)),
+`common_lore_index.retrieval` implements internal six-mode query envelopes
+(`cloe-retrieval-query-v1`) and a bounded in-memory captured-input text
+projection reference (`cloe-captured-text-reference-v1`). The projection
+requires a caller-supplied `AcceptedPublicationReference` derived from
+accepted SQLite Local or PostgreSQL store readback and verifies exact correspondence
+against `RunPublicationReceipt`, `PortableSnapshotManifest`, `PublicationBundle`,
+`ExtractionReceipt`, and `ArtifactStore` before projecting authorized `public-dev` /
+`full-authorized` code and Markdown/text artifacts. Existing CLI and read-only
+MCP schemas, wire names, and runtime behavior are unchanged in W2.

@@ -183,7 +183,7 @@ def _private_markers(private_root: str) -> tuple[str, ...]:
     return (
         private_root,
         "synthetic-private",
-        "synthetic/repomap_kg/requirements.txt",
+        "synthetic/common_lore_index/requirements.txt",
         "synthetic/profile.py",
         "synthetic/config.yaml",
         "private-package-name",

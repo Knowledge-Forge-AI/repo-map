@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.artifacts.receipt import (
+from common_lore_index.artifacts.receipt import (
     DIAGNOSTIC_CATEGORIES,
     PUBLIC_DIAGNOSTIC_PROJECTION,
     RECEIPT_OUTCOMES,
@@ -143,8 +143,8 @@ class ReceiptValidationBoundariesUnitTests(unittest.TestCase):
         self.assertIn("unsupported extraction receipt version", str(caught.exception))
 
     def test_completed_outcome_inconsistency_branches(self):
-        from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-        from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+        from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+        from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
         dummy_ref = ArtifactReference(
             "sha256:" + "0" * 64,
@@ -243,7 +243,7 @@ class ReceiptValidationBoundariesUnitTests(unittest.TestCase):
         self.assertIn("extraction receipt is malformed", str(caught.exception))
 
         # Non-canonical content (extra key decoded but not preserved by canonical_bytes)
-        from repomap_kg.artifacts._canonical import canonical_json, decode_canonical_json
+        from common_lore_index.artifacts._canonical import canonical_json, decode_canonical_json
         payload = decode_canonical_json(data)
         payload["extra_field"] = "not_part_of_receipt"
         extra_key_data = canonical_json(payload)
@@ -252,7 +252,7 @@ class ReceiptValidationBoundariesUnitTests(unittest.TestCase):
         self.assertIn("extraction receipt is not canonical", str(caught.exception))
 
     def test_vector_and_reidentify_branches(self):
-        from repomap_kg.artifacts.receipt import _int, _str, _vector
+        from common_lore_index.artifacts.receipt import _int, _str, _vector
 
         # _vector validations
         with self.assertRaises(ValueError) as caught:

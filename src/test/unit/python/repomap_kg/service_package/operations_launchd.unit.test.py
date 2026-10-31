@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.service_package.artifacts import ServiceArtifactError
-from repomap_kg.service_package.contract import (
+from common_lore_index.service_package.artifacts import ServiceArtifactError
+from common_lore_index.service_package.contract import (
     ServicePackageSpec,
     build_service_package_spec,
 )
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
-from repomap_kg.service_package.operations import (
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.operations import (
     CoordinatorServiceOperations,
     ServicePackageError,
 )
@@ -31,7 +31,7 @@ class RecordingRunner:
 def _operations(tmp_path, adapter, runner=None, health_probe=None):
     home = tmp_path / "repo-map-home"
     home.mkdir(mode=0o700)
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
     setup_local_runtime(home)
     config = home / "repomap.rpl.toml"
     config.write_text(config.read_text().replace('[runtime]', '[runtime]\ncoordinator_mode = "native"'))
@@ -241,7 +241,7 @@ def test_launchd_uninstall_failure_reenables_before_restoring_loaded_state(
     operations.runner = runner
 
     with patch(
-        "repomap_kg.service_package.operations.remove_owned_artifact",
+        "common_lore_index.service_package.operations.remove_owned_artifact",
         side_effect=ServiceArtifactError("service_definition_remove_failed"),
     ):
         with pytest.raises(ServicePackageError, match="service_uninstall_rolled_back"):

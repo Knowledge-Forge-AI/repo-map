@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import read_observations_jsonl
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import read_observations_jsonl
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import read_observations_jsonl
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import read_observations_jsonl
 
 
 FIXTURE_ROOT = (

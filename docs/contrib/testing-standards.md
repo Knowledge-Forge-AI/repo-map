@@ -514,9 +514,9 @@ RepoMap operates five hosted CI lanes across the three cost tiers:
    test-support, test-suite, top-level test-conftest, and tools surfaces with
    rules `E9`, `F821`, `F822`, and `F823`; parser fixture trees are intentionally
    excluded. A separate cumulative production ratchet enforces the complete
-   Pyflakes `F` family over `src/main/python/repomap_kg/runtime`,
-   `src/main/python/repomap_kg/graph`, and
-   `src/main/python/repomap_kg/server`. Mypy derives one explicit blocking
+   Pyflakes `F` family over `src/main/python/common_lore_index/runtime`,
+   `src/main/python/common_lore_index/graph`, and
+   `src/main/python/common_lore_index/server`. Mypy derives one explicit blocking
    target list from `tools/ci/python_type_ownership.json`: every T0
    cross-language contract and the declared T1 retained-Python seed. It uses
    current-checkout `MYPYPATH`, a mechanically tested silent-import boundary,

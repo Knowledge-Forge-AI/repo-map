@@ -17,15 +17,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.coordinator import portable_worker as pw
-from repomap_kg.coordinator._portable_capability import PortableExecutionCapability
-from repomap_kg.coordinator._portable_semantic_adapter import (
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.coordinator import portable_worker as pw
+from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
+from common_lore_index.coordinator._portable_semantic_adapter import (
     FailureReceiptWrite,
     PortableExecutionError,
 )
-from repomap_kg.coordinator._protocol_core import ProtocolError, encode_jsonl
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.coordinator._protocol_core import ProtocolError, encode_jsonl
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def _reference(media_type: str, fill: str) -> ArtifactReference:

@@ -14,9 +14,9 @@ import time
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.coordinator import transport
-from repomap_kg.coordinator import _transport_validation as validation
-from repomap_kg.coordinator.transport import TransportError
+from common_lore_index.coordinator import transport
+from common_lore_index.coordinator import _transport_validation as validation
+from common_lore_index.coordinator.transport import TransportError
 
 
 def _make_dispatcher(auth_token="secret-token", handlers=None, max_in_flight=4):

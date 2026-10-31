@@ -13,8 +13,8 @@ for candidate_path in (ROOT, ROOT / "tools", ROOT / "src/main/python", ROOT / "s
         sys.path.insert(0, str(candidate_path))
 
 import d12_libpq_runtime_probe
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION, PYTHON_RELEASE_IMAGE,
 )
 from repomap_test_support import d12_core_image

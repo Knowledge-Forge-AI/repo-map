@@ -16,16 +16,16 @@ import time
 from typing import Any
 import psycopg
 
-from repomap_kg.coordinator import normalize_request
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator.protocol import run_refresh_worker
-from repomap_kg.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.graph.multi_source_pipeline import scan_multi_source_generations
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.generations import canonicalizer_generation, configured_graph, extractor_generation
-from repomap_kg.runtime.postgres_route import effective_postgres_route
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.coordinator import normalize_request
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator.protocol import run_refresh_worker
+from common_lore_index.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.graph.multi_source_pipeline import scan_multi_source_generations
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.generations import canonicalizer_generation, configured_graph, extractor_generation
+from common_lore_index.runtime.postgres_route import effective_postgres_route
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 

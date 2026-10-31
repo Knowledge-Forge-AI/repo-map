@@ -21,12 +21,12 @@ from types import SimpleNamespace
 from typing import Any
 import unittest
 
-from repomap_kg.server._ops_records import McpOpsError
-from repomap_kg.server._ops_summaries import (
+from common_lore_index.server._ops_records import McpOpsError
+from common_lore_index.server._ops_summaries import (
     OpsSummaryDependencies,
     project_summary_payload,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
@@ -197,7 +197,7 @@ class Slice10GraphReadbackCompositionIntegrationTests(unittest.TestCase):
     def test_s10_c08_mcp_public_boundary_search_composition(self) -> None:
         """MCP public boundary search executes search_payload -> query_mcp_search -> SQL/readback."""
         from unittest.mock import patch
-        from repomap_kg.server.mcp import repomap_search_nodes
+        from common_lore_index.server.mcp import repomap_search_nodes
         from repomap_test_support.mcp_server import McpServerTestSupport
 
         require_postgres_binaries()
@@ -249,7 +249,7 @@ database = "{postgres.database}"
 
     def test_s10_c09_mcp_server_ops_summary_dependencies_composition(self) -> None:
         """OpsSummaryDependencies reads a real canonical storage summary through a read store."""
-        from repomap_kg.storage.canonical import query_canonical_storage_summary
+        from common_lore_index.storage.canonical import query_canonical_storage_summary
 
         require_postgres_binaries()
         with temporary_postgres() as postgres:

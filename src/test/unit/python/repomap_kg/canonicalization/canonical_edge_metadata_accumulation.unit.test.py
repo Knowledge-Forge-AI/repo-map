@@ -4,13 +4,13 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import RawObservation
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import RawObservation
 
-from repomap_kg.canonicalization.value_helpers import (
+from common_lore_index.canonicalization.value_helpers import (
     _append_distinct_json_values,
 )
 
@@ -148,7 +148,7 @@ class CanonicalEdgeMetadataAccumulationUnitTests(unittest.TestCase):
 
     def test_metadata_helpers_accumulation_and_extraction(self):
         from typing import Any
-        from repomap_kg.canonicalization.metadata_helpers import (
+        from common_lore_index.canonicalization.metadata_helpers import (
             _append_metadata_text,
             _metadata_text,
         )

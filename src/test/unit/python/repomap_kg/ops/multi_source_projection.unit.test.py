@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config_graphs import parse_graphs_section
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config_graphs import parse_graphs_section
 
 
 def _binding(

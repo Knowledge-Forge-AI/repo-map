@@ -10,10 +10,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from repomap_kg.runtime import system_test_pause
-from repomap_kg.storage import _staged_publication_pause as pause_module
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.runtime import system_test_pause
+from common_lore_index.storage import _staged_publication_pause as pause_module
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.staged_ingestion import (
     new_direct_authority,
     run_staged_full_refresh,
 )

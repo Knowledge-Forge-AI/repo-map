@@ -32,16 +32,16 @@ import uuid
 
 import pytest
 
-from repomap_kg.runtime._extension_restore_exec_control import (
+from common_lore_index.runtime._extension_restore_exec_control import (
     EXEC_CONTROL_PREFIX, EXEC_INVOCATION_ENV, SETTLE_PROCESS_SH, SUPERVISOR_SH, parse_process_settlement,
 )
-from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
-from repomap_kg.runtime._extension_restore_native import run_bounded_ext_command
-from repomap_kg.runtime._extension_restore_policy import ExtensionReplayBounds
-from repomap_kg.runtime.backup import dump_database, init_database_from_dump
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import build_local_runtime_plan
-from repomap_kg.runtime.release import PACKAGED_PSQL
+from common_lore_index.runtime._extension_restore_exec import bound_exec_custody
+from common_lore_index.runtime._extension_restore_native import run_bounded_ext_command
+from common_lore_index.runtime._extension_restore_policy import ExtensionReplayBounds
+from common_lore_index.runtime.backup import dump_database, init_database_from_dump
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import build_local_runtime_plan
+from common_lore_index.runtime.release import PACKAGED_PSQL
 from repomap_test_support.d9_extension_policies import (
     installed_synthetic_extensions, probe_live_container_qualification, synthetic_multilevel_extension_policy,
 )

@@ -2,7 +2,7 @@ import json
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     IngestedSourceRecord,
     SourceFeedItemRecord,
     SourceReferenceRecord,
@@ -13,7 +13,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
     def test_source_feed_mcp_tools_are_read_only_and_project_scoped(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_explain_source_feed_item,
             repomap_ingested_sources,
             repomap_source_feed_items,
@@ -38,7 +38,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
         )
         with patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(config_path)}):
             with patch(
-                "repomap_kg.server.mcp.query_ingested_source_records",
+                "common_lore_index.server.mcp.query_ingested_source_records",
                 return_value=(
                     IngestedSourceRecord(
                         source_id="example-news-feed",
@@ -56,7 +56,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
             ) as sources_query:
                 sources_payload = repomap_ingested_sources(source_type="feed.rss")
             with patch(
-                "repomap_kg.server.mcp.query_source_summary",
+                "common_lore_index.server.mcp.query_source_summary",
                 return_value=SourceSummaryRecord(
                     source_id="example-news-feed",
                     source_type="feed.rss",
@@ -82,7 +82,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                     source_id="example-news-feed",
                 )
             with patch(
-                "repomap_kg.server.mcp.query_source_run_records",
+                "common_lore_index.server.mcp.query_source_run_records",
                 return_value=(
                     SourceRunRecord(
                         source_run_id="20260630T120000Z",
@@ -100,7 +100,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
             ) as runs_query:
                 runs_payload = repomap_source_runs(source_id="example-news-feed")
             with patch(
-                "repomap_kg.server.mcp.query_source_feed_item_records",
+                "common_lore_index.server.mcp.query_source_feed_item_records",
                 return_value=(
                     SourceFeedItemRecord(
                         item_key=item_key,
@@ -123,7 +123,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                     source_id="example-news-feed",
                 )
             with patch(
-                "repomap_kg.server.mcp.query_source_reference_records",
+                "common_lore_index.server.mcp.query_source_reference_records",
                 return_value=(
                     SourceReferenceRecord(
                         source_item_key=item_key,
@@ -143,7 +143,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                     target_kind="external.url",
                 )
             with patch(
-                "repomap_kg.server.mcp.query_source_feed_item_explanation",
+                "common_lore_index.server.mcp.query_source_feed_item_explanation",
                 return_value={
                     "item": {"canonical_key": item_key, "kind": "feed.item"},
                     "source": {"source_id": "example-news-feed"},
@@ -171,7 +171,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
         self.assertEqual(explain_query.call_args.kwargs["item_key"], item_key)
 
     def test_source_feed_mcp_empty_and_missing_results_are_bounded(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_explain_source_feed_item,
             repomap_ingested_sources,
             repomap_source_feed_items,
@@ -197,7 +197,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
         )
 
         with patch(
-            "repomap_kg.server.mcp.query_ingested_source_records",
+            "common_lore_index.server.mcp.query_ingested_source_records",
             return_value=(),
         ) as sources_query:
             sources_payload = repomap_ingested_sources(
@@ -205,7 +205,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                 source_type="feed.rss",
             )
         with patch(
-            "repomap_kg.server.mcp.query_source_summary",
+            "common_lore_index.server.mcp.query_source_summary",
             return_value=SourceSummaryRecord(
                 source_id=missing_source_id,
                 source_type="unknown",
@@ -232,7 +232,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                 source_id=missing_source_id,
             )
         with patch(
-            "repomap_kg.server.mcp.query_source_run_records",
+            "common_lore_index.server.mcp.query_source_run_records",
             return_value=(),
         ) as runs_query:
             runs_payload = repomap_source_runs(
@@ -240,7 +240,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                 source_id=missing_source_id,
             )
         with patch(
-            "repomap_kg.server.mcp.query_source_feed_item_records",
+            "common_lore_index.server.mcp.query_source_feed_item_records",
             return_value=(),
         ) as items_query:
             items_payload = repomap_source_feed_items(
@@ -248,7 +248,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                 source_id=missing_source_id,
             )
         with patch(
-            "repomap_kg.server.mcp.query_source_reference_records",
+            "common_lore_index.server.mcp.query_source_reference_records",
             return_value=(),
         ) as references_query:
             references_payload = repomap_source_references(
@@ -256,7 +256,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                 source_id=missing_source_id,
             )
         with patch(
-            "repomap_kg.server.mcp.query_source_feed_item_explanation",
+            "common_lore_index.server.mcp.query_source_feed_item_explanation",
             return_value={
                 "item": None,
                 "source": None,
@@ -320,7 +320,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
         self.assertNotIn("raw-private-source-snippet", serialized)
 
     def test_source_feed_mcp_tools_reject_arbitrary_url_inputs(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, tool_input_schema
+        from common_lore_index.server.mcp import RepoMapMcpError, tool_input_schema
 
         for name in (
             "repomap_ingested_sources",
@@ -336,7 +336,7 @@ class McpServerStorageSourceFeedToolUnitTests(McpServerTestSupport):
                 self.assertNotIn("feed_url", schema["properties"])
                 self.assertNotIn("config_path", schema["properties"])
 
-        from repomap_kg.server.mcp import repomap_source_summary
+        from common_lore_index.server.mcp import repomap_source_summary
 
         with self.assertRaisesRegex(RepoMapMcpError, "source_id must not be a URL"):
             repomap_source_summary(

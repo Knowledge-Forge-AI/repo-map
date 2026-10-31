@@ -68,7 +68,7 @@ def test_durable_evidence_queries_use_their_authoritative_databases(tmp_path: Pa
 
         _control_job_evidence(tmp_path, plan, timer, "job-1")
         control_call = run_compose.call_args
-        from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
+        from common_lore_index.coordinator._refresh_execution import SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
         assert control_call.kwargs["timeout"] == SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
         assert control_call.args[1][control_call.args[1].index("--dbname") + 1] == "repomap_control"
         assert control_call.args[1][-2:] == ["--file", "-"]
@@ -277,7 +277,7 @@ def test_marker_consumer_observes_marker_before_producer_timeout(tmp_path: Path)
     assert handoff == {}
     assert runner.call_count == 1
     call_kwargs = runner.call_args.kwargs
-    from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+    from common_lore_index.coordinator._refresh_execution import SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
     assert call_kwargs["timeout"] == SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
 
 
@@ -291,13 +291,13 @@ def test_missing_marker_times_out_before_producer_window_closes(tmp_path: Path) 
     assert job_id == ""
     assert attempt is None
     assert handoff == {}
-    from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
+    from common_lore_index.coordinator._refresh_execution import SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
     call_kwargs = runner.call_args.kwargs
     assert call_kwargs.get("timeout", 0.0) <= SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
 
 
 def test_pause_window_contract_invariants() -> None:
-    from repomap_kg.runtime import system_test_pause as bounds
+    from common_lore_index.runtime import system_test_pause as bounds
     bounds.validate_pause_window_contract()
     protected = (bounds.SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS
                  + bounds.SYSTEM_TEST_STATUS_TIMEOUT_SECONDS
@@ -318,7 +318,7 @@ def test_pause_window_contract_invariants() -> None:
 def test_pause_contract_refuses_before_launching_scenario(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from tools.system import scenario_publication
 
-    from repomap_kg.runtime import system_test_pause
+    from common_lore_index.runtime import system_test_pause
     monkeypatch.setattr(system_test_pause, "SYSTEM_TEST_PRODUCER_PAUSE_SECONDS", 1.0)
     runner, popen = MagicMock(), MagicMock()
     timer = MonotonicTimer(total_budget_seconds=100.0, cleanup_reserve_seconds=20.0)
@@ -334,13 +334,13 @@ def test_pause_contract_refuses_before_launching_scenario(tmp_path: Path, monkey
 
 def test_producer_refuses_invalid_pause_contract_before_readiness(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from types import SimpleNamespace
-    from repomap_kg.coordinator import _refresh_execution
+    from common_lore_index.coordinator import _refresh_execution
 
     tmp_path.chmod(0o700)
     trigger = tmp_path / "pause"
     trigger.write_text("pause")
     monkeypatch.setenv("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", str(trigger))
-    from repomap_kg.runtime import system_test_pause
+    from common_lore_index.runtime import system_test_pause
     monkeypatch.setattr(system_test_pause, "SYSTEM_TEST_PRODUCER_PAUSE_SECONDS", 1.0)
     with pytest.raises(ValueError, match="Total window budget"):
         _refresh_execution._run_system_test_pause(SimpleNamespace(job_id="job-1", attempt=1))

@@ -4,8 +4,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from repomap_test_support.ops_refresh import OpsRefreshUnitTestCase
-from repomap_kg.storage.authority import RefreshResult
-from repomap_kg.ops.refresh import (
+from common_lore_index.storage.authority import RefreshResult
+from common_lore_index.ops.refresh import (
     OpsRefreshError, OpsRefreshPreflightResult, OpsGraphSummary,
     baseline_save_to_jsonable, baseline_prune_to_jsonable, drift_check_to_jsonable,
     format_baseline_save_table, format_baseline_prune_table, format_drift_check_table,
@@ -78,8 +78,8 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
             config = self.config_home_for_roots(home, repo_root)
 
             with (
-                patch("repomap_kg.ops.refresh.query_graph_summary") as graph_summary,
-                patch("repomap_kg.ops.refresh.preflight_graph") as preflight_graph_mock,
+                patch("common_lore_index.ops.refresh.query_graph_summary") as graph_summary,
+                patch("common_lore_index.ops.refresh.preflight_graph") as preflight_graph_mock,
             ):
                 graph_summary.return_value = summary
                 preflight_graph_mock.return_value = preflight
@@ -189,7 +189,7 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             config = self.config_for_roots(Path(tmpdir))
 
-            with patch("repomap_kg.ops.refresh.query_graph_summary") as query:
+            with patch("common_lore_index.ops.refresh.query_graph_summary") as query:
                 query.return_value = summary
                 result = query_drift_check(config, "repo-map", baseline=baseline, psql_command="/bin/psql")
 
@@ -218,7 +218,7 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             config = self.config_for_roots(Path(tmpdir))
 
-            with patch("repomap_kg.ops.refresh.query_graph_summary") as query:
+            with patch("common_lore_index.ops.refresh.query_graph_summary") as query:
                 query.return_value = current
                 result = query_drift_check(config, "repo-map", baseline=baseline)
 
@@ -243,8 +243,8 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
             stored_baseline = graph_baseline_to_jsonable(config, current)["baseline"]
             preflight_baseline = preflight_to_jsonable(config, preflight)
 
-            with patch("repomap_kg.ops.refresh.query_graph_summary") as query:
-                with patch("repomap_kg.ops.refresh.preflight_graph") as preflight_call:
+            with patch("common_lore_index.ops.refresh.query_graph_summary") as query:
+                with patch("common_lore_index.ops.refresh.preflight_graph") as preflight_call:
                     query.return_value = current
                     preflight_call.return_value = preflight
                     result = query_drift_check(
@@ -277,10 +277,10 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
             stored_baseline = graph_baseline_to_jsonable(config, current)["baseline"]
             preflight_baseline = preflight_to_jsonable(config, preflight)
 
-            with patch("repomap_kg.ops.refresh.query_graph_summary") as query:
-                with patch("repomap_kg.ops.refresh.preflight_graph") as preflight_call:
+            with patch("common_lore_index.ops.refresh.query_graph_summary") as query:
+                with patch("common_lore_index.ops.refresh.preflight_graph") as preflight_call:
                     with patch(
-                        "repomap_kg.ops.refresh._preflight_safety_markers",
+                        "common_lore_index.ops.refresh._preflight_safety_markers",
                         return_value={
                             "storage_written": True, "source_tree_mutated": False,
                             "server_memory_mutated": False, "server_memory_read": False,
@@ -311,7 +311,7 @@ class OpsRefreshBaselinesDriftUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(Path(tmpdir))
             stored_baseline = graph_baseline_to_jsonable(config, current)["baseline"]
 
-            with patch("repomap_kg.ops.refresh.query_graph_summary") as query:
+            with patch("common_lore_index.ops.refresh.query_graph_summary") as query:
                 query.return_value = current
                 with self.assertRaisesRegex(OpsRefreshError, "preflight baseline graph id"):
                     query_drift_check(

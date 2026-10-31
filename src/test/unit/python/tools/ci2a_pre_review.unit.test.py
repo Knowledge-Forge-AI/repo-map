@@ -162,9 +162,9 @@ def test_global_and_legacy_ratchets_remain_separate_and_unchanged(
         "check",
         "--select",
         "F",
-        "src/main/python/repomap_kg/runtime",
-        "src/main/python/repomap_kg/graph",
-        "src/main/python/repomap_kg/server",
+        "src/main/python/common_lore_index/runtime",
+        "src/main/python/common_lore_index/graph",
+        "src/main/python/common_lore_index/server",
     )
     assert selected["file-length"].command[1:] == (
         "tools/ci/check_file_lengths.py",

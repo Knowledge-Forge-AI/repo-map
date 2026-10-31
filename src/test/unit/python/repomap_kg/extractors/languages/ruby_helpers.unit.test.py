@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.extractors.languages import ruby_helpers as rh
+from common_lore_index.extractors.languages import ruby_helpers as rh
 
 
 class RubyHelpersUnitTests(unittest.TestCase):

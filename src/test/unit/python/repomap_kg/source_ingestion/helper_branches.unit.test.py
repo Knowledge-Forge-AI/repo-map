@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Mapping
 
 
-from repomap_kg.ops.ingestion import source
+from common_lore_index.ops.ingestion import source
 
 
 class SourceIngestionHelperBranchUnitTests(unittest.TestCase):

@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     TerraformSummaryRecord,
     build_terraform_summary_query_sql,
@@ -107,15 +107,15 @@ def test_psycopg77_query_terraform_summary_uses_object_readback_adapter(
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             return_value=payload,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.terraform_summary_from_storage_payload",
+            "common_lore_index.storage.summaries.terraform_summary_from_storage_payload",
             wraps=terraform_summary_from_storage_payload,
         ) as convert,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("terraform summary must use the adapter"),
         ),
     ):
@@ -327,10 +327,10 @@ def test_psycopg77_adapter_shape_errors_propagate_without_fallback() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             side_effect=shape_error,
         ),
-        patch("repomap_kg.storage.summaries.run_psql") as run_psql,
+        patch("common_lore_index.storage.summaries.run_psql") as run_psql,
     ):
         with pytest.raises(StorageSchemaError) as raised:
             query_terraform_summary([], root_path="/tmp/psycopg77-public")

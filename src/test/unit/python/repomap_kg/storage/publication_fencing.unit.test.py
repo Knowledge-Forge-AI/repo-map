@@ -2,27 +2,27 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage._publication_fencing_sql import (
+from common_lore_index.storage._publication_fencing_sql import (
     SENTINEL_STAGE_ID,
     build_authority_check_sql,
     build_authority_upsert_sql,
     build_finalize_sql,
 )
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     PublicationContractError,
     PublicationHandoff,
     build_graph_publication_claim_statements,
     build_graph_publication_fence_statements,
     build_publication_finalize_statements,
 )
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner, StageOwnershipError
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner, StageOwnershipError
 
 
 def _owner(

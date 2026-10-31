@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.staging import STAGING_FAMILIES
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementCategory,
     StagingMeasurements,
 )
-from repomap_kg.storage.staging_phase_events import (
+from common_lore_index.storage.staging_phase_events import (
     STAGING_PHASE_CODES,
     StagingPhaseEvent,
     StagingPhaseEventCategory,

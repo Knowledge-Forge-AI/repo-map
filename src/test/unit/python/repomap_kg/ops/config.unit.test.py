@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.ops.config import (
+from common_lore_index.ops.config import (
     OpsConfigError,
     load_ops_config,
     load_ops_config_home,
@@ -46,9 +46,10 @@ class OpsConfigUnitTests(unittest.TestCase):
         return home
 
     def test_repo_map_home_defaults_and_env_override_without_creation(self):
-        with patch.dict("os.environ", {}, clear=True):
-            default_home = resolve_repo_map_home()
-        self.assertEqual(default_home, Path("~/.repo-map").expanduser())
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.dict("os.environ", {"HOME": tmpdir}, clear=True):
+                default_home = resolve_repo_map_home()
+            self.assertEqual(default_home, Path(tmpdir) / ".cloe")
 
         with tempfile.TemporaryDirectory() as tmpdir:
             env_home = Path(tmpdir) / "configured-home"
@@ -62,10 +63,10 @@ class OpsConfigUnitTests(unittest.TestCase):
         legacy_env = "REPO" + "_MAP_HOME"
         with tempfile.TemporaryDirectory() as tmpdir:
             legacy_home = Path(tmpdir) / "legacy-home"
-            with patch.dict("os.environ", {legacy_env: str(legacy_home)}, clear=True):
+            with patch.dict("os.environ", {"HOME": tmpdir, legacy_env: str(legacy_home)}, clear=True):
                 resolved = resolve_repo_map_home()
 
-        self.assertEqual(resolved, Path("~/.repo-map").expanduser())
+        self.assertEqual(resolved, Path(tmpdir) / ".cloe")
         self.assertNotEqual(resolved, legacy_home)
 
     def test_config_home_discovers_rp_and_rpl_files_with_overlay(self):

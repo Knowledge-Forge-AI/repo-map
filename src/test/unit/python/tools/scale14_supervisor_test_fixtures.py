@@ -1,6 +1,6 @@
 from __future__ import annotations
-from repomap_kg.storage.staging_event_transport import StagingEventFrame
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_event_transport import StagingEventFrame
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEventCategory,
 )
 from scale14_actual_refresh_supervisor import (

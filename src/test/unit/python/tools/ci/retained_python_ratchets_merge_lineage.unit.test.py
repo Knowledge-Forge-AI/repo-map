@@ -149,7 +149,7 @@ def test_5_merge_local_registry_change_checked_for_append_only_and_unused_author
         "new_ownership_manifest_sha256": "d" * 64,
         "old_selected_set_sha256": "e" * 64,
         "new_selected_set_sha256": "f" * 64,
-        "changes": [{"old": None, "new": selection_item("repomap_kg.unused", "src/main/python/repomap_kg/unused.py")}],
+        "changes": [{"old": None, "new": selection_item("common_lore_index.unused", "src/main/python/common_lore_index/unused.py")}],
         "phase": "SYNTHETIC-UNUSED",
         "status_path": "docs/status/2099/01/01/99999-synthetic-unused-exit.md",
         "reason": "Unused authority.",

@@ -7,7 +7,7 @@ import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.source import FeedFetchResponse
+from common_lore_index.ops.ingestion.source import FeedFetchResponse
 
 
 from repomap_test_support.source_ingestion_records import (
@@ -347,7 +347,7 @@ fetch("https://example.invalid/report-data.json");
         return fetcher
 
     def fake_loader(self, _psql_args, observations, **_kwargs):
-        from repomap_kg.storage import LoadSummary
+        from common_lore_index.storage import LoadSummary
 
         self.assertGreater(len(observations), 0)
         return LoadSummary(repository_id=7, run_id=11, files=1)

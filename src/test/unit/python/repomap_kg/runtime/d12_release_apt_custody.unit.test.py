@@ -16,8 +16,8 @@ import sys
 
 import pytest
 
-from repomap_kg.runtime.commands import render_server_dockerfile
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.commands import render_server_dockerfile
+from common_lore_index.runtime.release import (
     APT_WORKDIR,
     RELEASE_FINAL_PACKAGE_CHECK_PY,
     RELEASE_FINAL_PROBE_PY,

@@ -14,9 +14,9 @@ for _rel in ("tools", "src/main/python", "src/test/support/python"):
 
 import d12_dependency_preflight as inner
 import d12_libpq_runtime_probe
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime import release_manifest as historical
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime import release_manifest as historical
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE, DebPackage, PlatformPackages,
 )
 from repomap_test_support import d12_core_image as d12

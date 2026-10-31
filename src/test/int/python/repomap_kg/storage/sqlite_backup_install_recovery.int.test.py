@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import backup, restore
-from repomap_kg.storage.sqlite_local.connection import publisher_lock, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError, accepted_identity
+from common_lore_index.storage.sqlite_local import backup, restore
+from common_lore_index.storage.sqlite_local.connection import publisher_lock, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError, accepted_identity
 from repomap_test_support.sqlite_local_fixtures import (
     generation_bundle,
     local_binding,

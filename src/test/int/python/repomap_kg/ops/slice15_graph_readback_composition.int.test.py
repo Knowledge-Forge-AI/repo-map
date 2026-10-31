@@ -11,25 +11,25 @@ from typing import Any, cast
 
 import pytest
 
-from repomap_kg.ops.baseline_operations import (
+from common_lore_index.ops.baseline_operations import (
     BaselineOperationDependencies,
     prune_graph_baselines,
     query_drift_check,
     save_graph_baselines,
 )
-from repomap_kg.ops.config import (
+from common_lore_index.ops.config import (
     OpsConfigError,
     check_ops_graph_storage_status,
     load_ops_config,
     load_ops_config_home,
 )
-from repomap_kg.ops.config_status import (
+from common_lore_index.ops.config_status import (
     format_ops_graph_registry_table,
     ops_config_status_to_jsonable,
     ops_graph_registry_status_to_jsonable,
 )
-from repomap_kg.ops.graph_files import GraphFileFilters, query_graph_files
-from repomap_kg.ops.reports import (
+from common_lore_index.ops.graph_files import GraphFileFilters, query_graph_files
+from common_lore_index.ops.reports import (
     OpsGraphSummary,
     OpsRefreshError,
     format_baseline_prune_table,
@@ -37,11 +37,11 @@ from repomap_kg.ops.reports import (
     format_drift_check_table,
     format_refresh_status_table,
 )
-from repomap_kg.ops.source_generation import (
+from common_lore_index.ops.source_generation import (
     SourceGenerationLimits,
     scan_source_generation,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 
 

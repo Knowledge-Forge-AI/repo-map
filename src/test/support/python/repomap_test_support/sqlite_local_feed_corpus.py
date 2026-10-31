@@ -27,12 +27,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.extractors.documents.feed import extract_feed_file_observations
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.ingestion.source import FeedFetchResponse, FeedIngestionSummary, ingest_feed_source
-from repomap_kg.storage.staged_ingestion import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.extractors.documents.feed import extract_feed_file_observations
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.ingestion.source import FeedFetchResponse, FeedIngestionSummary, ingest_feed_source
+from common_lore_index.storage.staged_ingestion import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 FIXTURES = Path(__file__).parents[3] / "fixtures"
 FEED_BODIES = FIXTURES / "discovery" / "feed_static_basic"

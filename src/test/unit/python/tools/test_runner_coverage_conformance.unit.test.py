@@ -9,8 +9,8 @@ import sys
 import coverage
 import pytest
 
-from repomap_kg.coordinator import _portable_worker_launch as launch
-from repomap_kg.coordinator._worker_launch import WorkerLaunchSpec
+from common_lore_index.coordinator import _portable_worker_launch as launch
+from common_lore_index.coordinator._worker_launch import WorkerLaunchSpec
 from repomap_test_support.portable_worker_conformance import run_portable_worker_conformance
 from runner_coverage import ChildCoverageSession
 from runner_coverage_capability import CapabilityContainmentError, CapabilityValidationError
@@ -112,7 +112,7 @@ def test_actual_conformance_supervisor_preserves_guard_cleanup_and_measurement(t
                 assert snapshot['receipt_diagnostic'] == 'write_failed'
             assert not session.measurement_errors
             data = session.combine(runner).get_data()
-            worker = str(ROOT / 'src/main/python/repomap_kg/coordinator/portable_worker.py')
+            worker = str(ROOT / 'src/main/python/common_lore_index/coordinator/portable_worker.py')
             assert data.lines(worker)
             assert data.arcs(worker)
     finally:
@@ -157,7 +157,7 @@ def test_canonical_production_launch_through_original_supervisor_is_measured(tmp
     observed = []
 
     def canonical_command(*args, **kwargs):
-        kwargs.update(module='repomap_kg.coordinator.portable_worker', module_arguments=(), python_paths=())
+        kwargs.update(module='common_lore_index.coordinator.portable_worker', module_arguments=(), python_paths=())
         return original_command(*args, **kwargs)
 
     original_supervisor = launch.run_worker_spec
@@ -182,7 +182,7 @@ def test_canonical_production_launch_through_original_supervisor_is_measured(tmp
         assert str(ROOT / 'src/test/support/python') not in observed[0].environment['PYTHONPATH']
         assert not session.measurement_errors
         data = session.combine(runner).get_data()
-        assert data.arcs(str(ROOT / 'src/main/python/repomap_kg/coordinator/portable_worker.py'))
+        assert data.arcs(str(ROOT / 'src/main/python/common_lore_index/coordinator/portable_worker.py'))
     finally:
         runner.stop()
         session.cleanup()

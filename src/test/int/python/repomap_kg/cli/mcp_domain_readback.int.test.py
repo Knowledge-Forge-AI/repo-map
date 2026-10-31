@@ -14,8 +14,8 @@ from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.psql import run_psql
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.psql import run_psql
 from repomap_test_support.mcp_domain_rows import (
     DOMAIN_ROWS_SQL,
     run_portable_publication_mcp_readback_scenario,
@@ -44,7 +44,7 @@ class McpDomainReadbackIntegrationTests(unittest.TestCase):
         payload = "\n".join(json.dumps(req) for req in requests) + "\n"
         env = module_process_environment(extra_env=extra_env)
         result = launch_observed_process(
-            [sys.executable, "-m", "repomap_kg.server.mcp"],
+            [sys.executable, "-m", "common_lore_index.server.mcp"],
             family="cli_module",
             cwd=REPO_ROOT,
             env=env,
@@ -163,7 +163,7 @@ refresh_policy = "manual"
                     encoding="utf-8",
                 )
 
-                from repomap_kg.ops.config_loading import load_ops_config
+                from common_lore_index.ops.config_loading import load_ops_config
                 load_ops_config(cfg_path)
 
                 extra_env = {"REPOMAP_OPS_CONFIG": str(cfg_path), "REPOMAP_PSQL_COMMAND": postgres.psql_command}

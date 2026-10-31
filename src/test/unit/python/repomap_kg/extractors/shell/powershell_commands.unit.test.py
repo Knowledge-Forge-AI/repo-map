@@ -2,7 +2,7 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.extractors.shell.powershell import extract_powershell_file_observations
+from common_lore_index.extractors.shell.powershell import extract_powershell_file_observations
 
 from repomap_test_support.powershell import (
     POWERSHELL_FIXTURE_ROOT as FIXTURE_ROOT,

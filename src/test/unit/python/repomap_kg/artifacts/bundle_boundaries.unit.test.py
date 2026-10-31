@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.artifacts.bundle import (
+from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_BYTES,
     MAX_BUNDLE_LINE_BYTES,
     MAX_BUNDLE_RECORDS,
@@ -12,7 +12,7 @@ from repomap_kg.artifacts.bundle import (
     FamilySummary,
     PublicationBundle,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def _base_bundle_kwargs():
@@ -154,7 +154,7 @@ class BundleBoundariesUnitTests(unittest.TestCase):
                 self.assertIn(f"bundle {field} is invalid", str(caught.exception))
 
     def test_vector_validation_branches(self):
-        from repomap_kg.artifacts.bundle import _vector
+        from common_lore_index.artifacts.bundle import _vector
 
         with self.assertRaises(ValueError) as caught:
             _vector("not-a-list")
@@ -288,7 +288,7 @@ class BundleBoundariesUnitTests(unittest.TestCase):
 
     def test_record_count_boundary_at_and_above_limit(self):
         from unittest.mock import patch
-        from repomap_kg.artifacts import bundle as bundle_module
+        from common_lore_index.artifacts import bundle as bundle_module
         kwargs = _base_bundle_kwargs()
         with patch.object(bundle_module, "MAX_BUNDLE_RECORDS", 5):
             # Below limit (4 single-family)
@@ -323,7 +323,7 @@ class BundleBoundariesUnitTests(unittest.TestCase):
 
     def test_bundle_bytes_and_line_bytes_boundary(self):
         from unittest.mock import patch
-        from repomap_kg.artifacts import bundle as bundle_module
+        from common_lore_index.artifacts import bundle as bundle_module
         kwargs = _base_bundle_kwargs()
         kwargs["families"]["files"] = ({"path": "p1"}, {"path": "p2"})
         bundle = PublicationBundle.create(**kwargs)

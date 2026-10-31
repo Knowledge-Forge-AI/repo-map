@@ -7,12 +7,12 @@ from repomap_test_support.canonical_contract import (
     odf_package as _odf_package,
 )
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.documents.office import (
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.documents.office import (
     extract_document_file_observations,
     extract_odf_file_observations,
 )
-from repomap_kg.observations import RawObservation
+from common_lore_index.observations import RawObservation
 
 
 class _OdfOptions(TypedDict, total=False):

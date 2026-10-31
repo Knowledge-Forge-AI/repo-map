@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from typing import Any
-from repomap_kg.runtime.release import POSTGRES_RELEASE_VERSION, PYTHON_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release import POSTGRES_RELEASE_VERSION, PYTHON_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support.d12_image_probes import SERVER, CLIENTS, NOTICES
 
 LIBC = "/usr/lib/x86_64-linux-gnu/libc.so.6"

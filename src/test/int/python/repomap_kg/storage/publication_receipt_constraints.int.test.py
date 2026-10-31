@@ -7,31 +7,31 @@ from typing import Any
 import psycopg
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage._psql_stream import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage._psql_stream import (
     _BoundedTextCapture,
     _PsqlStreamFailure,
     _is_connection_failure,
     _write_chunks,
     run_psql_stream,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.backend_telemetry_contracts import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.backend_telemetry_contracts import (
     ConnectionTelemetryError,
     ConnectionTelemetryEvent,
     TelemetryEventKind,
 )
-from repomap_kg.storage.backend_telemetry_events import (
+from common_lore_index.storage.backend_telemetry_events import (
     frame_telemetry_event,
     parse_telemetry_frame,
     read_telemetry_event,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     DiagnosticOptions,
     _resolve_diagnostic_options,
 )
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
 )
@@ -269,8 +269,8 @@ def test_staging_event_transport_extended_receive_and_readiness() -> None:
 
 def test_readback_driver_and_transport_error_branches() -> None:
     from unittest import mock
-    from repomap_kg.storage.readback_driver import diagnose_psycopg_database_presence
-    from repomap_kg.storage.staging_event_transport import (
+    from common_lore_index.storage.readback_driver import diagnose_psycopg_database_presence
+    from common_lore_index.storage.staging_event_transport import (
         staging_event_channel_from_inherited_fd,
         StagingEventTransportError,
     )
@@ -284,7 +284,7 @@ def test_readback_driver_and_transport_error_branches() -> None:
         == "unavailable"
     )
 
-    with mock.patch("repomap_kg.storage.readback_driver._import_psycopg") as mock_import:
+    with mock.patch("common_lore_index.storage.readback_driver._import_psycopg") as mock_import:
         err = Exception("auth failure")
         setattr(err, "sqlstate", "28000")
         mock_psycopg = mock.MagicMock()

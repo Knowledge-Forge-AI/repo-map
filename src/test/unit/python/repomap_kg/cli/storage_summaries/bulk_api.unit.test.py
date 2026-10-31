@@ -4,8 +4,8 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import (
+from common_lore_index.cli import main
+from common_lore_index.storage import (
     APISummaryRecord,
     BulkSummaryRecord,
 )
@@ -46,7 +46,7 @@ class CliStorageBulkApiSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_bulk_summary",
+            "common_lore_index.cli.query_bulk_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -111,7 +111,7 @@ class CliStorageBulkApiSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_bulk_summary",
+            "common_lore_index.cli.query_bulk_summary",
             return_value=summary,
         ):
             with redirect_stdout(stdout):
@@ -164,7 +164,7 @@ class CliStorageBulkApiSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_api_summary",
+            "common_lore_index.cli.query_api_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -230,7 +230,7 @@ class CliStorageBulkApiSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_api_summary",
+            "common_lore_index.cli.query_api_summary",
             return_value=summary,
         ):
             with redirect_stdout(stdout):

@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.graph.go_source_keys import (
+from common_lore_index.graph.go_source_keys import (
     go_source_const_key,
     go_source_function_key,
     go_source_method_key,
@@ -11,7 +11,7 @@ from repomap_kg.graph.go_source_keys import (
     go_source_var_key,
     validate_go_repository_scope,
 )
-from repomap_kg.graph.keys import GraphKeyError, go_module_key, parse_key
+from common_lore_index.graph.keys import GraphKeyError, go_module_key, parse_key
 
 
 class GoSourceGraphKeyTests(unittest.TestCase):

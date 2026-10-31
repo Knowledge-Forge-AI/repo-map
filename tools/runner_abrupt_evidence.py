@@ -125,7 +125,7 @@ class AbruptRunnerContext:
 
     @contextmanager
     def bind_session(self, session):
-        import repomap_kg.coordinator._portable_worker_launch as owner
+        import common_lore_index.coordinator._portable_worker_launch as owner
         previous_context = type(self)._CURRENT
         measured_adapter = owner.run_worker_spec
         original = getattr(measured_adapter, "_repomap_original", measured_adapter)
@@ -152,7 +152,7 @@ class AbruptRunnerContext:
                     raise RuntimeError("abrupt conformance source paths mismatch")
             if any(k.startswith("COVERAGE_") for k in spec.environment):
                 raise RuntimeError("ambient coverage in abrupt spec")
-            from repomap_kg.coordinator.process_supervision import launch_managed_process
+            from common_lore_index.coordinator.process_supervision import launch_managed_process
             launch = self.begin("conformance-abrupt")
             launcher = kwargs.pop("_launch_process", None) or launch_managed_process
 

@@ -6,7 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import NoReturn
 
-from repomap_kg.storage.staging_phase_events import (
+from common_lore_index.storage.staging_phase_events import (
     STAGING_PHASE_CODES,
     StagingPhaseEventCategory,
 )

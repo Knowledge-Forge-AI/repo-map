@@ -3,12 +3,12 @@ from __future__ import annotations
 import psycopg
 import pytest
 
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.runtime.maintenance import (
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.runtime.maintenance import (
     MaintenanceUnavailableError,
     maintenance_window,
 )
-from repomap_kg.storage import apply_migrations
+from common_lore_index.storage import apply_migrations
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

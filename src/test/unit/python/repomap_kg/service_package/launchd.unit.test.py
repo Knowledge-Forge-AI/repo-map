@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.service_package import contract
+from common_lore_index.service_package import contract
 
 from dataclasses import replace
 import plistlib
@@ -9,8 +9,8 @@ import shutil
 
 import pytest
 
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
 
 
 def test_launchd_renders_one_private_user_launch_agent(tmp_path, service_authority):

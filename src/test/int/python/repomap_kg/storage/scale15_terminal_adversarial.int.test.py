@@ -7,23 +7,23 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import (
     AttemptNumber,
     JobId,
     OperationId,
     PublicationGenerations,
 )
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staged_rows import build_staged_rows
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

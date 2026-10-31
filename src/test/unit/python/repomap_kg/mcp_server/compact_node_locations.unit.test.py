@@ -11,10 +11,10 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.storage.sqlite_local import node_location_queries
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.server import mcp
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.storage.sqlite_local import node_location_queries
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.host_read_store_config import NO_FALLBACK_GUARDS, patched_guards, setup_owned_config
 from repomap_test_support.node_location_fixtures import DOC, GRAPH, SYMBOL, locator_home, publish_locator_generation
 from repomap_test_support.sqlite_local_fixtures import generation_bundle, publication_for
@@ -212,7 +212,7 @@ def test_postgresql_unsupported_stays_an_ordinary_result(tmp_path: Path, monkeyp
 
 @pytest.mark.parametrize("detail", ["small", "", None, True, [], {}])
 def test_invalid_detail_refuses_before_configuration_or_storage(detail: Any) -> None:
-    with patch("repomap_kg.server._mcp_locations.configured_graph", side_effect=AssertionError("I/O")):
+    with patch("common_lore_index.server._mcp_locations.configured_graph", side_effect=AssertionError("I/O")):
         with pytest.raises(RepoMapMcpError, match="detail must be full or compact"):
             call(detail=detail)
         response = mcp.handle_jsonrpc_message({"jsonrpc": "2.0", "id": 1, "method": "tools/call",

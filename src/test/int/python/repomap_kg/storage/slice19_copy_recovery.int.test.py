@@ -3,8 +3,8 @@
 import psycopg
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.staging_copy import CopyContractError, STAGING_COPY_TABLES, copy_stage_rows
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.staging_copy import CopyContractError, STAGING_COPY_TABLES, copy_stage_rows
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.coordinator import _protocol_core as pc
+from common_lore_index.coordinator import _protocol_core as pc
 
 
 class ProtocolCoreBoundariesUnitTests(unittest.TestCase):

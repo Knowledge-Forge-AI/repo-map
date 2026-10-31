@@ -1,7 +1,7 @@
 import psycopg
 import pytest
 
-from repomap_kg.storage.backend_observer import (
+from common_lore_index.storage.backend_observer import (
     BackendOwnershipObserver,
     current_backend_identity,
 )

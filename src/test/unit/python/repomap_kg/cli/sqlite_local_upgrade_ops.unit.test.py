@@ -22,12 +22,12 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg import cli
-from repomap_kg.ops import local_refresh, portable_refresh
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
-from repomap_kg.storage.sqlite_local import migrations
-from repomap_kg.storage.sqlite_local.connection import publisher_lock
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index import cli
+from common_lore_index.ops import local_refresh, portable_refresh
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
+from common_lore_index.storage.sqlite_local import migrations
+from common_lore_index.storage.sqlite_local.connection import publisher_lock
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.host_read_store_config import fail_if_reached, setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import (

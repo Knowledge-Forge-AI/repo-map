@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.protocol import (
     MAX_JSONL_LINE_BYTES,
     ProtocolError,
     ProtocolSession,

@@ -6,7 +6,7 @@ import psycopg
 import pytest
 
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     LocalControlAuthority,
     coordinator_control_status,
@@ -18,7 +18,7 @@ from repomap_kg.coordinator.local_lifecycle import (
     maintenance_window_for_graph_upgrade,
     upgrade_coordinator_control,
 )
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
+from common_lore_index.runtime.maintenance import MaintenanceUnavailableError
 from repomap_test_support.cli_in_process import scrub_coverage_environment
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
@@ -328,8 +328,8 @@ def test_local_direct_route_control_lifecycle(tmp_path, monkeypatch, credential_
     import subprocess
     import sys
     from psycopg import sql
-    import repomap_kg
-    from repomap_kg.runtime.local import setup_local_runtime
+    import common_lore_index
+    from common_lore_index.runtime.local import setup_local_runtime
     home = tmp_path / "native-home"
     setup_local_runtime(home)
     assert home.stat().st_mode & 0o777 == 0o700
@@ -359,11 +359,11 @@ def test_local_direct_route_control_lifecycle(tmp_path, monkeypatch, credential_
             elif credential_authority == "environment":
                 monkeypatch.setenv("REPOMAP_PG_PASSWORD", secret)
             environment = scrub_coverage_environment(os.environ)
-            environment["PYTHONPATH"] = str(Path(repomap_kg.__file__).parents[1])
+            environment["PYTHONPATH"] = str(Path(common_lore_index.__file__).parents[1])
             environment["PGPASSFILE"] = str(tmp_path / "absent-pgpass")
             def command(name):
                 result = subprocess.run(
-                    [sys.executable, "-m", "repomap_kg", "ops", name,
+                    [sys.executable, "-m", "common_lore_index", "ops", name,
                      "--repo-map-home", str(home), "--json"],
                     env=environment, capture_output=True, text=True, timeout=60,
                 )
@@ -386,7 +386,7 @@ def test_local_direct_route_control_lifecycle(tmp_path, monkeypatch, credential_
 
 
 def test_custom_credential_does_not_use_generated_admin(tmp_path, monkeypatch):
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
 
     home = tmp_path / "custom-home"
     setup_local_runtime(home)

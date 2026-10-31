@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     _install_connection_signal_handlers,
     _restore_connection_signal_handlers,
 )
@@ -35,10 +35,10 @@ def test_signal_handlers_request_bounded_database_cancellation() -> None:
         installed[signal_number] = handler
 
     with patch(
-        "repomap_kg.storage.staged_ingestion.signal.getsignal",
+        "common_lore_index.storage.staged_ingestion.signal.getsignal",
         return_value="previous",
     ), patch(
-        "repomap_kg.storage.staged_ingestion.signal.signal",
+        "common_lore_index.storage.staged_ingestion.signal.signal",
         side_effect=install,
     ):
         previous = _install_connection_signal_handlers(connection)
@@ -57,10 +57,10 @@ def test_signal_handler_falls_back_to_legacy_cancel_api() -> None:
     installed: dict[object, Callable[..., Any]] = {}
 
     with patch(
-        "repomap_kg.storage.staged_ingestion.signal.getsignal",
+        "common_lore_index.storage.staged_ingestion.signal.getsignal",
         return_value="previous",
     ), patch(
-        "repomap_kg.storage.staged_ingestion.signal.signal",
+        "common_lore_index.storage.staged_ingestion.signal.signal",
         side_effect=lambda signal_number, handler: installed.__setitem__(
             signal_number, handler
         ),

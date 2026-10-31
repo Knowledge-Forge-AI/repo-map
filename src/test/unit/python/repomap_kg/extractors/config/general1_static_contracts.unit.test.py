@@ -3,8 +3,8 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.shell.powershell import extract_powershell_file_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.shell.powershell import extract_powershell_file_observations
 
 
 class General1StaticContractsUnitTests(unittest.TestCase):

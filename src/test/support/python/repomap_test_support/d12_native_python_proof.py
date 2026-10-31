@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 from typing import Any, Mapping, Sequence
 
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 
 COMPONENT_SCHEMA = "repomap-d12-python31216-component-v1"
 ENVELOPE_PATH = "tools/ci/d12_python31216_native_inputs.json"

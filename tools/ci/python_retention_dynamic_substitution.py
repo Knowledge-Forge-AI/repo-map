@@ -15,7 +15,7 @@ from ci.python_retention_operations import dynamic_operations
 CASES: dict[str, dict[str, Any]] = {
     "base_package_import": {
         "symbol": "test_base_package_import_does_not_require_scale_tools",
-        "target_module": "repomap_kg",
+        "target_module": "common_lore_index",
         "alternate_names": ["_repomap_without_scale_tools"],
         "outcome": "import_succeeds",
     },

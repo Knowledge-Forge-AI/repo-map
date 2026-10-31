@@ -10,10 +10,10 @@ import sys
 import tempfile
 import unittest
 
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator import _portable_authority as pa
-from repomap_kg.coordinator.protocol import SyntheticWorkerResult
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator import _portable_authority as pa
+from common_lore_index.coordinator.protocol import SyntheticWorkerResult
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.run25_portable_workflows import (
     WorkerLaunchSpec,
     build_clean_explicit_pythonpath,
@@ -77,8 +77,8 @@ class PortableBootstrapCausalityUnitTests(unittest.TestCase):
             "psycopg",
             "psycopg2",
             "sqlite3",
-            "repomap_kg.coordinator._control_test",
-            "repomap_kg.registry",
+            "common_lore_index.coordinator._control_test",
+            "common_lore_index.registry",
         ):
             with self.subTest(denied=denied):
                 with self.assertRaisesRegex(PermissionError, "import authority denied"):
@@ -94,7 +94,7 @@ class PortableBootstrapCausalityUnitTests(unittest.TestCase):
         )
         script = (
             "from pathlib import Path\n"
-            "from repomap_kg.coordinator._portable_authority import install_portable_authority_guard\n"
+            "from common_lore_index.coordinator._portable_authority import install_portable_authority_guard\n"
             f"install_portable_authority_guard(store_root=Path({str(self.write_root)!r}), "
             f"workspace_root=Path({str(self.write_root)!r}), code_roots=[Path({str(self.repo_root)!r})])\n"
             "import psycopg\n"
@@ -118,7 +118,7 @@ class PortableBootstrapCausalityUnitTests(unittest.TestCase):
         )
         script = (
             "from pathlib import Path\n"
-            "from repomap_kg.coordinator._portable_authority import install_portable_authority_guard\n"
+            "from common_lore_index.coordinator._portable_authority import install_portable_authority_guard\n"
             f"install_portable_authority_guard(store_root=Path({str(self.write_root)!r}), "
             f"workspace_root=Path({str(self.write_root)!r}), code_roots=[Path({str(self.repo_root)!r})])\n"
             "import sqlite3\n"
@@ -141,16 +141,16 @@ class PortableBootstrapCausalityUnitTests(unittest.TestCase):
 import json, sys, types
 from pathlib import Path
 repo_root = Path(sys.argv[3])
-pkg_root = repo_root / "src" / "main" / "python" / "repomap_kg"
+pkg_root = repo_root / "src" / "main" / "python" / "common_lore_index"
 for pkg_name, pkg_path in (
-    ("repomap_kg", pkg_root),
-    ("repomap_kg.coordinator", pkg_root / "coordinator"),
+    ("common_lore_index", pkg_root),
+    ("common_lore_index.coordinator", pkg_root / "coordinator"),
 ):
     if pkg_name not in sys.modules:
         mod = types.ModuleType(pkg_name)
         mod.__path__ = [str(pkg_path)]
         sys.modules[pkg_name] = mod
-from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
+from common_lore_index.coordinator._portable_authority import install_portable_authority_guard
 install_portable_authority_guard(
     store_root=Path(sys.argv[1]),
     workspace_root=Path(sys.argv[2]),

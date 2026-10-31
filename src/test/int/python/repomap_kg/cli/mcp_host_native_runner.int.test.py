@@ -26,12 +26,12 @@ import zipfile
 
 import pytest
 
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config import build_graph_storage_status_sql
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.ops.refresh_sql import build_graph_summary_sql, build_refresh_status_sql
-from repomap_kg.runtime.database_roles import READ_STATUS_ROLE
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config import build_graph_storage_status_sql
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.ops.refresh_sql import build_graph_summary_sql, build_refresh_status_sql
+from common_lore_index.runtime.database_roles import READ_STATUS_ROLE
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from smoke.host_mcp_native_checks import STATUS_COUNTS
 from smoke.host_mcp_native_evidence import EvidenceWriter

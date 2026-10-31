@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from repomap_kg.storage.publication import RunPublicationReceipt
-from repomap_kg.storage.run_authority import RunAuthoritySnapshot, RunStatus
+from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.run_authority import RunAuthoritySnapshot, RunStatus
 from scale15_readback_records import (
     StageTerminalEvidence,
     TerminalStorageEvidence,

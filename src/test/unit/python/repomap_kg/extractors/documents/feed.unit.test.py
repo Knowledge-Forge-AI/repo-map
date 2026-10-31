@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from repomap_kg.extractors.documents.feed import extract_feed_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.documents.feed import extract_feed_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 RSS_FIXTURE = """\

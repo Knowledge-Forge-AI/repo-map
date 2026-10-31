@@ -28,23 +28,23 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.ops import _portable_retention, local_refresh
-from repomap_kg.ops import portable_refresh
-from repomap_kg.ops._portable_retention import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.ops import _portable_retention, local_refresh
+from common_lore_index.ops import portable_refresh
+from common_lore_index.ops._portable_retention import (
     PortableRefreshError,
     _annotate_retained_attempt,
     _mark_retained_terminal,
     _read_retention_payload,
 )
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
-from repomap_kg.ops.local_refresh import ATTEMPT_BLOCK, attempts_namespace, refresh_local_graph
-from repomap_kg.ops.portable_refresh import portable_attempts_parent
-from repomap_kg.storage.sqlite_local import durability, investigation_queries, publisher
-from repomap_kg.storage.sqlite_local.connection import publisher_lock, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import LocalPublication, publish_generation
-from repomap_kg.storage.sqlite_local.durability import DURABILITY_FAILED
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
+from common_lore_index.ops.local_refresh import ATTEMPT_BLOCK, attempts_namespace, refresh_local_graph
+from common_lore_index.ops.portable_refresh import portable_attempts_parent
+from common_lore_index.storage.sqlite_local import durability, investigation_queries, publisher
+from common_lore_index.storage.sqlite_local.connection import publisher_lock, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import LocalPublication, publish_generation
+from common_lore_index.storage.sqlite_local.durability import DURABILITY_FAILED
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.host_read_store_config import fail_if_reached
 from repomap_test_support.sqlite_local_fixtures import (

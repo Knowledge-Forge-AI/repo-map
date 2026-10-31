@@ -13,9 +13,9 @@ from typing import overload
 import psutil
 import psycopg
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.observations.spool import ObservationSpool
-from repomap_kg.ops.config_records import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.observations.spool import ObservationSpool
+from common_lore_index.ops.config_records import (
     OpsConfig,
     OpsGraphConfig,
     OpsPostgresConfig,
@@ -24,16 +24,16 @@ from repomap_kg.ops.config_records import (
     OpsServiceConfig,
     OpsSourcesConfig,
 )
-from repomap_kg.ops.refresh import refresh_graph
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.ops.refresh import refresh_graph
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurements,

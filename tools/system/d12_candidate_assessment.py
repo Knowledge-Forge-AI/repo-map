@@ -5,12 +5,12 @@ from collections.abc import Mapping, Sequence
 import re
 from typing import Any
 
-from repomap_kg.runtime.release import POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION
+from common_lore_index.runtime.release import POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION
 from repomap_test_support import d12_dynamic_linkage as linkage
 from repomap_test_support.d12_image_probes import CLIENTS, NOTICES, SERVER
 from tools.system.config import SystemTestError
-from repomap_kg.runtime.release import DebPackage, POSTGRES_RELEASE_IMAGE, PlatformPackages
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release import DebPackage, POSTGRES_RELEASE_IMAGE, PlatformPackages
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 
 APPROVED_DIAGNOSTIC_STOPS = (
     "vulnerability classification of every other package and distribution is not performed (unknown)",

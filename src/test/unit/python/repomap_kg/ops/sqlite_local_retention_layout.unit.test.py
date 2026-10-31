@@ -21,15 +21,15 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.ops import _portable_retention
-from repomap_kg.ops._portable_retention import (
+from common_lore_index.ops import _portable_retention
+from common_lore_index.ops._portable_retention import (
     PortableRefreshError,
     _mark_retained_terminal,
     _read_retention_payload,
 )
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.ops.local_refresh import attempts_namespace
-from repomap_kg.ops.portable_refresh import portable_attempts_parent
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.ops.local_refresh import attempts_namespace
+from common_lore_index.ops.portable_refresh import portable_attempts_parent
 from repomap_test_support.host_read_store_config import fail_if_reached
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_sqlite_home
 

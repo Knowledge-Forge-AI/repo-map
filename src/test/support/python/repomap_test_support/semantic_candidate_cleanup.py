@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from typing import Any
 
-from repomap_kg.storage.psql import run_psql
+from common_lore_index.storage.psql import run_psql
 
 ENRICHMENT_CLEANUP_SQL = (
     "DROP TABLE IF EXISTS repomap_enrichment.embeddings; "

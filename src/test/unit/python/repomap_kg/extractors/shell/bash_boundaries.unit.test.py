@@ -1,6 +1,6 @@
 import unittest
-from repomap_kg.extractors.shell.bash import extract_bash_file_observations
-from repomap_kg.extractors.shell.bash_constructs import parse_alias_spec
+from common_lore_index.extractors.shell.bash import extract_bash_file_observations
+from common_lore_index.extractors.shell.bash_constructs import parse_alias_spec
 
 class ShellBashBoundariesUnitTests(unittest.TestCase):
     def test_bash_constructs_and_side_effects(self):
@@ -34,7 +34,7 @@ diff <(echo "a") <(echo "b")
         self.assertEqual(target, "git")
 
     def test_bash_side_effect_rules_boundaries(self):
-        from repomap_kg.extractors.shell.bash_side_effect_rules import (
+        from common_lore_index.extractors.shell.bash_side_effect_rules import (
             container_operation_for,
             credential_operation,
             credential_target,

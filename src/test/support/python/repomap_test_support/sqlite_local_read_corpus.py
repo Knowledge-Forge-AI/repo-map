@@ -18,10 +18,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.staged_ingestion import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.staged_ingestion import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.sqlite_local_fixtures import write_shell_source
 
 POLYGLOT_FILES: dict[str, str] = {

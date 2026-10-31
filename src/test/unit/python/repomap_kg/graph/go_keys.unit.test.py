@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     GraphKeyError,
     go_const_key,
     go_function_key,

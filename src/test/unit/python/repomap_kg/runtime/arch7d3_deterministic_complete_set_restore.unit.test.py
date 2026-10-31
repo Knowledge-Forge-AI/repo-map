@@ -8,18 +8,18 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.cli import main
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import build_local_runtime_plan
+from common_lore_index.cli import main
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.backup_restore_sets import restore_coordinated_backup
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import build_local_runtime_plan
 from repomap_test_support.local_db_backup import baseline_toc_bytes
 
 
 @pytest.fixture(autouse=True)
 def _mock_restore_toc_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "repomap_kg.runtime.backup_inspection._run_pg_restore_list_bytes",
+        "common_lore_index.runtime.backup_inspection._run_pg_restore_list_bytes",
         lambda *_args, **_kwargs: baseline_toc_bytes(),
     )
 
@@ -83,15 +83,15 @@ def test_dry_run_validates_complete_set_and_preflights_every_target(tmp_path: Pa
 
     with (
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
             return_value=SimpleNamespace(to_jsonable=lambda: {"labels_verified": True}),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             side_effect=absent,
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.create_database",
+            "common_lore_index.runtime.backup_restore_sets.create_database",
             side_effect=AssertionError("dry-run created a database"),
         ),
     ):
@@ -138,7 +138,7 @@ def test_invalid_set_fails_before_runtime_inspection(
     home, backup_path, _, _ = _home_with_backup(tmp_path, mutate=mutate)
 
     with patch(
-        "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+        "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
         side_effect=AssertionError("invalid backup touched the runtime"),
     ):
         with pytest.raises(LocalDbBackupError) as raised:
@@ -152,7 +152,7 @@ def test_checksum_failure_precedes_runtime_inspection(tmp_path: Path) -> None:
     (backup_path / f"{owned[0]}.pgcustom").write_bytes(b"corrupt")
 
     with patch(
-        "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+        "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
         side_effect=AssertionError("bad checksum touched the runtime"),
     ):
         with pytest.raises(LocalDbBackupError) as raised:
@@ -171,11 +171,11 @@ def test_complete_set_checksum_validation_is_bounded_streaming(tmp_path: Path) -
             side_effect=AssertionError("checksum validation buffered a dump"),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
             return_value=SimpleNamespace(),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             return_value=False,
         ),
     ):
@@ -201,15 +201,15 @@ def test_any_existing_target_refuses_before_first_create(tmp_path: Path) -> None
 
     with (
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
             return_value=SimpleNamespace(),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             side_effect=existence,
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.create_database",
+            "common_lore_index.runtime.backup_restore_sets.create_database",
             side_effect=AssertionError("occupied topology was mutated"),
         ),
     ):
@@ -226,30 +226,30 @@ def test_restore_is_graph_sorted_control_last(tmp_path: Path) -> None:
 
     with (
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
             return_value=SimpleNamespace(to_jsonable=lambda: {}),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             return_value=False,
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.create_database",
+            "common_lore_index.runtime.backup_restore_sets.create_database",
             side_effect=lambda _plan, database, _runner: events.append(
                 ("create", database)
             ),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.run_pg_restore",
+            "common_lore_index.runtime.backup_restore_sets.run_pg_restore",
             side_effect=lambda _plan, database, _path, _command, _runner: events.append(
                 ("restore", database)
             ),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.reconcile_graph_database_roles"
+            "common_lore_index.runtime.backup_restore_sets.reconcile_graph_database_roles"
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.reconcile_control_database_roles"
+            "common_lore_index.runtime.backup_restore_sets.reconcile_control_database_roles"
         ),
     ):
         result = restore_coordinated_backup(home, backup=backup_path)
@@ -282,23 +282,23 @@ def test_mid_restore_failure_cleans_created_targets_in_reverse(tmp_path: Path) -
 
     with (
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
             return_value=SimpleNamespace(),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             return_value=False,
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.create_database",
+            "common_lore_index.runtime.backup_restore_sets.create_database",
             side_effect=lambda _plan, database, _runner: created.append(database),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.run_pg_restore",
+            "common_lore_index.runtime.backup_restore_sets.run_pg_restore",
             side_effect=restore,
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.cleanup_created_database",
+            "common_lore_index.runtime.backup_restore_sets.cleanup_created_database",
             side_effect=lambda _plan, database, _runner: cleaned.append(database),
         ),
     ):
@@ -315,20 +315,20 @@ def test_cleanup_failure_is_explicit_and_bounded(tmp_path: Path) -> None:
 
     with (
         patch(
-            "repomap_kg.runtime.backup_restore_sets.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container",
             return_value=SimpleNamespace(),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.database_exists",
+            "common_lore_index.runtime.backup_restore_sets.database_exists",
             return_value=False,
         ),
-        patch("repomap_kg.runtime.backup_restore_sets.create_database"),
+        patch("common_lore_index.runtime.backup_restore_sets.create_database"),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.run_pg_restore",
+            "common_lore_index.runtime.backup_restore_sets.run_pg_restore",
             side_effect=LocalDbBackupError(()),
         ),
         patch(
-            "repomap_kg.runtime.backup_restore_sets.cleanup_created_database",
+            "common_lore_index.runtime.backup_restore_sets.cleanup_created_database",
             side_effect=RuntimeError(f"private failure for {failed_database}"),
         ),
     ):
@@ -346,7 +346,7 @@ def test_cli_restore_all_delegates_json_contract() -> None:
     )
     stdout = io.StringIO()
     with (
-        patch("repomap_kg.cli.restore_coordinated_backup", return_value=result) as helper,
+        patch("common_lore_index.cli.restore_coordinated_backup", return_value=result) as helper,
         redirect_stdout(stdout),
     ):
         exit_code = main(

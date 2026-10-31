@@ -5,7 +5,7 @@ import unittest
 from pathlib import PurePosixPath
 from typing import cast
 
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     GRAPH_KEY_VERSION,
     GraphKeyError,
     config_path_key,
@@ -63,7 +63,7 @@ class GraphKeysUnitTests(unittest.TestCase):
 
     def test_parse_key_decodes_file_and_segment_keys(self):
         parsed_file = parse_key("file:docs/My%20Tool%3Aguide%231.md")
-        parsed_method = parse_key("python.method:repomap_kg.storage:Record:to_dict")
+        parsed_method = parse_key("python.method:common_lore_index.storage:Record:to_dict")
         parsed_doc_section = parse_key(
             "doc.section:file%3AREADME.md:current-status"
         )
@@ -98,7 +98,7 @@ class GraphKeysUnitTests(unittest.TestCase):
         self.assertEqual(parsed_method.namespace, "python.method")
         self.assertEqual(
             parsed_method.segments,
-            ("repomap_kg.storage", "Record", "to_dict"),
+            ("common_lore_index.storage", "Record", "to_dict"),
         )
         self.assertIsNone(parsed_method.path)
         self.assertEqual(parsed_doc_section.namespace, "doc.section")
@@ -144,7 +144,7 @@ class GraphKeysUnitTests(unittest.TestCase):
             ("tool:nix%2", "percent"),
             ("tool:nix%2fbuild", "uppercase"),
             ("tool:nix#build", "reserved"),
-            ("python.module:repomap_kg.cli:extra", "segments"),
+            ("python.module:common_lore_index.cli:extra", "segments"),
             ("file:../outside", "escape"),
             ("file:docs//guide.md", "empty"),
             ("not-a-key", "separator"),
@@ -241,7 +241,7 @@ class GraphKeysUnitTests(unittest.TestCase):
 
     def test_key_boundaries_and_internal_coercion_helpers(self):
         from typing import Any
-        from repomap_kg.graph.keys import (
+        from common_lore_index.graph.keys import (
             _bounded_go_identity,
             _bounded_go_path_identity,
             _bounded_go_package_import_path,

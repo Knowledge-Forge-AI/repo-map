@@ -5,14 +5,14 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.semantic_seed import SimilarNodesQuery
-from repomap_kg.storage.semantic_seed_readback import query_seed_candidates, query_similar_nodes
-from repomap_kg.storage.semantic_seed_sql import build_seed_query_sql
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.semantic_seed import SimilarNodesQuery
+from common_lore_index.storage.semantic_seed_readback import query_seed_candidates, query_similar_nodes
+from common_lore_index.storage.semantic_seed_sql import build_seed_query_sql
 from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, candidate_query
 
-OWNER = "repomap_kg.storage.semantic_seed_readback.execute_json_readback"
-PROBE = "repomap_kg.storage.semantic_seed_readback.observe_candidate_capability"
+OWNER = "common_lore_index.storage.semantic_seed_readback.execute_json_readback"
+PROBE = "common_lore_index.storage.semantic_seed_readback.observe_candidate_capability"
 
 
 def seed_query(**changes) -> SimilarNodesQuery:

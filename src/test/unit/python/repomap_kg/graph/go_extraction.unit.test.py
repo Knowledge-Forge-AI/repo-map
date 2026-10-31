@@ -2,13 +2,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.extractors.languages.go_metadata import (
+from common_lore_index.extractors.languages.go_metadata import (
     detect_go_filename_constraints,
     detect_go_generated_marker,
     extract_go_metadata_observations,
 )
-from repomap_kg.graph.discovery import discover_observations, discover_repository
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.graph.discovery import discover_observations, discover_repository
+from common_lore_index.observations.raw import RawObservation
 
 
 FIXTURE_ROOT = Path(__file__).parents[4] / "fixtures" / "go"

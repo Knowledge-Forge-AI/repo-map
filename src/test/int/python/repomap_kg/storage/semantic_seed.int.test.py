@@ -1,6 +1,6 @@
 """Public JSON-RPC stdio integration owner for stored-node similarity.
 
-Tests the full public entry boundary via `python -m repomap_kg.server.mcp` subprocess stdio:
+Tests the full public entry boundary via `python -m common_lore_index.server.mcp` subprocess stdio:
 - Multi-source publication built via maintained portable source path (no hand-injected metadata)
 - Shared canonical module across two sources -> ambiguous seed without binding qualification
 - Qualification via source_binding_id resolves seed and keeps other source copy in candidates
@@ -20,11 +20,11 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root, query_canonical_node_records
-from repomap_kg.storage.psql import run_psql
-from repomap_kg.storage.semantic_candidate_import import candidate_schema_sql
-from repomap_kg.storage.semantic_seed import SimilarNodesQuery
-from repomap_kg.storage.semantic_seed_readback import query_seed_candidates, query_similar_nodes
+from common_lore_index.storage import apply_migrations, default_rdbms_root, query_canonical_node_records
+from common_lore_index.storage.psql import run_psql
+from common_lore_index.storage.semantic_candidate_import import candidate_schema_sql
+from common_lore_index.storage.semantic_seed import SimilarNodesQuery
+from common_lore_index.storage.semantic_seed_readback import query_seed_candidates, query_similar_nodes
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.semantic_candidate_fixtures import PROFILE
 from repomap_test_support.semantic_candidate_restore import (

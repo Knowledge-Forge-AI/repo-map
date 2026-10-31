@@ -5,18 +5,18 @@ import tempfile
 from typing import Any
 import unittest
 
-from repomap_kg.service_package._operations_execution import _return_code
-from repomap_kg.service_package.api import (
+from common_lore_index.service_package._operations_execution import _return_code
+from common_lore_index.service_package.api import (
     format_service_action_table,
     run_coordinator_service_action,
 )
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.operations import (
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.operations import (
     CoordinatorServiceOperations,
     ServiceActionResult,
     ServicePackageError,
 )
-from repomap_kg.service_package.systemd import SystemdUserAdapter
+from common_lore_index.service_package.systemd import SystemdUserAdapter
 from repomap_test_support.executable_authority import controlled_service_authority
 
 
@@ -49,7 +49,7 @@ class Slice9ServiceOperationsIntegrationTests(unittest.TestCase):
         runner: RecordingRunner | None = None,
         health_probe: Any = None,
     ) -> tuple[CoordinatorServiceOperations, SystemdUserAdapter, RecordingRunner]:
-        from repomap_kg.runtime.local import setup_local_runtime
+        from common_lore_index.runtime.local import setup_local_runtime
 
         home = root / "home"
         home.mkdir(mode=0o700, exist_ok=True)
@@ -294,9 +294,9 @@ class Slice9ServiceOperationsIntegrationTests(unittest.TestCase):
                 from unittest.mock import patch
 
                 with (
-                    patch("repomap_kg.service_package.api.select_service_adapter", return_value=adapter),
-                    patch("repomap_kg.service_package.api._run_manager_command", side_effect=runner),
-                    patch("repomap_kg.service_package.api._coordinator_health", return_value=True),
+                    patch("common_lore_index.service_package.api.select_service_adapter", return_value=adapter),
+                    patch("common_lore_index.service_package.api._run_manager_command", side_effect=runner),
+                    patch("common_lore_index.service_package.api._coordinator_health", return_value=True),
                 ):
                     rendered = run_coordinator_service_action("render", root / "home")
                     self.assertTrue(isinstance(rendered, str) and len(rendered) > 0)

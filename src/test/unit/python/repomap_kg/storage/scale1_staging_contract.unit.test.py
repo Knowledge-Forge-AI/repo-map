@@ -4,9 +4,9 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
 
-from repomap_kg.storage.staging import (
+from common_lore_index.storage.staging import (
     CleanupEligibility,
     LEGAL_STAGE_TRANSITIONS,
     MergeStatus,

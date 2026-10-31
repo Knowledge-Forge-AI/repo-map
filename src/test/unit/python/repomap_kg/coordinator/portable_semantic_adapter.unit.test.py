@@ -7,13 +7,13 @@ import threading
 import unittest
 from unittest.mock import MagicMock
 
-from repomap_kg.artifacts.store import (
+from common_lore_index.artifacts.store import (
     ArtifactErrorCode,
     ArtifactIntegrityError,
     ArtifactStore,
 )
-from repomap_kg.coordinator import _portable_semantic_adapter as psa
-from repomap_kg.coordinator._portable_capability import PortableExecutionCapability
+from common_lore_index.coordinator import _portable_semantic_adapter as psa
+from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
 
 
 class PortableSemanticAdapterDiagnosticUnitTests(unittest.TestCase):

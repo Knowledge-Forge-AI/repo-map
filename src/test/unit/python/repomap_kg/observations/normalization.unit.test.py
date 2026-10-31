@@ -2,11 +2,11 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.observations import RawObservation
+    from common_lore_index.observations import RawObservation
 
-from repomap_kg.observations.normalization import normalize_observation, normalize_observations
+from common_lore_index.observations.normalization import normalize_observation, normalize_observations
 
 
 class NormalizationUnitTests(unittest.TestCase):

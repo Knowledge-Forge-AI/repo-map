@@ -8,22 +8,22 @@ import json
 import psycopg
 import pytest
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import (
     STAGING_FAMILY_DESCRIPTORS,
     StageFamily,
 )
-from repomap_kg.storage import staging_observability
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage import staging_observability
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementAvailability,
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurementUnit,
     StagingMeasurements,
 )
-from repomap_kg.storage import staging_resource_observability as resources
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage import staging_resource_observability as resources
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
 
 
 def _clock() -> Callable[[], int]:

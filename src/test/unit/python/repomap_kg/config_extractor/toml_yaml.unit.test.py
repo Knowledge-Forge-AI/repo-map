@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import (
+from common_lore_index.extractors.config.generic import (
     extract_config_file_observations,
 )
 
@@ -13,7 +13,7 @@ class ConfigExtractorTomlYamlUnitTests(unittest.TestCase):
             """
 [mcp_servers.repomap]
 command = "python3"
-args = ["-m", "repomap_kg.server.mcp"]
+args = ["-m", "common_lore_index.server.mcp"]
 cwd = "src/main/python"
 docs_url = "https://example.com/docs"
 api_key = "toml-secret-api-key"

@@ -3,12 +3,12 @@ from threading import Event, Thread
 
 import pytest
 
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.operations import (
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.operations import (
     CoordinatorServiceOperations,
     ServicePackageError,
 )
-from repomap_kg.service_package.systemd import SystemdUserAdapter
+from common_lore_index.service_package.systemd import SystemdUserAdapter
 
 
 class RecordingRunner:
@@ -27,7 +27,7 @@ class RecordingRunner:
 def _operations(tmp_path, adapter, runner=None, health_probe=None):
     home = tmp_path / "repo-map-home"
     home.mkdir(mode=0o700)
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
     setup_local_runtime(home)
     config = home / "repomap.rpl.toml"
     config.write_text(config.read_text().replace('[runtime]', '[runtime]\ncoordinator_mode = "native"'))

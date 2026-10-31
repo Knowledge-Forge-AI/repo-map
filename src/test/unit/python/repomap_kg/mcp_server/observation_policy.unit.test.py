@@ -7,7 +7,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerObservationPolicyUnitTests(McpServerTestSupport):
     def test_mcp_harden5_observation_raw_payload_policy_contract(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         config_path = self.write_visible_ops_config()
         safe_metadata = {"safe_label": "safe-value", "command": "echo 1"}
@@ -32,7 +32,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
         with self.patch_ops_config(config_path):
             for label, include_raw, limit, offset, query_payload, expected_total, expected_has_more in cases:
                 with self.subTest(policy=label):
-                    with patch("repomap_kg.server.ops.query_mcp_search", return_value=query_payload) as query:
+                    with patch("common_lore_index.server.ops.query_mcp_search", return_value=query_payload) as query:
                         payload = repomap_search_observations(
                             graph_id="repo-map", query="command", kind="command.reference",
                             path="synthetic/config.txt", limit=limit, offset=offset, include_raw=include_raw,
@@ -59,7 +59,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
                         self.assertTrue(payload["raw_payload_policy"]["metadata_included"])
 
     def test_mcp_harden5_observation_include_raw_schema_contract(self):
-        from repomap_kg.server.mcp import tool_input_schema
+        from common_lore_index.server.mcp import tool_input_schema
 
         schema = tool_input_schema("repomap_search_observations")
         include_raw_schema = schema["properties"]["include_raw"]
@@ -71,7 +71,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
         self.assertNotIn("include_raw", schema.get("required", []))
 
     def test_mcp_harden5_observation_search_redacts_secret_metadata_but_retains_safe_metadata(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         config_path = self.write_visible_ops_config()
         secret_token, credentialed_url = "mcp-harden5-secret-value", "https://user:password@example.invalid/private.git"
@@ -85,7 +85,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             "total": 1, "has_more": False,
         }
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_mcp_search", return_value=observation_payload) as query:
+            with patch("common_lore_index.server.ops.query_mcp_search", return_value=observation_payload) as query:
                 payload = repomap_search_observations(graph_id="repo-map", query="command", include_raw=False)
 
         self.assert_observation_search_payload_contract(payload, query="command", limit=20, offset=0, total=1, has_more=False, include_raw=False)
@@ -101,7 +101,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
         self.assertIn("[REDACTED]", serialized)
 
     def test_mcp_harden5_observation_search_bounded_payload_contract(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         config_path = self.write_visible_ops_config()
         observation_payload = {
@@ -113,7 +113,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             "total": 9, "has_more": False,
         }
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_mcp_search", return_value=observation_payload) as query:
+            with patch("common_lore_index.server.ops.query_mcp_search", return_value=observation_payload) as query:
                 payload = repomap_search_observations(
                     graph_id="repo-map", query="command", kind="command.reference",
                     path="synthetic/config.txt", limit=2, offset=4, include_raw=False,
@@ -129,7 +129,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
         self.assertFalse(query.call_args.kwargs["include_raw"])
 
     def test_live_ops8_private_observation_search_redacts_config_path_value_summary(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         synthetic_user = "synthetic-live-user"
         private_root = f"/Users/{synthetic_user}/private-visible"
@@ -143,7 +143,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             "total": 1, "has_more": False,
         }
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_mcp_search", return_value=observation_payload) as query:
+            with patch("common_lore_index.server.ops.query_mcp_search", return_value=observation_payload) as query:
                 payload = repomap_search_observations(graph_id="private-visible", query="config.path", kind="config.path", include_raw=False)
 
         self.assert_observation_search_payload_contract(payload, query="config.path", kind="config.path", limit=20, offset=0, total=1, has_more=False, include_raw=False)
@@ -163,7 +163,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             self.assertNotIn(token, serialized)
 
     def test_live_ops8_private_observation_include_raw_does_not_bypass_redaction(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         synthetic_user = "synthetic-live-user"
         private_root = f"/Users/{synthetic_user}/private-visible"
@@ -183,7 +183,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             "total": 1, "has_more": False,
         }
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_mcp_search", return_value=observation_payload) as query:
+            with patch("common_lore_index.server.ops.query_mcp_search", return_value=observation_payload) as query:
                 payload = repomap_search_observations(graph_id="private-visible", query="config.path", kind="config.path", include_raw=True)
 
         self.assert_observation_search_payload_contract(payload, query="config.path", kind="config.path", limit=20, offset=0, total=1, has_more=False, include_raw=True)
@@ -210,7 +210,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             self.assertNotIn(token, serialized)
 
     def test_live_ops8_public_observation_search_preserves_safe_metadata(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         config_path = self.write_visible_ops_config()
         safe_value = "/opt/repo-map/public-config.toml"
@@ -223,7 +223,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             "total": 1, "has_more": False,
         }
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_mcp_search", return_value=observation_payload):
+            with patch("common_lore_index.server.ops.query_mcp_search", return_value=observation_payload):
                 payload = repomap_search_observations(graph_id="repo-map", query="config.path", kind="config.path", include_raw=True)
 
         self.assert_public_graph_payload(payload["graph"])
@@ -231,7 +231,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
         self.assertEqual(payload["results"][0]["payload"]["metadata"]["value_summary"], safe_value)
 
     def test_live_ops8_config_path_metadata_redaction_keeps_payload_bounded(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         synthetic_user = "synthetic-live-user"
         private_root = f"/Users/{synthetic_user}/private-visible"
@@ -245,7 +245,7 @@ class McpServerObservationPolicyUnitTests(McpServerTestSupport):
             "total": 9, "has_more": False,
         }
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_mcp_search", return_value=observation_payload) as query:
+            with patch("common_lore_index.server.ops.query_mcp_search", return_value=observation_payload) as query:
                 payload = repomap_search_observations(graph_id="private-visible", query="config.path", kind="config.path", limit=1, offset=3, include_raw=False)
 
         self.assert_observation_search_payload_contract(payload, query="config.path", kind="config.path", limit=1, offset=3, total=9, has_more=True, include_raw=False)

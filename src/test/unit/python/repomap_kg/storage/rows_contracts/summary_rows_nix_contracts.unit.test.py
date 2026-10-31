@@ -5,7 +5,7 @@ from repomap_test_support.storage_rows_contracts import _nix_summary_payload
 
 
 def test_nix_summary_from_storage_payload_nix_helpers_records_contracts() -> None:
-    import repomap_kg.storage.summary_rows_nix as summary_rows_nix
+    import common_lore_index.storage.summary_rows_nix as summary_rows_nix
     payload = _nix_summary_payload()
 
     flake_inputs = summary_rows_nix._nix_flake_inputs_from_payload(

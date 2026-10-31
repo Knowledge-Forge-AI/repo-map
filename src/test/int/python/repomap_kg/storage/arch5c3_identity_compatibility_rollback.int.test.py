@@ -6,23 +6,23 @@ from pathlib import Path
 
 import psycopg
 
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.ops.refresh import (
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.ops.refresh import (
     drift_check_to_jsonable,
     graph_baseline_to_jsonable,
     query_drift_check,
     query_graph_summary,
     refresh_graph,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     repository_identity_reconciliation_sql,
     run_psql,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 from repomap_test_support.postgres_harness import (

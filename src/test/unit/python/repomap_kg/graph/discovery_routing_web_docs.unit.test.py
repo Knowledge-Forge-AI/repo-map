@@ -6,7 +6,7 @@ import zipfile
 from io import BytesIO
 from pathlib import Path
 
-from repomap_kg.graph.discovery import (
+from common_lore_index.graph.discovery import (
     discover_observations,
     extract_css_file_observations_from_file,
     extract_feed_file_observations_from_file,

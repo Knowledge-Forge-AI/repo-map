@@ -24,11 +24,11 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import connection, orphans, restore
-from repomap_kg.storage.sqlite_local.backup import write_backup
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database, publisher_lock
-from repomap_kg.storage.sqlite_local.restore import install_backup, verify_backup
-from repomap_kg.storage.sqlite_local.schema import LocalGraphBinding, LocalStoreError
+from common_lore_index.storage.sqlite_local import connection, orphans, restore
+from common_lore_index.storage.sqlite_local.backup import write_backup
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database, publisher_lock
+from common_lore_index.storage.sqlite_local.restore import install_backup, verify_backup
+from common_lore_index.storage.sqlite_local.schema import LocalGraphBinding, LocalStoreError
 from repomap_test_support.host_read_store_config import fail_if_reached
 from repomap_test_support.sqlite_local_fixtures import local_binding
 

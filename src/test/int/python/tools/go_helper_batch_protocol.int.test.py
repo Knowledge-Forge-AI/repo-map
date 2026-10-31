@@ -6,10 +6,10 @@ from unittest import mock
 
 import pytest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.languages import go_protocol
-from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.languages import go_protocol
+from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command
+from common_lore_index.observations.raw import RawObservation
 
 
 def test_native_batch_keeps_diagnostic_accounting_and_refuses_later_escape(

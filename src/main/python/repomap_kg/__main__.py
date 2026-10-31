@@ -1,18 +1,17 @@
-"""Module entry point for ``python -m repomap_kg``."""
+"""Transitional ``python -m repomap_kg`` launch shim (ADR 0123)."""
 
 import os
 import sys
 
-from repomap_kg.service_package.environment import (
+from common_lore_index.entrypoints import legacy_main
+from common_lore_index.service_package.environment import (
     apply_service_environment,
     is_service_environment_request,
 )
 
 
+# Keep the canonical module's packaged-service environment boundary.
 if is_service_environment_request(tuple(sys.argv[1:])):
     apply_service_environment(os.environ)
 
-from repomap_kg import cli
-
-
-raise SystemExit(cli.main())
+raise SystemExit(legacy_main())

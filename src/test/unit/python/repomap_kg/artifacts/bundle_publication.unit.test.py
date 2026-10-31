@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     MemoryArtifactStore,
     PublicationBundle,
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.observations.raw import ObservationValidationError, RawObservation
-from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.observations.raw import ObservationValidationError, RawObservation
+from common_lore_index.storage.portable_ingestion import prepare_portable_bundle_rows
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 
 VECTOR = (("bind1:" + "1" * 64, 1, "snap1:" + "2" * 64),)
@@ -76,7 +76,7 @@ def bundle(
 
 
 def receipt(bundle_ref: object, value: PublicationBundle) -> ExtractionReceipt:
-    from repomap_kg.artifacts.references import ArtifactReference
+    from common_lore_index.artifacts.references import ArtifactReference
 
     assert isinstance(bundle_ref, ArtifactReference)
     return ExtractionReceipt.create(

@@ -8,7 +8,7 @@ from datetime import timedelta
 from typing import Any, cast
 
 import pytest
-from repomap_kg.coordinator import _publication_phase as phase
+from common_lore_index.coordinator import _publication_phase as phase
 from repomap_test_support.startup_recovery_scenarios import _harness, _req
 
 

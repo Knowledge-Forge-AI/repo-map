@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-import repomap_kg.coordinator.process_supervision as supervision
+import common_lore_index.coordinator.process_supervision as supervision
 
 
 class FakeProcess:
@@ -381,7 +381,7 @@ def test_windows_launch_environment_and_os_error(monkeypatch):
 
 def test_windows_handle_failure_uses_public_boundary_error():
     from types import SimpleNamespace
-    from repomap_kg.coordinator import _process_supervision_windows as windows
+    from common_lore_index.coordinator import _process_supervision_windows as windows
 
     for process in (object(), SimpleNamespace(_handle="invalid"), SimpleNamespace(_handle=None)):
         with pytest.raises(supervision.ProcessBoundaryError, match="handle is unavailable"):

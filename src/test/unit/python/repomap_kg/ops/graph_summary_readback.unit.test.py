@@ -6,9 +6,9 @@ from typing import Any
 
 import pytest
 
-import repomap_kg.ops.refresh as refresh
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import (
+import common_lore_index.ops.refresh as refresh
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import (
     MISSING_DATABASE_DIAGNOSTIC_CODE,
     OpsRefreshError,
     build_graph_summary_sql,
@@ -17,8 +17,8 @@ from repomap_kg.ops.refresh import (
     query_drift_check,
     query_graph_summary,
 )
-from repomap_kg.ops.readback import MissingDatabaseReadbackError
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.ops.readback import MissingDatabaseReadbackError
+from common_lore_index.storage import StorageSchemaError
 
 
 CONFIG = """\
@@ -378,8 +378,8 @@ def test_psycopg104_graph_validation_precedes_database_and_root_access(
 
 
 def test_psycopg104_moves_no_other_operational_owner() -> None:
-    import repomap_kg.ops.config as config
-    import repomap_kg.server.ops as server
+    import common_lore_index.ops.config as config
+    import common_lore_index.server.ops as server
     source = inspect.getsource(refresh.query_graph_summary)
 
     assert source.count("execute_ops_json_readback") == 2

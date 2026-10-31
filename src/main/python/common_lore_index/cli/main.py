@@ -1,0 +1,353 @@
+"""Command-line entry point for RepoMap."""
+
+from __future__ import annotations
+
+import argparse
+from collections.abc import Mapping as Mapping, Sequence as Sequence
+import json
+import os as os
+import sys
+from pathlib import Path
+from typing import Any
+
+# Same-name aliases preserve the historical CLI facade and monkeypatch seams.
+from common_lore_index import __version__ as __version__
+from common_lore_index.coordinator.client import CoordinatorClientError as CoordinatorClientError
+from common_lore_index.service_package.contract import apply_service_environment as apply_service_environment
+from common_lore_index.service_package.operations import ServicePackageError as ServicePackageError
+from common_lore_index.extractors.languages.go_helper import GoHelperUnavailableError as GoHelperUnavailableError
+from common_lore_index.extractors.languages.go_protocol import GoProtocolError as GoProtocolError
+from common_lore_index.ops.ingestion.api import (
+    ApiPolicyError as ApiPolicyError,
+    acquire_api_source as acquire_api_source,
+    build_api_plan_from_config as build_api_plan_from_config,
+)
+from common_lore_index.ops.ingestion.bulk import (
+    BulkPolicyError as BulkPolicyError,
+    build_bulk_plan_from_config as build_bulk_plan_from_config,
+    import_bulk_source as import_bulk_source,
+)
+from common_lore_index.graph.discovery import discover_observations as discover_observations
+from common_lore_index.graph.edge_kinds import CANONICAL_EDGE_KINDS as CANONICAL_EDGE_KINDS
+from common_lore_index.graph.readback.entrypoints import (
+    entrypoint_records_from_observations as entrypoint_records_from_observations,
+    entrypoints_to_jsonable as entrypoints_to_jsonable,
+    format_entrypoint_table as format_entrypoint_table,
+)
+from common_lore_index.graph.readback.files import (
+    FileFilters as FileFilters,
+    file_records_from_observations as file_records_from_observations,
+    filter_file_records as filter_file_records,
+    format_file_table as format_file_table,
+    records_to_jsonable as records_to_jsonable,
+)
+from common_lore_index.graph.keys import (
+    GRAPH_KEY_VERSION,
+    GraphKeyError,
+    file_key,
+    host_category_key as host_category_key,
+    validate_key as validate_key,
+)
+from common_lore_index.ops.ingestion.github_api import (
+    GitHubApiPolicyError as GitHubApiPolicyError,
+    acquire_github_api_source as acquire_github_api_source,
+    build_github_api_plan_from_config as build_github_api_plan_from_config,
+)
+from common_lore_index.graph.readback.host_mutators import (
+    filter_host_mutator_records as filter_host_mutator_records,
+    format_host_mutator_summary_table as format_host_mutator_summary_table,
+    format_host_mutator_table as format_host_mutator_table,
+    host_mutator_records_from_observations as host_mutator_records_from_observations,
+    host_mutator_summaries_to_jsonable as host_mutator_summaries_to_jsonable,
+    host_mutators_to_jsonable as host_mutators_to_jsonable,
+    summarize_host_mutator_records as summarize_host_mutator_records,
+)
+from common_lore_index.runtime.backup import (
+    LocalDbBackupError as LocalDbBackupError,
+    drop_database as drop_database,
+    dump_all_databases as dump_all_databases,
+    dump_database as dump_database,
+    format_backup_inspect_table as format_backup_inspect_table,
+    format_backup_info_table as format_backup_info_table,
+    format_backup_listing_table as format_backup_listing_table,
+    format_backup_result_table as format_backup_result_table,
+    format_drop_result_table as format_drop_result_table,
+    format_init_result_table as format_init_result_table,
+    init_database_from_dump as init_database_from_dump,
+    init_database_from_source as init_database_from_source,
+    inspect_backup as inspect_backup,
+    list_backups as list_backups,
+    read_backup_info as read_backup_info,
+)
+from common_lore_index.runtime.backup_restore_sets import (
+    format_coordinated_restore_table as format_coordinated_restore_table,
+    restore_coordinated_backup as restore_coordinated_backup,
+)
+from common_lore_index.runtime.local import (
+    LocalRuntimeError as LocalRuntimeError,
+    down_local_runtime as down_local_runtime,
+    format_local_runtime_table as format_local_runtime_table,
+    query_local_runtime_status as query_local_runtime_status,
+    setup_local_runtime as setup_local_runtime,
+    up_local_runtime as up_local_runtime,
+)
+from common_lore_index.runtime.schema_upgrade import (
+    format_graph_schema_upgrade_table as format_graph_schema_upgrade_table,
+    upgrade_graph_schema as upgrade_graph_schema,
+)
+from common_lore_index.server.http import LocalServerError as LocalServerError, serve_local_http as serve_local_http
+from common_lore_index.observations.normalization import normalize_observations as normalize_observations
+from common_lore_index.observations.raw import ObservationValidationError as ObservationValidationError, read_observations_jsonl as read_observations_jsonl
+from common_lore_index.ops.config import (
+    OpsConfigError as OpsConfigError,
+    check_ops_graph_storage_status as check_ops_graph_storage_status,
+    check_ops_postgres_status as check_ops_postgres_status,
+    format_ops_graph_registry_table as format_ops_graph_registry_table,
+    format_ops_config_status_table as format_ops_config_status_table,
+    load_ops_config,
+    load_ops_config_home,
+    ops_graph_registry_status_to_jsonable as ops_graph_registry_status_to_jsonable,
+    ops_config_status_to_jsonable as ops_config_status_to_jsonable,
+)
+from common_lore_index.ops.config_loading import _resolve_home_selection
+from common_lore_index.ops.policy_dogfood import (
+    format_policy_dogfood_table as format_policy_dogfood_table,
+    policy_dogfood_payload as policy_dogfood_payload,
+)
+from common_lore_index.ops.graph_files import (
+    GraphFileFilters as GraphFileFilters,
+    format_graph_file_table as format_graph_file_table,
+    graph_file_page_to_jsonable as graph_file_page_to_jsonable,
+    query_graph_files as query_graph_files,
+)
+from common_lore_index.storage.backend_telemetry import (
+    ConnectionTelemetryError as ConnectionTelemetryError,
+    telemetry_from_inherited_fds as telemetry_from_inherited_fds,
+)
+from common_lore_index.storage.staging_event_transport import (
+    StagingEventTransportError as StagingEventTransportError,
+    staging_event_channel_from_inherited_fd as staging_event_channel_from_inherited_fd,
+)
+from common_lore_index.storage.staging_observability import StagingMeasurements as StagingMeasurements
+from common_lore_index.storage.canonical_filters import (
+    canonical_edge_filters_from_args as canonical_edge_filters_from_args,
+    canonical_neighborhood_filters_from_args as canonical_neighborhood_filters_from_args,
+    canonical_node_kind_from_args as canonical_node_kind_from_args,
+)
+from common_lore_index.graph.profiles import ProfileValidationError as ProfileValidationError, load_profile as load_profile
+from common_lore_index.runtime.project_identity import PROJECT_IDENTITY as PROJECT_IDENTITY
+from common_lore_index.server.memory_bridge import (
+    format_server_memory_search_table as format_server_memory_search_table,
+    format_server_memory_summary_table as format_server_memory_summary_table,
+    server_memory_search_payload as server_memory_search_payload,
+    server_memory_summary_payload as server_memory_summary_payload,
+)
+from common_lore_index.ops.ingestion.source import (
+    SourceAcquisitionError as SourceAcquisitionError,
+    SourcePolicyError as SourcePolicyError,
+    import_archive_source as import_archive_source,
+    import_warc_source as import_warc_source,
+    ingest_feed_source as ingest_feed_source,
+)
+from common_lore_index.storage import (
+    StorageSchemaError,
+    api_summary_to_jsonable as api_summary_to_jsonable,
+    canonical_edge_explanation_to_jsonable as canonical_edge_explanation_to_jsonable,
+    canonical_edge_records_to_jsonable as canonical_edge_records_to_jsonable,
+    canonical_neighborhood_to_jsonable as canonical_neighborhood_to_jsonable,
+    canonical_node_records_to_jsonable as canonical_node_records_to_jsonable,
+    canonical_storage_summary_to_jsonable as canonical_storage_summary_to_jsonable,
+    bulk_summary_to_jsonable as bulk_summary_to_jsonable,
+    format_api_summary_table as format_api_summary_table,
+    format_canonical_edge_explanation_table as format_canonical_edge_explanation_table,
+    format_canonical_edge_table as format_canonical_edge_table,
+    format_canonical_neighborhood_table as format_canonical_neighborhood_table,
+    format_canonical_node_table as format_canonical_node_table,
+    format_public_read_page_footer as format_public_read_page_footer,
+    format_canonical_storage_summary_table as format_canonical_storage_summary_table,
+    format_bulk_summary_table as format_bulk_summary_table,
+    format_email_summary_table as format_email_summary_table,
+    format_js_framework_summary_table as format_js_framework_summary_table,
+    format_js_summary_table as format_js_summary_table,
+    format_nix_summary_table as format_nix_summary_table,
+    format_openapi_summary_table as format_openapi_summary_table,
+    format_python_summary_table as format_python_summary_table,
+    format_ruby_summary_table as format_ruby_summary_table,
+    format_terraform_summary_table as format_terraform_summary_table,
+    identity_metadata_hash as identity_metadata_hash,
+    query_canonical_edge_explanation as query_canonical_edge_explanation,
+    query_canonical_neighborhood as query_canonical_neighborhood,
+    query_canonical_node_records as query_canonical_node_records,
+    query_canonical_edge_records as query_canonical_edge_records,
+    query_canonical_storage_summary as query_canonical_storage_summary,
+    public_read_page as public_read_page,
+    public_embedded_read_result_to_jsonable as public_embedded_read_result_to_jsonable,
+    public_read_page_to_jsonable as public_read_page_to_jsonable,
+    validate_public_read_window as validate_public_read_window,
+    query_api_summary as query_api_summary,
+    query_bulk_summary as query_bulk_summary,
+    query_email_summary as query_email_summary,
+    query_js_framework_summary as query_js_framework_summary,
+    query_js_summary as query_js_summary,
+    query_nix_summary as query_nix_summary,
+    query_openapi_summary as query_openapi_summary,
+    query_python_summary as query_python_summary,
+    query_ruby_summary as query_ruby_summary,
+    query_terraform_summary as query_terraform_summary,
+    email_summary_to_jsonable as email_summary_to_jsonable,
+    js_framework_summary_to_jsonable as js_framework_summary_to_jsonable,
+    js_summary_to_jsonable as js_summary_to_jsonable,
+    nix_summary_to_jsonable as nix_summary_to_jsonable,
+    openapi_summary_to_jsonable as openapi_summary_to_jsonable,
+    python_summary_to_jsonable as python_summary_to_jsonable,
+    ruby_summary_to_jsonable as ruby_summary_to_jsonable,
+    terraform_summary_to_jsonable as terraform_summary_to_jsonable,
+)
+from common_lore_index.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
+from common_lore_index.cli._config_migration import dispatch_config_migration
+from common_lore_index.cli._postgres_facade import (
+    POSTGRES_DRIVER_UNAVAILABLE,
+    POSTGRES_FACADE_NAMES,
+    is_postgres_driver_missing,
+    load_postgres_facade_name,
+)
+from common_lore_index.cli.dispatch import _print_cli_error, dispatch_command
+from common_lore_index.cli.host_mutator_commands import (
+    CANONICAL_HOST_MUTATOR_BOOLEAN_METADATA_KEYS as CANONICAL_HOST_MUTATOR_BOOLEAN_METADATA_KEYS,
+    CANONICAL_HOST_MUTATOR_EDGE_KINDS as CANONICAL_HOST_MUTATOR_EDGE_KINDS,
+    HOST_CATEGORY_KEY_PREFIX as HOST_CATEGORY_KEY_PREFIX,
+    query_canonical_host_mutator_edge_records as _query_canonical_host_mutator_edge_records,
+    canonical_edge_identity_metadata_from_args as canonical_edge_identity_metadata_from_args,
+    canonical_host_mutator_category as canonical_host_mutator_category,
+    canonical_host_mutator_filters_from_args as canonical_host_mutator_filters_from_args,
+    canonical_host_mutator_record_has_tool as canonical_host_mutator_record_has_tool,
+    canonical_host_mutator_record_to_jsonable as canonical_host_mutator_record_to_jsonable,
+    canonical_host_mutator_records_to_jsonable as canonical_host_mutator_records_to_jsonable,
+    canonical_host_mutator_summaries_to_jsonable as canonical_host_mutator_summaries_to_jsonable,
+    canonical_host_mutator_summary_target_from_args as canonical_host_mutator_summary_target_from_args,
+    canonical_metadata_text_values as canonical_metadata_text_values,
+    filter_canonical_host_mutator_records as filter_canonical_host_mutator_records,
+    format_canonical_host_mutator_summary_table as format_canonical_host_mutator_summary_table,
+    format_canonical_host_mutator_table as format_canonical_host_mutator_table,
+    format_cli_table_row as format_cli_table_row,
+    psql_args_from_args as psql_args_from_args,
+    render_host_mutator_table_value as render_host_mutator_table_value,
+    summarize_canonical_host_mutator_records as summarize_canonical_host_mutator_records,
+)
+from common_lore_index.cli.parser import (
+    add_local_runtime_arguments as add_local_runtime_arguments,
+    add_ops_config_arguments as add_ops_config_arguments,
+    add_storage_connection_arguments as add_storage_connection_arguments,
+    add_storage_root_argument as add_storage_root_argument,
+    build_parser,
+)
+
+
+def load_ops_config_from_args(args: argparse.Namespace):
+    repo_map_home = getattr(args, "repo_map_home", None)
+    config_path = getattr(args, "config", None)
+    if repo_map_home:
+        return load_ops_config_home(repo_map_home)
+    if config_path:
+        return load_ops_config(config_path)
+    return load_ops_config_home()
+
+
+def _read_json_file(path_text: str, label: str) -> dict[str, object]:
+    path = Path(path_text)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ValueError(f"{label} file is not valid JSON: {error}") from error
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} file must contain a JSON object")
+    return payload
+
+
+def _commands_module():
+    return sys.modules.get("common_lore_index.cli", sys.modules[__name__])
+
+
+def __getattr__(name: str) -> Any:
+    # PostgreSQL-implementation facade names resolve on access (see _postgres_facade).
+    if name in POSTGRES_FACADE_NAMES:
+        return load_postgres_facade_name(name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | POSTGRES_FACADE_NAMES)
+
+
+def _home_selection_notice(args: argparse.Namespace) -> None:
+    if args.version or not hasattr(args, "repo_map_home") or getattr(args, "config", None) is not None:
+        return
+    if args.command == "mcp" and getattr(args, "mcp_command", None) == "serve" and os.environ.get("REPOMAP_OPS_CONFIG"):
+        return  # MCP's explicit single-file setting owns selection, including with a home option.
+    if args.command == "ops" and getattr(args, "ops_command", None) in (
+        "config-migration-apply", "config-migration-rollback", "config-migration-finalize",
+    ):
+        return  # Their explicit-home requirement is independent authority.
+    selection = _resolve_home_selection(args.repo_map_home)
+    for notice in selection.notices:
+        print(f"warning: legacy-default-home: {notice}", file=sys.stderr)
+
+
+def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
+    # An unspecified brand keeps the original no-argument parser seam.
+    parser = build_parser() if prog is None else build_parser(prog=prog)
+    args = parser.parse_args(argv)
+    try:
+        _home_selection_notice(args)
+    except OpsConfigError as error:
+        for diagnostic in error.diagnostics:
+            print(f"{diagnostic.code}: {diagnostic.message}", file=sys.stderr)
+        return 1
+    if not args.version:
+        migration_result = dispatch_config_migration(args, _print_cli_error)
+        if migration_result is not None:
+            return migration_result
+        # SQLite Local ops commands route before the PostgreSQL dispatcher loads.
+        sqlite_result = dispatch_ops_sqlite_command(args, _print_cli_error)
+        if sqlite_result is not None:
+            return sqlite_result
+    try:
+        return dispatch_command(args, parser, _commands_module())
+    except ModuleNotFoundError as error:
+        if not is_postgres_driver_missing(error):
+            raise
+        _print_cli_error(
+            RuntimeError(
+                f"{POSTGRES_DRIVER_UNAVAILABLE}: this command needs the PostgreSQL "
+                "driver (psycopg), which is not installed"
+            ),
+            file=sys.stderr,
+        )
+        return 1
+
+
+def read_observations_argument(jsonl_path: str):
+    if jsonl_path == "-":
+        return read_observations_jsonl(sys.stdin)
+    return read_observations_jsonl(jsonl_path)
+
+
+def canonical_file_neighborhood_node_from_args(args) -> str:
+    if args.graph_key_version != GRAPH_KEY_VERSION:
+        raise StorageSchemaError("unsupported graph key version")
+    if args.depth != 1:
+        raise StorageSchemaError(
+            "storage file-neighborhood only supports depth 1"
+        )
+    try:
+        return file_key(args.path)
+    except GraphKeyError as error:
+        raise StorageSchemaError(f"invalid file path: {error}") from error
+
+
+def query_canonical_host_mutator_edge_records(args, target_key):
+    return _query_canonical_host_mutator_edge_records(
+        args,
+        target_key,
+        commands=_commands_module(),
+    )

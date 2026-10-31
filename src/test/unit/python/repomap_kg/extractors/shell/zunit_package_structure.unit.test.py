@@ -18,14 +18,14 @@ ZUNIT_OBSERVATION_EXPORTS = (
 
 
 def test_rootpkg24_zunit_reexports_observation_builders() -> None:
-    import repomap_kg.extractors.shell.zunit as zunit
-    import repomap_kg.extractors.shell.zunit_observations as observations
+    import common_lore_index.extractors.shell.zunit as zunit
+    import common_lore_index.extractors.shell.zunit_observations as observations
     for name in ZUNIT_OBSERVATION_EXPORTS:
         assert getattr(zunit, name) is getattr(observations, name)
 
 
 def test_rootpkg24_zunit_observation_builders_keep_focused_dependencies() -> None:
-    import repomap_kg.extractors.shell.zunit_observations as observations
+    import common_lore_index.extractors.shell.zunit_observations as observations
     assert observations.__file__ is not None
     source_path = Path(observations.__file__)
     module_ast = ast.parse(source_path.read_text(encoding="utf-8"))
@@ -37,7 +37,7 @@ def test_rootpkg24_zunit_observation_builders_keep_focused_dependencies() -> Non
 
     assert imported_modules == {
         "__future__",
-        "repomap_kg.extractors.shell.zunit_helpers",
-        "repomap_kg.observations.raw",
+        "common_lore_index.extractors.shell.zunit_helpers",
+        "common_lore_index.observations.raw",
         "typing",
     }

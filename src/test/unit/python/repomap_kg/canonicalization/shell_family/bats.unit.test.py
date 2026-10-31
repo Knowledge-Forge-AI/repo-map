@@ -5,14 +5,14 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.extractors.shell.bats import extract_bats_file_observations
-from repomap_kg.graph.readback.bats import summarize_bats_evidence
+from common_lore_index.extractors.shell.bats import extract_bats_file_observations
+from common_lore_index.graph.readback.bats import summarize_bats_evidence
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.graph.keys import (
+    from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.graph.keys import (
     bats_expectation_key,
     bats_file_key,
     bats_test_case_key,
@@ -20,7 +20,7 @@ from repomap_kg.graph.keys import (
     file_key,
     tool_key,
 )
-from repomap_kg.storage import prepare_canonical_load
+from common_lore_index.storage import prepare_canonical_load
 
 
 FIXTURE_ROOT = Path(__file__).parents[5] / "fixtures" / "shell" / "bats"

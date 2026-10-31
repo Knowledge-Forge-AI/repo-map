@@ -28,9 +28,9 @@ import uuid
 
 import pytest
 
-from repomap_kg.runtime.database_roles import READ_STATUS_ROLE
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.server.mcp_schemas import tool_definitions
+from common_lore_index.runtime.database_roles import READ_STATUS_ROLE
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.server.mcp_schemas import tool_definitions
 from repomap_test_support.host_mcp_domain_publication import (
     ABSENT_DATABASE, FEED_URL, domain_snapshot, publish_domain_fixture, write_domain_config,
 )

@@ -12,19 +12,19 @@ from unittest.mock import patch
 import psycopg
 import pytest
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.runtime.maintenance import MaintenanceUnavailableError
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     new_direct_authority,
     run_staged_full_refresh,
     stage_id_for_authority,
 )
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
 
-_CONNECT = "repomap_kg.storage.staged_ingestion.psycopg.connect"
+_CONNECT = "common_lore_index.storage.staged_ingestion.psycopg.connect"
 _ROOT = "/fixture/general1-root"
 _TABLES = [descriptor.stage_table for descriptor in STAGING_FAMILY_DESCRIPTORS.values()]
 _NODE_ANALYZE = "ANALYZE stage_canonical_node_evidence"

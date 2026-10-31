@@ -19,15 +19,15 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.server.canonical_read_store import (
+from common_lore_index.server.canonical_read_store import (
     CanonicalEdgeExplanationQuery,
     CanonicalEdgeQuery,
     CanonicalNeighborhoodQuery,
     CanonicalNodeQuery,
 )
-from repomap_kg.server.graph_selection import GraphSelection, select_graph
-from repomap_kg.storage.semantic_candidates import EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable
-from repomap_kg.server.investigation_read_store import (
+from common_lore_index.server.graph_selection import GraphSelection, select_graph
+from common_lore_index.storage.semantic_candidates import EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable
+from common_lore_index.server.investigation_read_store import (
     ConfiguredNeighborhoodQuery,
     GraphRefreshStatusQuery,
     GraphSearchQuery,
@@ -36,7 +36,7 @@ from repomap_kg.server.investigation_read_store import (
     LanguageSummaryQuery,
     ProjectSummaryQuery,
 )
-from repomap_kg.server.source_read_store import (
+from common_lore_index.server.source_read_store import (
     IngestedSourcesQuery,
     SourceFeedItemExplanationQuery,
     SourceFeedItemsQuery,
@@ -44,7 +44,7 @@ from repomap_kg.server.source_read_store import (
     SourceRunsQuery,
     SourceSummaryQuery,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalEdgeExplanationRecord,
     CanonicalEdgeRecord,
     CanonicalNeighborhoodRecord,
@@ -61,8 +61,8 @@ from repomap_test_support.host_read_store_config import (
     setup_owned_config,
 )
 from repomap_test_support.mcp_server import McpServerTestSupport
-from repomap_kg.storage.semantic_candidates import CandidateResult, unavailable
-from repomap_kg.storage.semantic_seed import SimilarNodesQuery
+from common_lore_index.storage.semantic_candidates import CandidateResult, unavailable
+from common_lore_index.storage.semantic_seed import SimilarNodesQuery
 
 A, B = "python.module:a", "python.module:b"
 ITEM_KEY = "feed.item:feed.channel%3Afeed.document%253Afile%25253Arss.xml%3Aself:item-1"
@@ -212,7 +212,7 @@ class _FakeBinding:
 
 class GraphSelectionRecordTests(McpServerTestSupport):
     def _config(self, body: str | None = None) -> Any:
-        from repomap_kg.ops.config import load_ops_config
+        from common_lore_index.ops.config import load_ops_config
 
         return load_ops_config(self.write_ops_config(body or self.visible_ops_config()))
 
@@ -233,14 +233,14 @@ class GraphSelectionRecordTests(McpServerTestSupport):
             self.assertTrue(selected.path_markers)
 
     def test_selection_matches_the_postgres_context_identity_root_and_markers(self) -> None:
-        from repomap_kg.server._ops_records import graph_context
-        from repomap_kg.server._ops_sanitization import readback_path_markers
+        from common_lore_index.server._ops_records import graph_context
+        from common_lore_index.server._ops_sanitization import readback_path_markers
 
         for body, graph_ids in ((self.visible_ops_config(), (G, "private-visible")),
                                 (setup_owned_config(), ("host-one", "host-multi"))):
             path = self.write_ops_config(body)
             with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(path)}, clear=True):
-                from repomap_kg.server.ops import load_mcp_ops_config
+                from common_lore_index.server.ops import load_mcp_ops_config
 
                 config = load_mcp_ops_config()
                 for graph_id in graph_ids:
@@ -255,7 +255,7 @@ class GraphSelectionRecordTests(McpServerTestSupport):
     def test_selection_module_static_imports_stay_backend_neutral(self) -> None:
         import sys
 
-        import repomap_kg.server.graph_selection as module
+        import common_lore_index.server.graph_selection as module
 
         repo = next(parent for parent in Path(__file__).resolve().parents if (parent / "src/main/python").is_dir())
         sys.path.insert(0, str(repo))
@@ -271,9 +271,9 @@ class GraphSelectionRecordTests(McpServerTestSupport):
                 if dependency not in closure:
                     closure.add(dependency)
                     pending.append(dependency)
-        forbidden = ("repomap_kg.server", "repomap_kg.runtime", "repomap_kg.storage", "repomap_kg.ops.readback",
-                     "repomap_kg.ops.config_status", "repomap_kg.ops.config_loading", "repomap_kg.ops.refresh",
-                     "repomap_kg.coordinator")
+        forbidden = ("common_lore_index.server", "common_lore_index.runtime", "common_lore_index.storage", "common_lore_index.ops.readback",
+                     "common_lore_index.ops.config_status", "common_lore_index.ops.config_loading", "common_lore_index.ops.refresh",
+                     "common_lore_index.coordinator")
         self.assertEqual({name for name in closure if name.startswith(forbidden)}, set())
         tree = ast.parse(Path(module.__file__ or "").read_text(encoding="utf-8"))
         imported = {node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)}
@@ -288,21 +288,21 @@ class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
         stack = ExitStack()
         stack.enter_context(patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()),
                                                       "REPOMAP_PSQL_COMMAND": INVALID_PSQL_COMMAND}, clear=True))
-        stack.enter_context(patch("repomap_kg.server.ops.load_mcp_ops_config", lambda *_a: config))
-        stack.enter_context(patch("repomap_kg.server.mcp_core.load_mcp_ops_config", lambda *_a: config))
-        stack.enter_context(patch("repomap_kg.server.ops.investigation_stores", investigation))
-        stack.enter_context(patch("repomap_kg.server.mcp.graph_stores", graph))
+        stack.enter_context(patch("common_lore_index.server.ops.load_mcp_ops_config", lambda *_a: config))
+        stack.enter_context(patch("common_lore_index.server.mcp_core.load_mcp_ops_config", lambda *_a: config))
+        stack.enter_context(patch("common_lore_index.server.ops.investigation_stores", investigation))
+        stack.enter_context(patch("common_lore_index.server.mcp.graph_stores", graph))
         stack.enter_context(patched_guards(PG_BINDING_TRIPWIRES))
         return stack
 
     def _parsed_config(self) -> Any:
-        from repomap_kg.server.ops import load_mcp_ops_config
+        from common_lore_index.server.ops import load_mcp_ops_config
 
         with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(self.write_visible_ops_config())}, clear=True):
             return load_mcp_ops_config()
 
     def test_all_25_tools_route_to_their_named_store_operation_without_postgres_binding(self) -> None:
-        from repomap_kg.server.mcp import handle_tool_call, tool_definitions
+        from common_lore_index.server.mcp import handle_tool_call, tool_definitions
 
         config = self._parsed_config()
         calls: list[tuple[str, str, str, Any]] = []
@@ -340,7 +340,7 @@ class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
     def test_navigation_tools_route_to_selected_sqlite_without_postgres_binding(self) -> None:
         import tempfile
 
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
         from repomap_test_support.related_context_fixtures import GRAPH, IMPORTED, related_home
 
         with tempfile.TemporaryDirectory() as directory:
@@ -363,16 +363,16 @@ class NeutralSelectionFakeStoreRoutingTests(McpServerTestSupport):
             self.assertEqual(location["locations"][0]["source_relative_path"], "pkg/beta.py")
 
     def test_configuration_only_tools_never_bind_a_backend(self) -> None:
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
 
         path = self.write_visible_ops_config()
         env = {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()), "REPOMAP_OPS_CONFIG": str(path)}
         with patch.dict("os.environ", env, clear=True), \
-                patch("repomap_kg.server.ops.investigation_stores", fail_if_reached), \
-                patch("repomap_kg.server.mcp.graph_stores", fail_if_reached), \
-                patched_guards(("repomap_kg.server.canonical_read_store.readback_postgres_authority",
-                                "repomap_kg.ops.readback.readback_postgres_authority",
-                                "repomap_kg.server._ops_records.psql_command_from_environment")):
+                patch("common_lore_index.server.ops.investigation_stores", fail_if_reached), \
+                patch("common_lore_index.server.mcp.graph_stores", fail_if_reached), \
+                patched_guards(("common_lore_index.server.canonical_read_store.readback_postgres_authority",
+                                "common_lore_index.ops.readback.readback_postgres_authority",
+                                "common_lore_index.server._ops_records.psql_command_from_environment")):
             graphs = handle_tool_call("repomap_list_graphs", {})["structuredContent"]
             projects = handle_tool_call("repomap_projects", {})["structuredContent"]
         self.assertEqual([graph["graph_id"] for graph in graphs["graphs"]], [G, "private-visible"])

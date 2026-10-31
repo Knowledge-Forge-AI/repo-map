@@ -360,7 +360,7 @@ def cleanup_after_failure(process: subprocess.Popen[str] | ManagedChild, primary
 
 def child_failure_detail(process: subprocess.Popen[str] | ManagedChild, primary: BaseException) -> str:
     """Read bounded terminal stderr only after cleanup; failures stay observable."""
-    from repomap_kg.coordinator._transport_validation import public_diagnostic_summary
+    from common_lore_index.coordinator._transport_validation import public_diagnostic_summary
 
     try:
         _, stderr = process.communicate(timeout=2.0)

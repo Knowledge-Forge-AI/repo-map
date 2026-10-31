@@ -11,30 +11,30 @@ from typing import Any, Iterator
 
 import pytest
 
-from repomap_kg.runtime import _extension_restore_compensation as compensation_mod
-from repomap_kg.runtime import _extension_restore_lifecycle as lifecycle_mod
-from repomap_kg.runtime._extension_restore_custody import (
+from common_lore_index.runtime import _extension_restore_compensation as compensation_mod
+from common_lore_index.runtime import _extension_restore_lifecycle as lifecycle_mod
+from common_lore_index.runtime._extension_restore_custody import (
     DatabaseCreationIntent,
     RestoreLifecycleAuthority,
 )
-from repomap_kg.runtime._extension_restore_exec import (
+from common_lore_index.runtime._extension_restore_exec import (
     ExecOutcome,
     active_exec_custody,
     bound_exec_custody,
 )
-from repomap_kg.runtime._extension_restore_lifecycle import (
+from common_lore_index.runtime._extension_restore_lifecycle import (
     cleanup_extension_restore_intents,
     execute_extension_v2_restore_set,
 )
-from repomap_kg.runtime._extension_restore_policy import TrustedOptionalCapabilityContract
-from repomap_kg.runtime._extension_restore_steps import verify_restored_database
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import (
+from common_lore_index.runtime._extension_restore_policy import TrustedOptionalCapabilityContract
+from common_lore_index.runtime._extension_restore_steps import verify_restored_database
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import (
     LocalRuntimeDiagnostic,
     build_local_runtime_plan,
     setup_local_runtime,
 )
-from repomap_kg.runtime.maintenance import held_maintenance_custody_for
+from common_lore_index.runtime.maintenance import held_maintenance_custody_for
 
 
 def _plan(tmp_path: Path) -> Any:

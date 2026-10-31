@@ -18,8 +18,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime import release_manifest as historical
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime import release_manifest as historical
 from repomap_test_support.python_payload_probes import make_stdlib_import_probe_runner
 from runner_coverage_execution import launch_unified_coverage_process
 
@@ -330,7 +330,7 @@ def test_real_walk_special_entries_and_main_guard_refusals(
 
     src_root = str(Path(payload.__file__).resolve().parents[2])
     guard_proc = launch_unified_coverage_process(
-        [sys.executable, "-B", "-m", "repomap_kg.runtime.python_payload", "riscv64"],
+        [sys.executable, "-B", "-m", "common_lore_index.runtime.python_payload", "riscv64"],
         family="cli_module",
         pid_namespace_relation="shared",
         extra_env={"PYTHONPATH": src_root},

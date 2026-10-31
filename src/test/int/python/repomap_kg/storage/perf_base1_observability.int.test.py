@@ -2,28 +2,28 @@ from __future__ import annotations
 
 import psycopg
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.observations.spool import ObservationSpool
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.canonical import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.observations.spool import ObservationSpool
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.canonical import (
     query_canonical_node_records,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurements,
 )
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
-from repomap_kg.storage.staging_phase_events import StagingPhaseEvent
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage.staging_phase_events import StagingPhaseEvent
 from repomap_test_support.performance_baseline import (
     close_phase_spans,
     measurement_index,

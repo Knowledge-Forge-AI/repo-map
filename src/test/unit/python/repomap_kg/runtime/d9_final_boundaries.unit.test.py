@@ -17,24 +17,24 @@ import psutil
 import psycopg
 import pytest
 
-from repomap_kg.cli import main
-from repomap_kg.runtime._backup_observation import _normalize_server_provenance
-from repomap_kg.runtime._backup_process import BoundedProcessError, ProcessRetirement, run_bounded_process
-from repomap_kg.runtime import _extension_restore_exec as exec_mod
-from repomap_kg.runtime import _extension_restore_native as native_mod
-from repomap_kg.runtime._backup_provenance import parse_toc_entries, provenance_error, run_bounded_popen
-from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
-from repomap_kg.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH
-from repomap_kg.runtime._extension_restore_lifecycle import reconcile_restored_roles
-from repomap_kg.runtime._extension_restore_native import observe_custodied_client_identities
-from repomap_kg.runtime.backup_commands import planned_psql_stdin_command
-from repomap_kg.runtime.backup_manifests import summarize_pg_restore_toc
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.database_role_contract import read_role_secrets
-from repomap_kg.runtime.database_roles import render_database_role_sql
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
-from repomap_kg.runtime.release import PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL
-from repomap_kg.runtime import maintenance, release_cluster
+from common_lore_index.cli import main
+from common_lore_index.runtime._backup_observation import _normalize_server_provenance
+from common_lore_index.runtime._backup_process import BoundedProcessError, ProcessRetirement, run_bounded_process
+from common_lore_index.runtime import _extension_restore_exec as exec_mod
+from common_lore_index.runtime import _extension_restore_native as native_mod
+from common_lore_index.runtime._backup_provenance import parse_toc_entries, provenance_error, run_bounded_popen
+from common_lore_index.runtime._extension_restore_exec import bound_exec_custody
+from common_lore_index.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH
+from common_lore_index.runtime._extension_restore_lifecycle import reconcile_restored_roles
+from common_lore_index.runtime._extension_restore_native import observe_custodied_client_identities
+from common_lore_index.runtime.backup_commands import planned_psql_stdin_command
+from common_lore_index.runtime.backup_manifests import summarize_pg_restore_toc
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.database_role_contract import read_role_secrets
+from common_lore_index.runtime.database_roles import render_database_role_sql
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.release import PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL
+from common_lore_index.runtime import maintenance, release_cluster
 from repomap_test_support.local_db_backup import default_baseline_server_provenance
 
 
@@ -110,7 +110,7 @@ def test_cli_dump_validates_target_before_outer_maintenance_window(tmp_path: Pat
         stderr = io.StringIO()
         with (
             patch(
-                "repomap_kg.cli.maintenance_window_for_database_drop",
+                "common_lore_index.cli.maintenance_window_for_database_drop",
                 side_effect=AssertionError("outer maintenance window entered before target validation"),
             ),
             redirect_stdout(io.StringIO()),

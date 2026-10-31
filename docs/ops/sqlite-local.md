@@ -64,7 +64,7 @@ directory and uses no network: the operator kit installs with
 `--no-index --require-hashes` from the kit's own wheels. It proves:
 
 - Psycopg is absent;
-- `repomap_kg` imports from the venv;
+- `common_lore_index` imports from the venv;
 - `--help` and `--version`;
 - `ops config-check`, `ops graphs --check-db`, `ops sqlite-init`,
   `ops refresh-preflight` and a direct `ops refresh-graph` on a two-file

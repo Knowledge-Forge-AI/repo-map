@@ -1,9 +1,9 @@
 import unittest
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.observations import RawObservation
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.observations import RawObservation
 
 
 class CanonicalizationHtmlCssFamilyUnitTests(unittest.TestCase):

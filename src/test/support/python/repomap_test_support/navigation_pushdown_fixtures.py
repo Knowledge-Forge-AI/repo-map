@@ -7,7 +7,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.navigation_search_fixtures import GRAPH, navigation_bundle, navigation_home
 from repomap_test_support.sqlite_local_fixtures import publication_for
 

@@ -7,12 +7,12 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.graph.keys import css_document_key, html_document_key, js_file_key, js_module_key
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.graph.keys import css_document_key, html_document_key, js_file_key, js_module_key
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     import_archive_source,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_canonical_edge_explanation,

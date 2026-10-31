@@ -16,19 +16,19 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
     capture_multi_source_candidate,
     scan_multi_source_generations,
 )
-import repomap_kg.graph.multi_source_pipeline as msp
-from repomap_kg.graph.multi_source_records import (
+import common_lore_index.graph.multi_source_pipeline as msp
+from common_lore_index.graph.multi_source_records import (
     SourceKind,
     graph_source_binding_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 from repomap_test_support.test_scratch import select_scratch_root
 
 

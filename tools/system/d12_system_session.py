@@ -16,13 +16,13 @@ import subprocess
 from typing import Any
 
 import d12_dependency_preflight as inner
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE,
     POSTGRES_RELEASE_IMAGE,
     PYTHON_RELEASE_IMAGE,
     PlatformPackages,
 )
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support.d12_image_probes import _create, _hashes, _start_server
 from repomap_test_support.d12_complete_inventory import complete_inventory as _inventory

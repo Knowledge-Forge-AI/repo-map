@@ -33,6 +33,7 @@ from ci.python_type_ownership import (
     classify_modules,
     load_manifest,
     maintained_modules,
+    is_product_module,
     module_name_for_path,
     resolve_rule,
     tier_targets,
@@ -123,7 +124,7 @@ def _project_imports(
             for alias in node.names:
                 candidate = f"{imported}.{alias.name}" if imported else alias.name
                 imports.add(candidate if candidate in maintained else imported)
-    return tuple(sorted(name for name in imports if name.startswith("repomap_kg")))
+    return tuple(sorted(name for name in imports if is_product_module(name)))
 
 
 def parse_mypy_errors(output: str, repo_root: Path = ROOT) -> tuple[MypyError, ...]:

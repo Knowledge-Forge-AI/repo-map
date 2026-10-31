@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Sequence
 
-from repomap_kg.storage import run_psql
+from common_lore_index.storage import run_psql
 from repomap_test_support.postgres_harness import postgres_bin_dir
 
 

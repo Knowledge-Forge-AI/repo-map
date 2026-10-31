@@ -1,8 +1,8 @@
 import stat
 import unittest
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.observations.spool import ObservationSpool
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.observations.spool import ObservationSpool
 
 
 def _observation(source_id: str, ordinal: int) -> RawObservation:

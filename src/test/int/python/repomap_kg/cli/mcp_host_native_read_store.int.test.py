@@ -24,10 +24,10 @@ import uuid
 
 import pytest
 
-from repomap_kg.runtime.database_roles import READ_STATUS_ROLE
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.server.mcp_schemas import tool_definitions
-from repomap_kg.storage import (
+from common_lore_index.runtime.database_roles import READ_STATUS_ROLE
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.server.mcp_schemas import tool_definitions
+from common_lore_index.storage import (
     canonical_neighborhood_to_jsonable, canonical_node_records_to_jsonable,
     public_embedded_read_result_to_jsonable, public_read_page, public_read_page_to_jsonable,
     query_canonical_neighborhood, query_canonical_node_records,

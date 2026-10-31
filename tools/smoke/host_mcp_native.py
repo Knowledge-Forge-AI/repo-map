@@ -2,7 +2,7 @@
 
 ``--check`` (default) evaluates prerequisites and creates no resource.
 ``--execute`` runs the native proof on macOS from a verified, extracted
-operator kit against the pinned checkout's own ``.venv/bin/repomap-kg``.
+operator kit against the pinned checkout's own ``.venv/bin/cloe``.
 ``--build-kit OUT`` (repository checkout only) writes the operator kit.
 
 There is deliberately no option or environment variable that lets a non-macOS
@@ -76,7 +76,7 @@ def check_prerequisites(checkout: Path, kit_root: Path, *, platform: str = sys.p
     kit_ok, kit = verify_kit(kit_root)
     pre.add("kit", kit_ok, kit_root=str(kit_root), **kit)
     _checkout(pre, checkout, kit_root, kit_ok, runner)
-    console_path = checkout / ".venv" / "bin" / "repomap-kg"
+    console_path = checkout / ".venv" / "bin" / "cloe"
     if pre.add("console-present", console_path.is_file(), path=str(console_path)):
         pre.console = console_entrypoint(console_path)
         refusal = pre.console.native_refusal(checkout)
@@ -138,10 +138,10 @@ def _parent(pre: Prerequisites, checkout: Path, kit_root: Path) -> None:
     try:
         import psycopg
         import pytest
-        import repomap_kg
+        import common_lore_index
         from . import host_mcp_native_scenario  # loads the whole parent fixture closure
 
-        detail.update(repomap_kg=repomap_kg.__file__, psycopg=psycopg.__version__, pytest=pytest.__version__,
+        detail.update(common_lore_index=common_lore_index.__file__, psycopg=psycopg.__version__, pytest=pytest.__version__,
                       scenario=host_mcp_native_scenario.__file__)
     except Exception as error:  # a broken checkout import is a prerequisite refusal
         pre.add("parent-imports", False, error=f"{type(error).__name__}: {error}", **detail)
@@ -151,7 +151,7 @@ def _parent(pre: Prerequisites, checkout: Path, kit_root: Path) -> None:
              if name.startswith(KIT_MODULE_PREFIXES)}
     outside = sorted(name for name, file in files.items()
                      if file and not Path(file).resolve().is_relative_to(kit_root.resolve()))
-    pre.add("parent-imports", Path(detail["repomap_kg"]).resolve().is_relative_to(source) and not outside,
+    pre.add("parent-imports", Path(detail["common_lore_index"]).resolve().is_relative_to(source) and not outside,
             modules_outside_kit=outside[:20], **detail)
 
 

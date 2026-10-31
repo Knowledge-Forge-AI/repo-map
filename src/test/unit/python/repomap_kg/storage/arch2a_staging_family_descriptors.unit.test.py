@@ -4,10 +4,10 @@ import inspect
 from pathlib import Path
 import re
 
-from repomap_kg.storage import canonical_staging_merge, staging_merge
-from repomap_kg.storage.staging import STAGING_FAMILIES
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.storage import canonical_staging_merge, staging_merge
+from common_lore_index.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES
+from common_lore_index.storage.staging_family_contracts import (
     ChecksumStrategy,
     DuplicatePolicy,
     PrivacyClassification,

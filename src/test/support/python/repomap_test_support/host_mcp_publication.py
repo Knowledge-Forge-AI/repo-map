@@ -21,13 +21,13 @@ from typing import Any
 import psycopg
 import pytest
 
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.observations.raw import read_observations_jsonl
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.runtime.database_roles import READ_STATUS_ROLE, RoleSecrets, render_database_role_sql
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.storage import apply_migrations, default_rdbms_root, run_psql
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.observations.raw import read_observations_jsonl
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.runtime.database_roles import READ_STATUS_ROLE, RoleSecrets, render_database_role_sql
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.storage import apply_migrations, default_rdbms_root, run_psql
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.storage_integration import canonicalization_fixture
 

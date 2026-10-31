@@ -6,17 +6,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.coordinator._control_schema import (
+from common_lore_index.coordinator._control_schema import (
     control_schema_initialization_sql,
     control_schema_ledger_bootstrap_sql,
     discover_control_migrations,
 )
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     upgrade_coordinator_control,
 )
-from repomap_kg.runtime.backup_commands import validate_database_name
-from repomap_kg.runtime.schema_manifest import schema_manifest_sql
+from common_lore_index.runtime.backup_commands import validate_database_name
+from common_lore_index.runtime.schema_manifest import schema_manifest_sql
 
 
 def _migration_root(tmp_path: Path) -> Path:

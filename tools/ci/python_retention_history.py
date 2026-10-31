@@ -21,6 +21,7 @@ from ci.python_retention_cohorts import (
     validate_cohort_transition,
     validate_cohorts,
 )
+from ci.retained_python_namespace_history import namespace_path_successors
 
 
 
@@ -180,6 +181,16 @@ def validate_path_history(
 ) -> PathHistoryResult:
     """Validate append-only path lineage and protected predecessor coverage."""
     by_old, targets, transitions, decompositions = _parse_history(data)
+    namespace_successors = namespace_path_successors(repo_root)
+    for source, successor in namespace_successors.items():
+        if not source.endswith(".py"):
+            continue
+        # A current owner may already have a historical split. The exact identity
+        # edge carries that living owner forward without altering the split's
+        # immutable bytes; retired predecessors still traverse their full chain.
+        targets[source] = [successor]
+        by_old[source] = {"from": source, "to": successor,
+                          "rationale": "Sealed ADR0123 namespace identity projection"}
     current_files = {
         entry["path"]: entry
         for entry in data.get("files", [])
@@ -297,6 +308,7 @@ def validate_path_history(
         if inventory_path.is_file()
         else None
     )
+    evidence["namespace_source_successors"] = namespace_successors
     comparison_evidence = evidence.get("comparison_basis")
     if not isinstance(comparison_evidence, dict):
         raise HistoryValidationError("history evidence comparison basis is invalid")

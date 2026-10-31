@@ -6,20 +6,20 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES
-from repomap_kg.storage.main import apply_migrations, default_rdbms_root
-from repomap_kg.storage.canonical_staging_merge import (
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES
+from common_lore_index.storage.main import apply_migrations, default_rdbms_root
+from common_lore_index.storage.canonical_staging_merge import (
     build_canonical_merge_statements,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.portable_ingestion import prepare_portable_bundle_rows
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.portable_ingestion import prepare_portable_bundle_rows
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     MergeContext,
     PublicationContractError,
     PublicationHandoff,
@@ -28,14 +28,14 @@ from repomap_kg.storage.publication_fencing import (
     build_publication_prepare_statements,
     build_publication_reconciliation_statements,
 )
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication,
 )
-from repomap_kg.storage.staged_publication import (
+from common_lore_index.storage.staged_publication import (
     mark_failed_before_publication,
     reconcile_commit_unknown,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     _copy_families,
     _create_stage,
@@ -44,12 +44,12 @@ from repomap_kg.storage.staged_ingestion import (
     run_staged_portable_refresh,
     stage_id_for_authority,
 )
-from repomap_kg.storage.staged_validation import (
+from common_lore_index.storage.staged_validation import (
     mark_validated,
     mark_validating,
     validate_stage,
 )
-from repomap_kg.storage.staging_merge import build_source_index_merge_statements
+from common_lore_index.storage.staging_merge import build_source_index_merge_statements
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

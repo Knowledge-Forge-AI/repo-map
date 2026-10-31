@@ -18,7 +18,7 @@ from ci.qualification_native_contracts import (
 )
 from ci.workflow_model import load_workflow
 import d12_native_python_observer as observer
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 
 ROOT = Path(__file__).resolve().parents[6]
 WORKFLOW = ROOT / ".github/workflows/repomap-release-qualification.yml"

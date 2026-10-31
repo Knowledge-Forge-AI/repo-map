@@ -11,9 +11,9 @@ from repomap_test_support.test_scratch import short_test_directory
 import unittest
 from typing import Any
 
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.job_control import (
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.job_control import (
     CoordinatorModeError,
     cancel_coordinator_job,
     coordinator_health,
@@ -24,10 +24,10 @@ from repomap_kg.coordinator.job_control import (
     list_coordinator_jobs,
     wait_for_coordinator_job,
 )
-from repomap_kg.coordinator.local_mode import coordinator_runtime_paths
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
-from repomap_kg.coordinator.transport import (
+from common_lore_index.coordinator.local_mode import coordinator_runtime_paths
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator.transport import (
     LocalRequestDispatcher,
     LoopbackTcpService,
     UnixSocketService,

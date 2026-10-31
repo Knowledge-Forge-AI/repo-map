@@ -13,7 +13,7 @@ from repomap_test_support.cli import (
     write_text_fixture,
 )
 
-from repomap_kg import __version__
+from common_lore_index import __version__
 from repomap_test_support import cli, cli_in_process
 
 
@@ -36,6 +36,21 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
         with mock.patch.object(cli.runpy, "run_module", side_effect=RuntimeError("probe")):
             with self.assertRaisesRegex(RuntimeError, "probe"):
                 run_module_entrypoint("--version")
+        self.assertEqual(sys.argv, original)
+
+    def test_entrypoint_uses_preferred_command_without_changing_module_target(self):
+        original = sys.argv[:]
+        received = []
+
+        def capture_entrypoint(module_name, *, run_name):
+            received.append((module_name, run_name, sys.argv[:]))
+            raise SystemExit(7)
+
+        with mock.patch.object(cli, "PREFERRED_CLI", "cloe"), mock.patch.object(
+            cli.runpy, "run_module", side_effect=capture_entrypoint
+        ):
+            self.assertEqual(run_module_entrypoint("--version"), (7, "", ""))
+        self.assertEqual(received, [("common_lore_index", "__main__", ["cloe", "--version"])])
         self.assertEqual(sys.argv, original)
 
     def test_static_cli_capture_matches_the_compatibility_facade(self):
@@ -71,7 +86,7 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
         exit_code, stdout, stderr = run_repo_map_in_process("--version")
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(stdout.strip(), f"repomap-kg {__version__}")
+        self.assertEqual(stdout.strip(), f"cloe {__version__}")
         self.assertEqual(stderr, "")
 
     def test_run_module_entrypoint_captures_output_and_restores_argv(self):
@@ -80,7 +95,7 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
         exit_code, stdout, stderr = run_module_entrypoint("--version")
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(stdout.strip(), f"repomap-kg {__version__}")
+        self.assertEqual(stdout.strip(), f"cloe {__version__}")
         self.assertEqual(stderr, "")
         self.assertEqual(sys.argv, original_argv)
 

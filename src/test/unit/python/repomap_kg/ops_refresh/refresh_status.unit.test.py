@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from repomap_test_support.ops_refresh import OpsRefreshUnitTestCase
 
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.refresh import (
     OpsRefreshError,
     OpsGraphSummary,
     OpsRefreshGraphStatus,
@@ -15,7 +15,7 @@ from repomap_kg.ops.refresh import (
     query_refresh_status,
     refresh_status_to_jsonable,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 
 
 class OpsRefreshStatusUnitTests(OpsRefreshUnitTestCase):
@@ -243,7 +243,7 @@ class OpsRefreshStatusUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with patch(
-                "repomap_kg.ops.refresh.execute_ops_json_readback"
+                "common_lore_index.ops.refresh.execute_ops_json_readback"
             ) as execute_readback:
                 execute_readback.side_effect = [
                     {"connected": True, "schema_available": True},

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 def _file_observation(path: str, *, source_id: str | None = None) -> RawObservation:

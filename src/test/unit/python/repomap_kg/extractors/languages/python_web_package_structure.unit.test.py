@@ -25,10 +25,10 @@ PYTHON_WEB_DJANGO_EXPORTS = (
 
 
 def test_rootpkg29_python_web_reexports_observation_and_framework_builders() -> None:
-    import repomap_kg.extractors.languages.python_web as web
-    import repomap_kg.extractors.languages.python_web_observations as observations
-    import repomap_kg.extractors.languages.python_web_route_frameworks as routes
-    import repomap_kg.extractors.languages.python_web_django as django
+    import common_lore_index.extractors.languages.python_web as web
+    import common_lore_index.extractors.languages.python_web_observations as observations
+    import common_lore_index.extractors.languages.python_web_route_frameworks as routes
+    import common_lore_index.extractors.languages.python_web_django as django
     for name in PYTHON_WEB_OBSERVATION_EXPORTS:
         assert getattr(web, name) is getattr(observations, name)
     for name in PYTHON_WEB_ROUTE_EXPORTS:

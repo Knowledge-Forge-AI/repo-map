@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.graph.multi_source import SourceKind
+from common_lore_index.graph.multi_source import SourceKind
 from repomap_test_support.run25_wave2_corpus import (
     create_run25_wave2_graph_config,
     inject_malformed_plist,

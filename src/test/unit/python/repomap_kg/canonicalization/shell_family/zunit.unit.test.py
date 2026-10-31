@@ -7,11 +7,11 @@ from unittest.mock import patch
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.graph.keys import (
+    from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.graph.keys import (
     file_key,
     tool_key,
     zunit_assertion_key,
@@ -24,9 +24,9 @@ from repomap_kg.graph.keys import (
     zunit_suite_key,
     zunit_test_case_key,
 )
-from repomap_kg.storage import prepare_canonical_load
-from repomap_kg.extractors.shell.zunit import extract_zunit_file_observations
-from repomap_kg.graph.readback.zunit import summarize_zunit_evidence
+from common_lore_index.storage import prepare_canonical_load
+from common_lore_index.extractors.shell.zunit import extract_zunit_file_observations
+from common_lore_index.graph.readback.zunit import summarize_zunit_evidence
 
 
 FIXTURE_ROOT = Path(__file__).parents[5] / "fixtures" / "shell" / "zunit"

@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.graph.discovery import discover_observations
+from common_lore_index.graph.discovery import discover_observations
 
 FIXTURE_ROOT = Path(__file__).parents[4] / "fixtures" / "discovery"
 

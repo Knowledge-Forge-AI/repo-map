@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 from repomap_test_support.host_read_store_config import (
     NO_FALLBACK_GUARDS,
     fail_if_reached,
@@ -58,7 +58,7 @@ class _Recorder:
 
 
 def _patched_driver(recorder: _Recorder):
-    return patch("repomap_kg.storage.readback_driver.execute_json_readback_with_driver", recorder)
+    return patch("common_lore_index.storage.readback_driver.execute_json_readback_with_driver", recorder)
 
 
 class DomainReadStoreAuthorityTests(McpServerTestSupport):
@@ -66,7 +66,7 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
         return patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()), **env}, clear=True)
 
     def _run_twelve(self, **env: str) -> list[str]:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         refusals: list[str] = []
         with self._env(**env):
@@ -77,7 +77,7 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
         return refusals
 
     def test_setup_owned_home_reads_all_twelve_as_read_status_role(self) -> None:
-        from repomap_kg.runtime.database_role_contract import read_read_status_password
+        from common_lore_index.runtime.database_role_contract import read_read_status_password
 
         home = setup_owned_home(self)
         ambient = {"PGPASSWORD": "ambient-admin", "REPOMAP_PG_PASSWORD": "ambient-admin"}
@@ -125,7 +125,7 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
                 self.assertEqual(call["password"], password)
 
     def test_legacy_json_project_keeps_ambient_authority_without_readback_resolution(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         legacy = self.write_mcp_config({"projects": {"legacy": {
             "root_path": "/workspace/legacy", "pg_database": "legacy_db", "pg_host": "db.internal",
@@ -134,7 +134,7 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
         source_and_status = [(name, {**args, "project": "legacy"}) for name, args, _label in TWELVE_TOOL_CALLS[5:]]
         with patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(legacy), "PGPASSWORD": "ambient"}, clear=True), \
                 _patched_driver(recorder), \
-                patch("repomap_kg.server.canonical_read_store.readback_postgres_authority", fail_if_reached):
+                patch("common_lore_index.server.canonical_read_store.readback_postgres_authority", fail_if_reached):
             for name, args in source_and_status:
                 with self.assertRaises(RepoMapMcpError):
                     handle_tool_call(name, args)
@@ -162,23 +162,23 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
         # still falls back to a container on the same home, and the same guards
         # fire there, so the host-only assertions above would detect a
         # reintroduced fallback.
-        from repomap_kg.ops.refresh import run_storage_readback_with_ops_psql
-        from repomap_kg.server._ops_records import graph_context
-        from repomap_kg.storage import query_python_summary
+        from common_lore_index.ops.refresh import run_storage_readback_with_ops_psql
+        from common_lore_index.server._ops_records import graph_context
+        from common_lore_index.storage import query_python_summary
 
         home = setup_owned_home(self, setup_owned_config().replace(
             "direct_host_port_enabled = true", "direct_host_port_enabled = false"
         ))
         recorder = _Recorder(StorageSchemaError(UNRESOLVED))
         with self._env(REPOMAP_HOME=str(home), REPOMAP_STORAGE_READBACK_DRIVER="psql"), \
-                patch("repomap_kg.storage.readback_driver.run_psql", recorder), \
+                patch("common_lore_index.storage.readback_driver.run_psql", recorder), \
                 patched_guards(), self.assertRaisesRegex(AssertionError, "container, or subprocess path"):
             context = graph_context("host-one")
             run_storage_readback_with_ops_psql(context.config, context.database, query_python_summary,
                                                psql_command=None, root_path=context.root_path)
 
     def test_configured_summary_privacy_redacts_private_roots(self) -> None:
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
 
         private_root = str(Path.home() / "private-visible")
 
@@ -187,7 +187,7 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
                 return {"root_path": private_root, "repository_name": "private-visible", "count": 1}
 
         env = self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config())
-        with env, patch("repomap_kg.server.ops.query_python_summary", lambda *_a, **_k: _PrivateSummary()):
+        with env, patch("common_lore_index.server.ops.query_python_summary", lambda *_a, **_k: _PrivateSummary()):
             payload = handle_tool_call("repomap_python_summary", {"graph_id": "private-visible"})["structuredContent"]
         serialized = json.dumps(payload, sort_keys=True)
         self.assertNotIn(private_root, serialized)
@@ -196,9 +196,9 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
         self.assertTrue(payload["graph"]["private"])
 
     def test_source_seam_import_boundary_and_pure_construction(self) -> None:
-        import repomap_kg.server.source_read_store as module
-        from repomap_kg.server.canonical_read_store import ConfiguredPostgresConnection
-        from repomap_kg.server.mcp import source_read_store, storage_connection
+        import common_lore_index.server.source_read_store as module
+        from common_lore_index.server.canonical_read_store import ConfiguredPostgresConnection
+        from common_lore_index.server.mcp import source_read_store, storage_connection
 
         tree = ast.parse(Path(module.__file__ or "").read_text(encoding="utf-8"))
         imported = {
@@ -206,16 +206,16 @@ class DomainReadStoreAuthorityTests(McpServerTestSupport):
             for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))
             for alias in node.names
         }
-        self.assertEqual({name for name in imported if name and name.startswith("repomap_kg")},
-                         {"repomap_kg.server.canonical_read_store", "repomap_kg.storage.source_rows"})
-        forbidden = ("subprocess", "shutil", "psycopg", "repomap_kg.runtime", "repomap_kg.ops",
-                     "repomap_kg.storage.staged_ingestion", "repomap_kg.coordinator", "repomap_kg.server.ops",
-                     "repomap_kg.server.mcp", "repomap_kg.ingestion")
+        self.assertEqual({name for name in imported if name and name.startswith("common_lore_index")},
+                         {"common_lore_index.server.canonical_read_store", "common_lore_index.storage.source_rows"})
+        forbidden = ("subprocess", "shutil", "psycopg", "common_lore_index.runtime", "common_lore_index.ops",
+                     "common_lore_index.storage.staged_ingestion", "common_lore_index.coordinator", "common_lore_index.server.ops",
+                     "common_lore_index.server.mcp", "common_lore_index.ingestion")
         self.assertFalse({name for name in imported if name and name.startswith(forbidden)})
         with self._env(REPOMAP_OPS_CONFIG=str(self.write_visible_ops_config())):
             connection: Any = storage_connection(project="repo-map")
-        with patched_guards(("repomap_kg.server.canonical_read_store.readback_postgres_authority",
-                             "repomap_kg.storage.readback_driver.execute_json_readback_with_driver",
+        with patched_guards(("common_lore_index.server.canonical_read_store.readback_postgres_authority",
+                             "common_lore_index.storage.readback_driver.execute_json_readback_with_driver",
                              *NO_FALLBACK_GUARDS)):
             store: Any = source_read_store(connection)
         self.assertIsInstance(store.connection, ConfiguredPostgresConnection)
@@ -227,13 +227,13 @@ class DomainReadDriverRefusalTextContrastTests(McpServerTestSupport):
     """Configured reads use read_configured_graph: bounded generic driver text."""
 
     def _refusal(self, tool: str, args: dict[str, Any], env: dict[str, str], run_psql=None, psycopg=None) -> str:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         env = {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()),
                "REPOMAP_OPS_CONFIG": str(self.write_visible_ops_config()), **env}
         with patch.dict("os.environ", env, clear=True), patched_guards(), \
-                patch("repomap_kg.storage.readback_driver.run_psql", run_psql or fail_if_reached), \
-                patch("repomap_kg.storage.readback_driver._import_psycopg", psycopg or fail_if_reached), \
+                patch("common_lore_index.storage.readback_driver.run_psql", run_psql or fail_if_reached), \
+                patch("common_lore_index.storage.readback_driver._import_psycopg", psycopg or fail_if_reached), \
                 self.assertRaises(RepoMapMcpError) as raised:
             handle_tool_call(tool, args)
         return str(raised.exception)

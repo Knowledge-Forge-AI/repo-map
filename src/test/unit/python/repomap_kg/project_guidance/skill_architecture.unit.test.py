@@ -3,8 +3,8 @@ import os
 import re
 from pathlib import Path
 
-from repomap_kg.extractors.documents.markdown_structure import parse_frontmatter
-from repomap_kg.graph.discovery import discover_repository
+from common_lore_index.extractors.documents.markdown_structure import parse_frontmatter
+from common_lore_index.graph.discovery import discover_repository
 
 
 REPO_ROOT = Path(__file__).resolve().parents[6]

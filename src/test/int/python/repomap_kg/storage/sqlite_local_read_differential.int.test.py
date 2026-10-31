@@ -28,8 +28,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.server._ops_search import build_mcp_search_sql
-from repomap_kg.storage import (
+from common_lore_index.server._ops_search import build_mcp_search_sql
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_canonical_neighborhood,
@@ -40,16 +40,16 @@ from repomap_kg.storage import (
     query_python_summary,
     query_terraform_summary,
 )
-from repomap_kg.storage.readback_driver import READBACK_DRIVER_ENV, execute_json_readback
-from repomap_kg.storage.sqlite_local import (
+from common_lore_index.storage.readback_driver import READBACK_DRIVER_ENV, execute_json_readback
+from common_lore_index.storage.sqlite_local import (
     api_summary_queries,
     investigation_queries,
     nix_summary_queries,
     queries,
     summary_queries,
 )
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.portable_publication_fixtures import publish_portable_bundle
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.sqlite_local_fixtures import local_binding, publication_for
@@ -87,7 +87,7 @@ SEARCHES: tuple[tuple[str, str | None, str | None, int, int, bool], ...] = (
     ("ärger", None, None, 5, 0, False),
     ("Ünïcode", None, None, 5, 0, True),
     ('"program": null', None, None, 5, 0, False),
-    ("repomap_kg", None, None, 5, 0, False),
+    ("common_lore_index", None, None, 5, 0, False),
     ("repomapXkg", None, None, 5, 0, False),
 )
 
@@ -99,6 +99,37 @@ def _runs(value: Any, pg_run: int) -> Any:
     if isinstance(value, list):
         return [_runs(item, pg_run) for item in value]
     return value
+
+
+def test_cloe_and_legacy_dogfood_markers_match_in_both_stores(tmp_path: Path, monkeypatch):
+    from repomap_test_support import sqlite_local_read_corpus as corpus
+    require_postgres_binaries()
+    monkeypatch.setenv(READBACK_DRIVER_ENV, "psycopg")
+    cases: tuple[tuple[str, dict[str, str], bool], ...] = (
+        ("synthetic/repomap_kg/requirements.txt", {}, True),
+        ("synthetic/common_lore_index/requirements.txt", {}, True),
+        ("pkg/requirements.txt", {"project_name": "common-lore-index-sample"}, True),
+        ("pkg/requirements.txt", {}, False),
+    )
+    with temporary_postgres() as postgres:
+        for index, (source_path, metadata, expected) in enumerate(cases):
+            graph = f"dogfood-{index}"
+            root = "graph:" + graph
+            database = postgres.create_database(f"cloe_dogfood_{index}")
+            apply_migrations(default_rdbms_root(), database.psql_args, psql_command=database.psql_command)
+            monkeypatch.setattr(corpus, "CORPUS_ROWS", (("python.package_file", source_path, metadata, {}),))
+            bundle = corpus.read_corpus_bundle(graph)
+            publish_portable_bundle(database.psql_args, bundle, repository_name=graph, root_path=root)
+            path = tmp_path / f"{graph}.sqlite3"
+            binding = local_binding(graph)
+            initialize_graph_database(path, binding, applied_at="2026-10-30T00:00:00Z")
+            publish_generation(path, publication_for(bundle, graph), bundle.families, expected_generation=0)
+            pg = query_python_summary(database.psql_args, root_path=root, psql_command=database.psql_command)
+            with read_transaction(path, binding) as connection:
+                local = summary_queries.python_summary(connection, root_path=root)
+            assert local.python_observations == pg.python_observations == 1
+            assert local.dogfooding == pg.dogfooding
+            assert local.dogfooding["repo_map_profile_observed"] is expected
 
 
 def test_read_corpus_matches_postgresql_query_owners(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

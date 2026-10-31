@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.coordinator import _portable_authority as pa
+from common_lore_index.coordinator import _portable_authority as pa
 
 FILESYSTEM = "filesystem authority denied"
 RUNTIME = "runtime authority denied"
@@ -198,13 +198,13 @@ def test_database_and_publisher_imports_are_refused_while_other_events_pass(
     layout: SimpleNamespace,
 ) -> None:
     for denied in (
-        "psycopg2.extras", "sqlite3.dbapi2", "repomap_kg.storage.staged_publication",
-        "repomap_kg.coordinator.startup_recovery", "repomap_kg.registry.service",
-        "repomap_kg.coordinator._control_plane",
+        "psycopg2.extras", "sqlite3.dbapi2", "common_lore_index.storage.staged_publication",
+        "common_lore_index.coordinator.startup_recovery", "common_lore_index.registry.service",
+        "common_lore_index.coordinator._control_plane",
     ):
         _deny(layout, "import", (denied,), IMPORT)
     _allow(layout, "import", ("json",))
-    _allow(layout, "import", ("repomap_kg.coordinator.portable_worker",))
+    _allow(layout, "import", ("common_lore_index.coordinator.portable_worker",))
     _allow(layout, "import", (None,))
     _allow(layout, "import", ())
     _allow(layout, "os.getcwd", ())

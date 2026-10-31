@@ -23,6 +23,7 @@ test-hygiene.local.toml
 *.egg-info/
 *.py[cod]
 src/main/python/repomap_kg/_bin/
+src/main/python/common_lore_index/_bin/
 
 # Local database and generated graph artifacts
 data/

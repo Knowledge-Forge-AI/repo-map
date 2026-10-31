@@ -15,15 +15,15 @@ from repomap_test_support.public_branch_contracts import (
     unexpected_runner,
     write_backup_fixture,
 )
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     LocalDbBackupError,
     drop_database,
     format_drop_result_table,
     init_database_from_dump,
     init_database_from_source,
 )
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.storage import StorageSchemaError
 
 
 class PublicBranchLocalDbLifecycleIntegrationTests(unittest.TestCase):
@@ -58,7 +58,7 @@ class PublicBranchLocalDbLifecycleIntegrationTests(unittest.TestCase):
                 raise AssertionError(command)
 
             with patch(
-                "repomap_kg.runtime._backup_operations.graph_schema_initialization_sql",
+                "common_lore_index.runtime._backup_operations.graph_schema_initialization_sql",
                 side_effect=StorageSchemaError("missing migrations"),
             ):
                 with self.assertRaises(LocalDbBackupError) as schema:

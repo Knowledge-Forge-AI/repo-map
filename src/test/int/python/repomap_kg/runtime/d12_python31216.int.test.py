@@ -14,9 +14,9 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime import release
-from repomap_kg.runtime.commands import PYTHON_PAYLOAD_SOURCE
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime import release
+from common_lore_index.runtime.commands import PYTHON_PAYLOAD_SOURCE
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support import d12_python31216 as proof
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers

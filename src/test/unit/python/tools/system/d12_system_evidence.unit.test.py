@@ -15,11 +15,11 @@ from ci.d12_system_grant import (
     DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, build_system_admission_proof,
     load_and_validate_system_build_grant, write_system_admission_proof,
 )
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, POSTGRES_RELEASE_VERSION,
     PYTHON_RELEASE_IMAGE,
 )
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import resource_run as resource_run_mod
 from repomap_test_support.d12_image_probes import CLIENTS, SERVER
 from tools.system import d12_system_evidence as evidence_mod, d12_system_session as session_mod
@@ -34,7 +34,7 @@ from tools.system.d12_system_session import D12SystemSession
 from tools.system.report import SystemStepResult
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
-BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
+BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
 LIBC, SRV_IMAGE = "/usr/lib/x86_64-linux-gnu/libc.so.6", "sha256:" + "5" * 64
 
 
@@ -117,7 +117,7 @@ def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemS
     grant, grant_sha = load_and_validate_system_build_grant(
         grant_path, expected_candidate=expected_cand, frozen_identity=d12_ctx
     )
-    (ev := tmp_path / "event.json").write_text(json.dumps({"number": 13, "draft": True}), encoding="utf-8")
+    (ev := tmp_path / "event.json").write_text(json.dumps({"number": 23, "draft": True}), encoding="utf-8")
     proof = build_system_admission_proof(
         grant=grant, grant_sha256=grant_sha, expected_candidate_sha256=cand_sha,
         raw_event_sha256=hashlib.sha256(ev.read_bytes()).hexdigest(),
@@ -129,7 +129,7 @@ def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemS
     write_system_admission_proof(proof_file, proof)
     config = SystemTestConfig.create(
         timeout_seconds=1500, report_dir=tmp_path / "report", candidate_tree_sha="b" * 40,
-        run_id=_active_run_id(), gate_kind="main-system", approval_id="pr-13", pr_number="13",
+        run_id=_active_run_id(), gate_kind="main-system", approval_id="pr-23", pr_number="23",
         repository="Knowledge-Forge-AI/repo-map", approved_base_branch="main", approved_base_sha=BASE_SHA,
         approved_head_branch="staging", approved_head_sha="d" * 40, candidate_commit_sha="a" * 40,
         candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, execution_mode="hosted_qualification",

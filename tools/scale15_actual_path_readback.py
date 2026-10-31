@@ -12,18 +12,18 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 from psycopg.pq import abc as pq_abc
 
-from repomap_kg.storage.authority import PublicationGenerations
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import PublicationGenerations
+from common_lore_index.storage.publication import (
     RunPublicationReceipt,
     publication_receipt_from_mapping,
 )
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.run_authority import (
+from common_lore_index.storage.run_authority import (
     read_run_authority,
 )
 from semantic_digest_readback import (

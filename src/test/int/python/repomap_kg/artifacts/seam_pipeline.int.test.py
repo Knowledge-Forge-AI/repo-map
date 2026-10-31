@@ -12,19 +12,19 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.artifacts.parity_harness import compare_incumbent_and_subprocess_parity
-from repomap_kg.artifacts.manifest import PortableSnapshotManifest
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import (
+from common_lore_index.artifacts.parity_harness import compare_incumbent_and_subprocess_parity
+from common_lore_index.artifacts.manifest import PortableSnapshotManifest
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import (
     ArtifactIntegrityError, FileSystemArtifactStore, MemoryArtifactStore,
 )
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 from repomap_test_support.portable_worker_conformance import (
     run_portable_worker_conformance,
 )

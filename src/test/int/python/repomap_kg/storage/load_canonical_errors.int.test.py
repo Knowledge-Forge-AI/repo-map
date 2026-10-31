@@ -8,9 +8,9 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.observations import RawObservation, read_observations_jsonl
+from common_lore_index.observations import RawObservation, read_observations_jsonl
 from repomap_test_support.storage_publication import load_file_observations
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     apply_migrations,
     default_rdbms_root,

@@ -16,12 +16,12 @@ import shutil
 import tempfile
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.config.nix_resolver import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.config.nix_resolver import (
     NixBindingView,
     _source_relative_path,
 )
-from repomap_kg.extractors.config.openapi_helpers import (
+from common_lore_index.extractors.config.openapi_helpers import (
     _is_url,
     _openapi_components,
     _openapi_media_types,
@@ -29,19 +29,19 @@ from repomap_kg.extractors.config.openapi_helpers import (
     _openapi_parameters,
     _openapi_reference_scope,
 )
-from repomap_kg.extractors.config.terraform_hcl_helpers import (
+from common_lore_index.extractors.config.terraform_hcl_helpers import (
     _terraform_hcl_brace_delta,
     _terraform_hcl_collection_body,
     _terraform_hcl_nested_block_body,
     _terraform_hcl_nested_block_count,
     _terraform_hcl_strip_comment,
 )
-from repomap_kg.extractors.shell.powershell_manifest import (
+from common_lore_index.extractors.shell.powershell_manifest import (
     _collect_manifest_array,
     _extract_manifest_fields,
     _resolve_manifest_reference,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
 from repomap_test_support.run25_wave2_corpus import (
     create_run25_wave2_graph_config,
     populate_run25_config_shell_project,

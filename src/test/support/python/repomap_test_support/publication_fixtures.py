@@ -6,18 +6,18 @@ from dataclasses import dataclass
 import json
 from typing import Any, Mapping, Sequence
 
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import (
     PortablePublicationBinding,
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.sql_core import sql_literal
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.sql_core import sql_literal
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 def json_row_counts(*, files: int = 0) -> str:

@@ -61,7 +61,7 @@ runtime search path. No exceptions remain.
 ## Strongly Connected Component Guard
 
 ARCH1D established a standard-library AST guard over all committed
-`repomap_kg` production modules. The guard includes imports at every lexical
+`common_lore_index` production modules. The guard includes imports at every lexical
 scope. It fails if any component appears or production references test
 support.
 
@@ -150,7 +150,7 @@ fixture-selecting coordinator factory now live outside production in
 `storage.canonical_filters` now owns canonical node, edge, and neighborhood
 filter validation. Both `cli.main` and `server.mcp_core` import the same
 function objects. The CLI main module and dynamically populated
-`repomap_kg.cli` package facade therefore preserve their established exports,
+`common_lore_index.cli` package facade therefore preserve their established exports,
 and the CLI storage command adapters continue to bind those objects from the
 commands module supplied by dispatch.
 

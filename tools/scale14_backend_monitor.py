@@ -9,7 +9,7 @@ from typing import Callable, Generic, Mapping
 from typing_extensions import TypeVar
 
 from actual_refresh_failure_causality import FailureCausalityAuthority
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
+from common_lore_index.storage.backend_observer import BackendOwnershipObserver
 from scale14_backend_monitor_events import (
     EventReaderProtocol,
     MonitorObserverProtocol,

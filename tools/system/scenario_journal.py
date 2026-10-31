@@ -239,7 +239,7 @@ class ScenarioJournal:
             if valid_job:
                 database = "repomap_control"
                 if plan is not None and hasattr(plan, "database"):
-                    from repomap_kg.ops.resolved_config import control_database_for
+                    from common_lore_index.ops.resolved_config import control_database_for
                     database = str(control_database_for(plan.database))
                 if time.monotonic() < diag_deadline and _probe_timeout() > 0.0:
                     try:

@@ -3,7 +3,7 @@ import unittest
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
 
-from repomap_kg.graph.discovery_extractors import extract_shell_file_observations
+from common_lore_index.graph.discovery_extractors import extract_shell_file_observations
 
 class GraphDiscoveryBoundariesUnitTests(unittest.TestCase):
     def test_discovery_extractors_safe_dispatch(self):

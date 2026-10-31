@@ -25,8 +25,8 @@ Prepare storage outside MCP:
    database (or use an existing configured local runtime graph).
 2. Apply RepoMap migrations.
 3. Load a graph outside MCP: either refresh a configured graph through local
-   ops, or run `repomap-kg discover <repo> --jsonl` plus
-   `repomap-kg storage load-files <observations.jsonl>` for a disposable
+   ops, or run `cloe discover <repo> --jsonl` plus
+   `cloe storage load-files <observations.jsonl>` for a disposable
    database.
 4. Configure the MCP server with a graph-registry entry
    (`enabled`/`mcp_visible`), a legacy project-registry entry, or explicit
@@ -101,7 +101,7 @@ extracted operator kit:
 - `--execute`, on macOS only, creates a fresh run-owned PostgreSQL container
   and a setup-owned home. It publishes a tiny non-QUAL12 fixture and removes
   its source roots. It then launches the pinned checkout's own
-  `.venv/bin/repomap-kg mcp serve --repo-map-home <fresh-home>` directly, with
+  `.venv/bin/cloe mcp serve --repo-map-home <fresh-home>` directly, with
   a from-scratch environment. It checks the unchanged catalog, the config
   inventory, and positive oracle parity for the canonical, investigation and
   source/feed read stores. Graph and refresh status for the multi-source and

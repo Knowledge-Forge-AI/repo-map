@@ -4,8 +4,8 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import (
+from common_lore_index.cli import main
+from common_lore_index.storage import (
     EmailSummaryRecord,
 )
 from repomap_test_support.cli_storage_summaries import (
@@ -21,7 +21,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_terraform_summary",
+            "common_lore_index.cli.query_terraform_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -54,7 +54,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_terraform_summary",
+            "common_lore_index.cli.query_terraform_summary",
             return_value=terraform_summary_fixture(),
         ):
             with redirect_stdout(stdout):
@@ -79,7 +79,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_python_summary",
+            "common_lore_index.cli.query_python_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -113,7 +113,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_python_summary",
+            "common_lore_index.cli.query_python_summary",
             return_value=python_summary_fixture(),
         ):
             with redirect_stdout(stdout):
@@ -138,7 +138,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_nix_summary",
+            "common_lore_index.cli.query_nix_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -233,7 +233,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_email_summary",
+            "common_lore_index.cli.query_email_summary",
             return_value=summary,
         ) as query:
             with redirect_stdout(stdout):
@@ -301,7 +301,7 @@ class CliStorageConfigNixEmailSummaryUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_email_summary",
+            "common_lore_index.cli.query_email_summary",
             return_value=summary,
         ):
             with redirect_stdout(stdout):

@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.protocol import (
     MAX_JSONL_LINE_BYTES,
     ProtocolSession,
     decode_jsonl,

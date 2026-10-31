@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.runtime.backup_commands import planned_pg_restore_list_command
-from repomap_kg.runtime.local import setup_local_runtime
+from common_lore_index.runtime.backup_commands import planned_pg_restore_list_command
+from common_lore_index.runtime.local import setup_local_runtime
 
 
 class LocalDbBackupCommandUnitTests(unittest.TestCase):
@@ -18,7 +18,7 @@ class LocalDbBackupCommandUnitTests(unittest.TestCase):
 
     def test_format_coordinated_restore_table_and_error_handling(self):
         from unittest import mock
-        from repomap_kg.runtime.backup_restore_sets import format_coordinated_restore_table
+        from common_lore_index.runtime.backup_restore_sets import format_coordinated_restore_table
 
         restore_result = mock.MagicMock()
         restore_result.to_jsonable.return_value = {

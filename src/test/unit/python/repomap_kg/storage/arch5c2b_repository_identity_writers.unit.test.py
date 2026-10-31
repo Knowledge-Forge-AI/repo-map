@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.storage import LoadSummary, repository_run_prefix_sql
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.storage import LoadSummary, repository_run_prefix_sql
 
 
 def test_repository_run_prefix_selects_stable_or_historical_identity() -> None:
@@ -31,7 +31,7 @@ def test_repository_run_prefix_selects_stable_or_historical_identity() -> None:
 
 def test_direct_publication_forwards_optional_repository_identity() -> None:
     with patch(
-        "repomap_kg.ops.direct_publication.run_staged_full_refresh",
+        "common_lore_index.ops.direct_publication.run_staged_full_refresh",
         return_value=LoadSummary(repository_id=1, run_id=2, files=0),
     ) as staged:
         result = publish_observation_generation(

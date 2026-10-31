@@ -5,9 +5,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.coordinator import _refresh_execution
-from repomap_kg.runtime import system_test_pause as pause_window
-from repomap_kg.storage import _staged_publication_pause as pause
+from common_lore_index.coordinator import _refresh_execution
+from common_lore_index.runtime import system_test_pause as pause_window
+from common_lore_index.storage import _staged_publication_pause as pause
 from src.test.unit.python.repomap_kg.storage.scale8_staged_helpers_fixtures import _handoff
 
 

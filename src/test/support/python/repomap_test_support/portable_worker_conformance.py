@@ -11,10 +11,10 @@ import subprocess
 import sys
 import threading
 
-from repomap_kg.artifacts.store import ArtifactIntegrityError
-from repomap_kg.coordinator import portable_worker
-from repomap_kg.coordinator import _portable_semantic_adapter as semantic_adapter
-from repomap_kg.coordinator._portable_semantic_adapter import PortableExecutionError
+from common_lore_index.artifacts.store import ArtifactIntegrityError
+from common_lore_index.coordinator import portable_worker
+from common_lore_index.coordinator import _portable_semantic_adapter as semantic_adapter
+from common_lore_index.coordinator._portable_semantic_adapter import PortableExecutionError
 
 
 def run_portable_worker_conformance(
@@ -26,23 +26,23 @@ def run_portable_worker_conformance(
 ):
     """Launch the real worker through the closed test-support entrypoint."""
 
-    from repomap_kg.artifacts.parity_harness import seal_graph
-    from repomap_kg.artifacts.store import FileSystemArtifactStore
-    from repomap_kg.coordinator._portable_capability import (
+    from common_lore_index.artifacts.parity_harness import seal_graph
+    from common_lore_index.artifacts.store import FileSystemArtifactStore
+    from common_lore_index.coordinator._portable_capability import (
         PortableExecutionCapability,
         create_portable_capability,
     )
-    from repomap_kg.coordinator._portable_worker_launch import (
+    from common_lore_index.coordinator._portable_worker_launch import (
         _run_portable_worker_command,
     )
-    from repomap_kg.graph.multi_source import (
+    from common_lore_index.graph.multi_source import (
         SourceKind,
         graph_source_binding_id,
         source_selection_policy_id,
     )
-    from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-    from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-    from repomap_kg.ops.config_records import OpsGraphConfig
+    from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+    from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+    from common_lore_index.ops.config_records import OpsGraphConfig
 
     source = root / "source"
     source.mkdir(exist_ok=True)
@@ -214,13 +214,13 @@ def _exercise_authority(probe: str, probe_path: Path | None) -> None:
             import psycopg
             del psycopg  # The probe needs import side effects only.
         elif probe == "publisher-import":
-            sys.modules.pop("repomap_kg.storage.staged_ingestion", None)
-            import repomap_kg.storage.staged_ingestion
-            del repomap_kg  # The probe needs import side effects only.
+            sys.modules.pop("common_lore_index.storage.staged_ingestion", None)
+            import common_lore_index.storage.staged_ingestion
+            del common_lore_index  # The probe needs import side effects only.
         elif probe == "control-import":
-            sys.modules.pop("repomap_kg.coordinator._control_schema", None)
-            import repomap_kg.coordinator._control_schema
-            del repomap_kg  # The probe needs import side effects only.
+            sys.modules.pop("common_lore_index.coordinator._control_schema", None)
+            import common_lore_index.coordinator._control_schema
+            del common_lore_index  # The probe needs import side effects only.
         else:
             raise KeyError(probe)
     except PermissionError as error:

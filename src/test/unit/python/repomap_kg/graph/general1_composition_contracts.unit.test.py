@@ -5,7 +5,7 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     GraphSourceBinding, MultiSourceIdentityError, SnapshotManifestEntry,
     SourceDefinition, SourceKind, SourceSnapshot, graph_source_binding_id,
     multi_source_configuration_id, source_selection_policy_id,

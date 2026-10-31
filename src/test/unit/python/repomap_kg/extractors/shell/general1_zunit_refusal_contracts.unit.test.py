@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from repomap_kg.extractors.shell.zunit import extract_zunit_file_observations
+from common_lore_index.extractors.shell.zunit import extract_zunit_file_observations
 
 
 SUITE_PATH = "test/general1_refusals.zunit"

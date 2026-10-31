@@ -15,21 +15,21 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.storage.sqlite_local import connection as connection_module
-from repomap_kg.storage.sqlite_local import publisher
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.storage.sqlite_local import connection as connection_module
+from common_lore_index.storage.sqlite_local import publisher
+from common_lore_index.storage.sqlite_local.connection import (
     classify_write_error,
     initialize_graph_database,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.publisher import (
+from common_lore_index.storage.sqlite_local.publisher import (
     accepted_generation,
     publication_not_committed,
     publish_generation,
     read_accepted_generation,
 )
-from repomap_kg.storage.sqlite_local.schema import AcceptedIdentity, LocalStoreError
+from common_lore_index.storage.sqlite_local.schema import AcceptedIdentity, LocalStoreError
 from repomap_test_support.sqlite_local_fixtures import (
     generation_bundle,
     local_binding,

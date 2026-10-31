@@ -14,10 +14,10 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.server import mcp
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.navigation_search_fixtures import (
     BINDING, GRAPH, navigation_bundle,
 )

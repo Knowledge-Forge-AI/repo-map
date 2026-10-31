@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.artifacts import ArtifactLocator, ArtifactReference
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.artifacts import ArtifactLocator, ArtifactReference
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability,
     load_portable_capability,
     remove_portable_capability,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def manifest_reference() -> ArtifactReference:

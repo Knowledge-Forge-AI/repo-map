@@ -8,12 +8,12 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventFrame,
     StagingEventTransportError,
 )
-from repomap_kg.storage.staging_observability import StagingMeasurements
+from common_lore_index.storage.staging_observability import StagingMeasurements
 
 
 class _InterruptOnAcknowledgementChannel(StagingEventChannel):

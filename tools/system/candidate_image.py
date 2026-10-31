@@ -14,12 +14,12 @@ import sys
 import tempfile
 from typing import TYPE_CHECKING, Any
 
-from repomap_kg.runtime.commands import render_server_dockerfile
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.commands import render_server_dockerfile
+from common_lore_index.runtime.release import (
     DYNAMIC_PACKAGE_MANIFEST, GO_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION,
     PSYCOPG_LIBPQ_VERSION, PlatformPackages, validate_package_manifest,
 )
-from repomap_kg.runtime.release_manifest import (
+from common_lore_index.runtime.release_manifest import (
     D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST,
 )
 from tools.system.candidate_identity import (
@@ -246,11 +246,11 @@ def build_and_verify_candidate_image(
         deadline.check_test_budget("candidate image self-test")
 
     self_test_script = (
-        "import json, os, platform, subprocess, sys, psycopg, repomap_kg; "
+        "import json, os, platform, subprocess, sys, psycopg, common_lore_index; "
         "from psycopg import pq; "
-        "from repomap_kg.storage import discover_migrations; "
-        "from repomap_kg.coordinator._control_schema import discover_control_migrations; "
-        "from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command; "
+        "from common_lore_index.storage import discover_migrations; "
+        "from common_lore_index.coordinator._control_schema import discover_control_migrations; "
+        "from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command; "
         "assert discover_migrations(), 'missing graph migrations'; "
         "assert discover_control_migrations(), 'missing control migrations'; "
         "helper_cmd = resolve_go_helper_command(); "

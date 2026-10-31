@@ -22,34 +22,34 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.artifacts.validator import PublicationExpectation, PublisherBundleValidator
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.artifacts.validator import PublicationExpectation, PublisherBundleValidator
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability,
 )
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.errors import StorageSchemaError
 from repomap_test_support.run25_durable_families import assert_durable_families
-from repomap_kg.storage.main import apply_migrations, default_rdbms_root
-from repomap_kg.storage.publication import PortablePublicationBinding, RunPublicationReceipt
-from repomap_kg.storage.publication_fencing import MergeContext, PublicationHandoff
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.main import apply_migrations, default_rdbms_root
+from common_lore_index.storage.publication import PortablePublicationBinding, RunPublicationReceipt
+from common_lore_index.storage.publication_fencing import MergeContext, PublicationHandoff
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication,
     read_run_publication,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     _psycopg_connection_params_from_psql_args,
     run_staged_portable_refresh,
     stage_id_for_authority,
 )
-from repomap_kg.storage.staged_publication import reconcile_commit_unknown
+from common_lore_index.storage.staged_publication import reconcile_commit_unknown
 from repomap_test_support.portable_publication_fixtures import (
     create_single_source_graph_config,
     row as _row,

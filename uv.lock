@@ -657,7 +657,7 @@ wheels = [
 ]
 
 [[package]]
-name = "repomap-kg"
+name = "common-lore-index"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

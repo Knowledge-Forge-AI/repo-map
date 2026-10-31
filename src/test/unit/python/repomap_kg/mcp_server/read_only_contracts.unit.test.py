@@ -3,7 +3,7 @@ import json
 from typing import NamedTuple
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalNeighborhoodRecord,
     CanonicalNodeRecord,
     JSFrameworkSummaryRecord,
@@ -33,7 +33,7 @@ class SearchCase(NamedTuple):
 
 class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
     def test_mcp_harden2_graph_backed_tools_share_read_only_contract(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_graph_status,
             repomap_js_framework_summary,
             repomap_list_graphs,
@@ -138,7 +138,7 @@ class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
             ),
             ReadOnlyCase(
                 label="graph_status",
-                patch_target="repomap_kg.server.ops.query_refresh_status",
+                patch_target="common_lore_index.server.ops.query_refresh_status",
                 patch_value={
                     "repo-map": self.synthetic_refresh_status(
                         latest_run_status="complete",
@@ -154,7 +154,7 @@ class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
             ),
             ReadOnlyCase(
                 label="project_summary",
-                patch_target="repomap_kg.server.ops.query_canonical_storage_summary",
+                patch_target="common_lore_index.server.ops.query_canonical_storage_summary",
                 patch_value=storage_summary("/tmp/fixture", "fixture"),
                 call=lambda: repomap_project_summary(graph_id="repo-map"),
                 graph=lambda payload: payload["graph"],
@@ -162,7 +162,7 @@ class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
             ),
             ReadOnlyCase(
                 label="js_framework_summary",
-                patch_target="repomap_kg.server.ops.query_js_framework_summary",
+                patch_target="common_lore_index.server.ops.query_js_framework_summary",
                 patch_value=js_framework_summary("/tmp/fixture", "fixture"),
                 call=lambda: repomap_js_framework_summary(graph_id="repo-map"),
                 graph=lambda payload: payload["graph"],
@@ -170,7 +170,7 @@ class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
             ),
             ReadOnlyCase(
                 label="neighborhood",
-                patch_target="repomap_kg.server.ops.query_canonical_neighborhood",
+                patch_target="common_lore_index.server.ops.query_canonical_neighborhood",
                 patch_value=neighborhood,
                 call=lambda: repomap_neighborhood(
                     graph_id="repo-map",
@@ -197,7 +197,7 @@ class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
                     self.assert_public_graph_payload(case.graph(payload))
                     case.extra(payload)
     def test_mcp_harden2_search_payloads_share_bounded_result_contract(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_search_files,
             repomap_search_nodes,
             repomap_search_observations,
@@ -302,7 +302,7 @@ class McpServerReadOnlyContractUnitTests(McpServerTestSupport):
             for case in cases:
                 with self.subTest(target=case.target):
                     with patch(
-                        "repomap_kg.server.ops.query_mcp_search",
+                        "common_lore_index.server.ops.query_mcp_search",
                         return_value=case.payload,
                     ) as query:
                         payload = case.call()

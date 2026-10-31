@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.ops.ingestion.acquisition_contracts import non_publication_result
+    from common_lore_index.cli import build_parser
+from common_lore_index.ops.ingestion.acquisition_contracts import non_publication_result
 
 
 def test_non_publication_result_is_explicit_and_public_safe() -> None:

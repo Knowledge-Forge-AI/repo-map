@@ -40,7 +40,7 @@ def _instrument_observer_runtime(
         yield recorder
         return
     import psycopg
-    import repomap_kg.storage.backend_observer as observer_module
+    import common_lore_index.storage.backend_observer as observer_module
     import scale14_backend_monitor as monitor_module
     import scale28_backend_observer_session as session_module
     import scale28_observer_deadlines as deadline_module

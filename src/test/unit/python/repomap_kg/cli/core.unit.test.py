@@ -11,12 +11,12 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg import __version__
-from repomap_kg import cli as cli_module
-from repomap_kg.cli import dispatch as cli_dispatch
-from repomap_kg.cli import parser as cli_parser
-from repomap_kg.cli.main import main
-from repomap_kg.cli.parser import build_parser
+from common_lore_index import __version__
+from common_lore_index import cli as cli_module
+from common_lore_index.cli import dispatch as cli_dispatch
+from common_lore_index.cli import parser as cli_parser
+from common_lore_index.cli.main import main
+from common_lore_index.cli.parser import build_parser
 
 class CliCoreUnitTests(unittest.TestCase):
     def test_version_option_prints_distribution_name_and_version(self):
@@ -26,7 +26,7 @@ class CliCoreUnitTests(unittest.TestCase):
             exit_code = main(["--version"])
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(stdout.getvalue().strip(), f"repomap-kg {__version__}")
+        self.assertEqual(stdout.getvalue().strip(), f"cloe {__version__}")
 
     def test_identity_json_outputs_stable_project_metadata(self):
         stdout = io.StringIO()
@@ -36,11 +36,11 @@ class CliCoreUnitTests(unittest.TestCase):
 
         payload = json.loads(stdout.getvalue())
         self.assertEqual(exit_code, 0)
-        self.assertEqual(payload["name"], "RepoMap")
-        self.assertEqual(payload["distribution"], "repomap-kg")
-        self.assertEqual(payload["package"], "repomap_kg")
-        self.assertEqual(payload["cli"], "repomap-kg")
-        self.assertEqual(payload["license"], "Apache-2.0")
+        self.assertEqual(payload["name"], "Common Lore Index")
+        self.assertEqual(payload["distribution"], "common-lore-index")
+        self.assertEqual(payload["package"], "common_lore_index")
+        self.assertEqual(payload["cli"], "cloe")
+        self.assertEqual(payload["license"], "AGPL-3.0-or-later")
         self.assertEqual(payload["database"], "Postgres")
 
     def test_identity_text_outputs_key_value_metadata(self):
@@ -50,8 +50,8 @@ class CliCoreUnitTests(unittest.TestCase):
             exit_code = main(["identity"])
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("name: RepoMap", stdout.getvalue())
-        self.assertIn("distribution: repomap-kg", stdout.getvalue())
+        self.assertIn("name: Common Lore Index", stdout.getvalue())
+        self.assertIn("distribution: common-lore-index", stdout.getvalue())
 
     def test_no_arguments_prints_help(self):
         stdout = io.StringIO()
@@ -60,7 +60,7 @@ class CliCoreUnitTests(unittest.TestCase):
             exit_code = main([])
 
         self.assertEqual(exit_code, 0)
-        self.assertIn("usage: repomap-kg", stdout.getvalue())
+        self.assertIn("usage: cloe", stdout.getvalue())
 
     def test_ref3_keeps_cli_parser_and_dispatch_compatibility_exports(self):
         self.assertIs(getattr(cli_module, "build_parser"), cli_parser.build_parser)
@@ -102,9 +102,9 @@ class CliCoreUnitTests(unittest.TestCase):
         self.assertIn("deterministic knowledge graph", help_text)
 
     def test_module_entrypoint_returns_cli_exit_status(self):
-        with patch("repomap_kg.cli.main", return_value=7):
+        with patch("common_lore_index.cli.main", return_value=7):
             with self.assertRaises(SystemExit) as caught:
-                runpy.run_module("repomap_kg", run_name="__main__")
+                runpy.run_module("common_lore_index", run_name="__main__")
 
         self.assertEqual(caught.exception.code, 7)
 
@@ -135,15 +135,15 @@ class CliCoreUnitTests(unittest.TestCase):
                 },
                 clear=True,
             ),
-            patch("repomap_kg.cli.main", side_effect=record_environment),
+            patch("common_lore_index.cli.main", side_effect=record_environment),
         ):
             with self.assertRaises(SystemExit):
-                runpy.run_module("repomap_kg", run_name="__main__")
+                runpy.run_module("common_lore_index", run_name="__main__")
 
         self.assertEqual(observed, {"LANG": "C.UTF-8"})
 
     def test_cli_main_argument_helpers_cover_validation_and_error_branches(self):
-        from repomap_kg.cli.main import (
+        from common_lore_index.cli.main import (
             _read_json_file,
             canonical_edge_identity_metadata_from_args,
             canonical_file_neighborhood_node_from_args,
@@ -154,8 +154,8 @@ class CliCoreUnitTests(unittest.TestCase):
             read_observations_argument,
             GRAPH_KEY_VERSION,
         )
-        from repomap_kg.graph.keys import file_key, host_category_key
-        from repomap_kg.storage import StorageSchemaError
+        from common_lore_index.graph.keys import file_key, host_category_key
+        from common_lore_index.storage import StorageSchemaError
 
         with tempfile.TemporaryDirectory(prefix="repomap-cli-helpers-") as tmp:
             tmp_path = Path(tmp)
@@ -310,7 +310,7 @@ def test_integration_cli_module_boundary_preserves_child_inputs_and_patch_seams(
         assert completed.stdout == "output\n"
         assert completed.stderr == "error\n"
     args, kwargs = popen_mock.call_args
-    assert args == ([sys.executable, "-m", "repomap_kg", "identity"],)
+    assert args == ([sys.executable, "-m", "common_lore_index", "identity"],)
     assert kwargs["cwd"] == str(cli_integration.REPO_ROOT) and kwargs["text"] is True
     assert (kwargs["stdin"], kwargs["stdout"], kwargs["stderr"]) == (subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
     mock_proc.communicate.assert_called_once_with(input="payload")
@@ -371,7 +371,7 @@ def test_integration_cli_module_boundary_executes_real_module_version() -> None:
 
     original_argv = sys.argv[:]
     code, stdout, stderr = cli_integration.run_module_entrypoint("--version")
-    assert (code, stdout.strip(), stderr) == (0, f"repomap-kg {__version__}", "")
+    assert (code, stdout.strip(), stderr) == (0, f"cloe {__version__}", "")
     assert sys.argv == original_argv
 
 
@@ -381,7 +381,7 @@ def test_integration_cli_subprocess_retains_runner_child_coverage_bootstrap(tmp_
 
     with ChildCoverageSession(scratch_dir=tmp_path / "coverage") as session:
         code, stdout, _stderr = cli_integration.run_module_entrypoint("--version")
-    assert code == 0 and stdout.strip() == f"repomap-kg {__version__}"
+    assert code == 0 and stdout.strip() == f"cloe {__version__}"
     started = {path.stem for path in session.child_manifest_dir.glob("*.start")}
     exited = {path.stem for path in session.child_manifest_dir.glob("*.exit")}
     recorded = {path.stem for path in session.child_manifest_dir.glob("*.shard")}

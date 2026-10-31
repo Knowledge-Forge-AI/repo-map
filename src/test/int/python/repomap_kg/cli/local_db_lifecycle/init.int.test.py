@@ -13,8 +13,8 @@ from repomap_test_support.local_db_backup import (
     maybe_provenance_runner_result,
 )
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
-from repomap_kg.storage import discover_migrations
+from common_lore_index.runtime.local import LocalRuntimeIdentity
+from common_lore_index.storage import discover_migrations
 
 
 def _ready_ledger_output() -> bytes:
@@ -51,7 +51,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                 "--from-source", "--from-dump", str(home / "backups" / "missing"), "--json",
             )
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=fake_runner):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "init", "--repo-map-home", str(home), "--database", "repomap",
                     "--from-source", "--dry-run", "--json",
@@ -119,7 +119,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=b"0\n", stderr=b"")
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=fake_runner):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "init", "--repo-map-home", str(home), "--database", "repomap",
                     "--from-dump", str(backup_dir), "--dry-run", "--json",
@@ -163,7 +163,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=fake_runner):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "init", "--repo-map-home", str(home), "--database", "repomap", "--from-source",
                 )
@@ -246,7 +246,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=success_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=success_runner):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "init", "--repo-map-home", str(home), "--database", "repomap",
                     "--from-dump", str(backup_dir / "manifest.json"), "--json",
@@ -265,7 +265,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                     return prov
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=existing_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=existing_runner):
                 exists_exit, exists_stdout, exists_stderr = self.run_repo_map_in_process(
                     "local", "db", "init", "--repo-map-home", str(home), "--database", "repomap",
                     "--from-dump", f"{identity.home_hash}--repomap--20260702T010203Z", "--json",
@@ -330,7 +330,7 @@ class CliLocalDbInitIntegrationTests(CliIntegrationTestCase):
                 encoding="utf-8",
             )
 
-            with patch("repomap_kg.runtime.backup.subprocess.run") as run_mock:
+            with patch("common_lore_index.runtime.backup.subprocess.run") as run_mock:
                 checksum_exit, checksum_stdout, checksum_stderr = self.run_repo_map_in_process(
                     "local",
                     "db",

@@ -5,15 +5,15 @@ from unittest.mock import Mock
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ExtractionReceipt,
     MemoryArtifactStore,
     PublicationBundle,
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 
 VECTOR = (("bind1:" + "1" * 64, 1, "snap1:" + "2" * 64),)
@@ -76,7 +76,7 @@ def bundle(
 
 
 def receipt(bundle_ref: object, value: PublicationBundle) -> ExtractionReceipt:
-    from repomap_kg.artifacts.references import ArtifactReference
+    from common_lore_index.artifacts.references import ArtifactReference
 
     return ExtractionReceipt.create(
         request_id="request-1", job_id="job-1", attempt=1, graph_id="graph-a",
@@ -283,7 +283,7 @@ def test_validator_rejects_bundle_with_missing_publication_families(
     del partial_families["canonical_edges"]
     bad_b = replace(b, families=partial_families)
 
-    import repomap_kg.artifacts.validator as val_mod
+    import common_lore_index.artifacts.validator as val_mod
     monkeypatch.setattr(val_mod.PublicationBundle, "from_bytes", lambda _data: bad_b)
 
     with pytest.raises(ValueError, match="required publication families are absent"):

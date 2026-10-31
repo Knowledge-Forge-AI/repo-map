@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 from unittest.mock import patch
 
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 from repomap_test_support.mcp_server import McpServerTestSupport
 
@@ -11,12 +11,12 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
     def test_mcp_smoke3_refresh_status_flags_complete_without_finished_at(
         self,
     ):
-        from repomap_kg.server.mcp import repomap_refresh_status
+        from common_lore_index.server.mcp import repomap_refresh_status
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_refresh_status",
+                "common_lore_index.server.ops.query_refresh_status",
                 return_value={
                     "repo-map": self.synthetic_refresh_status(
                         latest_run_status="complete",
@@ -43,12 +43,12 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
     def test_mcp_smoke3_graph_status_flags_complete_without_finished_at(
         self,
     ):
-        from repomap_kg.server.mcp import repomap_graph_status
+        from common_lore_index.server.mcp import repomap_graph_status
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_refresh_status",
+                "common_lore_index.server.ops.query_refresh_status",
                 return_value={
                     "repo-map": self.synthetic_refresh_status(
                         latest_run_status="complete",
@@ -70,7 +70,7 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
 
     def _live_ops3_graph_status(self, host_error: str) -> tuple[dict, str, list]:
-        from repomap_kg.server.mcp import repomap_graph_status
+        from common_lore_index.server.mcp import repomap_graph_status
 
         container_probes: list[str] = []
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -107,30 +107,30 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
                     clear=True,
                 ),
                 patch(
-                    "repomap_kg.ops.refresh.run_psql",
+                    "common_lore_index.ops.refresh.run_psql",
                     side_effect=fake_run_psql,
                 ),
                 patch(
-                    "repomap_kg.ops.readback.execute_json_readback_with_driver",
+                    "common_lore_index.ops.readback.execute_json_readback_with_driver",
                     side_effect=lambda sql, **kwargs: (
                         fake_run_psql([kwargs["psql_command"]], input_text=sql)
                     ),
                 ),
                 patch(
-                    "repomap_kg.ops.readback.selected_json_readback_driver",
+                    "common_lore_index.ops.readback.selected_json_readback_driver",
                     return_value="psql",
                 ),
                 patch(
-                    "repomap_kg.ops.readback._resolve_container_readback_plan",
+                    "common_lore_index.ops.readback._resolve_container_readback_plan",
                     side_effect=container_probe("container plan"),
                 ),
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     side_effect=container_probe("shutil.which"),
                     create=True,
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     side_effect=container_probe("inspect_container"),
                     create=True,
                 ),
@@ -169,12 +169,12 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
 
     def test_mcp_smoke3_complete_with_finished_at_has_no_timestamp_warning(self):
-        from repomap_kg.server.mcp import repomap_refresh_status
+        from common_lore_index.server.mcp import repomap_refresh_status
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_refresh_status",
+                "common_lore_index.server.ops.query_refresh_status",
                 return_value={
                     "repo-map": self.synthetic_refresh_status(
                         latest_run_id=78,
@@ -191,12 +191,12 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
         )
 
     def test_mcp_smoke3_non_complete_null_finished_at_has_no_complete_warning(self):
-        from repomap_kg.server.mcp import repomap_refresh_status
+        from common_lore_index.server.mcp import repomap_refresh_status
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_refresh_status",
+                "common_lore_index.server.ops.query_refresh_status",
                 return_value={
                     "repo-map": self.synthetic_refresh_status(
                         latest_run_id=79,
@@ -213,7 +213,7 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
         )
 
     def test_mcp_smoke4_include_raw_false_documents_metadata_semantics(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         config_path = self.write_visible_ops_config()
         observation_payload = {
@@ -231,7 +231,7 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
 
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_mcp_search",
+                "common_lore_index.server.ops.query_mcp_search",
                 return_value=observation_payload,
             ) as query:
                 payload = repomap_search_observations(
@@ -250,7 +250,7 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
 
     def test_mcp_smoke4_include_raw_true_reports_payload_included(self):
-        from repomap_kg.server.mcp import repomap_search_observations
+        from common_lore_index.server.mcp import repomap_search_observations
 
         config_path = self.write_visible_ops_config()
         observation_payload = {
@@ -272,7 +272,7 @@ class McpServerStatusAndRawPayloadUnitTests(McpServerTestSupport):
 
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_mcp_search",
+                "common_lore_index.server.ops.query_mcp_search",
                 return_value=observation_payload,
             ) as query:
                 payload = repomap_search_observations(

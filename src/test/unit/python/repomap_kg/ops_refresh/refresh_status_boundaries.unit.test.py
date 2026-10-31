@@ -8,12 +8,12 @@ from repomap_test_support.ops_refresh import (
     VALID_REFRESH_CONFIG,
 )
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import (
     OpsRefreshGraphStatus,
     query_refresh_status,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 
 class OpsRefreshStatusBoundariesUnitTests(OpsRefreshUnitTestCase):
@@ -34,7 +34,7 @@ class OpsRefreshStatusBoundariesUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.execute_ops_json_readback"
+                    "common_lore_index.ops.refresh.execute_ops_json_readback"
                 ) as execute_readback,
                 patch("pathlib.Path.exists", side_effect=AssertionError("root read")),
             ):
@@ -60,7 +60,7 @@ class OpsRefreshStatusBoundariesUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with patch(
-                "repomap_kg.ops.refresh.execute_ops_json_readback"
+                "common_lore_index.ops.refresh.execute_ops_json_readback"
             ) as execute_readback:
                 execute_readback.side_effect = [
                     {"connected": True, "schema_available": True},
@@ -86,7 +86,7 @@ class OpsRefreshStatusBoundariesUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.execute_ops_json_readback",
+                    "common_lore_index.ops.refresh.execute_ops_json_readback",
                     side_effect=StorageSchemaError("password=fake-secret"),
                 ),
                 patch("pathlib.Path.exists", side_effect=AssertionError("root read")),

@@ -13,15 +13,15 @@ from types import SimpleNamespace
 
 import psycopg
 import pytest
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver,
     build_configured_refresh_coordinator,
 )
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshSourceError,
     build_refresh_worker_runner,
 )
-from repomap_kg.coordinator.startup_recovery import PublicationRouteChangedError
+from common_lore_index.coordinator.startup_recovery import PublicationRouteChangedError
 from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
 from repomap_test_support.startup_recovery_scenarios import (

@@ -13,15 +13,15 @@ from contextlib import ExitStack
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.ops.config_records import OpsConfig
-from repomap_kg.server.canonical_read_store import (
+from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.server.canonical_read_store import (
     ConfiguredPostgresConnection,
     PostgresCanonicalReadStore,
 )
-from repomap_kg.server.graph_selection import select_graph
-from repomap_kg.server.investigation_read_store import PostgresInvestigationReadStore
-from repomap_kg.server.postgres_read_binding import PostgresGraphStores, PostgresInvestigationStores
-from repomap_kg.server.source_read_store import PostgresSourceReadStore
+from common_lore_index.server.graph_selection import select_graph
+from common_lore_index.server.investigation_read_store import PostgresInvestigationReadStore
+from common_lore_index.server.postgres_read_binding import PostgresGraphStores, PostgresInvestigationStores
+from common_lore_index.server.source_read_store import PostgresSourceReadStore
 from repomap_test_support.host_read_store_config import (
     INVALID_PSQL_COMMAND,
     NO_FALLBACK_GUARDS,
@@ -37,7 +37,7 @@ FAMILY_TOOLS: tuple[tuple[str, dict[str, Any]], ...] = (
     ("repomap_canonical_nodes", {"project": "repo-map"}),
     ("repomap_source_runs", {"project": "repo-map", "source_id": "feed"}),
 )
-CONTEXT_TRIPWIRES = ("repomap_kg.server._ops_records.McpOpsGraphContext.__init__",)
+CONTEXT_TRIPWIRES = ("common_lore_index.server._ops_records.McpOpsGraphContext.__init__",)
 DATABASE_TRIPWIRES = tuple(target for target in PG_BINDING_TRIPWIRES if target.endswith(".graph_database"))
 AUTHORITY_TRIPWIRES = tuple(target for target in PG_BINDING_TRIPWIRES if "readback_postgres_authority" in target)
 SECRET_TRIPWIRES = tuple(target for target in PG_BINDING_TRIPWIRES if "_password" in target)
@@ -52,9 +52,9 @@ class PostgresBindingPreservationTests(McpServerTestSupport):
                           clear=True)
 
     def test_investigation_binding_keeps_database_command_and_second_resolution(self) -> None:
-        from repomap_kg.ops.config import graph_database
-        from repomap_kg.server._ops_records import graph_context
-        from repomap_kg.server.ops import investigation_stores, load_mcp_ops_config
+        from common_lore_index.ops.config import graph_database
+        from common_lore_index.server._ops_records import graph_context
+        from common_lore_index.server.ops import investigation_stores, load_mcp_ops_config
 
         with self._env(REPOMAP_PSQL_COMMAND=PSQL):
             config = load_mcp_ops_config()
@@ -75,12 +75,12 @@ class PostgresBindingPreservationTests(McpServerTestSupport):
                 self.assertEqual(store._context(graph_id), context)
 
     def test_graph_binding_builds_the_incumbent_context_and_facade_owners(self) -> None:
-        from repomap_kg.server._ops_records import graph_context
-        from repomap_kg.server.mcp import graph_stores, storage_connection
+        from common_lore_index.server._ops_records import graph_context
+        from common_lore_index.server.mcp import graph_stores, storage_connection
 
         with self._env(REPOMAP_PSQL_COMMAND=PSQL), \
-                patch("repomap_kg.server.mcp.query_canonical_node_records") as nodes_owner, \
-                patch("repomap_kg.server.mcp.query_source_run_records") as runs_owner:
+                patch("common_lore_index.server.mcp.query_canonical_node_records") as nodes_owner, \
+                patch("common_lore_index.server.mcp.query_source_run_records") as runs_owner:
             target: Any = storage_connection(project="repo-map")
             context = graph_context("repo-map")
             canonical = target.stores.canonical_store(target.selection)
@@ -99,7 +99,7 @@ class PostgresBindingPreservationTests(McpServerTestSupport):
         self.assertIs(source.queries.runs, runs_owner)
 
     def test_client_command_refusal_keeps_its_text_and_position(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         for tool, args in FAMILY_TOOLS:
             with self.subTest(tool=tool), self._env(REPOMAP_PSQL_COMMAND=INVALID_PSQL_COMMAND), \
@@ -116,8 +116,8 @@ class PostgresBindingTripwireCanaryTests(McpServerTestSupport):
     """Each tripwire category fires on the real PostgreSQL path (no fakes)."""
 
     def _run(self, label: str, tripwires: tuple[str, ...], tool: str, args: dict[str, Any]) -> None:
-        from repomap_kg.server.mcp import handle_tool_call
-        from repomap_kg.server.ops import load_mcp_ops_config
+        from common_lore_index.server.mcp import handle_tool_call
+        from common_lore_index.server.ops import load_mcp_ops_config
 
         ops_path = self.write_visible_ops_config()
         with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(ops_path)}, clear=True):
@@ -126,8 +126,8 @@ class PostgresBindingTripwireCanaryTests(McpServerTestSupport):
         stack = ExitStack()
         stack.enter_context(patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config()),
                                                       "REPOMAP_PG_PASSWORD": "synthetic"}, clear=True))
-        stack.enter_context(patch("repomap_kg.server.ops.load_mcp_ops_config", lambda *_a: config))
-        stack.enter_context(patch("repomap_kg.server.mcp_core.load_mcp_ops_config", lambda *_a: config))
+        stack.enter_context(patch("common_lore_index.server.ops.load_mcp_ops_config", lambda *_a: config))
+        stack.enter_context(patch("common_lore_index.server.mcp_core.load_mcp_ops_config", lambda *_a: config))
         stack.enter_context(patched_guards(NO_FALLBACK_GUARDS))
 
         def tripped(*_args: Any, **_kwargs: Any) -> Any:
@@ -140,8 +140,8 @@ class PostgresBindingTripwireCanaryTests(McpServerTestSupport):
             handle_tool_call(tool, dict(args))
 
     def test_every_tripwire_category_fires_without_injected_fakes(self) -> None:
-        psql = ("repomap_kg.server._ops_records.psql_command_from_environment",
-                "repomap_kg.server.postgres_read_binding.psql_command_from_environment")
+        psql = ("common_lore_index.server._ops_records.psql_command_from_environment",
+                "common_lore_index.server.postgres_read_binding.psql_command_from_environment")
         categories: tuple[tuple[str, tuple[str, ...], tuple[int, ...]], ...] = (
             ("client command", psql, (0, 1, 2, 3)),
             ("postgres context", CONTEXT_TRIPWIRES, (0, 1, 2, 3)),

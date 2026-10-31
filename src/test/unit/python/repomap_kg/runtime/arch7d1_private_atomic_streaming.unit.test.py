@@ -8,18 +8,18 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     LocalDbBackupError,
     dump_database,
     run_pg_restore,
 )
-from repomap_kg.runtime.backup_commands import backup_root
-from repomap_kg.runtime.backup_manifests import (
+from common_lore_index.runtime.backup_commands import backup_root
+from common_lore_index.runtime.backup_manifests import (
     list_manifest_paths,
     resolve_backup_manifest_path,
 )
-from repomap_kg.runtime.backup_records import RuntimeContainerMetadata
-from repomap_kg.runtime.local import setup_local_runtime
+from common_lore_index.runtime.backup_records import RuntimeContainerMetadata
+from common_lore_index.runtime.local import setup_local_runtime
 from repomap_test_support.local_db_backup import (
     maybe_provenance_runner_result,
     unit_maintenance_window_patch,
@@ -72,7 +72,7 @@ def test_dump_streams_to_private_staging_then_atomically_publishes(
     previous_umask = os.umask(0)
     try:
         with patch(
-            "repomap_kg.runtime.backup.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup.inspect_owned_postgres_container",
             return_value=_container(),
         ):
             result = dump_database(
@@ -129,11 +129,11 @@ def test_manifest_failure_removes_staging_and_never_publishes_final_set(
 
     with (
         patch(
-            "repomap_kg.runtime.backup.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup.inspect_owned_postgres_container",
             return_value=_container(),
         ),
         patch(
-            "repomap_kg.runtime.backup.write_manifest_and_restore_docs",
+            "common_lore_index.runtime.backup.write_manifest_and_restore_docs",
             side_effect=RuntimeError("synthetic manifest failure"),
         ),
         pytest.raises(RuntimeError, match="synthetic manifest failure"),
@@ -170,7 +170,7 @@ def test_midstream_dump_failure_removes_partial_staging_artifact(
 
     with (
         patch(
-            "repomap_kg.runtime.backup.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup.inspect_owned_postgres_container",
             return_value=_container(),
         ),
         pytest.raises(LocalDbBackupError, match="synthetic dump failure"),
@@ -205,7 +205,7 @@ def test_dump_refuses_duplicate_stream_and_returned_bytes_without_fallback(
 
     with (
         patch(
-            "repomap_kg.runtime.backup.inspect_owned_postgres_container",
+            "common_lore_index.runtime.backup.inspect_owned_postgres_container",
             return_value=_container(),
         ),
         pytest.raises(LocalDbBackupError) as caught,

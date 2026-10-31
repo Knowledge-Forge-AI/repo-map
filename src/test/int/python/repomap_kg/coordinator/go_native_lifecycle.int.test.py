@@ -7,12 +7,12 @@ from typing import Any
 import unittest
 from unittest import mock
 
-from repomap_kg.extractors.languages import go_protocol
-from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command
+from common_lore_index.extractors.languages import go_protocol
+from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command
 from pathlib import Path
 import tempfile
 
-from repomap_kg.coordinator.contracts import (
+from common_lore_index.coordinator.contracts import (
     DEFAULT_LIMITS,
     JobRequest,
     _bounded_string,
@@ -21,7 +21,7 @@ from repomap_kg.coordinator.contracts import (
     normalize_request,
     project_public_error,
 )
-from repomap_kg.coordinator._protocol_validation import (
+from common_lore_index.coordinator._protocol_validation import (
     ProtocolError,
     decode_jsonl,
     retain_stderr,
@@ -29,14 +29,14 @@ from repomap_kg.coordinator._protocol_validation import (
     _limit,
     _int_limit,
 )
-from repomap_kg.coordinator._protocol_session import ProtocolSession
-from repomap_kg.coordinator.endpoint import (
+from common_lore_index.coordinator._protocol_session import ProtocolSession
+from common_lore_index.coordinator.endpoint import (
     EndpointDescriptorError,
     LoopbackEndpointDescriptor,
     load_endpoint_descriptor,
     write_endpoint_descriptor,
 )
-from repomap_kg.coordinator.job_control import (
+from common_lore_index.coordinator.job_control import (
     CoordinatorModeError,
     cancel_coordinator_job,
     list_coordinator_jobs,

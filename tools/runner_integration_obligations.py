@@ -29,11 +29,11 @@ GO_HANG_NODE = (
 )
 MAINTAINED_ABRUPT_DECLARATIONS = (
     AbruptDeclaration(SEAM_NODE, "conformance-abrupt", 17, "during_semantic",
-                      "repomap_kg.coordinator._portable_worker_launch.run_worker_spec"),
+                      "common_lore_index.coordinator._portable_worker_launch.run_worker_spec"),
     AbruptDeclaration(SCALE28_NODE, "scale28-leader-abrupt", 17, "descendant-created",
                       "scale28_preparation_worker._start_without_ambient_parent_main"),
     AbruptDeclaration(GO_HANG_NODE, "go-helper-hang", -15, "file_end",
-                      "repomap_kg.extractors.languages.go_protocol.subprocess.Popen"),
+                      "common_lore_index.extractors.languages.go_protocol.subprocess.Popen"),
 )
 # SCALE28's descendant is a required cleanup observation, not another measured
 # child: _retain_minimal_worker_environment clears bootstrap/env before Popen.

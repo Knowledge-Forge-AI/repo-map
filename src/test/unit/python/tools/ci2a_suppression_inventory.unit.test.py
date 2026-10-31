@@ -9,6 +9,25 @@ import pytest
 from ci.scanner_suppressions import Directive, classify, load_baseline, scan_paths
 
 
+def test_cloe_cutover_projects_allowances_without_a_new_baseline(pytestconfig):
+    import subprocess
+    from ci.retained_python_namespace_contract import rewrite_namespace_text, rewrite_product_path
+    root = pytestconfig.rootpath
+    ledger = json.loads((root / "tools/ci/retained_python_namespace_projections.json").read_text())
+    source = ledger["records"][0]["source_commit"]
+    relative = "tools/ci/pre_review_baseline.json"
+    before = json.loads(subprocess.check_output(["git", "show", source + ":" + relative], cwd=root))
+    current = json.loads((root / relative).read_text())
+    expected = json.loads(json.dumps(before))
+    for row in expected["ratchets"]["scanner-suppressions"]["inventory"]:
+        old = Directive.from_jsonable(row)
+        path = rewrite_product_path(old.path) if old.path.startswith("src/main/python/repomap_kg/") else old.path
+        projected = Directive.create(old.kind, path, old.line, old.scope,
+            target=rewrite_namespace_text(old.target), occurrence=old.occurrence)
+        row.update(projected.to_jsonable())
+    assert current == expected
+
+
 def _baseline(*records: Directive) -> tuple[Directive, ...]:
     return tuple(records)
 

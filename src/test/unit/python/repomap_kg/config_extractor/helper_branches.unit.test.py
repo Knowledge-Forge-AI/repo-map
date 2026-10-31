@@ -3,7 +3,7 @@ from unittest.mock import patch
 from xml.etree import ElementTree
 
 
-from repomap_kg.extractors.config import generic as config
+from common_lore_index.extractors.config import generic as config
 
 
 class ConfigExtractorHelperBranchUnitTests(unittest.TestCase):
@@ -141,9 +141,9 @@ first: !secret &main hidden
                 ],
                 "optional-dependencies": {"dev": ["pytest>=8"]},
                 "dynamic": ["version", "api-token"],
-                "scripts": {"repomap": "repomap_kg.__main__:main"},
-                "gui-scripts": {"repomap-gui": "repomap_kg.gui:main"},
-                "entry-points": {"repomap.plugins": {"plugin": "repomap_kg.plugin:main"}},
+                "scripts": {"repomap": "common_lore_index.__main__:main"},
+                "gui-scripts": {"repomap-gui": "common_lore_index.gui:main"},
+                "entry-points": {"repomap.plugins": {"plugin": "common_lore_index.plugin:main"}},
             },
             "build-system": {
                 "requires": ["setuptools>=70"],

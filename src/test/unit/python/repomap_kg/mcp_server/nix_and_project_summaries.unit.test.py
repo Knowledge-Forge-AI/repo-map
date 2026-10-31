@@ -1,14 +1,14 @@
 import json
 from unittest.mock import patch
 
-from repomap_kg.storage import JSFrameworkSummaryRecord, CanonicalStorageSummaryRecord
+from common_lore_index.storage import JSFrameworkSummaryRecord, CanonicalStorageSummaryRecord
 
 from repomap_test_support.mcp_server import McpServerTestSupport
 
 
 class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
     def test_nix_summary3_mcp_nix_summary_returns_count_only_payload(self):
-        from repomap_kg.server.mcp import repomap_nix_summary
+        from common_lore_index.server.mcp import repomap_nix_summary
 
         config_path = self.write_ops_config(self.visible_ops_config())
         summary_record = self.synthetic_nix_summary()
@@ -18,10 +18,10 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         # (with its container fallback) is never reached.
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_nix_summary",
+                "common_lore_index.server.ops.query_nix_summary",
                 return_value=summary_record,
             ) as query, patch(
-                "repomap_kg.ops.refresh.run_storage_readback_with_ops_psql",
+                "common_lore_index.ops.refresh.run_storage_readback_with_ops_psql",
                 side_effect=AssertionError("retained ops-psql fallback reached"),
             ) as run_storage:
                 payload = repomap_nix_summary(graph_id="repo-map")
@@ -107,11 +107,11 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
     def test_nix_summary3_mcp_nix_summary_rejects_hidden_and_disabled_graphs(
         self,
     ):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_nix_summary
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_nix_summary
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_nix_summary") as query:
+            with patch("common_lore_index.server.ops.query_nix_summary") as query:
                 with self.assertRaisesRegex(RepoMapMcpError, "not enabled"):
                     repomap_nix_summary(graph_id="disabled")
                 with self.assertRaisesRegex(RepoMapMcpError, "not MCP-visible"):
@@ -122,7 +122,7 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
     def test_nix_summary3_private_graph_nix_summary_redacts_roots_and_paths(
         self,
     ):
-        from repomap_kg.server.mcp import repomap_nix_summary
+        from common_lore_index.server.mcp import repomap_nix_summary
 
         private_root = "/Users/synthetic-local-user/private-flakes"
         config_path = self.write_live_ops8_private_ops_config(private_root)
@@ -132,7 +132,7 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         )
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_nix_summary",
+                "common_lore_index.server.ops.query_nix_summary",
                 return_value=summary_record,
             ):
                 payload = repomap_nix_summary(graph_id="private-visible")
@@ -162,7 +162,7 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
             self.assertNotIn(marker, serialized)
 
     def test_nix_summary3_mcp_nix_summary_schema_is_listed(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             TOOL_FUNCTIONS,
             tool_definitions,
             tool_input_schema,
@@ -182,12 +182,12 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_tool_schema_omits_unsafe_arguments(schema)
 
     def test_mcp_smoke1_project_summary_redacts_private_summary_root(self):
-        from repomap_kg.server.mcp import repomap_project_summary
+        from common_lore_index.server.mcp import repomap_project_summary
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_canonical_storage_summary",
+                "common_lore_index.server.ops.query_canonical_storage_summary",
                 return_value=CanonicalStorageSummaryRecord(
                     root_path="synthetic-private-root",
                     repository_name="private-visible",
@@ -210,12 +210,12 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
         self.assert_no_synthetic_private_root(payload)
     def test_mcp_smoke1_domain_summary_redacts_private_summary_root(self):
-        from repomap_kg.server.mcp import repomap_js_framework_summary
+        from common_lore_index.server.mcp import repomap_js_framework_summary
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_js_framework_summary",
+                "common_lore_index.server.ops.query_js_framework_summary",
                 return_value=JSFrameworkSummaryRecord(
                     root_path="synthetic-private-root",
                     repository_name="private-visible",
@@ -240,12 +240,12 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_no_synthetic_private_root(payload)
 
     def test_mcp_smoke1_project_summary_masks_public_summary_root(self):
-        from repomap_kg.server.mcp import repomap_project_summary
+        from common_lore_index.server.mcp import repomap_project_summary
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_canonical_storage_summary",
+                "common_lore_index.server.ops.query_canonical_storage_summary",
                 return_value=CanonicalStorageSummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",
@@ -265,12 +265,12 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
 
     def test_mcp_smoke1_domain_summary_masks_public_summary_root(self):
-        from repomap_kg.server.mcp import repomap_js_framework_summary
+        from common_lore_index.server.mcp import repomap_js_framework_summary
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_js_framework_summary",
+                "common_lore_index.server.ops.query_js_framework_summary",
                 return_value=JSFrameworkSummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",
@@ -294,7 +294,7 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_read_only_payload(payload)
 
     def test_mcp_smoke2_projects_reports_graph_registry_available(self):
-        from repomap_kg.server.mcp import repomap_list_graphs, repomap_projects
+        from common_lore_index.server.mcp import repomap_list_graphs, repomap_projects
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
@@ -322,7 +322,7 @@ class McpServerNixAndProjectSummaryUnitTests(McpServerTestSupport):
         self.assert_private_graph_payload(projects_payload["graphs"][1])
 
     def test_mcp_smoke2_projects_graph_registry_hint_keeps_roots_safe(self):
-        from repomap_kg.server.mcp import repomap_projects
+        from common_lore_index.server.mcp import repomap_projects
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()

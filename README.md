@@ -1,11 +1,12 @@
-# RepoMap
+# Common Lore Index (CLOE)
 
-RepoMap is a deterministic knowledge graph system for polyglot software
-repositories. Its current implementation is PostgreSQL-backed. The accepted
+Common Lore Index (CLOE), formerly RepoMap, is a deterministic knowledge graph system for polyglot software
+repositories. Its implementation includes SQLite Local and PostgreSQL. The accepted
 product architecture has three surfaces: useful offline-capable SQLite Local,
 PostgreSQL Server Engine for reference/self-hosted operation, and managed Cloud.
-SQLite Local and host-native MCP remain targets; current setup instructions
-describe the supported containerized PostgreSQL reference distribution.
+SQLite Local and host-native MCP have manager acceptance for their bounded
+scopes; current runtime setup instructions describe the containerized PostgreSQL
+reference distribution.
 
 The first goal is to map how a repository actually works: entry points, scripts,
 source/include relationships, imports, generated artifacts, tests, coverage
@@ -19,15 +20,17 @@ and hosted qualification remain separate gates.
 
 ## Project Identity
 
-- Official name: RepoMap
+- Official name: Common Lore Index (CLOE)
 - Git repository: `repo-map`
-- Python distribution: `repomap-kg`
-- Python import package: `repomap_kg`
-- CLI: `repomap-kg`
+- Python distribution: `common-lore-index`
+- Python import package: `common_lore_index`
+- CLI: `cloe` (also `common-lore-index`; transitional `repomap-kg` through v0.1.x)
 - License: AGPL-3.0-or-later plus commercial licensing
-- Current database: PostgreSQL; the reference deployment uses a local container
+- Storage: SQLite Local and PostgreSQL; the reference Server deployment uses a local container
 - Product direction: [Local, Server Engine and Cloud](docs/adr/2026/09/0071-post-promotion-local-server-cloud-architecture.md)
 - Release program: [private-main milestones and pre-v0.1.0 gates](docs/specs/roadmap.md#post-promotion-product-program)
+
+See [installed upgrade compatibility](docs/ops/cloe-installed-upgrade-compatibility.md) before replacing a legacy installation.
 
 ## Design Principles
 
@@ -36,7 +39,7 @@ and hosted qualification remain separate gates.
 - Mark confidence explicitly: extracted, heuristic, manual, or unknown.
 - Treat shell, Nix, and process orchestration as first-class concerns.
 - Keep raw extractor output exportable as JSONL.
-- Store normalized graph data in Postgres.
+- Store normalized graph data in an explicitly owned SQLite or PostgreSQL store.
 - Keep logical graph and source identity independent of checkout, worker,
   container, region, and physical database location.
 - Keep project-specific conventions in profiles rather than hardcoding them.
@@ -275,11 +278,33 @@ before creating `.venv`. A pyenv-managed Python can still be invoked through a
 separate local alias or explicit shim path, but avoid accidentally mixing a Nix
 environment with a pyenv-created virtualenv.
 
-## `REPOMAP_HOME`
+## Configuration homes
 
-Local operations resolve configuration from `REPOMAP_HOME`, defaulting to
-`~/.repo-map`. You can also pass `--repo-map-home <dir>` to local and ops
-commands.
+Before replacing an installed distribution, `repomap-kg identity --installation-check --json`
+reports metadata ownership conflicts without loading entrypoints or inspecting
+homes. Ordinary `identity --json` remains unchanged. See
+[installed upgrade compatibility](docs/ops/cloe-installed-upgrade-compatibility.md)
+for its limits and persisted native-service recovery.
+
+The [CLOE compatibility milestone](docs/ops/cloe-config-compatibility.md) accepts a nonempty `CLOE_HOME` ahead of `REPOMAP_HOME` and a separate CLOE configuration family. Explicit invocation homes win. Without a selector, a recognizable private `~/.cloe` wins, while a recognizable legacy `~/.repo-map` remains a safe fallback. Fresh defaults use `~/.cloe`; unrelated or unsafe homes are never silently initialized. `ops config-migration-plan` prepares filenames without applying changes. See the [accepted transition roadmap](docs/specs/cloe-roadmap-transition-v1.md) for the coordinated rebrand.
+
+For a new container-runtime home, `local setup --config-format cloe` creates a
+CLOE overlay; existing homes are detected automatically and must match any
+explicit format. Fresh implicit defaults use CLOE files; explicit custom empty
+homes retain legacy bootstrap behavior. Use `--dry-run` first
+to inspect the selected format without writing files or credentials.
+
+
+Use `--repo-map-home <dir>` with local and ops commands for an explicit home.
+Home selection creates no files and never moves or merges existing graph data.
+
+Implicit recognition requires a private owned home. For an older manually created
+legacy home with broader permissions, inspect it and use `chmod 700 ~/.repo-map`,
+or select it explicitly through `REPOMAP_HOME`, `CLOE_HOME` or `--repo-map-home`.
+If fresh setup stopped after creating runtime directories but before creating its
+configuration, inspect the partial home, then resume with
+`local setup --repo-map-home ~/.cloe --config-format cloe`. The explicit format
+preserves CLOE filenames during recovery.
 
 The config home is a folder, not one giant config file. RepoMap loads TOML files
 matching:
@@ -288,8 +313,9 @@ matching:
 - `*.rpl.toml` for local/private machine configuration.
 
 `*.rp.toml` files load first in lexicographic order. `*.rpl.toml` files load
-second and overlay local/private values. The generated local setup file name is
-`repomap.rpl.toml`.
+second and overlay local/private values. Legacy setup generates `repomap.rpl.toml`.
+CLOE homes use `*.cloe.toml` followed by `*.local.cloe.toml`; fresh implicit setup
+generates `repomap.local.cloe.toml`. Each home uses one family.
 
 Do not commit a real local config home, generated runtime secrets, backups,
 status artifacts, or private graph data.
@@ -303,7 +329,7 @@ RepoMap's intended local runtime is an isolated container cluster:
 - `REPOMAP_HOME` mounted for config and runtime state;
 - localhost-only, configurable, non-standard ports.
 
-Basic lifecycle:
+Basic lifecycle for an explicitly selected legacy home:
 
 ```sh
 repomap-kg local setup --repo-map-home ~/.repo-map

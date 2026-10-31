@@ -6,9 +6,9 @@ from datetime import timedelta
 from typing import Any
 
 import pytest
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
-from repomap_kg.coordinator.storage import ControlStoreError
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator.storage import ControlStoreError
 from repomap_test_support.startup_recovery_scenarios import _harness, _req
 
 

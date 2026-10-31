@@ -4,8 +4,8 @@ from types import SimpleNamespace
 import pytest
 import repomap_test_support.scale15_runtime_campaign as runtime_campaign
 from actual_refresh_startup import ActualRefreshStartup, StartupState
-from repomap_kg.runtime.plan import default_local_runtime_plan
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.runtime.plan import default_local_runtime_plan
+from common_lore_index.storage.authority import PublicationGenerations
 from repomap_test_support.scale15_runtime_environment import Scale15RuntimeFixture
 from scale14_supervisor_contracts import ProtectedLaunchLimits
 from scale15_terminal_contracts import ExpectedRefreshAuthority

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from repomap_kg.coordinator._refresh_generation import (
+from common_lore_index.coordinator._refresh_generation import (
     generation_changed_terminal,
     psql_configuration_terminal,
 )
-from repomap_kg.coordinator._core_disposition import CoreDispositionMixin
+from common_lore_index.coordinator._core_disposition import CoreDispositionMixin
 
 
 class SimpleClaim:

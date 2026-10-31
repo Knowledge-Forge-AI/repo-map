@@ -8,13 +8,13 @@ from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     python_summary_to_jsonable,
     query_python_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 from src.test.int.python.repomap_kg.storage.python_summary_readback_contracts import (
     WRAPPER_FIELDS,
@@ -204,7 +204,7 @@ def test_psycopg80_python_summary_connector_cli_and_mcp_parity() -> None:
 
 
 def _mcp_payloads(postgres, *, public_root: str, private_root: str):
-    from repomap_kg.server.mcp import repomap_python_summary
+    from common_lore_index.server.mcp import repomap_python_summary
 
     with tempfile.TemporaryDirectory() as tmpdir:
         config_path = Path(tmpdir) / "psycopg80.local.toml"

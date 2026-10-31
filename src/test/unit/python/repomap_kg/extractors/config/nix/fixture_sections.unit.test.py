@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.config.nix import extract_nix_file_observations
+from common_lore_index.extractors.config.nix import extract_nix_file_observations
 from repomap_test_support.nix_extractor import (
     NIX_EXTRACT1_FIXTURES,
     NIX_EXTRACT3_DEFERRED_KINDS,

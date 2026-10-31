@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.protocol import (
     MAX_RETAINED_DIAGNOSTIC_BYTES,
     ProtocolError,
     ProtocolSession,
@@ -68,7 +68,7 @@ def test_protocol_errors_are_bounded_payload_free_and_traceback_free():
 
 
 def test_runner_reports_process_boundary_failure_without_fallback():
-    from repomap_kg.coordinator import protocol
+    from common_lore_index.coordinator import protocol
     from repomap_test_support.synthetic_worker_adapter import (
         run_synthetic_worker,
     )

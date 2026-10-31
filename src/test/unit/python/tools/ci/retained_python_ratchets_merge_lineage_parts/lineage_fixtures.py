@@ -70,8 +70,8 @@ def _setup_two_transition_history(
     fix1_baseline = copy.deepcopy(genesis)
     fix1_baseline["ownership"]["sha256"] = "b" * 64
     new_mod = selection_item(
-        "repomap_kg.added_helper",
-        "src/main/python/repomap_kg/added_helper.py",
+        "common_lore_index.added_helper",
+        "src/main/python/common_lore_index/added_helper.py",
     )
     fix1_baseline["selection"]["modules"].append(new_mod)
     fix1_baseline["selection"]["modules"].sort(key=lambda m: m["module"])
@@ -101,11 +101,11 @@ def _setup_two_transition_history(
     fix2_baseline = copy.deepcopy(fix1_baseline)
     fix2_baseline["selection"]["modules"] = [
         m for m in fix2_baseline["selection"]["modules"]
-        if m["module"] != "repomap_kg.added_helper"
+        if m["module"] != "common_lore_index.added_helper"
     ]
     private_mod = selection_item(
-        "repomap_kg._added_helper",
-        "src/main/python/repomap_kg/_added_helper.py",
+        "common_lore_index._added_helper",
+        "src/main/python/common_lore_index/_added_helper.py",
     )
     fix2_baseline["selection"]["modules"].append(private_mod)
     fix2_baseline["selection"]["modules"].sort(key=lambda m: m["module"])

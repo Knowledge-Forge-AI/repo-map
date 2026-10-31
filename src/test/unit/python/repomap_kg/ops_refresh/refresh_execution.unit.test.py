@@ -4,16 +4,16 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.storage.staging_observability import StagingMeasurements
-from repomap_kg.storage.staging_phase_events import StagingPhaseEventCategory
+from common_lore_index.storage.staging_observability import StagingMeasurements
+from common_lore_index.storage.staging_phase_events import StagingPhaseEventCategory
 
 from repomap_test_support.ops_refresh import (
     OpsRefreshUnitTestCase,
     VALID_REFRESH_CONFIG,
 )
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import (
     OpsRefreshError,
     OpsRefreshGenerationChangedError,
     OpsRefreshGraphResult,
@@ -22,20 +22,20 @@ from repomap_kg.ops.refresh import (
     refresh_graph,
     refresh_result_to_jsonable,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     LoadSummary,
 )
-from repomap_kg.storage.authority import (
+from common_lore_index.storage.authority import (
     AttemptNumber,
     JobId,
     RefreshResult,
 )
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.ops.portable_refresh import PortableRefreshOutcome
+from common_lore_index.ops.portable_refresh import PortableRefreshOutcome
 
 
 class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
@@ -53,7 +53,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             root.mkdir()
             config = self.config_for_roots(root)
             with patch(
-                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                 return_value=self.portable_outcome(),
             ) as portable:
                 result = refresh_graph(config, "repo-map")
@@ -67,10 +67,10 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
             with (
                 patch(
-                    "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                    "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                     side_effect=ValueError("portable rejected"),
                 ),
-                patch("repomap_kg.ops.refresh.run_staged_full_refresh") as legacy_stage,
+                patch("common_lore_index.ops.refresh.run_staged_full_refresh") as legacy_stage,
             ):
                 result = refresh_graph(config, "repo-map")
             self.assertEqual(result.result, "failure")
@@ -93,10 +93,10 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             )
             with (
                 patch(
-                    "repomap_kg.ops.refresh.discover_observations",
+                    "common_lore_index.ops.refresh.discover_observations",
                     return_value=self.sample_observations(),
                 ),
-                patch("repomap_kg.ops.refresh.run_staged_full_refresh") as load,
+                patch("common_lore_index.ops.refresh.run_staged_full_refresh") as load,
             ):
                 with self.assertRaises(OpsRefreshGenerationChangedError):
                     refresh_graph(
@@ -115,7 +115,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                    "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                     return_value=self.portable_outcome(),
                 ) as portable,
             ):
@@ -136,7 +136,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with (
-                patch("repomap_kg.ops.portable_refresh.execute_portable_refresh") as portable,
+                patch("common_lore_index.ops.portable_refresh.execute_portable_refresh") as portable,
             ):
                 result = refresh_graph(config, "repo-map", ingestion_mode="rowwise")
 
@@ -167,7 +167,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                    "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                     return_value=self.portable_outcome(),
                 ),
             ):
@@ -225,7 +225,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                    "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                     return_value=self.portable_outcome(8, 12),
                 ),
             ):
@@ -244,7 +244,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             root.mkdir()
             config = self.config_for_roots(root)
 
-            with patch("repomap_kg.ops.refresh.refresh_graph") as refresh_one:
+            with patch("common_lore_index.ops.refresh.refresh_graph") as refresh_one:
                 refresh_one.return_value.graph_id = "repo-map"
                 refresh_one.return_value.result = "success"
                 results = refresh_enabled_graphs(config)
@@ -273,7 +273,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                    "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                     return_value=self.portable_outcome(),
                 ),
             ):
@@ -339,7 +339,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with patch(
-                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                 side_effect=KeyboardInterrupt(),
             ):
                 result = refresh_graph(config, "repo-map")
@@ -357,7 +357,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
                 lambda _: None, phase_sink=phase_events.append
             )
             with patch(
-                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                 side_effect=KeyboardInterrupt(),
             ):
                 measured_result = refresh_graph(
@@ -385,7 +385,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
             config = replace(base_config, graphs=(g1, g2))
 
             with patch(
-                "repomap_kg.ops.portable_refresh.execute_portable_refresh",
+                "common_lore_index.ops.portable_refresh.execute_portable_refresh",
                 side_effect=KeyboardInterrupt(),
             ):
                 results = refresh_enabled_graphs(config)

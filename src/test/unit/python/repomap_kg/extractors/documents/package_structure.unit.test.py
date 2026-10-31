@@ -2,17 +2,17 @@ from __future__ import annotations
 
 
 def test_pkg5_configdoc_discovery_routes_to_package_symbols() -> None:
-    import repomap_kg.graph.discovery as discovery
+    import common_lore_index.graph.discovery as discovery
 
-    import repomap_kg.extractors.config.generic as owner_0
-    import repomap_kg.extractors.config.nix as owner_1
-    import repomap_kg.extractors.documents.css as owner_2
-    import repomap_kg.extractors.documents.css_html_matching as owner_3
-    import repomap_kg.extractors.documents.email as owner_4
-    import repomap_kg.extractors.documents.feed as owner_5
-    import repomap_kg.extractors.documents.html as owner_6
-    import repomap_kg.extractors.documents.markdown as owner_7
-    import repomap_kg.extractors.documents.office as owner_8
+    import common_lore_index.extractors.config.generic as owner_0
+    import common_lore_index.extractors.config.nix as owner_1
+    import common_lore_index.extractors.documents.css as owner_2
+    import common_lore_index.extractors.documents.css_html_matching as owner_3
+    import common_lore_index.extractors.documents.email as owner_4
+    import common_lore_index.extractors.documents.feed as owner_5
+    import common_lore_index.extractors.documents.html as owner_6
+    import common_lore_index.extractors.documents.markdown as owner_7
+    import common_lore_index.extractors.documents.office as owner_8
 
     for package_module, symbol_name in (
         (owner_0, 'extract_config_file_observations'),
@@ -33,11 +33,11 @@ def test_pkg5_configdoc_discovery_routes_to_package_symbols() -> None:
 
 
 def test_pkg5_configdoc_ingestion_consumers_use_package_symbols() -> None:
-    import repomap_kg.extractors.documents.css_html_matching as css_html_matching
-    import repomap_kg.extractors.documents.feed as feed
-    import repomap_kg.ops.ingestion.bulk as bulk_ingestion
-    import repomap_kg.ops.ingestion.source_archive as source_archive
-    import repomap_kg.ops.ingestion.source as source_ingestion
+    import common_lore_index.extractors.documents.css_html_matching as css_html_matching
+    import common_lore_index.extractors.documents.feed as feed
+    import common_lore_index.ops.ingestion.bulk as bulk_ingestion
+    import common_lore_index.ops.ingestion.source_archive as source_archive
+    import common_lore_index.ops.ingestion.source as source_ingestion
 
     assert (
         bulk_ingestion.extract_css_selector_match_observations
@@ -54,10 +54,10 @@ def test_pkg5_configdoc_ingestion_consumers_use_package_symbols() -> None:
 
 
 def test_pkg5_configdoc_packages_preserve_private_helper_attributes() -> None:
-    import repomap_kg.extractors.config.generic as config_package
-    import repomap_kg.extractors.config.paths as config_paths
-    import repomap_kg.extractors.documents.css as css_package
-    import repomap_kg.extractors.documents.html as html_package
+    import common_lore_index.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.paths as config_paths
+    import common_lore_index.extractors.documents.css as css_package
+    import common_lore_index.extractors.documents.html as html_package
 
     assert config_package.json_pointer is config_paths.json_pointer
     assert config_package._pointer_segments is config_paths._pointer_segments
@@ -71,8 +71,8 @@ def test_pkg5_configdoc_packages_preserve_private_helper_attributes() -> None:
 
 
 def test_config_ref2_python_ecosystem_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.python as python_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.python as python_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "PYTHON_REQUIREMENTS_FORMAT", "PYTHON_REQUIREMENTS_PROFILE",
@@ -102,8 +102,8 @@ def test_config_ref2_python_ecosystem_imports_are_preserved() -> None:
 
 
 def test_config_ref3_javascript_ecosystem_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.javascript as javascript_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.javascript as javascript_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "TFJSON_PACKAGE_DEPENDENCY_GROUPS", "TFJSON_FRAMEWORK_DEPENDENCY_HINTS",
@@ -119,8 +119,8 @@ def test_config_ref3_javascript_ecosystem_imports_are_preserved() -> None:
 
 
 def test_config_ref4_terraform_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.terraform as terraform_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.terraform as terraform_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "TERRAFORM_HCL_FORMAT",
@@ -195,8 +195,8 @@ def test_config_ref4_terraform_imports_are_preserved() -> None:
 
 
 def test_config_ref5_openapi_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.openapi as openapi_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.openapi as openapi_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "OPENAPI_HTTP_METHODS",
@@ -252,8 +252,8 @@ def test_config_ref5_openapi_imports_are_preserved() -> None:
 
 
 def test_config_ref6_yaml_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.yaml as yaml_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.yaml as yaml_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "YAML_FORMAT",
@@ -312,8 +312,8 @@ def test_config_ref6_yaml_imports_are_preserved() -> None:
 
 
 def test_config_ref7_xml_plist_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.xml as xml_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.xml as xml_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "PLIST_XML_FORMAT",
@@ -363,8 +363,8 @@ def test_config_ref7_xml_plist_imports_are_preserved() -> None:
 
 
 def test_config_ref8_infrastructure_imports_are_preserved() -> None:
-    import repomap_kg.extractors.config.infrastructure as infrastructure_config
-    import repomap_kg.extractors.config.generic as config_package
+    import common_lore_index.extractors.config.infrastructure as infrastructure_config
+    import common_lore_index.extractors.config.generic as config_package
 
     moved_names = (
         "_json_pointer_is_kubernetes_secret_data",

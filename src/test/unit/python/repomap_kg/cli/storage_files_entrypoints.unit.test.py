@@ -4,9 +4,9 @@ from contextlib import redirect_stderr
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
+    from common_lore_index.cli import build_parser
 
 
 class CliStorageFilesEntrypointsUnitTests(unittest.TestCase):

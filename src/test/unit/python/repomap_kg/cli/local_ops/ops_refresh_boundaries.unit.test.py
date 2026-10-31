@@ -6,11 +6,11 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.refresh import (
+from common_lore_index.cli import main
+from common_lore_index.ops.refresh import (
     OpsGraphSummary,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 
 
 class CliLocalOpsRefreshBoundariesUnitTests(unittest.TestCase):
@@ -55,7 +55,7 @@ mode = "read_only"
             stdout = io.StringIO()
 
             with (
-                patch("repomap_kg.cli.query_graph_summary") as graph_summary,
+                patch("common_lore_index.cli.query_graph_summary") as graph_summary,
                 patch("pathlib.Path.exists", side_effect=AssertionError("root read")),
             ):
                 graph_summary.return_value = OpsGraphSummary(
@@ -145,7 +145,7 @@ mode = "read_only"
             )
             stdout = io.StringIO()
 
-            with patch("repomap_kg.cli.preflight_graph") as preflight:
+            with patch("common_lore_index.cli.preflight_graph") as preflight:
                 preflight.return_value.to_jsonable.return_value = {
                     "graph_id": "codex-memories",
                     "repository_name": "codex-memories",

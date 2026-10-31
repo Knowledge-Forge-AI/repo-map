@@ -7,9 +7,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.cli import main
-from repomap_kg.runtime.maintenance import bind_maintenance_custody, runtime_maintenance_namespace
-from repomap_kg.runtime.release_cluster import (
+from common_lore_index.cli import main
+from common_lore_index.runtime.maintenance import bind_maintenance_custody, runtime_maintenance_namespace
+from common_lore_index.runtime.release_cluster import (
     GraphOperator,
     ReleaseClusterError,
     ReleaseGraphOperator,
@@ -76,7 +76,7 @@ def test_release_cluster_cleans_invocation_created_targets_after_failure() -> No
 
     setattr(operator, "initialize_schema", fail_initialize)
     control_cleanup = patch(
-        "repomap_kg.runtime.release_cluster._cleanup_created_control"
+        "common_lore_index.runtime.release_cluster._cleanup_created_control"
     )
 
     with control_cleanup as cleanup_control:
@@ -185,23 +185,23 @@ def test_release_cluster_backup_adapter_inspects_and_publishes_manifest(
             ),
         ),
         patch(
-            "repomap_kg.runtime.release_cluster.timestamp_utc",
+            "common_lore_index.runtime.release_cluster.timestamp_utc",
             return_value="synthetic",
         ),
         patch(
-            "repomap_kg.runtime.release_cluster.atomic_private_backup_directory",
+            "common_lore_index.runtime.release_cluster.atomic_private_backup_directory",
             side_effect=atomic_directory,
         ),
         patch(
-            "repomap_kg.runtime.release_cluster.stream_pg_dump_to_file",
+            "common_lore_index.runtime.release_cluster.stream_pg_dump_to_file",
             return_value=dump,
         ) as stream,
         patch(
-            "repomap_kg.runtime.release_cluster.subprocess.run",
+            "common_lore_index.runtime.release_cluster.subprocess.run",
             return_value=SimpleNamespace(returncode=0, stdout=baseline_toc_bytes()),
         ) as inspect,
         patch(
-            "repomap_kg.runtime.release_cluster.write_private_text"
+            "common_lore_index.runtime.release_cluster.write_private_text"
         ) as write_manifest,
     ):
         result = _backup_graph_before_upgrade(
@@ -355,7 +355,7 @@ def test_release_cluster_cli_wires_init_and_status() -> None:
         ("release-cluster-status", "release_cluster_status"),
     ):
         stdout = io.StringIO()
-        with patch(f"repomap_kg.cli.{target}", return_value=ready) as operation, redirect_stdout(stdout):
+        with patch(f"common_lore_index.cli.{target}", return_value=ready) as operation, redirect_stdout(stdout):
             exit_code = main(["ops", command, "--repo-map-home", "/placeholder/home", "--json"])
         assert exit_code == 0
         assert json.loads(stdout.getvalue()) == ready
@@ -365,7 +365,7 @@ def test_release_cluster_cli_wires_init_and_status() -> None:
 def test_release_cluster_cli_failure_is_bounded() -> None:
     stderr = io.StringIO()
     with (
-        patch("repomap_kg.cli.initialize_release_cluster", side_effect=ReleaseClusterError("release_cluster_init_failed")),
+        patch("common_lore_index.cli.initialize_release_cluster", side_effect=ReleaseClusterError("release_cluster_init_failed")),
         redirect_stderr(stderr),
     ):
         exit_code = main(["ops", "release-cluster-init", "--repo-map-home", "/placeholder/home"])
@@ -376,7 +376,7 @@ def test_release_cluster_cli_failure_is_bounded() -> None:
 def test_release_cluster_cli_table_reports_not_ready() -> None:
     stdout = io.StringIO()
     payload = {"result": "not_ready", "graph_database_count": 2}
-    with patch("repomap_kg.cli.release_cluster_status", return_value=payload) as status, redirect_stdout(stdout):
+    with patch("common_lore_index.cli.release_cluster_status", return_value=payload) as status, redirect_stdout(stdout):
         exit_code = main(["ops", "release-cluster-status", "--repo-map-home", "/placeholder/home"])
     assert exit_code == 1
     assert stdout.getvalue() == "RepoMap release cluster: result=not_ready graphs=2\n"

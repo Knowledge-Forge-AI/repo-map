@@ -4,15 +4,15 @@ from collections.abc import Mapping
 
 import pytest
 
-from repomap_kg.storage import publication_fencing
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage import publication_fencing
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import (
     PortablePublicationBinding,
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     PublicationHandoff,
     PublicationReconciliationOutcome,
     PublicationContractError,
@@ -21,8 +21,8 @@ from repomap_kg.storage.publication_fencing import (
     build_publication_reconciliation_statements,
     classify_publication_marker,
 )
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 def _handoff(*, mode: str = "coordinator", job_id: str | None = "job-scale5") -> PublicationHandoff:

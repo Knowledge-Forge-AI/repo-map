@@ -87,7 +87,7 @@ def test_repository_manifest_is_ordered_complete_and_unambiguous() -> None:
 def test_manifest_rejects_duplicate_invalid_and_unstable_rules(
     tmp_path: Path, mutation, match: str
 ) -> None:
-    entries = [_entry("repomap_kg.alpha"), _entry("repomap_kg.beta")]
+    entries = [_entry("common_lore_index.alpha"), _entry("common_lore_index.beta")]
     path = tmp_path / "ownership.json"
     _write_manifest(path, mutation(entries))
 
@@ -99,16 +99,16 @@ def test_manifest_rejects_omitted_module_and_uses_component_prefixes(
     tmp_path: Path,
 ) -> None:
     path = tmp_path / "ownership.json"
-    _write_manifest(path, [_entry("repomap_kg.ops.refresh", match="exact")])
+    _write_manifest(path, [_entry("common_lore_index.ops.refresh", match="exact")])
     manifest = load_manifest(path)
 
-    assert resolve_rule("repomap_kg.ops.refresh", manifest) is not None
-    assert resolve_rule("repomap_kg.ops.refresh_graphs", manifest) is None
+    assert resolve_rule("common_lore_index.ops.refresh", manifest) is not None
+    assert resolve_rule("common_lore_index.ops.refresh_graphs", manifest) is None
     with pytest.raises(OwnershipManifestError, match="unclassified"):
         classify_modules(
             {
-                "repomap_kg.ops.refresh": Path("ops/refresh.py"),
-                "repomap_kg.ops.refresh_graphs": Path("ops/refresh_graphs.py"),
+                "common_lore_index.ops.refresh": Path("ops/refresh.py"),
+                "common_lore_index.ops.refresh_graphs": Path("ops/refresh_graphs.py"),
             },
             manifest,
         )
@@ -116,31 +116,31 @@ def test_manifest_rejects_omitted_module_and_uses_component_prefixes(
 
 def test_blocking_modules_cannot_import_deferred_implementation(tmp_path: Path) -> None:
     source = tmp_path / "src/main/python"
-    retained = source / "repomap_kg/retained.py"
-    deferred = source / "repomap_kg/deferred.py"
+    retained = source / "common_lore_index/retained.py"
+    deferred = source / "common_lore_index/deferred.py"
     retained.parent.mkdir(parents=True)
-    retained.write_text("from repomap_kg.deferred import value\n", encoding="utf-8")
+    retained.write_text("from common_lore_index.deferred import value\n", encoding="utf-8")
     deferred.write_text("value = 1\n", encoding="utf-8")
     path = tmp_path / "ownership.json"
     _write_manifest(
         path,
         [
-            _entry("repomap_kg.deferred", "planned_go", "T3", match="exact")
+            _entry("common_lore_index.deferred", "planned_go", "T3", match="exact")
             | {
                 "architecture_box": "go_control_plane",
                 "disposition": "planned_go",
             },
-            _entry("repomap_kg.retained", tier="T1-seed", match="exact"),
+            _entry("common_lore_index.retained", tier="T1-seed", match="exact"),
         ],
     )
     modules = {
-        "repomap_kg.deferred": deferred,
-        "repomap_kg.retained": retained,
+        "common_lore_index.deferred": deferred,
+        "common_lore_index.retained": retained,
     }
     manifest = load_manifest(path, modules=modules)
 
     assert architecture_violations(manifest, modules, source) == (
-        "repomap_kg.retained imports T3 repomap_kg.deferred",
+        "common_lore_index.retained imports T3 common_lore_index.deferred",
     )
 
 
@@ -148,41 +148,41 @@ def test_blocking_modules_cannot_import_deferred_implementation(tmp_path: Path) 
     ("source", "package", "expected"),
     (
         (
-            "from repomap_kg.graph import readback\n",
-            "repomap_kg.retained",
-            ("repomap_kg.graph.readback",),
+            "from common_lore_index.graph import readback\n",
+            "common_lore_index.retained",
+            ("common_lore_index.graph.readback",),
         ),
         (
-            "from repomap_kg.coordinator import contracts\n",
-            "repomap_kg.retained",
-            ("repomap_kg.coordinator.contracts",),
+            "from common_lore_index.coordinator import contracts\n",
+            "common_lore_index.retained",
+            ("common_lore_index.coordinator.contracts",),
         ),
         (
-            "from repomap_kg.deferred import value\n",
-            "repomap_kg.retained",
-            ("repomap_kg.deferred",),
+            "from common_lore_index.deferred import value\n",
+            "common_lore_index.retained",
+            ("common_lore_index.deferred",),
         ),
         (
             "from . import deferred\n",
-            "repomap_kg",
-            ("repomap_kg.deferred",),
+            "common_lore_index",
+            ("common_lore_index.deferred",),
         ),
         (
-            "import repomap_kg.graph.readback\n",
-            "repomap_kg.retained",
-            ("repomap_kg.graph.readback",),
+            "import common_lore_index.graph.readback\n",
+            "common_lore_index.retained",
+            ("common_lore_index.graph.readback",),
         ),
         (
-            "from repomap_kg.graph.readback import query\n",
-            "repomap_kg.retained",
-            ("repomap_kg.graph.readback",),
+            "from common_lore_index.graph.readback import query\n",
+            "common_lore_index.retained",
+            ("common_lore_index.graph.readback",),
         ),
         (
-            "from repomap_kg.graph import readback, writeback\n",
-            "repomap_kg.retained",
+            "from common_lore_index.graph import readback, writeback\n",
+            "common_lore_index.retained",
             (
-                "repomap_kg.graph.readback",
-                "repomap_kg.graph.writeback",
+                "common_lore_index.graph.readback",
+                "common_lore_index.graph.writeback",
             ),
         ),
     ),
@@ -193,10 +193,10 @@ def test_project_imports_resolve_maintained_modules_without_treating_symbols_as_
     expected: tuple[str, ...],
 ) -> None:
     maintained = {
-        "repomap_kg.coordinator.contracts": Path("coordinator/contracts.py"),
-        "repomap_kg.deferred": Path("deferred.py"),
-        "repomap_kg.graph.readback": Path("graph/readback.py"),
-        "repomap_kg.graph.writeback": Path("graph/writeback.py"),
+        "common_lore_index.coordinator.contracts": Path("coordinator/contracts.py"),
+        "common_lore_index.deferred": Path("deferred.py"),
+        "common_lore_index.graph.readback": Path("graph/readback.py"),
+        "common_lore_index.graph.writeback": Path("graph/writeback.py"),
     }
 
     assert _project_imports(ast.parse(source), package, maintained) == expected
@@ -206,15 +206,15 @@ def test_nested_import_overrides_prevent_false_negatives_and_false_positives(
     tmp_path: Path,
 ) -> None:
     source = tmp_path / "src/main/python"
-    retained = source / "repomap_kg/retained.py"
-    graph_readback = source / "repomap_kg/graph/readback.py"
-    coordinator_contracts = source / "repomap_kg/coordinator/contracts.py"
+    retained = source / "common_lore_index/retained.py"
+    graph_readback = source / "common_lore_index/graph/readback.py"
+    coordinator_contracts = source / "common_lore_index/coordinator/contracts.py"
     retained.parent.mkdir(parents=True)
     graph_readback.parent.mkdir(parents=True)
     coordinator_contracts.parent.mkdir(parents=True)
     retained.write_text(
-        "from repomap_kg.graph import readback\n"
-        "from repomap_kg.coordinator import contracts\n",
+        "from common_lore_index.graph import readback\n"
+        "from common_lore_index.coordinator import contracts\n",
         encoding="utf-8",
     )
     graph_readback.write_text("query = object()\n", encoding="utf-8")
@@ -223,13 +223,13 @@ def test_nested_import_overrides_prevent_false_negatives_and_false_positives(
     _write_manifest(
         path,
         [
-            _entry("repomap_kg.coordinator", "planned_go", "T3")
+            _entry("common_lore_index.coordinator", "planned_go", "T3")
             | {
                 "architecture_box": "go_control_plane",
                 "disposition": "planned_go",
             },
             _entry(
-                "repomap_kg.coordinator.contracts",
+                "common_lore_index.coordinator.contracts",
                 "cross_language_contract",
                 "T0",
                 match="exact",
@@ -238,24 +238,24 @@ def test_nested_import_overrides_prevent_false_negatives_and_false_positives(
                 "architecture_box": "job_contract",
                 "disposition": "durable_contract",
             },
-            _entry("repomap_kg.graph", tier="T1-future"),
-            _entry("repomap_kg.graph.readback", "planned_go", "T3", match="exact")
+            _entry("common_lore_index.graph", tier="T1-future"),
+            _entry("common_lore_index.graph.readback", "planned_go", "T3", match="exact")
             | {
                 "architecture_box": "go_query_api",
                 "disposition": "planned_go",
             },
-            _entry("repomap_kg.retained", tier="T1-seed", match="exact"),
+            _entry("common_lore_index.retained", tier="T1-seed", match="exact"),
         ],
     )
     modules = {
-        "repomap_kg.coordinator.contracts": coordinator_contracts,
-        "repomap_kg.graph.readback": graph_readback,
-        "repomap_kg.retained": retained,
+        "common_lore_index.coordinator.contracts": coordinator_contracts,
+        "common_lore_index.graph.readback": graph_readback,
+        "common_lore_index.retained": retained,
     }
     manifest = load_manifest(path, modules=modules)
 
     assert architecture_violations(manifest, modules, source) == (
-        "repomap_kg.retained imports T3 repomap_kg.graph.readback",
+        "common_lore_index.retained imports T3 common_lore_index.graph.readback",
     )
 
 
@@ -264,8 +264,8 @@ def test_deferred_mypy_errors_are_grouped_but_do_not_fail_blocking_lane(
 ) -> None:
     output = "\n".join(
         (
-            "src/main/python/repomap_kg/deferred.py:3: error: Bad value 7  [arg-type]",
-            "src/main/python/repomap_kg/deferred.py:9: error: Bad value 8  [arg-type]",
+            "src/main/python/common_lore_index/deferred.py:3: error: Bad value 7  [arg-type]",
+            "src/main/python/common_lore_index/deferred.py:9: error: Bad value 8  [arg-type]",
             "Found 2 errors in 1 file (checked 1 source file)",
         )
     )
@@ -274,7 +274,7 @@ def test_deferred_mypy_errors_are_grouped_but_do_not_fail_blocking_lane(
     _write_manifest(
         path,
         [
-            _entry("repomap_kg.deferred", "planned_go", "T3", match="exact")
+            _entry("common_lore_index.deferred", "planned_go", "T3", match="exact")
             | {
                 "architecture_box": "go_control_plane",
                 "disposition": "planned_go",
@@ -285,7 +285,7 @@ def test_deferred_mypy_errors_are_grouped_but_do_not_fail_blocking_lane(
     inventory = grouped_inventory(errors, manifest)
 
     assert len(inventory) == 1
-    assert inventory[0]["module"] == "repomap_kg.deferred"
+    assert inventory[0]["module"] == "common_lore_index.deferred"
     assert inventory[0]["error_code"] == "arg-type"
     assert inventory[0]["count"] == 2
     assert "message" not in inventory[0]
@@ -298,7 +298,7 @@ def test_root_module_finding_is_grouped_and_uses_root_distribution_bucket(
     tmp_path: Path,
 ) -> None:
     output = (
-        "src/main/python/repomap_kg/__init__.py:3: "
+        "src/main/python/common_lore_index/__init__.py:3: "
         "error: Bad root value 7  [arg-type]"
     )
     errors = parse_mypy_errors(output, ROOT)
@@ -306,7 +306,7 @@ def test_root_module_finding_is_grouped_and_uses_root_distribution_bucket(
     _write_manifest(
         path,
         [
-            _entry("repomap_kg", "planned_go", "T3", match="exact")
+            _entry("common_lore_index", "planned_go", "T3", match="exact")
             | {
                 "architecture_box": "go_control_plane",
                 "disposition": "planned_go",
@@ -315,7 +315,7 @@ def test_root_module_finding_is_grouped_and_uses_root_distribution_bucket(
     )
     inventory = grouped_inventory(errors, load_manifest(path))
 
-    assert inventory[0]["module"] == "repomap_kg"
+    assert inventory[0]["module"] == "common_lore_index"
     assert _distribution(inventory) == {
         "error_count": 1,
         "file_count": 1,
@@ -329,18 +329,18 @@ def test_newly_admitted_modules_override_parent_subtree_in_manifest() -> None:
     classified = classify_modules(modules, manifest)
 
     admitted = (
-        "repomap_kg.artifacts.bundle",
-        "repomap_kg.artifacts.receipt",
-        "repomap_kg.artifacts.references",
-        "repomap_kg.storage.staging_checksums",
-        "repomap_kg.storage.staging_duplicate_guard",
-        "repomap_kg.storage.staging_family_catalog",
-        "repomap_kg.storage.staging_family_contracts",
-        "repomap_kg.storage.staging_family_rows",
-        "repomap_kg.storage.staging_merge_operations",
-        "repomap_kg.storage.staging_operation_contracts",
-        "repomap_kg.storage.staging_operation_events",
-        "repomap_kg.storage.staging_phase_events",
+        "common_lore_index.artifacts.bundle",
+        "common_lore_index.artifacts.receipt",
+        "common_lore_index.artifacts.references",
+        "common_lore_index.storage.staging_checksums",
+        "common_lore_index.storage.staging_duplicate_guard",
+        "common_lore_index.storage.staging_family_catalog",
+        "common_lore_index.storage.staging_family_contracts",
+        "common_lore_index.storage.staging_family_rows",
+        "common_lore_index.storage.staging_merge_operations",
+        "common_lore_index.storage.staging_operation_contracts",
+        "common_lore_index.storage.staging_operation_events",
+        "common_lore_index.storage.staging_phase_events",
     )
     for mod in admitted:
         assert mod in classified
@@ -366,12 +366,12 @@ def test_run_checked_mypy_propagates_findings_and_tool_errors(
 ) -> None:
     import subprocess
 
-    target = ROOT / "src/main/python/repomap_kg/cli.py"
+    target = ROOT / "src/main/python/common_lore_index/cli.py"
     proc = lambda rc, out: lambda *a, **k: subprocess.CompletedProcess([], rc, out, "")
     monkeypatch.setattr("ci.python_type_check._mypy", proc(0, ""))
     assert _run_checked_mypy((target,)) == (0, ())
 
-    finding = "src/main/python/repomap_kg/cli.py:1: error: E  [syntax]\n"
+    finding = "src/main/python/common_lore_index/cli.py:1: error: E  [syntax]\n"
     monkeypatch.setattr("ci.python_type_check._mypy", proc(1, finding))
     rc, errors = _run_checked_mypy((target,))
     assert rc == 1 and len(errors) == 1 and errors[0].error_code == "syntax"

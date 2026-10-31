@@ -7,9 +7,9 @@ import socket
 import struct
 import unittest
 
-from repomap_kg.coordinator._protocol_session import ProtocolSession
-from repomap_kg.coordinator._protocol_validation import PROTOCOL_VERSION, ProtocolError
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.coordinator._protocol_session import ProtocolSession
+from common_lore_index.coordinator._protocol_validation import PROTOCOL_VERSION, ProtocolError
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
 )

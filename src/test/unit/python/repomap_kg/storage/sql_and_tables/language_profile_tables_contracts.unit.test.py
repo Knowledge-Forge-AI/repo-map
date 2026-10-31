@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     OpenAPISummaryRecord,
     PythonSummaryRecord,
     TerraformSummaryRecord,

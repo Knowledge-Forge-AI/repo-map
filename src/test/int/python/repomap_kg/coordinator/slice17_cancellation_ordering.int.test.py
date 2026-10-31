@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from repomap_kg.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
+from common_lore_index.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
 from repomap_test_support.portable_worker_conformance import run_portable_worker_conformance
 
 
@@ -43,7 +43,7 @@ def test_pending_cancel_is_drained_before_terminal_decision(tmp_path):
 
 @pytest.mark.parametrize("damage", ["identity", "json", "partial"])
 def test_malformed_pending_cancel_fails_closed(tmp_path, monkeypatch, damage):
-    from repomap_kg.coordinator import _protocol_execution
+    from common_lore_index.coordinator import _protocol_execution
 
     original_encode = _protocol_execution.encode_jsonl
 
@@ -68,7 +68,7 @@ def test_malformed_pending_cancel_fails_closed(tmp_path, monkeypatch, damage):
 
 
 def test_terminal_accepted_before_later_cancel_remains_success(tmp_path, monkeypatch):
-    from repomap_kg.coordinator._protocol_session import ProtocolSession
+    from common_lore_index.coordinator._protocol_session import ProtocolSession
 
     accepted = threading.Event()
     original_accept = ProtocolSession.accept_worker
@@ -145,7 +145,7 @@ def test_cancel_during_real_materialized_work_settles_and_cleans(tmp_path):
 
 
 def test_cancelled_terminal_does_not_excuse_attempt_cleanup_failure(tmp_path, monkeypatch):
-    from repomap_kg.coordinator import _portable_worker_launch
+    from common_lore_index.coordinator import _portable_worker_launch
 
     original_remove = _portable_worker_launch._remove_attempt_root
 

@@ -5,9 +5,9 @@ import sys
 
 import pytest
 
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 PEER = '''
