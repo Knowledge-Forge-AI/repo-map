@@ -26665,6 +26665,36 @@
       ],
       "test": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.unit.test.py",
       "test_sha256": "7cd8094c809e8f4d88d2e1bb3aecd80762f5619ed0a36cc05d4e8108413d2216"
+    },
+    {
+      "fingerprint": "4dab36f56016f6963401c5769ec80dec5ddea132166d5644dbf14107e6f6463c",
+      "id": "cloe.ci99repair1.cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise39.cli.py.run_module_entrypoint",
+      "kind": "run_module",
+      "owner": "src/test/support/python/repomap_test_support/cli.py",
+      "owner_sha256": "200b7ef707c799d920726ca4da9ba72989ce9af94e65b894e0c86870d8c45031",
+      "parameters": {
+        "module": "common_lore_index",
+        "run_name": "__main__"
+      },
+      "recipe": "literal_module_entry",
+      "supersedes": "cloe.cutover1.cloe.ownership1.navigation40.ci57.preview003.v002.revise39.cli.py.run_module_entrypoint",
+      "symbol": "run_module_entrypoint",
+      "targets": [
+        {
+          "module": "common_lore_index",
+          "path": "src/main/python/common_lore_index/__init__.py",
+          "sha256": "92e28ff0ce66fe80bd366a57157dc2798aaab98d44338bb2ef69df58ea915ecc",
+          "symbol": ""
+        },
+        {
+          "module": "common_lore_index.__main__",
+          "path": "src/main/python/common_lore_index/__main__.py",
+          "sha256": "62aa9eb8cc38fe4d7a926ef5353ba4799ed147ccdd3de9f9fcb843fc1f4ab94b",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
+      "test_sha256": "62620ebb03736f35ed4143cb65657b3bb53e9eb0cb9ef8d101b3f62f832bde5b"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",

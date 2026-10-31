@@ -20,14 +20,14 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
         result = self.run_cli("--version")
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertRegex(result.stdout.strip(), r"^repomap-kg \d+\.\d+\.\d+$")
+        self.assertRegex(result.stdout.strip(), r"^cloe \d+\.\d+\.\d+$")
         self.assertEqual(result.stderr, "")
 
     def test_module_entrypoint_can_run_in_process(self):
         exit_code, stdout, stderr = self.run_module_entrypoint("--version")
 
         self.assertEqual(exit_code, 0)
-        self.assertRegex(stdout.strip(), r"^repomap-kg \d+\.\d+\.\d+$")
+        self.assertRegex(stdout.strip(), r"^cloe \d+\.\d+\.\d+$")
         self.assertEqual(stderr, "")
 
     def test_mcp_server_package_module_entrypoint_runs_jsonrpc(self):
@@ -187,7 +187,7 @@ class CliServerEntrypointIntegrationTests(CliIntegrationTestCase):
 
         self.assertEqual(exit_code, 0)
         payload = json.loads(stdout)
-        self.assertEqual(payload["name"], "RepoMap")
-        self.assertEqual(payload["cli"], "repomap-kg")
+        self.assertEqual(payload["name"], "Common Lore Index")
+        self.assertEqual(payload["cli"], "cloe")
         self.assertEqual(payload["database"], "Postgres")
         self.assertEqual(stderr, "")

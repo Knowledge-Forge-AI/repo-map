@@ -73,7 +73,7 @@ def test_in_process_cli_capture_does_not_invoke_module_launcher(
     )
 
     assert result[0] == 0
-    assert result[1].startswith("repomap-kg ")
+    assert result[1].startswith("cloe ")
     assert result[2] == ""
 
 

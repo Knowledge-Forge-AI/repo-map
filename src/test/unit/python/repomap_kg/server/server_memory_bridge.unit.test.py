@@ -184,7 +184,7 @@ mode = "read_only"
 
         self.assertEqual(payload["result_count"], 1)
         self.assertIn(
-            "./src/main/python/common_lore_index/mcp_server.py",
+            "./src/main/python/repomap_kg/mcp_server.py",
             payload["results"][0]["local_paths"],
         )
         self.assertTrue(payload["linking"]["implemented"] is False)

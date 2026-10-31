@@ -62,3 +62,4 @@ def run_module_entrypoint(*args: str) -> tuple[int, str, str]:
     return code, stdout.getvalue(), stderr.getvalue()
 # v0.0.2 dynamic target re-attestation.
 # v0.0.3 dynamic target re-attestation.
+# v0.0.3 CI99 dynamic target re-attestation.

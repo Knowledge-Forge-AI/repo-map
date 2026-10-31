@@ -28,13 +28,13 @@ class PythonExtractorUnitTests(unittest.TestCase):
             importable_module_name(
                 "src/test/unit/python/repomap_kg/test_cli.unit.test.py"
             ),
-            "common_lore_index.test_cli.unit.test",
+            "repomap_kg.test_cli.unit.test",
         )
         self.assertEqual(
             importable_module_name(
                 "src/test/int/python/repomap_kg/test_storage.int.test.py"
             ),
-            "common_lore_index.test_storage.int.test",
+            "repomap_kg.test_storage.int.test",
         )
 
     def test_importable_module_name_supports_pyproject_package_dir(self):

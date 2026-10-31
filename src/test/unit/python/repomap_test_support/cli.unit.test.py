@@ -86,7 +86,7 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
         exit_code, stdout, stderr = run_repo_map_in_process("--version")
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(stdout.strip(), f"repomap-kg {__version__}")
+        self.assertEqual(stdout.strip(), f"cloe {__version__}")
         self.assertEqual(stderr, "")
 
     def test_run_module_entrypoint_captures_output_and_restores_argv(self):
@@ -95,7 +95,7 @@ class TestSupportCliHelpersUnitTests(unittest.TestCase):
         exit_code, stdout, stderr = run_module_entrypoint("--version")
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(stdout.strip(), f"repomap-kg {__version__}")
+        self.assertEqual(stdout.strip(), f"cloe {__version__}")
         self.assertEqual(stderr, "")
         self.assertEqual(sys.argv, original_argv)
 

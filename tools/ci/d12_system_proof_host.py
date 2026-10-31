@@ -197,7 +197,7 @@ def validate_host_system_event_and_git(
     ):
         raise D12SystemGrantError(f"event/pull_request.number {ev_num!r}/{pr_num!r} != {grant['pull_request']!r}")
     if pr.get("draft") is not True:
-        raise D12SystemGrantError("CI99 draft admission requires pull_request.draft is True")
+        raise D12SystemGrantError("CI100 draft admission requires pull_request.draft is True")
     base_blk, head_blk = pr.get("base"), pr.get("head")
     if not isinstance(base_blk, Mapping) or not isinstance(head_blk, Mapping):
         raise D12SystemGrantError("pull_request base/head blocks missing")

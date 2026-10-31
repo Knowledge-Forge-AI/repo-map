@@ -19,9 +19,9 @@ def records(rows):
 
 def test_current_identity_and_license_agree_with_owned_distribution_metadata() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
-    assert PROJECT_IDENTITY.distribution == common_lore_index.DISTRIBUTION_NAME == project["name"] == "repomap-kg"
+    assert PROJECT_IDENTITY.distribution == common_lore_index.DISTRIBUTION_NAME == project["name"] == "common-lore-index"
     assert PROJECT_IDENTITY.package == common_lore_index.IMPORT_PACKAGE == "common_lore_index"
-    assert PROJECT_IDENTITY.cli == common_lore_index.PREFERRED_CLI == "repomap-kg"
+    assert PROJECT_IDENTITY.cli == common_lore_index.PREFERRED_CLI == "cloe"
     assert PROJECT_IDENTITY.license == project["license"] == "AGPL-3.0-or-later"
     assert "GNU AFFERO GENERAL PUBLIC LICENSE" in (ROOT / "LICENSE").read_text()
     assert set(PROJECT_IDENTITY.as_dict()) == {"name", "distribution", "package", "cli", "license", "database"}

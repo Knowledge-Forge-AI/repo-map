@@ -13,16 +13,16 @@ ROOT = Path(__file__).resolve().parents[6]
 def test_real_cli_keeps_identity_shape_and_reports_the_repository_license() -> None:
     result = run_cli_module("identity", "--json")
     assert result.returncode == 0, result.stderr
-    assert json.loads(result.stdout) == {"name": "RepoMap", "distribution": "repomap-kg",
-                                        "package": "common_lore_index", "cli": "repomap-kg",
+    assert json.loads(result.stdout) == {"name": "Common Lore Index", "distribution": "common-lore-index",
+                                        "package": "common_lore_index", "cli": "cloe",
                                         "license": "AGPL-3.0-or-later", "database": "Postgres"}
     version = run_cli_module("--version")
-    assert version.returncode == 0 and version.stdout.strip() == "repomap-kg 0.0.3"
+    assert version.returncode == 0 and version.stdout.strip() == "cloe 0.0.3"
 
 
 def test_real_catalog_readback_in_simulated_installed_layout_preserves_frozen_prefix(tmp_path: Path, monkeypatch) -> None:
     golden = json.loads((ROOT / "src/test/fixtures/cloe/migration-continuity-v1.json").read_text())
-    prefix = tmp_path / "share/repomap-kg"
+    prefix = tmp_path / "share/common-lore-index"
     for family in ("rdbms", "coordinator-rdbms"):
         shutil.copytree(ROOT / "src/main/resources" / family, prefix / family)
     monkeypatch.setattr(graph, "__file__", str(tmp_path / "site/common_lore_index/storage/schema.py"))

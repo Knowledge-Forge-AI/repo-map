@@ -128,7 +128,7 @@ def test_help_and_local_status_commands_start_without_the_driver(tmp_path: Path)
     _assert_driver_free(harness, harness.run("--help"))
     version = harness.run("--version")
     _assert_driver_free(harness, version)
-    assert version.stdout.startswith("repomap-kg "), version.stdout
+    assert version.stdout.startswith("cloe "), version.stdout
     for args in (
         ("ops", "config-check"),
         ("ops", "graphs"),
