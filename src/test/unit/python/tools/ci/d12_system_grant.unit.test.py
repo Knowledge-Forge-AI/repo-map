@@ -29,6 +29,9 @@ from ci.d12_system_grant import (
     SPENT_CI97_NONCE, SPENT_CI97_RESERVATION_SHA256,
     SPENT_CI98_NONCE, SPENT_CI98_RESERVATION_SHA256,
     SPENT_CI99_NONCE, SPENT_CI99_RESERVATION_SHA256,
+    SUPERSEDED_W2_NONCE, SUPERSEDED_W2_RESERVATION_SHA256,
+    SUPERSEDED_W2_REV2_NONCE, SUPERSEDED_W2_REV2_RESERVATION_SHA256,
+    SPENT_CI100_NONCE, SPENT_CI100_RESERVATION_SHA256,
     D12SystemGrantError, SYSTEM_ADMISSION_PROOF_SCHEMA, SYSTEM_BUILD_GRANT_SCHEMA,
     build_system_admission_proof,
     load_and_validate_system_admission_proof, load_and_validate_system_build_grant,
@@ -110,7 +113,7 @@ def _coherent_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], b
     return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
 
 
-def test_load_tracked_system_build_grant_matches_ci100_and_refuses_drifted_candidate() -> None:
+def test_load_tracked_system_build_grant_matches_ci101_and_refuses_drifted_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
@@ -131,7 +134,7 @@ def test_load_tracked_system_build_grant_matches_ci100_and_refuses_drifted_candi
             expected_candidate=live_cand,
             frozen_identity=dict(live_cand["d12_context"]),
         )
-    assert EXPECTED_PHASE_ID == "REPOMAP-CI99-REPAIR1"
+    assert EXPECTED_PHASE_ID == "REPOMAP-CLOE-RETRIEVAL1"
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
     assert SPENT_CI70_RESERVATION_SHA256 == "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
     assert SPENT_CI71_NONCE == "549ee11fd8a44b4f8723030412032fa3"
@@ -160,12 +163,18 @@ def test_load_tracked_system_build_grant_matches_ci100_and_refuses_drifted_candi
     assert SPENT_CI98_RESERVATION_SHA256 == "60a7a3a141d49c4fb0cf9a440afb9fb7c7215b4b523cc2841ea5bd518c802fd7"
     assert SPENT_CI99_NONCE == "9fbd0f97ac4945a4a3bc231cbc512b5f"
     assert SPENT_CI99_RESERVATION_SHA256 == "dfe02b643a6dafc7161d37b841ab97e9dbf34a6bf0f9dcc41c91e9c2a855f65e"
+    assert SPENT_CI100_NONCE == "10f975ff610e4030bd68cc09eba9d53b"
+    assert SPENT_CI100_RESERVATION_SHA256 == "12fad920fef49dc9604bbc4c69108fcf7867503787244b6bfd85feac66836e68"
+    assert SUPERSEDED_W2_NONCE == "cb637c3b41e4427491dcf7bc2c83e0ec"
+    assert SUPERSEDED_W2_RESERVATION_SHA256 == "922395c6167f8ebe47f192a32b2e7834c8f5c53a1c7bfbe04d1d1ad2f422e3a8"
+    assert SUPERSEDED_W2_REV2_NONCE == "d16a2474e8f841e489cf44e0d789da8b"
+    assert SUPERSEDED_W2_REV2_RESERVATION_SHA256 == "aa7ff667131b61c8070a3dfb45ae0efea197fe2fb89e5b509fd30bfed31aac5b"
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 100
+    assert grant["workflow_ordinal"] == 101
     assert grant["workflow_attempt"] == 1
-    assert (grant["maximum_total"], grant["maximum_per_platform"]) == (17, 17)
+    assert (grant["maximum_total"], grant["maximum_per_platform"]) == (18, 18)
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
@@ -187,33 +196,33 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
 
     for field, bad_val in (
         ("workflow_ordinal", 69), ("workflow_ordinal", 70), ("workflow_ordinal", 71), ("workflow_ordinal", 73), ("workflow_ordinal", 85), ("workflow_ordinal", 86), ("workflow_ordinal", 87),
-        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 97), ("workflow_ordinal", 98), ("workflow_ordinal", 99), ("workflow_ordinal", 96), ("workflow_ordinal", 95), ("workflow_attempt", 2), ("maximum_per_platform", 1), ("maximum_per_platform", 2), ("maximum_per_platform", 3),
+        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 97), ("workflow_ordinal", 98), ("workflow_ordinal", 99), ("workflow_ordinal", 100), ("workflow_ordinal", 96), ("workflow_ordinal", 95), ("workflow_attempt", 2), ("maximum_per_platform", 1), ("maximum_per_platform", 2), ("maximum_per_platform", 3),
         ("maximum_total", 1), ("maximum_total", 2), ("maximum_total", 3), ("maximum_total", 5), ("maximum_total", 6), ("maximum_total", 7), ("maximum_total", 8), ("maximum_total", 9), ("maximum_per_platform", 9),
         ("maximum_total", 10), ("maximum_per_platform", 10),
-        ("maximum_total", 11), ("maximum_per_platform", 11), ("maximum_total", 12), ("maximum_per_platform", 12), ("maximum_total", 13), ("maximum_per_platform", 13), ("maximum_total", 14), ("maximum_per_platform", 14), ("maximum_total", 15), ("maximum_per_platform", 15), ("maximum_total", 16), ("maximum_per_platform", 16), ("maximum_total", 18), ("maximum_per_platform", 18), ("workflow_ordinal", 101), ("maximum_per_platform", 8),
+        ("maximum_total", 11), ("maximum_per_platform", 11), ("maximum_total", 12), ("maximum_per_platform", 12), ("maximum_total", 13), ("maximum_per_platform", 13), ("maximum_total", 14), ("maximum_per_platform", 14), ("maximum_total", 15), ("maximum_per_platform", 15), ("maximum_total", 17), ("maximum_per_platform", 17), ("maximum_total", 16), ("maximum_per_platform", 16), ("maximum_total", 19), ("maximum_per_platform", 19), ("workflow_ordinal", 102), ("maximum_per_platform", 8),
         ("maximum_per_platform", 7), ("maximum_per_platform", 6), ("maximum_per_platform", 5), ("nonce", SPENT_CI69_NONCE), ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256), ("nonce", SPENT_CI70_NONCE),
         ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256), ("nonce", SPENT_CI71_NONCE), ("nonce", SPENT_CI72_NONCE), ("nonce", SPENT_CI85_NONCE), ("nonce", SPENT_CI86_NONCE), ("nonce", SPENT_CI87_NONCE), ("nonce", SPENT_CI91_NONCE),
         ("nonce", SPENT_CI92_NONCE), ("nonce", SPENT_CI93_NONCE), ("reservation_sha256", SPENT_CI93_RESERVATION_SHA256), ("nonce", SPENT_CI94_NONCE), ("reservation_sha256", SPENT_CI94_RESERVATION_SHA256),
         ("nonce", SPENT_CI95_NONCE), ("reservation_sha256", SPENT_CI95_RESERVATION_SHA256), ("nonce", SPENT_CI97_NONCE), ("reservation_sha256", SPENT_CI97_RESERVATION_SHA256),
         ("nonce", SPENT_CI98_NONCE), ("reservation_sha256", SPENT_CI98_RESERVATION_SHA256), ("nonce", SPENT_CI99_NONCE), ("reservation_sha256", SPENT_CI99_RESERVATION_SHA256),
+        ("nonce", SPENT_CI100_NONCE), ("reservation_sha256", SPENT_CI100_RESERVATION_SHA256),
+        ("nonce", SUPERSEDED_W2_REV2_NONCE), ("reservation_sha256", SUPERSEDED_W2_REV2_RESERVATION_SHA256), ("nonce", SUPERSEDED_W2_NONCE), ("reservation_sha256", SUPERSEDED_W2_RESERVATION_SHA256),
         ("nonce", SPENT_CI96_NONCE), ("reservation_sha256", SPENT_CI96_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI92_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI91_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI86_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256), ("nonce", str(grant["nonce"]) + "\n"), ("before", str(grant["before"]) + "\n"), ("reservation_sha256", str(grant["reservation_sha256"]) + "\n"),
         ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"), ("before", "a0c1f1d99b24fb26a4bf6041356187249d726ee9"), ("before", "433a2edf89284f71f10996d20c88bcf3e311c9de"), ("before", "bec838a210f3ffea84986ae85986e4081b2e8291"),
         ("before", "35d9235cefd740e13ae7228a791338d5a5fcf9ee"), ("before", "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe"), ("before", "d6aeb61826ed4ee0eb114152d04fd09ab3512cfb"), ("before", "b90fa8e9c8126be2eac73620001c3869b2cf8e33"),
-        ("before", "6d818ad6d43d38d47c64b8c474c2b64b853f631a"), ("before", "1" * 40), ("base", "2" * 40), ("approval_sha256", "88a3672196430bf30091672621771af4160fa22c28fe35b671145e2ed4e870b1"),
+        ("before", "6d818ad6d43d38d47c64b8c474c2b64b853f631a"), ("before", "3c326f254aaffcdc382434f7a9cd86429fbb0b6c"), ("before", "1" * 40), ("base", "2" * 40), ("approval_sha256", "88a3672196430bf30091672621771af4160fa22c28fe35b671145e2ed4e870b1"),
         ("approval_sha256", "36aabdbb9b35dcd540d88cb67b8054e8c89fecc92b9f24fb1c9a569b8fd3544c"),
         ("approval_sha256", "afb7670b0a5353d112a5ee161b2c2518a829147940f889ab923560b0c31a015f"), ("approval_sha256", "94d71498c0cccaea469394b9ab7b76677659daba16dd99eff5300acf90e4e831"),
         ("approval_sha256", "fb8c1490d7d8f630b667a508022fcb56716741ee4e0b53fcb667f107445f3795"), ("approval_sha256", "e88b10a33b75584d6bf06bb5ba13e11280a8f779443c41da03a5ad3b01cd34f7"),
         ("approval_sha256", "5073476b8c17f77f56cc127ea701a5bd37c9c2d3605547a27e721939e59c9183"), ("approval_sha256", "86c2230c40de636d2333c1282e170b5951be374a3721b163dd968bd29a2edbb1"),
-        ("approval_sha256", "335e5452cd2ba9e5c19ddbdac3d9256404a23501ba975c73e5ace6145ef75bc1"), ("approval_sha256", "3" * 64), ("ledger_before_sha256", "1cc8dea0eed060628e427f052df5968118e91d015b8fc3c8792516314b84f6d5"),
+        ("approval_sha256", "335e5452cd2ba9e5c19ddbdac3d9256404a23501ba975c73e5ace6145ef75bc1"), ("approval_sha256", "8d984243d7d56599b1e96005b03f5953d93246cf467986a3590b291a7ff9f44e"), ("approval_sha256", "3" * 64), ("ledger_before_sha256", "1cc8dea0eed060628e427f052df5968118e91d015b8fc3c8792516314b84f6d5"),
         ("ledger_before_sha256", "cc8f1d659c10d4d3ed36bd38daf8cc95ddb21cf2781026a89d30061e85af8ed6"),
         ("ledger_before_sha256", "54787ff8a0f8692bff0a2d47221bc20ac12be67610f8e937b770ef8671c24fc7"), ("ledger_before_sha256", "2129c892344ea4e276c0fcc01059fae7871493a36e27c1ae2bfdb51f35edc383"),
-        ("ledger_before_sha256", "dea9cb989fbf576ca127158ee1940c223abe8293dcbfecba0c3a24e11578665e"),
-        ("ledger_before_sha256", "624951d3066611d824430d8eeccb3f1870aae1202f69c61a6f7c25025dc295eb"),
-        ("ledger_before_sha256", "7bf85a672ab5a416b1c3a90d5d7f1feabb4cd115e7f2f75f0fbafbda1fd77147"),
-        ("ledger_before_sha256", "3ccb9b6c63856d830059ab479803d5c8064cd3ffc46631ede1cb5d12a20c8811"),
-        ("ledger_before_sha256", "a20cacab1cfd1984f62002b89d3b9ed74ba31a100b4a09e8bb2576c35a7dccbc"), ("ledger_before_sha256", "4" * 64),
+        ("ledger_before_sha256", "dea9cb989fbf576ca127158ee1940c223abe8293dcbfecba0c3a24e11578665e"), ("ledger_before_sha256", "624951d3066611d824430d8eeccb3f1870aae1202f69c61a6f7c25025dc295eb"),
+        ("ledger_before_sha256", "7bf85a672ab5a416b1c3a90d5d7f1feabb4cd115e7f2f75f0fbafbda1fd77147"), ("ledger_before_sha256", "3ccb9b6c63856d830059ab479803d5c8064cd3ffc46631ede1cb5d12a20c8811"),
+        ("ledger_before_sha256", "a20cacab1cfd1984f62002b89d3b9ed74ba31a100b4a09e8bb2576c35a7dccbc"), ("ledger_before_sha256", "cf16233c91f9fdeec71cc65ae437eb46bf4c076bc1a197dff46604ec967a6739"), ("ledger_before_sha256", "4" * 64),
     ):
         with pytest.raises(D12SystemGrantError):
             validate_system_build_grant({**grant, field: bad_val})
@@ -226,22 +235,10 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
             with pytest.raises(D12SystemGrantError, match="closed schema"):
                 validate_system_admission_proof({**proof, max_key: bad_max})
     for proof_field, bad_proof_val in (
-        ("workflow_ordinal", 69),
-        ("workflow_ordinal", 70),
-        ("workflow_ordinal", 71),
-        ("workflow_ordinal", 73),
-        ("workflow_ordinal", 85),
-        ("workflow_ordinal", 86),
-        ("workflow_ordinal", 87),
-        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 97), ("workflow_ordinal", 98), ("workflow_ordinal", 99), ("workflow_ordinal", 96), ("workflow_ordinal", 95), ("workflow_ordinal", 101),
-        ("workflow_attempt", 2),
-        ("nonce", SPENT_CI69_NONCE),
-        ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
-        ("nonce", SPENT_CI70_NONCE),
-        ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
-        ("nonce", SPENT_CI71_NONCE),
-        ("nonce", SPENT_CI72_NONCE),
-        ("nonce", SPENT_CI85_NONCE),
+        ("workflow_ordinal", 69), ("workflow_ordinal", 70), ("workflow_ordinal", 71), ("workflow_ordinal", 73), ("workflow_ordinal", 85), ("workflow_ordinal", 86), ("workflow_ordinal", 87),
+        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 97), ("workflow_ordinal", 98), ("workflow_ordinal", 99), ("workflow_ordinal", 100), ("workflow_ordinal", 96), ("workflow_ordinal", 95), ("workflow_ordinal", 102),
+        ("workflow_attempt", 2), ("nonce", SPENT_CI69_NONCE), ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256), ("nonce", SPENT_CI70_NONCE), ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256), ("nonce", SPENT_CI71_NONCE),
+        ("nonce", SPENT_CI72_NONCE), ("nonce", SPENT_CI85_NONCE),
         ("nonce", SPENT_CI86_NONCE),
         ("nonce", SPENT_CI87_NONCE),
         ("nonce", SPENT_CI91_NONCE),
@@ -252,6 +249,9 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("nonce", SPENT_CI97_NONCE), ("reservation_sha256", SPENT_CI97_RESERVATION_SHA256),
         ("nonce", SPENT_CI98_NONCE), ("reservation_sha256", SPENT_CI98_RESERVATION_SHA256),
         ("nonce", SPENT_CI99_NONCE), ("reservation_sha256", SPENT_CI99_RESERVATION_SHA256),
+        ("nonce", SPENT_CI100_NONCE), ("reservation_sha256", SPENT_CI100_RESERVATION_SHA256),
+        ("nonce", SUPERSEDED_W2_REV2_NONCE), ("reservation_sha256", SUPERSEDED_W2_REV2_RESERVATION_SHA256),
+        ("nonce", SUPERSEDED_W2_NONCE), ("reservation_sha256", SUPERSEDED_W2_RESERVATION_SHA256),
         ("nonce", SPENT_CI96_NONCE), ("reservation_sha256", SPENT_CI96_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI92_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI91_RESERVATION_SHA256),
@@ -270,7 +270,7 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("before", "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe"),
         ("before", "d6aeb61826ed4ee0eb114152d04fd09ab3512cfb"),
         ("before", "b90fa8e9c8126be2eac73620001c3869b2cf8e33"),
-        ("before", "6d818ad6d43d38d47c64b8c474c2b64b853f631a"), ("before", "1" * 40),
+        ("before", "6d818ad6d43d38d47c64b8c474c2b64b853f631a"), ("before", "3c326f254aaffcdc382434f7a9cd86429fbb0b6c"), ("before", "1" * 40),
         ("base", "2" * 40),
     ):
         with pytest.raises(D12SystemGrantError):

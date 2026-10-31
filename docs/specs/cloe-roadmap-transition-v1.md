@@ -136,3 +136,19 @@ Live home/service migration, package-manager publication, repository rename and
 release promotion remain separate. W2 follows the accepted dependency order after
 this W1 milestone is qualified; preserved private experiments are not automatically
 accepted or overwritten.
+
+## W2 retrieval contracts, projection reference, and calibration baseline
+
+Following CI99 qualification of the W1 namespace cutover at `970d7dc9f6b895a210953e38bccb54cc839ccf75`,
+`REPOMAP-CLOE-RETRIEVAL1` implements the W2 milestone under accepted
+[ADR0127](../adr/2026/10/0127-cloe-retrieval-contracts-and-evaluation.md),
+[cloe-retrieval-evaluation-v1.md](cloe-retrieval-evaluation-v1.md), and
+[cloe-retrieval1-exit.md](../../tools/ci/cloe-retrieval1-exit.md). It delivers
+internal six-mode query envelopes (`cloe-retrieval-query-v1`), the bounded
+in-memory captured-input text projection reference (`cloe-captured-text-reference-v1`),
+the public-safe `mixed-v1` multi-source evaluation corpus across two generations
+and 36 frozen tasks (24 calibration, 12 held-out), real native (`git grep --no-index`),
+current-graph (SQLite Local and PostgreSQL), and reference adapters, and the
+declared 24-task calibration baseline plus baseline-derived future criteria
+proposal. The 12-task held-out split remains unexecuted for W3. Hosted CI
+qualification of the W2 candidate remains pending (`NOT ACCEPTED`).

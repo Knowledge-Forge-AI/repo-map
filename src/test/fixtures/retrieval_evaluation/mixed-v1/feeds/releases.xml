@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>CLOE Retrieval Fixture Releases</title>
+    <link>https://example.invalid/feeds/releases</link>
+    <description>Synthetic local RSS feed for mixed-v1 retrieval evaluation</description>
+    <item>
+      <guid>cloe-release-2026-10-rc1</guid>
+      <title>cloe-release-2026-10-rc1: Snapshot Quorum Handoff RC1</title>
+      <link>https://example.invalid/releases/2026-10-rc1</link>
+      <pubDate>Thu, 15 Oct 2026 12:00:00 GMT</pubDate>
+      <category>release-candidate</category>
+      <description>Introduces RetrievalExecutionPipeline snapshot quorum handoff.</description>
+    </item>
+    <item>
+      <guid>cloe-release-2026-09-ga</guid>
+      <title>cloe-release-2026-09-ga: RouteDispatchTable General Availability</title>
+      <link>https://example.invalid/releases/2026-09-ga</link>
+      <pubDate>Tue, 15 Sep 2026 12:00:00 GMT</pubDate>
+      <category>general-availability</category>
+      <description>Stabilizes RouteDispatchTable target normalization.</description>
+    </item>
+  </channel>
+</rss>

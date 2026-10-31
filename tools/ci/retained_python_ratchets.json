@@ -836,7 +836,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "9d530ac19861c0d8a8e8c4f027a144309b4657a3c2753688b8c01e7e79564243"
+    "sha256": "b1cd1ecb821c9dd212a0a486b45a833a8b2a863db553ce5ebd8a424f3d2c4d22"
   },
   "ruff": {
     "findings": [
@@ -16753,6 +16753,60 @@
         "module": "common_lore_index.ops_refresh",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops_refresh.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.projection_build",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/projection_build.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.projection_chunks",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/projection_chunks.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.projection_evidence",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/projection_evidence.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.projection_policy",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/projection_policy.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.projection_query",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/projection_query.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.projection_text",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/projection_text.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.publication_binding",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/publication_binding.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.query_contracts",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/query_contracts.py",
         "tier": "T1-future"
       },
       {

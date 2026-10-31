@@ -1,0 +1,67 @@
+{
+  "current_attempt_id": "calibration-attempt-7",
+  "history": [
+    {
+      "attempt_id": "calibration-attempt-1",
+      "inherited_public_draft_sha256": {
+        "attempt-declaration-1.json": "sha256:2afa6dce0cf8d8922caf903e243d7c578ad252075b8c318c98d4487eaed8c71d",
+        "calibration-attempt-1.json": "sha256:1330d678674cb21bf50b9678d5ed13ef60fa583055f664b0455b80daf6e79e94"
+      },
+      "reason": "Inherited draft lacked enforceable immutable admission and matching final execution-source proof; observations were not qualified.",
+      "status": "unaccepted_superseded"
+    },
+    {
+      "attempt_id": "calibration-attempt-2",
+      "inherited_public_draft_sha256": {
+        "attempt-declaration-2.json": "sha256:8a141b7badf8a61fea6c558918f05f3cd04f74abbffc33bf8e88705f09244776",
+        "calibration-attempt-2.json": "sha256:95c0116bdeca10887480cb5be5bfee0da637ab38e55ee148f015e3f63d036353"
+      },
+      "reason": "Inherited draft lacked enforceable immutable admission and matching final execution-source proof; observations were not qualified.",
+      "status": "unaccepted_superseded"
+    },
+    {
+      "attempt_id": "calibration-attempt-3",
+      "reason": "Completed retained observation is preserved against its original source; later wire-type correction requires a new source-bound attempt.",
+      "sources_archive_sha256": "sha256:ee3ece3f07b312c7cddd039c77624b3f4a5e98bc4a184ce8a76dcda4ab08066c",
+      "status": "superseded_source",
+      "terminal_sha256": "sha256:ab79c1f6d4b7ab570735d5f4a1ecd2725fc189d53c689f8058221f08a4b48c8e"
+    },
+    {
+      "attempt_id": "calibration-attempt-4",
+      "prior_public_draft_sha256": {
+        "attempt-declaration-4.json": "sha256:3df97e96a210d0fc36425aa6557a0abc3a746f4a1a2a7af745b02e4738b17517",
+        "calibration-attempt-4.json": "sha256:7298f064d0e9d909d939398e191a3534c581028f887f0ba8458396c315c10f61",
+        "retained-attempt-4-evidence.json": "sha256:edca9592421798a9b84ceed8c193c922ff9589774ec917c0ba4931f858d4bdc5"
+      },
+      "reason": "Preserved at its exact source before mandatory publisher validation/provenance and comparability corrections; not repinned or qualified for successor source.",
+      "sources_archive_sha256": "sha256:620d9b5ecfab834781374df6e8aa7d860bda0ed4de04bf0762934003c4e78274",
+      "status": "superseded_source",
+      "terminal_sha256": "sha256:7586440340586991682a891734685de398a1231fb7340e1b51a27023a1b7f415"
+    },
+    {
+      "attempt_id": "calibration-attempt-5",
+      "prior_public_draft_sha256": {
+        "attempt-declaration-5.json": "sha256:99c7c2b7274f5c4dcfcd8f927130b598f9127c48e1103bd1d6d4a2926b6735fd",
+        "calibration-attempt-5.json": "sha256:374cb782481a581b6a01583214905162dbc02962350bd59a3ea2d074a6cf013c",
+        "retained-attempt-5-evidence.json": "sha256:12d24fa53f5ec2969c0e5e460d8ef2af18340cdf5006cb29133662c6b47c44f7"
+      },
+      "reason": "Preserved at its exact source before requested/effective mode and metadata surface corrections; not repinned or qualified for successor source.",
+      "sources_archive_sha256": "sha256:fe8a5c1bd968a83214a70e66b1bc63bfa51eecaa32d7dd9907bc3fa0620af32b",
+      "status": "superseded_source",
+      "terminal_sha256": "sha256:3c5f798f3f9cbe91d1cb4c2699378acb25216dd6e7602dadaf48faeedd02b87c"
+    },
+    {
+      "attempt_id": "calibration-attempt-6",
+      "prior_public_draft_sha256": {
+        "attempt-declaration-6.json": "sha256:d2136ddf651a625dbed22e3b65963a70936ab2b5958e4b19a3cc2271ca817b96",
+        "calibration-attempt-6.json": "sha256:3c8880114ff5863b6d8a47a63110553a193ffe983158ca52f985336368b948fc",
+        "retained-attempt-6-evidence.json": "sha256:24a5a43078729de775c113a8fca673d53791d55854aa6635f8fb95c593da78d4"
+      },
+      "reason": "Preserved at its exact source before direct projection request fallback correction; not repinned or qualified for successor source.",
+      "sources_archive_sha256": "sha256:75d7829aa0bb198c3650fca1fa3de656a4e7b92e5637e11aa4dc6c57207e0143",
+      "status": "superseded_source",
+      "terminal_sha256": "sha256:d4cd7f356f7813e06e88b47c02812614eb44a37bc3030a2ad21a7ac94edf839a"
+    }
+  ],
+  "schema": "cloe-retrieval-attempt-history-v1"
+}

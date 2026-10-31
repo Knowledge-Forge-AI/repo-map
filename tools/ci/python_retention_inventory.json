@@ -111,6 +111,77 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.retrieval1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/retrieval/corpus_publication.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/evaluation_baselines.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/native_search_process.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/projection_publication.int.test.py",
+        "src/test/int/python/repomap_kg/storage/sqlite_mcp_transport.int.test.py",
+        "src/test/unit/python/repomap_kg/cli/sqlite_mcp_transport.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/corpus.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_binding.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_chunks.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_paging.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_policy.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_query.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_text.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/projection_validation_required.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/query_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/query_wire.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_attempts.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_catalog.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_comparability.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_criteria.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_execution.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_grading.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_harness.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_native.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_schema.unit.test.py"
+      ],
+      "rationale": "ADR0127 internal retrieval query contracts, captured-text projection reference, mixed-v1 corpus, native/graph/reference adapters, and calibration baseline.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.retrieval1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/retrieval_evaluation_canaries.py",
+        "src/test/support/python/repomap_test_support/retrieval_evaluation_fixture.py",
+        "src/test/support/python/repomap_test_support/retrieval_evaluation_publication.py",
+        "src/test/support/python/repomap_test_support/retrieval_evaluation_query_fixture.py",
+        "src/test/support/python/repomap_test_support/sqlite_mcp_transport.py"
+      ],
+      "rationale": "ADR0127 mixed-v1 fixture materialization, canary guard, and SQLite/PostgreSQL publication test-support helpers.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.retrieval1.tools",
+      "members": [
+        "tools/retrieval_evaluation.py",
+        "tools/retrieval_evaluation_accounting.py",
+        "tools/retrieval_evaluation_admission.py",
+        "tools/retrieval_evaluation_attempts.py",
+        "tools/retrieval_evaluation_comparability.py",
+        "tools/retrieval_evaluation_criteria.py",
+        "tools/retrieval_evaluation_execution.py",
+        "tools/retrieval_evaluation_grading.py",
+        "tools/retrieval_evaluation_graph.py",
+        "tools/retrieval_evaluation_harness.py",
+        "tools/retrieval_evaluation_native.py",
+        "tools/retrieval_evaluation_reference.py",
+        "tools/retrieval_evaluation_schema.py",
+        "tools/retrieval_evaluation_views.py"
+      ],
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.runner.recovery1.test_owners",
       "members": [
         "src/test/int/python/tools/runner_failure_recovery.int.test.py",
@@ -30552,6 +30623,87 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/__init__.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/projection_build.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/projection_chunks.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/projection_evidence.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/projection_policy.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/projection_query.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/projection_text.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/publication_binding.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/query_contracts.py",
+      "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -34398,6 +34550,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/corpus_publication.int.test.py",
+      "rationale": "ADR0127 real SQLite/PostgreSQL publication, native git-grep process, and 5-arm calibration baseline integration owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/evaluation_baselines.int.test.py",
+      "rationale": "ADR0127 real SQLite/PostgreSQL publication, native git-grep process, and 5-arm calibration baseline integration owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/native_search_process.int.test.py",
+      "rationale": "ADR0127 real SQLite/PostgreSQL publication, native git-grep process, and 5-arm calibration baseline integration owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/projection_publication.int.test.py",
+      "rationale": "ADR0127 real SQLite/PostgreSQL publication, native git-grep process, and 5-arm calibration baseline integration owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/arch7e_database_roles.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -36002,6 +36190,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/sqlite_local_source_differential.int.test.py",
       "rationale": "First-party int test owner for same-input SQLite Local source/feed reads versus the PostgreSQL source query owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/sqlite_mcp_transport.int.test.py",
+      "rationale": "ADR0127 bounded non-deadlocking SQLite Local MCP stdio test-transport integration owner.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -38205,6 +38402,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/retrieval_evaluation_canaries.py",
+      "rationale": "ADR0127 mixed-v1 fixture materialization, canary guard, and SQLite/PostgreSQL publication test-support helpers.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/retrieval_evaluation_fixture.py",
+      "rationale": "ADR0127 mixed-v1 fixture materialization, canary guard, and SQLite/PostgreSQL publication test-support helpers.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/retrieval_evaluation_publication.py",
+      "rationale": "ADR0127 mixed-v1 fixture materialization, canary guard, and SQLite/PostgreSQL publication test-support helpers.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/retrieval_evaluation_query_fixture.py",
+      "rationale": "ADR0127 mixed-v1 fixture materialization, canary guard, and SQLite/PostgreSQL publication test-support helpers.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/run25_acquisition_fixtures.py",
       "rationale": "Run 25 acquisition fixtures support for GitHub and multi-source ingestion coverage wave.",
       "root": "test_support",
@@ -38684,6 +38917,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/sqlite_managed_child.py",
       "rationale": "REPAIR5 bounded launch, packaging, abrupt ownership or qualification contract owner; immediate zero-debt enforcement.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sqlite_mcp_transport.py",
+      "rationale": "ADR0127 bounded non-deadlocking SQLite Local MCP stdio test-transport support helper.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -40385,6 +40627,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/cli/sqlite_local_upgrade_ops.unit.test.py",
       "rationale": "First-party unit test owner for SQLite Local sqlite-upgrade CLI routing, refusals and path-free payloads.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/sqlite_mcp_transport.unit.test.py",
+      "rationale": "ADR0127 bounded non-deadlocking SQLite Local MCP stdio test-transport unit owner.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -43121,6 +43372,96 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/project_guidance/skill_architecture.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/corpus.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_binding.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_chunks.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_paging.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_policy.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_query.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_text.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/projection_validation_required.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/query_contracts.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/query_wire.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -47601,6 +47942,87 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_attempts.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_catalog.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_comparability.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_criteria.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_execution.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_grading.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_harness.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_native.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_schema.unit.test.py",
+      "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_inventory_metadata.unit.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 unit owner for fixed A/B metadata transport, identity-chain verification and sanitization, streaming byte/entry caps, JSON/tree validation and non-claim invariants.",
       "root": "test_owners",
@@ -50195,6 +50617,132 @@
       "maintained_executable": true,
       "path": "tools/related_source_context.py",
       "rationale": "RELATED-CONTEXT1 optional one-hop caller composition and focused static-extraction fixture evidence; no runtime or quality-policy change.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_accounting.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_admission.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_attempts.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_comparability.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_criteria.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_execution.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_grading.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_graph.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_harness.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_native.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_reference.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_schema.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_views.py",
+      "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
       "root": "tools",
       "status": "active_tool"
     },

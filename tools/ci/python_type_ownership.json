@@ -2152,6 +2152,87 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.projection_build",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.projection_chunks",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.projection_evidence",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.projection_policy",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.projection_query",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.projection_text",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.publication_binding",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.query_contracts",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_execution_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",

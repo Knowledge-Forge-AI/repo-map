@@ -1,0 +1,3 @@
+Unselected cache scratch file.
+Contains synthetic canary token: CANARY_UNSELECTED_CACHE_SCRATCH_88310
+Do not select or expose in authorized retrieval outputs.

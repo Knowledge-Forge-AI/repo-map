@@ -1,0 +1,409 @@
+{
+  "baseline_attempt_id": "calibration-attempt-7",
+  "baseline_execution_purpose": "retained_calibration",
+  "catalog_sha256": "sha256:8da52c1a477a78ba5f467892690e2f59045326d18ba371d693dda157736a80a1",
+  "cost_requirements": [
+    {
+      "id": "COST-OUTPUT-PAYLOAD-BOUND",
+      "metric": "max_observed_output_payload_bytes_per_query",
+      "observed_max_native_output_payload_bytes": 495781,
+      "observed_max_projection_envelope_bytes": 10070,
+      "operator": "<=",
+      "policy_hard_ceiling_bytes": 65536,
+      "proposed_ceiling": 20140,
+      "rationale": "Derive the projection envelope ceiling from that serialized output layer only; native stdout and underlying graph responses are separately reported, not pooled."
+    },
+    {
+      "id": "COST-PROJECTION-ARTIFACT-READ-BOUND",
+      "metric": "max_projection_setup_body_input_bytes_read",
+      "observed_max_projected_body_input_bytes_read": 349372,
+      "operator": "<=",
+      "policy_hard_ceiling_bytes": 8388608,
+      "proposed_ceiling": 698744,
+      "rationale": "Bound measured projection body-input reads; total validator/manifest/store I/O is unobserved. Cached in-memory queries perform zero artifact reads."
+    }
+  ],
+  "freeze_sha256": "sha256:89e13a570419f17b31cd89169beae84ec2e7ea1c0d7b4bc3210664f42b0821d2",
+  "invariant_requirements": [
+    {
+      "id": "INV-PRIVACY-CANARY-ZERO",
+      "metric": "canary_leak_count",
+      "operator": "==",
+      "rationale": "Zero synthetic private-body or unselected-cache canary disclosures across all arms.",
+      "target": 0
+    },
+    {
+      "id": "INV-SAFETY-REFUSAL-ACCURACY",
+      "metric": "safety_refusal_correct_ratio",
+      "operator": "==",
+      "rationale": "100% safety-refusal accuracy on private-memory/metadata-only body requests before opening artifacts.",
+      "target": 1.0
+    },
+    {
+      "id": "INV-FIXED-SPLIT-DENOMINATORS",
+      "metric": "missing_or_duplicate_slot_count",
+      "operator": "==",
+      "rationale": "Every declared adapter/backend/task slot must be preserved without shrinking split denominators.",
+      "target": 0
+    },
+    {
+      "id": "INV-REQUEST-PINNED-PUBLICATION-FENCE",
+      "metric": "stale_publication_silent_acceptance_count",
+      "operator": "==",
+      "rationale": "Advancement of accepted store generation/run must refuse stale projection queries.",
+      "target": 0
+    }
+  ],
+  "observed_baseline_summary": {
+    "captured_projection_reference:postgresql": {
+      "body_graded_count": 11,
+      "body_mean_recall_at_5": 0.772727,
+      "exposure_strata": {
+        "projected_authorized_bodies": {
+          "absent_answer_correct_count": 0,
+          "absent_answer_total": 1,
+          "failed_count": 0,
+          "graded_denominator": 16,
+          "refused_count": 2,
+          "safety_refusal_correct_count": 2,
+          "safety_refusal_total": 2,
+          "strata": {
+            "body": {
+              "graded_count": 11,
+              "mean_mrr_at_5": 0.848485,
+              "mean_ndcg_at_5": 0.73348,
+              "mean_recall_at_5": 0.772727,
+              "slot_count": 13
+            },
+            "direct_handoff": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 1
+            },
+            "graph_topology": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 3
+            },
+            "metadata": {
+              "graded_count": 4,
+              "mean_mrr_at_5": 0.383333,
+              "mean_ndcg_at_5": 0.471713,
+              "mean_recall_at_5": 0.75,
+              "slot_count": 7
+            }
+          },
+          "supported_denominator": 18,
+          "unavailable_count": 6,
+          "whole_split_denominator": 24
+        }
+      },
+      "graded_denominator": 16,
+      "graph_topology_graded_count": 0,
+      "graph_topology_mean_recall_at_5": null,
+      "metadata_graded_count": 4,
+      "metadata_mean_recall_at_5": 0.75,
+      "observed_max_artifact_store_bytes_read": 0,
+      "observed_max_output_payload_bytes": 10070,
+      "safety_refusal_correct_count": 2,
+      "safety_refusal_total": 2,
+      "supported_denominator": 18,
+      "unavailable_count": 6,
+      "whole_split_denominator": 24
+    },
+    "captured_projection_reference:sqlite": {
+      "body_graded_count": 11,
+      "body_mean_recall_at_5": 0.772727,
+      "exposure_strata": {
+        "projected_authorized_bodies": {
+          "absent_answer_correct_count": 0,
+          "absent_answer_total": 1,
+          "failed_count": 0,
+          "graded_denominator": 16,
+          "refused_count": 2,
+          "safety_refusal_correct_count": 2,
+          "safety_refusal_total": 2,
+          "strata": {
+            "body": {
+              "graded_count": 11,
+              "mean_mrr_at_5": 0.848485,
+              "mean_ndcg_at_5": 0.73348,
+              "mean_recall_at_5": 0.772727,
+              "slot_count": 13
+            },
+            "direct_handoff": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 1
+            },
+            "graph_topology": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 3
+            },
+            "metadata": {
+              "graded_count": 4,
+              "mean_mrr_at_5": 0.383333,
+              "mean_ndcg_at_5": 0.471713,
+              "mean_recall_at_5": 0.75,
+              "slot_count": 7
+            }
+          },
+          "supported_denominator": 18,
+          "unavailable_count": 6,
+          "whole_split_denominator": 24
+        }
+      },
+      "graded_denominator": 16,
+      "graph_topology_graded_count": 0,
+      "graph_topology_mean_recall_at_5": null,
+      "metadata_graded_count": 4,
+      "metadata_mean_recall_at_5": 0.75,
+      "observed_max_artifact_store_bytes_read": 0,
+      "observed_max_output_payload_bytes": 10066,
+      "safety_refusal_correct_count": 2,
+      "safety_refusal_total": 2,
+      "supported_denominator": 18,
+      "unavailable_count": 6,
+      "whole_split_denominator": 24
+    },
+    "current_graph_baseline:postgresql": {
+      "body_graded_count": 0,
+      "body_mean_recall_at_5": null,
+      "exposure_strata": {
+        "accepted_canonical_and_observation_metadata": {
+          "absent_answer_correct_count": 0,
+          "absent_answer_total": 1,
+          "failed_count": 0,
+          "graded_denominator": 6,
+          "refused_count": 2,
+          "safety_refusal_correct_count": 2,
+          "safety_refusal_total": 2,
+          "strata": {
+            "body": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 13
+            },
+            "direct_handoff": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 1
+            },
+            "graph_topology": {
+              "graded_count": 3,
+              "mean_mrr_at_5": 1.0,
+              "mean_ndcg_at_5": 0.977481,
+              "mean_recall_at_5": 1.0,
+              "slot_count": 3
+            },
+            "metadata": {
+              "graded_count": 2,
+              "mean_mrr_at_5": 1.0,
+              "mean_ndcg_at_5": 1.0,
+              "mean_recall_at_5": 1.0,
+              "slot_count": 7
+            }
+          },
+          "supported_denominator": 8,
+          "unavailable_count": 16,
+          "whole_split_denominator": 24
+        }
+      },
+      "graded_denominator": 6,
+      "graph_topology_graded_count": 3,
+      "graph_topology_mean_recall_at_5": 1.0,
+      "metadata_graded_count": 2,
+      "metadata_mean_recall_at_5": 1.0,
+      "observed_max_artifact_store_bytes_read": null,
+      "observed_max_output_payload_bytes": 47164,
+      "safety_refusal_correct_count": 2,
+      "safety_refusal_total": 2,
+      "supported_denominator": 8,
+      "unavailable_count": 16,
+      "whole_split_denominator": 24
+    },
+    "current_graph_baseline:sqlite": {
+      "body_graded_count": 0,
+      "body_mean_recall_at_5": null,
+      "exposure_strata": {
+        "accepted_canonical_and_observation_metadata": {
+          "absent_answer_correct_count": 1,
+          "absent_answer_total": 1,
+          "failed_count": 0,
+          "graded_denominator": 10,
+          "refused_count": 2,
+          "safety_refusal_correct_count": 2,
+          "safety_refusal_total": 2,
+          "strata": {
+            "body": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 13
+            },
+            "direct_handoff": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 1
+            },
+            "graph_topology": {
+              "graded_count": 3,
+              "mean_mrr_at_5": 1.0,
+              "mean_ndcg_at_5": 0.977481,
+              "mean_recall_at_5": 1.0,
+              "slot_count": 3
+            },
+            "metadata": {
+              "graded_count": 6,
+              "mean_mrr_at_5": 1.0,
+              "mean_ndcg_at_5": 1.0,
+              "mean_recall_at_5": 1.0,
+              "slot_count": 7
+            }
+          },
+          "supported_denominator": 12,
+          "unavailable_count": 12,
+          "whole_split_denominator": 24
+        }
+      },
+      "graded_denominator": 10,
+      "graph_topology_graded_count": 3,
+      "graph_topology_mean_recall_at_5": 1.0,
+      "metadata_graded_count": 6,
+      "metadata_mean_recall_at_5": 1.0,
+      "observed_max_artifact_store_bytes_read": null,
+      "observed_max_output_payload_bytes": 47164,
+      "safety_refusal_correct_count": 2,
+      "safety_refusal_total": 2,
+      "supported_denominator": 12,
+      "unavailable_count": 12,
+      "whole_split_denominator": 24
+    },
+    "native_tools_baseline": {
+      "body_graded_count": 11,
+      "body_mean_recall_at_5": 0.772727,
+      "exposure_strata": {
+        "authorized_bodies_and_approved_metadata": {
+          "absent_answer_correct_count": 1,
+          "absent_answer_total": 1,
+          "failed_count": 0,
+          "graded_denominator": 19,
+          "refused_count": 2,
+          "safety_refusal_correct_count": 2,
+          "safety_refusal_total": 2,
+          "strata": {
+            "body": {
+              "graded_count": 11,
+              "mean_mrr_at_5": 0.757576,
+              "mean_ndcg_at_5": 0.747961,
+              "mean_recall_at_5": 0.772727,
+              "slot_count": 13
+            },
+            "direct_handoff": {
+              "graded_count": 1,
+              "mean_mrr_at_5": 1.0,
+              "mean_ndcg_at_5": 1.0,
+              "mean_recall_at_5": 1.0,
+              "slot_count": 1
+            },
+            "graph_topology": {
+              "graded_count": 0,
+              "mean_mrr_at_5": null,
+              "mean_ndcg_at_5": null,
+              "mean_recall_at_5": null,
+              "slot_count": 3
+            },
+            "metadata": {
+              "graded_count": 6,
+              "mean_mrr_at_5": 0.255555,
+              "mean_ndcg_at_5": 0.314475,
+              "mean_recall_at_5": 0.5,
+              "slot_count": 7
+            }
+          },
+          "supported_denominator": 21,
+          "unavailable_count": 3,
+          "whole_split_denominator": 24
+        }
+      },
+      "graded_denominator": 19,
+      "graph_topology_graded_count": 0,
+      "graph_topology_mean_recall_at_5": null,
+      "metadata_graded_count": 6,
+      "metadata_mean_recall_at_5": 0.5,
+      "observed_max_artifact_store_bytes_read": null,
+      "observed_max_output_payload_bytes": 495781,
+      "safety_refusal_correct_count": 2,
+      "safety_refusal_total": 2,
+      "supported_denominator": 21,
+      "unavailable_count": 3,
+      "whole_split_denominator": 24
+    }
+  },
+  "phase_id": "REPOMAP-CLOE-RETRIEVAL1",
+  "policy_digest": "sha256:25fc4a40ebd23872a6c18641c13df3dc02b2020f6b40af2f8acbbbf392ddf41e",
+  "quality_requirements": [
+    {
+      "id": "QUAL-BODY-STRATUM-RECALL5",
+      "metric": "mean_recall_at_5",
+      "observed_current_graph_sqlite": null,
+      "observed_current_graph_sqlite_graded_count": 0,
+      "observed_native_baseline": 0.772727,
+      "observed_projection_reference_sqlite": 0.772727,
+      "operator": ">=",
+      "proposed_floor": null,
+      "proposed_floor_by_arm": {
+        "captured_projection_reference:postgresql": 0.7727,
+        "captured_projection_reference:sqlite": 0.7727,
+        "native_tools_baseline": 0.7727
+      },
+      "rationale": "W2 metadata-only graph search reports explicit unavailable (null recall, 0 graded tasks) on literal_captured_text body tasks. Native full-file and bounded projection exposure floors stay separate; W3 must choose a matching exposure before defining a gate.",
+      "stratum": "body"
+    },
+    {
+      "id": "QUAL-METADATA-STRATUM-NON-REGRESSION",
+      "metric": "mean_recall_at_5",
+      "observed_current_graph_sqlite": 1.0,
+      "operator": ">=",
+      "proposed_floor": 1.0,
+      "rationale": "Preserve or improve existing metadata-stratum symbol/feed/observation recall@5.",
+      "stratum": "metadata"
+    },
+    {
+      "id": "QUAL-GRAPH-TOPOLOGY-NON-REGRESSION",
+      "metric": "mean_recall_at_5",
+      "observed_current_graph_sqlite": 1.0,
+      "observed_native_baseline": null,
+      "operator": ">=",
+      "proposed_floor": null,
+      "rationale": "Current graph tasks are seed-heavy lookups; their observed recall does not establish a general relationship-traversal quality floor.",
+      "stratum": "graph_topology"
+    }
+  ],
+  "schema_version": "cloe-retrieval-criteria-proposal-v1",
+  "status": "proposed_for_parent_review",
+  "target_future_phase": "W3-INDEXED-TEXT-AND-NAVIGATION-PARITY",
+  "unresolved_limitations": [
+    "Model token spend and end-to-end external agent task completion cost are not observed by the deterministic W2 harness and remain unavailable (None) until a W3/W4 agent-telemetry study supplies real external cost logs.",
+    "PostgreSQL navigation_search and node_locations remain backend_unsupported in W2; cross-backend ranked_discovery parity cannot be pooled until PostgreSQL navigation readback is implemented.",
+    "The 12-task held-out split remains unexecuted in W2 and must not be queried or used for threshold tuning before W3 candidate freeze.",
+    "Graph calibration tasks start from a relevant seed and do not justify a general graph-quality gate; traversal is bounded but has no edge-type filter.",
+    "Native full-file and projected bounded-body exposures have separate populations and proposed floors; no pooled body-quality threshold is admitted."
+  ]
+}

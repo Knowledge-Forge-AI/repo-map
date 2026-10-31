@@ -1765,3 +1765,18 @@ error. Checked status reports observed truth without retaining raw Engine
 payloads. Native and container execution select their PostgreSQL route at
 connection boundaries without changing loaded configuration or generations.
 Live proof for this repair is Docker-only; Podman live parity is not claimed.
+
+### Internal retrieval query contracts and captured-input projection reference (W2)
+
+Under accepted [ADR 0127](../adr/2026/10/0127-cloe-retrieval-contracts-and-evaluation.md)
+and [cloe-retrieval-evaluation-v1.md](cloe-retrieval-evaluation-v1.md)
+(`REPOMAP-CLOE-RETRIEVAL1`, [exit](../../tools/ci/cloe-retrieval1-exit.md)),
+`common_lore_index.retrieval` implements internal six-mode query envelopes
+(`cloe-retrieval-query-v1`) and a bounded in-memory captured-input text
+projection reference (`cloe-captured-text-reference-v1`). The projection
+requires a caller-supplied `AcceptedPublicationReference` derived from
+accepted SQLite Local or PostgreSQL store readback and verifies exact correspondence
+against `RunPublicationReceipt`, `PortableSnapshotManifest`, `PublicationBundle`,
+`ExtractionReceipt`, and `ArtifactStore` before projecting authorized `public-dev` /
+`full-authorized` code and Markdown/text artifacts. Existing CLI and read-only
+MCP schemas, wire names, and runtime behavior are unchanged in W2.

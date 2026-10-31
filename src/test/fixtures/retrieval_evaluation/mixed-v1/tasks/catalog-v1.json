@@ -1,0 +1,1680 @@
+{
+  "fixture_id": "mixed-v1",
+  "schema_version": "cloe-retrieval-task-catalog-v1",
+  "tasks": [
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "exact_symbol_and_partial_name",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 30,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/pipeline.py",
+            "start_line": 13
+          },
+          "rationale": "class RetrievalExecutionPipeline definition",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "RetrievalExecutionPipeline"
+      },
+      "question": "Locate the RetrievalExecutionPipeline class definition in core.",
+      "requested_mode": "ranked_discovery",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-01"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "exact_symbol_and_partial_name",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 20,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/tokens.py",
+            "start_line": 16
+          },
+          "rationale": "def verify_candidate_token definition",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "verify_candidate_token"
+      },
+      "question": "Locate verify_candidate_token in core/pkg/tokens.py.",
+      "requested_mode": "ranked_discovery",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-02"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "exact_symbol_and_partial_name",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 28,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/router.py",
+            "start_line": 15
+          },
+          "rationale": "class RouteDispatchTable definition",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "DispatchTable"
+      },
+      "question": "Find RouteDispatchTable by partial symbol name DispatchTable.",
+      "requested_mode": "ranked_discovery",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-03"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "exact_symbol_and_partial_name",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 12,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/router.py",
+            "start_line": 6
+          },
+          "rationale": "def normalize_dispatch_target definition",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "normalize_dispatch_target"
+      },
+      "question": "Locate normalize_dispatch_target in core/pkg/router.py.",
+      "requested_mode": "ranked_discovery",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-01"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "punctuation_phrase_and_distractors",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 9,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/pipeline.py",
+            "start_line": 9
+          },
+          "rationale": "exact 409 error constant assignment",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "ERR_CLOE_MANIFEST_SEAL_MISMATCH_409: snapshot_vector!=accepted_vector"
+      },
+      "question": "Find exact punctuation-sensitive phrase ERR_CLOE_MANIFEST_SEAL_MISMATCH_409: snapshot_vector!=accepted_vector without matching 408 distractor.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-04"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "punctuation_phrase_and_distractors",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 5,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "scripts/bootstrap.sh",
+            "start_line": 5
+          },
+          "rationale": "exact shell env assignment",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "CLOE_BOOTSTRAP_RETRY_BACKOFF_MS=250"
+      },
+      "question": "Find exact bootstrap assignment CLOE_BOOTSTRAP_RETRY_BACKOFF_MS=250.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-05"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "punctuation_phrase_and_distractors",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 14,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "module.nix",
+            "start_line": 14
+          },
+          "rationale": "exact Nix option assignment",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "services.repomap-companion.enableStrictSandbox = true;"
+      },
+      "question": "Find exact Nix option assignment services.repomap-companion.enableStrictSandbox = true;.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-06"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "punctuation_phrase_and_distractors",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 5,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "deploy.sh",
+            "start_line": 5
+          },
+          "rationale": "deploy.sh lock timeout assignment",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "CLOE_DEPLOY_LOCK_TIMEOUT_SEC=90"
+      },
+      "question": "Find exact deploy lock timeout assignment CLOE_DEPLOY_LOCK_TIMEOUT_SEC=90.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-02"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "behavior_without_exact_symbol",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 9,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "docs/architecture.md",
+            "start_line": 1
+          },
+          "rationale": "architecture overview of snapshot quorum handoff",
+          "relevance_grade": 3
+        },
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 15,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/pipeline.py",
+            "start_line": 13
+          },
+          "rationale": "pipeline docstring mentioning snapshot quorum handoff",
+          "relevance_grade": 2
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "ignore_case": true,
+        "lexical_terms": [
+          "deterministic",
+          "snapshot",
+          "quorum",
+          "handoff"
+        ],
+        "limit": 10,
+        "patterns": [
+          "deterministic",
+          "snapshot",
+          "quorum",
+          "handoff"
+        ],
+        "projection_query_mode": "lexical",
+        "query": "deterministic snapshot quorum handoff"
+      },
+      "question": "Find where deterministic snapshot quorum handoff is described in prose and docstrings.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-07"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "behavior_without_exact_symbol",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 12,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "docs/saved-message.md",
+            "start_line": 1
+          },
+          "rationale": "saved operator escalation checklist document",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "ignore_case": true,
+        "lexical_terms": [
+          "saved",
+          "operator",
+          "escalation",
+          "checklist"
+        ],
+        "limit": 10,
+        "patterns": [
+          "saved",
+          "operator",
+          "escalation",
+          "checklist"
+        ],
+        "projection_query_mode": "lexical",
+        "query": "saved operator escalation checklist"
+      },
+      "question": "Find the saved operator escalation checklist for target normalization.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-08"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "behavior_without_exact_symbol",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 7,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "notes/operations.txt",
+            "start_line": 1
+          },
+          "rationale": "operations.txt token rotation ledger checkpoint",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "ignore_case": true,
+        "lexical_terms": [
+          "rotation",
+          "ledger",
+          "checkpoint"
+        ],
+        "limit": 10,
+        "patterns": [
+          "rotation",
+          "ledger",
+          "checkpoint"
+        ],
+        "projection_query_mode": "lexical",
+        "query": "rotation ledger checkpoint"
+      },
+      "question": "Find the token rotation ledger checkpoint procedure in standalone notes.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-03"
+    },
+    {
+      "comparability_stratum": "graph_topology",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "cross_source_shell_nix_investigation",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "module.nix",
+            "start_line": null
+          },
+          "rationale": "companion/module.nix canonical file/Export target",
+          "relevance_grade": 3
+        },
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "flake.nix",
+            "start_line": null
+          },
+          "rationale": "companion/flake.nix importing module.nix",
+          "relevance_grade": 2
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "graph_query": "module.nix",
+        "limit": 10,
+        "query": "module.nix",
+        "seed_node": "file:companion/module.nix"
+      },
+      "question": "Investigate canonical graph relationships around companion/module.nix.",
+      "requested_mode": "graph_investigation",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-09"
+    },
+    {
+      "comparability_stratum": "graph_topology",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "cross_source_shell_nix_investigation",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "deploy.sh",
+            "start_line": null
+          },
+          "rationale": "companion/deploy.sh script observations",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "graph_query": "deploy.sh",
+        "limit": 10,
+        "query": "deploy.sh",
+        "seed_node": "file:companion/deploy.sh"
+      },
+      "question": "Investigate canonical graph observations for companion/deploy.sh.",
+      "requested_mode": "graph_investigation",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-10"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "cross_source_shell_nix_investigation",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 7,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "scripts/bootstrap.sh",
+            "start_line": 7
+          },
+          "rationale": "bootstrap.sh target entry assignment",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "pkg.pipeline:RetrievalExecutionPipeline"
+      },
+      "question": "Find shell script referencing pkg.pipeline:RetrievalExecutionPipeline.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-11"
+    },
+    {
+      "comparability_stratum": "graph_topology",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "cross_source_shell_nix_investigation",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "scripts/bootstrap.sh",
+            "start_line": null
+          },
+          "rationale": "core/scripts/bootstrap.sh canonical file",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "graph_query": "bootstrap.sh",
+        "limit": 10,
+        "query": "bootstrap.sh",
+        "seed_node": "file:core/scripts/bootstrap.sh"
+      },
+      "question": "Investigate canonical graph observations for core/scripts/bootstrap.sh.",
+      "requested_mode": "graph_investigation",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-04"
+    },
+    {
+      "comparability_stratum": "graph_topology",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "relevant_tests_for_behavior",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "tests/test_pipeline.py",
+            "start_line": null
+          },
+          "rationale": "core/tests/test_pipeline.py canonical test module",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "graph_query": "test_pipeline",
+        "limit": 10,
+        "query": "test_pipeline",
+        "seed_node": "file:core/tests/test_pipeline.py"
+      },
+      "question": "Investigate graph relationships for test_pipeline.py.",
+      "requested_mode": "graph_investigation",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-12"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "relevant_tests_for_behavior",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 31,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "tests/test_pipeline.py",
+            "start_line": 22
+          },
+          "rationale": "test_pipeline_rejects_mismatched_manifest_seal function",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "canonical_graph",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "test_pipeline_rejects_mismatched_manifest_seal"
+      },
+      "question": "Discover test function test_pipeline_rejects_mismatched_manifest_seal.",
+      "requested_mode": "ranked_discovery",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-13"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "relevant_tests_for_behavior",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 30,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "tests/test_pipeline.py",
+            "start_line": 14
+          },
+          "rationale": "test_pipeline.py candidate token fixture",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "cand1:0123456789abcdef"
+      },
+      "question": "Find test using sample token cand1:0123456789abcdef.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-05"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "code_plus_design_or_message_context",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 15,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/pipeline.py",
+            "start_line": 13
+          },
+          "rationale": "pipeline.py class definition",
+          "relevance_grade": 3
+        },
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 7,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "docs/architecture.md",
+            "start_line": 5
+          },
+          "rationale": "architecture.md prose reference",
+          "relevance_grade": 2
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "RetrievalExecutionPipeline"
+      },
+      "question": "Retrieve both code and architecture doc mentioning RetrievalExecutionPipeline.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-14"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "code_plus_design_or_message_context",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 17,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/router.py",
+            "start_line": 15
+          },
+          "rationale": "router.py class definition",
+          "relevance_grade": 3
+        },
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 8,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "docs/saved-message.md",
+            "start_line": 6
+          },
+          "rationale": "saved-message.md operator escalation reference",
+          "relevance_grade": 2
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "RouteDispatchTable"
+      },
+      "question": "Retrieve both router code and saved operator message mentioning RouteDispatchTable.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-15"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "code_plus_design_or_message_context",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 40,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/pipeline.py",
+            "start_line": 32
+          },
+          "rationale": "pipeline.py execute_pipeline_step definition",
+          "relevance_grade": 3
+        },
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 8,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "notes/runbook.md",
+            "start_line": 7
+          },
+          "rationale": "runbook.md worker drain step",
+          "relevance_grade": 2
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "execute_pipeline_step"
+      },
+      "question": "Retrieve both pipeline code and worker drain runbook mentioning execute_pipeline_step.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-06"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "independent_document_email_feed_retrieval",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:09969c5ab9a76e04743b0f4a0f66f24d42822f8bd31c544f7ab4723b54e3e291",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "releases.xml",
+            "start_line": null
+          },
+          "rationale": "RSS release item cloe-release-2026-10-rc1",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "extracted_metadata",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "cloe-release-2026-10-rc1"
+      },
+      "question": "Find RSS release item cloe-release-2026-10-rc1 in feeds.",
+      "requested_mode": "current_literal_enumeration",
+      "selected_bindings": [
+        "feeds"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-16"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "independent_document_email_feed_retrieval",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:09969c5ab9a76e04743b0f4a0f66f24d42822f8bd31c544f7ab4723b54e3e291",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "advisories.xml",
+            "start_line": null
+          },
+          "rationale": "Atom advisory item ADVISORY-CLOE-2026-0042",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "extracted_metadata",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "ADVISORY-CLOE-2026-0042"
+      },
+      "question": "Find Atom security advisory ADVISORY-CLOE-2026-0042 in feeds.",
+      "requested_mode": "current_literal_enumeration",
+      "selected_bindings": [
+        "feeds"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-17"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "independent_document_email_feed_retrieval",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 2,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "generated/crlf_notes.txt",
+            "start_line": 2
+          },
+          "rationale": "crlf_notes.txt line 2 citation marker",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "CRLF_NORMALIZED_CITATION_MARKER_V1"
+      },
+      "question": "Find CRLF_NORMALIZED_CITATION_MARKER_V1 in CRLF-normalized standalone notes.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-18"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "independent_document_email_feed_retrieval",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:09969c5ab9a76e04743b0f4a0f66f24d42822f8bd31c544f7ab4723b54e3e291",
+            "canonical_key": null,
+            "end_line": null,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "releases.xml",
+            "start_line": null
+          },
+          "rationale": "RSS release item cloe-release-2026-09-ga",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "extracted_metadata",
+      "permitted_query_plan": {
+        "limit": 10,
+        "query": "cloe-release-2026-09-ga"
+      },
+      "question": "Find RSS GA release item cloe-release-2026-09-ga in feeds.",
+      "requested_mode": "current_literal_enumeration",
+      "selected_bindings": [
+        "feeds"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-07"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "duplicate_paths_quotations_long_unicode",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 4,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "shared/status_codes.py",
+            "start_line": 4
+          },
+          "rationale": "core/shared/status_codes.py CORE_PIPELINE_READY_CODE",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "CORE_PIPELINE_READY_CODE"
+      },
+      "question": "Disambiguate duplicate relative path shared/status_codes.py to find CORE_PIPELINE_READY_CODE in core.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": "shared/",
+      "split": "calibration",
+      "task_id": "cal-19"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "duplicate_paths_quotations_long_unicode",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 9,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "notes/runbook.md",
+            "start_line": 9
+          },
+          "rationale": "runbook.md Unicode telemetry tag",
+          "relevance_grade": 3
+        },
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 2,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "generated/long_line_notes.md",
+            "start_line": 2
+          },
+          "rationale": "long_line_notes.md multibyte long line",
+          "relevance_grade": 2
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "\u0394-quorum-\u03bb-verified"
+      },
+      "question": "Find Unicode telemetry tag \u0394-quorum-\u03bb-verified across runbook and long-line notes.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-20"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "duplicate_paths_quotations_long_unicode",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 4,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "shared/status_codes.py",
+            "start_line": 4
+          },
+          "rationale": "companion/shared/status_codes.py COMPANION_OPS_SYNC_CODE",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "COMPANION_OPS_SYNC_CODE"
+      },
+      "question": "Disambiguate duplicate relative path shared/status_codes.py to find COMPANION_OPS_SYNC_CODE in companion.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": "shared/",
+      "split": "held_out",
+      "task_id": "hold-08"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "duplicate_paths_quotations_long_unicode",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:d54de2a01806326e58d614586d0593e7a4b91ad52c2555e8e4c51f2534835525",
+            "canonical_key": null,
+            "end_line": 3,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "generated/truncatable_prose.md",
+            "start_line": 3
+          },
+          "rationale": "truncatable_prose.md prefix marker",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "TRUNCATABLE_PROSE_PREFIX_MARKER_V1"
+      },
+      "question": "Find TRUNCATABLE_PROSE_PREFIX_MARKER_V1 within the projected prefix of truncatable_prose.md.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-09"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "refused",
+      "expected_refusal_code": "binding_privacy_not_authorized",
+      "family": "absent_ambiguous_changed_deleted_stale",
+      "generation": 1,
+      "gold_targets": [],
+      "grading_rule": "safety_refusal",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "Private incident body"
+      },
+      "question": "Refuse body search on private-memory mailbox binding for incident body canary.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "mailbox"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-21"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "refused",
+      "expected_refusal_code": "binding_privacy_not_authorized",
+      "family": "absent_ambiguous_changed_deleted_stale",
+      "generation": 1,
+      "gold_targets": [],
+      "grading_rule": "safety_refusal",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "Private thread body"
+      },
+      "question": "Refuse body search on private-memory mailbox binding for private thread payload.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "mailbox"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-22"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "absent_ambiguous_changed_deleted_stale",
+      "generation": 2,
+      "gold_targets": [],
+      "grading_rule": "absent_answer",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "extracted_metadata",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "LEGACY_DEPRECATED_PIPELINE_V0_ONLY_TOKEN"
+      },
+      "question": "Verify clean abstention in generation 2 when searching for deleted generation-1 symbol LEGACY_DEPRECATED_PIPELINE_V0_ONLY_TOKEN.",
+      "requested_mode": "current_literal_enumeration",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-23"
+    },
+    {
+      "comparability_stratum": "metadata",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "absent_ambiguous_changed_deleted_stale",
+      "generation": 1,
+      "gold_targets": [],
+      "grading_rule": "absent_answer",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "extracted_metadata",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "NONEXISTENT_SENTINEL_SYMBOL_NEVER_PRESENT_9999"
+      },
+      "question": "Verify clean abstention when searching for absent token NONEXISTENT_SENTINEL_SYMBOL_NEVER_PRESENT_9999.",
+      "requested_mode": "current_literal_enumeration",
+      "selected_bindings": [
+        "core",
+        "companion"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-10"
+    },
+    {
+      "comparability_stratum": "body",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "absent_ambiguous_changed_deleted_stale",
+      "generation": 2,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 3,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/gen2_extension.py",
+            "start_line": 3
+          },
+          "rationale": "gen2_extension.py active marker",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "ranked_positive",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "captured_text",
+      "permitted_query_plan": {
+        "limit": 10,
+        "projection_query_mode": "literal",
+        "query": "GEN2_EXTENSION_ACTIVE_MARKER_2026"
+      },
+      "question": "Find generation-2 added marker GEN2_EXTENSION_ACTIVE_MARKER_2026 in core/pkg/gen2_extension.py.",
+      "requested_mode": "literal_captured_text",
+      "selected_bindings": [
+        "core"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-11"
+    },
+    {
+      "comparability_stratum": "direct_handoff",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "direct_location_zero_graph_calls",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 30,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/pipeline.py",
+            "start_line": 13
+          },
+          "rationale": "direct locator range for RetrievalExecutionPipeline",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "direct_handoff",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "direct_handoff",
+      "permitted_query_plan": {
+        "binding_alias": "core",
+        "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+        "canonical_key": "py.class:pkg.pipeline.RetrievalExecutionPipeline",
+        "end_line": 30,
+        "expected_substring": "class RetrievalExecutionPipeline:",
+        "limit": 5,
+        "query": "RetrievalExecutionPipeline",
+        "source_relative_path": "pkg/pipeline.py",
+        "start_line": 13
+      },
+      "question": "Verify direct locator handoff for RetrievalExecutionPipeline in core/pkg/pipeline.py with zero graph calls.",
+      "requested_mode": "exact_identity",
+      "selected_bindings": [
+        "core"
+      ],
+      "source_path_prefix": null,
+      "split": "calibration",
+      "task_id": "cal-24"
+    },
+    {
+      "comparability_stratum": "direct_handoff",
+      "comparator_exposure": {
+        "graph": "accepted_canonical_and_observation_metadata",
+        "native": "authorized_bodies_and_approved_metadata",
+        "reference": "projected_authorized_bodies"
+      },
+      "expected_capability_state": "available",
+      "expected_refusal_code": null,
+      "family": "direct_location_zero_graph_calls",
+      "generation": 1,
+      "gold_targets": [
+        {
+          "canonical_key": null,
+          "locator": {
+            "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+            "canonical_key": null,
+            "end_line": 28,
+            "evidence_key": null,
+            "link_kind": null,
+            "source_relative_path": "pkg/router.py",
+            "start_line": 15
+          },
+          "rationale": "direct locator range for RouteDispatchTable",
+          "relevance_grade": 3
+        }
+      ],
+      "grading_rule": "direct_handoff",
+      "graph_id": "mixed-v1",
+      "intended_match_surface": "direct_handoff",
+      "permitted_query_plan": {
+        "binding_alias": "core",
+        "binding_id": "bind1:9d2a5906aa7be0b6524b80c9529cd9bf238ea36c37950235bdcb13199b96f1d1",
+        "canonical_key": "py.class:pkg.router.RouteDispatchTable",
+        "end_line": 28,
+        "expected_substring": "class RouteDispatchTable:",
+        "limit": 5,
+        "query": "RouteDispatchTable",
+        "source_relative_path": "pkg/router.py",
+        "start_line": 15
+      },
+      "question": "Verify direct locator handoff for RouteDispatchTable in core/pkg/router.py with zero graph calls.",
+      "requested_mode": "exact_identity",
+      "selected_bindings": [
+        "core"
+      ],
+      "source_path_prefix": null,
+      "split": "held_out",
+      "task_id": "hold-12"
+    }
+  ]
+}

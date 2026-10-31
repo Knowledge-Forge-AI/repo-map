@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>CLOE Retrieval Fixture Security Advisories</title>
+  <id>urn:uuid:00000000-0000-4000-8000-000000000042</id>
+  <updated>2026-10-20T09:00:00Z</updated>
+  <link href="https://example.invalid/feeds/advisories" rel="self"/>
+  <entry>
+    <id>ADVISORY-CLOE-2026-0042</id>
+    <title>ADVISORY-CLOE-2026-0042: Strict Manifest Seal Enforcement</title>
+    <updated>2026-10-20T09:00:00Z</updated>
+    <link href="https://example.invalid/advisories/2026-0042"/>
+    <summary>Enforces ERR_CLOE_MANIFEST_SEAL_MISMATCH_409 across all candidate steps.</summary>
+  </entry>
+  <entry>
+    <id>ADVISORY-CLOE-2026-0039</id>
+    <title>ADVISORY-CLOE-2026-0039: Token Prefix Allowlist Rotation</title>
+    <updated>2026-09-20T09:00:00Z</updated>
+    <link href="https://example.invalid/advisories/2026-0039"/>
+    <summary>Requires verify_candidate_token rotation audit before key rollout.</summary>
+  </entry>
+</feed>

@@ -141,14 +141,9 @@ class LocalHarness:
 
     def mcp(self, home: Path, requests: Sequence[dict[str, Any]],
             extra_env: Mapping[str, str] | None = None) -> dict[int, dict[str, Any]]:
-        payload = "".join(json.dumps(request) + "\n" for request in requests)
-        completed = self.run(
-            "mcp", "serve", "--repo-map-home", str(home), input_text=payload, extra_env=extra_env
-        )
-        if completed.returncode != 0:
-            raise AssertionError(f"mcp serve failed: {completed.stderr}")
-        responses = [json.loads(line) for line in completed.stdout.splitlines() if line.strip()]
-        return {int(response["id"]): response for response in responses}
+        from repomap_test_support.sqlite_mcp_transport import run_mcp_session
+
+        return run_mcp_session(self, home, requests, extra_env=extra_env)
 
     def guard_events(self) -> list[dict[str, Any]]:
         if not self.guard_log.exists():
