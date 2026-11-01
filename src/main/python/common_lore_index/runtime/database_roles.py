@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from typing import Literal
 
+from common_lore_index.runtime._lexical_restore import (
+    render_lexical_custody_and_restore_plpgsql,
+)
 from common_lore_index.runtime.backup_commands import (
     CommandRunner,
     planned_psql_stdin_command,
@@ -36,6 +39,7 @@ def render_database_role_sql(
     owner_role: str,
     database_kind: DatabaseKind,
     secrets: RoleSecrets,
+    purge_restored_lexical: bool = False,
 ) -> str:
     """Render deterministic idempotent role and database grant SQL."""
 
@@ -68,7 +72,14 @@ ALTER DEFAULT PRIVILEGES FOR ROLE {owner_sql} IN SCHEMA public
   GRANT SELECT ON TABLES TO {read_sql};
 """.strip()
     capability_sql = (
-        _graph_grants(database_sql, owner_sql, refresh_sql, control_sql)
+        _graph_grants(
+            database_sql,
+            owner_sql,
+            refresh_sql,
+            control_sql,
+            owner_role=owner_role,
+            purge_restored_lexical=purge_restored_lexical,
+        )
         if database_kind == "graph"
         else _control_grants(database_sql, owner_sql, refresh_sql, control_sql)
     )
@@ -79,12 +90,20 @@ def reconcile_graph_database_roles(
     plan: _RoleRuntimePlan,
     database: str,
     command_runner: CommandRunner,
+    *,
+    purge_restored_lexical: bool = False,
 ) -> None:
     """Reconcile graph read and publication capabilities."""
 
     if database not in plan.graph_databases:
         raise ValueError("graph role target is not configured")
-    _reconcile_database_roles(plan, database, "graph", command_runner)
+    _reconcile_database_roles(
+        plan,
+        database,
+        "graph",
+        command_runner,
+        purge_restored_lexical=purge_restored_lexical,
+    )
 
 
 def reconcile_control_database_roles(
@@ -107,12 +126,15 @@ def _reconcile_database_roles(
     database: str,
     database_kind: DatabaseKind,
     command_runner: CommandRunner,
+    *,
+    purge_restored_lexical: bool = False,
 ) -> None:
     sql = render_database_role_sql(
         database=database,
         owner_role=plan.user,
         database_kind=database_kind,
         secrets=read_role_secrets(plan.env_file),
+        purge_restored_lexical=purge_restored_lexical,
     )
     run_container_command(
         plan,
@@ -169,7 +191,16 @@ def _graph_grants(
     owner_sql: str,
     refresh_sql: str,
     control_sql: str,
+    *,
+    owner_role: str,
+    purge_restored_lexical: bool = False,
 ) -> str:
+    lexical_lines = "\n  ".join(
+        render_lexical_custody_and_restore_plpgsql(
+            owner_role=owner_role,
+            purge_restored_rows=purge_restored_lexical,
+        )
+    )
     return f"""REVOKE CONNECT ON DATABASE {database_sql} FROM {control_sql};
 GRANT CONNECT, TEMPORARY ON DATABASE {database_sql} TO {refresh_sql};
 GRANT USAGE ON SCHEMA public TO {refresh_sql};
@@ -180,7 +211,12 @@ ALTER DEFAULT PRIVILEGES FOR ROLE {owner_sql} IN SCHEMA public
   GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
   ON TABLES TO {refresh_sql};
 ALTER DEFAULT PRIVILEGES FOR ROLE {owner_sql} IN SCHEMA public
-  GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO {refresh_sql};"""
+  GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO {refresh_sql};
+DO $repomap$
+BEGIN
+  {lexical_lines}
+END
+$repomap$;"""
 
 
 def _control_grants(

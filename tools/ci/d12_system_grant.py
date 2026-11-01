@@ -22,13 +22,13 @@ from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSI
 
 SYSTEM_BUILD_GRANT_SCHEMA = "repomap-d12-system-build-grant-v1"
 SYSTEM_ADMISSION_PROOF_SCHEMA = "repomap-d12-system-admission-proof-v1"
-EXPECTED_PHASE_ID = "REPOMAP-CLOE-RETRIEVAL1"
+EXPECTED_PHASE_ID = "REPOMAP-CLOE-LEXICAL1"
 EXPECTED_WORKFLOW_PATH = ".github/workflows/repomap-release-qualification.yml"
 EXPECTED_SYSTEM_OWNER, EXPECTED_REPOSITORY = "main-system-gate", "Knowledge-Forge-AI/repo-map"
-EXPECTED_BEFORE_SHA = "970d7dc9f6b895a210953e38bccb54cc839ccf75"
+EXPECTED_BEFORE_SHA = "ae636963abcf3c952150bb738b122464cec9399f"
 EXPECTED_BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
-EXPECTED_APPROVAL_SHA256 = "8393dca86bb9a0ec5b0a7a069479ce1f7f0e06c335c1301f716637daa1087d95"
-EXPECTED_LEDGER_BEFORE_SHA256 = "90ca98935be02d7d45f8f169113bc9045c2043c97b02d07e15c4e288f94c7bff"
+EXPECTED_APPROVAL_SHA256 = "1242846cb906fbb5aa2d5796a976c70d52db9857f4c1e0044bdf48c2223018b1"
+EXPECTED_LEDGER_BEFORE_SHA256 = "3464514b63aeea7579cc69d466c85807445a4188fdd90380d090ed747153bb29"
 SPENT_CI69_NONCE = "68920c8be2054bddaefba6ff1761b2e5"
 SPENT_CI69_RESERVATION_SHA256 = "60d67477702e81125b5fba737c182965a78bcb6865c4e267adb0d064a71ac595"
 SPENT_CI70_NONCE = "2ca8d5a3ad7645798437728db064e8d4"
@@ -63,10 +63,14 @@ SPENT_CI99_NONCE = "9fbd0f97ac4945a4a3bc231cbc512b5f"
 SPENT_CI99_RESERVATION_SHA256 = "dfe02b643a6dafc7161d37b841ab97e9dbf34a6bf0f9dcc41c91e9c2a855f65e"
 SPENT_CI100_NONCE = "10f975ff610e4030bd68cc09eba9d53b"
 SPENT_CI100_RESERVATION_SHA256 = "12fad920fef49dc9604bbc4c69108fcf7867503787244b6bfd85feac66836e68"
+SPENT_CI101_NONCE = "0e28d22b081149c7a4c7b0bab21fa1ef"
+SPENT_CI101_RESERVATION_SHA256 = "3b5f2e8514e4b151794bba31c70b1e2b93f029ddba0fd2c9a1ab38f6e6ecd47c"
 SUPERSEDED_W2_NONCE = "cb637c3b41e4427491dcf7bc2c83e0ec"
 SUPERSEDED_W2_RESERVATION_SHA256 = "922395c6167f8ebe47f192a32b2e7834c8f5c53a1c7bfbe04d1d1ad2f422e3a8"
 SUPERSEDED_W2_REV2_NONCE = "d16a2474e8f841e489cf44e0d789da8b"
 SUPERSEDED_W2_REV2_RESERVATION_SHA256 = "aa7ff667131b61c8070a3dfb45ae0efea197fe2fb89e5b509fd30bfed31aac5b"
+SUPERSEDED_W3_REV1_NONCE = "81d48773f8793cf5219279819b968c4a"
+SUPERSEDED_W3_REV1_RESERVATION_SHA256 = "f62ac5cde2fb8ce186d553e55723630010123bc8a4efa8897fa35c64a1a7bcdb"
 DEFAULT_GRANT_RELPATH = Path("tools/ci/d12_system_build_grant.json")
 DEFAULT_CANDIDATE_RELPATH = Path("tools/ci/d12_hosted_candidate.json")
 MAX_SYSTEM_GRANT_BYTES = MAX_SYSTEM_PROOF_BYTES = 16384
@@ -137,8 +141,8 @@ def validate_system_build_grant(
         if record.get(key) != expected:
             raise D12SystemGrantError(f"system build grant {key}={record.get(key)!r} != {expected!r}")
     for key, expected_int in (
-        ("pull_request", 23), ("workflow_ordinal", 101), ("workflow_attempt", 1),
-        ("maximum_total", 18), ("maximum_per_platform", 18),
+        ("pull_request", 23), ("workflow_ordinal", 102), ("workflow_attempt", 1),
+        ("maximum_total", 19), ("maximum_per_platform", 19),
     ):
         val = record.get(key)
         if not _is_strict_int(val) or val != expected_int:
@@ -148,9 +152,9 @@ def validate_system_build_grant(
     for sha_key in ("reservation_sha256", "approval_sha256", "ledger_before_sha256", "sdk_recipe_sha256"):
         if not _is_hex64(record.get(sha_key)):
             raise D12SystemGrantError(f"system build grant {sha_key} must be 64 lowercase hex")
-    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE, SPENT_CI87_NONCE, SPENT_CI91_NONCE, SPENT_CI92_NONCE, SPENT_CI93_NONCE, SPENT_CI94_NONCE, SPENT_CI95_NONCE, SPENT_CI96_NONCE, SPENT_CI97_NONCE, SPENT_CI98_NONCE, SPENT_CI99_NONCE, SPENT_CI100_NONCE, SUPERSEDED_W2_NONCE, SUPERSEDED_W2_REV2_NONCE) or record["reservation_sha256"] in (
-        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256, SPENT_CI87_RESERVATION_SHA256, SPENT_CI91_RESERVATION_SHA256, SPENT_CI92_RESERVATION_SHA256, SPENT_CI93_RESERVATION_SHA256, SPENT_CI94_RESERVATION_SHA256, SPENT_CI95_RESERVATION_SHA256, SPENT_CI96_RESERVATION_SHA256, SPENT_CI97_RESERVATION_SHA256, SPENT_CI98_RESERVATION_SHA256, SPENT_CI99_RESERVATION_SHA256, SPENT_CI100_RESERVATION_SHA256, SUPERSEDED_W2_RESERVATION_SHA256, SUPERSEDED_W2_REV2_RESERVATION_SHA256):
-        raise D12SystemGrantError("system build grant reuses spent CI69/CI70/CI71/CI72/CI85/CI86/CI87/CI91/CI92/CI93/CI94/CI95/CI96/CI97/CI98/CI99/CI100 nonce or reservation")
+    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE, SPENT_CI87_NONCE, SPENT_CI91_NONCE, SPENT_CI92_NONCE, SPENT_CI93_NONCE, SPENT_CI94_NONCE, SPENT_CI95_NONCE, SPENT_CI96_NONCE, SPENT_CI97_NONCE, SPENT_CI98_NONCE, SPENT_CI99_NONCE, SPENT_CI100_NONCE, SPENT_CI101_NONCE, SUPERSEDED_W2_NONCE, SUPERSEDED_W2_REV2_NONCE, SUPERSEDED_W3_REV1_NONCE) or record["reservation_sha256"] in (
+        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256, SPENT_CI87_RESERVATION_SHA256, SPENT_CI91_RESERVATION_SHA256, SPENT_CI92_RESERVATION_SHA256, SPENT_CI93_RESERVATION_SHA256, SPENT_CI94_RESERVATION_SHA256, SPENT_CI95_RESERVATION_SHA256, SPENT_CI96_RESERVATION_SHA256, SPENT_CI97_RESERVATION_SHA256, SPENT_CI98_RESERVATION_SHA256, SPENT_CI99_RESERVATION_SHA256, SPENT_CI100_RESERVATION_SHA256, SPENT_CI101_RESERVATION_SHA256, SUPERSEDED_W2_RESERVATION_SHA256, SUPERSEDED_W2_REV2_RESERVATION_SHA256, SUPERSEDED_W3_REV1_RESERVATION_SHA256):
+        raise D12SystemGrantError("system build grant reuses spent CI69/CI70/CI71/CI72/CI85/CI86/CI87/CI91/CI92/CI93/CI94/CI95/CI96/CI97/CI98/CI99/CI100/CI101 nonce or reservation")
     before, base = record.get("before"), record.get("base")
     if not (_is_hex40(before) and _is_hex40(base)) or before == base:
         raise D12SystemGrantError("system build grant synchronize before/base must be distinct 40-hex")
@@ -159,7 +163,7 @@ def validate_system_build_grant(
         ("approval_sha256", EXPECTED_APPROVAL_SHA256), ("ledger_before_sha256", EXPECTED_LEDGER_BEFORE_SHA256),
     ):
         if record.get(pin_k) != pin_v:
-            raise D12SystemGrantError(f"system build grant {pin_k} does not match pinned CLOE-RETRIEVAL1 CI101 authority")
+            raise D12SystemGrantError(f"system build grant {pin_k} does not match pinned CLOE-LEXICAL1 CI102 authority")
     sdk_sha = str(record["sdk_recipe_sha256"])
     d12_ctx = _validate_d12_context(record.get("d12_context"), sdk_recipe_sha256=sdk_sha)
     if expected_candidate is not None:
@@ -235,7 +239,7 @@ def validate_system_admission_proof(
     ):
         if record.get(k) != exp:
             raise D12SystemGrantError(f"system admission proof {k}={record.get(k)!r} != {exp!r}")
-    for k, exp_int in (("pull_request", 23), ("workflow_ordinal", 101), ("workflow_attempt", 1)):
+    for k, exp_int in (("pull_request", 23), ("workflow_ordinal", 102), ("workflow_attempt", 1)):
         val = record.get(k)
         if not _is_strict_int(val) or val != exp_int:
             raise D12SystemGrantError(f"system admission proof {k} must be strict int {exp_int}")
@@ -247,9 +251,9 @@ def validate_system_admission_proof(
     ):
         if not _is_hex64(record.get(sha_k)):
             raise D12SystemGrantError(f"system admission proof {sha_k} must be 64-hex")
-    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE, SPENT_CI87_NONCE, SPENT_CI91_NONCE, SPENT_CI92_NONCE, SPENT_CI93_NONCE, SPENT_CI94_NONCE, SPENT_CI95_NONCE, SPENT_CI96_NONCE, SPENT_CI97_NONCE, SPENT_CI98_NONCE, SPENT_CI99_NONCE, SPENT_CI100_NONCE, SUPERSEDED_W2_NONCE, SUPERSEDED_W2_REV2_NONCE) or record["reservation_sha256"] in (
-        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256, SPENT_CI87_RESERVATION_SHA256, SPENT_CI91_RESERVATION_SHA256, SPENT_CI92_RESERVATION_SHA256, SPENT_CI93_RESERVATION_SHA256, SPENT_CI94_RESERVATION_SHA256, SPENT_CI95_RESERVATION_SHA256, SPENT_CI96_RESERVATION_SHA256, SPENT_CI97_RESERVATION_SHA256, SPENT_CI98_RESERVATION_SHA256, SPENT_CI99_RESERVATION_SHA256, SPENT_CI100_RESERVATION_SHA256, SUPERSEDED_W2_RESERVATION_SHA256, SUPERSEDED_W2_REV2_RESERVATION_SHA256):
-        raise D12SystemGrantError("system admission proof reuses spent CI69/CI70/CI71/CI72/CI85/CI86/CI87/CI91/CI92/CI93/CI94/CI95/CI96/CI97/CI98/CI99/CI100 nonce or reservation")
+    if record["nonce"] in (SPENT_CI69_NONCE, SPENT_CI70_NONCE, SPENT_CI71_NONCE, SPENT_CI72_NONCE, SPENT_CI85_NONCE, SPENT_CI86_NONCE, SPENT_CI87_NONCE, SPENT_CI91_NONCE, SPENT_CI92_NONCE, SPENT_CI93_NONCE, SPENT_CI94_NONCE, SPENT_CI95_NONCE, SPENT_CI96_NONCE, SPENT_CI97_NONCE, SPENT_CI98_NONCE, SPENT_CI99_NONCE, SPENT_CI100_NONCE, SPENT_CI101_NONCE, SUPERSEDED_W2_NONCE, SUPERSEDED_W2_REV2_NONCE, SUPERSEDED_W3_REV1_NONCE) or record["reservation_sha256"] in (
+        SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_RESERVATION_SHA256, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_RESERVATION_SHA256, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_RESERVATION_SHA256, SPENT_CI87_RESERVATION_SHA256, SPENT_CI91_RESERVATION_SHA256, SPENT_CI92_RESERVATION_SHA256, SPENT_CI93_RESERVATION_SHA256, SPENT_CI94_RESERVATION_SHA256, SPENT_CI95_RESERVATION_SHA256, SPENT_CI96_RESERVATION_SHA256, SPENT_CI97_RESERVATION_SHA256, SPENT_CI98_RESERVATION_SHA256, SPENT_CI99_RESERVATION_SHA256, SPENT_CI100_RESERVATION_SHA256, SPENT_CI101_RESERVATION_SHA256, SUPERSEDED_W2_RESERVATION_SHA256, SUPERSEDED_W2_REV2_RESERVATION_SHA256, SUPERSEDED_W3_REV1_RESERVATION_SHA256):
+        raise D12SystemGrantError("system admission proof reuses spent CI69/CI70/CI71/CI72/CI85/CI86/CI87/CI91/CI92/CI93/CI94/CI95/CI96/CI97/CI98/CI99/CI100/CI101 nonce or reservation")
     for git_k in (
         "before", "after", "base", "candidate_sha", "candidate_tree",
         "candidate_base_parent", "candidate_head_parent",
@@ -257,7 +261,7 @@ def validate_system_admission_proof(
         if not _is_hex40(record.get(git_k)):
             raise D12SystemGrantError(f"system admission proof {git_k} must be 40-hex")
     if record["before"] != EXPECTED_BEFORE_SHA or record["base"] != EXPECTED_BASE_SHA:
-        raise D12SystemGrantError("system admission proof before/base does not match pinned CLOE-RETRIEVAL1 CI101 authority")
+        raise D12SystemGrantError("system admission proof before/base does not match pinned CLOE-LEXICAL1 CI102 authority")
     if (
         record["after"] == record["before"]
         or record["candidate_base_parent"] != record["base"]

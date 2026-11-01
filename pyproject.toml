@@ -85,6 +85,9 @@ common_lore_index = ["third_party_licenses/*.json", "third_party_licenses/*.txt"
 "share/common-lore-index/rdbms/2026/09" = [
   "src/main/resources/rdbms/2026/09/*.sql",
 ]
+"share/common-lore-index/rdbms/2026/10" = [
+  "src/main/resources/rdbms/2026/10/*.sql",
+]
 "share/common-lore-index/coordinator-rdbms" = [
   "src/main/resources/coordinator-rdbms/changelog.yaml",
 ]

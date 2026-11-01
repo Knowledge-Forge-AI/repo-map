@@ -154,7 +154,14 @@ def _load_and_validate_retained_attempt(
     bundle_ref = ArtifactReference.from_mapping(payload["bundle"]).with_store_version(None)
     store = FileSystemArtifactStore(attempt_root / "objects")
 
-    manifest, manifest_ref = _find_manifest_in_store(store, portable.snapshot_manifest_id)
+    raw_manifest_ref = payload.get("manifest")
+    if isinstance(raw_manifest_ref, dict):
+        manifest_ref = ArtifactReference.from_mapping(raw_manifest_ref).with_store_version(None)
+        manifest = PortableSnapshotManifest.from_bytes(store.read(manifest_ref))
+        if manifest.manifest_id != portable.snapshot_manifest_id:
+            raise ValueError("retained manifest reference manifest_id mismatch")
+    else:
+        manifest, manifest_ref = _find_manifest_in_store(store, portable.snapshot_manifest_id)
     extraction_receipt = ExtractionReceipt.from_bytes(store.read(receipt_ref))
     bundle = PublicationBundle.from_bytes(store.read(bundle_ref))
 

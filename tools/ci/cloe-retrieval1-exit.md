@@ -1,9 +1,15 @@
 # REPOMAP-CLOE-RETRIEVAL1 Exit: Retrieval contracts and evaluation milestone
 
-Status: NOT ACCEPTED pending the exact successor hosted CI qualification.
-Local scoped verification and independent source/grant review are required for
-the frozen publication candidate. Complete populations and coverage belong to
-hosted CI101 attempt1. W1's CI100 pass does not qualify this successor.
+Status: ACCEPTED for staging `ae636963abcf3c952150bb738b122464cec9399f`
+by [CI101 attempt1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41204249885).
+All nine jobs executed and passed. Retained same-attempt staging M/A and system
+evidence validate against independently derived committed source and merge parents.
+Unit14766 passed/40 skipped with88.1/87.4 coverage; integration1928 passed/12 skipped
+with measured90.1/81.9. Hard gates pass. The requested82% integration branch target
+is short by11 covered branches on this20720-branch denominator and is carried
+into W3 as useful regression coverage, without a threshold/denominator change.
+Eighteen actual native AMD application starts are spent. No local successor,
+new build allocation, main promotion or held-out result is qualified here.
 
 ## Scope
 
@@ -164,3 +170,12 @@ advancement check; callers must supply it for that guarantee. Correspondence
 verifies top-level references and stored manifest bytes. Individual projected
 body blobs are verified by bounded store reads; missing blobs are explicit
 partial/excluded outcomes, not a claim that every manifest entry was preverified.
+
+## W3 evidence interpretation
+
+Recall columns group declared task strata, not actual retrieval surfaces.
+Native/reference answers to metadata-intent tasks can use literal body fallbacks;
+those scores are not metadata-retrieval proof. Exact mode/fallback/surface
+disclosures remain in the retained source-bound attempt7 journal. W3 must carry
+these axes into summary/criteria artifacts before accepting future gates. No
+attempt, journal, source closure or observed score is repinned by this closeout.

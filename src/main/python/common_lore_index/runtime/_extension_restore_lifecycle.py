@@ -55,6 +55,9 @@ from common_lore_index.runtime.backup_commands import (
 )
 from common_lore_index.runtime.backup_records import LocalDbBackupError
 from common_lore_index.runtime.backup_streaming import describe_dump_file
+from common_lore_index.runtime._lexical_restore import (
+    reconcile_restored_graph_lexical_roles,
+)
 from common_lore_index.runtime.database_roles import (
     reconcile_control_database_roles,
     reconcile_graph_database_roles,
@@ -110,7 +113,10 @@ def reconcile_restored_roles(
         reconcile_graph_database_roles if database_role == "graph" else reconcile_control_database_roles
     )
     if runner is not _STDLIB_SUBPROCESS_RUN:
-        reconcile(plan, database, runner)
+        if database_role == "graph":
+            reconcile_restored_graph_lexical_roles(plan, database, runner, reconcile)
+        else:
+            reconcile(plan, database, runner)
         return
 
     def custodied(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[bytes]:
@@ -124,7 +130,10 @@ def reconcile_restored_roles(
         )
         return subprocess.CompletedProcess(command, 0, out, b"")
 
-    reconcile(plan, database, custodied)
+    if database_role == "graph":
+        reconcile_restored_graph_lexical_roles(plan, database, custodied, reconcile)
+    else:
+        reconcile(plan, database, custodied)
 
 
 def _reconcile_failed_create(

@@ -3,29 +3,42 @@
 from __future__ import annotations
 
 import hashlib
-import time
 from pathlib import Path
+import subprocess
+import time
 from typing import Any
 
-from common_lore_index.retrieval.projection_build import CapturedTextProjection, build_captured_text_projection
+from common_lore_index.ops.config import OpsConfig
+from common_lore_index.ops.config_local import load_graph_registry_config_home
+from common_lore_index.ops.lexical_service import build_graph_lexical_generation
+from common_lore_index.retrieval.projection_build import build_captured_text_projection
 from common_lore_index.retrieval.projection_text import REPRESENTATION_VERSION
 from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
 from repomap_test_support.retrieval_evaluation_fixture import (
-    MIXED_V1_FIXTURE_ROOT, MIXED_V1_GRAPH_ID, build_mixed_v1_projection_policy,
+    MIXED_V1_FIXTURE_ROOT, MIXED_V1_GRAPH_ID, binding_id_for_alias, build_mixed_v1_projection_policy,
     compute_working_copy_digests, materialize_mixed_v1_working_copy,
     write_mixed_v1_postgres_home, write_mixed_v1_sqlite_home,
 )
 from repomap_test_support.retrieval_evaluation_publication import (
-    PublishedCorpusState, publish_and_load_postgres_corpus, publish_and_load_sqlite_corpus,
+    publish_and_load_postgres_corpus, publish_and_load_sqlite_corpus,
 )
-from retrieval_evaluation_admission import admit_evaluation, candidate_source_files, runtime_profile, source_digests
+from retrieval_evaluation_admission import (
+    admit_evaluation,
+    candidate_source_files,
+    runtime_profile,
+    source_digests,
+    validate_admitted_input_manifest,
+)
 from retrieval_evaluation_attempts import AttemptJournal
 from retrieval_evaluation_comparability import describe_comparability
-from retrieval_evaluation_execution import ArmContext, measure_task_repetitions
+from retrieval_evaluation_execution import ArmContext, failed_outcome, measure_task_repetitions
 from retrieval_evaluation_grading import ExecutionState, GradedSlotRecord, aggregate_arm_summary
 from retrieval_evaluation_schema import (
     ATTEMPT_DECLARATION_SCHEMA_VERSION, FREEZE_MANIFEST_SCHEMA_VERSION,
     AttemptDeclaration, FreezeManifest, TaskCatalog,
+)
+from retrieval_evaluation_summary_v2 import (
+    BASELINE_REPORT_SCHEMA_V2, W3_DEFAULT_ARMS, upgrade_arm_summary_to_v2,
 )
 from retrieval_evaluation_views import materialize_native_search_view
 
@@ -175,6 +188,7 @@ def execute_calibration_baseline(
     psql_command: str = "psql",
     include_postgres: bool = True,
     attempt_root: Path | None = None,
+    report_schema_version: str | None = None,
 ) -> dict[str, Any]:
     """Execute the declared 24-task calibration baseline across native, graph, and projection arms."""
     if not include_postgres and any(arm.endswith(":postgresql") for arm in declaration.arms):
@@ -184,13 +198,14 @@ def execute_calibration_baseline(
     verify_fixture_freeze_guard(catalog, freeze, work_dir=work_dir / "freeze_guard")
     journal = admit_evaluation(
         declaration, catalog, freeze, attempt_root=attempt_root or work_dir / "functional-attempts",
-        pg_port=pg_port, supported_arms=DEFAULT_ARMS,
+        pg_port=pg_port, supported_arms=W3_DEFAULT_ARMS,
     )
     try:
         report = _execute_admitted(
             catalog, freeze, declaration, work_dir=work_dir, journal=journal,
             postgres=(pg_host, pg_port, pg_database, pg_user, pg_password, psql_command),
             include_postgres=include_postgres,
+            report_schema_version=report_schema_version,
         )
         if dict(declaration.candidate_closure_digests) != _compute_candidate_closure_digests(MIXED_V1_FIXTURE_ROOT.parents[4]):
             raise ValueError("candidate source changed during evaluation")
@@ -211,18 +226,25 @@ def _execute_admitted(
     journal: AttemptJournal,
     postgres: tuple[str, int, str, str, str | None, str],
     include_postgres: bool,
+    report_schema_version: str | None = None,
 ) -> dict[str, Any]:
     cal_tasks = catalog.calibration_tasks()
+    tasks_by_id = {task.task_id: task for task in cal_tasks}
     expected_ids = tuple(task.task_id for task in cal_tasks)
     observations: list[dict[str, Any]] = []
     divergent_task_count = 0
     setup_timings_ns: dict[str, int] = {}
     setup_bytes: dict[str, dict[str, int | None]] = {}
     slots_by_arm: dict[str, dict[str, GradedSlotRecord]] = {arm: {} for arm in declaration.arms}
+    envelopes_by_arm: dict[str, dict[str, dict[str, Any]]] = {arm: {} for arm in declaration.arms}
     reps = declaration.repetitions_per_task
+    has_lexical = "postgres_native_fts:postgresql" in declaration.arms
     for gen in sorted({task.generation for task in cal_tasks}):
         context, generation_timings = _publish_generation(
-            gen, work_dir, postgres, include_postgres and any(arm.endswith(":postgresql") for arm in declaration.arms),
+            gen, work_dir, postgres,
+            include_postgres and any(arm.endswith(":postgresql") for arm in declaration.arms),
+            include_lexical=has_lexical,
+            admitted_journal=journal,
         )
         setup_timings_ns.update(generation_timings)
         setup_bytes[f"sqlite_projection_gen{gen}"] = {
@@ -234,16 +256,35 @@ def _execute_admitted(
                 "projected_body_input_bytes_read": context.postgres_projection.aggregate_input_bytes_read,
                 "total_artifact_store_bytes_read": None,
             }
+            if has_lexical:
+                setup_bytes[f"postgres_lexical_gen{gen}"] = {
+                    "projected_body_input_bytes_read": context.postgres_lexical_input_bytes,
+                    "total_artifact_store_bytes_read": None,
+                }
         journal.append({"event": "generation_published", "generation": gen, "setup_timings_ns": dict(setup_timings_ns)})
         for arm_id in slots_by_arm:
             for task in (task for task in cal_tasks if task.generation == gen):
+                def _exec_and_capture(a: str = arm_id, t: Any = task) -> Any:
+                    out = context.execute(a, t)
+                    envelopes_by_arm[a][t.task_id] = out[1].to_dict()
+                    return out
+
                 slot, task_observations, divergent = measure_task_repetitions(
-                    task, arm_id, reps, lambda: context.execute(arm_id, task), journal,
+                    task, arm_id, reps, _exec_and_capture, journal,
                 )
+                if divergent:
+                    envelopes_by_arm[arm_id][task.task_id] = failed_outcome(
+                        task, arm_id, "nondeterministic_repetitions", 0
+                    )[1].to_dict()
                 slots_by_arm[arm_id][task.task_id] = slot
                 observations.extend(task_observations)
                 divergent_task_count += int(divergent)
 
+    use_v2 = (
+        report_schema_version == BASELINE_REPORT_SCHEMA_V2
+        or declaration.runner_profile.get("report_schema_version") == BASELINE_REPORT_SCHEMA_V2
+        or has_lexical
+    )
     arms_out: dict[str, dict[str, Any]] = {}
     for arm_id, arm_slots_map in slots_by_arm.items():
         backend = (
@@ -265,9 +306,13 @@ def _execute_admitted(
                 else "query_envelope_serialization"
             )
         )
+        if use_v2:
+            arms_out[arm_id] = upgrade_arm_summary_to_v2(
+                arms_out[arm_id], tasks_by_id, envelopes_by_task=envelopes_by_arm[arm_id]
+            )
 
     report = {
-        "schema_version": BASELINE_REPORT_SCHEMA_VERSION,
+        "schema_version": BASELINE_REPORT_SCHEMA_V2 if use_v2 else BASELINE_REPORT_SCHEMA_VERSION,
         "status": "failed" if any(
             slot.execution_state == ExecutionState.FAILED
             for slots in slots_by_arm.values() for slot in slots.values()
@@ -296,10 +341,15 @@ def _publish_generation(
     work_dir: Path,
     postgres: tuple[str, int, str, str, str | None, str],
     include_postgres: bool,
+    *,
+    include_lexical: bool = False,
+    admitted_journal: AttemptJournal | None = None,
 ) -> tuple[ArmContext, dict[str, int]]:
     pg_host, pg_port, pg_database, pg_user, pg_password, psql_command = postgres
     pg_wc, pg_home = work_dir / "wc_pg", work_dir / "pg_home"
     setup_timings_ns: dict[str, int] = {}
+    if admitted_journal is not None:
+        validate_admitted_input_manifest(admitted_journal)
     wc = materialize_mixed_v1_working_copy(work_dir / f"wc_gen{gen}", generation=gen)
     sq_home = write_mixed_v1_sqlite_home(work_dir / f"sqlite_gen{gen}", wc)
     t0 = time.perf_counter_ns()
@@ -307,39 +357,44 @@ def _publish_generation(
     setup_timings_ns[f"sqlite_publish_gen{gen}"] = time.perf_counter_ns() - t0
 
     t0 = time.perf_counter_ns()
-    sqlite_projection = build_captured_text_projection(
-        sq_state.projection_inputs(), sq_state.policy
-    )
+    sqlite_projection = build_captured_text_projection(sq_state.projection_inputs(), sq_state.policy)
     setup_timings_ns[f"sqlite_projection_build_gen{gen}"] = time.perf_counter_ns() - t0
 
     t0 = time.perf_counter_ns()
     native_view = materialize_native_search_view(
-        work_dir / f"native_view_gen{gen}",
-        manifest=sq_state.manifest,
-        bundle=sq_state.bundle,
-        store=sq_state.store,
-        policy=sq_state.policy,
-        selected_aliases=("core", "companion", "feeds", "mailbox"),
+        work_dir / f"native_view_gen{gen}", manifest=sq_state.manifest, bundle=sq_state.bundle,
+        store=sq_state.store, policy=sq_state.policy, selected_aliases=("core", "companion", "feeds", "mailbox"),
     )
     setup_timings_ns[f"native_view_gen{gen}"] = time.perf_counter_ns() - t0
 
-    pg_state: PublishedCorpusState | None = None
-    pg_proj: CapturedTextProjection | None = None
+    pg_state, pg_proj, pg_fts_home, pg_fts_input_bytes = None, None, None, None
     if include_postgres:
+        if admitted_journal is not None:
+            validate_admitted_input_manifest(admitted_journal)
         materialize_mixed_v1_working_copy(pg_wc, generation=gen)
-        write_mixed_v1_postgres_home(
-            pg_home, pg_wc, host=pg_host, port=pg_port,
-            database=pg_database, user=pg_user, password=pg_password,
-        )
+        write_mixed_v1_postgres_home(pg_home, pg_wc, host=pg_host, port=pg_port, database=pg_database, user=pg_user, password=pg_password)
         t0 = time.perf_counter_ns()
         pg_state = publish_and_load_postgres_corpus(pg_home, psql_command=psql_command)
         setup_timings_ns[f"postgres_publish_gen{gen}"] = time.perf_counter_ns() - t0
         t0 = time.perf_counter_ns()
         pg_proj = build_captured_text_projection(pg_state.projection_inputs(), pg_state.policy)
         setup_timings_ns[f"postgres_projection_build_gen{gen}"] = time.perf_counter_ns() - t0
+        if include_lexical:
+            fts_db, pg_fts_home = f"{pg_database}_fts_gen{gen}", work_dir / f"pg_fts_home_gen{gen}"
+            write_mixed_v1_postgres_home(pg_fts_home, pg_wc, host=pg_host, port=pg_port, database=fts_db, user=pg_user, password=pg_password, declared_aliases=("core", "companion"))
+            pg_cfg = load_graph_registry_config_home(pg_fts_home)
+            if isinstance(pg_cfg, OpsConfig):
+                admin_args = [psql_command, *pg_cfg.postgres.psql_args_for_database("postgres"), "-tAc"]
+                if subprocess.run([*admin_args, f"SELECT 1 FROM pg_database WHERE datname = '{fts_db}'"], capture_output=True, text=True, check=True).stdout.strip() != "1":
+                    subprocess.run([*admin_args, f'CREATE DATABASE "{fts_db}"'], check=True)
+                t0 = time.perf_counter_ns()
+                publish_and_load_postgres_corpus(pg_fts_home, psql_command=psql_command)
+                setup_timings_ns[f"postgres_lexical_publish_gen{gen}"] = time.perf_counter_ns() - t0
+                t0 = time.perf_counter_ns()
+                build_out = build_graph_lexical_generation(pg_cfg, MIXED_V1_GRAPH_ID, selected_binding_ids=(binding_id_for_alias("core"), binding_id_for_alias("companion")), authorize_body=True)
+                if build_out.result != "published":
+                    raise RuntimeError(f"lexical build failed in gen {gen}: {build_out.result} ({build_out.refusal_code})")
+                pg_fts_input_bytes = build_out.aggregate_input_bytes
+                setup_timings_ns[f"postgres_lexical_build_gen{gen}"] = time.perf_counter_ns() - t0
 
-    context = ArmContext(
-        native_view, sq_state.home_root, sqlite_projection,
-        pg_state.home_root if pg_state else None, pg_proj, psql_command,
-    )
-    return context, setup_timings_ns
+    return ArmContext(native_view, sq_state.home_root, sqlite_projection, pg_state.home_root if pg_state else None, pg_proj, psql_command, pg_fts_home, pg_fts_input_bytes), setup_timings_ns

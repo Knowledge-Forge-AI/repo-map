@@ -57,6 +57,16 @@ def execute_projection_reference_task(
         selected_binding_ids=selected_b_ids,
         source_path_prefix=task.source_path_prefix,
     )
+    if not selected_b_ids:
+        return _outcome(
+            ExecutionState.UNAVAILABLE,
+            unavailable_envelope(
+                requested_mode=requested_mode,
+                scope=scope,
+                reason="empty_selected_bindings",
+            ),
+            0,
+        )
 
     plan = task.permitted_query_plan
     if (

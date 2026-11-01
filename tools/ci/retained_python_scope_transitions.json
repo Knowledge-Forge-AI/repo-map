@@ -4617,6 +4617,226 @@
       "source_commit": "970d7dc9f6b895a210953e38bccb54cc839ccf75",
       "source_manifest_sha256": "9d530ac19861c0d8a8e8c4f027a144309b4657a3c2753688b8c01e7e79564243",
       "status_path": "tools/ci/cloe-retrieval1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.cli._parser_ops_lexical",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/_parser_ops_lexical.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.cli.ops_lexical_commands",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/ops_lexical_commands.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.lexical_output",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/lexical_output.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.lexical_publication",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/lexical_publication.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.lexical_service",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/lexical_service.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_aliases",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_aliases.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_capture",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_capture.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_envelopes",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_envelopes.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_policy",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_policy.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.runtime._lexical_restore",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/runtime/_lexical_restore.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.server._postgres_investigation_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/server/_postgres_investigation_queries.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_build_lease",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_build_lease.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_driver",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_driver.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_fence_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_fence_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_lifecycle",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_lifecycle.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_literal_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_literal_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_population",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_population.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_probe",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_probe.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_query_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_query_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_revoke",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_revoke.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.postgres_navigation_search",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/postgres_navigation_search.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.postgres_navigation_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/postgres_navigation_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.postgres_node_locations",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/postgres_node_locations.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "c30790d5ecf84463300c11e99364536a2e73147657b707243fdb3d1d21938525",
+      "new_selected_set_sha256": "8cf9304b5882a3dadf706e9abc0a54d7387428aed7b95b8fcaf7f94837b5e68a",
+      "old_ownership_manifest_sha256": "b1cd1ecb821c9dd212a0a486b45a833a8b2a863db553ce5ebd8a424f3d2c4d22",
+      "old_selected_set_sha256": "a15fa73ac0793165753971558fc1683eeeb35ae79683115bc65f50f5b24ad797",
+      "phase": "REPOMAP-CLOE-LEXICAL1",
+      "reason": "ADR0129 clean lexical and PG parity owner admission; all predecessor selection and numerical debt/tool sections unchanged.",
+      "source_commit": "ae636963abcf3c952150bb738b122464cec9399f",
+      "source_manifest_sha256": "b1cd1ecb821c9dd212a0a486b45a833a8b2a863db553ce5ebd8a424f3d2c4d22",
+      "status_path": "tools/ci/cloe-lexical1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

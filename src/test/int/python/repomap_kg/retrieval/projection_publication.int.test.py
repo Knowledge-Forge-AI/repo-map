@@ -246,3 +246,85 @@ def test_postgres_real_publication_projection_query_and_missing_artifact_exclusi
         assert stale_pg_env.capability_state == CapabilityState.STALE
         assert "stale_detail" in stale_pg_env.provenance
         _check_serialized_contract(stale_pg_env)
+
+
+def test_empty_selected_aliases_max_projected_files_cap_and_none_current_reference(
+    tmp_path: Path,
+) -> None:
+    """Exercise empty selected_aliases, max_projected_files=1 cap, and lambda: None current reference."""
+    wc = materialize_mixed_v1_working_copy(tmp_path / "wc", generation=1)
+    sq_home = write_mixed_v1_sqlite_home(tmp_path / "sq_home", wc)
+    state_empty = publish_and_load_sqlite_corpus(sq_home, selected_aliases=())
+    proj_empty = build_captured_text_projection(
+        state_empty.projection_inputs(), state_empty.policy
+    )
+    assert proj_empty.projected_files == ()
+    assert proj_empty.aggregate_input_bytes_read == 0
+    assert len(proj_empty.excluded_bindings) == 4
+
+    refused_excl = query_captured_text(
+        proj_empty,
+        CapturedTextQueryRequest(
+            query="token",
+            selected_binding_ids=(binding_id_for_alias("mailbox"),),
+        ),
+        current_accepted_reference=state_empty.accepted_reference,
+    )
+    assert refused_excl.capability_state == CapabilityState.REFUSED
+    assert refused_excl.refusal_code == ExclusionReason.BINDING_PRIVACY_NOT_AUTHORIZED.value
+
+    unknown_b = "bind1:" + ("0" * 64)
+    refused_unknown = query_captured_text(
+        proj_empty,
+        CapturedTextQueryRequest(query="token", selected_binding_ids=(unknown_b,)),
+        current_accepted_reference=state_empty.accepted_reference,
+    )
+    assert refused_unknown.capability_state == CapabilityState.REFUSED
+    assert refused_unknown.refusal_code == "unresolved_inherit_policy"
+
+    unavail_empty = query_captured_text(
+        proj_empty,
+        CapturedTextQueryRequest(query="token", selected_binding_ids=()),
+        current_accepted_reference=state_empty.accepted_reference,
+    )
+    assert unavail_empty.capability_state == CapabilityState.UNAVAILABLE
+    assert unavail_empty.unavailable_reason == "projection_absent"
+    assert unavail_empty.establishes_absence() is False
+
+    # Normal policy with max_projected_files=1 cap and lambda: None current reference
+    state_full = publish_and_load_sqlite_corpus(sq_home)
+    policy_cap1 = replace(state_full.policy, max_projected_files=1)
+    proj_cap1 = build_captured_text_projection(
+        state_full.projection_inputs(), policy_cap1
+    )
+    assert len(proj_cap1.projected_files) == 1
+    budget_omitted = [
+        ef
+        for ef in proj_cap1.excluded_files
+        if ef.reason == ExclusionReason.AGGREGATE_BUDGET_EXCEEDED
+    ]
+    assert len(budget_omitted) >= 1
+    assert all(ef.store_opened is False for ef in budget_omitted)
+
+    partial_env = query_captured_text(
+        proj_cap1,
+        CapturedTextQueryRequest(query="NONEXISTENT_TOKEN_99999"),
+        current_accepted_reference=state_full.accepted_reference,
+    )
+    assert partial_env.capability_state == CapabilityState.PARTIAL
+    assert partial_env.scope_complete is False
+    assert partial_env.establishes_absence() is False
+    assert any(
+        o.reason_code == ExclusionReason.AGGREGATE_BUDGET_EXCEEDED.value
+        for o in partial_env.omissions
+    )
+
+    stale_none = query_captured_text(
+        proj_cap1,
+        CapturedTextQueryRequest(query="execute_pipeline"),
+        current_accepted_reference=lambda: None,
+    )
+    assert stale_none.capability_state == CapabilityState.STALE
+    assert stale_none.hits == ()
+    assert stale_none.scope_complete is False
+    assert stale_none.establishes_absence() is False

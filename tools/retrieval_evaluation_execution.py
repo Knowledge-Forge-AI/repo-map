@@ -23,6 +23,7 @@ from repomap_test_support.retrieval_evaluation_publication import (
 )
 from retrieval_evaluation_accounting import ByteLayerAccounting, summarize_timing_samples
 from retrieval_evaluation_attempts import AttemptJournal
+from retrieval_evaluation_fts import execute_postgres_native_fts_task
 from retrieval_evaluation_grading import ExecutionState, GradedSlotRecord, grade_task_execution
 from retrieval_evaluation_graph import execute_graph_baseline_task
 from retrieval_evaluation_native import execute_native_baseline_task
@@ -44,6 +45,8 @@ class ArmContext:
     postgres_home: Path | None
     postgres_projection: CapturedTextProjection | None
     psql_command: str
+    postgres_lexical_home: Path | None = None
+    postgres_lexical_input_bytes: int | None = None
 
     def execute(self, arm_id: str, task: EvaluationTask) -> TaskOutcome:
         if arm_id == "native_tools_baseline":
@@ -67,6 +70,11 @@ class ArmContext:
                 raise ValueError("PostgreSQL arm requires PostgreSQL configuration")
             current, _ = read_postgres_accepted_publication(config, task.graph_id, psql_command=self.psql_command)
             return execute_projection_reference_task(task, self.postgres_projection, current_accepted=current)
+        if arm_id == "postgres_native_fts:postgresql":
+            lex_home = self.postgres_lexical_home or self.postgres_home
+            if lex_home is None:
+                raise ValueError("PostgreSQL lexical arm has no published generation")
+            return execute_postgres_native_fts_task(task, lex_home)
         raise ValueError("unsupported evaluation arm")
 
 

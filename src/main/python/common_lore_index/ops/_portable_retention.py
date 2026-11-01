@@ -65,13 +65,15 @@ _TERMINAL_RETENTION_CLASSES = frozenset({"terminal-accepted", "terminal-failed"}
 _LOCAL_RETENTION_SYNC_LEVELS = 5
 
 
-def _write_retained_result(path, manifest_id, references):
+def _write_retained_result(path, manifest_id, references, *, manifest_reference=None):
     payload = {
         "manifest_id": manifest_id,
         "receipt": references[0].to_mapping(),
         "bundle": references[1].to_mapping(),
         "retention_class": "publication-reconciliation",
     }
+    if manifest_reference is not None:
+        payload["manifest"] = manifest_reference.to_mapping()
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:
@@ -84,6 +86,30 @@ def _write_retained_result(path, manifest_id, references):
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
+
+
+def _retained_manifest_reference(
+    path: Path, expected_manifest_id: str
+) -> ArtifactReference | None:
+    if not path.exists():
+        return None
+    try:
+        payload = _read_retention_payload(path)
+        if payload.get("manifest_id") != expected_manifest_id:
+            raise ValueError
+        if payload.get("retention_class") not in {
+            "publication-reconciliation",
+            *_TERMINAL_RETENTION_CLASSES,
+        }:
+            raise ValueError
+        manifest_mapping = payload.get("manifest")
+        if manifest_mapping is None:
+            return None
+        if not isinstance(manifest_mapping, Mapping):
+            raise ValueError
+        return ArtifactReference.from_mapping(manifest_mapping).with_store_version(None)
+    except (KeyError, OSError, TypeError, ValueError) as error:
+        raise PortableRefreshError("retained portable result is invalid") from error
 
 
 def _retained_result(path, expected_manifest_id):

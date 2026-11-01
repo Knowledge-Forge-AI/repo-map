@@ -364,6 +364,15 @@
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli._parser_ops_lexical",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.cli._parser_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli._parser_sources",
@@ -439,6 +448,15 @@
       "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli.ops_graph_file_commands",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli.ops_lexical_commands",
       "ownership_class": "python_retained"
     },
     {
@@ -1972,6 +1990,33 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.lexical_output",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.lexical_publication",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.lexical_service",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
@@ -2158,6 +2203,42 @@
       "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.retrieval",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.lexical_aliases",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.lexical_capture",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.lexical_envelopes",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.lexical_policy",
       "ownership_class": "python_retained"
     },
     {
@@ -2473,6 +2554,15 @@
       "justification": "Bounded local home and lifecycle administrator authority repair; retained under zero-new-debt Python enforcement.",
       "match": "exact",
       "module_prefix": "common_lore_index.runtime._home_authority",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.runtime._lexical_restore",
       "ownership_class": "python_retained"
     },
     {
@@ -2896,6 +2986,15 @@
       "justification": "Maintain repomap_kg.server._ops_summaries under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.server._ops_summaries",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_query_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.server._postgres_investigation_queries",
       "ownership_class": "python_retained"
     },
     {
@@ -3478,6 +3577,87 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_build_lease",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_driver",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_fence_sql",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_lifecycle",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_literal_sql",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_population",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_probe",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_query_sql",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.lexical_revoke",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.storage.main under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.main",
@@ -3508,6 +3688,33 @@
       "justification": "Maintain repomap_kg.storage.portable_ingestion under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.portable_ingestion",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.postgres_navigation_search",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.postgres_navigation_sql",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.postgres_node_locations",
       "ownership_class": "python_retained"
     },
     {

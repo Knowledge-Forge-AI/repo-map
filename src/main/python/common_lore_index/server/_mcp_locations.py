@@ -22,8 +22,8 @@ from common_lore_index.storage.node_locations import NodeLocationsQuery
 def node_locations_tool_definition() -> dict[str, Any]:
     return {
         "name": "repomap_node_locations",
-        "description": "Resolve one selected node to bounded stored source evidence. SQLite Local; "
-                       "other backends report unsupported. Use evidence_role=direct for subjects or "
+        "description": "Resolve one selected node to bounded stored source evidence. SQLite Local and "
+                       "PostgreSQL; other backends report unsupported. Use evidence_role=direct for subjects or "
                        "reference for incoming/outgoing links and containment context. "
                        "Use detail=compact for unresolved locations; full is the default. "
                        "Verify a usable handoff location directly without a graph call. "

@@ -26,8 +26,10 @@ from common_lore_index.retrieval.query_contracts import (
     QueryHit,
     QueryMode,
     QueryScope,
+    UnavailableReason,
     refused_envelope,
     stale_envelope,
+    unavailable_envelope,
 )
 
 
@@ -150,6 +152,13 @@ def query_captured_text(
             requested_mode=requested_mode,
             scope=scope,
             detail="accepted publication advanced or disappeared before query completion",
+        )
+    if not requested_bindings:
+        return unavailable_envelope(
+            requested_mode=requested_mode,
+            scope=scope,
+            reason=UnavailableReason.PROJECTION_ABSENT.value,
+            provenance={"projection_digest": projection.projection_digest},
         )
 
     req_binding_set = frozenset(requested_bindings)

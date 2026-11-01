@@ -86,6 +86,72 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.lexical1.boundaries.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/storage/lexical_bigint_lock_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/lexical_build_lease_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/lexical_lifecycle_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/lexical_output_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/lexical_query_scope_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/storage/lexical_restore_local_plan.int.test.py",
+        "src/test/int/python/repomap_kg/storage/postgres_navigation_admission.int.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/heldout_custody_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/historical_evidence_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_bigint_lock_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_build_lease_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_lifecycle_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_output_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_query_scope_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_restore_local_plan.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/postgres_navigation_admission.unit.test.py"
+      ],
+      "rationale": "ADR0129 source-bound correction owners; existing cohorts and numerical debt remain unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.lexical1.boundaries.tools",
+      "members": [
+        "tools/retrieval_evaluation_historical_evidence.py"
+      ],
+      "rationale": "ADR0129 source-bound correction owners; existing cohorts and numerical debt remain unchanged.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "cloe.lexical1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/retrieval/lexical_postgres_lifecycle.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/postgres_navigation_and_w3_eval.int.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/evaluation_v2_and_heldout.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/lexical_envelopes_and_cli.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/lexical_policy_and_capture.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/lexical_storage_and_navigation.unit.test.py"
+      ],
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 unit and integration test owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.lexical1.tools",
+      "members": [
+        "tools/retrieval_evaluation_criteria_v2.py",
+        "tools/retrieval_evaluation_fts.py",
+        "tools/retrieval_evaluation_heldout.py",
+        "tools/retrieval_evaluation_reprojection.py",
+        "tools/retrieval_evaluation_slots_v2.py",
+        "tools/retrieval_evaluation_summary_v2.py",
+        "tools/retrieval_evaluation_w3.py"
+      ],
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.migration1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config_migration.int.test.py",
@@ -27566,6 +27632,15 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/_parser_ops_lexical.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/common_lore_index/cli/_parser_sources.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
       "root": "product",
@@ -27640,6 +27715,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/cli/ops_graph_file_commands.py",
       "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/ops_lexical_commands.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -30443,6 +30527,33 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/lexical_output.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/lexical_publication.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/lexical_service.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -30628,6 +30739,42 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/retrieval/__init__.py",
       "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/lexical_aliases.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/lexical_capture.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/lexical_envelopes.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/lexical_policy.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -30943,6 +31090,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/runtime/_home_authority.py",
       "rationale": "Focused local home and administrator authority repair owner.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/runtime/_lexical_restore.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -31366,6 +31522,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/server/_ops_summaries.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/server/_postgres_investigation_queries.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -31946,6 +32111,87 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_build_lease.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_driver.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_fence_sql.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_lifecycle.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_literal_sql.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_population.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_probe.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_query_sql.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/lexical_revoke.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -31978,6 +32224,33 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/storage/portable_ingestion.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/postgres_navigation_search.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/postgres_navigation_sql.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/postgres_node_locations.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -34568,8 +34841,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/lexical_postgres_lifecycle.int.test.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/native_search_process.int.test.py",
       "rationale": "ADR0127 real SQLite/PostgreSQL publication, native git-grep process, and 5-arm calibration baseline integration owners.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/postgres_navigation_and_w3_eval.int.test.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -35378,6 +35669,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_bigint_lock_boundaries.int.test.py",
+      "rationale": "ADR0129 independent-review restore, safe-scope, deterministic-order and BIGINT lifecycle corrections.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_build_lease_boundaries.int.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_lifecycle_boundaries.int.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_output_boundaries.int.test.py",
+      "rationale": "ADR0129 exact serialized output and partial exit boundary proof.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_query_scope_boundaries.int.test.py",
+      "rationale": "ADR0129 independent-review restore, safe-scope, deterministic-order and BIGINT lifecycle corrections.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_restore_local_plan.int.test.py",
+      "rationale": "ADR0129 independent-review restore, safe-scope, deterministic-order and BIGINT lifecycle corrections.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/load_canonical_errors.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -35569,6 +35914,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/perf_base1_observability.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/postgres_navigation_admission.int.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -43388,6 +43742,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/evaluation_v2_and_heldout.unit.test.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/heldout_custody_boundaries.unit.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/historical_evidence_boundaries.unit.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/lexical_envelopes_and_cli.unit.test.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/lexical_policy_and_capture.unit.test.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/lexical_storage_and_navigation.unit.test.py",
+      "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/projection_binding.unit.test.py",
       "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
       "root": "test_owners",
@@ -44306,6 +44714,60 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_bigint_lock_boundaries.unit.test.py",
+      "rationale": "ADR0129 independent-review restore, safe-scope, deterministic-order and BIGINT lifecycle corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_build_lease_boundaries.unit.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_lifecycle_boundaries.unit.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_output_boundaries.unit.test.py",
+      "rationale": "ADR0129 exact serialized output and partial exit boundary proof.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_query_scope_boundaries.unit.test.py",
+      "rationale": "ADR0129 independent-review restore, safe-scope, deterministic-order and BIGINT lifecycle corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_restore_local_plan.unit.test.py",
+      "rationale": "ADR0129 independent-review restore, safe-scope, deterministic-order and BIGINT lifecycle corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/migrations.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -44353,6 +44815,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/post_publication_pause_hook.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/postgres_navigation_admission.unit.test.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -50678,8 +51149,26 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_criteria_v2.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_evaluation_execution.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_fts.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -50714,6 +51203,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_heldout.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_historical_evidence.py",
+      "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_evaluation_native.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
       "root": "tools",
@@ -50732,6 +51239,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_reprojection.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_evaluation_schema.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
       "root": "tools",
@@ -50741,8 +51257,35 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_slots_v2.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_summary_v2.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_evaluation_views.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_w3.py",
+      "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
       "root": "tools",
       "status": "active_tool"
     },

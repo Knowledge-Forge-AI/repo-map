@@ -234,7 +234,7 @@ def capture_portable_candidate(
                 leaf_limits,
             )
             references = _worker_references(worker.terminal)
-            _write_retained_result(result_path, manifest.manifest_id, references)
+            _write_retained_result(result_path, manifest.manifest_id, references, manifest_reference=manifest_reference)
         except BaseException as error:
             try:
                 _remove_attempt_root(attempt_root, _directory_identity(attempt_root))

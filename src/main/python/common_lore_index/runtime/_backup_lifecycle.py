@@ -60,6 +60,7 @@ from common_lore_index.runtime.backup_records import (
     RuntimeContainerMetadata,
 )
 from common_lore_index.runtime.backup_streaming import atomic_private_backup_directory
+from common_lore_index.runtime._lexical_restore import reconcile_restored_graph_lexical_roles
 from common_lore_index.runtime.database_roles import reconcile_graph_database_roles
 from common_lore_index.runtime.local import (
     LocalRuntimeDiagnostic,
@@ -244,7 +245,7 @@ def init_database_from_dump(
 
     def provision_from_dump() -> None:
         restore_fn(runtime_plan, database, dump_path, planned, runner)
-        roles_fn(runtime_plan, database, runner)
+        reconcile_restored_graph_lexical_roles(runtime_plan, database, runner, roles_fn)
 
     complete_graph_provision(
         runtime_plan,

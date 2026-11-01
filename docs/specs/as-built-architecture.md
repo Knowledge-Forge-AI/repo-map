@@ -1780,3 +1780,23 @@ against `RunPublicationReceipt`, `PortableSnapshotManifest`, `PublicationBundle`
 `ExtractionReceipt`, and `ArtifactStore` before projecting authorized `public-dev` /
 `full-authorized` code and Markdown/text artifacts. Existing CLI and read-only
 MCP schemas, wire names, and runtime behavior are unchanged in W2.
+
+The exact W2 milestone on staging `ae636963` is qualified by
+[CI101 attempt1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41204249885),
+including all nine jobs and retained same-attempt staging/system evidence.
+Its measured integration branch coverage81.9 passes80%, with the requested82%
+target carried into W3. PostgreSQL native FTS and request-pinned text capability
+are successor work and are not implied by W2 qualification.
+
+### PostgreSQL-native lexical and metadata parity successor (W3)
+
+ADR0129 adds explicit opt-in lexical build/query/revoke over owner-custodied
+`cloe_lexical` derived tables, publication/policy fencing and honest partial or
+stale outcomes. Native ranked/phrase/literal styles preserve bounded captured
+text provenance; ordinary graph/MCP read authority stays source-blind. Public-table
+PostgreSQL navigation and node locations use one pinned read statement with
+pre-aggregation admission budgets. Evaluation v2 preserves actual modes/surfaces
+and verifies retained journals and source archives. Corrected-source calibration
+attempt2 and historical attempt7 reprojection remain distinct. This successor
+is NOT ACCEPTED pending its own hosted CI102campaign; W2 qualification does not
+carry forward. No live deployment or optional extension admission occurs.

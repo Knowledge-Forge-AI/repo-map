@@ -49,8 +49,12 @@ from common_lore_index.storage.rows import (
 from common_lore_index.storage.semantic_candidates import CandidateQuery, CandidateResult, unavailable
 from common_lore_index.storage.semantic_candidate_readback import query_semantic_candidates
 from common_lore_index.storage.semantic_seed import SimilarNodesQuery
-from common_lore_index.storage.node_locations import NodeLocationsQuery, unavailable as locations_unavailable
-from common_lore_index.storage.navigation_search import NavigationSearchQuery, unavailable as navigation_unavailable
+from common_lore_index.storage.node_locations import NodeLocationsQuery
+from common_lore_index.storage.navigation_search import NavigationSearchQuery
+from common_lore_index.server._postgres_investigation_queries import (
+    execute_postgres_navigation_search,
+    execute_postgres_node_locations,
+)
 from common_lore_index.storage.semantic_seed_readback import query_similar_nodes
 from common_lore_index.storage.semantic_candidates import EmbeddingProfilesQuery, EmbeddingProfilesResult, profiles_unavailable
 from common_lore_index.storage.semantic_candidate_readback import query_embedding_profiles
@@ -211,14 +215,12 @@ class PostgresInvestigationReadStore:
     queries: InvestigationStorageQueries
 
     def navigation_search(self, graph_id: str, query: NavigationSearchQuery) -> dict[str, Any]:
-        self._context(graph_id)
-        query.validate()
-        return navigation_unavailable("backend_unsupported")
+        context = self._context(graph_id)
+        return execute_postgres_navigation_search(context, query)
 
     def node_locations(self, graph_id: str, query: NodeLocationsQuery) -> dict[str, Any]:
-        self._context(graph_id)
-        query.validate()
-        return locations_unavailable("backend_unsupported")
+        context = self._context(graph_id)
+        return execute_postgres_node_locations(context, query)
 
     def embedding_profiles(self, graph_id: str, query: EmbeddingProfilesQuery) -> EmbeddingProfilesResult:
         context = self._context(graph_id)

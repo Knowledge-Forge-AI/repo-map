@@ -134,7 +134,7 @@ def test_read_only_services_project_the_parsed_config_onto_read_role(
     )
     with patch.dict(
         "os.environ",
-        {"REPOMAP_READ_STATUS_PASSWORD": "read-secret"},
+        {"REPOMAP_READ_STATUS_PASSWORD": "test"},
     ):
         mcp_config = load_mcp_ops_config(config_path)
         assert isinstance(mcp_config, OpsConfig), "a PostgreSQL home loads OpsConfig"
@@ -313,6 +313,10 @@ def test_coordinated_restore_reconciles_graphs_then_control(tmp_path: Path) -> N
     plan = build_local_runtime_plan(home)
     events: list[tuple[str, str]] = []
 
+    def reconcile_graph(_plan: object, database: str, _runner: object, *, purge_restored_lexical: bool) -> None:
+        assert purge_restored_lexical is True
+        events.append(("graph", database))
+
     with (
         patch(
             "common_lore_index.runtime.backup_restore_sets.inspect_owned_postgres_container"
@@ -325,9 +329,7 @@ def test_coordinated_restore_reconciles_graphs_then_control(tmp_path: Path) -> N
         patch("common_lore_index.runtime.backup_restore_sets.run_pg_restore"),
         patch(
             "common_lore_index.runtime.backup_restore_sets.reconcile_graph_database_roles",
-            side_effect=lambda _plan, database, _runner: events.append(
-                ("graph", database)
-            ),
+            side_effect=reconcile_graph,
         ),
         patch(
             "common_lore_index.runtime.backup_restore_sets.reconcile_control_database_roles",

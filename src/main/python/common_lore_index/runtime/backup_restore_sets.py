@@ -49,6 +49,9 @@ from common_lore_index.runtime.local import (
     build_local_runtime_plan,
 )
 from common_lore_index.runtime.provisioning import cleanup_created_database
+from common_lore_index.runtime._lexical_restore import (
+    reconcile_restored_graph_lexical_roles,
+)
 from common_lore_index.runtime.database_roles import (
     reconcile_control_database_roles,
     reconcile_graph_database_roles,
@@ -206,7 +209,9 @@ def restore_coordinated_backup(
             )
             restored.append(database)
         for database in sorted(runtime_plan.graph_databases):
-            reconcile_graph_database_roles(runtime_plan, database, runner)
+            reconcile_restored_graph_lexical_roles(
+                runtime_plan, database, runner, reconcile_graph_database_roles
+            )
         reconcile_control_database_roles(runtime_plan, restore_order[-1], runner)
     except Exception as restore_error:
         cleanup_failed = False

@@ -154,3 +154,75 @@ def test_mixed_v1_corpus_edge_cases_duplicate_paths_and_generation_diff_across_b
         assert [e.to_dict() for e in pg_proj2.excluded_files] == [
             e.to_dict() for e in sq_proj2.excluded_files
         ]
+
+
+def test_disposable_fixture_format_exclusions_and_multibyte_utf8_truncation(
+    tmp_path: Path,
+) -> None:
+    """Verify pre-open format exclusions (.eml, .rss, .xml), empty file, and mid-codepoint UTF-8 prefix."""
+    from dataclasses import replace
+
+    wc = materialize_mixed_v1_working_copy(tmp_path / "wc_variant", generation=1)
+    comp_root = wc / "companion"
+    (comp_root / "generated" / "notice.eml").write_bytes(
+        b"From: ops@example.invalid\nSubject: Notice\n\nBody text\n"
+    )
+    (comp_root / "releases.rss").write_bytes(
+        b"<rss><channel><title>Releases</title></channel></rss>\n"
+    )
+    (comp_root / "opaque.xml").write_bytes(b"<root><item>opaque</item></root>\n")
+    (comp_root / "generated" / "empty_note.md").write_bytes(b"")
+    multibyte_text = ("alpha \u03b1\u03b2\u03b3 \U0001f680 line\r\n" * 8).encode("utf-8")
+    (comp_root / "generated" / "multibyte_utf8.md").write_bytes(multibyte_text)
+
+    sq_home = write_mixed_v1_sqlite_home(tmp_path / "sq_variant", wc)
+    state = publish_and_load_sqlite_corpus(sq_home)
+
+    tight_policy = replace(state.policy, max_projected_file_bytes=27)
+    proj = build_captured_text_projection(state.projection_inputs(), tight_policy)
+
+    comp_id = binding_id_for_alias("companion")
+    excluded_by_path = {
+        (e.binding_id, e.source_relative_path): e for e in proj.excluded_files
+    }
+    eml_ex = excluded_by_path[(comp_id, "generated/notice.eml")]
+    assert eml_ex.reason == ExclusionReason.EMAIL_BODY_FORBIDDEN
+    assert eml_ex.store_opened is False
+
+    rss_ex = excluded_by_path[(comp_id, "releases.rss")]
+    assert rss_ex.reason == ExclusionReason.FEED_BODY_FORBIDDEN
+    assert rss_ex.store_opened is False
+
+    xml_ex = excluded_by_path[(comp_id, "opaque.xml")]
+    assert xml_ex.reason == ExclusionReason.UNSUPPORTED_SOURCE_FORMAT
+    assert xml_ex.store_opened is False
+
+    projected_by_path = {
+        (f.binding_id, f.source_relative_path): f for f in proj.projected_files
+    }
+    empty_rec = projected_by_path[(comp_id, "generated/empty_note.md")]
+    assert empty_rec.projected_byte_length == 0
+    assert len(empty_rec.chunks) == 1
+    assert empty_rec.chunks[0].is_empty_file_record is True
+
+    mb_rec = projected_by_path[(comp_id, "generated/multibyte_utf8.md")]
+    assert mb_rec.truncated is True
+    assert mb_rec.projected_byte_length <= 27
+    joined_mb = "".join(c.content_text for c in mb_rec.chunks)
+    assert "\r" not in joined_mb
+    assert joined_mb.startswith("alpha \u03b1\u03b2\u03b3 ")
+
+    env = query_captured_text(
+        proj,
+        CapturedTextQueryRequest(query="alpha", selected_binding_ids=(comp_id,)),
+        current_accepted_reference=state.accepted_reference,
+    )
+    assert env.capability_state == CapabilityState.PARTIAL
+    assert env.scope_complete is False
+    omission_reasons = {
+        (o.source_relative_path, o.reason_code) for o in env.omissions
+    }
+    assert ("generated/notice.eml", ExclusionReason.EMAIL_BODY_FORBIDDEN.value) in omission_reasons
+    assert ("releases.rss", ExclusionReason.FEED_BODY_FORBIDDEN.value) in omission_reasons
+    assert ("opaque.xml", ExclusionReason.UNSUPPORTED_SOURCE_FORMAT.value) in omission_reasons
+    assert ("generated/multibyte_utf8.md", "projected_prefix_truncated") in omission_reasons

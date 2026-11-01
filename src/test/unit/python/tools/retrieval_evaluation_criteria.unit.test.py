@@ -152,7 +152,7 @@ def test_committed_mixed_v1_baseline_artifacts_match_freeze_and_catalog() -> Non
 
     from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
     from repomap_test_support.retrieval_evaluation_fixture import MIXED_V1_FIXTURE_ROOT
-    from retrieval_evaluation_harness import _compute_candidate_closure_digests
+    import hashlib
     from retrieval_evaluation_schema import (
         AttemptDeclaration,
         load_freeze_manifest,
@@ -173,10 +173,26 @@ def test_committed_mixed_v1_baseline_artifacts_match_freeze_and_catalog() -> Non
     assert decl.catalog_sha256 == catalog.catalog_digest()
     assert len(decl.ordered_task_ids) == 24
     assert decl.runner_profile["execution_purpose"] == "retained_calibration"
-    assert dict(decl.candidate_closure_digests) == _compute_candidate_closure_digests(
-        MIXED_V1_FIXTURE_ROOT.parents[4]
+    retained_evidence = json.loads(
+        (baseline_dir / "retained-attempt-7-evidence.json").read_text(encoding="utf-8")
     )
+    assert dict(decl.candidate_closure_digests) == retained_evidence["execution_source_files"]
     assert_canary_free(decl_raw)
+
+    w3_decl_raw = json.loads(
+        (baseline_dir / "w3" / "attempt-declaration-w3-1.json").read_text(encoding="utf-8")
+    )
+    w3_decl = AttemptDeclaration.from_mapping(w3_decl_raw)
+    # A saved execution proposal binds its saved declaration, never successor code.
+    recipe = json.loads((baseline_dir / "w3" / "w3-calibration-recipe-1.json").read_text())
+    assert recipe["status"] == "proposed_for_parent_execution"
+    assert recipe["declaration_sha256"] == "sha256:" + hashlib.sha256(
+        json.dumps(w3_decl.to_dict(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    ).hexdigest()
+    assert w3_decl.freeze_sha256 == freeze.freeze_digest()
+    assert w3_decl.catalog_sha256 == catalog.catalog_digest()
+    assert recipe["retained_calibration_queries_executed_by_dispatcher"] == 0
+    assert_canary_free(w3_decl_raw)
 
     report = json.loads(
         (baseline_dir / "calibration-attempt-7.json").read_text(encoding="utf-8")

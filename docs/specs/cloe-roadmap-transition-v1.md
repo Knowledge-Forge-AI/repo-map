@@ -139,7 +139,7 @@ accepted or overwritten.
 
 ## W2 retrieval contracts, projection reference, and calibration baseline
 
-Following CI99 qualification of the W1 namespace cutover at `970d7dc9f6b895a210953e38bccb54cc839ccf75`,
+Following CI100 qualification of the W1 namespace cutover at `970d7dc9f6b895a210953e38bccb54cc839ccf75`,
 `REPOMAP-CLOE-RETRIEVAL1` implements the W2 milestone under accepted
 [ADR0127](../adr/2026/10/0127-cloe-retrieval-contracts-and-evaluation.md),
 [cloe-retrieval-evaluation-v1.md](cloe-retrieval-evaluation-v1.md), and
@@ -150,5 +150,41 @@ the public-safe `mixed-v1` multi-source evaluation corpus across two generations
 and 36 frozen tasks (24 calibration, 12 held-out), real native (`git grep --no-index`),
 current-graph (SQLite Local and PostgreSQL), and reference adapters, and the
 declared 24-task calibration baseline plus baseline-derived future criteria
-proposal. The 12-task held-out split remains unexecuted for W3. Hosted CI
-qualification of the W2 candidate remains pending (`NOT ACCEPTED`).
+proposal. The12-task held-out split remains unexecuted for W3. [CI101 attempt1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41204249885)
+qualifies exact staging `ae636963abcf3c952150bb738b122464cec9399f`: all nine jobs,
+same-attempt staging M/A and system contracts pass. Unit88.1/87.4 and measured
+integration90.1/81.9 meet the hard gates; the requested integration82% branch
+target is11 covered branches short and stays a W3 regression-coverage objective.
+W3 must carry actual query modes/fallbacks/surfaces into summaries before treating
+metadata-intent scores as metadata retrieval. Existing attempts remain immutable.
+
+## W3 native lexical, metadata parity and evaluation evidence milestone
+
+[ADR0129](../adr/2026/10/0129-postgresql-native-lexical-search-and-publication-pinning.md)
+and [the lexical operator guide](../ops/lexical-search.md) deliver opt-in
+PostgreSQL native lexical build/query/revoke, owner-fenced derived storage and
+request-pinned public metadata navigation parity. The source also closes empty
+resolved-scope misclassification and preserves actual modes, surfaces, fallback,
+omissions and provenance in evaluation v2. Historical attempt7 has a separate
+raw-journal-bound v2 reprojection; its original artifacts remain unchanged.
+
+Corrected-source retained W3 calibration `w3-calibration-attempt-2` has24tasks ×6arms ×3repetitions:432query
+observations,144graded slots and1010journal records, bound to its pre-query
+source/input archive. It records zero execution failures or divergent tasks;
+refusal/unavailability and weak scores remain visible by cell. These observations
+do not establish superiority or accept proposed future criteria. All12held-out
+tasks remain unexecuted, behind a separate source/criteria acceptance gate.
+
+[ADR0130](../adr/2026/10/0130-lexical-milestone-staging-campaign.md) binds one
+review-ready staging publication and automatic CI102attempt1. Exact W3 hosted
+qualification and whole-population coverage remain pending. See the
+[phase exit](../../tools/ci/cloe-lexical1-exit.md) for resulting-state proof.
+Optional trigram, vectors/fusion, W4 compact context, Rust and release/installed
+qualification remain subsequent roadmap work. No live deployment is performed.
+
+W3 retains its first successful observation at its original source and the
+independent-review corrections at attempt2; neither is repinned. Before future
+criteria acceptance, disposition the native comparator output above the proposed
+65,536-byte ceiling and the incumbent PostgreSQL graph absent-answer discrepancy.
+The separate namespace19042 staged-publisher int32-ID limit remains W7-owned;
+this milestone qualifies lexical lock expressions, not all large-ID publication.

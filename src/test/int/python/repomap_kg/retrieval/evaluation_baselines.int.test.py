@@ -19,6 +19,30 @@ from retrieval_evaluation_harness import (
 from retrieval_evaluation_schema import load_freeze_manifest, load_task_catalog
 
 
+def test_w3_cli_recipe_binds_each_unexecuted_attempt_to_distinct_paths(tmp_path: Path) -> None:
+    """Actual CLI declarations are inert definitions, not retained observations."""
+    from retrieval_evaluation import main
+
+    recipes: list[dict[str, object]] = []
+    for number in (1, 2):
+        declaration_path = tmp_path / f"declaration-{number}.json"
+        recipe_path = tmp_path / f"recipe-{number}.json"
+        assert main([
+            "declare-w3-attempt", "--attempt-id", f"w3-calibration-attempt-{number}",
+            "--output", str(declaration_path), "--recipe-output", str(recipe_path),
+        ]) == 0
+        declaration = json.loads(declaration_path.read_text())
+        recipe = json.loads(recipe_path.read_text())
+        assert recipe["attempt_id"] == declaration["attempt_id"]
+        assert recipe["declaration_rel_path"].endswith(f"attempt-declaration-w3-{number}.json")
+        assert recipe["output_report_rel_path"].endswith(f"w3-calibration-attempt-{number}.json")
+        assert recipe["output_criteria_rel_path"].endswith(f"criteria-proposal-v2-w3-{number}.json")
+        assert recipe["retained_calibration_queries_executed_by_dispatcher"] == 0
+        assert recipe["held_out_executed"] is False
+        recipes.append(recipe)
+    assert recipes[0]["declaration_rel_path"] != recipes[1]["declaration_rel_path"]
+
+
 def test_calibration_baseline_end_to_end_across_all_five_arms_and_criteria_derivation(
     tmp_path: Path,
 ) -> None:

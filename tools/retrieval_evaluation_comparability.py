@@ -15,7 +15,14 @@ def describe_comparability(
     key = "native" if arm_id == "native_tools_baseline" else (
         "graph" if arm_id.startswith("current_graph_baseline:") else "reference"
     )
-    exposures = {task.task_id: task.comparator_exposure.get(key) for task in tasks}
+    exposures = {
+        task.task_id: (
+            task.comparator_exposure.get("lexical") or task.comparator_exposure.get("reference")
+            if arm_id == "postgres_native_fts:postgresql"
+            else task.comparator_exposure.get(key)
+        )
+        for task in tasks
+    }
     if any(not isinstance(value, str) or not value for value in exposures.values()):
         raise ValueError("every task must declare the arm's comparator exposure")
     if set(exposures) != {slot.task_id for slot in slots}:
@@ -32,4 +39,7 @@ def describe_comparability(
             arm_id, backend, population, expected_task_ids=[slot.task_id for slot in population],
         ).to_dict()
         summaries[exposure] = {name: value for name, value in summary.items() if name not in {"slots", "arm_id", "backend"}}
-    return {"comparator_exposure_by_task": exposures, "exposure_strata": summaries}
+    out: dict[str, Any] = {"comparator_exposure_by_task": exposures, "exposure_strata": summaries}
+    if arm_id == "postgres_native_fts:postgresql":
+        out["view_scope_disclosure"] = "evaluator_precheck_over_two_binding_public_view"
+    return out

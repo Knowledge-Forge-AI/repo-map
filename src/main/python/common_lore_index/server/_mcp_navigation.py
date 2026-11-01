@@ -16,7 +16,7 @@ from common_lore_index.storage.navigation_search import NavigationSearchQuery
 def navigation_tool_definition() -> dict[str, Any]:
     return {
         "name": "repomap_navigation_search",
-        "description": "Optional SQLite Local literal search of canonical key, kind and display name, "
+        "description": "Optional SQLite Local and PostgreSQL literal search of canonical key, kind and display name, "
                        "not source text. code supports only python.module, python.class, python.function, python.method; "
                        "docs supports page/section/ADR/skill. Use bounded native literal-text search "
                        "in the caller's workspace/subtree for assignments, comments, strings or syntax. "

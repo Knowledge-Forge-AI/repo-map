@@ -4,8 +4,8 @@
 
 Implemented in `REPOMAP-CLOE-RETRIEVAL1` under accepted [ADR0127](../adr/2026/10/0127-cloe-retrieval-contracts-and-evaluation.md)
 and recorded in [cloe-retrieval1-exit.md](../../tools/ci/cloe-retrieval1-exit.md)
-(local scoped unit, containerized integration, and static gates verified; overall
-phase status `NOT ACCEPTED` pending fresh hosted CI qualification). W2 delivers
+(qualified for exact staging `ae636963` by [CI101 attempt1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41204249885);
+all nine jobs and retained same-attempt contracts pass). W2 delivers
 an internal reference and evaluation instrument, not a production text index or
 evidence of agent productivity. The accepted roadmap remains
 [CLOE transition](cloe-roadmap-transition-v1.md).
@@ -438,3 +438,30 @@ advancement check; callers must supply it for that guarantee. Correspondence
 verifies top-level references and stored manifest bytes. Individual projected
 body blobs are verified by bounded store reads; missing blobs are explicit
 partial/excluded outcomes, not a claim that every manifest entry was preverified.
+
+### Qualified W2 baseline and successor limits
+
+CI101 qualifies the exact W2 candidate, not later W3 code. Unit coverage is
+88.1/87.4; measured integration90.1/81.9 passes hard gates while missing the
+requested82% branch target by11 covered branches on its20720 denominator.
+W3 owns useful regression coverage for this gap. Metadata-intent task strata
+in attempt7 can contain native/reference body-scan fallbacks; actual surfaces
+must be preserved in future summaries before metadata-retrieval or criteria
+claims. The original attempt7 and its journal remain immutable source evidence.
+
+### W3 native lexical and source-bound v2 milestone
+
+ADR0129 adds the production PostgreSQL lexical arm and exact-journal summaries
+preserving mode, fallback, surface, omissions and provenance. Historical attempt7
+has a separate immutable-input v2 reprojection. W3 attempt1 remains at its actual
+source; independent-review corrections are observed under a new pre-query
+`w3-calibration-attempt-2`, with distinct declaration/recipe/report/criteria paths.
+Each completed W3 observation has24tasks ×6arms ×3repetitions,432query observations,
+144graded slots and1010journal records. No held-out query or criteria acceptance
+is implied. Current source qualification remains pending CI102attempt1.
+
+The current proposed criteria require explicit future disposition: native output
+reaches495,781bytes against a proposed65,536ceiling, and the incumbent PostgreSQL
+graph baseline scores0/1 on the absent-answer task where SQLite scores1/1. Keep
+those observations visible; do not accept floors or claim superiority from
+execution success. See the lexical phase exit for exact source/proof boundaries.

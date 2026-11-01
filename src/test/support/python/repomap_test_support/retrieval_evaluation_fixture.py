@@ -212,15 +212,23 @@ def build_mixed_v1_projection_policy(
     ).validate()
 
 
-def _render_source_bindings_toml(working_copy_root: Path, graph_id: str) -> str:
+def _render_source_bindings_toml(
+    working_copy_root: Path,
+    graph_id: str,
+    *,
+    declared_aliases: Sequence[str] = MIXED_V1_BINDINGS,
+) -> str:
     specs = (
         ("core", "public-dev", "full-authorized", "allow-declared", "source", ""),
         ("companion", "public-dev", "full-authorized", "allow-declared", "companion", 'exclude_paths = ["excluded_cache"]\n'),
         ("feeds", "public-dev", "metadata-only", "isolated", "feeds", ""),
         ("mailbox", "private-memory", "metadata-only", "isolated", "mailbox", ""),
     )
+    allowed = set(declared_aliases)
     chunks: list[str] = []
     for alias, priv, ret, res_pol, role, extra in specs:
+        if alias not in allowed:
+            continue
         r_path = (working_copy_root / alias).resolve().as_posix()
         b_id = binding_id_for_alias(alias, graph_id)
         chunks.append(
@@ -250,6 +258,7 @@ def write_mixed_v1_sqlite_home(
     working_copy_root: Path,
     *,
     graph_id: str = MIXED_V1_GRAPH_ID,
+    declared_aliases: Sequence[str] = MIXED_V1_BINDINGS,
 ) -> Path:
     """Write a complete SQLite Local RepoMap home for mixed-v1."""
     mem_dir = _prepare_home_dirs(home_root)
@@ -259,7 +268,7 @@ def write_mixed_v1_sqlite_home(
         f'[server_memory]\nenabled = false\npath = "{mem_dir.resolve().as_posix()}"\nmode = "read_only"\n\n'
         f'[[graphs]]\nid = "{graph_id}"\nname = "Mixed-v1 Retrieval Evaluation Corpus"\n'
         f'enabled = true\nmcp_visible = true\nrefresh_policy = "manual"\n\n'
-        f"{_render_source_bindings_toml(working_copy_root, graph_id)}"
+        f"{_render_source_bindings_toml(working_copy_root, graph_id, declared_aliases=declared_aliases)}"
     )
     (home_root / "repomap.rpl.toml").write_text(toml_text, encoding="utf-8")
     return home_root
@@ -275,6 +284,7 @@ def write_mixed_v1_postgres_home(
     database: str = "repomap_mixed_v1",
     user: str = "repomap",
     password: str | None = None,
+    declared_aliases: Sequence[str] = MIXED_V1_BINDINGS,
 ) -> Path:
     """Write a complete PostgreSQL RepoMap home for mixed-v1."""
     mem_dir = _prepare_home_dirs(home_root)
@@ -294,7 +304,7 @@ def write_mixed_v1_postgres_home(
         f'[server_memory]\nenabled = false\npath = "{mem_dir.resolve().as_posix()}"\nmode = "read_only"\n\n'
         f'[[graphs]]\nid = "{graph_id}"\nname = "Mixed-v1 Retrieval Evaluation Corpus"\n'
         f'database = "{database}"\nenabled = true\nmcp_visible = true\nrefresh_policy = "manual"\n\n'
-        f"{_render_source_bindings_toml(working_copy_root, graph_id)}"
+        f"{_render_source_bindings_toml(working_copy_root, graph_id, declared_aliases=declared_aliases)}"
     )
     (home_root / "repomap.rpl.toml").write_text(toml_text, encoding="utf-8")
     return home_root
