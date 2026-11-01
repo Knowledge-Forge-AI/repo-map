@@ -10,6 +10,7 @@ recorders on the fixture module object, and ``status_checks`` is pure.
 from __future__ import annotations
 
 from pathlib import Path
+import copy
 from types import SimpleNamespace
 from typing import Any
 
@@ -19,19 +20,64 @@ from common_lore_index.ops import portable_refresh
 from common_lore_index.ops.config import load_ops_config_home
 from common_lore_index.ops.refresh import refresh_graph
 from smoke import host_mcp_native_fixture as fixture
-from smoke.host_mcp_native_checks import CATALOG_SHA256, NativePlan, catalog_digest, status_checks
+from smoke.host_mcp_native_checks import CATALOG_SHA256, NativePlan, _family_checks, catalog_digest, status_checks
 from common_lore_index.server.mcp import tool_definitions
 
 MULTI, FEED = "host-multi", "host-feed"
+PRE_W3_CATALOG_SHA256 = "c487dc30ffa570f6ec80af68fabbb15d5b96bdb273e5fc375676c7174321189d"
+CURRENT_CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"
 
 
 def test_native_smoke_catalog_pin_covers_the_optional_read_tool() -> None:
     tools = tool_definitions()
     assert len(tools) == 31
-    assert catalog_digest(tools) == CATALOG_SHA256
+    assert CATALOG_SHA256 == CURRENT_CATALOG_SHA256
+    assert catalog_digest(tools) == CURRENT_CATALOG_SHA256
+    assert len({tool["name"] for tool in tools}) == 31
+    assert all(tool["inputSchema"].get("additionalProperties") is False for tool in tools)
+    assert not any("lexical" in tool["name"] or "write" in tool["name"] or "mutate" in tool["name"] for tool in tools)
     assert sum(tool["name"] == "repomap_similar_nodes" for tool in tools) == 1
     assert sum(tool["name"] == "repomap_embedding_profiles" for tool in tools) == 1
     assert sum(tool["name"] == "repomap_node_locations" for tool in tools) == 1
+    assert sum(tool["name"] == "repomap_navigation_search" for tool in tools) == 1
+
+    # Confirm pre-W3 catalog constant reproduces under identical serialization when the
+    # two W3 description additions ("SQLite Local and PostgreSQL" -> "SQLite Local") are reverted.
+    pre_w3_tools = copy.deepcopy(tools)
+    for tool in pre_w3_tools:
+        if tool["name"] in ("repomap_node_locations", "repomap_navigation_search"):
+            tool["description"] = tool["description"].replace("SQLite Local and PostgreSQL", "SQLite Local", 1)
+    assert catalog_digest(pre_w3_tools) == PRE_W3_CATALOG_SHA256
+
+    # Negative catalog custody checks on _family_checks.
+    mutated = copy.deepcopy(tools)
+    mutated[0]["description"] += " [mutated]"
+    assert catalog_digest(mutated) != CATALOG_SHA256
+    base_responses: dict[int, dict[str, Any]] = {
+        2: {"result": {"tools": tools}},
+        21: {"result": {"structuredContent": {"items": [{"source_key": "n1", "edge_kind": "k", "target_key": "n2"}]}}},
+        23: {"result": {"structuredContent": {"result": {"edge": {"source_key": "n1", "edge_kind": "k", "target_key": "n2"}}}}},
+        25: {"result": {"structuredContent": {"result": {"center": {"canonical_key": "n1"}}}}},
+        30: {"result": {"structuredContent": {"results": [{"canonical_key": "n1"}]}}},
+        31: {"result": {"structuredContent": {"results": [{"path": "alpha/a"}, {"path": "beta/b"}]}}},
+        33: {"result": {"structuredContent": {"storage": {"latest_run_status": "complete"}}}},
+        35: {"result": {"structuredContent": {"graphs": [{"graph_id": MULTI}, {"graph_id": FEED}]}}},
+        44: {"result": {"structuredContent": [{"not_fetched": True, "target_key": "external.url:https://example.test"}]}},
+        45: {"result": {"structuredContent": {"item": {"canonical_key": "feed.item:1"}}}},
+    }
+    plan = NativePlan(chain={
+        "catalog_sha256": catalog_digest(tools),
+        "edge": ["n1", "k", "n2"],
+        "key": "n1",
+        "item_key": "feed.item:1",
+    })
+    assert _family_checks(plan, base_responses)["catalog_is_31_tools"] is True
+    assert _family_checks(plan, base_responses)["catalog_sha256_pinned"] is True
+    bad_digest_plan = NativePlan(chain={**plan.chain, "catalog_sha256": catalog_digest(mutated)})
+    assert _family_checks(bad_digest_plan, base_responses)["catalog_sha256_pinned"] is False
+    for bad_tools in (tools[:-1], [*tools, tools[0]]):
+        bad_resp: dict[int, dict[str, Any]] = {**base_responses, 2: {"result": {"tools": bad_tools}}}
+        assert _family_checks(plan, bad_resp)["catalog_is_31_tools"] is False
 
 
 def _databases() -> dict[str, Any]:

@@ -285,9 +285,35 @@ def test_client_version_probes_run_under_container_custody_with_existing_limits(
 def test_role_reconciliation_reuses_core_sql_under_custody_with_piped_input(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     plan = _custody_plan(tmp_path)
     database = plan.graph_databases[0]
+    secrets = read_role_secrets(plan.env_file)
     expected_sql = render_database_role_sql(
-        database=database, owner_role=plan.user, database_kind="graph", secrets=read_role_secrets(plan.env_file),
+        database=database, owner_role=plan.user, database_kind="graph", secrets=secrets, purge_restored_lexical=True,
     ).encode("utf-8")
+    no_purge_sql = render_database_role_sql(
+        database=database, owner_role=plan.user, database_kind="graph", secrets=secrets, purge_restored_lexical=False,
+    ).encode("utf-8")
+    default_sql = render_database_role_sql(
+        database=database, owner_role=plan.user, database_kind="graph", secrets=secrets,
+    ).encode("utf-8")
+    assert default_sql == no_purge_sql and expected_sql != no_purge_sql
+    sql_text, no_purge_text = expected_sql.decode("utf-8"), no_purge_sql.decode("utf-8")
+    for acl_line in (
+        "RAISE EXCEPTION 'cloe_lexical schema or object custody is not owned by the database owner';",
+        "EXECUTE 'REVOKE ALL ON SCHEMA cloe_lexical FROM PUBLIC';",
+        "ALTER DEFAULT PRIVILEGES FOR ROLE %I IN SCHEMA cloe_lexical REVOKE ALL ON TABLES FROM PUBLIC",
+        'EXECUTE \'REVOKE ALL ON ALL TABLES IN SCHEMA cloe_lexical FROM "repomap_read_status"\';',
+        'EXECUTE \'REVOKE ALL ON ALL TABLES IN SCHEMA cloe_lexical FROM "repomap_refresh_publication"\';',
+        'EXECUTE \'REVOKE ALL ON ALL TABLES IN SCHEMA cloe_lexical FROM "repomap_coordinator_control"\';',
+    ):
+        assert acl_line in sql_text and acl_line in no_purge_text
+    delete_stmts = [f"EXECUTE 'DELETE FROM cloe_lexical.{t}';" for t in ("authority", "omissions", "chunks", "documents")]
+    positions = [sql_text.index(stmt) for stmt in delete_stmts]
+    assert positions == sorted(positions) and "DELETE FROM cloe_lexical." not in no_purge_text
+    revoked_stmt = (
+        "UPDATE cloe_lexical.generations SET state = ''revoked'', "
+        "revocation_reason = ''restored_snapshot_unverified_lexical_index_invalidated''"
+    )
+    assert sql_text.index(revoked_stmt) > positions[-1] and "UPDATE cloe_lexical.generations" not in no_purge_text
     bounded = _ScriptedBounded(lambda command: b"BEGIN\nCOMMIT\n")
     monkeypatch.setattr(exec_mod, "run_bounded_popen", bounded)
     with bound_exec_custody("c" * 64) as custody:
@@ -303,3 +329,11 @@ def test_role_reconciliation_reuses_core_sql_under_custody_with_piped_input(tmp_
     shared = MagicMock(return_value=subprocess.CompletedProcess([], 0, b"", b""))
     reconcile_restored_roles(plan, database, "graph", shared)
     assert shared.call_args.kwargs["input"] == expected_sql, "a caller-supplied runner keeps the shared core path"
+    control_db = next(v for v in plan.owned_databases if v not in plan.graph_databases)
+    control_sql = render_database_role_sql(
+        database=control_db, owner_role=plan.user, database_kind="control", secrets=secrets,
+    ).encode("utf-8")
+    assert b"cloe_lexical" not in control_sql
+    shared_ctrl = MagicMock(return_value=subprocess.CompletedProcess([], 0, b"", b""))
+    reconcile_restored_roles(plan, control_db, "control", shared_ctrl)
+    assert shared_ctrl.call_args.kwargs["input"] == control_sql

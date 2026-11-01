@@ -11,6 +11,8 @@ from unittest.mock import patch
 
 import pytest
 
+from common_lore_index.runtime.database_role_contract import read_role_secrets
+from common_lore_index.runtime.local import setup_local_runtime
 from common_lore_index.server import mcp
 from common_lore_index.server.mcp_core import RepoMapMcpError
 from common_lore_index.storage.sqlite_local.publisher import publish_generation
@@ -236,16 +238,67 @@ def test_filtered_views_preserve_search_visibility_identity_and_redaction(store:
         call(evidence_role="direct")
 
 
-def test_direct_view_postgres_remains_unsupported_without_io(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    home = tmp_path / "postgres-home"
-    home.mkdir()
-    (home / "repomap.rpl.toml").write_text(setup_owned_config(), encoding="utf-8")
-    monkeypatch.setenv("REPOMAP_HOME", str(home))
+def test_direct_view_postgres_routes_via_read_status_and_refuses_missing_credentials(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    unauth = tmp_path / "unauth-home"
+    unauth.mkdir()
+    (unauth / "repomap.rpl.toml").write_text(setup_owned_config(), encoding="utf-8")
+    monkeypatch.setenv("REPOMAP_HOME", str(unauth))
     monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
-    with patched_guards(NO_FALLBACK_GUARDS):
+    with (
+        patched_guards(NO_FALLBACK_GUARDS),
+        patch("common_lore_index.storage.postgres_node_locations.execute_json_readback", side_effect=AssertionError("io")),
+    ):
+        with pytest.raises(RepoMapMcpError, match="read/status credential unavailable or unsafe") as exc_info:
+            call(evidence_role="direct", graph_id="host-one")
+        assert str(tmp_path) not in str(exc_info.value) and "REPOMAP_READ_STATUS_PASSWORD" not in str(exc_info.value)
+
+    home = tmp_path / "postgres-home"
+    setup_local_runtime(home)
+    (home / "repomap.rpl.toml").write_text(setup_owned_config(), encoding="utf-8")
+    secret = read_role_secrets(home / "runtime" / ".env").read_status
+    monkeypatch.setenv("REPOMAP_HOME", str(home))
+    calls: list[tuple[str, dict[str, Any]]] = []
+
+    def fake_exec(sql: str, **kwargs: Any) -> dict[str, Any]:
+        calls.append((sql, kwargs))
+        return {
+            "has_accepted": True,
+            "accepted": {"generation": 2, "run_id": 7, "publication_bundle_id": "bundle1:" + "a" * 64},
+            "has_node": True,
+            "node": {"id": 11, "metadata_json": {}, "first_seen_run_id": 7, "last_seen_run_id": 7},
+            "selected_run_id": 7,
+            "current_rows": [{
+                "evidence_key": "ev1:11", "link_kind": "observed", "run_id": 7, "raw_observation_ordinal": 1,
+                "payload_hash": "b" * 64, "raw_kind": "markdown.document", "raw_source_id": "src1:1",
+                "path": "root/docs/guide.md", "start_line": None, "end_line": None, "extractor": "markdown",
+                "extractor_version": "1", "confidence": "extracted",
+                "metadata_json": {"binding_id": "bind1:host", "binding_alias": "root", "binding_revision": 1,
+                                  "snapshot_id": "snap1:host", "source_relative_path": "docs/guide.md"},
+                "publication_bundle_id": "bundle1:" + "a" * 64, "snapshot_manifest_id": "snapmanifest1:" + "c" * 64,
+                "extraction_receipt_id": "receipt1:" + "d" * 64, "graph_candidate_id": "cand1:" + "e" * 64,
+                "snapshot_vector_json": [{"binding_id": "bind1:host", "revision": 1, "snapshot_id": "snap1:host"}],
+                "evidence_role": "direct",
+            }],
+            "historical_rows": [],
+        }
+
+    with (
+        patched_guards(NO_FALLBACK_GUARDS),
+        patch("common_lore_index.storage.postgres_node_locations.execute_json_readback", side_effect=fake_exec),
+    ):
         result = call(evidence_role="direct", graph_id="host-one")
-    assert result["reason"] == "backend_unsupported" and result["locations"] == []
-    assert result["evidence_role"] == "direct" and result["fallback"] == "native_search"
+    assert len(calls) == 1
+    sql, kwargs = calls[0]
+    assert kwargs["psql_args"] == ["-h", "127.0.0.1", "-p", "55439", "-U", "repomap_read_status", "-d", "repomap_host_one"]
+    assert kwargs["password"] == secret and kwargs["label"] == "node locations" and kwargs["expected_shape"] == "object"
+    assert sql.startswith("WITH matched_repo AS MATERIALIZED") and "= 'direct'" in sql and "cloe_lexical" not in sql
+    assert result["status"] == "located" and result["evidence_role"] == "direct" and result["fallback"] == "native_search"
+    assert result["locations"][0]["path"] == "root/docs/guide.md" and result["locations"][0]["evidence_role"] == "direct"
+    serialized = json.dumps(result)
+    assert secret not in serialized and str(tmp_path) not in serialized
+    assert "chunk_text" not in serialized and "normalized_text" not in serialized
 
 
 def test_existing_tool_advertises_one_optional_role_selector() -> None:

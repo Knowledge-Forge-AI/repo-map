@@ -15,6 +15,23 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.ci102repair1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/cli/lexical_cli_roundtrip.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/lexical_capture_policy_publication.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/lexical_pagination.int.test.py",
+        "src/test/int/python/repomap_kg/storage/lexical_driver_native_timeout.int.test.py",
+        "src/test/unit/python/repomap_kg/ops/lexical_output_cli_edges.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/lexical_envelope_states.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/lexical_policy_capture_edges.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/lexical_driver_validation.unit.test.py"
+      ],
+      "rationale": "CI102 compatibility and accepted W3 contract regression owners; historical cohorts and debt remain unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
@@ -33887,6 +33904,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/cli/lexical_cli_roundtrip.int.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/cli/local_db_lifecycle/drop_guards.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -34841,6 +34867,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/lexical_capture_policy_publication.int.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/lexical_pagination.int.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/lexical_postgres_lifecycle.int.test.py",
       "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
       "root": "test_owners",
@@ -35680,6 +35724,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/storage/lexical_build_lease_boundaries.int.test.py",
       "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/lexical_driver_native_timeout.int.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -43346,6 +43399,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/lexical_output_cli_edges.unit.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/ops/multi_source_config.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -43769,6 +43831,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/lexical_envelope_states.unit.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/lexical_envelopes_and_cli.unit.test.py",
       "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
       "root": "test_owners",
@@ -43780,6 +43851,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/lexical_policy_and_capture.unit.test.py",
       "rationale": "ADR0129 PostgreSQL-native lexical search, metadata parity, and evaluation v2 test owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/lexical_policy_capture_edges.unit.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -44725,6 +44805,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/lexical_build_lease_boundaries.unit.test.py",
       "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/lexical_driver_validation.unit.test.py",
+      "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

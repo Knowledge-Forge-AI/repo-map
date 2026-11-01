@@ -20,6 +20,7 @@ from runner_coverage_observer import launch_observed_process
 ROOT = Path(__file__).resolve().parents[6]
 INCUMBENT = "6d818ad6d43d38d47c64b8c474c2b64b853f631a"
 CATALOGS = ("rdbms", "coordinator-rdbms")
+W3_APPEND_ONLY = {"rdbms/2026/10/31-001-cloe-lexical-create-derived-schema.sql"}
 
 
 def run(args: tuple[str, ...], cwd: Path, *, pip: bool = False) -> subprocess.CompletedProcess[str]:
@@ -70,11 +71,27 @@ def wheels(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     assert new.name.startswith("common_lore_index-0.0.3-")
     old_catalog = catalog_bytes(old, "repomap-kg")
     new_catalog = catalog_bytes(new, "common-lore-index")
-    expected = {path.relative_to(ROOT / "src/main/resources").as_posix():
-                hashlib.sha256(path.read_bytes()).hexdigest()
-                for catalog in CATALOGS for path in (ROOT / "src/main/resources" / catalog).rglob("*")
-                if path.is_file()}
-    assert old_catalog == new_catalog == expected and expected
+    old_expected = {path.relative_to(incumbent / "src/main/resources").as_posix():
+                    hashlib.sha256(path.read_bytes()).hexdigest()
+                    for catalog in CATALOGS for path in (incumbent / "src/main/resources" / catalog).rglob("*")
+                    if path.is_file()}
+    new_expected = {path.relative_to(ROOT / "src/main/resources").as_posix():
+                    hashlib.sha256(path.read_bytes()).hexdigest()
+                    for catalog in CATALOGS for path in (ROOT / "src/main/resources" / catalog).rglob("*")
+                    if path.is_file()}
+    incumbent_tree_files = {
+        line.removeprefix("src/main/resources/")
+        for line in require(("git", "ls-tree", "-r", "--name-only", INCUMBENT, "--",
+                             "src/main/resources/rdbms", "src/main/resources/coordinator-rdbms"), ROOT).splitlines()
+        if line
+    }
+    assert set(old_expected) == incumbent_tree_files
+    assert old_catalog == old_expected and old_expected
+    assert new_catalog == new_expected and new_expected
+    assert old_expected.items() <= new_expected.items()
+    assert set(new_expected) - set(old_expected) == W3_APPEND_ONLY
+    dated_rdbms = [k for k in sorted(new_expected) if k.startswith("rdbms/202")]
+    assert dated_rdbms and dated_rdbms[-1] == "rdbms/2026/10/31-001-cloe-lexical-create-derived-schema.sql"
     with zipfile.ZipFile(new) as wheel:
         names = wheel.namelist()
         assert not any(".data/data/share/repomap-kg/" in name for name in names)
@@ -86,12 +103,16 @@ def wheels(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     inputs = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in sorted(set(source_files))
               if (ROOT / name).is_file() and (name in {"README.md", "LICENSE", "pyproject.toml"}
                   or name.startswith(("src/main/python/", "src/main/resources/")))}
+    old_cat_sha = hashlib.sha256(json.dumps(old_expected, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    new_cat_sha = hashlib.sha256(json.dumps(new_expected, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     print(json.dumps({"schema": "cloe-offline-wheel-proof-v1", "incumbent_commit": INCUMBENT,
         "old_wheel_sha256": hashlib.sha256(old.read_bytes()).hexdigest(),
         "new_wheel_sha256": hashlib.sha256(new.read_bytes()).hexdigest(),
         "candidate_input_sha256": hashlib.sha256(json.dumps(inputs, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
-        "candidate_input_count": len(inputs), "catalog_files": len(expected),
-        "catalog_sha256": hashlib.sha256(json.dumps(expected, sort_keys=True, separators=(",", ":")).encode()).hexdigest()}, sort_keys=True))
+        "candidate_input_count": len(inputs), "old_catalog_files": len(old_expected),
+        "old_catalog_sha256": old_cat_sha, "new_catalog_files": len(new_expected),
+        "new_catalog_sha256": new_cat_sha, "w3_additions": sorted(W3_APPEND_ONLY),
+        "catalog_files": len(new_expected), "catalog_sha256": new_cat_sha}, sort_keys=True))
     return old, new
 
 

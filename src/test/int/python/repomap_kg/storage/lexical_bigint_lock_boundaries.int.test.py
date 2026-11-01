@@ -123,6 +123,62 @@ def test_real_build_query_and_revoke_preserve_accepted_repository(tmp_path: Path
         )
         assert envelope.hits
 
+        # Live query styles: normalized_phrase, literal_captured_text with fallback, and empty_tsquery
+        from common_lore_index.retrieval.query_contracts import FallbackDisclosure, QueryMode
+        phrase_env = query_graph_lexical_generation(
+            config,
+            MIXED_V1_GRAPH_ID,
+            LexicalQueryRequest(
+                query="RetrievalExecutionPipeline",
+                query_style="normalized_phrase",
+                selected_binding_ids=(core_id,),
+                path_prefixes=("pkg",),
+            ),
+            authorize_body=True,
+        )
+        assert phrase_env.hits
+        lit_fb = FallbackDisclosure(
+            caller_selected=True,
+            from_mode=QueryMode.GRAPH_INVESTIGATION,
+            to_mode=QueryMode.LITERAL_CAPTURED_TEXT,
+            reason_code="int_fallback",
+        ).validate()
+        lit_env = query_graph_lexical_generation(
+            config,
+            MIXED_V1_GRAPH_ID,
+            LexicalQueryRequest(
+                query="RetrievalExecutionPipeline",
+                query_style="literal_captured_text",
+                selected_binding_ids=(core_id,),
+                source_path_prefix="pkg",
+                fallback=lit_fb,
+            ),
+            authorize_body=True,
+        )
+        assert lit_env.hits and lit_env.effective_mode == QueryMode.LITERAL_CAPTURED_TEXT
+        empty_ts_env = query_graph_lexical_generation(
+            config,
+            MIXED_V1_GRAPH_ID,
+            LexicalQueryRequest(
+                query="!!!",
+                query_style="ranked_terms",
+                selected_binding_ids=(core_id,),
+            ),
+            authorize_body=True,
+        )
+        assert empty_ts_env.refusal_code == "empty_lexical_tsquery"
+
+        # Live open_lexical_connection, execute_fetchall, execute_fetchone, and driver/envelope boundaries
+        import common_lore_index.storage.lexical_driver as drv
+        auth = drv.resolve_lexical_postgres_authority(config, postgres.database)
+        with drv.open_lexical_connection(auth, read_only=True, autocommit=True) as ro_conn:
+            assert drv.execute_fetchall(ro_conn, "SELECT 1") == [(1,)]
+            assert drv.execute_fetchone(ro_conn, "SELECT 1 WHERE false") is None
+        with drv.lexical_connection_scope(params, read_only=True) as ro_scope:
+            with pytest.raises(drv.LexicalStorageError) as ro_err:
+                drv.execute_fetchone(ro_scope, "CREATE TABLE public._ro_disallow(id int)")
+            assert ro_err.value.code == "lexical_read_only_violation"
+
         revoked = revoke_graph_lexical_generation(
             config,
             MIXED_V1_GRAPH_ID,
@@ -133,6 +189,16 @@ def test_real_build_query_and_revoke_preserve_accepted_repository(tmp_path: Path
         assert revoked.repository_id == accepted_repository_id
         assert revoked.revoked_generation_count >= 1
         assert revoked.purge_rows is True
+        unavail_after_revoke = query_graph_lexical_generation(
+            config,
+            MIXED_V1_GRAPH_ID,
+            LexicalQueryRequest(query="RetrievalExecutionPipeline", selected_binding_ids=(core_id,)),
+            authorize_body=True,
+        )
+        assert unavail_after_revoke.capability_state.value == "unavailable"
+        assert unavail_after_revoke.provenance.get("revocation_reason") == "bigint_lifecycle_boundary"
+
+
 
 
 def test_real_bigint_lifecycle_lock_blocks_same_id_but_allows_distinct_id(

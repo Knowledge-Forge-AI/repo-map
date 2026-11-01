@@ -22,6 +22,13 @@ from common_lore_index.storage import (
     repository_identity_reconciliation_sql,
     run_psql,
 )
+from common_lore_index.runtime._lexical_restore import LEXICAL_SCHEMA
+from common_lore_index.storage.lexical_probe import (
+    EXPECTED_SCHEMA_COMMENT,
+    REQUIRED_GIN_INDEXES,
+    REQUIRED_LEXICAL_TABLES,
+    probe_lexical_runtime,
+)
 from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
@@ -135,6 +142,7 @@ def test_arch5d_upgrade_restore_and_forward_recovery() -> None:
 
         assert published.run_id > 0
         assert backup_path.is_file() and backup_path.stat().st_size > 0
+        assert "cloe_lexical" not in backup_path.read_text(encoding="utf-8")
         assert all(count > 0 for count in legacy_counts)
         assert canonical_rows_before[0]
         assert canonical_rows_before[1]
@@ -145,21 +153,19 @@ def test_arch5d_upgrade_restore_and_forward_recovery() -> None:
         assert "canonical_edge_evidence" in upgraded_default
 
         with temporary_postgres() as restored_postgres:
+            assert _non_system_schemas_and_relations(restored_postgres.psql_args) == (("public",), 0)
             restore_plain_database(
                 restored_postgres,
                 restored_postgres.psql_args,
                 backup_path,
             )
+            assert _non_system_schemas_and_relations(restored_postgres.psql_args)[0] == ("public",)
             restored_counts = _legacy_counts(restored_postgres.psql_args)
             _reconcile(restored_postgres, current_source)
             restored_config = _write_config(
                 root / "restored.toml", restored_postgres, current_source
             )
-            restored_drift = _drift(
-                restored_config,
-                baseline,
-                restored_postgres.psql_command,
-            )
+            restored_drift = _drift(restored_config, baseline, restored_postgres.psql_command)
             apply_migrations(
                 default_rdbms_root(),
                 restored_postgres.psql_args,
@@ -167,26 +173,17 @@ def test_arch5d_upgrade_restore_and_forward_recovery() -> None:
             )
             reconstructed_presence = _table_presence(restored_postgres.psql_args)
             reconstructed_canonical_rows = _canonical_rows(
-                restored_postgres.psql_args,
-                current_source,
-                restored_postgres.psql_command,
+                restored_postgres.psql_args, current_source, restored_postgres.psql_command
             )
-            reconstructed_drift = _drift(
-                restored_config,
-                baseline,
-                restored_postgres.psql_command,
-            )
-            reconstructed_repository_id = _repository_id(
-                restored_postgres.psql_args
-            )
+            reconstructed_drift = _drift(restored_config, baseline, restored_postgres.psql_command)
+            reconstructed_repository_id = _repository_id(restored_postgres.psql_args)
+            _assert_lexical_post_upgrade(restored_postgres.psql_args)
 
         assert restored_counts == legacy_counts
         assert not restored_drift["drift_detected"], restored_drift["drift"]
         _assert_removed_and_retained(reconstructed_presence)
         assert reconstructed_canonical_rows == canonical_rows_before
-        assert not reconstructed_drift["drift_detected"], reconstructed_drift[
-            "drift"
-        ]
+        assert not reconstructed_drift["drift_detected"], reconstructed_drift["drift"]
         assert reconstructed_repository_id == upgraded_repository_id
 
 
@@ -299,22 +296,39 @@ def _seed_legacy_rows(psql_args: list[str]) -> None:
 
 def _canonical_rows(psql_args: list[str], source: Path, psql: str):
     root = str(source.resolve())
-    nodes = query_canonical_node_records(
-        psql_args,
-        root_path=root,
-        graph_key_version=1,
-        psql_command=psql,
-    )
-    edges = query_canonical_edge_records(
-        psql_args,
-        root_path=root,
-        graph_key_version=1,
-        psql_command=psql,
-    )
-    return (
-        tuple(record.to_dict() for record in nodes),
-        tuple(record.to_dict() for record in edges),
-    )
+    nodes = query_canonical_node_records(psql_args, root_path=root, graph_key_version=1, psql_command=psql)
+    edges = query_canonical_edge_records(psql_args, root_path=root, graph_key_version=1, psql_command=psql)
+    return tuple(record.to_dict() for record in nodes), tuple(record.to_dict() for record in edges)
+
+
+def _non_system_schemas_and_relations(psql_args: list[str]) -> tuple[tuple[str, ...], int]:
+    conninfo = " ".join(f"{k}={v}" for k, v in _psycopg_connection_params_from_psql_args(psql_args).items())
+    with psycopg.connect(conninfo) as conn:
+        schemas = tuple(r[0] for r in conn.execute(
+            "SELECT nspname FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname <> 'information_schema' ORDER BY nspname"
+        ).fetchall())
+        rels = int((conn.execute(
+            "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+            "WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'"
+        ).fetchone() or (0,))[0])
+        return schemas, rels
+
+
+def _assert_lexical_post_upgrade(psql_args: list[str]) -> None:
+    conninfo = " ".join(f"{k}={v}" for k, v in _psycopg_connection_params_from_psql_args(psql_args).items())
+    with psycopg.connect(conninfo) as conn:
+        probe = probe_lexical_runtime(conn)
+        assert probe.ready and probe.table_count == len(REQUIRED_LEXICAL_TABLES)
+        assert probe.gin_index_count == len(REQUIRED_GIN_INDEXES) and probe.schema_comment == EXPECTED_SCHEMA_COMMENT
+        row = conn.execute(
+            "SELECT pg_get_userbyid(d.datdba), pg_get_userbyid(n.nspowner), "
+            "has_schema_privilege('public', 'cloe_lexical', 'USAGE'), "
+            "CASE WHEN EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'repomap_read_status') "
+            "THEN has_schema_privilege('repomap_read_status', 'cloe_lexical', 'USAGE') ELSE FALSE END "
+            "FROM pg_database d, pg_namespace n WHERE d.datname = current_database() AND n.nspname = %s",
+            (LEXICAL_SCHEMA,),
+        ).fetchone()
+        assert row is not None and row[0] == row[1] and row[2] is False and row[3] is False
 
 
 def _legacy_counts(psql_args: list[str]) -> tuple[int, ...]:
@@ -378,16 +392,8 @@ def _repository_id(psql_args: list[str]) -> int:
 
 def _reconcile(postgres, source: Path) -> None:
     run_psql(
-        [
-            postgres.psql_command,
-            *postgres.psql_args,
-            "-X",
-            "-v",
-            "ON_ERROR_STOP=1",
-        ],
+        [postgres.psql_command, *postgres.psql_args, "-X", "-v", "ON_ERROR_STOP=1"],
         input_text=repository_identity_reconciliation_sql(
-            _REPOSITORY_IDENTITY,
-            _REPOSITORY_NAME,
-            str(source.resolve()),
+            _REPOSITORY_IDENTITY, _REPOSITORY_NAME, str(source.resolve())
         ),
     )

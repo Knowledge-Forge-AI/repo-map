@@ -289,3 +289,87 @@ def test_private_location_redaction_does_not_manufacture_identity() -> None:
     )
     assert public["path"] is None
     assert public["source"]["source_relative_path"] is None
+
+
+def test_postgres_navigation_search_json_coercion_and_scan_limit_boundaries() -> None:
+    """Compact JSON coercion, missing predicates, schema errors, and scan limits fail closed."""
+    from common_lore_index.storage.errors import StorageSchemaError
+    from common_lore_index.storage.navigation_search import EVIDENCE_SCAN_LIMIT
+    from common_lore_index.storage.postgres_navigation_search import _compact_json_str
+
+    assert _compact_json_str('{"a":1}') == '{"a":1}'
+    assert _compact_json_str(None) == "{}"
+    assert _compact_json_str([{"binding_id": "b", "revision": 2, "snapshot_id": "s"}]) == '[["b",2,"s"]]'
+    assert _compact_json_str({"b": 2, "a": 1}) == '{"a":1,"b":2}'
+
+    scoped_query = NavigationSearchQuery(query="needle", source_binding_id=_BINDING, limit=5)
+    no_pred = read_postgres_navigation_search_with_executor(
+        scoped_query,
+        executor=lambda _sql: _navigation_payload([], []),
+    )
+    assert no_pred["status"] == "unavailable"
+    assert no_pred["reason"] == "source_scope_predicate_unavailable"
+
+    with pytest.raises(StorageSchemaError):
+        read_postgres_navigation_search_with_executor(
+            NavigationSearchQuery(query="needle", limit=5),
+            executor=lambda _sql: None,
+        )
+
+    unavail = read_postgres_navigation_search_with_executor(
+        NavigationSearchQuery(query="needle", limit=5),
+        executor=lambda _sql: {"has_accepted": False},
+    )
+    assert unavail["status"] == "unavailable"
+    assert unavail["reason"] == "publication_absent"
+
+    node_overflow = read_postgres_navigation_search_with_executor(
+        NavigationSearchQuery(query="needle", limit=5),
+        executor=lambda _sql: _navigation_payload(
+            [_node(i, f"needle:{i}") for i in range(NODE_SCAN_LIMIT + 1)],
+            [],
+        ),
+    )
+    assert node_overflow["status"] == "incomplete"
+    assert node_overflow["reason"] == "node_scan_limit"
+
+    ev_overflow = read_postgres_navigation_search_with_executor(
+        NavigationSearchQuery(query="needle", limit=5),
+        executor=lambda _sql: _navigation_payload(
+            [_node(1, "needle:1")],
+            [_evidence(1, f"nested/{i}.py") for i in range(EVIDENCE_SCAN_LIMIT + 1)],
+        ),
+    )
+    assert ev_overflow["status"] == "incomplete"
+    assert ev_overflow["reason"] == "evidence_scan_limit"
+
+    # Scoped candidate with no evidence and evidence raising ValueError on non-exhausted budget
+    def admit_or_raise(location: dict[str, Any]) -> bool:
+        if location["path"] == "nested/bad.py":
+            raise ValueError("malformed location")
+        return True
+
+    with pytest.raises(ValueError, match="malformed location"):
+        read_postgres_navigation_search_with_executor(
+            scoped_query,
+            executor=lambda _sql: _navigation_payload(
+                [_node(1, "needle:no_ev"), _node(2, "needle:with_ev")],
+                [_evidence(2, "nested/bad.py")],
+            ),
+            admits_location=admit_or_raise,
+            repository_identity="repo:w3",
+            root_path="graph:w3",
+        )
+
+    scoped_res = read_postgres_navigation_search_with_executor(
+        scoped_query,
+        executor=lambda _sql: _navigation_payload(
+            [_node(1, "needle:no_ev"), _node(2, "needle:with_ev")],
+            [_evidence(2, "nested/good.py")],
+        ),
+        admits_location=admit_or_raise,
+        repository_identity="repo:w3",
+        root_path="graph:w3",
+    )
+    assert scoped_res["status"] == "ok"
+    assert [n["canonical_key"] for n in scoped_res["nodes"]] == ["needle:with_ev"]

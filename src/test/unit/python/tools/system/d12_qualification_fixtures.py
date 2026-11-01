@@ -59,7 +59,7 @@ def _valid_round_trip() -> dict[str, Any]:
         "server_version": f"{POSTGRES_RELEASE_VERSION} (Debian {POSTGRES_RELEASE_VERSION}-1.pgdg13+1)",
         "fixture_rows": 2000, "fixture_md5": "0123456789abcdef0123456789abcdef",
         "graph_schema": "CURRENT", "extensions": ["plpgsql"], "replication_slots": 0,
-        "index_access_methods": ["btree"],
+        "index_access_methods": ["btree", "gin"],
     }
     return {
         "archive_sha256_before": "a" * 64, "archive_sha256_after": "a" * 64,
