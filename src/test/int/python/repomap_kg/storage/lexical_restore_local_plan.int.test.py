@@ -177,12 +177,18 @@ def test_d12_round_trip_probe_observes_btree_and_gin_across_pg_dump_restore(
     """D12 ROUND_TRIP_PY custom-format pg_dump/pg_restore preserves btree and gin indexes."""
     import json
     import os
-    import subprocess
     import sys
-    from repomap_test_support.d12_image_probes import ROUND_TRIP_PY
+    from repomap_test_support.cli_in_process import module_process_environment
+    from repomap_test_support.d12_image_probes import (
+        ROUND_TRIP_PY,
+        restore_replay_shim_source,
+    )
     from repomap_test_support.postgres_harness import postgres_bin_dir
+    from runner_coverage import get_active_bootstrap_capability
+    from runner_coverage_observer import launch_observed_process
     from tools.system.d12_candidate_assessment import ACCEPTED_INDEX_ACCESS_METHODS, _verify_round_trip
 
+    outer_env, outer_cap = dict(os.environ), get_active_bootstrap_capability()
     assert '"-p", "5432"' in ROUND_TRIP_PY and "port=5432" in ROUND_TRIP_PY
     assert '"/tmp/d12-source.dump"' in ROUND_TRIP_PY
     bin_dir = postgres_bin_dir()
@@ -191,15 +197,11 @@ def test_d12_round_trip_probe_observes_btree_and_gin_across_pg_dump_restore(
         archive_path = tmp_path / "d12-source.dump"
         restore_shim = tmp_path / "pg_restore_shim.py"
         restore_shim.write_text(
-            f"#!{sys.executable}\n"
-            "import os, subprocess, sys\n"
-            f"real_restore = {str(bin_dir / 'pg_restore')!r}\n"
-            f"real_psql = {str(bin_dir / 'psql')!r}\n"
-            "if '-l' in sys.argv:\n"
-            "    os.execv(real_restore, [real_restore, *sys.argv[1:]])\n"
-            "sql = subprocess.check_output([real_restore, '-f', '-', sys.argv[-1]], text=True)\n"
-            "clean = '\\n'.join(l for l in sql.splitlines() if l != 'SET transaction_timeout = 0;') + '\\n'\n"
-            "subprocess.run([real_psql, *sys.argv[1:-3], '--single-transaction', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1'], input=clean, text=True, check=True)\n",
+            restore_replay_shim_source(
+                sys.executable,
+                bin_dir / "pg_restore",
+                bin_dir / "psql",
+            ),
             encoding="utf-8",
         )
         restore_shim.chmod(0o755)
@@ -209,24 +211,25 @@ def test_d12_round_trip_probe_observes_btree_and_gin_across_pg_dump_restore(
             .replace("port=5432", f"port={pg_db.port}")
             .replace('"/tmp/d12-source.dump"', repr(str(archive_path)))
         )
-        env = dict(
-            os.environ,
-            PYTHONPATH=os.pathsep.join(sys.path),
-            REPOMAP_PACKAGED_PSQL=str(bin_dir / "psql"),
-            REPOMAP_PACKAGED_PG_DUMP=str(bin_dir / "pg_dump"),
-            REPOMAP_PACKAGED_PG_RESTORE=str(restore_shim),
-            PGUSER=pg_db.user,
-            PGDATABASE=pg_db.database,
-            PGPASSWORD=pg_db.password or "",
+        env = module_process_environment(
+            extra_env={
+                "REPOMAP_PACKAGED_PSQL": str(bin_dir / "psql"),
+                "REPOMAP_PACKAGED_PG_DUMP": str(bin_dir / "pg_dump"),
+                "REPOMAP_PACKAGED_PG_RESTORE": str(restore_shim),
+                "PGUSER": pg_db.user,
+                "PGDATABASE": pg_db.database,
+                "PGPASSWORD": pg_db.password or "",
+            }
         )
         pg_db.psql_scalar("DROP DATABASE IF EXISTS d12_source;")
         pg_db.psql_scalar("DROP DATABASE IF EXISTS d12_restore;")
         try:
-            completed = subprocess.run(
+            completed = launch_observed_process(
                 [sys.executable, "-c", probe_script],
+                family="cli_module",
                 env=env,
+                pid_namespace_relation="shared",
                 check=True,
-                capture_output=True,
                 text=True,
             )
             round_trip: dict[str, Any] = json.loads(completed.stdout)
@@ -236,3 +239,5 @@ def test_d12_round_trip_probe_observes_btree_and_gin_across_pg_dump_restore(
         finally:
             pg_db.psql_scalar("DROP DATABASE IF EXISTS d12_source;")
             pg_db.psql_scalar("DROP DATABASE IF EXISTS d12_restore;")
+    assert dict(os.environ) == outer_env
+    assert get_active_bootstrap_capability() is outer_cap

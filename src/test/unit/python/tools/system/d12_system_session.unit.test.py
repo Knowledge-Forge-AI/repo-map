@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import hashlib, stat, subprocess
+import shlex
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -14,6 +16,7 @@ import pytest
 from common_lore_index.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
 from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import d12_image_probes as probes_mod, resource_run as resource_run_mod
+from runner_coverage_execution import scrub_coverage_environment
 from tools.system import d12_system_session as session_mod
 from tools.system.config import SystemDeadline, SystemTestError
 from tools.system.d12_system_session import (
@@ -313,3 +316,39 @@ def test_default_same_daemon_preflight_binds_active_sandbox_and_daemon(
     rep = session.run_same_daemon_preflight(deadline=SystemDeadline(1500, 120))
     assert rep["bindings"]["run_id"] == config.run_id and rep["bindings"]["daemon_id"] == "daemon-1"
     session.validate_for_candidate_build(repo_root=REPO_ROOT, config=config)
+
+
+@pytest.mark.parametrize(("failure_stage", "exit_code"), [("dump", 17), ("psql", 23)])
+def test_restore_replay_shim_returns_sql_stage_failure_without_fallthrough(
+    tmp_path: Path, failure_stage: str, exit_code: int,
+) -> None:
+    """Pure command stubs prove error propagation; no database or image is used."""
+    restore = tmp_path / "pg_restore"
+    psql = tmp_path / "psql"
+    psql_called = tmp_path / "psql-called"
+    dump_body = (
+        "printf 'dump-failure\\n' >&2\nexit 17\n"
+        if failure_stage == "dump" else "printf 'SELECT 1;\\n'\n"
+    )
+    restore.write_text("#!/bin/sh\n" + dump_body, encoding="utf-8")
+    psql.write_text(
+        "#!/bin/sh\n"
+        f"printf called > {shlex.quote(str(psql_called))}\n"
+        "cat > /dev/null\nprintf 'psql-failure\\n' >&2\nexit 23\n",
+        encoding="utf-8",
+    )
+    for command in (restore, psql):
+        command.chmod(0o755)
+    shim = tmp_path / "restore_shim.py"
+    shim.write_text(
+        probes_mod.restore_replay_shim_source(sys.executable, restore, psql),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, str(shim), "-d", "fixture", "--exit-on-error",
+         "--single-transaction", "fixture.dump"],
+        env=scrub_coverage_environment(), capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == exit_code
+    assert result.stdout == "" and result.stderr == f"{failure_stage}-failure\n"
+    assert psql_called.exists() == (failure_stage == "psql")

@@ -10,11 +10,18 @@ from typing import Any
 import coverage
 import pytest
 
+from repomap_test_support.d12_image_probes import restore_replay_shim_source
 from repomap_test_support.test_scratch import establish_run
 from runner_failure_evidence import CHILD_SCHEMA, DISCOVERY_SCHEMA, FAILURE_SCHEMA, read_diagnostic
 import runner_staging_discovery as discovery
 from runner_coverage import ChildCoverageSession, get_active_bootstrap_capability
-from runner_coverage_execution import scrub_coverage_environment
+from runner_coverage_execution import (
+    is_runner_bootstrap_path,
+    launch_observed_process,
+    prepare_child_coverage_environment,
+    read_registered_children,
+    scrub_coverage_environment,
+)
 from staging_report_contract import execution_succeeded, qualifies
 
 REPO = Path(__file__).resolve().parents[5]
@@ -141,3 +148,200 @@ def test_real_child_request_refusal_retains_typed_startup_failure(tmp_path: Path
     assert value["error"]["stage"] == "child_startup"
     assert value["error"]["type"] == "PopulationDiscoveryError"
     assert b"opaque-fixture" not in done.stdout + done.stderr + path.read_bytes()
+
+
+def test_measured_python_descendants_register_and_combine_through_restore_shim(
+    tmp_path: Path,
+) -> None:
+    """Measured parent Python and nested shebang pg_restore shim children register and combine cleanly."""
+    outer_env, outer_cap = dict(os.environ), get_active_bootstrap_capability()
+    base = tmp_path.resolve()
+    source = base / "synthetic-source"
+    source.mkdir()
+    fixture_file = source / "fixture.py"
+    fixture_file.write_text(
+        "def probe(v: int) -> int:\n    return v + 1 if v > 0 else 0\n",
+        encoding="utf-8",
+    )
+    bin_dir = base / "bin"
+    bin_dir.mkdir()
+    real_restore = bin_dir / "pg_restore"
+    real_restore.write_text(
+        "#!/bin/sh\n"
+        "if [ \"$1\" = \"-l\" ]; then\n"
+        "  printf 'TOC:%s\\n' \"$2\"\n"
+        "  exit 3\n"
+        "fi\n"
+        "printf 'CREATE TABLE t(id int);\\nSET transaction_timeout = 0;\\nINSERT INTO t VALUES (1);\\n'\n",
+        encoding="utf-8",
+    )
+    real_restore.chmod(0o755)
+    psql_argv_out = base / "psql-argv.txt"
+    psql_sql_out = base / "psql-stdin.sql"
+    real_psql = bin_dir / "psql"
+    real_psql.write_text(
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$@\" > {str(psql_argv_out)!r}\n"
+        f"cat > {str(psql_sql_out)!r}\n",
+        encoding="utf-8",
+    )
+    real_psql.chmod(0o755)
+    restore_shim = base / "pg_restore_shim.py"
+    restore_shim.write_text(
+        restore_replay_shim_source(sys.executable, real_restore, real_psql),
+        encoding="utf-8",
+    )
+    restore_shim.chmod(0o755)
+    parent_code = (
+        "import json, os, subprocess, sys\n"
+        "import fixture\n"
+        "assert fixture.probe(2) == 3 and fixture.probe(0) == 0\n"
+        "shim, archive = sys.argv[1], sys.argv[2]\n"
+        "toc = subprocess.run([shim, '-l', archive], capture_output=True, text=True)\n"
+        "subprocess.run(\n"
+        "    [shim, '-h', '127.0.0.1', '-p', '5432', '-U', 'u', '-d', 'd12_restore',\n"
+        "     '--exit-on-error', '--single-transaction', archive],\n"
+        "    check=True,\n"
+        "    capture_output=True,\n"
+        "    text=True,\n"
+        ")\n"
+        "print(json.dumps({'pid': os.getpid(), 'toc_rc': toc.returncode, 'toc_out': toc.stdout.strip()}))\n"
+    )
+    session = ChildCoverageSession(
+        coverage_module=coverage,
+        scratch_dir=base / "session",
+        source_root=source,
+        suite="int",
+    )
+    try:
+        with session:
+            env = prepare_child_coverage_environment(
+                os.environ,
+                family="cli_module",
+                source_root=source,
+            )
+            completed = launch_observed_process(
+                [sys.executable, "-c", parent_code, str(restore_shim), str(base / "sample.dump")],
+                family="cli_module",
+                env=env,
+                pid_namespace_relation="shared",
+                check=True,
+                text=True,
+            )
+            parent_result = json.loads(completed.stdout)
+            assert parent_result["toc_rc"] == 3
+            assert parent_result["toc_out"] == f"TOC:{base / 'sample.dump'}"
+            assert psql_argv_out.read_text(encoding="utf-8").splitlines() == [
+                "-h", "127.0.0.1", "-p", "5432", "-U", "u", "-d", "d12_restore",
+                "--single-transaction", "-X", "-qAt", "-v", "ON_ERROR_STOP=1",
+            ]
+            assert psql_sql_out.read_text(encoding="utf-8") == (
+                "CREATE TABLE t(id int);\nINSERT INTO t VALUES (1);\n"
+            )
+            obs_files = list(session.observation_dir.glob("parent_obs_*.json"))
+            assert len(obs_files) == 1
+            reg_failures = list(session.child_manifest_dir.glob("*.registration_failure"))
+            assert reg_failures == []
+            children = read_registered_children(
+                session.child_manifest_dir,
+                expected_invocation=session.invocation_id,
+                expected_suite="int",
+            )
+            assert len(children) == 3
+            parent_children = [
+                (pid, info) for pid, info in children.items() if info.get("launch_shape") == "cpython:-c"
+            ]
+            shim_children = [
+                info
+                for info in children.values()
+                if str(info.get("launch_shape", "")).startswith("script:pg_restore_shim.py")
+            ]
+            assert len(parent_children) == 1
+            assert len(shim_children) == 2
+            parent_pid, parent_info = parent_children[0]
+            assert parent_pid == parent_result["pid"]
+            assert parent_info["ppid"] == os.getpid()
+            assert parent_info["exited"] is True and parent_info["strict"] is True
+            assert parent_info["measurement"] == "selected_hits"
+            assert all(c["ppid"] == parent_result["pid"] for c in shim_children)
+            assert all(c["exited"] is True and c["strict"] is True for c in shim_children)
+            assert all(c["measurement"] == "no_selected_hits" for c in shim_children)
+            combined = session.combine()
+            assert combined is not None
+            assert session.source_rejections == []
+            data = combined.get_data()
+            assert set(data.measured_files()) == {str(fixture_file)}
+            lines = data.lines(str(fixture_file)) or []
+            assert 1 in lines and 2 in lines
+    finally:
+        session.cleanup()
+    assert dict(os.environ) == outer_env
+    assert get_active_bootstrap_capability() is outer_cap
+
+
+def test_lost_bootstrap_orphan_child_remains_rejected(tmp_path: Path) -> None:
+    """Overwriting PYTHONPATH while keeping COVERAGE_PROCESS_START produces a rejected orphan shard."""
+    assert any((Path(p) / "a1_coverage.pth").is_file() for p in sys.path if p)
+    outer_env, outer_cap = dict(os.environ), get_active_bootstrap_capability()
+    base = tmp_path.resolve()
+    source = base / "synthetic-source"
+    source.mkdir()
+    (source / "fixture.py").write_text(
+        "def orphan_probe() -> int:\n    return 7\n",
+        encoding="utf-8",
+    )
+    session = ChildCoverageSession(
+        coverage_module=coverage,
+        scratch_dir=base / "session",
+        source_root=source,
+        suite="int",
+    )
+    try:
+        with session:
+            non_bootstrap_paths = [
+                p for p in sys.path
+                if p and not is_runner_bootstrap_path(p, capability=session.bootstrap_capability)
+            ]
+            broken_env = dict(
+                os.environ,
+                PYTHONPATH=os.pathsep.join([str(source), *non_bootstrap_paths]),
+            )
+            assert "COVERAGE_PROCESS_START" in broken_env
+            done = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    "import json, os, fixture; assert fixture.orphan_probe() == 7; "
+                    "print(json.dumps({'pid': os.getpid()}))",
+                ],
+                env=broken_env,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            orphan_pid = int(json.loads(done.stdout)["pid"])
+            shards = sorted(session.data_dir.glob(f".coverage.*.pid{orphan_pid}.*"))
+            assert len(shards) == 1
+            assert not (session.child_manifest_dir / f"{orphan_pid}.start").exists()
+            assert not list(session.observation_dir.glob("parent_obs_*.json"))
+            with pytest.raises(RuntimeError, match="unregistered coverage shard rejected") as exc_info:
+                session.combine()
+            message = str(exc_info.value)
+            assert f"pid{orphan_pid}" in message
+            unregistered = [
+                snap.to_dict()
+                for snap in session.diagnostic_snapshots
+                if snap.shard_name == shards[0].name
+            ]
+            assert len(unregistered) == 1
+            record = unregistered[0]
+            assert record["file_type"] == "unregistered"
+            assert record["termination_outcome"] == "unregistered_child"
+            assert record["launch_role"] == "unregistered"
+            assert record["launch_shape"] == "cpython:-c"
+            assert record["failure_class"] == "valid_sqlite"
+            assert record["child_probe_id"] == f"pid={orphan_pid}"
+    finally:
+        session.cleanup()
+    assert dict(os.environ) == outer_env
+    assert get_active_bootstrap_capability() is outer_cap

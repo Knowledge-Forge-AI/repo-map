@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
+from os import PathLike
 import re
 import time
 from typing import Any
@@ -153,6 +154,49 @@ toc_n = sum(1 for l in toc.splitlines() if l and not l.startswith(";"))
 print(json.dumps({"source": observe("d12_source"), "restored": observe("d12_restore"), "archive_sha256_before": before,
   "archive_sha256_after": after, "archive_toc_entries": toc_n}))
 """
+
+
+def restore_replay_shim_source(
+    python_executable: str,
+    real_restore: str | PathLike[str],
+    real_psql: str | PathLike[str],
+) -> str:
+    """Return a measured-child-safe pg_restore replay shim script for D12 round-trip probes."""
+    # The local PG17 client emits transaction_timeout, which PG16 cannot replay.
+    # Direct pg_restore against the server remains a hosted native qualification.
+    return (
+        f"#!{python_executable}\n"
+        "import subprocess, sys\n"
+        f"real_restore = {str(real_restore)!r}\n"
+        f"real_psql = {str(real_psql)!r}\n"
+        "if '-l' in sys.argv:\n"
+        "    raise SystemExit(subprocess.run([real_restore, *sys.argv[1:]]).returncode)\n"
+        "dumped = subprocess.run(\n"
+        "    [real_restore, '-f', '-', sys.argv[-1]],\n"
+        "    stdout=subprocess.PIPE,\n"
+        "    text=True,\n"
+        ")\n"
+        "if dumped.returncode != 0:\n"
+        "    raise SystemExit(dumped.returncode)\n"
+        "clean = '\\n'.join(\n"
+        "    line for line in dumped.stdout.splitlines() if line != 'SET transaction_timeout = 0;'\n"
+        ") + '\\n'\n"
+        "raise SystemExit(\n"
+        "    subprocess.run(\n"
+        "        [\n"
+        "            real_psql,\n"
+        "            *sys.argv[1:-3],\n"
+        "            '--single-transaction',\n"
+        "            '-X',\n"
+        "            '-qAt',\n"
+        "            '-v',\n"
+        "            'ON_ERROR_STOP=1',\n"
+        "        ],\n"
+        "        input=clean,\n"
+        "        text=True,\n"
+        "    ).returncode\n"
+        ")\n"
+    )
 
 
 def _tmpfs(client: Any, image: str) -> dict[str, str]:
