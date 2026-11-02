@@ -6,6 +6,9 @@ from collections.abc import Callable, Mapping, Sequence
 import json
 from typing import Any
 
+from common_lore_index.storage.context_postgres_identity import (
+    format_postgres_accepted_publication,
+)
 from common_lore_index.storage.errors import StorageSchemaError
 from common_lore_index.storage.navigation_search import (
     EVIDENCE_SCAN_LIMIT,
@@ -20,6 +23,10 @@ from common_lore_index.storage.readback_driver import execute_json_readback
 from common_lore_index.storage.sqlite_local.navigation_queries import (
     _Admission,
     _direct_location,
+)
+from common_lore_index.storage.sqlite_local.node_location_queries import (
+    _EVIDENCE_ROLE_SQL,
+    _parse_context_snapshot_vector,
 )
 
 
@@ -40,7 +47,12 @@ def _compact_json_str(value: Any, *, default: str = "{}") -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
-def _evidence_tuple_from_json(raw: Mapping[str, Any]) -> tuple[Any, ...]:
+def _evidence_tuple_from_json(
+    raw: Mapping[str, Any], *, context_identity: bool = False
+) -> tuple[Any, ...]:
+    raw_vector = raw.get("snapshot_vector_json")
+    if context_identity:
+        raw_vector = _parse_context_snapshot_vector(raw_vector)
     return (
         raw.get("evidence_key"),
         raw.get("link_kind"),
@@ -60,7 +72,7 @@ def _evidence_tuple_from_json(raw: Mapping[str, Any]) -> tuple[Any, ...]:
         raw.get("snapshot_manifest_id"),
         raw.get("extraction_receipt_id"),
         raw.get("graph_candidate_id"),
-        _compact_json_str(raw.get("snapshot_vector_json"), default="[]"),
+        _compact_json_str(raw_vector, default="[]"),
         raw.get("evidence_role") or "direct",
         int(raw["node_id"]),
     )
@@ -127,6 +139,8 @@ def read_postgres_navigation_search_with_executor(
     admits_location: Callable[[dict[str, Any]], bool] | None = None,
     root_path: str = "",
     repository_identity: str | None = None,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    context_identity: bool = False,
 ) -> dict[str, Any]:
     """Execute single-statement PostgreSQL navigation_search using an injected SQL JSON executor."""
     query.validate()
@@ -134,12 +148,14 @@ def read_postgres_navigation_search_with_executor(
     if query.source_binding_id is not None:
         if admits_location is None:
             return unavailable("source_scope_predicate_unavailable")
-        admission = _Admission(admits_location)
+        admission = _Admission(admits_location, context_identity=context_identity)
 
     sql = build_postgres_navigation_sql(
         query,
         repository_identity=repository_identity,
         root_path=root_path,
+        role_sql=role_sql,
+        context_identity=context_identity,
     )
     payload = executor(sql)
     if not isinstance(payload, dict):
@@ -159,7 +175,7 @@ def read_postgres_navigation_search_with_executor(
         if isinstance(r, Mapping)
     ]
     raw_evidence = [
-        _evidence_tuple_from_json(r)
+        _evidence_tuple_from_json(r, context_identity=context_identity)
         for r in (payload.get("direct_evidence") or ())
         if isinstance(r, Mapping)
     ]
@@ -174,11 +190,9 @@ def read_postgres_navigation_search_with_executor(
         "status": "ok",
         "reason": None,
         "nodes": [],
-        "accepted_publication": {
-            "generation": int(accepted["generation"]),
-            "run_id": accepted_run_id,
-            "publication_bundle_id": str(accepted["publication_bundle_id"]),
-        },
+        "accepted_publication": format_postgres_accepted_publication(
+            accepted, context_identity=context_identity
+        ),
         "scan": {
             "complete": False,
             "nodes": min(len(rows), NODE_SCAN_LIMIT),
@@ -211,7 +225,10 @@ def read_postgres_navigation_search_with_executor(
     }
     for ev_row in evidence:
         vector = admission.vectors.get(ev_row[2]) if admission is not None else None
-        location = _direct_location(ev_row[:20], accepted_run_id, snapshot_vector=vector)
+        location = _direct_location(
+            ev_row[:20], accepted_run_id, snapshot_vector=vector,
+            context_identity=context_identity,
+        )
         if ev_row[20] in nodes_map:
             nodes_map[ev_row[20]]["locations"].append(location)
     result["nodes"] = list(nodes_map.values())
@@ -228,6 +245,8 @@ def query_postgres_navigation_candidates(
     password: str | None = None,
     root_path: str = "",
     repository_identity: str | None = None,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    context_identity: bool = False,
 ) -> dict[str, Any]:
     """Execute single-statement PostgreSQL navigation_search with SQLite admission parity."""
     return read_postgres_navigation_search_with_executor(
@@ -243,6 +262,8 @@ def query_postgres_navigation_candidates(
         admits_location=admits_location,
         root_path=root_path,
         repository_identity=repository_identity,
+        role_sql=role_sql,
+        context_identity=context_identity,
     )
 
 

@@ -842,6 +842,8 @@ Postgres harness and shared integration state are proven safe under xdist.
 - [Zunit Extraction Design](docs/extraction/zunit-extraction-design.md)
 - [Project Profile Schema](docs/specs/profile-schema.md)
 - [Raw Observation Schema](docs/specs/raw-observation-schema.md)
+- [Intent-Aware Navigation and Compact Context Specification](docs/specs/cloe-intent-context-v1.md)
+- [Compact Context Operations](docs/ops/compact-context.md)
 - [Roadmap](docs/specs/roadmap.md)
 
 ## License

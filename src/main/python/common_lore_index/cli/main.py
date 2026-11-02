@@ -204,6 +204,7 @@ from common_lore_index.storage import (
     terraform_summary_to_jsonable as terraform_summary_to_jsonable,
 )
 from common_lore_index.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
+from common_lore_index.cli.ops_context_commands import dispatch_ops_context_command
 from common_lore_index.cli._config_migration import dispatch_config_migration
 from common_lore_index.cli._postgres_facade import (
     POSTGRES_DRIVER_UNAVAILABLE,
@@ -311,6 +312,9 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
         sqlite_result = dispatch_ops_sqlite_command(args, _print_cli_error)
         if sqlite_result is not None:
             return sqlite_result
+        context_result = dispatch_ops_context_command(args, _commands_module(), _print_cli_error)
+        if context_result is not None:
+            return context_result
     try:
         return dispatch_command(args, parser, _commands_module())
     except ModuleNotFoundError as error:

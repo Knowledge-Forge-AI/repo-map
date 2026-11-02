@@ -35,6 +35,7 @@ from common_lore_index.storage.lexical_query_sql import execute_single_statement
 from common_lore_index.storage.lexical_revoke import revoke_lexical_generations
 from common_lore_index.storage.navigation_search import NavigationSearchQuery
 from common_lore_index.storage.node_locations import NodeLocationsQuery
+from common_lore_index.storage.errors import StorageSchemaError
 from common_lore_index.storage.postgres_navigation_search import (
     read_postgres_navigation_search_with_executor,
 )
@@ -362,3 +363,37 @@ def test_postgres_navigation_and_node_locations_executor_parity() -> None:
     )
     assert overflow_res["status"] == "incomplete"
     assert overflow_res["reason"] == "admission_work_limit"
+    assert set(nav_res["accepted_publication"].keys()) == {
+        "generation", "run_id", "publication_bundle_id"
+    }
+    assert set(loc_res["accepted_publication"].keys()) == {
+        "generation", "run_id", "publication_bundle_id"
+    }
+    strict_accepted = {
+        "generation": 1, "run_id": 4, "publication_bundle_id": "bundle1:b", "repository_id": 1,
+        "snapshot_manifest_id": "manifest1:m", "extraction_receipt_id": "receipt1:r",
+        "graph_candidate_id": "cand1:c", "publication_job_id": "job1", "publication_attempt": 1,
+        "snapshot_vector_json": ev_row["snapshot_vector_json"],
+    }
+    strict_kwargs = {"repository_identity": "repo1:mixed-v1", "context_identity": True}
+    loc_query = NodeLocationsQuery(canonical_key="file:core/pkg/pipeline.py", limit=5)
+    nav_query = NavigationSearchQuery(query="pipeline.py", scope="all", limit=5)
+    def read(fn: Any, query: Any, payload: Any) -> Any:
+        return fn(query, executor=lambda _sql: payload, **strict_kwargs)
+    for bad_vector in (1.5, "{"):
+        bad_loc = {
+            **loc_payload, "accepted": strict_accepted,
+            "current_rows": [{**ev_row, "snapshot_vector_json": bad_vector}],
+        }
+        with pytest.raises(StorageSchemaError):
+            read(read_postgres_node_locations_with_executor, loc_query, bad_loc)
+        bad_nav = {
+            **nav_payload, "accepted": strict_accepted,
+            "direct_evidence": [{**ev_row, "snapshot_vector_json": bad_vector}],
+        }
+        with pytest.raises(StorageSchemaError):
+            read(read_postgres_navigation_search_with_executor, nav_query, bad_nav)
+    good_loc = {**loc_payload, "accepted": strict_accepted}
+    good_nav = {**nav_payload, "accepted": strict_accepted}
+    assert (read(read_postgres_node_locations_with_executor, loc_query, good_loc)["status"],
+            read(read_postgres_navigation_search_with_executor, nav_query, good_nav)["status"]) == ("ok", "ok")

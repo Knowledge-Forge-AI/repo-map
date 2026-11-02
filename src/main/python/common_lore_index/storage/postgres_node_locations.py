@@ -6,6 +6,12 @@ from collections.abc import Callable, Mapping, Sequence
 import json
 from typing import Any
 
+from common_lore_index.storage.context_postgres_identity import (
+    format_postgres_accepted_publication,
+    postgres_accepted_json_sql,
+    postgres_accepted_run_cte_sql,
+    postgres_repo_predicate_sql,
+)
 from common_lore_index.storage.errors import StorageSchemaError
 from common_lore_index.storage.node_locations import NodeLocationsQuery, unavailable
 from common_lore_index.storage.postgres_navigation_sql import transport_budget_sql
@@ -15,6 +21,7 @@ from common_lore_index.storage.sqlite_local.node_location_queries import (
     _EVIDENCE_ROLE_SQL,
     _location,
     _metadata_location,
+    _parse_context_snapshot_vector,
     _relation,
 )
 
@@ -39,21 +46,27 @@ def build_postgres_node_locations_sql(
     *,
     repository_identity: str | None,
     root_path: str,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    context_identity: bool = False,
 ) -> str:
     """Build a single-statement CTE query pinning accepted publication and node evidence windows."""
     query.validate()
-    repo_pred = (
-        f"repo.repository_identity = {sql_literal(repository_identity)}"
-        if repository_identity
-        else f"repo.root_path = {sql_literal(root_path)}"
+    repo_pred = postgres_repo_predicate_sql(
+        repository_identity, root_path, context_identity=context_identity
     )
     filtered = query.evidence_role != "all"
     role_filter_sql = (
-        f"AND ({_EVIDENCE_ROLE_SQL}) = {sql_literal(query.evidence_role)}"
+        f"AND ({role_sql}) = {sql_literal(query.evidence_role)}"
         if filtered
         else ""
     )
     window_limit = int(query.limit) + 1
+    target_display_col = ",\n        cn.display_name" if context_identity else ""
+    extra_node_cols = (
+        ",\n            'kind', tn.kind,\n            'display_name', tn.display_name"
+        if context_identity
+        else ""
+    )
 
     return f"""WITH matched_repo AS MATERIALIZED (
     SELECT repo.id AS repository_id
@@ -62,52 +75,12 @@ def build_postgres_node_locations_sql(
     ORDER BY repo.id DESC
     LIMIT 1
 ),
-accepted_run AS MATERIALIZED (
-    SELECT
-        r.id AS run_id,
-        r.publication_bundle_id,
-        (
-            SELECT count(*)::int
-            FROM public.runs r2
-            WHERE r2.repository_id = mr.repository_id
-              AND r2.status = 'complete'
-              AND r2.execution_route = 'portable-worker-v1'
-              AND r2.publication_bundle_id IS NOT NULL
-              AND r2.id <= r.id
-        ) AS generation
-    FROM public.runs r
-    JOIN matched_repo mr ON mr.repository_id = r.repository_id
-    WHERE r.status = 'complete'
-      AND r.execution_route = 'portable-worker-v1'
-      AND r.publication_bundle_id IS NOT NULL
-      AND r.snapshot_manifest_id IS NOT NULL
-      AND r.extraction_receipt_id IS NOT NULL
-      AND r.graph_candidate_id IS NOT NULL
-      AND r.snapshot_vector_json IS NOT NULL
-      AND (
-          r.portable_execution_mode <> 'coordinator'
-          OR EXISTS (
-              SELECT 1
-              FROM public.graph_publication_authority gpa
-              WHERE gpa.repository_id = mr.repository_id
-                AND gpa.last_run_id = r.id
-          )
-      )
-      AND NOT EXISTS (
-          SELECT 1
-          FROM public.graph_publication_authority gpa
-          WHERE gpa.repository_id = mr.repository_id
-            AND gpa.last_run_id IS NOT NULL
-            AND gpa.last_run_id <> r.id
-      )
-    ORDER BY r.id DESC
-    LIMIT 1
-),
+{postgres_accepted_run_cte_sql(context_identity=context_identity)},
 target_node AS MATERIALIZED (
     SELECT
         cn.id,
         cn.repository_id,
-        cn.kind,
+        cn.kind{target_display_col},
         cn.metadata_json,
         cn.first_seen_run_id,
         cn.last_seen_run_id
@@ -151,7 +124,7 @@ current_window AS MATERIALIZED (
         r.extraction_receipt_id,
         r.graph_candidate_id,
         r.snapshot_vector_json,
-        ({_EVIDENCE_ROLE_SQL}) AS evidence_role
+        ({role_sql}) AS evidence_role
     FROM public.canonical_node_evidence link
     JOIN target_node subject ON subject.id = link.canonical_node_id
     JOIN selected_run sr ON TRUE
@@ -190,7 +163,7 @@ historical_window AS MATERIALIZED (
         r.extraction_receipt_id,
         r.graph_candidate_id,
         r.snapshot_vector_json,
-        ({_EVIDENCE_ROLE_SQL}) AS evidence_role
+        ({role_sql}) AS evidence_role
     FROM public.canonical_node_evidence link
     JOIN target_node subject ON subject.id = link.canonical_node_id
     JOIN selected_run sr ON TRUE
@@ -213,11 +186,7 @@ SELECT json_build_object(
     'has_accepted', EXISTS (SELECT 1 FROM accepted_run),
     'transport_overflow', (SELECT exceeded FROM transport_budget),
     'accepted', (
-        SELECT json_build_object(
-            'generation', acc.generation,
-            'run_id', acc.run_id,
-            'publication_bundle_id', acc.publication_bundle_id
-        )
+        SELECT {postgres_accepted_json_sql(context_identity=context_identity)}
         FROM accepted_run acc
         WHERE NOT (SELECT exceeded FROM transport_budget)
     ),
@@ -227,7 +196,7 @@ SELECT json_build_object(
             'id', tn.id,
             'metadata_json', tn.metadata_json,
             'first_seen_run_id', tn.first_seen_run_id,
-            'last_seen_run_id', tn.last_seen_run_id
+            'last_seen_run_id', tn.last_seen_run_id{extra_node_cols}
         )
         FROM target_node tn
         WHERE NOT (SELECT exceeded FROM transport_budget)
@@ -246,7 +215,12 @@ SELECT json_build_object(
 )::text;"""
 
 
-def _row_tuple_from_json(raw: Mapping[str, Any], *, include_role: bool) -> tuple[Any, ...]:
+def _row_tuple_from_json(
+    raw: Mapping[str, Any], *, include_role: bool, context_identity: bool = False
+) -> tuple[Any, ...]:
+    raw_vector = raw.get("snapshot_vector_json")
+    if context_identity:
+        raw_vector = _parse_context_snapshot_vector(raw_vector)
     base: tuple[Any, ...] = (
         raw.get("evidence_key"),
         raw.get("link_kind"),
@@ -266,7 +240,7 @@ def _row_tuple_from_json(raw: Mapping[str, Any], *, include_role: bool) -> tuple
         raw.get("snapshot_manifest_id"),
         raw.get("extraction_receipt_id"),
         raw.get("graph_candidate_id"),
-        _compact_json_str(raw.get("snapshot_vector_json") or "[]"),
+        _compact_json_str(raw_vector or "[]"),
     )
     if include_role:
         return (*base, raw.get("evidence_role"))
@@ -279,6 +253,8 @@ def read_postgres_node_locations_with_executor(
     executor: Callable[[str], Any],
     root_path: str = "",
     repository_identity: str | None = None,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    context_identity: bool = False,
 ) -> dict[str, Any]:
     """Execute single-statement PostgreSQL node_locations using an injected SQL JSON executor."""
     query.validate()
@@ -286,6 +262,8 @@ def read_postgres_node_locations_with_executor(
         query,
         repository_identity=repository_identity,
         root_path=root_path,
+        role_sql=role_sql,
+        context_identity=context_identity,
     )
     payload = executor(sql)
     if not isinstance(payload, dict):
@@ -295,7 +273,12 @@ def read_postgres_node_locations_with_executor(
     if payload.get("transport_overflow"):
         return unavailable("admission_work_limit")
     if not payload.get("has_node"):
-        return unavailable("node_not_found")
+        res = unavailable("node_not_found")
+        if context_identity and isinstance(payload.get("accepted"), Mapping):
+            res["accepted_publication"] = format_postgres_accepted_publication(
+                payload["accepted"], context_identity=True
+            )
+        return res
 
     accepted = payload["accepted"]
     accepted_run_id = int(accepted["run_id"])
@@ -311,20 +294,26 @@ def read_postgres_node_locations_with_executor(
     include_role = query.evidence_role != "all"
 
     cur_tuples = [
-        _row_tuple_from_json(r, include_role=include_role)
+        _row_tuple_from_json(r, include_role=include_role, context_identity=context_identity)
         for r in (payload.get("current_rows") or ())
         if isinstance(r, Mapping)
     ]
     hist_tuples = [
-        _row_tuple_from_json(r, include_role=include_role)
+        _row_tuple_from_json(r, include_role=include_role, context_identity=context_identity)
         for r in (payload.get("historical_rows") or ())
         if isinstance(r, Mapping)
     ]
-    return {
+    result: dict[str, Any] = {
         "status": "ok",
         "reason": None,
-        "locations": [_location(row, accepted_run_id) for row in cur_tuples[: query.limit]],
-        "historical_locations": [_location(row, accepted_run_id) for row in hist_tuples[: query.limit]],
+        "locations": [
+            _location(row, accepted_run_id, context_identity=context_identity)
+            for row in cur_tuples[: query.limit]
+        ],
+        "historical_locations": [
+            _location(row, accepted_run_id, context_identity=context_identity)
+            for row in hist_tuples[: query.limit]
+        ],
         "historical_has_more": len(hist_tuples) > query.limit,
         "location_run_id": loc_run_id,
         "location_scope": _relation(loc_run_id, accepted_run_id) if loc_run_id is not None else "unavailable",
@@ -332,12 +321,14 @@ def read_postgres_node_locations_with_executor(
         "has_more": len(cur_tuples) > query.limit,
         "node_first_seen_run_id": node_tuple[2],
         "node_last_seen_run_id": node_tuple[3],
-        "accepted_publication": {
-            "generation": int(accepted["generation"]),
-            "run_id": accepted_run_id,
-            "publication_bundle_id": str(accepted["publication_bundle_id"]),
-        },
+        "accepted_publication": format_postgres_accepted_publication(
+            accepted, context_identity=context_identity
+        ),
     }
+    if context_identity:
+        result["node_kind"] = str(node_obj.get("kind") or "")
+        result["node_display_name"] = node_obj.get("display_name")
+    return result
 
 
 def query_postgres_node_locations(
@@ -348,6 +339,8 @@ def query_postgres_node_locations(
     password: str | None = None,
     root_path: str = "",
     repository_identity: str | None = None,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    context_identity: bool = False,
 ) -> dict[str, Any]:
     """Execute single-statement PostgreSQL node_locations readback with SQLite wire parity."""
     return read_postgres_node_locations_with_executor(
@@ -362,6 +355,8 @@ def query_postgres_node_locations(
         ),
         root_path=root_path,
         repository_identity=repository_identity,
+        role_sql=role_sql,
+        context_identity=context_identity,
     )
 
 

@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+from common_lore_index.storage.context_postgres_identity import (
+    postgres_accepted_json_sql,
+    postgres_accepted_run_cte_sql,
+    postgres_repo_predicate_sql,
+)
 from common_lore_index.storage.graph_readback_sql import escape_readback_like_pattern
 from common_lore_index.storage.navigation_search import (
     CODE_KINDS,
@@ -70,13 +75,13 @@ def build_postgres_navigation_sql(
     *,
     repository_identity: str | None,
     root_path: str,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    context_identity: bool = False,
 ) -> str:
     """Build single-statement request-pinned SQL for PostgreSQL navigation_search."""
     query.validate()
-    repo_pred = (
-        f"repo.repository_identity = {sql_literal(repository_identity)}"
-        if repository_identity
-        else f"repo.root_path = {sql_literal(root_path)}"
+    repo_pred = postgres_repo_predicate_sql(
+        repository_identity, root_path, context_identity=context_identity
     )
     cand_pred = build_postgres_candidate_predicate_sql(query)
     has_scope = query.source_binding_id is not None
@@ -98,47 +103,7 @@ def build_postgres_navigation_sql(
     ORDER BY repo.id DESC
     LIMIT 1
 ),
-accepted_run AS MATERIALIZED (
-    SELECT
-        r.id AS run_id,
-        r.publication_bundle_id,
-        (
-            SELECT count(*)::int
-            FROM public.runs r2
-            WHERE r2.repository_id = mr.repository_id
-              AND r2.status = 'complete'
-              AND r2.execution_route = 'portable-worker-v1'
-              AND r2.publication_bundle_id IS NOT NULL
-              AND r2.id <= r.id
-        ) AS generation
-    FROM public.runs r
-    JOIN matched_repo mr ON mr.repository_id = r.repository_id
-    WHERE r.status = 'complete'
-      AND r.execution_route = 'portable-worker-v1'
-      AND r.publication_bundle_id IS NOT NULL
-      AND r.snapshot_manifest_id IS NOT NULL
-      AND r.extraction_receipt_id IS NOT NULL
-      AND r.graph_candidate_id IS NOT NULL
-      AND r.snapshot_vector_json IS NOT NULL
-      AND (
-          r.portable_execution_mode <> 'coordinator'
-          OR EXISTS (
-              SELECT 1
-              FROM public.graph_publication_authority gpa
-              WHERE gpa.repository_id = mr.repository_id
-                AND gpa.last_run_id = r.id
-          )
-      )
-      AND NOT EXISTS (
-          SELECT 1
-          FROM public.graph_publication_authority gpa
-          WHERE gpa.repository_id = mr.repository_id
-            AND gpa.last_run_id IS NOT NULL
-            AND gpa.last_run_id <> r.id
-      )
-    ORDER BY r.id DESC
-    LIMIT 1
-),
+{postgres_accepted_run_cte_sql(context_identity=context_identity)},
 candidate_nodes AS MATERIALIZED (
     SELECT
         subject.id,
@@ -200,7 +165,7 @@ direct_evidence AS MATERIALIZED (
         r.extraction_receipt_id,
         r.graph_candidate_id,
         r.snapshot_vector_json,
-        ({_EVIDENCE_ROLE_SQL}) AS evidence_role,
+        ({role_sql}) AS evidence_role,
         subject.id AS node_id,
         subject.canonical_key AS subject_canonical_key
     FROM selected_node_runs snr
@@ -216,7 +181,7 @@ direct_evidence AS MATERIALIZED (
       ON raw.repository_id = e.repository_id
      AND raw.run_id = e.run_id
      AND raw.ordinal = e.raw_observation_ordinal
-    WHERE ({_EVIDENCE_ROLE_SQL}) = 'direct'
+    WHERE ({role_sql}) = 'direct'
     ORDER BY
         subject.canonical_key COLLATE "C" ASC,
         e.raw_observation_ordinal ASC,
@@ -229,11 +194,7 @@ SELECT json_build_object(
     'has_accepted', EXISTS (SELECT 1 FROM accepted_run),
     'transport_overflow', (SELECT exceeded FROM transport_budget),
     'accepted', (
-        SELECT json_build_object(
-            'generation', acc.generation,
-            'run_id', acc.run_id,
-            'publication_bundle_id', acc.publication_bundle_id
-        )
+        SELECT {postgres_accepted_json_sql(context_identity=context_identity)}
         FROM accepted_run acc
         WHERE NOT (SELECT exceeded FROM transport_budget)
     ),

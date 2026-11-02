@@ -176,9 +176,9 @@ do not establish superiority or accept proposed future criteria. All12held-out
 tasks remain unexecuted, behind a separate source/criteria acceptance gate.
 
 [ADR0130](../adr/2026/10/0130-lexical-milestone-staging-campaign.md) binds one
-review-ready staging publication and automatic CI102attempt1. Exact W3 hosted
-qualification and whole-population coverage remain pending. See the
-[phase exit](../../tools/ci/cloe-lexical1-exit.md) for resulting-state proof.
+review-ready staging publication and automatic CI102attempt1. See the
+[phase exit](../../tools/ci/cloe-lexical1-exit.md) for resulting-state proof and
+the W3 hosted qualification section below for the accepted CI104 result.
 Optional trigram, vectors/fusion, W4 compact context, Rust and release/installed
 qualification remain subsequent roadmap work. No live deployment is performed.
 
@@ -188,3 +188,60 @@ criteria acceptance, disposition the native comparator output above the proposed
 65,536-byte ceiling and the incumbent PostgreSQL graph absent-answer discrepancy.
 The separate namespace19042 staged-publisher int32-ID limit remains W7-owned;
 this milestone qualifies lexical lock expressions, not all large-ID publication.
+
+## W3 hosted qualification and W4 selection
+
+Automatic CI102 and successor CI103 were classified `EXECUTED_FAIL` and repaired
+under [ADR0131](../adr/2026/10/0131-ci102-compatibility-repair-and-twentieth-native-amd-attempt.md)
+and [ADR0132](../adr/2026/11/0132-ci103-measured-child-repair-and-successor-qualification.md).
+CI104 attempt 1 passed all nine jobs and retained same-attempt staging M/A and
+system contracts on exact staging `7babd887cb6b46c2791a22d57baddcdc24914463`, and
+the parent accepted that qualification: unit passed 14,947 tests at 88.0/87.1
+statement/branch coverage, and the measured staging integration lane passed 1,961
+tests at 89.8/81.4. Both hard coverage gates (85/85 unit, 80/80 integration) are
+met; the 82.0% staging integration branch margin remains ~0.6 percentage points
+short and carries forward as a W4 real-boundary coverage objective. CI104
+qualifies that W3 candidate only: it does not accept proposed evaluation
+criteria, execute the 12 held-out tasks, admit optional trigram indexing, deploy
+live, promote staging to `main`, or qualify later commits.
+
+With W3 qualified on staging, W4 (`REPOMAP-CLOE-CONTEXT1`) is selected as the
+next milestone, with architecture and specification authored in design phase
+`REPOMAP-CLOE-CONTEXT-DESIGN1` under proposed
+[ADR0133](../adr/2026/11/0133-intent-aware-navigation-and-bounded-context.md)
+and [cloe-intent-context-v1.md](cloe-intent-context-v1.md):
+
+- **Epic A (intent-aware deterministic navigation):** explicit caller-declared
+  `NavigationIntent` (`definition`, `implementation`, `tests`, `docs`,
+  `messages`, `general`), six-tier lexicographic ranking (`cloe-intent-rank-v1`)
+  with byte tie-break (`cloe-intent-tiebreak-v1`), versioned affinity and
+  Python test-subject classification (`cloe-intent-tables-v1`) without a
+  universal test penalty, isolated context direct-evidence roles
+  (`CONTEXT_DIRECT_EVIDENCE_ROLE_V1`), ambiguity preservation, and complete-scan
+  enforcement while keeping MCP `repomap_navigation_search` unchanged.
+- **Epic B (bounded compact context):** `cloe-compact-context-v1` packets via
+  `cloe ops context-pack` and `build_compact_context`, enforcing hard serialized
+  UTF-8 byte budgets (`4,096..65,536`, default `16,384`) with skeleton echo
+  compaction (`skeleton_compaction_v1`), strict rank-prefix admission
+  (`seeds_then_neighbors_v1`), `_destination`-preserving location deduplication,
+  stored `canonical_edges` relation support, explicit PostgreSQL neighborhood
+  non-support (`expansion_backend_unsupported`), and separate storage-work and
+  SQL-statement caps (`MAX_SCAN_UNITS = 8`, `MAX_SQL_STATEMENTS_SQLITE = 36`,
+  `MAX_SQL_STATEMENTS_POSTGRES = 12`).
+- **Epic C (reusable source selection and optional advisory freshness):**
+  caller-held `cloe-source-selection-v1` records via `cloe ops context-select`
+  (storing no filesystem roots and revalidated against live config and accepted
+  publication state on every call) and opt-in bounded structural freshness
+  observations (`cloe-advisory-freshness-v1`) with root-anchored no-follow
+  descriptor traversal and structural-only file/span checks,
+  leaving source excerpts deferred out of W4.
+
+`REPOMAP-CLOE-CONTEXT1` ([exit report](../../tools/ci/cloe-context1-exit.md),
+[operations guide](../ops/compact-context.md)) implements the accepted W4
+architecture across SQLite Local and PostgreSQL Server Engine with 59 scoped
+unit tests, 37 containerized integration tests, and the 20-task × 7-arm ×
+3-repetition `context-v1` calibration observation (`w4-context-calibration-attempt-1`,
+420 query observations, `held_out_queries_executed == 0`). Neither the 12
+`mixed-v1` nor the 10 `context-v1` held-out tasks are executed or accepted, and
+one later hosted qualification campaign remains gated on parent review
+disposition and separate parent authority.

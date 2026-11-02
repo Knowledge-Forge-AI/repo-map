@@ -343,6 +343,15 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli._parser_ops_context",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
@@ -439,6 +448,15 @@
       "justification": "Maintain repomap_kg.cli.main under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli.main",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli.ops_context_commands",
       "ownership_class": "python_retained"
     },
     {
@@ -2209,6 +2227,105 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.advisory_freshness",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_admission",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_assembly",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_budget",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_budget_reservation",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_contracts",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_identity",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_packet_builder",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_work",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.intent_policy",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.intent_ranking",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.retrieval.lexical_aliases",
@@ -2311,6 +2428,15 @@
       "justification": "ADR0127: internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.retrieval.query_contracts",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.source_selection",
       "ownership_class": "python_retained"
     },
     {
@@ -3025,6 +3151,24 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.server.context_read_postgres",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.server.context_read_sqlite",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_query_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
@@ -3526,6 +3670,15 @@
       "justification": "Maintain repomap_kg.storage.canonical_staging_merge under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.canonical_staging_merge",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.context_postgres_identity",
       "ownership_class": "python_retained"
     },
     {
@@ -4039,6 +4192,15 @@
       "justification": "SQLite Local read-only reader and single-writer connection policy; admitted with zero new quality debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.sqlite_local.connection",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.sqlite_local.context_expansion_queries",
       "ownership_class": "python_retained"
     },
     {

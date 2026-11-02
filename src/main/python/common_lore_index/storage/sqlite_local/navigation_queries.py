@@ -13,8 +13,12 @@ from common_lore_index.storage.navigation_search import (
     EVIDENCE_SCAN_LIMIT, NODE_SCAN_LIMIT, NavigationSearchQuery, unavailable,
 )
 from common_lore_index.storage.graph_readback_sql import escape_readback_like_pattern
-from common_lore_index.storage.sqlite_local.node_location_queries import _EVIDENCE_ROLE_SQL, _location
-from common_lore_index.storage.sqlite_local.schema import accepted_identity
+from common_lore_index.storage.sqlite_local.node_location_queries import (
+    _EVIDENCE_ROLE_SQL,
+    _location,
+    _parse_context_snapshot_vector,
+)
+from common_lore_index.storage.sqlite_local.schema import SqliteFunctionReadConnection, accepted_identity
 
 
 def candidate_predicate(query: NavigationSearchQuery) -> tuple[str, dict[str, Any]]:
@@ -31,7 +35,7 @@ def candidate_predicate(query: NavigationSearchQuery) -> tuple[str, dict[str, An
     return " AND ".join(filters), params
 
 
-def evidence_sql(predicate: str) -> str:
+def evidence_sql(predicate: str, *, role_sql: str = _EVIDENCE_ROLE_SQL) -> str:
     # Run selection deliberately precedes role selection, just like the locator.
     return f"""WITH selected AS (
         SELECT subject.id AS node_id,
@@ -45,7 +49,7 @@ def evidence_sql(predicate: str) -> str:
            raw.payload_hash, e.raw_kind, e.raw_source_id, e.path, e.start_line, e.end_line,
            e.extractor, e.extractor_version, e.confidence, e.metadata_json,
            r.publication_bundle_id, r.snapshot_manifest_id, r.extraction_receipt_id,
-           r.graph_candidate_id, r.snapshot_vector_json, {_EVIDENCE_ROLE_SQL}, subject.id
+           r.graph_candidate_id, r.snapshot_vector_json, {role_sql}, subject.id
     FROM selected
     JOIN canonical_nodes subject ON subject.id = selected.node_id
     JOIN canonical_node_evidence link ON link.canonical_node_id = subject.id
@@ -53,15 +57,22 @@ def evidence_sql(predicate: str) -> str:
                             AND e.run_id = selected.run_id AND e.graph_key_version = 1
     JOIN runs r ON r.id = e.run_id
     LEFT JOIN raw_observations raw ON raw.run_id = e.run_id AND raw.ordinal = e.raw_observation_ordinal
-    WHERE ({_EVIDENCE_ROLE_SQL}) = 'direct'
+    WHERE ({role_sql}) = 'direct'
     ORDER BY subject.canonical_key, e.raw_observation_ordinal, e.evidence_key, link.link_kind
     LIMIT :evidence_fetch"""
 
 
 def _direct_location(row: Any, accepted_run_id: int, *,
-                     snapshot_vector: list[Any] | None = None) -> dict[str, Any]:
-    vector = json.loads(row[18]) if snapshot_vector is None else snapshot_vector
-    location = _location(row, accepted_run_id, snapshot_vector=vector)
+                     snapshot_vector: list[Any] | None = None,
+                     context_identity: bool = False) -> dict[str, Any]:
+    vector = (
+        _parse_context_snapshot_vector(row[18] if snapshot_vector is None else snapshot_vector)
+        if context_identity
+        else json.loads(row[18]) if snapshot_vector is None else snapshot_vector
+    )
+    location = _location(
+        row, accepted_run_id, snapshot_vector=vector, context_identity=context_identity
+    )
     source = location["source"]
     vector = [item for item in vector if item[0] == source.get("binding_id")]
     location["source_identity_status"] = (
@@ -74,6 +85,7 @@ def _direct_location(row: Any, accepted_run_id: int, *,
 @dataclass
 class _Admission:
     admits_location: Callable[[dict[str, Any]], bool]
+    context_identity: bool = False
     checks: int = 0
     decoded_bytes: int = 0
     input_bytes: int = 0
@@ -93,12 +105,15 @@ class _Admission:
         self.decoded_bytes += size
         try:
             if run_id not in self.vectors:
-                self.vectors[run_id] = json.loads(vector)
+                self.vectors[run_id] = (_parse_context_snapshot_vector(vector)
+                                        if self.context_identity else json.loads(vector))
                 self.vector_bytes += vector_size
             # Identity fields only; no payload/source or corpus-sized collection.
             row = (None, "observed", 0, None, None, None, None, path, None, None,
                    None, None, None, metadata, None, None, None, None, vector, "direct")
-            return self.admits_location(_direct_location(row, 0, snapshot_vector=self.vectors[run_id]))
+            return self.admits_location(_direct_location(
+                row, 0, snapshot_vector=self.vectors[run_id], context_identity=self.context_identity
+            ))
         except Exception as error:
             # sqlite3 erases callback causes. Re-raise outside its SQL boundary.
             self.error = error
@@ -112,7 +127,7 @@ class _Admission:
                 "byte_limit": ADMISSION_BYTE_LIMIT, "budget_exhausted": self.exhausted}
 
 
-def _scope_predicate(predicate: str) -> str:
+def _scope_predicate(predicate: str, *, role_sql: str = _EVIDENCE_ROLE_SQL) -> str:
     # Correlated relational EXISTS, not a backend query per subject. Select the
     # run from ANY link before selecting direct roles and source facts.
     return predicate + f""" AND EXISTS (
@@ -125,13 +140,15 @@ def _scope_predicate(predicate: str) -> str:
             JOIN canonical_evidence chosen ON chosen.id = chosen_link.canonical_evidence_id
                                          AND chosen.graph_key_version = 1
             WHERE chosen_link.canonical_node_id = subject.id
-        ) AND ({_EVIDENCE_ROLE_SQL}) = 'direct'
+        ) AND ({role_sql}) = 'direct'
         AND repomap_navigation_admits(e.run_id, e.path, e.metadata_json, r.snapshot_vector_json)
     )"""
 
 
-def navigation_candidates(connection: sqlite3.Connection, query: NavigationSearchQuery, *,
-                          admits_location: Callable[[dict[str, Any]], bool] | None = None) -> dict[str, Any]:
+def navigation_candidates(connection: SqliteFunctionReadConnection, query: NavigationSearchQuery, *,
+                          admits_location: Callable[[dict[str, Any]], bool] | None = None,
+                          role_sql: str = _EVIDENCE_ROLE_SQL,
+                          context_identity: bool = False) -> dict[str, Any]:
     query.validate()
     accepted = accepted_identity(connection)
     if accepted is None:
@@ -141,8 +158,8 @@ def navigation_candidates(connection: sqlite3.Connection, query: NavigationSearc
     if query.source_binding_id is not None:
         if admits_location is None:
             return unavailable("source_scope_predicate_unavailable")
-        admission = _Admission(admits_location)
-        predicate = _scope_predicate(predicate)
+        admission = _Admission(admits_location, context_identity=context_identity)
+        predicate = _scope_predicate(predicate, role_sql=role_sql)
     rows = []
     try:
         if admission is not None:
@@ -178,7 +195,7 @@ def navigation_candidates(connection: sqlite3.Connection, query: NavigationSearc
     # The trusted integer ID set is at most NODE_SCAN_LIMIT, independent of
     # SQLite's bound-variable ceiling. Admit subjects, never prune alternatives.
     evidence_predicate = "subject.id IN (" + ",".join(str(int(row[0])) for row in rows) + ")" if rows else "0"
-    evidence = connection.execute(evidence_sql(evidence_predicate), {
+    evidence = connection.execute(evidence_sql(evidence_predicate, role_sql=role_sql), {
         **params, "accepted": accepted.run_id, "evidence_fetch": EVIDENCE_SCAN_LIMIT + 1,
     }).fetchall()
     result["scan"]["evidence"] = min(len(evidence), EVIDENCE_SCAN_LIMIT)
@@ -189,7 +206,10 @@ def navigation_candidates(connection: sqlite3.Connection, query: NavigationSearc
              for row in rows}
     for row in evidence:
         vector = admission.vectors.get(row[2]) if admission is not None else None
-        location = _direct_location(row[:20], accepted.run_id, snapshot_vector=vector)
+        location = _direct_location(
+            row[:20], accepted.run_id, snapshot_vector=vector,
+            context_identity=context_identity,
+        )
         nodes[row[20]]["locations"].append(location)
     result["nodes"] = list(nodes.values())
     result["scan"]["complete"] = True

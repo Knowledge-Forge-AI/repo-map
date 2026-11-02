@@ -30,7 +30,9 @@ def _destination(location: dict[str, Any], markers: tuple[str, ...]) -> dict[str
             "path_namespace": "source_relative", "graph_path": location["path"]}
 
 
-def _member(node: dict[str, Any], markers: tuple[str, ...]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def project_navigation_member(
+    node: dict[str, Any], markers: tuple[str, ...]
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     locations = [_public_navigation_location(row, markers) for row in node["locations"]]
     result = sanitize_jsonable({key: value for key, value in node.items() if key != "locations"},
                                private_markers=markers)
@@ -40,6 +42,9 @@ def _member(node: dict[str, Any], markers: tuple[str, ...]) -> tuple[dict[str, A
                   identity_status="available" if result["canonical_key"] == node["canonical_key"]
                   and not _withheld(result["canonical_key"]) else "withheld")
     return result, locations
+
+
+_member = project_navigation_member
 
 
 def _public_navigation_location(row: dict[str, Any], markers: tuple[str, ...]) -> dict[str, Any]:

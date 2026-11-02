@@ -243,3 +243,27 @@ def test_navigation_search_over_existing_driver_free_stdio_path(tmp_path: Path) 
     assert scoped["results"][0]["destination"]["source_relative_path"] == "docs/beta.md"
     assert harness.forbidden_events() == [] and harness.shim_invocations() == ""
     assert not harness.imported_modules() & POSTGRES_IMPLEMENTATION
+
+
+def test_context_pack_and_select_run_without_the_postgres_driver(tmp_path: Path) -> None:
+    from repomap_test_support.navigation_search_fixtures import BINDING, GRAPH, navigation_home
+
+    home, _ = navigation_home(tmp_path)
+    harness = LocalHarness(tmp_path / "context-driver-free", block_psycopg=True)
+    sel_out = tmp_path / "sel.json"
+    selected = harness.run(
+        "ops", "context-select", "--repo-map-home", str(home),
+        "--graph", GRAPH, "--binding", BINDING, "--output", str(sel_out),
+    )
+    _assert_driver_free(harness, selected)
+    packed = harness.run(
+        "ops", "context-pack", "--repo-map-home", str(home), "--graph", GRAPH,
+        "--mode", "ranked_discovery", "--query", "beacon", "--intent", "docs",
+        "--selection", str(sel_out), "--allow-partial",
+    )
+    _assert_driver_free(harness, packed)
+    packet = json.loads(packed.stdout)
+    assert packet["schema"] == "cloe-compact-context-v1"
+    assert packet["effective_mode"] == "ranked_discovery"
+    assert packet["items"]
+    assert harness.shim_invocations() == ""

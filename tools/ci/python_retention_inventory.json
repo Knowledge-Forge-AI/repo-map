@@ -43,6 +43,69 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.context1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/retrieval/advisory_freshness_filesystem.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_cli.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_evaluation.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_freshness_bounds.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_identity_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_postgres_publication.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_sqlite_publication.int.test.py",
+        "src/test/unit/python/repomap_kg/cli/context_dispatch.unit.test.py",
+        "src/test/unit/python/repomap_kg/cli/ops_context_commands.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/advisory_freshness.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/advisory_freshness_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_assembly.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_budget.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_budget_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_pin_boundaries.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_selection_io.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/intent_policy.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/intent_ranking.unit.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/source_selection.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/context_expansion_queries.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/context_work_boundaries.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_context.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_context_boundaries.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_context_transport.unit.test.py"
+      ],
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.context1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/context_assertions.py",
+        "src/test/support/python/repomap_test_support/context_fixture.py"
+      ],
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.context1.tools",
+      "members": [
+        "tools/retrieval_evaluation_context.py",
+        "tools/retrieval_evaluation_context_arms.py",
+        "tools/retrieval_evaluation_context_catalog.py",
+        "tools/retrieval_evaluation_context_custody.py",
+        "tools/retrieval_evaluation_context_grading.py",
+        "tools/retrieval_evaluation_context_manifest.py",
+        "tools/retrieval_evaluation_context_native.py",
+        "tools/retrieval_evaluation_context_prepare.py",
+        "tools/retrieval_evaluation_context_transport.py"
+      ],
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.cutover1.consumers.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_namespace_compatibility.int.test.py",
@@ -27631,6 +27694,15 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/_parser_ops_context.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/common_lore_index/cli/_parser_ops_control.py",
       "rationale": "Cohesive maintained helper preserves its product owner's retention obligations.",
       "root": "product",
@@ -27723,6 +27795,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/cli/main.py",
       "rationale": "Current maintained product implementation; existing 85% retention assessment preserved. Admission requires clean typing, lint, length and import-direction checks.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/ops_context_commands.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -30763,6 +30844,105 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/advisory_freshness.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_admission.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_assembly.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_budget.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_budget_reservation.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_contracts.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_identity.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_packet_builder.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/context_work.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/intent_policy.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/intent_ranking.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/common_lore_index/retrieval/lexical_aliases.py",
       "rationale": "ADR0129 PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "root": "product",
@@ -30864,6 +31044,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/retrieval/query_contracts.py",
       "rationale": "ADR0127 internal retrieval query contracts and bounded captured-input projection reference admitted with zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/retrieval/source_selection.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -31579,6 +31768,24 @@
       "status": "retained_ratchet"
     },
     {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/server/context_read_postgres.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/server/context_read_sqlite.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
       "confidence": 0.85,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
@@ -32079,6 +32286,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/storage/canonical_staging_merge.py",
       "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/context_postgres_identity.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -32592,6 +32808,15 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/storage/sqlite_local/connection.py",
       "rationale": "Product3 SQLite Local connection and publisher-lock policy.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/sqlite_local/context_expansion_queries.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -34842,6 +35067,69 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/public_branch_contracts/source_storage_warc.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/advisory_freshness_filesystem.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_cli.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_evaluation.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_freshness_bounds.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_identity_boundaries.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_postgres_publication.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_sqlite_publication.int.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
       "status": "active_int_test"
     },
@@ -37128,6 +37416,24 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/config_extractor.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/context_assertions.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/context_fixture.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -40726,6 +41032,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/context_dispatch.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/cli/coordinator_job_control.unit.test.py",
       "rationale": "First-party unit test owner.",
       "root": "test_owners",
@@ -40962,6 +41277,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/cli/observations_sources/source_acquisition_boundaries.unit.test.py",
       "rationale": "REVISE32 cohesive decomposition of src/test/unit/python/repomap_kg/cli/observations_sources/source_acquisition.unit.test.py; same maintained responsibility and quality profile.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/cli/ops_context_commands.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -43795,6 +44119,78 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/advisory_freshness.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/advisory_freshness_boundaries.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_assembly.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_budget.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_budget_boundaries.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_contracts.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_pin_boundaries.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_selection_io.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/corpus.unit.test.py",
       "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
       "root": "test_owners",
@@ -43824,6 +44220,24 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/historical_evidence_boundaries.unit.test.py",
       "rationale": "ADR0129 owner-fenced lifecycle, metadata transport and retained evaluation evidence boundary corrections.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/intent_policy.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/intent_ranking.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -43950,6 +44364,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/query_wire.unit.test.py",
       "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/source_selection.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -44670,6 +45093,24 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/canonical_readback/rows_sql.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/context_expansion_queries.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/context_work_boundaries.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -48529,6 +48970,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_context.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_context_boundaries.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_context_transport.unit.test.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_evaluation_criteria.unit.test.py",
       "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
       "root": "test_owners",
@@ -51222,6 +51690,87 @@
       "maintained_executable": true,
       "path": "tools/retrieval_evaluation_comparability.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_arms.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_catalog.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_custody.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_grading.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_manifest.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_native.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_prepare.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_context_transport.py",
+      "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "tools",
       "status": "active_tool"
     },

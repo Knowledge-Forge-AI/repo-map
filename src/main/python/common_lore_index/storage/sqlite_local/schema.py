@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 from dataclasses import dataclass
+from typing import Any, Protocol
 
 from common_lore_index.storage.errors import StorageSchemaError
 
@@ -237,7 +238,21 @@ class AcceptedIdentity:
     publication_attempt: int | None
 
 
-def accepted_identity(connection: sqlite3.Connection) -> AcceptedIdentity | None:
+class SqliteReadConnection(Protocol):
+    """Statement interface shared by native and metered read connections."""
+
+    def execute(self, sql: str, parameters: Any = (), /) -> sqlite3.Cursor: ...
+
+
+class SqliteFunctionReadConnection(SqliteReadConnection, Protocol):
+    """Read connection supporting request-owned predicate functions."""
+
+    def create_function(
+        self, name: str, narg: int, func: Any, /, *, deterministic: bool = False,
+    ) -> None: ...
+
+
+def accepted_identity(connection: SqliteReadConnection) -> AcceptedIdentity | None:
     """Read the accepted marker with its run's attempt identity; ``None`` if unpublished."""
     row = connection.execute(
         "SELECT a.generation, a.run_id, r.previous_run_id, r.publication_bundle_id, "

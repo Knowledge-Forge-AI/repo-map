@@ -8,6 +8,7 @@ import json
 import sys
 from types import ModuleType
 
+from common_lore_index.cli.ops_context_commands import dispatch_ops_context_command
 from common_lore_index.cli.ops_lexical_commands import dispatch_ops_lexical_command
 
 __all__ = ("dispatch_ops_baselines_command",)
@@ -176,4 +177,7 @@ def dispatch_ops_baselines_command(
             print(commands.format_policy_dogfood_table(payload))
         return 0
 
+    ctx_res = dispatch_ops_context_command(args, commands, print_cli_error)
+    if ctx_res is not None:
+        return ctx_res
     return dispatch_ops_lexical_command(args, commands, print_cli_error)

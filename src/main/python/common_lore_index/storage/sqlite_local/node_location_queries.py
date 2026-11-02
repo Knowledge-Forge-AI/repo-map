@@ -7,8 +7,17 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from common_lore_index.retrieval.context_identity import (
+    ContextIdentityError,
+    parse_snapshot_vector,
+)
+from common_lore_index.storage.errors import StorageSchemaError
 from common_lore_index.storage.node_locations import NodeLocationsQuery, unavailable
-from common_lore_index.storage.sqlite_local.schema import LocalGraphBinding, accepted_identity
+from common_lore_index.storage.sqlite_local.schema import (
+    LocalGraphBinding,
+    SqliteReadConnection,
+    accepted_identity,
+)
 from common_lore_index.storage.sqlite_local.connection import read_transaction
 
 
@@ -33,16 +42,26 @@ def read_node_locations(path: Path, binding: LocalGraphBinding, query: NodeLocat
         return node_locations(connection, query)
 
 
-def node_locations(connection: sqlite3.Connection, query: NodeLocationsQuery) -> dict[str, Any]:
+def node_locations(
+    connection: SqliteReadConnection,
+    query: NodeLocationsQuery,
+    *,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
+    include_node_summary: bool = False,
+    context_identity: bool = False,
+) -> dict[str, Any]:
     query.validate()
     accepted = accepted_identity(connection)
     if accepted is None:
         return unavailable("publication_absent")
-    node = connection.execute(
-        "SELECT id, metadata_json, first_seen_run_id, last_seen_run_id "
-        "FROM canonical_nodes WHERE graph_key_version = 1 AND canonical_key = ?",
-        (query.canonical_key,),
-    ).fetchone()
+    node_sql = (
+        "SELECT id, metadata_json, first_seen_run_id, last_seen_run_id, kind, display_name "
+        "FROM canonical_nodes WHERE graph_key_version = 1 AND canonical_key = ?"
+        if include_node_summary
+        else "SELECT id, metadata_json, first_seen_run_id, last_seen_run_id "
+        "FROM canonical_nodes WHERE graph_key_version = 1 AND canonical_key = ?"
+    )
+    node = connection.execute(node_sql, (query.canonical_key,)).fetchone()
     if node is None:
         return unavailable("node_not_found")
     selected = connection.execute(
@@ -53,12 +72,22 @@ def node_locations(connection: sqlite3.Connection, query: NodeLocationsQuery) ->
         (node[0], accepted.run_id),
     ).fetchone()
     location_run_id = selected[0] if selected else None
-    rows = _evidence_window(connection, node[0], location_run_id, query, historical=False)
-    history = _evidence_window(connection, node[0], location_run_id, query, historical=True)
-    return {
+    rows = _evidence_window(
+        connection, node[0], location_run_id, query, historical=False, role_sql=role_sql
+    )
+    history = _evidence_window(
+        connection, node[0], location_run_id, query, historical=True, role_sql=role_sql
+    )
+    result: dict[str, Any] = {
         "status": "ok", "reason": None,
-        "locations": [_location(row, accepted.run_id) for row in rows[:query.limit]],
-        "historical_locations": [_location(row, accepted.run_id) for row in history[:query.limit]],
+        "locations": [
+            _location(row, accepted.run_id, context_identity=context_identity)
+            for row in rows[:query.limit]
+        ],
+        "historical_locations": [
+            _location(row, accepted.run_id, context_identity=context_identity)
+            for row in history[:query.limit]
+        ],
         "historical_has_more": len(history) > query.limit,
         "location_run_id": location_run_id,
         "location_scope": _relation(selected[0], accepted.run_id) if selected else "unavailable",
@@ -67,17 +96,29 @@ def node_locations(connection: sqlite3.Connection, query: NodeLocationsQuery) ->
         "accepted_publication": {"generation": accepted.generation, "run_id": accepted.run_id,
                                  "publication_bundle_id": accepted.publication_bundle_id},
     }
+    if include_node_summary:
+        result["node_summary"] = {
+            "id": int(node[0]), "canonical_key": query.canonical_key,
+            "kind": str(node[4]), "display_name": str(node[5]),
+        }
+    return result
 
 
 def _evidence_window(
-    connection: sqlite3.Connection, node_id: int, run_id: int | None, query: NodeLocationsQuery, *, historical: bool,
+    connection: SqliteReadConnection,
+    node_id: int,
+    run_id: int | None,
+    query: NodeLocationsQuery,
+    *,
+    historical: bool,
+    role_sql: str = _EVIDENCE_ROLE_SQL,
 ) -> list[Any]:
     if run_id is None:
         return []
     relation = "<>" if historical else "="
     filtered = query.evidence_role != "all"
-    role_column = f", {_EVIDENCE_ROLE_SQL}" if filtered else ""
-    role_predicate = f"AND ({_EVIDENCE_ROLE_SQL}) = ? " if filtered else ""
+    role_column = f", {role_sql}" if filtered else ""
+    role_predicate = f"AND ({role_sql}) = ? " if filtered else ""
     parameters = (node_id, run_id, query.evidence_role, query.limit + 1) if filtered else (
         node_id, run_id, query.limit + 1,
     )
@@ -116,15 +157,40 @@ def _relation(run_id: int, accepted_run_id: int) -> str:
     return "accepted_run" if run_id == accepted_run_id else "historical_run"
 
 
+def _parse_context_snapshot_vector(raw_vector: Any) -> list[list[Any]]:
+    """Validate a persisted evidence vector before context normalization."""
+    if isinstance(raw_vector, str):
+        try:
+            raw_vector = json.loads(raw_vector)
+        except (TypeError, ValueError, RecursionError) as exc:
+            raise StorageSchemaError("malformed context snapshot vector") from exc
+    try:
+        parsed = parse_snapshot_vector(raw_vector)
+    except (ContextIdentityError, TypeError, ValueError) as exc:
+        raise StorageSchemaError("malformed context snapshot vector") from exc
+    return [list(item) for item in parsed]
+
+
 def _location(row: sqlite3.Row | tuple[Any, ...], accepted_run_id: int, *,
-              snapshot_vector: list[Any] | None = None) -> dict[str, Any]:
+              snapshot_vector: list[Any] | None = None,
+              context_identity: bool = False) -> dict[str, Any]:
+    raw_vector = (
+        _parse_context_snapshot_vector(row[18])
+        if context_identity
+        else json.loads(row[18]) if snapshot_vector is None else snapshot_vector
+    )
+    vector = (
+        _parse_context_snapshot_vector(snapshot_vector)
+        if context_identity and snapshot_vector is not None
+        else raw_vector if snapshot_vector is None else snapshot_vector
+    )
     metadata = json.loads(row[13])
     source = {key: metadata[key] for key in (
         "binding_id", "binding_alias", "binding_revision", "snapshot_id", "source_relative_path"
     ) if isinstance(metadata, dict) and type(metadata.get(key)) in {str, int}}
     # A revision may exist only in the publication vector. Match an explicit
     # canonical-evidence binding; never attribute an arbitrary vector entry to a node.
-    for binding, revision, snapshot in json.loads(row[18]) if snapshot_vector is None else snapshot_vector:
+    for binding, revision, snapshot in vector:
         if binding == source.get("binding_id") and snapshot == source.get("snapshot_id"):
             source.setdefault("binding_revision", revision)
             break

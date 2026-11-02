@@ -1,0 +1,775 @@
+{
+  "fixture_id": "context-v1",
+  "schema_version": "cloe-context-task-catalog-v1",
+  "tasks": [
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "definition",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "definition",
+      "task_id": "CTX-CAL-01"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.validate_invoice",
+          "relevance_grade": 2,
+          "role_expectation": "seed_or_neighbor",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "definition",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "validate_invoice",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "definition",
+      "task_id": "CTX-CAL-02"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing",
+          "relevance_grade": 2,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "definition",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "pkg.billing",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "definition",
+      "task_id": "CTX-CAL-03"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService.compute_total",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "implementation",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "compute_total",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "implementation",
+      "task_id": "CTX-CAL-04"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        },
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService.compute_total",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "implementation",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "implementation",
+      "task_id": "CTX-CAL-05"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:tests.test_invoice.test_invoice_service",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "tests/test_invoice.py"
+        }
+      ],
+      "intent": "tests",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "test_invoice_service",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "tests",
+      "task_id": "CTX-CAL-06"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "bats.test_case:tests/cli.bats#invokes%20InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "tests/cli.bats"
+        },
+        {
+          "canonical_key": "zunit.test_case:tests/billing.zunit#InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "tests/billing.zunit"
+        }
+      ],
+      "intent": "tests",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "tests",
+      "task_id": "CTX-CAL-07"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "nix.check:checks.x86_64-linux.billing",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "nix/default.nix"
+        }
+      ],
+      "intent": "tests",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "billing check",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "tests",
+      "task_id": "CTX-CAL-08"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:adr/0010-billing-architecture",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "adr/0010-billing.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "ADR 0010",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "docs",
+      "task_id": "CTX-CAL-09"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:skill/billing-ops",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "skills/billing-ops.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "Billing Ops Skill",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "docs",
+      "task_id": "CTX-CAL-10"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:section/billing-guide#invoicing",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "guides/billing.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "docs",
+      "task_id": "CTX-CAL-11"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "email.message:msg-billing-alert",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "messages/rollout.eml"
+        },
+        {
+          "canonical_key": "feed.item:feed-billing-release",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "messages/releases.xml"
+        }
+      ],
+      "intent": "messages",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "messages",
+      "task_id": "CTX-CAL-12"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "email.message:msg-billing-alert",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "messages/rollout.eml"
+        }
+      ],
+      "intent": "messages",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "rollout notice",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "messages",
+      "task_id": "CTX-CAL-13"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": true,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.ambig.AlphaHandler",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "definition",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "AlphaHandler",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "ambiguous",
+      "task_id": "CTX-CAL-14"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": true,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.ambig.AlphaHandler",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "general",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "AlphaHandler",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "ambiguous",
+      "task_id": "CTX-CAL-15"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": true,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:shared/readme-core",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "shared/README.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "SharedReadme",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "duplicate_path_identity",
+      "task_id": "CTX-CAL-16"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 1,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService.compute_total",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        },
+        {
+          "canonical_key": "py:pkg.billing.validate_invoice",
+          "relevance_grade": 2,
+          "role_expectation": "seed_or_neighbor",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "implementation",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "compute_total",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "relation_expansion",
+      "task_id": "CTX-CAL-17"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 1,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        },
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService.compute_total",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "definition",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "relation_expansion",
+      "task_id": "CTX-CAL-18"
+    },
+    {
+      "budget_bytes": 4096,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:page/multibyte-\u0394-guide",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "guides/billing.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "\u0394-quorum",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "budget_multibyte",
+      "task_id": "CTX-CAL-19"
+    },
+    {
+      "budget_bytes": 4096,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        },
+        {
+          "canonical_key": "doc:section/billing-guide#invoicing",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "guides/billing.md"
+        }
+      ],
+      "intent": "general",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "calibration",
+      "task_family": "budget_multibyte",
+      "task_id": "CTX-CAL-20"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "definition",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "definition",
+      "task_id": "CTX-HELD-01"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.validate_invoice",
+          "relevance_grade": 2,
+          "role_expectation": "seed_or_neighbor",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "implementation",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "validate_invoice",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "implementation",
+      "task_id": "CTX-HELD-02"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "bats.test_case:tests/cli.bats#invokes%20InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "tests/cli.bats"
+        }
+      ],
+      "intent": "tests",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "cli.bats",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "tests",
+      "task_id": "CTX-HELD-03"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:page/billing-guide",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "guides/billing.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "Billing Guide",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "docs",
+      "task_id": "CTX-HELD-04"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "feed.item:feed-billing-release",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "messages/releases.xml"
+        }
+      ],
+      "intent": "messages",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "v1 release",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "messages",
+      "task_id": "CTX-HELD-05"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": true,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.ambig.AlphaHandler",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "implementation",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "AlphaHandler",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "ambiguous",
+      "task_id": "CTX-HELD-06"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": true,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:shared/readme-core",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "shared/README.md"
+        }
+      ],
+      "intent": "general",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "SharedReadme",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "duplicate_path_identity",
+      "task_id": "CTX-HELD-07"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 1,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:page/billing-guide",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "guides/billing.md"
+        },
+        {
+          "canonical_key": "doc:adr/0010-billing-architecture",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "adr/0010-billing.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "Billing Guide",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "relation_expansion",
+      "task_id": "CTX-HELD-08"
+    },
+    {
+      "budget_bytes": 4096,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "doc:page/multibyte-\u0394-guide",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:68adc76ce2cfcb7701b1a19bad0a92606f5a1dabf0b8f96df63b20ef13348d89",
+          "source_relative_path": "guides/billing.md"
+        }
+      ],
+      "intent": "docs",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "\u0394-quorum",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "budget_multibyte",
+      "task_id": "CTX-HELD-09"
+    },
+    {
+      "budget_bytes": 16384,
+      "canonical_key": null,
+      "expand_depth": 0,
+      "expect_ambiguous": false,
+      "expect_duplicate_path": false,
+      "gold_targets": [
+        {
+          "canonical_key": "py:pkg.billing.InvoiceService",
+          "relevance_grade": 3,
+          "role_expectation": "seed",
+          "source_binding_id": "bind1:abed3507658658bde0ab484b9a532f19c0758c7d402e382c199541f416cbe419",
+          "source_relative_path": "src/billing/invoice.py"
+        }
+      ],
+      "intent": "general",
+      "kind": null,
+      "mode": "ranked_discovery",
+      "query": "InvoiceService",
+      "scope": "all",
+      "split": "held_out",
+      "task_family": "definition",
+      "task_id": "CTX-HELD-10"
+    }
+  ]
+}

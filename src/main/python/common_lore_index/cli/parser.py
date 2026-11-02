@@ -12,6 +12,7 @@ from common_lore_index.cli._parser_ops_graph import (
     _non_negative_offset,
     add_ops_graph_commands,
 )
+from common_lore_index.cli._parser_ops_context import add_ops_context_commands
 from common_lore_index.cli._parser_ops_lexical import add_ops_lexical_commands
 from common_lore_index.cli._parser_sources import add_source_commands
 from common_lore_index.cli.storage_parser import add_storage_commands
@@ -161,6 +162,7 @@ def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
     add_ops_control_commands(ops_subcommands)
     add_ops_graph_commands(ops_subcommands, add_ops_config_arguments)
     add_ops_lexical_commands(ops_subcommands, add_ops_config_arguments)
+    add_ops_context_commands(ops_subcommands, add_ops_config_arguments)
 
     add_local_commands(subparsers, add_local_runtime_arguments)
 
