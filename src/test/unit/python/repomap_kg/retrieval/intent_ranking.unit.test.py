@@ -166,3 +166,44 @@ def test_ambiguity_and_canonical_key_asc_ordering() -> None:
         "py:pkg.b.Handler",
     ]
     assert asc_amb.status == "unambiguous"
+
+
+def test_match_classes_respect_word_boundaries_and_missing_display_names() -> None:
+    assert classify_match_class(
+        query_text="Service", canonical_key="py:pkg.Service", display_name=None,
+    ) == (2, "key_terminal_exact")
+    assert classify_match_class(
+        query_text="Service", canonical_key="py:pkg.ServiceFactory", display_name=None,
+    ) == (5, "key_substring")
+    assert classify_match_class(
+        query_text="Handler", canonical_key="py:pkg.MyHandler", display_name="",
+    ) == (5, "key_substring")
+    assert classify_match_class(
+        query_text="handler", canonical_key="py:pkg.HandlerFactory", display_name="MyHandler",
+    ) == (4, "display_substring")
+    assert classify_match_class(
+        query_text="   ", canonical_key="py:pkg.Anything", display_name=None,
+    ) == (6, "kind_only")
+
+
+def test_first_verified_destination_tuple_is_deterministic_for_missing_and_multiple_rows() -> None:
+    empty = first_verified_destination_tuple([])
+    assert empty[0] == 1 and empty[-2:] == (2**31 - 1, 2**31 - 1)
+    rows = [
+        {"source_binding_id": "bind1:z", "binding_revision": 1, "snapshot_id": "snap:z", "source_relative_path": "z.py", "run_id": 9, "publication_relation": "accepted", "path_namespace": "source", "graph_path": "z.py", "start_line": None, "end_line": None},
+        {"source_binding_id": "bind1:a", "binding_revision": 2, "snapshot_id": "snap:a", "source_relative_path": "a.py", "run_id": 1, "publication_relation": "accepted", "path_namespace": "source", "graph_path": "a.py", "start_line": 2, "end_line": 3},
+    ]
+    chosen = first_verified_destination_tuple(rows)
+    assert chosen[1] == b"bind1:a"
+    assert chosen[2] == 2
+
+
+def test_ranking_empty_and_single_candidates_have_no_false_ambiguity() -> None:
+    ranked, disclosure = rank_candidates([], query="missing", intent="general")
+    assert ranked == ()
+    assert disclosure.status == "unambiguous"
+    only = _cand("py:only", "python.class", "Only", "code_definition")
+    ranked, disclosure = rank_candidates([only], query="Only", intent="definition")
+    assert len(ranked) == 1
+    assert ranked[0].tiers.as_tuple() == (0, 0, 0, 0, 0)
+    assert disclosure.to_dict() == {"status": "unambiguous", "tied_top_count": 0}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import ExitStack
 import json
 from pathlib import Path
 import sqlite3
@@ -19,7 +20,9 @@ from common_lore_index.storage.node_locations import NodeLocationsQuery
 from common_lore_index.storage.postgres_navigation_sql import PG_SCOPED_TRANSPORT_BYTE_CAP
 from common_lore_index.storage.postgres_node_locations import read_postgres_node_locations_with_executor
 from common_lore_index.storage.readback_driver import execute_json_readback
-from repomap_test_support.context_assertions import build_postgres_context_fixture
+from repomap_test_support.context_assertions import (
+    assert_valid_budget_error, assert_valid_context_packet, build_postgres_context_fixture,
+)
 from repomap_test_support.context_fixture import (
     BINDING_CORE, BINDING_DOCS, CTX_GRAPH_ID, SNAP_CORE, SNAP_DOCS,
     build_sqlite_context_fixture,
@@ -205,11 +208,22 @@ def _seed_postgres_historical_row(connection: Any, vector: Any) -> None:
     )
 
 
+@pytest.mark.parametrize(
+    "malformed_vector",
+    [
+        1.5,
+        True,
+        "1",
+        _valid_vector() + [[BINDING_CORE, 1, SNAP_CORE]],
+        _valid_vector() + [["bind1:unselected"]],
+        [[BINDING_CORE, 1, None], [BINDING_DOCS, 1, SNAP_DOCS]],
+    ],
+)
 def test_sqlite_context_rejects_bad_historical_vectors_before_ranked_and_node_paths(
-    tmp_path: Path,
+    tmp_path: Path, malformed_vector: Any,
 ) -> None:
     db_path, _cfg, _graph, binding, original = build_sqlite_context_fixture(tmp_path)
-    _seed_sqlite_historical_row(db_path, 1.5)
+    _seed_sqlite_historical_row(db_path, malformed_vector)
     with SqliteContextReadAdapter(
         graph_id=CTX_GRAPH_ID, db_path=db_path, binding=binding,
         configured_bindings=original.configured_bindings_by_id(),
@@ -331,3 +345,46 @@ def test_legacy_postgres_locations_ignore_unrequested_display_name_transport_cos
         context = read_postgres_node_locations_with_executor(query, context_identity=True, **kwargs)
         assert context["status"] == "unavailable"
         assert context["reason"] == "admission_work_limit"
+
+
+@pytest.mark.parametrize("backend", ("sqlite", "postgres"))
+def test_context_refusals_preserve_scope_and_bounded_error_envelopes(
+    tmp_path: Path, backend: str,
+) -> None:
+    with ExitStack() as stack:
+        if backend == "postgres":
+            require_postgres_binaries()
+            postgres = stack.enter_context(temporary_postgres())
+            _home, adapter = build_postgres_context_fixture(tmp_path / "pg", postgres)
+        else:
+            *_store, adapter = build_sqlite_context_fixture(tmp_path)
+        stack.enter_context(adapter)
+        for mode in ("literal_captured_text", "semantic_discovery"):
+            packet = build_compact_context(ContextRequest(
+                graph_id=CTX_GRAPH_ID, mode=mode, query="InvoiceService",
+            ), adapter)
+            assert_valid_context_packet(packet)
+            assert (packet["status"], packet["reason"]) == ("unavailable", "capability_not_admitted")
+            assert packet["items"] == packet["neighbors"] == packet["relations"] == []
+        for budget in (True, 4095, 65537, 1.5, "16384"):
+            packet = build_compact_context(ContextRequest(
+                graph_id=CTX_GRAPH_ID, query="InvoiceService", budget_bytes=budget,
+            ), adapter)
+            assert_valid_budget_error(packet)
+            assert packet["reason"] == ("budget_out_of_range" if type(budget) is int else "invalid_budget_type")
+        packet = build_compact_context(ContextRequest(
+            graph_id=CTX_GRAPH_ID, query="InvoiceService", bindings=(BINDING_CORE,),
+            path_prefixes={BINDING_CORE: ("src",)}, kinds=("tool",),
+        ), adapter)
+        assert_valid_context_packet(packet)
+        assert (packet["status"], packet["reason"]) == ("unavailable", "unlocatable_kind_in_scoped_selection")
+        assert packet["scope"]["selected_binding_count"] == 1
+        malformed = tmp_path / "malformed-selection.json"
+        malformed.write_text('{"schema":"wrong"}\n', encoding="utf-8")
+        packet = build_compact_context(ContextRequest(
+            graph_id=CTX_GRAPH_ID, query="InvoiceService", selection_path=malformed,
+        ), adapter)
+        assert_valid_context_packet(packet)
+        assert (packet["status"], packet["reason"]) == ("refused", "invalid_selection_record")
+        assert packet["scope"]["selection_source"] == "selection_file"
+        assert packet["items"] == packet["neighbors"] == packet["relations"] == []

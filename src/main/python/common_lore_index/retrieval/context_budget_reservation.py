@@ -6,6 +6,8 @@ from collections.abc import Mapping
 import copy
 from typing import Any
 
+from common_lore_index.retrieval.context_budget import compute_actual_bytes_fixpoint
+
 _FRESHNESS_REASON = "structural_span_only_no_lexical_anchor"
 _FRESHNESS_LIMITS = ["structural_span_only", "no_lexical_anchor", "no_body_text"]
 
@@ -132,8 +134,6 @@ def _reserve_variable_fields(packet: dict[str, Any]) -> None:
 
 def packet_size_with_reservation(packet: dict[str, Any]) -> int:
     """Measure a packet after reserving all bounded post-admission fields."""
-    from common_lore_index.retrieval.context_budget import compute_actual_bytes_fixpoint
-
     reserved = copy.deepcopy(packet)
     _reserve_variable_fields(reserved)
     _, size = compute_actual_bytes_fixpoint(reserved)

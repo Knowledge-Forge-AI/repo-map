@@ -53,6 +53,49 @@ def test_cli_argparse_errors_exit_2_and_budget_error_exits_1(
     assert env["budget_bytes"] == 2048
 
 
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--path-prefix", "missing_equals"],
+        ["--path-prefix", "=src"],
+        ["--path-prefix", "bind1:core=../outside"],
+        ["--source-root", "missing_equals"],
+    ],
+)
+def test_cli_context_pack_rejects_malformed_scope_pairs_before_opening_config(
+    extra: list[str], capfd: pytest.CaptureFixture[str],
+) -> None:
+    code, out, _ = _run_cli(
+        [
+            "ops", "context-pack", "--graph", "g", "--mode", "ranked_discovery",
+            "--query", "x", *extra,
+        ],
+        capfd,
+    )
+    assert code == 1
+    packet = json.loads(out)
+    assert packet["status"] == "refused"
+    assert packet["reason"] == "invalid_request"
+
+
+@pytest.mark.parametrize("extra, reason", [
+    ([arg for i in range(9) for arg in ("--binding", f"bind1:{i}")], "binding_limit_exceeded"),
+    (["--binding", "bind1:a", *[arg for i in range(5) for arg in ("--path-prefix", f"bind1:a=src{i}")]], "prefix_limit_exceeded"),
+    ([arg for i in range(3) for arg in ("--binding", f"bind1:{i}", *[arg for j in range(3) for arg in ("--path-prefix", f"bind1:{i}=src{j}")])], "scan_unit_limit_exceeded"),
+])
+def test_cli_context_select_rejects_scope_limits_before_opening_config(
+    tmp_path: Path, capfd: pytest.CaptureFixture[str], extra: list[str], reason: str,
+) -> None:
+    output = tmp_path / "unused-selection.json"
+    code, out, err = _run_cli(
+        ["ops", "context-select", "--graph", "g", "--output", str(output), *extra], capfd,
+    )
+    assert code == 1
+    assert out == ""
+    assert reason in err
+    assert not output.exists()
+
+
 def test_cli_context_select_and_context_pack_exit_codes(
     tmp_path: Path, capfd: pytest.CaptureFixture[str]
 ) -> None:

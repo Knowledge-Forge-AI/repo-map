@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import stat
+from dataclasses import replace
 
 import pytest
 
@@ -172,3 +173,79 @@ def test_selection_revalidation_and_stale_publication(tmp_path: Path) -> None:
         live_accepted=live_acc,
     )
     assert (status, reason) == ("stale", "selection_publication_advanced")
+
+
+@pytest.mark.parametrize(
+    ("bad", "reason"),
+    [
+        (lambda rec: replace(rec, schema="other-v1"), "invalid_selection_record"),
+        (lambda rec: replace(rec, backend="memory"), "invalid_selection_record"),
+        (lambda rec: replace(rec, repository_id="private-repo"), "invalid_selection_record"),
+        (lambda rec: replace(rec, bindings=()), "binding_limit_exceeded"),
+        (lambda rec: replace(rec, scan_unit_count=99), "invalid_selection_record"),
+        (lambda rec: replace(rec, bindings=(rec.bindings[0], rec.bindings[0])), "invalid_selection_record"),
+    ],
+)
+def test_selection_record_rejects_header_binding_and_count_tampering(bad, reason: str) -> None:
+    rec = _sample_record(pin_pub=True)
+    candidate = bad(rec)
+    with pytest.raises(ContextRequestError) as exc:
+        candidate.validate()
+    assert exc.value.refusal_reason == reason
+
+
+@pytest.mark.parametrize(
+    ("binding", "reason"),
+    [
+        (SourceBindingSelection("", 1, None, "select1:pol", "src1:core"), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", True, None, "select1:pol", "src1:core"), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", 0, None, "select1:pol", "src1:core"), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", 1, "", "select1:pol", "src1:core"), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", 1, None, "", "src1:core"), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", 1, None, "select1:pol", "",), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", 1, None, "select1:pol", "src1:core", ("../src",)), "invalid_selection_record"),
+        (SourceBindingSelection("bind1:core", 1, None, "select1:pol", "src1:core", tuple("src" + str(i) for i in range(5))), "prefix_limit_exceeded"),
+    ],
+)
+def test_binding_validation_rejects_untrusted_fields(binding: SourceBindingSelection, reason: str) -> None:
+    with pytest.raises(ContextRequestError) as exc:
+        binding.validate()
+    assert exc.value.refusal_reason == reason
+
+
+def test_selection_revalidation_reports_configuration_and_publication_states() -> None:
+    rec = _sample_record(pin_pub=True)
+    assert revalidate_selection_record(
+        rec, live_graph_id="other", live_repository_id=rec.repository_id,
+        live_backend=rec.backend, live_bindings_by_id={}, live_accepted=None,
+    ) == (
+        "refused", "selection_graph_mismatch"
+    )
+    assert revalidate_selection_record(
+        rec, live_graph_id=rec.graph_id, live_repository_id=rec.repository_id,
+        live_backend=rec.backend, live_bindings_by_id={}, live_accepted=None,
+    ) == ("refused", "selection_binding_missing")
+    changed = {rec.bindings[0].binding_id: {
+        "revision": 2,
+        "snapshot_id": rec.bindings[0].snapshot_id,
+        "selection_policy_id": rec.bindings[0].selection_policy_id,
+        "source_definition_id": rec.bindings[0].source_definition_id,
+    }}
+    assert revalidate_selection_record(
+        rec, live_graph_id=rec.graph_id, live_repository_id=rec.repository_id,
+        live_backend=rec.backend, live_bindings_by_id=changed, live_accepted=None,
+    ) == ("refused", "selection_binding_changed")
+    live = {rec.bindings[0].binding_id: {
+        "revision": rec.bindings[0].revision,
+        "snapshot_id": rec.bindings[0].snapshot_id,
+        "selection_policy_id": rec.bindings[0].selection_policy_id,
+        "source_definition_id": rec.bindings[0].source_definition_id,
+    }}
+    assert revalidate_selection_record(
+        rec, live_graph_id=rec.graph_id, live_repository_id=rec.repository_id,
+        live_backend=rec.backend, live_bindings_by_id=live, live_accepted=None,
+    ) == ("unavailable", "publication_absent")
+    assert revalidate_selection_record(
+        rec, live_graph_id=rec.graph_id, live_repository_id=rec.repository_id,
+        live_backend=rec.backend, live_bindings_by_id=live, live_accepted={},
+    ) == ("unavailable", "accepted_publication_unverified")

@@ -10,9 +10,9 @@ from typing import Any
 from common_lore_index.retrieval.advisory_freshness import reserve_freshness_observation
 from common_lore_index.retrieval.context_budget import (
     CANONICAL_KEY_CAP_BYTES, DISPLAY_NAME_CAP_BYTES, SOURCE_RELATIVE_PATH_CAP_BYTES,
-    _withhold_scope_echo, _withhold_target_echo, apply_skeleton_compaction,
-    packet_size_with_reservation, sanitize_stored_string,
+    _withhold_scope_echo, _withhold_target_echo, apply_skeleton_compaction, sanitize_stored_string,
 )
+from common_lore_index.retrieval.context_budget_reservation import packet_size_with_reservation
 from common_lore_index.retrieval.context_contracts import OMISSION_COUNT_KEYS
 from common_lore_index.retrieval.intent_policy import classify_subject_intent_family
 from common_lore_index.server._navigation_groups import (

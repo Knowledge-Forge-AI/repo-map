@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import sqlite3
 
+import pytest
+
 from common_lore_index.graph.edge_kinds import CANONICAL_EDGE_KINDS
 from common_lore_index.retrieval.intent_policy import (
     CONTEXT_DIRECT_EVIDENCE_ROLE_V1,
@@ -15,6 +17,8 @@ from common_lore_index.retrieval.intent_policy import (
     compute_affinity_tier,
     evaluate_context_evidence_role,
     unlocatable_patterns,
+    DirectEvidenceRuleSpec,
+    build_context_direct_evidence_role_sql,
 )
 
 
@@ -127,3 +131,78 @@ def test_unlocatable_patterns_for_scoped_requests() -> None:
     tool_excl, tool_unloc = unlocatable_patterns("definition", ("tool",), scoped=True)
     assert tool_excl == ("tool",)
     assert tool_unloc
+
+
+def test_direct_rule_sql_uses_closed_single_and_multi_value_predicates() -> None:
+    single = DirectEvidenceRuleSpec(
+        family="single", link_kinds=("observed",), subject_kinds=("python.class",), raw_kinds=("python.class",)
+    )
+    multi = DirectEvidenceRuleSpec(
+        family="multi", link_kinds=("observed", "inferred_from_edge"),
+        subject_kinds=("bats.expectation", "zunit.hook"), raw_kinds=None,
+    )
+    assert "link.link_kind = 'observed'" in single.sql_predicate()
+    assert "subject.kind = 'python.class'" in single.sql_predicate()
+    assert "e.raw_kind = 'python.class'" in single.sql_predicate()
+    sql = build_context_direct_evidence_role_sql((single, multi))
+    assert "link.link_kind IN ('observed', 'inferred_from_edge')" in sql
+    assert "subject.kind IN ('bats.expectation', 'zunit.hook')" in sql
+    assert "e.raw_kind = subject.kind" in sql
+    assert "ELSE 'unknown'" in sql
+
+
+@pytest.mark.parametrize(
+    ("kind", "key", "display", "path", "expected"),
+    [
+        ("python.function", "py:pkg.test_total", "total", "src/test_billing.py", "python_test_subject"),
+        ("python.function", "py:pkg.total", "test_total", None, "python_test_subject"),
+        ("python.class", "py:pkg.TestBilling", "Billing", None, "code_definition"),
+        ("python.class", "py:pkg.TestBilling", None, None, "python_test_subject"),
+        ("python.class", "py:pkg.Billing", "Billing", "src/billing.py", "code_definition"),
+        ("doc.page", "doc:README", "README", None, "doc_artifact"),
+        ("email.message", "mail:1", "Subject", None, "message_artifact"),
+        ("bats.test_case", "bats:case", "case", None, "test_subject"),
+        ("css.selector", "css:.button", ".button", None, "code_definition"),
+        ("mystery", "mystery:1", "Mystery", None, "other"),
+    ],
+)
+def test_subject_family_uses_kind_symbol_and_verified_path(
+    kind: str, key: str, display: str | None, path: str | None, expected: str,
+) -> None:
+    assert classify_subject_intent_family(
+        kind, key, display_name=display, source_relative_path=path,
+    ) == expected
+
+
+@pytest.mark.parametrize(
+    ("intent", "kind", "family", "expected"),
+    [
+        (None, "python.class", "code_definition", (1, "intent_kind_neutral")),
+        ("general", "python.class", "code_definition", (1, "intent_kind_neutral")),
+        ("definition", "doc.page", "doc_artifact", (1, "intent_kind_neutral")),
+        ("definition", "python.function", "python_test_subject", (1, "intent_kind_neutral")),
+        ("implementation", "python.function", "code_definition", (0, "intent_kind_affine")),
+        ("tests", "python.class", "code_definition", (1, "intent_kind_neutral")),
+        ("tests", "python.class", "python_test_subject", (0, "intent_kind_affine")),
+        ("docs", "doc.adr", "doc_artifact", (0, "intent_kind_affine")),
+        ("messages", "email.message", "message_artifact", (0, "intent_kind_affine")),
+        ("messages", "python.class", "code_definition", (1, "intent_kind_neutral")),
+        ("unrecognized", "python.class", "code_definition", (1, "intent_kind_neutral")),
+    ],
+)
+def test_affinity_tiers_cover_each_navigation_intent_branch(
+    intent: str | None, kind: str, family: str, expected: tuple[int, str],
+) -> None:
+    assert compute_affinity_tier(intent, kind, family) == expected
+
+
+def test_unlocatable_patterns_distinguishes_partial_and_all_explicit_kinds() -> None:
+    excluded, all_unlocatable = unlocatable_patterns(
+        "general", ("tool", "python.class"), scoped=True,
+    )
+    assert excluded == ("tool",)
+    assert all_unlocatable is False
+    excluded, all_unlocatable = unlocatable_patterns("general", ("tool",), scoped=True)
+    assert excluded == ("tool",)
+    assert all_unlocatable is True
+    assert unlocatable_patterns("definition", (), scoped=False) == ((), False)

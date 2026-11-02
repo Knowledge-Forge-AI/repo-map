@@ -13,9 +13,6 @@ from common_lore_index.retrieval.context_contracts import (
     MAX_BUDGET_BYTES,
     MIN_BUDGET_BYTES,
 )
-from common_lore_index.retrieval.context_budget_reservation import (
-    packet_size_with_reservation as packet_size_with_reservation,
-)
 
 DISPLAY_NAME_CAP_BYTES = 512
 SOURCE_RELATIVE_PATH_CAP_BYTES = 1024

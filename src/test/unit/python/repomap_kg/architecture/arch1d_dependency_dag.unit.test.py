@@ -14,7 +14,8 @@ ALLOWED_TEST_SUPPORT_REFERENCES: set[tuple[str, str]] = set()
 def test_production_import_graph_has_only_accepted_transitional_cycles() -> None:
     graph, _ = _import_graph()
 
-    assert _strongly_connected_components(graph) == TRANSITIONAL_COMPONENTS
+    components = _strongly_connected_components(graph)
+    assert components == TRANSITIONAL_COMPONENTS, sorted(sorted(c) for c in components)
 
 
 def test_production_does_not_import_test_support() -> None:

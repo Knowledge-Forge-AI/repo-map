@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from common_lore_index.retrieval.context_contracts import (
@@ -157,6 +159,30 @@ def test_expected_publication_pin_strict_validation() -> None:
     assert exc.value.refusal_reason == "invalid_selection_record"
 
 
+@pytest.mark.parametrize(
+    "accepted",
+    [
+        {},
+        {"generation": True},
+        {"generation": 1, "accepted_run_id": 1},
+        {"generation": 1, "accepted_run_id": 1, "publication_bundle_id": "bundle"},
+    ],
+)
+def test_expected_publication_pin_fails_closed_for_incomplete_live_identity(
+    accepted: dict[str, object],
+) -> None:
+    pin = ExpectedPublicationPin(
+        accepted_run_id=1,
+        publication_bundle_id="bundle1:aa",
+        snapshot_manifest_id="manifest1:bb",
+        generation=1,
+        job_id="job-1",
+        attempt=1,
+        extraction_receipt_id="receipt1:cc",
+    )
+    assert pin.matches_accepted(accepted) is False
+
+
 def test_work_ledger_statement_and_progress_accounting() -> None:
     now = [100.0]
     sq_ledger = WorkLedger(backend="sqlite", clock=lambda: now[0])
@@ -185,3 +211,51 @@ def test_work_ledger_statement_and_progress_accounting() -> None:
     now[0] = 115.0
     assert not pg_ledger.check_deadline()
     assert pg_ledger.exhausted_reason == "deadline_exceeded"
+
+
+@pytest.mark.parametrize(
+    ("context_request", "reason"),
+    [
+        (ContextRequest(graph_id="", mode="ranked_discovery", query="x"), "invalid_request"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="   "), "invalid_request"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="x", intent="bogus"), "invalid_intent"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="x", fallback_to="bogus"), "invalid_fallback"),
+        (ContextRequest(graph_id="repo", mode="graph_investigation", canonical_key="py:A", fallback_to="ranked_discovery"), "invalid_fallback"),
+        (ContextRequest(graph_id="repo", mode="graph_investigation", canonical_key="py:A", query="x"), "invalid_target_flags"),
+        (ContextRequest(graph_id="repo", mode="graph_investigation", canonical_key="py:A", expand_depth=0), "invalid_expand_depth"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="x", edge_kinds=("not-an-edge",)), "invalid_request"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="x", freshness="watch"), "invalid_request"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="x", bindings=("bind1:a",), path_prefixes={"bind1:b": ("src",)}), "invalid_request"),
+        (ContextRequest(graph_id="repo", mode="ranked_discovery", query="x", selection_path=Path("selection.json"), bindings=("bind1:a",)), "invalid_request"),
+    ],
+)
+def test_context_request_rejects_invalid_contract_combinations(
+    context_request: ContextRequest, reason: str,
+) -> None:
+    with pytest.raises(ContextRequestError) as exc:
+        context_request.validate()
+    assert exc.value.refusal_reason == reason
+
+
+def test_context_request_effective_edges_deduplicate_and_mode_defaults() -> None:
+    exact = ContextRequest(graph_id="repo", mode="exact_identity", canonical_key="py:A")
+    assert exact.effective_intent() is None
+    assert exact.effective_edge_kinds() == ()
+
+    ranked = ContextRequest(
+        graph_id="repo", mode="ranked_discovery", query="A", expand_depth=1,
+        edge_kinds=("calls", "calls", "contains"),
+    )
+    assert ranked.effective_edge_kinds() == ("calls", "contains")
+
+    graph = ContextRequest(graph_id="repo", mode="graph_investigation", canonical_key="py:A")
+    assert graph.effective_intent() == "general"
+    assert graph.effective_edge_kinds()
+
+
+@pytest.mark.parametrize(
+    "value",
+    [None, "", "../src", "/absolute", "~/src", "src//main", "src/./main", "src/../main", "src\\main", "src\nmain", "a" * 501],
+)
+def test_source_prefix_validation_rejects_unsafe_forms(value: object) -> None:
+    assert not valid_source_path_prefix(value)

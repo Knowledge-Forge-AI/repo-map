@@ -76,3 +76,28 @@ def test_read_selection_file_refuses_growth_before_an_over_limit_probe(
         source_selection.read_selection_file(output)
     assert exc.value.refusal_reason == "invalid_selection_record"
     assert output.stat().st_size <= MAX_SELECTION_FILE_BYTES
+
+
+@pytest.mark.parametrize("raw", [b"", b"not-json\n", b"[]\n", b"{\"schema\": \"wrong\"}\n"])
+def test_read_selection_file_rejects_malformed_and_open_schema_payloads(
+    tmp_path: Path, raw: bytes,
+) -> None:
+    path = tmp_path / "malformed.json"
+    path.write_bytes(raw)
+    with pytest.raises(ContextRequestError) as exc:
+        source_selection.read_selection_file(path)
+    assert exc.value.refusal_reason == "invalid_selection_record"
+
+
+def test_read_selection_file_rejects_directory_and_invalid_utf8(tmp_path: Path) -> None:
+    directory = tmp_path / "directory"
+    directory.mkdir()
+    with pytest.raises(ContextRequestError) as exc_dir:
+        source_selection.read_selection_file(directory)
+    assert exc_dir.value.refusal_reason == "invalid_selection_record"
+
+    bad_utf8 = tmp_path / "bad-utf8.json"
+    bad_utf8.write_bytes(b"\xff\xfe")
+    with pytest.raises(ContextRequestError) as exc_utf8:
+        source_selection.read_selection_file(bad_utf8)
+    assert exc_utf8.value.refusal_reason == "invalid_selection_record"

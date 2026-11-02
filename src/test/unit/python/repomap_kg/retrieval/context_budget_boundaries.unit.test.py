@@ -21,10 +21,11 @@ from common_lore_index.retrieval.context_budget import (
     compute_actual_bytes_fixpoint,
     finalize_packet_within_budget,
     maximally_compacted_skeleton_bytes,
-    packet_size_with_reservation,
     serialize_compact_json,
 )
-from common_lore_index.retrieval.context_budget_reservation import empty_packet_size_with_reservation
+from common_lore_index.retrieval.context_budget_reservation import (
+    empty_packet_size_with_reservation, packet_size_with_reservation,
+)
 from common_lore_index.retrieval.context_contracts import ContextRequest
 from common_lore_index.retrieval.context_packet_builder import (
     build_packet_skeleton, execute_scans_and_pack,
