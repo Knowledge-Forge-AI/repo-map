@@ -18,6 +18,7 @@ import pytest
 import d12_native_python_observer as observer
 from common_lore_index.runtime import python_payload as payload
 from repomap_test_support import d12_core_image as d12
+from repomap_test_support import d12_native_python_proof as proof
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
 from repomap_test_support.resource_run import active_resource_run
 
@@ -59,6 +60,8 @@ def test_native_python31216_component(capsys: pytest.CaptureFixture[str]) -> Non
     with capsys.disabled():  # one bounded record; pytest would otherwise discard captured stdout on a pass
         print(RECORD_PREFIX + json.dumps(record, sort_keys=True, separators=(",", ":")), flush=True)
     assert record["status"] == "observed", record["reasons"]
+    assert record["envelope"]["sha256"] == proof.ENVELOPE_SHA256
+    assert record["provenance"]["index"] == payload.PYTHON_31216_INDEX
     assert record["provenance"]["config"] == payload.PYTHON_31216_ARM64_CONFIG
     assert record["summary"]["default_enrolled"] is True and record["defaults"]["amd64_default_enrolled"] is True
     assert record["cleanup"]["verified"] is True and record["operations"]["delta"] == {}

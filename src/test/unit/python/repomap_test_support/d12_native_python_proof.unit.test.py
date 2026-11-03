@@ -28,6 +28,7 @@ def _meta() -> dict[str, bytes]:
 def test_exact_envelope_hash_schema_and_older_arm_manifest_bytes() -> None:
     assert hashlib.sha256(ENVELOPE).hexdigest() == proof.ENVELOPE_SHA256
     meta = _meta()
+    assert proof.digest(meta["index"]) == payload.PYTHON_31216_INDEX
     assert tuple(sorted(meta)) == proof.METADATA_KEYS
     assert meta["arm64-manifest"] == older.RETAINED_ARM64_MANIFEST_BYTES  # A5: duplicated ARM bytes are identical
     assert proof.CONFIGS == {"arm64": payload.PYTHON_31216_ARM64_CONFIG, "amd64": payload.PYTHON_31216_AMD64_CONFIG}
