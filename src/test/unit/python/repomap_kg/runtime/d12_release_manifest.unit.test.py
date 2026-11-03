@@ -10,6 +10,17 @@ from common_lore_index.runtime import commands, release
 from repomap_test_support import d12_core_image as d12
 
 
+def test_candidate_header_matches_native_ci107_security_observation() -> None:
+    from common_lore_index.runtime import release_manifest
+
+    rows = release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST["amd64"].builder
+    header = next(row for row in rows if row.name == "linux-libc-dev")
+    assert header == release.DebPackage(
+        "linux-libc-dev", "6.12.115-2", "all",
+        "235ba2cb2ea677f4acaf402b027e76d305342870f6d80d822d7ee9713e2f0ff5",
+    )
+
+
 def test_release_manifest_exports_ci68_amd64_candidate_closure() -> None:
     assert importlib.util.find_spec("common_lore_index.runtime.release_manifest") is not None
     from common_lore_index.runtime import release_manifest

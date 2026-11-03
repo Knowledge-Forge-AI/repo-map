@@ -49,7 +49,7 @@ class PayloadExclusion(NamedTuple):
 # ADR0105 refreshed OCI metadata. These separate literal import sets are the required native contracts:
 # originally observed on each architecture under ADR0100/0103, re-proved for each refreshed supplier before use.
 # Metadata or unchanged Tk bytes alone never transfer native qualification to a refreshed image.
-PYTHON_31216_INDEX = "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+PYTHON_31216_INDEX = "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
 PYTHON_31216_ARM64_MANIFEST = "sha256:b224e2fe306f9d303251ada22961635e5b52a69c0414a0050611be31c59f5f5b"
 PYTHON_31216_ARM64_CONFIG = "sha256:ff710677e697054c516f12c53c92166f1aef075f21b2a593f4c615e522112b4e"
 PYTHON_31216_AMD64_MANIFEST = "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b"

@@ -32,6 +32,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.ci107repair1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/d12_package_preflight.int.test.py"
+      ],
+      "rationale": "ADR0139 exact current Debian header admission and stale/tampered preflight refusal; clean test admission with all existing debt ceilings preserved.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
@@ -35440,6 +35450,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/runtime/d12_native_python_proof.int.test.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION47-AMDPROOF1 ADR 0102 native Python 3.12.16 component diagnostic owners, exact native-job pin and Docker-free fixtures; strict zero-debt admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_package_preflight.int.test.py",
+      "rationale": "ADR0139 exact current Debian header admission and stale/tampered preflight refusal; clean test admission with all existing debt ceilings preserved.",
       "root": "test_owners",
       "status": "active_int_test"
     },

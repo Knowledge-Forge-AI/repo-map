@@ -12,7 +12,7 @@ def test_security_release_selects_exact_inspected_python_31216() -> None:
     assert release.PYTHON_RELEASE_VERSION == "3.12.16"
     assert release.PYTHON_RELEASE_IMAGE == (
         "python:3.12-slim-trixie@sha256:"
-        "aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+        "b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
     )
 
 
@@ -26,7 +26,7 @@ def test_python_31216_payload_oci_identities_and_native_arm_baseline() -> None:
     from common_lore_index.runtime import release_manifest as historical
 
     assert payload.PYTHON_31216_INDEX == (
-        "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+        "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
     )
     assert payload.PYTHON_31216_ARM64_MANIFEST == (
         "sha256:b224e2fe306f9d303251ada22961635e5b52a69c0414a0050611be31c59f5f5b"
@@ -86,7 +86,7 @@ def test_amd64_expected_default_is_a_separate_literal_bound_to_the_refreshed_can
     assert hashlib.sha256(" ".join(names).encode()).hexdigest() == (
         "049267074bee42d4449e7a3ed866076d6529b44106e0e3676f41a5e1da277a1b")
     assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion("amd64", names) == (
-        "amd64", "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+        "amd64", "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30",
         "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b",
         "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e",
         "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",

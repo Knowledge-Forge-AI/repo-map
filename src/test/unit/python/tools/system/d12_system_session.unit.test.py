@@ -108,11 +108,19 @@ def test_preflight_rejects_package_drift_and_preserves_failure_report(
     session, d12_ctx = _establish(tmp_path, report_dir)
     base_rep = _matching_preflight_report(d12_ctx)
     steps = base_rep["steps"]
+    manifest = steps["candidate"]["manifest"]
+    stale_builder = tuple(
+        row._replace(version="6.12.113-1", sha256="b2d475e01aaf0030c72bd3a0300d311f8be64aa9e82d82eae5da1a04f4010071")
+        if row.name == "linux-libc-dev" else row for row in manifest["builder"]
+    )
     for mut, msg in (
         ({"build": {"succeeded": True}}, "must not claim build/image"),
         ({"server_inventory": None}, "missing server_inventory"),
         ({"steps": {**steps, "candidate": {
             **steps["candidate"], "manifest": {**steps["candidate"]["manifest"], "libpq_sha256": "f" * 64}}}},
+         "candidate manifest mismatch"),
+        ({"steps": {**steps, "candidate": {
+            **steps["candidate"], "manifest": {**manifest, "builder": stale_builder}}}},
          "candidate manifest mismatch"),
         ({"steps": {**steps, "libpq_runtime": {
             **steps["libpq_runtime"], "library": {**steps["libpq_runtime"]["library"], "sha256": "f" * 64}}}},

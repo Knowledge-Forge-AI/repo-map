@@ -24,9 +24,9 @@ import test_sandbox
 import test_sandbox_contract as contract
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-TRIXIE = "postgres:16.15-trixie@sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c"
+TRIXIE = "postgres:16.15-trixie@sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a"
 BOOKWORM = "postgres:16.15-bookworm@sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0"
-PYTHON = "python:3.12-slim-trixie@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+PYTHON = "python:3.12-slim-trixie@sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
 
 
 def test_release_pins_and_every_mirror_are_the_exact_trixie_indexes():

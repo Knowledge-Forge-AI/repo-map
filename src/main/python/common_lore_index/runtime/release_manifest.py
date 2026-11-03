@@ -58,7 +58,7 @@ HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS: Mapping[str, PayloadExclusion] = Map
 
 D12_CANDIDATE_LIBPQ_VERSION = 180006
 CI68_MANIFEST_SHA256 = '13f616f876ebc6e2ef6c9772e55e39426184944a15cce61ef2690187b2ef0273'
-D12_CANDIDATE_MANIFEST_SHA256 = 'f55dafe560ee79b58d1c480e9d75d3f457fad705f0bf32dce1f44e35b90befa4'
+D12_CANDIDATE_MANIFEST_SHA256 = '0128232485473545c4321403b90d1a76d2b0915e5cd74133dd69f956d8caa7aa'
 
 D12_CANDIDATE_PACKAGE_MANIFEST: Mapping[str, PlatformPackages] = MappingProxyType({
     "amd64": PlatformPackages(
@@ -261,8 +261,8 @@ D12_CANDIDATE_PACKAGE_MANIFEST: Mapping[str, PlatformPackages] = MappingProxyTyp
                 '9205a1bef7d6a52ffc06548e0cde169ff303e688c12d9be3a98f734449077e22',
             ),
             DebPackage(
-                'linux-libc-dev', '6.12.113-1', 'all',
-                'b2d475e01aaf0030c72bd3a0300d311f8be64aa9e82d82eae5da1a04f4010071',
+                'linux-libc-dev', '6.12.115-2', 'all',
+                '235ba2cb2ea677f4acaf402b027e76d305342870f6d80d822d7ee9713e2f0ff5',
             ),
             DebPackage(
                 'rpcsvc-proto', '1.4.3-1', 'amd64',
