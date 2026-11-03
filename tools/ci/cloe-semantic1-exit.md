@@ -3,7 +3,8 @@
 Status: **CI109 qualified the predecessor evaluator milestone** at staging
 `e012f0180b7e2b85112e46a361fc4cd7fcd66472`. The connected ADR0141 continuation
 now has independent source/controller review, scoped proof and a fresh verified
-public calibration. Its one-use CI110 campaign remains pending. Full W5,
+public calibration. Its unspent campaign was rebound to CI113 under ADR0143 after unrelated
+Dependabot events advanced the workflow counter; hosted qualification remains pending. Full W5,
 scientific criteria, held-out usefulness and public-main promotion remain open.
 
 ## Delivered scope
@@ -120,10 +121,16 @@ Go metrics/race/lint prerequisites remain separate. Disposable pgvector test-
 profile materializations are ledgered separately; no local application/SDK
 build was performed. Native model evidence is ARM-only, not AMD qualification.
 
-Capacity remains AVAILABLE under the operator's standing selection. ADR0142
-bounds one fresh CI110 attempt 1 through existing draft PR23 synchronization and
+Capacity remains AVAILABLE under the operator's standing selection. ADR0142 supplies the single allocation; ADR0143
+transfers its unpublished grant to one CI113 attempt 1 through existing draft PR23 synchronization and
 one native AMD start 26 after 25 spent starts. Legacy stop fields and every prior
 consumption record remain. No automatic retry, duplicate trigger, main promotion,
 release/tag, new dependency or live deployment follows. Hosted CI owns complete
 populations, coverage and native assembled-system gates. The 87%/82% branch
 headroom aim remains pending rather than inferred from scoped proof.
+
+The implementation commit was retained without rewriting when remote preflight
+found ordinals 110–112 consumed by Dependabot promotion-policy refusals. Their
+system/native jobs were skipped and added no application starts. The forward
+CI113 correction retires the unused CI110 nonce/reservation, preserves all ledger
+records and keeps the same single slot26 rather than granting another build.

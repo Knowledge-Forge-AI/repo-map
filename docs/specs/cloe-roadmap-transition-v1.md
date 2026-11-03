@@ -314,3 +314,10 @@ records remain explicit measured limits; no scientific aggregate is accepted.
 [ADR0142](../adr/2026/11/0142-w5-correspondence-milestone-staging-campaign.md)
 bounds the one-use CI110 staging campaign for this connected milestone. Hosted
 qualification of the successor and full W5 remain pending.
+
+[ADR0143](../adr/2026/11/0143-unpublished-staging-campaign-ordinal-reconciliation.md)
+transfers the unused ADR0142 allocation to CI113 after three unrelated Dependabot
+promotion-policy refusals advanced the workflow counter. No candidate was pushed
+for CI110 and no application start was added. The implementation commit and all
+calibration/formatting evidence remain intact; only forward campaign metadata
+and its owning tests change.
