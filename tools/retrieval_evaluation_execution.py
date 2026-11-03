@@ -21,15 +21,20 @@ from repomap_test_support.retrieval_evaluation_canaries import assert_canary_fre
 from repomap_test_support.retrieval_evaluation_publication import (
     read_postgres_accepted_publication, read_sqlite_accepted_publication,
 )
-from retrieval_evaluation_accounting import ByteLayerAccounting, summarize_timing_samples
+from retrieval_evaluation_accounting import (
+    ByteLayerAccounting, EvaluatorByteBreakdownV1, summarize_timing_samples,
+)
 from retrieval_evaluation_attempts import AttemptJournal
 from retrieval_evaluation_fts import execute_postgres_native_fts_task
 from retrieval_evaluation_grading import ExecutionState, GradedSlotRecord, grade_task_execution
 from retrieval_evaluation_graph import execute_graph_baseline_task
-from retrieval_evaluation_native import execute_native_baseline_task
+from retrieval_evaluation_native import (
+    execute_native_baseline_task, execute_native_baseline_task_with_breakdown,
+)
 from retrieval_evaluation_reference import execute_projection_reference_task
 from retrieval_evaluation_schema import EvaluationTask
 from retrieval_evaluation_views import MaterializedNativeView
+from retrieval_evaluation_observation_contracts import ObservationPublicationPin
 
 
 TaskOutcome = tuple[ExecutionState, QueryEnvelope, int, ByteLayerAccounting]
@@ -48,14 +53,17 @@ class ArmContext:
     postgres_lexical_home: Path | None = None
     postgres_lexical_input_bytes: int | None = None
 
-    def execute(self, arm_id: str, task: EvaluationTask) -> TaskOutcome:
+    def execute(
+        self, arm_id: str, task: EvaluationTask, *,
+        expected_pin: ObservationPublicationPin | None = None,
+    ) -> TaskOutcome:
         if arm_id == "native_tools_baseline":
             return execute_native_baseline_task(task, self.native_view)
         if arm_id.startswith("current_graph_baseline:"):
             home = self.sqlite_home if arm_id.endswith(":sqlite") else self.postgres_home
             if home is None:
                 raise ValueError("PostgreSQL arm has no published generation")
-            return execute_graph_baseline_task(task, home)
+            return execute_graph_baseline_task(task, home, psql_command=self.psql_command, expected_pin=expected_pin)
         if arm_id == "captured_projection_reference:sqlite":
             config = load_graph_registry_config_home(self.sqlite_home)
             if not isinstance(config, LocalSqliteConfig):
@@ -76,6 +84,21 @@ class ArmContext:
                 raise ValueError("PostgreSQL lexical arm has no published generation")
             return execute_postgres_native_fts_task(task, lex_home)
         raise ValueError("unsupported evaluation arm")
+
+    def execute_with_breakdown(
+        self,
+        arm_id: str,
+        task: EvaluationTask,
+        *,
+        expected_pin: ObservationPublicationPin | None = None,
+    ) -> tuple[TaskOutcome, EvaluatorByteBreakdownV1 | None]:
+        """Expose native byte/work evidence while preserving the legacy adapter."""
+        if arm_id != "native_tools_baseline":
+            return self.execute(arm_id, task, expected_pin=expected_pin), None
+        state, envelope, elapsed, layers, breakdown = execute_native_baseline_task_with_breakdown(
+            task, self.native_view,
+        )
+        return (state, envelope, elapsed, layers), breakdown
 
 
 def failed_outcome(task: EvaluationTask, arm_id: str, reason: str, elapsed_ns: int) -> TaskOutcome:

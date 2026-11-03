@@ -167,7 +167,7 @@ def test_postgres_real_publication_projection_query_and_missing_artifact_exclusi
             state_pg1.projection_inputs(), state_pg1.policy
         )
         assert projection_pg1.accepted_reference.backend == "postgresql"
-        assert projection_pg1.accepted_reference.accepted_generation is None
+        assert projection_pg1.accepted_reference.accepted_generation == 1
 
         req = CapturedTextQueryRequest(
             query="execute_pipeline",
@@ -229,15 +229,20 @@ def test_postgres_real_publication_projection_query_and_missing_artifact_exclusi
             pg_home, psql_command=pg_db.psql_command
         )
         assert state_pg2.accepted_reference.run_id != state_pg1.accepted_reference.run_id
+        assert state_pg2.accepted_reference.accepted_generation == 2
 
         from common_lore_index.ops.config_local import load_graph_registry_config_home
         from common_lore_index.ops.config_records import OpsConfig
+        from common_lore_index.retrieval.publication_binding import check_correspondence
 
         cfg = load_graph_registry_config_home(pg_home)
         assert isinstance(cfg, OpsConfig)
         cur_pg_acc, _ = read_postgres_accepted_publication(
             cfg, MIXED_V1_GRAPH_ID, psql_command=pg_db.psql_command
         )
+        assert cur_pg_acc.accepted_generation == 2
+        checked_pg2 = check_correspondence(state_pg2.projection_inputs())
+        assert checked_pg2.repository_id == cur_pg_acc.repository_id
         stale_pg_env = query_captured_text(
             projection_pg1,
             req,

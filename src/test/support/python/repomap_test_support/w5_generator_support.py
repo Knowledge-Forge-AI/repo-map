@@ -13,8 +13,9 @@ from common_lore_index.retrieval.projection_policy import BodyProjectionPolicy
 from repomap_test_support.retrieval_evaluation_publication import (
     PublishedCorpusState, read_postgres_accepted_publication, read_sqlite_accepted_publication,
 )
-from repomap_test_support.w5_semantic_support import (
+from repomap_test_support.w5_semantic_store_support import (
     load_postgres_accepted_nodes_and_evidence, load_sqlite_accepted_nodes_and_evidence,
+    make_postgres_readback_adapter, make_sqlite_readback_adapter,
 )
 from retrieval_semantic_provenance import (
     AcceptedStoreReadback, RepresentationValidationError, VerifiedPublicationPin, verify_publication_provenance,
@@ -68,8 +69,19 @@ class GeneratorFixtureReader:
         return AcceptedStoreReadback(self.published.graph_id, str(binding.repository_identity),
                                      self.backend, publication, receipt)
 
+    def _compact_readback(self) -> AcceptedStoreReadback:
+        """Recheck public authorization and read only matched identity/receipt."""
+        self._authorized_graph()
+        if self.backend == 'sqlite':
+            return make_sqlite_readback_adapter(self.published)()
+        if self.backend == 'postgresql':
+            return make_postgres_readback_adapter(self.published, psql_command=self.psql_command)()
+        raise ValueError('unsupported disposable generator fixture backend')
+
     def read_pin(self) -> VerifiedPublicationPin:
-        return verify_publication_provenance_from_adapter(self.read_publication, policy=self.policy)
+        return verify_publication_provenance_from_adapter(
+            self._compact_readback, policy=self.policy
+        )
 
     def read_representations(self) -> RepresentationValidationReport:
         self._authorized_graph()
@@ -80,9 +92,9 @@ class GeneratorFixtureReader:
                 self.published, psql_command=self.psql_command)
         else:
             raise ValueError('unsupported disposable generator fixture backend')
-        current = self.read_publication()
+        current = self._compact_readback()
         pin = verify_publication_provenance(
             graph_id=current.graph_id, repository_identity=current.repository_identity,
             backend=current.backend, accepted_publication=publication, receipt=current.receipt,
-            policy=self.policy, readback_adapter=self.read_publication)
+            policy=self.policy, readback_adapter=self._compact_readback)
         return validate_canonical_node_representations(pin, accepted_nodes=nodes, accepted_evidence=evidence)

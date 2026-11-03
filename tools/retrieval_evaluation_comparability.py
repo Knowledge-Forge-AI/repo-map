@@ -5,6 +5,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
+from retrieval_evaluation_current_observations import (
+    FencedObservationResult, query_fenced_current_observations,
+)
 from retrieval_evaluation_grading import GradedSlotRecord, aggregate_arm_summary
 from retrieval_evaluation_schema import EvaluationTask
 
@@ -43,3 +46,5 @@ def describe_comparability(
     if arm_id == "postgres_native_fts:postgresql":
         out["view_scope_disclosure"] = "evaluator_precheck_over_two_binding_public_view"
     return out
+
+__all__ = ["describe_comparability", "FencedObservationResult", "query_fenced_current_observations"]

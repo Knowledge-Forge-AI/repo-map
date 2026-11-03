@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import selectors
 import shutil
@@ -14,23 +15,13 @@ from pathlib import Path
 
 from common_lore_index.retrieval.projection_chunks import frame_digest
 from common_lore_index.retrieval.query_contracts import (
-    CapabilityState,
-    DEFAULT_ORDERING_POLICY_VERSION,
-    EvaluationLocator,
-    FallbackDisclosure,
-    MatchSurface,
-    OmissionRecord,
-    QUERY_CONTRACT_VERSION,
-    QueryEnvelope,
-    QueryHit,
-    QueryMode,
-    QueryScope,
-    refused_envelope,
-    unavailable_envelope,
+    CapabilityState, DEFAULT_ORDERING_POLICY_VERSION, EvaluationLocator,
+    FallbackDisclosure, MatchSurface, OmissionRecord, QUERY_CONTRACT_VERSION,
+    QueryEnvelope, QueryHit, QueryMode, QueryScope, refused_envelope, unavailable_envelope,
 )
 from repomap_test_support.retrieval_evaluation_fixture import binding_id_for_alias
 from portable_handoff import recheck as handoff_recheck
-from retrieval_evaluation_accounting import ByteLayerAccounting
+from retrieval_evaluation_accounting import ByteLayerAccounting, EvaluatorByteBreakdownV1
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
 from retrieval_evaluation_views import MaterializedNativeView
@@ -38,6 +29,10 @@ from source_navigation_consumer import navigate as consumer_navigate
 
 DEFAULT_GIT_GREP_TIMEOUT_SECONDS = 5.0
 DEFAULT_MAX_STDOUT_BYTES = 1024 * 1024
+
+
+def _env_bytes(env: QueryEnvelope) -> int:
+    return len(json.dumps(env.to_dict(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8"))
 
 
 def resolve_git_executable() -> str:
@@ -264,26 +259,24 @@ def _execute_direct_handoff_native(
     return ExecutionState.COMPLETED, env, elapsed, ByteLayerAccounting(observed_output_payload_bytes=len(expected_sub.encode("utf-8")))
 
 
-def execute_native_baseline_task(
+def execute_native_baseline_task_with_breakdown(
     task: EvaluationTask,
     view: MaterializedNativeView,
     *,
     git_executable: str | None = None,
-) -> tuple[ExecutionState, QueryEnvelope, int, ByteLayerAccounting]:
-    """Execute one evaluation task using real git grep --no-index over the authorized view."""
+) -> tuple[ExecutionState, QueryEnvelope, int, ByteLayerAccounting, EvaluatorByteBreakdownV1]:
+    """Execute one evaluation task over the authorized view and return versioned byte/work breakdown."""
     requested_mode = QueryMode(task.requested_mode)
-    selected_b_ids = tuple(
-        sorted(binding_id_for_alias(a, task.graph_id) for a in task.selected_bindings)
-    )
+    selected_b_ids = tuple(sorted(binding_id_for_alias(a, task.graph_id) for a in task.selected_bindings))
     scope = QueryScope(
         graph_id=task.graph_id, backend="native_filesystem",
         selected_binding_ids=selected_b_ids, source_path_prefix=task.source_path_prefix,
     )
     if requested_mode == QueryMode.GRAPH_INVESTIGATION:
+        env = unavailable_envelope(requested_mode=requested_mode, scope=scope, reason="native_filesystem_has_no_typed_graph_relationships")
         return (
-            ExecutionState.UNAVAILABLE,
-            unavailable_envelope(requested_mode=requested_mode, scope=scope, reason="native_filesystem_has_no_typed_graph_relationships"),
-            0, ByteLayerAccounting(observed_output_payload_bytes=0),
+            ExecutionState.UNAVAILABLE, env, 0, ByteLayerAccounting(observed_output_payload_bytes=0),
+            EvaluatorByteBreakdownV1(raw_process_stdout_bytes=0, direct_selected_text_bytes=0, native_process_stdout_cap_bytes=DEFAULT_MAX_STDOUT_BYTES, decoded_candidate_count=0, returned_hit_count=0, serialized_envelope_bytes=_env_bytes(env), observed_output_payload_bytes=0),
         )
     unauthorized_reasons = [
         view.excluded_bindings[b_id] for b_id in selected_b_ids
@@ -291,17 +284,22 @@ def execute_native_baseline_task(
     ]
     if selected_b_ids and len(unauthorized_reasons) == len(selected_b_ids) and task.intended_match_surface == "captured_text":
         code = unauthorized_reasons[0]
+        env = refused_envelope(
+            requested_mode=requested_mode, scope=scope, refusal_code=code,
+            omissions=(OmissionRecord(binding_id=selected_b_ids[0], source_relative_path=None, reason_code=code, detail=f"native view excludes unauthorized body scope ({code})"),),
+        )
         return (
-            ExecutionState.REFUSED,
-            refused_envelope(
-                requested_mode=requested_mode, scope=scope, refusal_code=code,
-                omissions=(OmissionRecord(binding_id=selected_b_ids[0], source_relative_path=None, reason_code=code, detail=f"native view excludes unauthorized body scope ({code})"),),
-            ),
-            0, ByteLayerAccounting(observed_output_payload_bytes=0),
+            ExecutionState.REFUSED, env, 0, ByteLayerAccounting(observed_output_payload_bytes=0),
+            EvaluatorByteBreakdownV1(raw_process_stdout_bytes=0, direct_selected_text_bytes=0, native_process_stdout_cap_bytes=DEFAULT_MAX_STDOUT_BYTES, decoded_candidate_count=0, returned_hit_count=0, serialized_envelope_bytes=_env_bytes(env), observed_output_payload_bytes=0),
         )
     plan = task.permitted_query_plan
     if str(plan.get("workflow") or "") == "direct_handoff" or task.intended_match_surface == "direct_handoff":
-        return _execute_direct_handoff_native(task, view, scope, requested_mode)
+        st, env, el, acct = _execute_direct_handoff_native(task, view, scope, requested_mode)
+        sel_b = acct.observed_output_payload_bytes or 0
+        return st, env, el, acct, EvaluatorByteBreakdownV1(
+            raw_process_stdout_bytes=0, direct_selected_text_bytes=sel_b, native_process_stdout_cap_bytes=DEFAULT_MAX_STDOUT_BYTES,
+            decoded_candidate_count=len(env.hits), returned_hit_count=len(env.hits), serialized_envelope_bytes=_env_bytes(env), observed_output_payload_bytes=sel_b,
+        )
 
     scoped_paths = [
         p for p in view.selected_relative_paths
@@ -327,7 +325,10 @@ def execute_native_baseline_task(
             ordering_policy_version=DEFAULT_ORDERING_POLICY_VERSION,
             capability_state=CapabilityState.AVAILABLE, hits=(), scope_complete=True, fallback=fb,
         ).validate()
-        return ExecutionState.COMPLETED, env, 0, ByteLayerAccounting(0)
+        return (
+            ExecutionState.COMPLETED, env, 0, ByteLayerAccounting(0),
+            EvaluatorByteBreakdownV1(raw_process_stdout_bytes=0, direct_selected_text_bytes=0, native_process_stdout_cap_bytes=DEFAULT_MAX_STDOUT_BYTES, decoded_candidate_count=0, returned_hit_count=0, serialized_envelope_bytes=_env_bytes(env), observed_output_payload_bytes=0),
+        )
 
     exe = git_executable or resolve_git_executable()
     patterns: list[str] = list(plan.get("patterns") or [str(plan["query"])])
@@ -335,12 +336,10 @@ def execute_native_baseline_task(
     ignore_case = bool(plan.get("ignore_case", False))
     limit = int(plan.get("limit", 10))
 
-    total_elapsed, total_stdout = 0, 0
+    total_elapsed, total_stdout, decoded_candidates = 0, 0, 0
     scored: dict[tuple[str, str, int], tuple[EvaluationLocator, int]] = {}
     for pat in patterns:
-        argv = build_git_grep_argv(
-            pat, scoped_paths, git_executable=exe, fixed_strings=fixed_strings, ignore_case=ignore_case
-        )
+        argv = build_git_grep_argv(pat, scoped_paths, git_executable=exe, fixed_strings=fixed_strings, ignore_case=ignore_case)
         res = run_git_grep_process(argv, cwd=view.view_root)
         total_elapsed += res.elapsed_ns
         total_stdout += len(res.stdout_bytes)
@@ -348,15 +347,16 @@ def execute_native_baseline_task(
             failed_env = QueryEnvelope(
                 contract_version=QUERY_CONTRACT_VERSION, requested_mode=requested_mode,
                 effective_mode=requested_mode, match_surface=MatchSurface.NONE, scope=scope,
-                ordering_policy_version=DEFAULT_ORDERING_POLICY_VERSION,
-                capability_state=CapabilityState.FAILED,
+                ordering_policy_version=DEFAULT_ORDERING_POLICY_VERSION, capability_state=CapabilityState.FAILED,
                 provenance={"adapter_id": "native_tools_baseline", "failure_reason": res.status},
             ).validate()
             return (
-                ExecutionState.FAILED, failed_env, total_elapsed,
-                ByteLayerAccounting(observed_output_payload_bytes=total_stdout),
+                ExecutionState.FAILED, failed_env, total_elapsed, ByteLayerAccounting(observed_output_payload_bytes=total_stdout),
+                EvaluatorByteBreakdownV1(raw_process_stdout_bytes=total_stdout, direct_selected_text_bytes=0, native_process_stdout_cap_bytes=DEFAULT_MAX_STDOUT_BYTES, decoded_candidate_count=decoded_candidates, returned_hit_count=0, serialized_envelope_bytes=_env_bytes(failed_env), observed_output_payload_bytes=total_stdout),
             )
-        for loc in parse_git_grep_z_output(res.stdout_bytes, path_to_binding=view.path_to_binding):
+        parsed = parse_git_grep_z_output(res.stdout_bytes, path_to_binding=view.path_to_binding)
+        decoded_candidates += len(parsed)
+        for loc in parsed:
             key = (loc.binding_id, loc.source_relative_path, ((loc.start_line or 1) - 1) // 25)
             prev = scored.get(key)
             scored[key] = (loc, 1) if prev is None else (prev[0], prev[1] + 1)
@@ -365,22 +365,22 @@ def execute_native_baseline_task(
         scored.values(),
         key=lambda item: (-item[1], item[0].binding_id, item[0].source_relative_path, item[0].start_line or 0),
     )[:limit]
-    hits = tuple(
-        QueryHit(locator=loc, match_surface=surf_actual, rank=idx, score=float(score))
-        for idx, (loc, score) in enumerate(ordered, start=1)
-    )
+    hits = tuple(QueryHit(locator=loc, match_surface=surf_actual, rank=idx, score=float(score)) for idx, (loc, score) in enumerate(ordered, start=1))
     env = QueryEnvelope(
         contract_version=QUERY_CONTRACT_VERSION, requested_mode=requested_mode,
         effective_mode=eff_mode, match_surface=surf_actual, scope=scope,
         ordering_policy_version=DEFAULT_ORDERING_POLICY_VERSION,
         capability_state=CapabilityState.AVAILABLE, hits=hits, scope_complete=True, fallback=fb,
-        provenance={
-            "adapter_id": "native_tools_baseline",
-            "backend": "native_filesystem",
-            "binary_files_policy": "-I (binary files skipped)",
-        },
+        provenance={"adapter_id": "native_tools_baseline", "backend": "native_filesystem", "binary_files_policy": "-I (binary files skipped)"},
     ).validate()
     return (
-        ExecutionState.COMPLETED, env, total_elapsed,
-        ByteLayerAccounting(observed_output_payload_bytes=total_stdout),
+        ExecutionState.COMPLETED, env, total_elapsed, ByteLayerAccounting(observed_output_payload_bytes=total_stdout),
+        EvaluatorByteBreakdownV1(raw_process_stdout_bytes=total_stdout, direct_selected_text_bytes=0, native_process_stdout_cap_bytes=DEFAULT_MAX_STDOUT_BYTES, decoded_candidate_count=decoded_candidates, returned_hit_count=len(hits), serialized_envelope_bytes=_env_bytes(env), observed_output_payload_bytes=total_stdout),
     )
+
+
+def execute_native_baseline_task(
+    task: EvaluationTask, view: MaterializedNativeView, *, git_executable: str | None = None,
+) -> tuple[ExecutionState, QueryEnvelope, int, ByteLayerAccounting]:
+    """Execute one evaluation task using real git grep --no-index over the authorized view."""
+    return execute_native_baseline_task_with_breakdown(task, view, git_executable=git_executable)[:4]

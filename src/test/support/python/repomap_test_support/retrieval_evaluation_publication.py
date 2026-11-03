@@ -52,14 +52,15 @@ from common_lore_index.storage.publication import (
     RunPublicationReceipt,
     publication_receipt_from_mapping,
 )
-from common_lore_index.storage.publication_readback import (
-    read_latest_receipt_bearing_publication,
-)
 from common_lore_index.storage.sqlite_local.connection import read_transaction
 from common_lore_index.storage.sqlite_local.schema import accepted_identity
 from repomap_test_support.retrieval_evaluation_fixture import (
     MIXED_V1_GRAPH_ID,
     build_mixed_v1_projection_policy,
+)
+
+from repomap_test_support.retrieval_evaluation_publication_readback import (
+    read_postgres_matched_accepted_publication,
 )
 
 
@@ -307,32 +308,18 @@ def read_postgres_accepted_publication(
     *,
     psql_command: str = "psql",
 ) -> tuple[AcceptedPublicationReference, RunPublicationReceipt]:
-    """Read current accepted publication record from PostgreSQL."""
-    graph: OpsGraphConfig | None = next((c for c in config.graphs if c.id == graph_id), None)
-    if graph is None:
-        raise ValueError(f"unknown graph_id {graph_id!r}")
-    database = graph.database or config.postgres.database
-    psql_args = config.postgres.psql_args_for_database(database)
-    record = read_latest_receipt_bearing_publication(psql_args, psql_command=psql_command)
-    if record is None or record.receipt.portable is None:
-        raise LookupError(f"PostgreSQL graph {graph_id!r} has no accepted portable publication")
-    receipt = record.receipt
-    portable = receipt.portable
-    assert portable is not None
-    binding = local_graph_binding(graph)
-    accepted_ref = AcceptedPublicationReference(
-        graph_id=graph_id,
-        repository_id=binding.repository_identity,
-        backend="postgresql",
-        run_id=int(record.run_id),
-        publication_bundle_id=portable.publication_bundle_id,
-        job_id=str(receipt.attempt.job_id),
-        attempt=int(receipt.attempt.attempt),
-        accepted_generation=None,
-        snapshot_manifest_id=portable.snapshot_manifest_id,
-        extraction_receipt_id=portable.extraction_receipt_id,
-        trusted_caller=True,
-    ).validate()
+    """Read current matched-repository accepted publication record and generation from PostgreSQL."""
+    accepted_ref, receipt, pub_map = read_postgres_matched_accepted_publication(
+        config, graph_id, psql_command=psql_command
+    )
+    if (
+        pub_map.get("publication_bundle_id") != accepted_ref.publication_bundle_id
+        or pub_map.get("snapshot_manifest_id") != accepted_ref.snapshot_manifest_id
+        or pub_map.get("extraction_receipt_id") != accepted_ref.extraction_receipt_id
+    ):
+        raise ValueError(
+            f"PostgreSQL accepted marker disagrees with portable receipt for {graph_id!r}"
+        )
     return accepted_ref, receipt
 
 

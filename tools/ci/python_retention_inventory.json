@@ -306,6 +306,7 @@
         "src/test/support/python/repomap_test_support/retrieval_evaluation_canaries.py",
         "src/test/support/python/repomap_test_support/retrieval_evaluation_fixture.py",
         "src/test/support/python/repomap_test_support/retrieval_evaluation_publication.py",
+        "src/test/support/python/repomap_test_support/retrieval_evaluation_publication_readback.py",
         "src/test/support/python/repomap_test_support/retrieval_evaluation_query_fixture.py",
         "src/test/support/python/repomap_test_support/sqlite_mcp_transport.py"
       ],
@@ -322,12 +323,16 @@
         "tools/retrieval_evaluation_admission.py",
         "tools/retrieval_evaluation_attempts.py",
         "tools/retrieval_evaluation_comparability.py",
+        "tools/retrieval_evaluation_correspondence_graph_scope.py",
+        "tools/retrieval_evaluation_correspondence_observation_records.py",
         "tools/retrieval_evaluation_criteria.py",
+        "tools/retrieval_evaluation_current_observations.py",
         "tools/retrieval_evaluation_execution.py",
         "tools/retrieval_evaluation_grading.py",
         "tools/retrieval_evaluation_graph.py",
         "tools/retrieval_evaluation_harness.py",
         "tools/retrieval_evaluation_native.py",
+        "tools/retrieval_evaluation_observation_contracts.py",
         "tools/retrieval_evaluation_reference.py",
         "tools/retrieval_evaluation_schema.py",
         "tools/retrieval_evaluation_views.py"
@@ -374,14 +379,31 @@
       "governing_profile": "clean_test_owners",
       "id": "cloe.semantic1.test_owners",
       "members": [
+        "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_failure_finalization.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_native.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_privacy.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_readback_publication.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_validation.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/jsonb_evidence_workload.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_foundations.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_generator_admission.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_pgvector_experiment.int.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_current_observations.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_execution.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_graph_work.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_native_work.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_outcomes.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_privacy.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_readback_storage.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_validation.unit.test.py",
+        "src/test/unit/python/tools/retrieval_evaluation_correspondence_validation_policy_query.unit.test.py",
         "src/test/unit/python/tools/retrieval_jsonb_evidence.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_ann.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_ann_boundaries.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_ann_diagnostic.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_baseline_finalization.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_baseline_framing.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_baseline_results.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_bridge_admission.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_bridge_ownership.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_bridge_transport.unit.test.py",
@@ -413,10 +435,14 @@
         "src/test/support/python/repomap_test_support/w5_experiment_ann.py",
         "src/test/support/python/repomap_test_support/w5_experiment_ann_diagnostic.py",
         "src/test/support/python/repomap_test_support/w5_experiment_postgres.py",
+        "src/test/support/python/repomap_test_support/w5_experiment_results.py",
         "src/test/support/python/repomap_test_support/w5_experiment_support.py",
         "src/test/support/python/repomap_test_support/w5_experiment_vector.py",
         "src/test/support/python/repomap_test_support/w5_generator_support.py",
         "src/test/support/python/repomap_test_support/w5_jsonb_support.py",
+        "src/test/support/python/repomap_test_support/w5_publication_privacy_fixtures.py",
+        "src/test/support/python/repomap_test_support/w5_publication_readback.py",
+        "src/test/support/python/repomap_test_support/w5_publication_validation_fixtures.py",
         "src/test/support/python/repomap_test_support/w5_semantic_store_support.py",
         "src/test/support/python/repomap_test_support/w5_semantic_support.py"
       ],
@@ -441,6 +467,13 @@
         "tools/retrieval_semantic_ann_scope.py",
         "tools/retrieval_semantic_ann_sql.py",
         "tools/retrieval_semantic_arm_validation.py",
+        "tools/retrieval_semantic_baseline_capture.py",
+        "tools/retrieval_semantic_baseline_correspondence.py",
+        "tools/retrieval_semantic_baseline_result_frames.py",
+        "tools/retrieval_semantic_baseline_result_integrity.py",
+        "tools/retrieval_semantic_baseline_result_objects.py",
+        "tools/retrieval_semantic_baseline_results.py",
+        "tools/retrieval_semantic_baseline_work.py",
         "tools/retrieval_semantic_bridge_admission.py",
         "tools/retrieval_semantic_bridge_admission_remote.py",
         "tools/retrieval_semantic_bridge_ownership.py",
@@ -35205,6 +35238,51 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_failure_finalization.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_native.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_privacy.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_readback_publication.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_validation.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/context_cli.int.test.py",
       "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
@@ -39309,6 +39387,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/retrieval_evaluation_publication_readback.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/retrieval_evaluation_query_fixture.py",
       "rationale": "ADR0127 mixed-v1 fixture materialization, canary guard, and SQLite/PostgreSQL publication test-support helpers.",
       "root": "test_support",
@@ -40497,6 +40584,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_results.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/w5_experiment_support.py",
       "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
       "root": "test_support",
@@ -40526,6 +40622,33 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/w5_jsonb_support.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_publication_privacy_fixtures.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_publication_readback.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_publication_validation_fixtures.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -49245,6 +49368,87 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_current_observations.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_execution.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_graph_work.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_native_work.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_outcomes.unit.test.py",
+      "rationale": "Pure issued-capture gap classification and unverified work-accounting regressions.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_privacy.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_readback_storage.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_validation.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_evaluation_correspondence_validation_policy_query.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_evaluation_criteria.unit.test.py",
       "rationale": "ADR0127 retrieval contracts, captured-text projection reference, mixed-v1 corpus, and evaluation harness unit owners.",
       "root": "test_owners",
@@ -49336,6 +49540,33 @@
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_semantic_ann_diagnostic.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_baseline_finalization.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_baseline_framing.unit.test.py",
+      "rationale": "W5 complete result integrity and bounded mixed-log transport owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_baseline_results.unit.test.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
@@ -52233,6 +52464,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_correspondence_graph_scope.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_correspondence_observation_records.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_evaluation_criteria.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
       "root": "tools",
@@ -52244,6 +52493,15 @@
       "maintained_executable": true,
       "path": "tools/retrieval_evaluation_criteria_v2.py",
       "rationale": "ADR0129 evaluation v2 slots, summaries, criteria, attempt-7 reprojection, FTS adapter, held-out gate, and W3 calibration recipe tools.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_current_observations.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -52316,6 +52574,15 @@
       "maintained_executable": true,
       "path": "tools/retrieval_evaluation_native.py",
       "rationale": "ADR0127 developer retrieval evaluation harness, native/graph/reference adapters, deterministic grader, and criteria derivation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_evaluation_observation_contracts.py",
+      "rationale": "Dependency-neutral accepted-publication observation protocol and read refusal; generic evaluator leaf.",
       "root": "tools",
       "status": "active_tool"
     },
@@ -52504,6 +52771,69 @@
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
       "path": "tools/retrieval_semantic_arm_validation.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_capture.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_correspondence.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_result_frames.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_result_integrity.py",
+      "rationale": "W5 complete result integrity and bounded mixed-log transport owner.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_result_objects.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_results.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_baseline_work.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "tools",
       "status": "active_tool"

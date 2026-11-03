@@ -4,53 +4,39 @@ from __future__ import annotations
 
 from dataclasses import replace
 import time
-from typing import Protocol
+from typing import Callable, Mapping, Protocol
 
 from common_lore_index.retrieval.query_contracts import QueryEnvelope
 from common_lore_index.storage.semantic_candidates import (
-    CandidatePublication,
-    CandidateQuery,
-    EmbeddingProfile,
+    CandidatePublication, CandidateQuery, EmbeddingProfile,
 )
 from repomap_test_support.w5_experiment_postgres import (
-    HNSW_OWNER_ROLE,
-    HnswObservation,
-    PostgresHandle,
-    cleanup_hnsw_index,
-    create_hnsw_index,
-    exact_candidates,
-    hnsw_candidates,
+    HNSW_OWNER_ROLE, HnswObservation, PostgresHandle,
+    cleanup_hnsw_index, create_hnsw_index, exact_candidates, hnsw_candidates,
 )
 from repomap_test_support.w5_experiment_support import (
-    combine_scoped_cells,
-    merge_candidate_rows,
-    record_cell,
-    selected_public_binding_ids,
+    combine_scoped_cells, merge_candidate_rows, record_cell, selected_public_binding_ids,
 )
 from retrieval_evaluation_attempts import AttemptJournal
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
 from retrieval_semantic_ann import HnswEvaluationQuery
 from retrieval_semantic_ann_lifecycle import HnswCleanupDisposition, HnswCreationReceipt
-from retrieval_semantic_arm_validation import (
-    FileIdentityTuple,
-    _verify_envelope_against_pin,
-)
+from retrieval_semantic_arm_validation import FileIdentityTuple, _verify_envelope_against_pin
 from retrieval_semantic_experiment_contracts import (
-    ExperimentCell,
-    ExperimentCostLedger,
-    digest_json,
+    ExperimentCell, ExperimentCostLedger, digest_json,
 )
 from retrieval_semantic_experiment_outcomes import require_admitted_vector_execution
 from retrieval_semantic_experiment_evaluator import (
-    SealedComponent,
-    build_candidate_rows_arm,
-    grade_vector_arm,
+    SealedComponent, build_candidate_rows_arm, grade_vector_arm,
 )
 from retrieval_semantic_fusion import AdmittedArmObservation
-from retrieval_semantic_grading import grade_w5_task_slot
+from retrieval_semantic_grading import evaluate_arm_task_applicability, grade_w5_task_slot
 from retrieval_semantic_generator_inputs import PublicGenerationInput
 from retrieval_semantic_provenance import VerifiedPublicationPin
+from retrieval_semantic_experiment_scope import (
+    BaselineCorrespondenceSidecar, CorrespondenceCostSample, verify_baseline_correspondence_sidecar,
+)
 
 VECTOR_ARM_IDS: tuple[str, ...] = ("exact_vector", "hnsw_vector", "hybrid_rrf")
 
@@ -60,18 +46,9 @@ class _JournalWriter(Protocol):
 
 
 def run_hnsw_binding(
-    postgres: PostgresHandle,
-    publication: CandidatePublication,
-    profile: EmbeddingProfile,
-    *,
-    rebuild_id: str,
-    vector: tuple[float, ...],
-    task_id: str,
-    source_binding_id: str,
-    publication_pin: VerifiedPublicationPin,
-    attempt_identity: str,
-    limit: int = 20,
-    evidence_limit: int = 5,
+    postgres: PostgresHandle, publication: CandidatePublication, profile: EmbeddingProfile, *,
+    rebuild_id: str, vector: tuple[float, ...], task_id: str, source_binding_id: str,
+    publication_pin: VerifiedPublicationPin, attempt_identity: str, limit: int = 20, evidence_limit: int = 5,
 ) -> tuple[HnswObservation, HnswCreationReceipt | None, HnswCleanupDisposition | None, int, int, dict[str, object]]:
     """Run one receipt-bound HNSW query and prove cleanup before returning."""
     query = CandidateQuery(
@@ -182,6 +159,7 @@ def run_vector_task(
     attempt_identity: str,
     lexical_arm: AdmittedArmObservation,
     costs: ExperimentCostLedger,
+    result_cell_sink: Callable[[Mapping[str, object], ExperimentCell], None] | None = None,
 ) -> None:
     """Record one task/repetition, retaining every binding state and receipt."""
     record_vector_query_starts(journal, task.task_id, repetition)
@@ -196,6 +174,7 @@ def run_vector_task(
                     cleanup_status="not_applicable",
                 ),
                 repetition,
+                result_cell_sink=result_cell_sink,
             )
         return
     bindings = selected_public_binding_ids(task)
@@ -228,13 +207,13 @@ def run_vector_task(
     )
     if exact_arm is not None:
         exact_grade, exact_slot = grade_vector_arm(exact_arm, task, pin)
-        record_cell(journal, exact_grade, repetition, slot=exact_slot)
+        record_cell(journal, exact_grade, repetition, slot=exact_slot, result_cell_sink=result_cell_sink)
         hybrid_grade, hybrid_slot = grade_vector_arm(
             exact_arm, task, pin, lexical_arm=lexical_arm
         )
-        record_cell(journal, hybrid_grade, repetition, slot=hybrid_slot)
+        record_cell(journal, hybrid_grade, repetition, slot=hybrid_slot, result_cell_sink=result_cell_sink)
     else:
-        record_cell(journal, exact_cell, repetition)
+        record_cell(journal, exact_cell, repetition, result_cell_sink=result_cell_sink)
         record_cell(
             journal,
             ExperimentCell(
@@ -243,6 +222,7 @@ def run_vector_task(
                 cleanup_status="not_applicable",
             ),
             repetition,
+            result_cell_sink=result_cell_sink,
         )
     hnsw_results = {
         binding: run_hnsw_binding(
@@ -291,9 +271,13 @@ def run_vector_task(
         record_cell(
             journal, hnsw_grade, repetition, plan=plan, plan_sha256=plan_sha256,
             exact_reference_recall=reference_recall, slot=hnsw_slot,
+            result_cell_sink=result_cell_sink,
         )
     else:
-        record_cell(journal, hnsw_cell, repetition, plan=plan, plan_sha256=plan_sha256)
+        record_cell(
+            journal, hnsw_cell, repetition, plan=plan, plan_sha256=plan_sha256,
+            result_cell_sink=result_cell_sink,
+        )
     # All cells and cleanup evidence are recorded before mechanical failure.
     require_admitted_vector_execution(
         exact=exact_grade.execution_state if exact_arm is not None else exact_cell.execution_state,
@@ -303,14 +287,75 @@ def run_vector_task(
     )
 
 
+def baseline_file_metrics_with_correspondence(
+    task: EvaluationTask,
+    arm_id: str,
+    state: ExecutionState,
+    envelope: QueryEnvelope,
+    correspondence_sidecar: BaselineCorrespondenceSidecar,
+) -> tuple[dict[str, float] | None, str, str | None, CorrespondenceCostSample]:
+    """Grade baseline locators via verified correspondence sidecar and measure verification cost."""
+    t0 = time.perf_counter_ns()
+    try:
+        cost = correspondence_sidecar.captured_gap_cost(task, arm_id, envelope)
+        applicability = evaluate_arm_task_applicability(arm_id, task)
+        if not applicability.applicable:
+            return None, "not_applicable", "file_metric_not_applicable", cost
+        if state in (ExecutionState.REFUSED, ExecutionState.UNAVAILABLE):
+            reason = envelope.refusal_code if state == ExecutionState.REFUSED else envelope.unavailable_reason
+            return None, "gap", f"{state.value}:{reason or state.value}", cost
+        if state != ExecutionState.COMPLETED:
+            return None, "gap", f"non_completed:{state.value}", cost
+        verified_pin, cost = verify_baseline_correspondence_sidecar(
+            correspondence_sidecar, task=task, arm_id=arm_id, state=state, envelope=envelope,
+        )
+        snapshots = verified_pin.snapshot_by_binding()
+        items = tuple(
+            FileIdentityTuple(
+                hit.locator.binding_id, snapshots[hit.locator.binding_id][1], hit.locator.source_relative_path,
+            ).validate()
+            for hit in envelope.hits
+        )
+        file_slot = grade_w5_task_slot(
+            task, arm_id=arm_id, verified_pin=verified_pin, returned_files=items,
+            execution_state=state, capability_state=envelope.capability_state.value,
+            refusal_code=envelope.refusal_code, scope_complete=envelope.scope_complete,
+        )
+    except Exception as exc:
+        code = getattr(exc, "code", "file_metric_provenance_unresolved")
+        retained_cost = getattr(exc, "correspondence_cost", None)
+        fail_cost = (
+            retained_cost
+            if isinstance(retained_cost, CorrespondenceCostSample)
+            else CorrespondenceCostSample(
+                correspondence_verification_ns=max(0, time.perf_counter_ns() - t0),
+                correspondence_verification_bytes_read=None, correspondence_failures=1,
+            )
+        )
+        return None, "gap", str(code) if isinstance(code, str) and code else "file_metric_provenance_unresolved", fail_cost
+    if file_slot.capability_state == "unsupported_mode":
+        return None, "not_applicable", "file_metric_not_applicable", cost
+    return (
+        {key: value for key, value in file_slot.metrics.items() if key.startswith("file_")},
+        "verified", None, cost,
+    )
+
+
 def baseline_file_metrics(
     task: EvaluationTask,
     arm_id: str,
     state: ExecutionState,
     envelope: QueryEnvelope,
     pin: VerifiedPublicationPin | None,
+    *,
+    correspondence_sidecar: BaselineCorrespondenceSidecar | None = None,
 ) -> tuple[dict[str, float] | None, str, str | None]:
-    """Grade baseline envelope locators only with a current public pin."""
+    """Grade baseline envelope locators only with a current public pin or verified sidecar."""
+    if correspondence_sidecar is not None:
+        metrics, status, gap, _cost = baseline_file_metrics_with_correspondence(
+            task, arm_id, state, envelope, correspondence_sidecar
+        )
+        return metrics, status, gap
     if pin is None:
         return None, "gap", "verified_pin_required"
     try:
@@ -334,14 +379,9 @@ def baseline_file_metrics(
             for hit in envelope.hits
         )
         file_slot = grade_w5_task_slot(
-            task,
-            arm_id=arm_id,
-            verified_pin=pin,
-            returned_files=items,
-            execution_state=state,
-            capability_state=envelope.capability_state.value,
-            refusal_code=envelope.refusal_code,
-            scope_complete=envelope.scope_complete,
+            task, arm_id=arm_id, verified_pin=pin, returned_files=items,
+            execution_state=state, capability_state=envelope.capability_state.value,
+            refusal_code=envelope.refusal_code, scope_complete=envelope.scope_complete,
         )
     except Exception:
         return None, "gap", "file_metric_provenance_unresolved"
@@ -355,6 +395,6 @@ def baseline_file_metrics(
 
 
 __all__ = (
-    "VECTOR_ARM_IDS", "baseline_file_metrics", "record_vector_query_starts",
-    "run_hnsw_binding", "run_vector_task",
+    "VECTOR_ARM_IDS", "baseline_file_metrics", "baseline_file_metrics_with_correspondence",
+    "record_vector_query_starts", "run_hnsw_binding", "run_vector_task",
 )

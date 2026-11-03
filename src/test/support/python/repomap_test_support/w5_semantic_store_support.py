@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from dataclasses import replace
 import json
 
 from common_lore_index.ops.config_local import (
@@ -12,19 +13,27 @@ from common_lore_index.ops.config_local import (
     sqlite_graph_database_path,
 )
 from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.retrieval.publication_binding import (
+    ProjectionInputs,
+)
 from common_lore_index.storage.context_postgres_identity import (
     format_postgres_accepted_publication,
     postgres_accepted_json_sql,
     postgres_accepted_run_cte_sql,
     postgres_repo_predicate_sql,
 )
-from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.publication import (
+    RunPublicationReceipt,
+)
 from common_lore_index.storage.readback_driver import execute_json_readback
 from common_lore_index.storage.sqlite_local.connection import read_transaction
 from repomap_test_support.retrieval_evaluation_publication import (
     PublishedCorpusState,
-    read_postgres_accepted_publication,
     read_sqlite_accepted_publication,
+)
+from repomap_test_support.retrieval_evaluation_publication_readback import (
+    read_postgres_matched_accepted_publication,
+    sqlite_publication_mapping,
 )
 from retrieval_semantic_representation import (
     AcceptedEvidenceRecord,
@@ -32,6 +41,8 @@ from retrieval_semantic_representation import (
     AcceptedStoreReadback,
     PublicationReadbackAdapter,
 )
+
+
 
 
 def load_sqlite_accepted_nodes_and_evidence(
@@ -99,6 +110,8 @@ def load_sqlite_accepted_nodes_and_evidence(
 def make_sqlite_readback_adapter(
     published: PublishedCorpusState,
     receipt_getter: Callable[[], RunPublicationReceipt] | None = None,
+    *,
+    projection_inputs: ProjectionInputs | None = None,
 ) -> PublicationReadbackAdapter:
     """Create a live SQLite store readback adapter for a published local graph."""
     config = load_graph_registry_config_home(published.home_root)
@@ -108,17 +121,22 @@ def make_sqlite_readback_adapter(
     repo_id = str(local_graph_binding(graph).repository_identity)
 
     def _adapter() -> AcceptedStoreReadback:
-        pub_map, _nodes, _ev = load_sqlite_accepted_nodes_and_evidence(published)
+        accepted_ref, live_receipt = read_sqlite_accepted_publication(config, published.graph_id)
+        pub_map = sqlite_publication_mapping(accepted_ref, live_receipt)
+        proj = projection_inputs
         if receipt_getter is not None:
             rec = receipt_getter()
         else:
-            _accepted_ref, rec = read_sqlite_accepted_publication(config, published.graph_id)
+            rec = live_receipt
+            if proj is None and rec == published.receipt:
+                proj = replace(published.projection_inputs(), accepted_reference=accepted_ref, receipt=rec)
         return AcceptedStoreReadback(
             graph_id=str(published.graph_id),
             repository_identity=repo_id,
             backend="sqlite",
             accepted_publication=pub_map,
             receipt=rec,
+            projection_inputs=proj,
         )
 
     return _adapter
@@ -215,6 +233,7 @@ def make_postgres_readback_adapter(
     *,
     psql_command: str = "psql",
     receipt_getter: Callable[[], RunPublicationReceipt] | None = None,
+    projection_inputs: ProjectionInputs | None = None,
 ) -> PublicationReadbackAdapter:
     """Create a live PostgreSQL store readback adapter for a published local graph."""
     config = load_graph_registry_config_home(published.home_root)
@@ -224,19 +243,23 @@ def make_postgres_readback_adapter(
     repo_id = str(local_graph_binding(graph).repository_identity)
 
     def _adapter() -> AcceptedStoreReadback:
-        pub_map, _nodes, _ev = load_postgres_accepted_nodes_and_evidence(published, psql_command=psql_command)
+        accepted_ref, live_receipt, pub_map = read_postgres_matched_accepted_publication(
+            config, published.graph_id, psql_command=psql_command
+        )
+        proj = projection_inputs
         if receipt_getter is not None:
             rec = receipt_getter()
         else:
-            _accepted_ref, rec = read_postgres_accepted_publication(
-                config, published.graph_id, psql_command=psql_command
-            )
+            rec = live_receipt
+            if proj is None and rec == published.receipt:
+                proj = replace(published.projection_inputs(), accepted_reference=accepted_ref, receipt=rec)
         return AcceptedStoreReadback(
             graph_id=str(published.graph_id),
             repository_identity=repo_id,
             backend="postgresql",
             accepted_publication=pub_map,
             receipt=rec,
+            projection_inputs=proj,
         )
 
     return _adapter
@@ -247,4 +270,5 @@ __all__ = [
     "load_sqlite_accepted_nodes_and_evidence",
     "make_postgres_readback_adapter",
     "make_sqlite_readback_adapter",
+    "read_postgres_matched_accepted_publication",
 ]

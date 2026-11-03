@@ -350,8 +350,8 @@ def _publish_generation(
     setup_timings_ns: dict[str, int] = {}
     if admitted_journal is not None:
         validate_admitted_input_manifest(admitted_journal)
-    wc = materialize_mixed_v1_working_copy(work_dir / f"wc_gen{gen}", generation=gen)
-    sq_home = write_mixed_v1_sqlite_home(work_dir / f"sqlite_gen{gen}", wc)
+    wc = materialize_mixed_v1_working_copy(work_dir / "wc_sqlite", generation=gen)
+    sq_home = write_mixed_v1_sqlite_home(work_dir / "sqlite_home", wc)
     t0 = time.perf_counter_ns()
     sq_state = publish_and_load_sqlite_corpus(sq_home)
     setup_timings_ns[f"sqlite_publish_gen{gen}"] = time.perf_counter_ns() - t0

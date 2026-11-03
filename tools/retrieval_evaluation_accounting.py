@@ -78,6 +78,80 @@ class ByteLayerAccounting:
         }
 
 
+EVALUATOR_BYTE_BREAKDOWN_SCHEMA_V1 = "cloe-w5-byte-accounting-v1"
+
+
+@dataclass(frozen=True)
+class EvaluatorByteBreakdownV1:
+    """Versioned W5 byte/work breakdown separating raw process stdout, candidates, hits, envelope, and correspondence."""
+
+    schema_version: str = EVALUATOR_BYTE_BREAKDOWN_SCHEMA_V1
+    raw_process_stdout_bytes: int | None = None
+    direct_selected_text_bytes: int | None = None
+    native_process_stdout_cap_bytes: int | None = None
+    decoded_candidate_count: int = 0
+    returned_hit_count: int = 0
+    serialized_envelope_bytes: int = 0
+    observed_output_payload_bytes: int | None = None
+    correspondence_verification_bytes_read: int = 0
+    correspondence_verification_ns: int = 0
+
+    def validate(self) -> EvaluatorByteBreakdownV1:
+        if self.schema_version != EVALUATOR_BYTE_BREAKDOWN_SCHEMA_V1:
+            raise ValueError("invalid_byte_breakdown_schema")
+        for val in (
+            self.raw_process_stdout_bytes,
+            self.direct_selected_text_bytes,
+            self.native_process_stdout_cap_bytes,
+            self.observed_output_payload_bytes,
+        ):
+            if val is not None and (isinstance(val, bool) or not isinstance(val, int) or val < 0):
+                raise ValueError("invalid_byte_breakdown_value")
+        for req_int in (
+            self.decoded_candidate_count,
+            self.returned_hit_count,
+            self.serialized_envelope_bytes,
+            self.correspondence_verification_bytes_read,
+            self.correspondence_verification_ns,
+        ):
+            if isinstance(req_int, bool) or not isinstance(req_int, int) or req_int < 0:
+                raise ValueError("invalid_byte_breakdown_value")
+        if self.returned_hit_count > self.decoded_candidate_count:
+            raise ValueError("returned_hits_exceed_decoded_candidates")
+        return self
+
+    def with_correspondence(self, *, bytes_read: int, elapsed_ns: int) -> EvaluatorByteBreakdownV1:
+        if type(bytes_read) is not int or type(elapsed_ns) is not int or bytes_read < 0 or elapsed_ns < 0:
+            raise ValueError("invalid_correspondence_measurement")
+        return EvaluatorByteBreakdownV1(
+            schema_version=self.schema_version,
+            raw_process_stdout_bytes=self.raw_process_stdout_bytes,
+            direct_selected_text_bytes=self.direct_selected_text_bytes,
+            native_process_stdout_cap_bytes=self.native_process_stdout_cap_bytes,
+            decoded_candidate_count=self.decoded_candidate_count,
+            returned_hit_count=self.returned_hit_count,
+            serialized_envelope_bytes=self.serialized_envelope_bytes,
+            observed_output_payload_bytes=self.observed_output_payload_bytes,
+            correspondence_verification_bytes_read=self.correspondence_verification_bytes_read + bytes_read,
+            correspondence_verification_ns=self.correspondence_verification_ns + elapsed_ns,
+        ).validate()
+
+    def to_dict(self) -> dict[str, Any]:
+        self.validate()
+        return {
+            "schema_version": self.schema_version,
+            "raw_process_stdout_bytes": self.raw_process_stdout_bytes,
+            "direct_selected_text_bytes": self.direct_selected_text_bytes,
+            "native_process_stdout_cap_bytes": self.native_process_stdout_cap_bytes,
+            "decoded_candidate_count": self.decoded_candidate_count,
+            "returned_hit_count": self.returned_hit_count,
+            "serialized_envelope_bytes": self.serialized_envelope_bytes,
+            "observed_output_payload_bytes": self.observed_output_payload_bytes,
+            "correspondence_verification_bytes_read": self.correspondence_verification_bytes_read,
+            "correspondence_verification_ns": self.correspondence_verification_ns,
+        }
+
+
 @dataclass(frozen=True)
 class ExternalAgentCostSummary:
     """Accounting summary for externally supplied agent/model telemetry records."""
@@ -196,6 +270,8 @@ def compute_external_agent_cost(
 
 __all__ = [
     "ByteLayerAccounting",
+    "EVALUATOR_BYTE_BREAKDOWN_SCHEMA_V1",
+    "EvaluatorByteBreakdownV1",
     "ExternalAgentCostSummary",
     "TimingSummary",
     "compute_external_agent_cost",

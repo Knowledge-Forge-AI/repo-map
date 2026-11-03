@@ -1,9 +1,10 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
-Status: **NOT ACCEPTED for whole-candidate qualification**. The introducing
-commit records final scoped proof and independent review for one staging
-campaign. Complete hosted populations, coverage and assembled-system evidence
-remain pending for that exact candidate. Full W5 remains open.
+Status: **CI109 qualified the predecessor evaluator milestone** at staging
+`e012f0180b7e2b85112e46a361fc4cd7fcd66472`. The connected ADR0141 continuation
+now has independent source/controller review, scoped proof and a fresh verified
+public calibration. Its one-use CI110 campaign remains pending. Full W5,
+scientific criteria, held-out usefulness and public-main promotion remain open.
 
 ## Delivered scope
 
@@ -27,38 +28,68 @@ remain pending for that exact candidate. Full W5 remains open.
   Query timing retains failed work and excludes nested index/ANN cleanup cost.
   Shared campaign cleanup is charged once, to the last retained generation.
 
+## Correspondence and current-publication continuation
+
+Evaluator-only sidecars bind each execution to independently read SQLite and
+PostgreSQL publications, artifacts, projections and native materialized bytes.
+Factory-issued captures and before/after fences prevent caller-provided mappings
+from becoming publication proof. Actual backend/mode envelopes stay unchanged.
+Current raw observations are fenced by matched repository and accepted run;
+historical MCP search and canonical topology retain their historical contract.
+
+Opt-in result-v2 retains every planned cell, baseline correspondence/cost and
+native byte-work record alongside all six original journal members per generation.
+Unknown database wire/internal I/O remains unknown. Component timings overlap
+execution and are not added again. No threshold, denominator, debt or dependency
+was changed.
+
 ## Actual retained public calibration
 
-Both declared generations completed with zero execution failures and verified
-SQL/container cleanup. The unchanged catalog, labels and three repetitions
-produce 648 primary cells across nine arms. No held-out task was executed.
+Fresh attempt `w5c-optional-0013` completed both declared generations and verified
+SQL/container cleanup. Attempt 12 failed at private admission-name adaptation
+before model execution; its reservation, logs and failure remain retained.
+The corrected successor is separately declared; historical attempts are not reset.
+The unchanged catalog, golds and three repetitions yield 648 primary cells.
+No held-out task was executed.
 
-| Generation | Tasks | Primary cells | Document records | Query records |
-| --- | ---: | ---: | ---: | ---: |
-| 1 | 23 | 621 | 80 | 4 |
-| 2 | 1 | 27 | 80 | 0 |
+| Generation | Tasks | Cells | Document records | Query records | Result-v2 bytes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 23 | 621 | 80 | 4 | 3,020,775 |
+| 2 | 1 | 27 | 80 | 0 | 125,430 |
 
-Generation 2's only task is unsupported for the metadata-vector representation.
-Its document-only inference/rebuild and explicit unavailable vector cells prove
-no vector-query execution or utility for that generation. Refused, unavailable
-and NOT_RUN observations remain in the raw ledger. Native HNSW bindings include
-16 completed and 8 NOT_RUN observations; 16 retained plan summaries show
-the expected index. A sequentially planned arm stays NOT_RUN. Planner forcing,
-quality superiority, generalization and production readiness are not claimed.
+Actual V2 sizes satisfy the unchanged 4 MiB per-result/8 MiB aggregate limits.
+The 13,140,801-byte mixed log remains within its separate 96 MiB envelope.
+Twelve raw experiment members and both five-member model responses are retained;
+source/input/model/publication identities and terminal hashes were revalidated.
+Paired receipt SHA-256:
+`51d94b4503bb2c7581fbf529ce1047f346d79bfda330785d459a100ca9ffcc7d`.
 
-The local exact-commit report retains the twelve manifest-verified experiment
-members, two five-member model responses and all source/input/terminal hashes.
-Paired verification receipt SHA-256: `1b806dfbbf5d10ddb463ecd2db9bbb98cbebc1280c07dee1ca436f4c6b5beb05`.
-Earlier failed/refused attempts and the completed pre-review pair remain
-immutable history. They do not substitute for this corrected-source pair.
+Generation 1 has 237 of 414 baseline grading records with file-metric dictionaries,
+compared with 45 in the predecessor. Eighteen of those 237 contain only zero metrics
+for absent-mailbox safety cases and do not establish a safety refusal or quality
+success. There are 219 other records with file metrics. Generation 2 has all 18
+baseline grading records with file metrics, compared with 3 previously. Its vector
+query remains unavailable: document-only inference/rebuild proves no vector-query
+execution or utility for that generation. Vector/hybrid cells remain separate
+from baseline grading. No comparative quality aggregate is accepted.
 
-Of 414 generation-1 baseline grading records, 45 PostgreSQL FTS records have
-file metrics and 369 retain explicit provenance gaps. Generation 2 has 3 FTS
-records with file metrics and 15 baseline gaps. Native, graph and captured
-projection baselines lack the required publication scope; their span grading
-does not establish file-level comparability. Vector and hybrid observations
-retain their separate evidence and are not baseline task-grading records.
-These gaps preclude a complete comparative retrieval-quality conclusion.
+The 177 generation 1 non-metric records comprise 78 unsupported captured-text graph
+observations, 72 non-applicable slots, 18 non-body feed/mailbox exclusions, 6 explicit
+privacy refusals and 3 strict path-prefix correspondence gaps. For cal-19, FTS
+normalizes `shared/` to `shared`; equality with the frozen task's representation
+remains unqualified and those 3 records receive no file metrics.
+
+The public-only fixture omits mailbox. For cal-21/22, native/reference arms return
+18 available-empty observations with `safety_refusal_correct=false`; graph arms
+retain 12 unavailable observations with the same false safety flag. Only the 6 FTS
+observations attest the explicit refusal. No private body was admitted. Actual
+private-binding negative tests remain separate; available-empty is not a refusal.
+Expected-gap tables remain expectations, not a rewrite of these observed results.
+
+Native cal-07 retains 495,781 raw process-output bytes beneath the unchanged 1 MiB
+process cap. The 65,536-byte scientific criterion remains unaccepted. cal-20's
+non-ASCII query remains frozen and current-reader Unicode equivalence unqualified.
+These limits preclude full W5, scientific, generalization or production acceptance.
 
 ## Named JSONB workload
 
@@ -70,12 +101,17 @@ and this tiny observed scale establish no production performance or index claim.
 
 ## Source verification and hosted boundary
 
-The corrected pre-freeze candidate passed 395 exact scoped unit cases, 9
-containerized core integration cases and one direct PostgreSQL exact/ANN
-inferred-link exclusion case, without Python coverage. Final grant-bound
-selectors and actual case counts, static enforcement, file-length, export, topology, suppression,
+The core source passed 209 exact scoped unit and 31 containerized integration
+cases before campaign binding, without coverage. Final campaign-owner selectors,
+actual counts, static enforcement, file-length, export, topology, suppression,
 privacy and both Git diff checks are recorded in the introducing commit and
 exact-commit report. Independent resulting-state review gates publication.
+
+The final staged check found extra EOF blank lines in five Python files. Trimming
+those lines changes two archived calibration runtime files and three test files.
+An explicit formatting bridge retains the original source bytes and hashes and
+proves identical line-aware ASTs and compiled code objects. The calibration is
+not silently repinned; fresh current-source scoped checks follow this correction.
 
 All clean retained-Python admissions and numerical debt/coverage ceilings remain.
 Complete local Python unit, integration, smoke, staging, system and combined
@@ -84,8 +120,10 @@ Go metrics/race/lint prerequisites remain separate. Disposable pgvector test-
 profile materializations are ledgered separately; no local application/SDK
 build was performed. Native model evidence is ARM-only, not AMD qualification.
 
-Capacity remains AVAILABLE under the operator's standing selection. ADR0138
-bounds one fresh CI107 attempt 1 through existing draft PR23 synchronization and
-one native AMD start 24 after 23 spent starts. No automatic retry, duplicate
-trigger, main promotion, release/tag, new dependency or live deployment follows.
-Hosted CI owns complete populations, coverage and native assembled-system gates.
+Capacity remains AVAILABLE under the operator's standing selection. ADR0142
+bounds one fresh CI110 attempt 1 through existing draft PR23 synchronization and
+one native AMD start 26 after 25 spent starts. Legacy stop fields and every prior
+consumption record remain. No automatic retry, duplicate trigger, main promotion,
+release/tag, new dependency or live deployment follows. Hosted CI owns complete
+populations, coverage and native assembled-system gates. The 87%/82% branch
+headroom aim remains pending rather than inferred from scoped proof.

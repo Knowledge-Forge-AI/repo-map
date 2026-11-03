@@ -295,5 +295,22 @@ two-generation public calibration within its declared capabilities. See the
 [operational exit](../../tools/ci/cloe-semantic1-exit.md) and ADR0138 for the
 separate one-use staging campaign. Generation2 has document-only inference and
 an explicit unsupported metadata-vector query. Relational JSONB behavior stays
-in place. Hosted qualification, held-out criteria, broader utility and production
-model/pgvector/schema/index admission remain open; W5 is not complete.
+in place. CI109 attempt 1 qualified the bounded evaluator milestone at staging
+`e012f0180b7e2b85112e46a361fc4cd7fcd66472`, with all nine jobs and retained
+same-attempt staging/system contracts passing. Unit coverage is 87.9/86.7 and
+measured integration coverage is 89.6/80.9: hard gates pass; the 87%/82% branch
+headroom aim remains open. The next connected W5 batch under ADR0141
+addresses baseline publication correspondence, current-generation PostgreSQL
+comparison and related provenance/privacy proof. Held-out criteria, broader
+utility and production model/pgvector/schema/index admission remain open; W5 is
+not complete. No successor source or public-main promotion is qualified here.
+
+
+The ADR0141 correspondence continuation now retains a fresh648-cell calibration,
+backend-specific publication witnesses and current-run raw-observation comparison.
+Its original journals and supplementary V2 results remain separately bound.
+Absent-mailbox safety expectations and three normalized-FTS-prefix correspondence
+records remain explicit measured limits; no scientific aggregate is accepted.
+[ADR0142](../adr/2026/11/0142-w5-correspondence-milestone-staging-campaign.md)
+bounds the one-use CI110 staging campaign for this connected milestone. Hosted
+qualification of the successor and full W5 remain pending.

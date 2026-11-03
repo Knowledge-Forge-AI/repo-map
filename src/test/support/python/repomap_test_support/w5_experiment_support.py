@@ -225,7 +225,6 @@ def record_baseline(
     journal.append(grade_record)
     return outcome
 
-
 def record_cell(
     journal: Any,
     cell: ExperimentCell,
@@ -235,6 +234,7 @@ def record_cell(
     plan_sha256: str | None = None,
     exact_reference_recall: float | None = None,
     slot: GradedSlotRecord | None = None,
+    result_cell_sink: Callable[[Mapping[str, object], ExperimentCell], None] | None = None,
 ) -> None:
     record: dict[str, object] = {
         "event": "query_observed", **cell.to_dict(), "repetition": repetition,
@@ -248,7 +248,10 @@ def record_cell(
     if slot is not None:
         record["slot"] = slot.to_dict()
     journal.append(record)
-
+    if result_cell_sink is not None:
+        result_cell_sink(
+            {"arm_id": cell.arm_id, "task_id": cell.task_id, "repetition": repetition}, cell
+        )
 
 def prepare_postgres_generation(
     root: Path,
@@ -274,7 +277,6 @@ def prepare_postgres_generation(
     )
     return published, make_public_reader(published, psql_command=database.psql_command)
 
-
 def candidate_publication(reader: GeneratorFixtureReader) -> CandidatePublication:
     """Build CandidatePublication from fresh verified pin data."""
     pin = reader.read_pin()
@@ -283,11 +285,9 @@ def candidate_publication(reader: GeneratorFixtureReader) -> CandidatePublicatio
         RunPublicationRecord(GraphRunId(pin.run_id), pin.receipt),
     ).validate()
 
-
 def selected_public_binding_ids(task: EvaluationTask) -> tuple[str, ...]:
     """Resolve only the task-declared public aliases to canonical binding IDs."""
     return _selected_public_binding_ids(task)
-
 
 def merge_candidate_rows(
     rows_by_binding: Mapping[str, Sequence[Mapping[str, Any]]], *, limit: int = 20
@@ -324,7 +324,6 @@ def merge_candidate_rows(
     merged.sort(key=lambda item: (item[0], item[1].encode("utf-8"), item[2].encode("utf-8"), item[3].encode("utf-8")))
     return tuple(item[4] for item in merged[:limit])
 
-
 def combine_scoped_cells(
     cells: Sequence[ExperimentCell], *, arm_id: str, task_id: str
 ) -> ExperimentCell:
@@ -359,7 +358,6 @@ def combine_scoped_cells(
         cleanup_status=cleanup,
     ).validate()
 
-
 def archive_inputs(
     *,
     request_raw: bytes,
@@ -388,7 +386,6 @@ def archive_inputs(
     if any(type(raw) is not bytes or not raw for raw in values.values()):
         raise ExperimentRefusal("invalid_input_archive")
     return values
-
 
 __all__ = [
     "DECLARED_PROFILE_IDENTITY", "EXPERIMENT_ATTEMPTS_ROOT", "MIXED_V1_FIXTURE_ROOT", "MIXED_V1_GRAPH_ID", "PUBLIC_ALIASES",

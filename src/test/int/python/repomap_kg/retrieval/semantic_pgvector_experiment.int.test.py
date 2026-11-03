@@ -13,7 +13,6 @@ from typing import Any
 
 import pytest
 
-from common_lore_index.retrieval.query_contracts import QueryEnvelope
 from common_lore_index.ops.config import OpsConfig
 from common_lore_index.ops.config_local import load_graph_registry_config_home
 from common_lore_index.ops.lexical_service import build_graph_lexical_generation
@@ -41,25 +40,16 @@ from repomap_test_support.w5_experiment_postgres import (
     import_generation,
     install_candidate_schema,
 )
+from repomap_test_support.w5_experiment_results import ResultV2Run, finalize_attempt_evidence, safe_failure_code
 from repomap_test_support.w5_experiment_support import (
-    DECLARED_PROFILE_IDENTITY,
-    EXPERIMENT_ATTEMPTS_ROOT,
-    PUBLIC_ALIASES,
-    calibration_task_manifest,
-    calibration_tasks_for_generation,
-    candidate_publication,
-    experiment_source_closure,
-    load_calibration_catalog,
-    make_generation_plan,
-    make_public_reader,
-    record_baseline,
-    record_cell,
-    selected_public_binding_ids,
+    DECLARED_PROFILE_IDENTITY, EXPERIMENT_ATTEMPTS_ROOT, PUBLIC_ALIASES,
+    calibration_task_manifest, calibration_tasks_for_generation, candidate_publication,
+    experiment_source_closure, load_calibration_catalog, make_generation_plan,
+    make_public_reader, record_baseline, selected_public_binding_ids,
     worker_source_closure,
 )
 from repomap_test_support.w5_experiment_vector import (
-    VECTOR_ARM_IDS,
-    baseline_file_metrics,
+    VECTOR_ARM_IDS, baseline_file_metrics, baseline_file_metrics_with_correspondence,
     run_vector_task,
 )
 from repomap_test_support.w5_generator_support import GeneratorFixtureReader
@@ -71,43 +61,40 @@ from retrieval_evaluation_schema import EvaluationTask, load_freeze_manifest
 from retrieval_semantic_experiment_artifacts import emit_attempt_artifacts
 from retrieval_semantic_experiment_bridge import ComponentExchange
 from retrieval_semantic_experiment_contracts import (
-    ExperimentCell,
-    ExperimentCostLedger,
-    ExperimentRefusal,
-    TIMEOUT_POLICY,
-    canonical_json_bytes,
+    ExperimentCostLedger, ExperimentRefusal, TIMEOUT_POLICY, canonical_json_bytes,
 )
-from retrieval_semantic_experiment_evaluator import (
-    seal_component_response,
-)
+from retrieval_semantic_experiment_evaluator import seal_component_response
+from retrieval_semantic_baseline_capture import generation_aliases_for, make_baseline_correspondence_runner
+from retrieval_semantic_experiment_scope import BaselineCorrespondenceSidecar
 from retrieval_semantic_experiment_timing import assign_campaign_cleanup_cost, measure_query_work
-from retrieval_semantic_generator_inputs import (
-    build_worker_request,
-    prepare_public_generation_input,
-)
+from retrieval_semantic_generator_inputs import build_worker_request, prepare_public_generation_input
 from retrieval_semantic_fusion import AdmittedArmObservation
 
+# Opt in before source freeze; ordinary CI deselects this optional owner.
+EMIT_RESULT_V2 = True
 
-def _publish_generation(root: Path, database: Any, generation: int) -> tuple[Any, GeneratorFixtureReader, ArmContext]:
-    working = materialize_mixed_v1_working_copy(root / f"working-g{generation}", generation=generation)
-    sqlite_home = write_mixed_v1_sqlite_home(root / f"sqlite-g{generation}", working, declared_aliases=PUBLIC_ALIASES)
+def _publish_generation(root: Path, database: Any, generation: int) -> tuple[Any, Any, GeneratorFixtureReader, GeneratorFixtureReader, ArmContext]:
+    working = materialize_mixed_v1_working_copy(root / "working-shared", generation=generation)
+    sqlite_home = write_mixed_v1_sqlite_home(root / "sqlite-shared", working, declared_aliases=("core", "companion", "feeds"))
     sqlite_state = publish_and_load_sqlite_corpus(sqlite_home, selected_aliases=PUBLIC_ALIASES)
     postgres_home = write_mixed_v1_postgres_home(
         root / f"postgres-g{generation}", working,
         host=database.host, port=database.port, database=database.database,
-        user=database.user, password=database.password, declared_aliases=PUBLIC_ALIASES,
+        user=database.user, password=database.password, declared_aliases=("core", "companion", "feeds"),
     )
     postgres_state = publish_and_load_postgres_corpus(
         postgres_home, selected_aliases=PUBLIC_ALIASES, psql_command=database.psql_command
     )
     reader = make_public_reader(postgres_state, psql_command=database.psql_command)
+    sqlite_reader = GeneratorFixtureReader(sqlite_state, sqlite_state.policy, "sqlite")
+    generation_aliases = generation_aliases_for(sqlite_state.manifest)
     from common_lore_index.retrieval.projection_build import build_captured_text_projection
     from retrieval_evaluation_views import materialize_native_search_view
 
     sqlite_projection = build_captured_text_projection(sqlite_state.projection_inputs(), sqlite_state.policy)
     native_view = materialize_native_search_view(
         root / f"native-g{generation}", manifest=sqlite_state.manifest, bundle=sqlite_state.bundle,
-        store=sqlite_state.store, policy=sqlite_state.policy, selected_aliases=PUBLIC_ALIASES,
+        store=sqlite_state.store, policy=sqlite_state.policy, selected_aliases=generation_aliases,
     )
     postgres_projection = build_captured_text_projection(postgres_state.projection_inputs(), postgres_state.policy)
     config = load_graph_registry_config_home(postgres_home)
@@ -124,8 +111,7 @@ def _publish_generation(root: Path, database: Any, generation: int) -> tuple[Any
         native_view, sqlite_state.home_root, sqlite_projection, postgres_state.home_root,
         postgres_projection, database.psql_command,
     )
-    return postgres_state, reader, context
-
+    return sqlite_state, postgres_state, sqlite_reader, reader, context
 
 @pytest.mark.requires_pgvector
 def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> None:
@@ -141,9 +127,11 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
     with temporary_postgres() as database:
         apply_migrations(default_rdbms_root(), database.psql_args, psql_command=database.psql_command)
         journals: list[tuple[Any, ExperimentCostLedger, str, dict[str, object]]] = []
+        result_v2 = ResultV2Run(enabled=EMIT_RESULT_V2)
         primary: BaseException | None = None
         cleanup_error: BaseException | None = None
         attribution_error: BaseException | None = None
+        result_v2_errors: tuple[BaseException, ...] = ()
         cleanup_ns = 0
         try:
             try:
@@ -157,9 +145,13 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                     )
                     journal: Any | None = None
                     sealed: Any | None = None
+                    collector: Any | None = None
+                    cell_sink: Any = None
                     try:
                         started = time.perf_counter_ns()
-                        postgres_state, reader, context = _publish_generation(tmp_path, database, generation)
+                        sqlite_state, postgres_state, sqlite_reader, reader, context = _publish_generation(
+                            tmp_path, database, generation
+                        )
                         representation_report = reader.read_representations()
                         tasks = calibration_tasks_for_generation(catalog, generation)
                         inputs = prepare_public_generation_input(
@@ -194,6 +186,8 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                             freeze_sha256=freeze.freeze_digest(),
                             policy_digest=freeze.policy_digest,
                         )
+                        collector = result_v2.register(plan)
+                        cell_sink = result_v2.cell_sink(collector)
                         source_files, source_closure = experiment_source_closure(source_root)
                         declaration = {
                             **plan.to_mapping(),
@@ -234,21 +228,24 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                         import_generation(database, publication, sealed.artifact, rebuild_id=rebuild_id)
                         costs.import_ns = time.perf_counter_ns() - started
                         pin = reader.read_pin()
-
-                        def grade_baseline_files(
-                            selected_task: EvaluationTask,
-                            selected_arm: str,
-                            selected_state: ExecutionState,
-                            selected_envelope: QueryEnvelope,
-                        ) -> tuple[dict[str, float] | None, str, str | None]:
-                            return baseline_file_metrics(
-                                selected_task, selected_arm, selected_state,
-                                selected_envelope, pin,
-                            )
+                        baseline_runner = make_baseline_correspondence_runner(
+                            BaselineCorrespondenceSidecar, generation_aliases_for(sqlite_state.manifest), context.native_view,
+                            sqlite_reader, reader, sqlite_state, postgres_state,
+                        )
 
                         with measure_query_work(costs):
                             for task in tasks:
                                 for repetition in range(1, plan.repetitions + 1):
+                                    grade_baseline_files = result_v2.baseline_callback_for_runner(
+                                        collector,
+                                        repetition=repetition,
+                                        runner=baseline_runner,
+                                        sqlite_projection=context.sqlite_projection,
+                                        postgres_projection=context.postgres_projection,
+                                        metrics_reader=baseline_file_metrics_with_correspondence,
+                                        legacy_reader=baseline_file_metrics,
+                                        pin=pin,
+                                    )
                                     for arm_id in (
                                         "native_tools_baseline",
                                         "current_graph_baseline:sqlite",
@@ -260,25 +257,33 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                                             selected_arm: str = arm_id,
                                             selected_task: EvaluationTask = task,
                                         ) -> TaskOutcome:
-                                            return context.execute(selected_arm, selected_task)
-
+                                            return baseline_runner.execute(
+                                                selected_arm,
+                                                selected_task,
+                                                result_v2.captured_executor(
+                                                    context,
+                                                    collector=collector, arm_id=selected_arm,
+                                                    task=selected_task, repetition=repetition,
+                                                ),
+                                            )
                                         outcome = record_baseline(
-                                            journal, task, arm_id, repetition,
-                                            execute_context_arm,
+                                            journal, task, arm_id, repetition, execute_context_arm,
                                             file_metrics_callback=grade_baseline_files,
                                         )
                                         costs.failures += int(outcome[0] == ExecutionState.FAILED)
                                     def execute_lexical_arm(
                                         selected_task: EvaluationTask = task,
                                     ) -> TaskOutcome:
-                                        return execute_postgres_native_fts_task(
-                                            selected_task, postgres_state.home_root
+                                        return baseline_runner.execute(
+                                            "postgres_native_fts:postgresql",
+                                            selected_task,
+                                            lambda _expected: execute_postgres_native_fts_task(
+                                                selected_task, postgres_state.home_root
+                                            ),
                                         )
-
                                     lexical_outcome = record_baseline(
                                         journal, task, "postgres_native_fts:postgresql", repetition,
-                                        execute_lexical_arm,
-                                        file_metrics_callback=grade_baseline_files,
+                                        execute_lexical_arm, file_metrics_callback=grade_baseline_files,
                                     )
                                     costs.failures += int(lexical_outcome[0] == ExecutionState.FAILED)
                                     lexical_state, lexical_envelope, _lex_ns, _lex_bytes = lexical_outcome
@@ -290,27 +295,17 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                                     query = next(item for item in sealed.artifact.queries if item.task_id == task.task_id)
                                     if query.state != "admitted" or query.vector is None:
                                         state = ExecutionState.REFUSED if query.state == "refused" else ExecutionState.UNAVAILABLE
-                                        for arm_id in VECTOR_ARM_IDS:
-                                            journal.append({
-                                                "event": "query_started",
-                                                "task_id": task.task_id,
-                                                "arm_id": arm_id,
-                                                "repetition": repetition,
-                                            })
-                                            record_cell(
-                                                journal,
-                                                ExperimentCell(
-                                                    arm_id, task.task_id, state,
-                                                    query.reason or "query_not_admitted",
-                                                    cleanup_status="not_applicable",
-                                                ),
-                                                repetition,
-                                            )
+                                        result_v2.record_unadmitted_vector_cells(
+                                            journal, task_id=task.task_id, repetition=repetition,
+                                            state=state, reason=query.reason or "query_not_admitted",
+                                            arm_ids=VECTOR_ARM_IDS, cell_sink=cell_sink,
+                                        )
                                         continue
                                     run_vector_task(
                                         journal, database, publication, sealed, inputs, task, repetition,
                                         pin=pin, rebuild_id=rebuild_id, attempt_identity=plan.attempt_id,
                                         lexical_arm=lexical_arm, costs=costs,
+                                        result_cell_sink=cell_sink,
                                     )
                             _final_files, final_source_closure = experiment_source_closure(source_root)
                             if final_source_closure != source_closure:
@@ -332,9 +327,13 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                     except BaseException as exc:
                         costs.failures += 1
                         if journal is not None:
+                            failure_code = safe_failure_code(
+                                exc, fallback="attempt_failed"
+                            )
                             journal.append({
                                 "event": "attempt_failed",
                                 "failure_type": type(exc).__name__,
+                                "failure_code": failure_code,
                                 "timeout_policy": dict(TIMEOUT_POLICY),
                             })
                             journals.append((
@@ -343,6 +342,7 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                                     "status": "failed",
                                     "generation": generation,
                                     "failure_type": type(exc).__name__,
+                                    "failure_code": failure_code,
                                     "timeout_policy": dict(TIMEOUT_POLICY),
                                     **({"component_response_cost": dict(sealed.response_cost)} if sealed is not None else {}),
                                 },
@@ -374,25 +374,22 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                     raise ExperimentRefusal("campaign_cleanup_cost_attribution_failed")
             except BaseException as exc:
                 attribution_error = exc
-            for journal, costs, status, report in journals:
-                report["cost"] = costs.to_dict()
-                report["cleanup_status"] = cleanup_status
-                terminal_status = status
-                if cleanup_error is not None and status == "completed":
-                    terminal_status = "failed"
-                    report["status"] = "failed"
-                    report["failure_type"] = type(cleanup_error).__name__
-                journal.finish(terminal_status, report)
-            if journals and any(
-                report["cleanup_status"] != cleanup_status
-                for _journal, _costs, _status, report in journals
-            ):
-                attribution_error = attribution_error or ExperimentRefusal(
-                    "campaign_cleanup_status_mismatch"
-                )
-            emit_attempt_artifacts(tuple(item[0].directory for item in journals))
+            attribution_error, result_v2_errors = finalize_attempt_evidence(
+                journals,
+                result_v2=result_v2,
+                cleanup_status=cleanup_status,
+                cleanup_error=cleanup_error,
+                attribution_error=attribution_error,
+                emit_legacy=emit_attempt_artifacts,
+            )
+        if result_v2_errors:
+            retained_error = primary or cleanup_error or attribution_error or result_v2_errors[0]
+            for error in result_v2_errors:
+                retained_error.add_note("w5_result_v2_secondary:" + safe_failure_code(error, fallback="result_v2_failed"))
         if primary is not None: raise primary
         if cleanup_error is not None:
             raise cleanup_error
         if attribution_error is not None:
             raise attribution_error
+        if result_v2_errors:
+            raise result_v2_errors[0]

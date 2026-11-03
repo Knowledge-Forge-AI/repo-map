@@ -14,7 +14,7 @@ from common_lore_index.retrieval.projection_policy import (
     ALLOWED_BINDING_PRIVACY, ALLOWED_EVIDENCE_RETENTION, ALLOWED_GRAPH_PRIVACY,
 )
 from common_lore_index.server.investigation_read_store import (
-    ConfiguredNeighborhoodQuery, GraphSearchQuery, InvestigationReadStore,
+    ConfiguredNeighborhoodQuery, InvestigationReadStore,
 )
 from common_lore_index.server.ops import investigation_stores
 from common_lore_index.storage.navigation_search import NavigationSearchQuery
@@ -23,8 +23,10 @@ from repomap_test_support.retrieval_evaluation_fixture import (
     MIXED_V1_BINDING_IDS, binding_id_for_alias,
 )
 from retrieval_evaluation_accounting import ByteLayerAccounting
+import retrieval_evaluation_correspondence_graph_scope as graph_scope
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
+from retrieval_evaluation_observation_contracts import ObservationPublicationPin
 
 _GraphTaskOutcome = tuple[ExecutionState, qc.QueryEnvelope, int, ByteLayerAccounting]
 
@@ -190,8 +192,9 @@ def _evaluate_graph_body_safety_refusal(
 
 
 def _traverse_graph_neighborhood(
-    inv_store: InvestigationReadStore, task: EvaluationTask, seed_node: str,
-    q_text: str, limit: int, selected_b_ids: tuple[str, ...],
+    inv_store: InvestigationReadStore, config: Any, task: EvaluationTask, seed_node: str,
+    q_text: str, limit: int, selected_b_ids: tuple[str, ...], *,
+    psql_command: str = "psql", expected_pin: ObservationPublicationPin | None = None,
 ) -> tuple[list[qc.QueryHit], int]:
     visited: dict[str, tuple[int, Any]] = {}
     incident_by_file: dict[str, list[str]] = {}
@@ -251,11 +254,10 @@ def _traverse_graph_neighborhood(
             (k for k in cands if q_lower and q_lower in k.lower()),
             cands[0] if cands else f"file:{graph_path}",
         )
-        obs_res = inv_store.search(
-            GraphSearchQuery(
-                graph_id=task.graph_id, target="observations", query=q_text,
-                kind=None, path=graph_path, limit=limit, offset=0, include_raw=False,
-            )
+        obs_res = graph_scope.query_fenced_current_observations(
+            config, graph_id=task.graph_id, query=q_text, path=graph_path,
+            task_scope=task,
+            limit=limit, expected_pin=expected_pin, psql_command=psql_command,
         )
         payload_bytes += _json_len(obs_res.rows)
         for row in obs_res.rows:
@@ -320,7 +322,10 @@ def _execute_direct_handoff(
     return ExecutionState.COMPLETED, env, elapsed, acct
 
 
-def execute_graph_baseline_task(task: EvaluationTask, home_root: Path) -> _GraphTaskOutcome:
+def _execute_graph_baseline_task(
+    task: EvaluationTask, home_root: Path, *, psql_command: str = "psql",
+    expected_pin: ObservationPublicationPin | None = None,
+) -> _GraphTaskOutcome:
     """Execute one evaluation task against the real SQLite or PostgreSQL read store."""
     config = load_graph_registry_config_home(home_root)
     backend = "sqlite" if isinstance(config, LocalSqliteConfig) else "postgresql"
@@ -370,14 +375,14 @@ def execute_graph_baseline_task(task: EvaluationTask, home_root: Path) -> _Graph
     if is_inv:
         seed = str(plan.get("seed_node") or "file:core/pkg/pipeline.py")
         hits_list, payload_bytes = _traverse_graph_neighborhood(
-            inv_store, task, seed, q_text, limit, selected_b_ids
+            inv_store, config, task, seed, q_text, limit, selected_b_ids,
+            psql_command=psql_command, expected_pin=expected_pin,
         )
     else:
-        obs_res = inv_store.search(
-            GraphSearchQuery(
-                graph_id=task.graph_id, target="observations", query=q_text,
-                kind=None, path=None, limit=limit, offset=0, include_raw=False,
-            )
+        obs_res = graph_scope.query_fenced_current_observations(
+            config, graph_id=task.graph_id, query=q_text, limit=limit,
+            task_scope=task,
+            expected_pin=expected_pin, psql_command=psql_command,
         )
         payload_bytes, hits_list = _json_len(obs_res.rows), []
         for row in obs_res.rows:
@@ -392,3 +397,4 @@ def execute_graph_baseline_task(task: EvaluationTask, home_root: Path) -> _Graph
     elapsed = time.perf_counter_ns() - t0
     env = _build_available_envelope(requested_mode, surf, scope, hits_list[:limit])
     return ExecutionState.COMPLETED, env, elapsed, ByteLayerAccounting(observed_output_payload_bytes=payload_bytes)
+execute_graph_baseline_task = graph_scope.bind_graph_execution(_execute_graph_baseline_task)

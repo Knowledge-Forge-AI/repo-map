@@ -13,7 +13,7 @@ import pytest
 from ci.d12_hosted_evidence import SYSTEM_HOLD_REFUSAL_SCHEMA, validate_expected_candidate_record
 from ci.d12_hosted_qualification import main as qualification_main
 from ci.d12_system_grant import (
-    DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, D12SystemGrantError, EXPECTED_APPROVAL_SHA256, EXPECTED_BEFORE_SHA, EXPECTED_LEDGER_BEFORE_SHA256, EXPECTED_PHASE_ID, SPENT_CI108_NONCE, SPENT_CI108_RESERVATION_SHA256,
+    DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, D12SystemGrantError, EXPECTED_APPROVAL_SHA256, EXPECTED_BEFORE_SHA, EXPECTED_LEDGER_BEFORE_SHA256, EXPECTED_PHASE_ID, SPENT_CI108_NONCE, SPENT_CI108_RESERVATION_SHA256, SPENT_CI109_NONCE, SPENT_CI109_RESERVATION_SHA256,
     SYSTEM_ADMISSION_PROOF_SCHEMA, load_and_validate_system_build_grant, verify_host_system_proof_for_dispatch,
 )
 from common_lore_index.runtime import release as release_mod
@@ -47,10 +47,10 @@ BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
 def _setup_hosted_pr_env(tmp_path: Path) -> tuple[dict[str, str], dict[str, Any]]:
     cand_doc = json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8"))
     grant, _ = load_and_validate_system_build_grant(REPO_ROOT / DEFAULT_GRANT_RELPATH)
-    assert EXPECTED_PHASE_ID == "REPOMAP-CLOE-SEMANTIC1-CI109"; assert EXPECTED_BEFORE_SHA == "4eae9e49da880508b0ac4bc77665be7ab487da7d"; assert EXPECTED_APPROVAL_SHA256 == "20891546e3a4640aea490932392135fc20eae3a01275958a0b0c621e5a6df5da"; assert EXPECTED_LEDGER_BEFORE_SHA256 == "1f1ccc22cd7395c298175b5455542f7fed1f40b6314b8f99900c610ae22412e3"; assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (109, 25, 25); assert grant["nonce"] != SPENT_CI108_NONCE and grant["reservation_sha256"] != SPENT_CI108_RESERVATION_SHA256
+    assert EXPECTED_PHASE_ID == "REPOMAP-CLOE-SEMANTIC1-CI110"; assert EXPECTED_BEFORE_SHA == "e012f0180b7e2b85112e46a361fc4cd7fcd66472"; assert EXPECTED_APPROVAL_SHA256 == "5bf8569fc3e53929bce2e76502fbee8cdd30391ee65f9baaae8e0bebf8068a9d"; assert EXPECTED_LEDGER_BEFORE_SHA256 == "ddbfc942761b9fe36b58f36d0144c6980198260678ff179e50582c2008fe57ed"; assert (grant["workflow_ordinal"], grant["maximum_total"], grant["maximum_per_platform"]) == (110, 26, 26); assert grant["nonce"] not in (SPENT_CI108_NONCE, SPENT_CI109_NONCE) and grant["reservation_sha256"] not in (SPENT_CI108_RESERVATION_SHA256, SPENT_CI109_RESERVATION_SHA256)
     assert grant["nonce"] not in ("57a15c277787496bbfdaca7d8e47b439", "d4ea67e655f54742ac8ddc6a06174acf", "8cf0db5228e2467b991ff5a0a2eba5ea", "a3b8757061cd4f1881b2d2bf96340539", "d20a514d6d3144edb9f1408d55cfd408", "9fbd0f97ac4945a4a3bc231cbc512b5f", "10f975ff610e4030bd68cc09eba9d53b", "cb637c3b41e4427491dcf7bc2c83e0ec", "d16a2474e8f841e489cf44e0d789da8b", "0e28d22b081149c7a4c7b0bab21fa1ef", "81d48773f8793cf5219279819b968c4a", "7efd4e22bf9fb53df4eda303f1be9339", "d0d625000a771536cc0dee3af1c3e650", "a39bf353e1d68d49a7d545986e163a1f", "8b763cc4281fb2aa0695a1e3a0274b83", "93d9f509e46c6cb9eb9b05db7e0881ed", "ab31ea6d1199edcca4bfabddfb81ddfd", "14cc664cdb3b09ba1993beb070983795", "ddd4357249dc922f90ca6acbbfd72050", "cefe2333256878de7307757db244fa0d", "674dcffdf793d911ce7fb1c3ab2b90ca")
     expected_cand = validate_expected_candidate_record({**cand_doc, "d12_context": dict(grant["d12_context"])})
-    (tmp_path / "ci108-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
+    (tmp_path / "ci110-candidate.json").write_text(json.dumps(expected_cand, indent=2, sort_keys=True) + "\n", "utf-8")
     event_path = tmp_path / "github_event.json"
     repo_info = {"full_name": grant["repository"], "fork": False}
     pr_payload = {
@@ -146,7 +146,7 @@ def _hold_argv(out_path: Path, proof_path: Path | None = None) -> list[str]:
     if proof_path is None:
         return argv
     return [*argv, "--proof-json", str(proof_path),
-            "--expected-json", str(proof_path.parents[1] / "ci108-candidate.json")]
+            "--expected-json", str(proof_path.parents[1] / "ci110-candidate.json")]
 
 
 def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> None:
@@ -196,7 +196,7 @@ def test_system_hold_proof_capture_and_child_secure_writer(tmp_path: Path) -> No
     common_disp: dict[str, Any] = {"repo_root": drift_root, "env": env, "uname_fn": lambda: ("Linux", "x86_64"),
                    "runner": _fake_git, "frozen_identity_fn": lambda _r, _p: d12_ctx,
                    "grant_path": REPO_ROOT / DEFAULT_GRANT_RELPATH,
-                   "expected_candidate_path": tmp_path / "ci108-candidate.json"}
+                   "expected_candidate_path": tmp_path / "ci110-candidate.json"}
     with pytest.raises(D12SystemGrantError, match="live SDK recipe SHA256 disagrees with system build grant"):
         verify_host_system_proof_for_dispatch(args, **common_disp)
     (drift_root / "tools/test_sandbox/Dockerfile").write_bytes(sdk_df)
@@ -240,7 +240,7 @@ def test_cross_process_flock_and_o_excl_race_and_execute_system_run(tmp_path: Pa
     lock_report_dir.mkdir(parents=True, exist_ok=True)
     lock_file = lock_report_dir / SYSTEM_BUILD_LOCK_FILENAME
     preflight_doc = _matching_preflight_doc(d12_ctx)
-    cand_path = tmp_path / "ci108-candidate.json"
+    cand_path = tmp_path / "ci110-candidate.json"
 
     def _new_session(rep_dir: Path) -> D12SystemSession:
         sess = D12SystemSession.establish(
