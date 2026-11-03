@@ -245,3 +245,55 @@ unit tests, 37 containerized integration tests, and the 20-task × 7-arm ×
 `mixed-v1` nor the 10 `context-v1` held-out tasks are executed or accepted, and
 one later hosted qualification campaign remains gated on parent review
 disposition and separate parent authority.
+
+## W4 qualification and W5 design selection
+
+[CI106 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41382023561)
+qualifies staging `a300dc82d317ecde5646e4e90717b5eaa4aee8db` after the CI105
+import-cycle and lineage-regression corrections. All nine jobs and retained
+same-attempt staging M/A/system contracts pass. Unit: 15,271 passed, 40 skipped,
+59,851/68,080 statements and 19,378/22,346 branches. Integration: 2,004 passed,
+12 skipped, 60,988/68,080 statements and 18,075/22,346 branches. Hard gates pass;
+the desired 87%/82% branch margins remain 64 unit and 249 integration branches
+short at that denominator and carry forward into W5. There is no main promotion.
+
+Earlier W4 producer counts and calibration descriptions above are historical
+checkpoints. Final local proof is 404 scoped unit and 71 containerized integration
+cases with no project Python coverage. The retained actual functional journal
+is `w4-context-functional-attempt-7`, 420 observations with zero held-out tasks,
+at its own source binding. It is not repinned to the CI106 import correction,
+and neither it nor green core CI accepts scientific criteria or optional vectors.
+
+W5's model-independent foundation continues under accepted
+[ADR0137](../adr/2026/11/0137-model-independent-w5-evaluation-foundations.md)
+and [the foundation contract](cloe-w5-foundations-v1.md). The exact route-A
+model-dependent path is separately accepted under
+[ADR0136](../adr/2026/11/0136-w5-local-embedding-and-fusion-evidence.md);
+neither record asserts W5 completion, learned usefulness, held-out results or
+production qualification. The `REPOMAP-CLOE-SEMANTIC1` milestone retains its
+verified local enrichment, vector/fusion comparison and named-workload JSONB
+disposition boundaries. Existing synthetic/private proposals remain evidence
+only, not accepted models, corpora, labels or thresholds.
+
+
+### Model-independent W5 continuation
+
+REPOMAP-CLOE-SEMANTIC-FOUNDATION1 proceeds under
+[ADR0137](../adr/2026/11/0137-model-independent-w5-evaluation-foundations.md)
+and [the foundation contract](cloe-w5-foundations-v1.md). The operator renewed
+roadmap continuation on 2026-11-02. Dependency-free representation/provenance,
+file-level fusion/grading and disposable named JSONB evidence remain within
+this foundation. The separately accepted ADR0136 route does not make this
+foundation a model result: learned usefulness, held-out criteria and full W5
+completion remain separate. No public campaign is scheduled for a partial
+foundation checkpoint.
+
+## W5 evaluator milestone
+
+The bounded evaluator/generator/fusion and named JSONB milestone has retained
+two-generation public calibration within its declared capabilities. See the
+[operational exit](../../tools/ci/cloe-semantic1-exit.md) and ADR0138 for the
+separate one-use staging campaign. Generation2 has document-only inference and
+an explicit unsupported metadata-vector query. Relational JSONB behavior stays
+in place. Hosted qualification, held-out criteria, broader utility and production
+model/pgvector/schema/index admission remain open; W5 is not complete.

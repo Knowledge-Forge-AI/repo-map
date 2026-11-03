@@ -7,6 +7,9 @@ from common_lore_index.storage.semantic_candidates import CandidatePublication, 
 from common_lore_index.storage.sql_core import sql_literal
 
 
+_ACCEPTED_EVIDENCE_LINK_SQL = "link.link_kind NOT IN ('inferred', 'inferred_from_edge')"
+
+
 CAPABILITY_PROBE_SQL = """SELECT json_build_object(
     'installed_version', (SELECT extversion FROM pg_catalog.pg_extension WHERE extname = 'vector'),
     'installation_schema', (SELECT n.nspname FROM pg_catalog.pg_extension e
@@ -62,6 +65,7 @@ def build_candidate_query_sql(query: CandidateQuery) -> str:
         AND evidence.run_id = accepted.id AND evidence.graph_key_version = 1
         AND evidence.metadata_json->>'binding_id' = embedding.source_binding_id
         AND evidence.metadata_json->>'snapshot_id' = embedding.snapshot_id
+        AND {_ACCEPTED_EVIDENCE_LINK_SQL}
         {path_filter}"""
     return f"""WITH {accepted_publication_sql(query)},
     matching AS MATERIALIZED (
@@ -107,6 +111,7 @@ def build_candidate_query_sql(query: CandidateQuery) -> str:
                 WHERE link.canonical_node_id = nearest.node_id AND evidence.run_id = accepted.id
                   AND evidence.metadata_json->>'binding_id' = nearest.source_binding_id
                   AND evidence.metadata_json->>'snapshot_id' = nearest.snapshot_id
+                  AND {_ACCEPTED_EVIDENCE_LINK_SQL}
                   {path_filter}
                 ORDER BY evidence.evidence_key COLLATE "C" LIMIT {query.evidence_limit}
             ) items

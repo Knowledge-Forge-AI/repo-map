@@ -74,6 +74,13 @@ def test_exact_query_is_source_blind_and_quotes_filter_literals() -> None:
         assert forbidden not in sql
 
 
+def test_exact_query_scopes_candidates_and_evidence_to_accepted_links() -> None:
+    sql = build_candidate_query_sql(candidate_query())
+    accepted_link = "link.link_kind NOT IN ('inferred', 'inferred_from_edge')"
+
+    assert sql.count(accepted_link) == 2
+
+
 def _entry(**changes) -> EmbeddingEntry:
     return replace(EmbeddingEntry("file:src/a.py", BINDING, (1, 0, 0), "sha256:" + "a" * 64), **changes)
 

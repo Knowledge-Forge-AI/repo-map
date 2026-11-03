@@ -17,15 +17,19 @@ from common_lore_index.storage import apply_migrations, default_rdbms_root, quer
 from common_lore_index.storage.errors import StorageSchemaError
 from common_lore_index.storage.authority import GraphRunId
 from common_lore_index.storage.psql import run_psql
+from common_lore_index.storage.readback_driver import execute_json_readback
 from common_lore_index.storage.publication_readback import read_latest_publication
-from common_lore_index.storage.semantic_candidates import CandidatePublication, CandidateQuery, EmbeddingEntry
+from common_lore_index.storage.semantic_candidates import (
+    CandidatePublication, CandidateQuery, EmbeddingEntry, EmbeddingProfile,
+)
 from common_lore_index.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
 from common_lore_index.storage.semantic_candidate_readback import query_semantic_candidates
 from common_lore_index.storage.staged_ingestion import run_staged_portable_refresh
 from repomap_test_support.portable_publication_fixtures import _authority, _binding
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
-from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, candidate_query
+from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, SNAPSHOT, candidate_query
 from repomap_test_support.semantic_candidate_publication import candidate_bundle
+from retrieval_semantic_ann_sql import build_hnsw_query_sql
 from repomap_test_support.semantic_candidate_restore import (
     execute_candidate_dump_restore,
     optional_database_cleanup,
@@ -303,3 +307,93 @@ def test_primary_failure_survives_optional_sql_cleanup_failure() -> None:
                 "DROP TABLE IF EXISTS repomap_enrichment.cleanup_blocker; "
                 "DROP SCHEMA IF EXISTS repomap_enrichment;",
             )
+
+
+@pytest.mark.requires_pgvector
+def test_pgvector_candidate_link_fence_applies_to_exact_and_ann_sql() -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        available = postgres.psql_scalar(
+            "SELECT count(*) FROM pg_available_extension_versions "
+            "WHERE name = 'vector' AND version = '0.8.7'"
+        )
+        apply_migrations(default_rdbms_root(), postgres.psql_args, psql_command=postgres.psql_command)
+        assert available == "1", "exact boundary requires an admitted pgvector 0.8.7 test image"
+        _execute(
+            postgres,
+            f"CREATE ROLE {READER} NOLOGIN; CREATE ROLE {WRITER} NOLOGIN; "
+            "CREATE SCHEMA repomap_vector; CREATE EXTENSION vector WITH SCHEMA repomap_vector VERSION '0.8.7';",
+        )
+        with optional_sql_fixture_cleanup(
+            postgres,
+            reader=READER,
+            writer=WRITER,
+            execute_fn=_execute,
+            canonical_nodes_fn=lambda: query_canonical_node_records(postgres.psql_args, root_path=ROOT, repository_identity=REPOSITORY, psql_command=postgres.psql_command),
+            expected_canonical_count=3,
+        ):
+            _execute(postgres, candidate_schema_sql(read_principal=READER, enrichment_principal=WRITER))
+            publication = _publish(postgres)
+            profile = EmbeddingProfile("synthetic-contract-384", "1", "public-fixture-author", "1", 384)
+
+            def axis(index: int) -> tuple[float, ...]:
+                return tuple(1.0 if position == index else 0.0 for position in range(384))
+            entries = tuple(
+                EmbeddingEntry(f"file:src/{name}.py", BINDING, axis(index), "sha256:" + "a" * 64)
+                for name, index in (("a", 0), ("b", 1), ("c", 0))
+            )
+            query = replace(
+                candidate_query(), publication=publication, profile=profile, vector=axis(0),
+                limit=3, evidence_limit=5, source_binding_id=BINDING,
+            )
+            _execute(postgres, build_embedding_import_sql(publication, profile, entries, rebuild_id=query.rebuild_id, enrichment_principal=WRITER, public_safe=True), role=WRITER)
+            _execute(
+                postgres,
+                """
+                WITH pairs(target_key, source_key) AS (
+                    VALUES ('file:src/b.py', 'file:src/c.py'),
+                           ('file:src/c.py', 'file:src/b.py')
+                )
+                INSERT INTO public.canonical_node_evidence
+                    (canonical_node_id, canonical_evidence_id, link_kind)
+                SELECT target.id, source_link.canonical_evidence_id, 'inferred_from_edge'
+                FROM pairs
+                JOIN public.canonical_nodes target ON target.canonical_key = pairs.target_key
+                JOIN public.canonical_nodes source
+                  ON source.canonical_key = pairs.source_key
+                 AND source.repository_id = target.repository_id
+                JOIN public.canonical_node_evidence source_link
+                  ON source_link.canonical_node_id = source.id
+                 AND source_link.link_kind = 'observed'
+                ON CONFLICT DO NOTHING;
+                UPDATE public.canonical_node_evidence link
+                SET link_kind = 'inferred'
+                FROM public.canonical_nodes node
+                WHERE node.id = link.canonical_node_id
+                  AND node.canonical_key = 'file:src/b.py'
+                  AND link.link_kind = 'observed';
+                """,
+            )
+            assert postgres.psql_scalar("SELECT count(*) FROM public.canonical_node_evidence link "
+                "JOIN public.canonical_nodes node ON node.id = link.canonical_node_id "
+                "WHERE node.canonical_key IN ('file:src/b.py', 'file:src/c.py') "
+                "AND link.link_kind = 'inferred_from_edge'") == "2"
+            expected_keys = {"file:src/a.py", "file:src/c.py"}
+            exact = _read(postgres, query)
+            assert exact.status == "ok", exact.reason
+            assert {row["canonical_key"] for row in exact.candidates} == expected_keys
+            exact_mixed = next(row for row in exact.candidates if row["canonical_key"] == "file:src/c.py")
+            assert [item["path"] for item in exact_mixed["evidence"]] == ["src/c.py"]
+            ann_sql = build_hnsw_query_sql(query, source_scope=((BINDING, SNAPSHOT),), ann_scan_limit=3)
+            args = ("-c", f"role={READER}", "-c", "default_transaction_read_only=on")
+            with pytest.MonkeyPatch.context() as env:
+                env.setenv("REPOMAP_STORAGE_READBACK_DRIVER", "psql")
+                env.setenv("PGOPTIONS", " ".join(args))
+                ann_payload = execute_json_readback(ann_sql, psql_args=postgres.psql_args, psql_command=postgres.psql_command, label="semantic candidate ANN", expected_shape="object")
+            assert isinstance(ann_payload, dict)
+            assert ann_payload["status"] == "ok"
+            ann_rows = ann_payload.get("candidates")
+            assert isinstance(ann_rows, list) and all(isinstance(row, dict) for row in ann_rows)
+            assert {row["canonical_key"] for row in ann_rows} == expected_keys
+            ann_mixed = next(row for row in ann_rows if row["canonical_key"] == "file:src/c.py")
+            assert [item["path"] for item in ann_mixed["evidence"]] == ["src/c.py"]

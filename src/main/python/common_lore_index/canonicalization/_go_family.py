@@ -79,22 +79,22 @@ def canonicalize_go_observation(
         )
 
     observed_edge_keys: set[str] = set()
-    for claim in context.edge_claims_by_source_id.get(observation.source_id, ()):
+    for edge_claim in context.edge_claims_by_source_id.get(observation.source_id, ()):
         edge_key = canonical_edge_key(
             graph_key_version=GRAPH_KEY_VERSION,
-            source_key=claim.source_key,
-            kind=claim.kind,
-            target_key=claim.target_key,
-            identity_metadata=claim.identity_metadata,
+            source_key=edge_claim.source_key,
+            kind=edge_claim.kind,
+            target_key=edge_claim.target_key,
+            identity_metadata=edge_claim.identity_metadata,
         )
         _upsert_edge(
             state.edges,
             edge_key=edge_key,
-            source_key=claim.source_key,
-            kind=claim.kind,
-            target_key=claim.target_key,
-            identity_metadata=claim.identity_metadata,
-            metadata=claim.metadata,
+            source_key=edge_claim.source_key,
+            kind=edge_claim.kind,
+            target_key=edge_claim.target_key,
+            identity_metadata=edge_claim.identity_metadata,
+            metadata=edge_claim.metadata,
             confidence=observation.confidence,
         )
         stored_edge = state.edges[edge_key]

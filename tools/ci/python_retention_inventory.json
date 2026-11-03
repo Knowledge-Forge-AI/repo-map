@@ -362,6 +362,118 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.semantic1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/retrieval/jsonb_evidence_workload.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/semantic_foundations.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/semantic_generator_admission.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/semantic_pgvector_experiment.int.test.py",
+        "src/test/unit/python/tools/retrieval_jsonb_evidence.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_ann.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_ann_boundaries.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_ann_diagnostic.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_bridge_admission.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_bridge_ownership.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_bridge_transport.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_envelope_provenance.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_experiment.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_experiment_artifacts.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_experiment_postgres.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_experiment_scope.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_experiment_timing.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_fusion.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_generator_artifacts.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_generator_inputs.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_generator_kernel.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_generator_output.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_generator_protocol.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_generator_worker.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_grading.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_records.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_representation.unit.test.py"
+      ],
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.semantic1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/w5_experiment_ann.py",
+        "src/test/support/python/repomap_test_support/w5_experiment_ann_diagnostic.py",
+        "src/test/support/python/repomap_test_support/w5_experiment_postgres.py",
+        "src/test/support/python/repomap_test_support/w5_experiment_support.py",
+        "src/test/support/python/repomap_test_support/w5_experiment_vector.py",
+        "src/test/support/python/repomap_test_support/w5_generator_support.py",
+        "src/test/support/python/repomap_test_support/w5_jsonb_support.py",
+        "src/test/support/python/repomap_test_support/w5_semantic_store_support.py",
+        "src/test/support/python/repomap_test_support/w5_semantic_support.py"
+      ],
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.semantic1.tools",
+      "members": [
+        "tools/retrieval_jsonb_contracts.py",
+        "tools/retrieval_jsonb_evidence.py",
+        "tools/retrieval_jsonb_metrics.py",
+        "tools/retrieval_jsonb_ownership.py",
+        "tools/retrieval_jsonb_sql.py",
+        "tools/retrieval_semantic_ann.py",
+        "tools/retrieval_semantic_ann_contracts.py",
+        "tools/retrieval_semantic_ann_lifecycle.py",
+        "tools/retrieval_semantic_ann_models.py",
+        "tools/retrieval_semantic_ann_plan.py",
+        "tools/retrieval_semantic_ann_scope.py",
+        "tools/retrieval_semantic_ann_sql.py",
+        "tools/retrieval_semantic_arm_validation.py",
+        "tools/retrieval_semantic_bridge_admission.py",
+        "tools/retrieval_semantic_bridge_admission_remote.py",
+        "tools/retrieval_semantic_bridge_ownership.py",
+        "tools/retrieval_semantic_bridge_remote_io.py",
+        "tools/retrieval_semantic_bridge_transport.py",
+        "tools/retrieval_semantic_bridge_transport_bundle.py",
+        "tools/retrieval_semantic_bridge_transport_io.py",
+        "tools/retrieval_semantic_experiment_artifacts.py",
+        "tools/retrieval_semantic_experiment_bridge.py",
+        "tools/retrieval_semantic_experiment_contracts.py",
+        "tools/retrieval_semantic_experiment_evaluator.py",
+        "tools/retrieval_semantic_experiment_outcomes.py",
+        "tools/retrieval_semantic_experiment_scope.py",
+        "tools/retrieval_semantic_experiment_timing.py",
+        "tools/retrieval_semantic_file_projection.py",
+        "tools/retrieval_semantic_fusion.py",
+        "tools/retrieval_semantic_generator_artifacts.py",
+        "tools/retrieval_semantic_generator_inputs.py",
+        "tools/retrieval_semantic_generator_kernel.py",
+        "tools/retrieval_semantic_generator_kernel_contracts.py",
+        "tools/retrieval_semantic_generator_kernel_runtime_factory.py",
+        "tools/retrieval_semantic_generator_kernel_runtime_types.py",
+        "tools/retrieval_semantic_generator_kernel_runtime_validation.py",
+        "tools/retrieval_semantic_generator_kernel_validation.py",
+        "tools/retrieval_semantic_generator_output.py",
+        "tools/retrieval_semantic_generator_output_parser.py",
+        "tools/retrieval_semantic_generator_output_receipt.py",
+        "tools/retrieval_semantic_generator_runtime.py",
+        "tools/retrieval_semantic_generator_worker.py",
+        "tools/retrieval_semantic_generator_worker_contracts.py",
+        "tools/retrieval_semantic_generator_worker_protocol.py",
+        "tools/retrieval_semantic_grading.py",
+        "tools/retrieval_semantic_primitives.py",
+        "tools/retrieval_semantic_provenance.py",
+        "tools/retrieval_semantic_record_validation.py",
+        "tools/retrieval_semantic_representation.py"
+      ],
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "fix21.int.run25_acquisition_wave",
       "members": [
         "src/test/int/python/repomap_kg/source_ingestion/run25_acquisition_wave.int.test.py"
@@ -35155,6 +35267,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/jsonb_evidence_workload.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/lexical_capture_policy_publication.int.test.py",
       "rationale": "CI102 compatibility and accepted W3 contract regression proof; admitted with zero new debt.",
       "root": "test_owners",
@@ -35204,6 +35325,33 @@
       "rationale": "ADR0127 real SQLite/PostgreSQL publication, native git-grep process, and 5-arm calibration baseline integration owners.",
       "root": "test_owners",
       "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/semantic_foundations.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/semantic_generator_admission.int.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/semantic_pgvector_experiment.int.test.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
     },
     {
       "confidence": 0.95,
@@ -40296,6 +40444,87 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/unit_purity.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_ann.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_ann_diagnostic.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_postgres.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_support.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_vector.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_generator_support.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_jsonb_support.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_semantic_store_support.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_semantic_support.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -49060,6 +49289,213 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_jsonb_evidence.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_ann.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_ann_boundaries.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_ann_diagnostic.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_bridge_admission.unit.test.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_bridge_ownership.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_bridge_transport.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_envelope_provenance.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_experiment.unit.test.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_experiment_artifacts.unit.test.py",
+      "rationale": "ADR0136 bounded W5 scientific artifact retention: fixed inert frames, exact bytes and terminal identity; clean admission, existing profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_experiment_postgres.unit.test.py",
+      "rationale": "Independent W5 review correction: strict ownership, full PostgreSQL readback and honest provenance/metric scopes; clean admission, historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_experiment_scope.unit.test.py",
+      "rationale": "Independent W5 review correction: strict ownership, full PostgreSQL readback and honest provenance/metric scopes; clean admission, historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_experiment_timing.unit.test.py",
+      "rationale": "ADR0136 measured exclusive query costs on successful and failed calibration; clean admission with all historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_fusion.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_generator_artifacts.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_generator_inputs.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_generator_kernel.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_generator_output.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_generator_protocol.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_generator_worker.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_grading.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_records.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_representation.unit.test.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/runner_discovery_failure.unit.test.py",
       "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
       "root": "test_owners",
@@ -51933,6 +52369,447 @@
       "maintained_executable": true,
       "path": "tools/retrieval_inventory_metadata.py",
       "rationale": "REPOMAP-PRODUCT6-NAVIGATION35-BOUNDED-INVENTORY1 stdlib-only contributor CLI, identity-chain verifier and tree manifest classifier for fixed A/B inventory metadata preparation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_jsonb_contracts.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_jsonb_evidence.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_jsonb_metrics.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_jsonb_ownership.py",
+      "rationale": "Independent W5 review correction: strict ownership, full PostgreSQL readback and honest provenance/metric scopes; clean admission, historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_jsonb_sql.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann_contracts.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann_lifecycle.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann_models.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann_plan.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann_scope.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_ann_sql.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_arm_validation.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_admission.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_admission_remote.py",
+      "rationale": "Cohesive fixed-source admission file-IO helper; exact clean W5 admission with historical debt unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_ownership.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_remote_io.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_transport.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_transport_bundle.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_bridge_transport_io.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_artifacts.py",
+      "rationale": "ADR0136 bounded W5 scientific artifact retention: fixed inert frames, exact bytes and terminal identity; clean admission, existing profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_bridge.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_contracts.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_evaluator.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_outcomes.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_scope.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_experiment_timing.py",
+      "rationale": "ADR0136 measured exclusive query costs on successful and failed calibration; clean admission with all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_file_projection.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_fusion.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_artifacts.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_inputs.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_kernel.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_kernel_contracts.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_kernel_runtime_factory.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_kernel_runtime_types.py",
+      "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_kernel_runtime_validation.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_kernel_validation.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_output.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_output_parser.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_output_receipt.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_runtime.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_worker.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_worker_contracts.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_generator_worker_protocol.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_grading.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_primitives.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_provenance.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_record_validation.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_representation.py",
+      "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "tools",
       "status": "active_tool"
     },

@@ -561,69 +561,6 @@
       },
       {
         "count": 1,
-        "error_code": "assignment",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "ab811eb5bb225cf8ecc4b954b0b78e4edb5f35cdeb138edd97b90b079e787964",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "26991d50b883e5418dcba3b21e623eabecfe8b3c72c60b528efc1e3d4a0ed42d",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "404f534f0400d12a195019ba4a46d6782db173840cb94c7981f0c312119f87d1",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "45dfd8bbcaa02d10e2d7216840c1055e665beca8081082c8daf4d5c9dab8ab5c",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "4eea9b6834ed108d912106631e2d9b996546dcfe568d9a077a5a698c5f21d772",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "5687322cb4507fbdcd563aacc05f18678def7d01dcc3c9b11e137046708b180b",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 1,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "64c8efe2ecd746f5fcb3ea7fe91f94cd2688ab9ab9f6c5d634ae101902529b89",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "7b7e26b4f56bec557f95cf43827bd489984a32a736409e783a098b9a6e40905b",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 2,
-        "error_code": "union-attr",
-        "module": "common_lore_index.canonicalization._go_family",
-        "normalized_fingerprint": "f981398fcd0d56c468f704fd4daff694d09c2fd06d6bdf0c2f7ab11d70253001",
-        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py"
-      },
-      {
-        "count": 1,
         "error_code": "unreachable",
         "module": "common_lore_index.extractors.config._openapi_components",
         "normalized_fingerprint": "b803de7271e25085ec61736e492ae09be61fe7bb9790bc84fde2ea6f26308c34",
