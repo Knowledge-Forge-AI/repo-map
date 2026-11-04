@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from time import perf_counter_ns
 from typing import Any, TypeVar
@@ -14,6 +14,13 @@ from common_lore_index.retrieval.query_contracts import QueryEnvelope
 from retrieval_evaluation_schema import EvaluationTask
 from retrieval_evaluation_correspondence_graph_scope import (
     GraphExecutionWork, collect_graph_execution_work,
+)
+from retrieval_evaluation_accounting import EvaluatorByteBreakdownV1
+from retrieval_evaluation_admission_w5_runner import (
+    TaskOutcome, execute_w5_callback,
+)
+from retrieval_evaluation_admission_w5_capture import (
+    NativePrecheckWork, native_precheck_breakdown,
 )
 from retrieval_evaluation_views import MaterializedNativeView
 from retrieval_semantic_experiment_contracts import ExperimentRefusal, digest_json
@@ -216,25 +223,90 @@ class BaselineCorrespondenceRunner:
     postgres_inputs: ProjectionInputs
     sqlite_policy: BodyProjectionPolicy
     postgres_policy: BodyProjectionPolicy
+    _policy_digests: Mapping[str, str] = field(init=False, repr=False)
     live: IssuedBaselineCapture | None = None
+    _pending_native_precheck: NativePrecheckWork | None = field(
+        default=None, init=False, repr=False,
+    )
+
+    def __post_init__(self) -> None:
+        self._policy_digests = {
+            "sqlite": str(self.sqlite_policy.policy_digest()),
+            "postgresql": str(self.postgres_policy.policy_digest()),
+        }
 
     def execute(
         self,
         arm_id: str,
         task: EvaluationTask,
-        callback: Callable[[VerifiedPublicationPin], T],
-    ) -> T:
+        callback: Callable[[VerifiedPublicationPin], TaskOutcome],
+    ) -> TaskOutcome:
         self.live = None
+        self._pending_native_precheck = None
+        blocked_outcome: TaskOutcome | None = None
+
+        def retain_blocked(_decision: object, outcome: TaskOutcome) -> None:
+            nonlocal blocked_outcome
+            if arm_id == "native_tools_baseline":
+                if blocked_outcome is not None:
+                    raise ExperimentRefusal("duplicate_native_precheck_work")
+                blocked_outcome = outcome
+
+        def execute_admitted(pre: BaselinePinSnapshot) -> TaskOutcome:
+            pin = pre.target_for_arm(arm_id)
+            sqlite_arm = arm_id == "native_tools_baseline" or arm_id.endswith(":sqlite")
+            policy = self.sqlite_policy if sqlite_arm else self.postgres_policy
+            return execute_w5_callback(
+                arm_id=arm_id,
+                task=task,
+                publication_pin=pin,
+                policy=policy,
+                frozen_policy_digest=self._policy_digests["sqlite" if sqlite_arm else "postgresql"],
+                callback=callback,
+                on_blocked=retain_blocked,
+            )
+
         result, capture = execute_with_live_baseline_pins(
             arm_id=arm_id,
             task=task,
             generation_aliases=self.generation_aliases,
-            execute=lambda pre: callback(pre.target_for_arm(arm_id)),
+            execute=execute_admitted,
             read_sqlite=self.read_sqlite,
             read_postgres=self.read_postgres,
         )
         self.live = capture
+        if blocked_outcome is not None:
+            if result is not blocked_outcome:
+                raise ExperimentRefusal("native_precheck_work_result_mismatch")
+            self._pending_native_precheck = NativePrecheckWork(
+                arm_id=arm_id,
+                task_id=task.task_id,
+                envelope_digest=digest_json(blocked_outcome[1].to_dict()),
+                capture=capture,
+                breakdown=native_precheck_breakdown(blocked_outcome[1]),
+            ).validate()
         return result
+
+    def take_native_precheck_work(
+        self,
+        arm_id: str,
+        task: EvaluationTask,
+        envelope: QueryEnvelope,
+    ) -> EvaluatorByteBreakdownV1 | None:
+        """Consume exactly one blocked-native witness bound to this capture."""
+        pending = self._pending_native_precheck
+        self._pending_native_precheck = None
+        if pending is None:
+            return None
+        pending.validate()
+        if (
+            pending.capture is not self.live
+            or pending.arm_id != arm_id
+            or pending.task_id != task.task_id
+            or pending.envelope_digest != digest_json(envelope.to_dict())
+        ):
+            raise ExperimentRefusal("native_precheck_work_binding_mismatch")
+        return pending.breakdown
 
     def sidecar(
         self,
@@ -255,7 +327,15 @@ class BaselineCorrespondenceRunner:
         sqlite_arm = arm_id == "native_tools_baseline" or arm_id.endswith(":sqlite")
         inputs = self.sqlite_inputs if sqlite_arm else self.postgres_inputs
         policy = self.sqlite_policy if sqlite_arm else self.postgres_policy
-        artifact_arm = arm_id == "native_tools_baseline" or arm_id.startswith("captured_projection_reference:")
+        # Preserve the actual backend inputs/policy for every W5 filesystem arm.
+        # The sidecar keeps object identity; correspondence recomputes the
+        # digest and accepted publication instead of trusting serialized fields.
+        artifact_arm = (
+            arm_id == "native_tools_baseline"
+            or arm_id.startswith("current_graph_baseline:")
+            or arm_id.startswith("captured_projection_reference:")
+            or arm_id == "postgres_native_fts:postgresql"
+        )
         return self.sidecar_type(
             arm_id=arm_id,
             task_id=task.task_id,
@@ -299,6 +379,7 @@ __all__ = [
     "BaselineCorrespondenceRunner",
     "BaselinePinSnapshot",
     "IssuedBaselineCapture",
+    "NativePrecheckWork",
     "execute_with_live_baseline_pins",
     "is_verified_sidecar",
     "make_baseline_correspondence_runner",

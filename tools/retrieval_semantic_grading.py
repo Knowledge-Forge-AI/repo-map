@@ -34,6 +34,11 @@ from retrieval_semantic_representation import (
     _validate_representation_string,
 )
 
+W5_FILE_GRADING_POLICY_V1 = "cloe-w5-file-grading-v1"
+W5_FILE_GRADING_POLICY_V2 = "cloe-w5-file-grading-v2"
+W5_FILE_GRADING_POLICY_CURRENT = W5_FILE_GRADING_POLICY_V2
+
+
 METADATA_ONLY_VECTOR_ARMS: frozenset[str] = frozenset(
     {"vector_only", "canonical_node_v1_vector", "semantic_vector_only"}
 )
@@ -179,6 +184,7 @@ def grade_w5_task_slot(
     cutoffs: Sequence[int] = DEFAULT_CUTOFFS,
     private_markers: Sequence[str] = (),
     grading_granularity: str = "file",
+    grading_policy_version: str = W5_FILE_GRADING_POLICY_CURRENT,
 ) -> GradedSlotRecord:
     """Grade one calibration task slot with predeclared applicability and dual span/file metrics."""
     _require(isinstance(verified_pin, VerifiedPublicationPin), "unverified_publication_pin", "VerifiedPublicationPin required")
@@ -209,14 +215,19 @@ def grade_w5_task_slot(
         "span grading requires explicit span_locators",
     )
     measured_span_locators = () if span_locators is None else span_locators
-    if not applicability.applicable:
+    _require(grading_policy_version in {W5_FILE_GRADING_POLICY_V1, W5_FILE_GRADING_POLICY_V2},
+             "invalid_grading_policy_version", "unknown W5 file grading policy")
+    derived = None if grading_policy_version == W5_FILE_GRADING_POLICY_V1 else _derive_slot_execution_state(
+        fusion_result, execution_state, capability_state, refusal_code, scope_complete, verified_pin
+    )
+    if not applicability.applicable and (derived is None or derived[0] != ExecutionState.REFUSED):
         return GradedSlotRecord(
             task_id=task.task_id, family=task.family, comparability_stratum=task.comparability_stratum,
             grading_rule=task.grading_rule, execution_state=ExecutionState.UNAVAILABLE,
             grading_state=GradingState.UNGRADED, capability_state=applicability.default_capability_state,
             safety_refusal_correct=None, absent_answer_correct=None, metrics=zero_all, returned_hit_count=len(items),
         )
-    eff_exec, eff_cap, eff_refusal, eff_scope_ok = _derive_slot_execution_state(
+    eff_exec, eff_cap, eff_refusal, eff_scope_ok = derived if derived is not None else _derive_slot_execution_state(
         fusion_result, execution_state, capability_state, refusal_code, scope_complete, verified_pin
     )
     if eff_exec == ExecutionState.UNAVAILABLE:
@@ -291,5 +302,6 @@ __all__ = [
     "ArmApplicabilityDecision", "ArmSummary", "CollapsedFileGoldTarget", "aggregate_arm_summary",
     "assert_calibration_split_only", "collapse_gold_targets_to_files",
     "compute_file_level_ranking_metrics", "evaluate_arm_task_applicability",
+    "W5_FILE_GRADING_POLICY_V1", "W5_FILE_GRADING_POLICY_V2", "W5_FILE_GRADING_POLICY_CURRENT",
     "grade_w5_task_slot", "verify_and_project_returned_files",
 ]

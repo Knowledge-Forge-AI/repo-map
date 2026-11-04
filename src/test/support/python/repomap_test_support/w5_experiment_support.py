@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 import json
 import math
 from pathlib import Path
@@ -11,7 +11,6 @@ from typing import Any
 from common_lore_index.storage.authority import GraphRunId
 from common_lore_index.storage.publication_readback import RunPublicationRecord
 from common_lore_index.storage.semantic_candidates import CandidatePublication
-from common_lore_index.retrieval.query_contracts import QueryEnvelope
 from repomap_test_support.retrieval_evaluation_fixture import (
     MIXED_V1_FIXTURE_ROOT,
     MIXED_V1_GRAPH_ID,
@@ -21,9 +20,7 @@ from repomap_test_support.retrieval_evaluation_fixture import (
 )
 from repomap_test_support.retrieval_evaluation_publication import publish_and_load_postgres_corpus
 from repomap_test_support.w5_generator_support import GeneratorFixtureReader
-from retrieval_evaluation_accounting import summarize_timing_samples
-from retrieval_evaluation_execution import TaskOutcome
-from retrieval_evaluation_grading import ExecutionState, GradedSlotRecord, grade_task_execution
+from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask, TaskCatalog, load_task_catalog
 from retrieval_semantic_experiment_contracts import (
     ExperimentCell,
@@ -38,11 +35,26 @@ from retrieval_semantic_generator_worker_contracts import WORKER_SOURCE_FILES
 from retrieval_semantic_generator_inputs import PublicGenerationInput
 from retrieval_semantic_experiment_scope import selected_public_binding_ids as _selected_public_binding_ids
 from test_sandbox_contract import INNER_REPORT_ROOT
+from repomap_test_support.w5_experiment_journal import record_baseline, record_cell
 
 PUBLIC_ALIASES: tuple[str, ...] = ("core", "companion", "feeds")
 DECLARED_PROFILE_IDENTITY = "sha256:033cf41ffc5ca108b6e26638573554bac64b84be744903809904ef3364722180"
 EXPERIMENT_ATTEMPTS_ROOT = INNER_REPORT_ROOT / "w5-semantic-attempts"
 EXPERIMENT_SOURCE_PATHS: tuple[str, ...] = (
+    'tools/retrieval_evaluation_admission_w5_capture.py',
+    'tools/retrieval_evaluation_admission_w5.py',
+    'tools/retrieval_evaluation_admission_w5_contracts.py',
+    'tools/retrieval_evaluation_admission_w5_runner.py',
+    'tools/retrieval_semantic_baseline_expectations.py',
+    'tools/retrieval_evaluation_scope.py',
+    'tools/retrieval_evaluation_matching.py',
+    'tools/retrieval_evaluation_graph_records.py',
+    'tools/retrieval_evaluation_graph_pages.py',
+    'tools/retrieval_evaluation_graph_traversal.py',
+    'tools/retrieval_semantic_baseline_inputs.py',
+    'tools/retrieval_semantic_baseline_envelope.py',
+    'tools/retrieval_semantic_baseline_scope.py',
+    "src/test/support/python/repomap_test_support/w5_experiment_journal.py",
     "tools/retrieval_semantic_bridge_transport.py", "tools/retrieval_semantic_bridge_transport_io.py",
     "tools/retrieval_semantic_bridge_transport_bundle.py", "tools/retrieval_semantic_experiment_bridge.py",
     "tools/retrieval_semantic_experiment_contracts.py",
@@ -180,78 +192,6 @@ def make_public_reader(published: Any, *, psql_command: str) -> GeneratorFixture
     )
     return GeneratorFixtureReader(published, policy, "postgresql", psql_command)
 
-def record_baseline(
-    journal: Any,
-    task: EvaluationTask,
-    arm_id: str,
-    repetition: int,
-    execute: Callable[[], TaskOutcome],
-    *,
-    file_metrics_callback: Callable[[EvaluationTask, str, ExecutionState, QueryEnvelope], tuple[dict[str, float] | None, str, str | None]] | None = None,
-) -> TaskOutcome:
-    journal.append({"event": "query_started", "task_id": task.task_id, "arm_id": arm_id, "repetition": repetition})
-    outcome = execute()
-    state, envelope, elapsed_ns, byte_accounting = outcome
-    journal.append({
-        "event": "query_observed", "task_id": task.task_id, "arm_id": arm_id,
-        "repetition": repetition, "execution_state": state.value,
-        "elapsed_ns": max(0, elapsed_ns), "byte_accounting": byte_accounting.to_dict(),
-        "envelope": envelope.to_dict(),
-    })
-    span_slot = grade_task_execution(
-        task,
-        execution_state=state,
-        envelope=envelope,
-        timing=summarize_timing_samples([max(0, elapsed_ns)]),
-        byte_accounting=byte_accounting,
-    )
-    file_metrics, file_status, file_gap = (
-        (None, "gap", "verified_pin_required") if file_metrics_callback is None
-        else file_metrics_callback(task, arm_id, state, envelope)
-    )
-    grade_record: dict[str, object] = {
-        "event": "task_graded",
-        "arm_id": arm_id,
-        "task_id": task.task_id,
-        "repetition": repetition,
-        "divergent": False,
-        "slot": span_slot.to_dict(),
-        "span_metrics": dict(span_slot.metrics),
-        "file_metrics": file_metrics,
-        "file_metrics_status": file_status,
-    }
-    if file_gap is not None:
-        grade_record["file_metrics_gap"] = file_gap
-    journal.append(grade_record)
-    return outcome
-
-def record_cell(
-    journal: Any,
-    cell: ExperimentCell,
-    repetition: int,
-    *,
-    plan: object | None = None,
-    plan_sha256: str | None = None,
-    exact_reference_recall: float | None = None,
-    slot: GradedSlotRecord | None = None,
-    result_cell_sink: Callable[[Mapping[str, object], ExperimentCell], None] | None = None,
-) -> None:
-    record: dict[str, object] = {
-        "event": "query_observed", **cell.to_dict(), "repetition": repetition,
-    }
-    if plan is not None:
-        record["plan"] = plan
-    if plan_sha256 is not None:
-        record["plan_sha256"] = plan_sha256
-    if exact_reference_recall is not None:
-        record["exact_reference_recall"] = exact_reference_recall
-    if slot is not None:
-        record["slot"] = slot.to_dict()
-    journal.append(record)
-    if result_cell_sink is not None:
-        result_cell_sink(
-            {"arm_id": cell.arm_id, "task_id": cell.task_id, "repetition": repetition}, cell
-        )
 
 def prepare_postgres_generation(
     root: Path,

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 
+from dataclasses import replace
 from pathlib import (Path)
 
 import pytest
@@ -123,3 +124,34 @@ def test_native_byte_breakdown_separates_raw_stdout_candidates_and_envelope_byte
     assert breakdown.decoded_candidate_count >= breakdown.returned_hit_count
     assert breakdown.returned_hit_count == 10 == len(env.hits)
     assert 0 < breakdown.serialized_envelope_bytes < breakdown.raw_process_stdout_bytes
+
+
+def test_native_direct_scope_refusal_and_legitimate_handoff_use_disposable_view(
+    tmp_path: Path,
+) -> None:
+    """Direct native handoff refuses an out-of-scope prefix before reading and preserves cal-24."""
+    wc = materialize_mixed_v1_working_copy(tmp_path / "wc", generation=1)
+    sq_home = write_mixed_v1_sqlite_home(tmp_path / "sq_home", wc)
+    state = publish_and_load_sqlite_corpus(sq_home, selected_aliases=("core", "companion", "feeds"))
+    view = materialize_native_search_view(
+        tmp_path / "native_view", manifest=state.manifest, bundle=state.bundle,
+        store=state.store, policy=state.policy,
+        selected_aliases=("core", "companion", "feeds", "mailbox"),
+    )
+    catalog = load_task_catalog(MIXED_V1_FIXTURE_ROOT / "tasks" / "catalog-v1.json")
+    direct = next(task for task in catalog.calibration_tasks() if task.task_id == "cal-24")
+
+    refused_state, refused, _elapsed, refused_bytes, _breakdown = execute_native_baseline_task_with_breakdown(
+        replace(direct, source_path_prefix="shared/"), view,
+    )
+    assert refused_state == ExecutionState.REFUSED
+    assert refused.refusal_code == "direct_handoff_scope_mismatch"
+    assert refused.scope.backend == "native_filesystem"
+    assert refused_bytes.observed_output_payload_bytes == 0
+
+    complete_state, complete, _elapsed, _bytes, _breakdown = execute_native_baseline_task_with_breakdown(
+        direct, view,
+    )
+    assert complete_state == ExecutionState.COMPLETED
+    assert complete.scope.backend == "native_filesystem"
+    assert [hit.locator.source_relative_path for hit in complete.hits] == ["pkg/pipeline.py"]

@@ -41,42 +41,13 @@ BASELINE_ARM_TARGET_BACKENDS: Mapping[str, str] = MappingProxyType({
     "postgres_native_fts:postgresql": "postgresql",
 })
 
-_COMMON_NON_VERIFIED: dict[str, tuple[str, str]] = {
-    **{t: ("not_applicable", "file_metric_not_applicable") for t in ("cal-09", "cal-10", "cal-12", "cal-24")},
-    **{t: ("gap", "refused:binding_privacy_not_authorized") for t in ("cal-21", "cal-22")},
-}
-_GRAPH_UNAVAILABLE_BODY: dict[str, tuple[str, str]] = {
-    tid: ("gap", "unavailable:captured_text_surface_unsupported_by_metadata_graph")
-    for tid in ("cal-04", "cal-05", "cal-06", "cal-07", "cal-08", "cal-11", "cal-14", "cal-15", "cal-18", "cal-19", "cal-20")
-}
-# The approved W5 public-only graph does not declare the denied mailbox.
-# Its graph arm cannot attest a privacy refusal for an absent binding.
-_GRAPH_ABSENT_MAILBOX = {t: ("gap", "unavailable:captured_text_surface_unsupported_by_metadata_graph") for t in ("cal-21", "cal-22")}
-_REF_UNAVAILABLE_FEEDS: dict[str, tuple[str, str]] = {
-    t: ("gap", "unavailable:non_body_feed_or_mailbox_excluded_from_text_projection") for t in ("cal-16", "cal-17")
-}
-_FTS_UNAVAILABLE_FEEDS: dict[str, tuple[str, str]] = {
-    t: ("gap", "unavailable:non_body_feed_or_mailbox_excluded_from_lexical_index") for t in ("cal-16", "cal-17")
-}
-W5_EXPECTED_BASELINE_GAPS_BY_ARM: Mapping[str, Mapping[str, tuple[str, str]]] = MappingProxyType({
-    "native_tools_baseline": MappingProxyType(dict(_COMMON_NON_VERIFIED)),
-    "current_graph_baseline:sqlite": MappingProxyType({**_COMMON_NON_VERIFIED, **_GRAPH_UNAVAILABLE_BODY, **_GRAPH_ABSENT_MAILBOX}),
-    "current_graph_baseline:postgresql": MappingProxyType({**_COMMON_NON_VERIFIED, **_GRAPH_UNAVAILABLE_BODY, **_GRAPH_ABSENT_MAILBOX}),
-    "captured_projection_reference:sqlite": MappingProxyType({**_COMMON_NON_VERIFIED, **_REF_UNAVAILABLE_FEEDS}),
-    "captured_projection_reference:postgresql": MappingProxyType({**_COMMON_NON_VERIFIED, **_REF_UNAVAILABLE_FEEDS}),
-    "postgres_native_fts:postgresql": MappingProxyType({**_COMMON_NON_VERIFIED, **_FTS_UNAVAILABLE_FEEDS}),
-})
+from retrieval_semantic_baseline_expectations import (
+    W5_EXPECTED_BASELINE_GAPS_BY_ARM as W5_EXPECTED_BASELINE_GAPS_BY_ARM,
+    W5_EXPECTED_BASELINE_GAPS_BY_ARM_V1 as W5_EXPECTED_BASELINE_GAPS_BY_ARM_V1,
+    W5_EXPECTED_BASELINE_GAPS_BY_ARM_V2 as W5_EXPECTED_BASELINE_GAPS_BY_ARM_V2,
+    is_expected_baseline_gap as is_expected_baseline_gap,
+)
 
-
-def is_expected_baseline_gap(
-    arm_id: str, task_id: str, status: str, gap_reason: str | None
-) -> bool:
-    """Return True iff a non-verified baseline slot matches the predeclared expected-gap table."""
-    arm_table = W5_EXPECTED_BASELINE_GAPS_BY_ARM.get(arm_id)
-    if arm_table is None:
-        return False
-    expected = arm_table.get(task_id)
-    return expected is not None and expected == (status, str(gap_reason or ""))
 
 
 @dataclass(frozen=True)

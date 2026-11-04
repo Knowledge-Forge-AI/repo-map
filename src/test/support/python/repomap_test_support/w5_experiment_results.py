@@ -15,14 +15,8 @@ from common_lore_index.retrieval.query_contracts import QueryEnvelope
 from retrieval_evaluation_execution import TaskOutcome
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
-from retrieval_semantic_baseline_result_frames import (
-    emit_result_frames,
-    read_raw_journal_members,
-)
-from retrieval_semantic_baseline_result_objects import (
-    BaselineResultV2,
-    ResultV2Collector,
-)
+from retrieval_semantic_baseline_result_frames import emit_result_frames, read_raw_journal_members
+from retrieval_semantic_baseline_result_objects import BaselineResultV2, ResultV2Collector
 from retrieval_semantic_experiment_contracts import (
     ExperimentCell, ExperimentPlan, ExperimentRefusal,
 )
@@ -31,6 +25,7 @@ from retrieval_semantic_experiment_scope import (
     CorrespondenceCostSample,
 )
 from retrieval_semantic_provenance import VerifiedPublicationPin
+from retrieval_evaluation_admission_w5_capture import retain_native_work
 
 
 BaselineMetrics = tuple[
@@ -205,6 +200,10 @@ class ResultV2Run:
         def sidecar_factory(
             task: EvaluationTask, arm_id: str, envelope: QueryEnvelope,
         ) -> BaselineCorrespondenceSidecar:
+            retain_native_work(
+                runner, collector, arm_id, task, envelope,
+                self._identity(arm_id, task, repetition),
+            )
             projection = (
                 sqlite_projection
                 if arm_id == "native_tools_baseline" or arm_id.endswith(":sqlite")

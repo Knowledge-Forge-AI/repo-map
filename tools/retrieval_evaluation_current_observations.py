@@ -30,6 +30,8 @@ from common_lore_index.storage.sqlite_local.connection import read_transaction
 from common_lore_index.storage.sqlite_local.context_expansion_queries import (
     read_sqlite_context_publication,
 )
+from retrieval_evaluation_matching import postgres_literal_observation_match
+from retrieval_evaluation_scope import evaluation_path_prefix, source_path_matches_prefix
 from retrieval_evaluation_observation_contracts import (
     CurrentObservationReadError, ObservationPublicationPin,
 )
@@ -109,10 +111,7 @@ def _scan_sqlite_observations(
             relative = str(metadata["source_relative_path"])
             if selected and binding_id not in selected:
                 continue
-            if request.source_path_prefix and not (
-                relative == request.source_path_prefix
-                or relative.startswith(request.source_path_prefix + "/")
-            ):
+            if not source_path_matches_prefix(relative, request.source_path_prefix):
                 continue
             if len(candidates) >= fetch_limit:
                 has_more = True
@@ -230,29 +229,27 @@ def _postgres_observation_sql(
     predicate: str,
     fetch_limit: int,
 ) -> str:
-    pattern = sql_literal("%" + escape_readback_like_pattern(request.query) + "%")
     filters = [
         f"ro.run_id = {int(before['run_id'])}",
-        f"(ro.kind ILIKE {pattern} ESCAPE '\\' OR ro.source_id ILIKE {pattern} ESCAPE '\\' OR ro.path ILIKE {pattern} ESCAPE '\\' OR ro.payload_json::text ILIKE {pattern} ESCAPE '\\')",
+        postgres_literal_observation_match(request.query),
     ]
     if request.kind is not None:
-        filters.append(f"ro.kind = {sql_literal(request.kind)}")
+        filters.append(f'ro.kind COLLATE "C" = {sql_literal(request.kind)}')
     if request.path is not None:
-        filters.append(f"ro.path = {sql_literal(request.path)}")
+        filters.append(f'ro.path COLLATE "C" = {sql_literal(request.path)}')
     matching_where = " AND ".join(filters)
     filters = []
     if request.selected_binding_ids:
         selected_sql = ", ".join(sql_literal(binding) for binding in request.selected_binding_ids)
         filters.append(f"ro.payload_json->'metadata'->>'binding_id' IN ({selected_sql})")
     if request.source_path_prefix is not None:
-        prefix = sql_literal(request.source_path_prefix)
-        prefix_pattern = sql_literal(
-            escape_readback_like_pattern(request.source_path_prefix + "/") + "%"
-        )
-        filters.append(
-            f"(ro.payload_json->'metadata'->>'source_relative_path' = {prefix} OR "
-            f"ro.payload_json->'metadata'->>'source_relative_path' LIKE {prefix_pattern} ESCAPE '\\')"
-        )
+        scope_prefix = evaluation_path_prefix(request.source_path_prefix)
+        assert scope_prefix is not None
+        prefix = sql_literal(scope_prefix.canonical)
+        pattern = sql_literal(escape_readback_like_pattern(scope_prefix.canonical + "/") + "%")
+        descendant = f"(ro.payload_json->'metadata'->>'source_relative_path') COLLATE \"C\" LIKE {pattern} ESCAPE '\\'"
+        filters.append(descendant if scope_prefix.descendants_only else
+            f"((ro.payload_json->'metadata'->>'source_relative_path') COLLATE \"C\" = {prefix} OR {descendant})")
     selected_where = " AND ".join(filters) or "TRUE"
     valid_metadata = _postgres_valid_metadata_sql(before_snapshots)
     columns = "ro.ordinal, ro.kind, ro.source_id, ro.path, ro.payload_json AS payload"

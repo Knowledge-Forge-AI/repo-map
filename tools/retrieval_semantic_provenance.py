@@ -60,6 +60,7 @@ class VerifiedPublicationPin:
     policy_digest: str
     _readback_adapter: PublicationReadbackAdapter | None = field(default=None, repr=False, compare=False)
     _token: object = field(default=None, repr=False, compare=False)
+    _factory_seal: tuple[int, int, str] | None = field(default=None, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         _require(
@@ -92,6 +93,15 @@ class VerifiedPublicationPin:
             "live store receipt disagrees with pinned receipt",
         )
         return self
+
+    def is_factory_issued(self) -> bool:
+        """Check this exact factory-issued object's fields, not a copied dataclass."""
+        try:
+            return self._factory_seal == (
+                id(self), id(self._readback_adapter), str(digest_json(self.to_dict())),
+            )
+        except (AssertionError, AttributeError, TypeError, ValueError):
+            return False
 
     @property
     def graph_candidate_id(self) -> str:
@@ -320,11 +330,13 @@ def verify_publication_provenance(
             admitted_public.add(b_id)
     sel_err = _check_selected_bindings(selected_binding_ids, denied, vector_bindings)
     _require(sel_err is None, sel_err or "", "selected_binding_ids refused")
-    return VerifiedPublicationPin(
+    pin = VerifiedPublicationPin(
         graph_id, repository_identity, backend, normalized["run_id"], normalized["generation"],
         validated_receipt, str(digest_json(validated_receipt.to_mapping())), frozenset(admitted_public),
         MappingProxyType(denied), policy_digest, readback_adapter, _PROVENANCE_TOKEN,
     )
+    object.__setattr__(pin, "_factory_seal", (id(pin), id(readback_adapter), str(digest_json(pin.to_dict()))))
+    return pin
 
 
 def verify_publication_provenance_from_adapter(

@@ -2,98 +2,60 @@
 
 from __future__ import annotations
 
-import json
 import time
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 import common_lore_index.retrieval.query_contracts as qc
 from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
 from common_lore_index.retrieval.projection_policy import (
     ALLOWED_BINDING_PRIVACY, ALLOWED_EVIDENCE_RETENTION, ALLOWED_GRAPH_PRIVACY,
 )
-from common_lore_index.server.investigation_read_store import (
-    ConfiguredNeighborhoodQuery, InvestigationReadStore,
-)
 from common_lore_index.server.ops import investigation_stores
 from common_lore_index.storage.navigation_search import NavigationSearchQuery
 from common_lore_index.storage.node_locations import NodeLocationsQuery
 from repomap_test_support.retrieval_evaluation_fixture import (
-    MIXED_V1_BINDING_IDS, binding_id_for_alias,
+    binding_id_for_alias,
 )
 from retrieval_evaluation_accounting import ByteLayerAccounting
 import retrieval_evaluation_correspondence_graph_scope as graph_scope
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
-from retrieval_evaluation_observation_contracts import ObservationPublicationPin
+from retrieval_evaluation_observation_contracts import ObservationPublicationPin, CurrentObservationReadError
+from retrieval_evaluation_graph_records import (
+    _parse_prefixed_graph_path as _parse_prefixed_graph_path,
+    _opt_pos_int as _opt_pos_int,
+    _make_hit as _make_hit,
+    _json_len as _json_len,
+    _locator_from_observation_row as _locator_from_observation_row,
+    _build_available_envelope as _build_available_envelope,
+)
+from retrieval_evaluation_graph_traversal import _traverse_graph_neighborhood as _traverse_graph_neighborhood
+from retrieval_evaluation_graph_pages import GraphPageEvidence
+from retrieval_evaluation_scope import source_path_matches_prefix
 
 _GraphTaskOutcome = tuple[ExecutionState, qc.QueryEnvelope, int, ByteLayerAccounting]
 
 
-def _parse_prefixed_graph_path(graph_path: str) -> tuple[str, str] | None:
-    if "/" not in graph_path:
-        return None
-    alias, rel = graph_path.split("/", 1)
-    b_id = MIXED_V1_BINDING_IDS.get(alias)
-    return (b_id, rel) if b_id is not None and rel else None
+class _NavigationReadStore(Protocol):
+    """Minimal navigation surface consumed by the evaluator adapter."""
+
+    def navigation_search(
+        self, graph_id: str, query: NavigationSearchQuery,
+    ) -> Mapping[str, Any]: ...
 
 
-def _opt_pos_int(val: Any) -> int | None:
-    return int(val) if isinstance(val, int) and val >= 1 else None
+class _LocationsReadStore(Protocol):
+    """Minimal node-location surface consumed by direct handoff evaluation."""
 
-
-def _make_hit(locator: qc.EvaluationLocator, surface: qc.MatchSurface, rank: int) -> qc.QueryHit:
-    return qc.QueryHit(locator=locator, match_surface=surface, rank=rank, score=1.0 / rank)
-
-
-def _json_len(obj: Any) -> int:
-    return len(json.dumps(obj, default=str).encode("utf-8"))
-
-
-def _locator_from_observation_row(
-    row: Mapping[str, Any], *, canonical_key: str | None = None
-) -> qc.EvaluationLocator | None:
-    meta = row.get("metadata")
-    if isinstance(meta, Mapping):
-        b_id, rel = meta.get("binding_id"), meta.get("source_relative_path")
-        start = meta.get("start_line") or meta.get("line")
-        end = meta.get("end_line") or start
-        if isinstance(b_id, str) and isinstance(rel, str) and b_id and rel:
-            s_int = _opt_pos_int(start)
-            e_int = int(end) if isinstance(end, int) and s_int is not None and end >= s_int else s_int
-            return qc.EvaluationLocator(
-                binding_id=b_id, source_relative_path=rel,
-                start_line=s_int, end_line=e_int, canonical_key=canonical_key,
-            ).validate()
-    raw_path = row.get("path")
-    parsed = _parse_prefixed_graph_path(raw_path) if isinstance(raw_path, str) else None
-    if parsed is not None:
-        return qc.EvaluationLocator(
-            binding_id=parsed[0], source_relative_path=parsed[1], canonical_key=canonical_key
-        ).validate()
-    return None
-
-
-def _build_available_envelope(
-    mode: qc.QueryMode, surface: qc.MatchSurface, scope: qc.QueryScope,
-    hits: list[qc.QueryHit], *, with_provenance: bool = True,
-) -> qc.QueryEnvelope:
-    prov = (
-        {"adapter_id": f"current_graph_baseline:{scope.backend}", "backend": scope.backend}
-        if with_provenance else {}
-    )
-    return qc.QueryEnvelope(
-        contract_version=qc.QUERY_CONTRACT_VERSION, requested_mode=mode, effective_mode=mode,
-        match_surface=surface, scope=scope,
-        ordering_policy_version=qc.DEFAULT_ORDERING_POLICY_VERSION,
-        capability_state=qc.CapabilityState.AVAILABLE, hits=tuple(hits),
-        scope_complete=True, provenance=prov,
-    ).validate()
+    def node_locations(
+        self, graph_id: str, query: NodeLocationsQuery,
+    ) -> Mapping[str, Any]: ...
 
 
 def _execute_navigation_or_locations_mode(
-    inv_store: InvestigationReadStore, task: EvaluationTask,
+    inv_store: _NavigationReadStore, task: EvaluationTask,
     scope: qc.QueryScope, requested_mode: qc.QueryMode,
 ) -> _GraphTaskOutcome:
     t0, plan = time.perf_counter_ns(), task.permitted_query_plan
@@ -114,6 +76,16 @@ def _execute_navigation_or_locations_mode(
         reason = str(nav_res.get("reason") or "backend_unsupported")
         env = qc.unavailable_envelope(requested_mode=requested_mode, scope=scope, reason=reason)
         return ExecutionState.UNAVAILABLE, env, elapsed, acct
+    page_evidence = GraphPageEvidence()
+    scan = nav_res.get("scan")
+    if nav_res.get("status") != "ok" or not isinstance(scan, Mapping) or scan.get("complete") is not True:
+        reason = str(nav_res.get("reason") or "navigation_scan_incomplete")
+        page_evidence.omit(reason)
+        env = _build_available_envelope(
+            requested_mode, qc.MatchSurface.STORED_METADATA, scope, [],
+            omissions=page_evidence.omissions, scope_complete=False,
+        )
+        return ExecutionState.COMPLETED, env, elapsed, acct
     hits: list[qc.QueryHit] = []
     for node in nav_res.get("nodes", ()):
         c_key = str(node.get("canonical_key") or "") or None
@@ -122,7 +94,7 @@ def _execute_navigation_or_locations_mode(
             b_id, rel = str(src.get("binding_id") or ""), str(src.get("source_relative_path") or "")
             if not b_id or not rel or b_id not in selected_b_ids:
                 continue
-            if task.source_path_prefix and not rel.startswith(task.source_path_prefix):
+            if not source_path_matches_prefix(rel, task.source_path_prefix):
                 continue
             ev_loc = qc.EvaluationLocator(
                 binding_id=b_id, source_relative_path=rel,
@@ -132,11 +104,12 @@ def _execute_navigation_or_locations_mode(
                 link_kind=str(loc.get("evidence_role") or "") or None,
             ).validate()
             hits.append(_make_hit(ev_loc, qc.MatchSurface.STORED_METADATA, len(hits) + 1))
-            if len(hits) >= limit:
-                break
-        if len(hits) >= limit:
-            break
-    env = _build_available_envelope(requested_mode, qc.MatchSurface.STORED_METADATA, scope, hits)
+    if len(hits) > limit:
+        page_evidence.omit("graph_result_limit")
+    env = _build_available_envelope(
+        requested_mode, qc.MatchSurface.STORED_METADATA, scope, hits[:limit],
+        omissions=page_evidence.omissions, scope_complete=page_evidence.scope_complete,
+    )
     return ExecutionState.COMPLETED, env, elapsed, acct
 
 
@@ -191,89 +164,8 @@ def _evaluate_graph_body_safety_refusal(
     return None
 
 
-def _traverse_graph_neighborhood(
-    inv_store: InvestigationReadStore, config: Any, task: EvaluationTask, seed_node: str,
-    q_text: str, limit: int, selected_b_ids: tuple[str, ...], *,
-    psql_command: str = "psql", expected_pin: ObservationPublicationPin | None = None,
-) -> tuple[list[qc.QueryHit], int]:
-    visited: dict[str, tuple[int, Any]] = {}
-    incident_by_file: dict[str, list[str]] = {}
-    frontier: list[tuple[int, str]] = [(0, seed_node)]
-    payload_bytes, expansions = 0, 0
-    while frontier and expansions < 16:
-        hop, node_key = frontier.pop(0)
-        if node_key in visited:
-            continue
-        nb = inv_store.configured_neighborhood(
-            ConfiguredNeighborhoodQuery(
-                graph_id=task.graph_id, node=node_key,
-                direction="both", depth=1, graph_key_version=1,
-            )
-        )
-        expansions += 1
-        nb_dict = nb.to_dict() if hasattr(nb, "to_dict") else (nb if isinstance(nb, Mapping) else {})
-        payload_bytes += _json_len(nb_dict)
-        center = nb_dict.get("center")
-        if not isinstance(center, Mapping):
-            continue
-        visited[str(center.get("canonical_key") or node_key)] = (hop, center)
-        edges = nb_dict.get("edges", ())
-        for edge in edges if isinstance(edges, (list, tuple)) else ():
-            if not isinstance(edge, Mapping):
-                continue
-            s_k, t_k = str(edge.get("source_key") or ""), str(edge.get("target_key") or "")
-            if s_k.startswith("file:") and not t_k.startswith("file:"):
-                incident_by_file.setdefault(s_k.removeprefix("file:"), []).append(t_k)
-            elif t_k.startswith("file:") and not s_k.startswith("file:"):
-                incident_by_file.setdefault(t_k.removeprefix("file:"), []).append(s_k)
-        neighbors = nb_dict.get("nodes", ())
-        for n_obj in neighbors if isinstance(neighbors, (list, tuple)) else ():
-            if not isinstance(n_obj, Mapping):
-                continue
-            n_key = str(n_obj.get("canonical_key") or "")
-            if not n_key or n_key in visited:
-                continue
-            if hop + 1 <= 3:
-                frontier.append((hop + 1, n_key))
-            else:
-                visited[n_key] = (hop + 1, n_obj)
-
-    reached = sorted(
-        (hop, k.removeprefix("file:")) for k, (hop, _) in visited.items() if k.startswith("file:")
-    )
-    hits_list: list[qc.QueryHit] = []
-    q_lower, selected_set = q_text.lower(), set(selected_b_ids)
-    for _hop, graph_path in reached:
-        parsed = _parse_prefixed_graph_path(graph_path)
-        if parsed is None or parsed[0] not in selected_set:
-            continue
-        if task.source_path_prefix and not parsed[1].startswith(task.source_path_prefix):
-            continue
-        cands = incident_by_file.get(graph_path, [])
-        attr_key = next(
-            (k for k in cands if q_lower and q_lower in k.lower()),
-            cands[0] if cands else f"file:{graph_path}",
-        )
-        obs_res = graph_scope.query_fenced_current_observations(
-            config, graph_id=task.graph_id, query=q_text, path=graph_path,
-            task_scope=task,
-            limit=limit, expected_pin=expected_pin, psql_command=psql_command,
-        )
-        payload_bytes += _json_len(obs_res.rows)
-        for row in obs_res.rows:
-            loc = (
-                _locator_from_observation_row(row, canonical_key=attr_key)
-                if isinstance(row, Mapping) else None
-            )
-            if loc is not None and loc.binding_id in selected_set:
-                hits_list.append(_make_hit(loc, qc.MatchSurface.GRAPH_TOPOLOGY, len(hits_list) + 1))
-                if len(hits_list) >= limit:
-                    return hits_list, payload_bytes
-    return hits_list, payload_bytes
-
-
 def _execute_direct_handoff(
-    inv_store: InvestigationReadStore, task: EvaluationTask, scope: qc.QueryScope,
+    inv_store: _LocationsReadStore, task: EvaluationTask, scope: qc.QueryScope,
     requested_mode: qc.QueryMode, selected_b_ids: tuple[str, ...],
 ) -> _GraphTaskOutcome:
     t0 = time.perf_counter_ns()
@@ -301,7 +193,7 @@ def _execute_direct_handoff(
             b_id, rel = parsed
         if b_id not in set(selected_b_ids):
             continue
-        if task.source_path_prefix and not rel.startswith(task.source_path_prefix):
+        if not source_path_matches_prefix(rel, task.source_path_prefix):
             continue
         ev_loc = qc.EvaluationLocator(
             binding_id=b_id, source_relative_path=rel,
@@ -311,13 +203,18 @@ def _execute_direct_handoff(
             link_kind=str(loc.get("evidence_role") or loc.get("link_kind") or "") or None,
         ).validate()
         dh_hits.append(_make_hit(ev_loc, qc.MatchSurface.DIRECT_HANDOFF, len(dh_hits) + 1))
-    if not dh_hits:
+    page_evidence = GraphPageEvidence()
+    if loc_res.get("has_more") is True:
+        page_evidence.omit("direct_location_limit")
+    if not dh_hits and page_evidence.scope_complete:
         env = qc.unavailable_envelope(
             requested_mode=requested_mode, scope=scope, reason="no_direct_locations_in_scope"
         )
         return ExecutionState.UNAVAILABLE, env, elapsed, acct
     env = _build_available_envelope(
-        requested_mode, qc.MatchSurface.DIRECT_HANDOFF, scope, dh_hits, with_provenance=False
+        requested_mode, qc.MatchSurface.DIRECT_HANDOFF, scope, dh_hits,
+        with_provenance=False, omissions=page_evidence.omissions,
+        scope_complete=page_evidence.scope_complete,
     )
     return ExecutionState.COMPLETED, env, elapsed, acct
 
@@ -372,11 +269,12 @@ def _execute_graph_baseline_task(
     q_text, limit = str(plan.get("graph_query") or plan["query"]), int(plan.get("limit", 10))
     is_inv = requested_mode == qc.QueryMode.GRAPH_INVESTIGATION
     surf = qc.MatchSurface.GRAPH_TOPOLOGY if is_inv else qc.MatchSurface.STORED_METADATA
+    page_evidence = GraphPageEvidence()
     if is_inv:
         seed = str(plan.get("seed_node") or "file:core/pkg/pipeline.py")
         hits_list, payload_bytes = _traverse_graph_neighborhood(
             inv_store, config, task, seed, q_text, limit, selected_b_ids,
-            psql_command=psql_command, expected_pin=expected_pin,
+            psql_command=psql_command, expected_pin=expected_pin, page_evidence=page_evidence,
         )
     else:
         obs_res = graph_scope.query_fenced_current_observations(
@@ -384,17 +282,22 @@ def _execute_graph_baseline_task(
             task_scope=task,
             expected_pin=expected_pin, psql_command=psql_command,
         )
+        page_evidence.observe(obs_res)
         payload_bytes, hits_list = _json_len(obs_res.rows), []
         for row in obs_res.rows:
             loc = _locator_from_observation_row(row) if isinstance(row, Mapping) else None
-            if loc is None or loc.binding_id not in set(selected_b_ids):
+            if loc is None:
+                page_evidence.omit("observation_locator_unavailable")
                 continue
-            if task.source_path_prefix and not loc.source_relative_path.startswith(task.source_path_prefix):
-                continue
+            if loc.binding_id not in set(selected_b_ids) or not source_path_matches_prefix(
+                loc.source_relative_path, task.source_path_prefix,
+            ):
+                raise CurrentObservationReadError("graph_observation_scope_mismatch", "current reader returned an out-of-scope locator")
             hits_list.append(_make_hit(loc, surf, len(hits_list) + 1))
             if len(hits_list) >= limit:
                 break
     elapsed = time.perf_counter_ns() - t0
-    env = _build_available_envelope(requested_mode, surf, scope, hits_list[:limit])
+    env = _build_available_envelope(requested_mode, surf, scope, hits_list[:limit],
+        omissions=page_evidence.omissions, scope_complete=page_evidence.scope_complete)
     return ExecutionState.COMPLETED, env, elapsed, ByteLayerAccounting(observed_output_payload_bytes=payload_bytes)
 execute_graph_baseline_task = graph_scope.bind_graph_execution(_execute_graph_baseline_task)

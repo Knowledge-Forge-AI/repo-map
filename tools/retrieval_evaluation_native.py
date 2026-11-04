@@ -24,6 +24,7 @@ from portable_handoff import recheck as handoff_recheck
 from retrieval_evaluation_accounting import ByteLayerAccounting, EvaluatorByteBreakdownV1
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
+from retrieval_evaluation_scope import source_path_matches_prefix
 from retrieval_evaluation_views import MaterializedNativeView
 from source_navigation_consumer import navigate as consumer_navigate
 
@@ -228,6 +229,14 @@ def _execute_direct_handoff_native(
     t0, plan = time.perf_counter_ns(), task.permitted_query_plan
     binding_id, alias, rel_path = str(plan["binding_id"]), str(plan["binding_alias"]), str(plan["source_relative_path"])
     start_line, end_line, expected_sub = int(plan["start_line"]), int(plan["end_line"]), str(plan["expected_substring"])
+    if binding_id not in scope.selected_binding_ids or not source_path_matches_prefix(rel_path, scope.source_path_prefix):
+        code = "direct_handoff_scope_mismatch"
+        env = refused_envelope(
+            requested_mode=requested_mode, scope=scope, refusal_code=code,
+            omissions=(OmissionRecord(binding_id=binding_id or "scope", source_relative_path=None,
+                                      reason_code=code, detail="native direct handoff is outside the frozen task scope"),),
+        )
+        return ExecutionState.REFUSED, env, 0, ByteLayerAccounting(0)
     repo_id = f"repo:{task.graph_id}"
     nav_res = consumer_navigate(
         graph_id=task.graph_id, repository_identity=repo_id, bindings={binding_id: view.view_root / alias},
@@ -304,7 +313,7 @@ def execute_native_baseline_task_with_breakdown(
     scoped_paths = [
         p for p in view.selected_relative_paths
         if view.path_to_binding[p][0] in set(selected_b_ids)
-        and (task.source_path_prefix is None or view.path_to_binding[p][1].startswith(task.source_path_prefix))
+        and source_path_matches_prefix(view.path_to_binding[p][1], task.source_path_prefix)
     ]
     surf_actual = (
         MatchSurface.STORED_METADATA

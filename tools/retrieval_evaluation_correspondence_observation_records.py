@@ -6,6 +6,7 @@ from typing import Any
 from common_lore_index.retrieval.query_contracts import OmissionRecord
 from common_lore_index.storage.sqlite_local import raw_payload
 from retrieval_evaluation_observation_contracts import CurrentObservationReadError
+from retrieval_evaluation_scope import evaluation_path_prefix, source_path_matches_prefix
 
 MAX_QUERY_LENGTH = 200
 
@@ -61,7 +62,7 @@ class CurrentObservationQuery:
         ):
             raise ValueError("source path prefix is bounded")
         if self.source_path_prefix is not None:
-            _validate_relative_path(self.source_path_prefix, "source_path_prefix")
+            evaluation_path_prefix(self.source_path_prefix)
         return self
 
 
@@ -172,7 +173,7 @@ def _page_rows(
         relative = str(metadata["source_relative_path"])
         if selected and binding not in selected:
             continue
-        if request.source_path_prefix and not relative.startswith(request.source_path_prefix + "/") and relative != request.source_path_prefix:
+        if not source_path_matches_prefix(relative, request.source_path_prefix):
             continue
         scoped.append({**dict(row), "metadata": dict(metadata)})
     omissions: list[OmissionRecord] = []

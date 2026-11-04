@@ -2,8 +2,19 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
+from pathlib import Path
+
 import pytest
 
+from common_lore_index.retrieval.query_contracts import MatchSurface, QueryScope, QueryMode
+from repomap_test_support.retrieval_evaluation_fixture import (
+    MIXED_V1_FIXTURE_ROOT, binding_id_for_alias,
+)
+from retrieval_evaluation_grading import ExecutionState
+from retrieval_evaluation_schema import EvaluationTask, load_task_catalog
+import retrieval_evaluation_native as native
+from retrieval_evaluation_views import MaterializedNativeView
 from retrieval_evaluation_native import (
     build_git_grep_argv,
     classify_git_grep_exit,
@@ -81,3 +92,80 @@ def test_git_grep_exit_code_classification_distinguishes_no_match_from_failure()
     assert classify_git_grep_exit(1, "fatal: bad flag") == "failed"
     assert classify_git_grep_exit(2, "fatal: error") == "failed"
     assert classify_git_grep_exit(128, "fatal: error") == "failed"
+
+
+def _direct_task_and_view(
+    tmp_path: Path, *, selected_bindings: tuple[str, ...] = ("core",),
+    source_path_prefix: str | None = None,
+) -> tuple[EvaluationTask, MaterializedNativeView]:
+    catalog = load_task_catalog(MIXED_V1_FIXTURE_ROOT / "tasks/catalog-v1.json")
+    task = next(item for item in catalog.tasks if item.task_id == "cal-24")
+    task = replace(task, selected_bindings=selected_bindings, source_path_prefix=source_path_prefix).validate()
+    binding_id = binding_id_for_alias("core", task.graph_id)
+    rel_path = "core/pkg/pipeline.py"
+    view = MaterializedNativeView(
+        view_root=tmp_path, selected_relative_paths=(rel_path,),
+        path_to_binding={rel_path: (binding_id, "pkg/pipeline.py")},
+        path_to_surface={rel_path: MatchSurface.CAPTURED_TEXT}, excluded_bindings={},
+    )
+    return task, view
+
+
+def _native_scope(task: EvaluationTask) -> QueryScope:
+    return QueryScope(
+        graph_id=task.graph_id, backend="native_filesystem",
+        selected_binding_ids=tuple(sorted(binding_id_for_alias(alias, task.graph_id) for alias in task.selected_bindings)),
+        source_path_prefix=task.source_path_prefix,
+    ).validate()
+
+
+@pytest.mark.parametrize(
+    ("selected_bindings", "source_path_prefix"),
+    [("companion", None), ("core", "shared/")],
+)
+def test_native_direct_handoff_refuses_scope_mismatch_before_source_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    selected_bindings: str, source_path_prefix: str | None,
+) -> None:
+    task, view = _direct_task_and_view(
+        tmp_path,
+        selected_bindings=(selected_bindings,),
+        source_path_prefix=source_path_prefix,
+    )
+    calls: list[str] = []
+    monkeypatch.setattr(native, "consumer_navigate", lambda **_kwargs: calls.append("navigate"))
+    monkeypatch.setattr(native, "handoff_recheck", lambda *_args, **_kwargs: calls.append("recheck"))
+
+    state, envelope, elapsed, accounting = native._execute_direct_handoff_native(
+        task, view, _native_scope(task), QueryMode(task.requested_mode),
+    )
+    assert state is ExecutionState.REFUSED
+    assert envelope.refusal_code == "direct_handoff_scope_mismatch"
+    assert envelope.scope.backend == "native_filesystem"
+    assert elapsed == 0 and accounting.observed_output_payload_bytes == 0
+    assert calls == []
+
+
+def test_native_direct_handoff_keeps_a_frozen_in_scope_target(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    task, view = _direct_task_and_view(tmp_path)
+    calls: list[str] = []
+
+    def navigate(**_kwargs):
+        calls.append("navigate")
+        return {"outcome": "verified", "graph_calls": 0}
+
+    def recheck(*_args, **_kwargs):
+        calls.append("recheck")
+        return [{"source_check": True}]
+
+    monkeypatch.setattr(native, "consumer_navigate", navigate)
+    monkeypatch.setattr(native, "handoff_recheck", recheck)
+    state, envelope, _elapsed, _accounting = native._execute_direct_handoff_native(
+        task, view, _native_scope(task), QueryMode(task.requested_mode),
+    )
+    assert state is ExecutionState.COMPLETED
+    assert envelope.scope.backend == "native_filesystem"
+    assert [hit.locator.source_relative_path for hit in envelope.hits] == ["pkg/pipeline.py"]
+    assert calls == ["navigate", "recheck"]

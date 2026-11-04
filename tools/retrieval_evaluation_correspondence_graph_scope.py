@@ -145,14 +145,18 @@ def bind_graph_execution(execute: Callable[..., tuple[Any, Any, int, Any]]) -> C
             raise
         finally:
             _READS.reset(token)
-        omissions = tuple(item for read in reads for item in read.omissions)
+        read_omissions = tuple(item for read in reads for item in read.omissions)
+        omissions: list[Any] = []
+        for omission in (*envelope.omissions, *read_omissions):
+            if omission not in omissions:
+                omissions.append(omission)
         complete = envelope.scope_complete and all(read.scope_complete for read in reads)
         if omissions or complete != envelope.scope_complete:
             capability = envelope.capability_state
             if capability == CapabilityState.AVAILABLE and not complete:
                 capability = CapabilityState.PARTIAL
             envelope = replace(
-                envelope, omissions=(*envelope.omissions, *omissions),
+                envelope, omissions=tuple(omissions),
                 scope_complete=complete, capability_state=capability,
             ).validate()
         _record_work(reads, elapsed, failed=False)

@@ -259,7 +259,7 @@ def test_w5_two_generation_fenced_observations_and_verified_baseline_corresponde
         stale_output_g1: tuple[Any, Any, int, Any] | None = None
         correspondence_failures: list[tuple[str, str, str, str | None]] = []
 
-        for tid in ("cal-01", "cal-04", "cal-09", "cal-16", "cal-21", "cal-24"):
+        for tid in ("cal-01", "cal-04", "cal-09", "cal-16", "cal-17", "cal-19", "cal-21", "cal-24"):
             t_obj = tasks_by_id[tid]
             for arm_id in (*DEFAULT_ARMS, "postgres_native_fts:postgresql"):
                 out = baseline_runner_g1.execute(
@@ -284,7 +284,8 @@ def test_w5_two_generation_fenced_observations_and_verified_baseline_corresponde
                 valid = (
                     gap is None and metrics is not None and "file_recall@5" in metrics
                     and all(0.0 <= value <= 1.0 for value in metrics.values())
-                ) if status == "verified" else is_expected_baseline_gap(arm_id, tid, status, gap)
+                ) if status == "verified" else is_expected_baseline_gap(
+                    arm_id, tid, status, gap, policy_version="cloe-w5-admission-v1")
                 if cost.correspondence_failures or not valid:
                     correspondence_failures.append((tid, arm_id, status, gap))
                 if tid == "cal-01" and arm_id == "current_graph_baseline:postgresql":
@@ -324,7 +325,10 @@ def test_w5_two_generation_fenced_observations_and_verified_baseline_corresponde
 
         # Fenced current-observation lookup in G2 excludes deleted G1 row on both PG and SQLite,
         # while positive G2 rows and unchanged companion rows remain visible, and stale/foreign pins refuse
-        cal_10, cal_23 = tasks_by_id["cal-10"], tasks_by_id["cal-23"]
+        # This positive readback probe is ungraded. Match its execution scope
+        # to G2 without changing the frozen catalog or scored population.
+        cal_10 = replace(tasks_by_id["cal-10"], generation=2)
+        cal_23 = tasks_by_id["cal-23"]
         for home, pin_g2, pin_g1_old, arm_name in (
             (sq_home, sq_pin_g2, sq_pin_g1, "current_graph_baseline:sqlite"),
             (pg_home, pg_pin_g2, pg_pin_g1, "current_graph_baseline:postgresql"),

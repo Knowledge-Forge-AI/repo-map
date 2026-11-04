@@ -321,3 +321,60 @@ promotion-policy refusals advanced the workflow counter. No candidate was pushed
 for CI110 and no application start was added. The implementation commit and all
 calibration/formatting evidence remain intact; only forward campaign metadata
 and its owning tests change.
+
+## W5 correspondence qualification and evidence closure
+
+[CI113 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41726594941)
+qualified staging `228716d8bfa2858d0d1c31cf39af0636fa7e855d` with all nine jobs
+and verified same-attempt measured/abrupt, native and five-scenario system
+contracts. Its single application start brings the actual cumulative count to 26.
+The 87%/82% branch-margin aim remains 12 unit and 233 integration branches short
+at 22,346 branches. No rounded display, scoped proof or calibration closes it.
+
+The connected technical batch under
+[ADR0144](../adr/2026/11/0144-w5-admission-scope-and-paired-evidence-closure.md)
+addressed admission and refusal/applicability ordering, literal path/matching/page
+correspondence and adds traceable paired-artifact reporting. It preserves the
+frozen tasks, golds, old journals and source bindings. New scientific criteria,
+held-out evaluation, broader model/input choices, production admission and full
+W5 remain separate. This direction does not qualify successor code or promote
+public main.
+
+## W5 admission, scope and paired-evidence implementation
+
+The evaluator-only continuation selected by ADR0144 is now implemented in the
+public candidate tree. Admission recomputes from a token-issued publication pin
+and its matching frozen policy, requires the calibration split and exact
+publication generation, and refuses a denied mixed scope before candidate or
+other-arm access. Policy-declared denials, observed denials, undeclared
+selections and declared-public-but-absent bindings remain distinct; no privacy
+or safety result is inferred from a task, gold, alias or caller-supplied
+decision. Current policy-v2 grading evaluates the actual cal-21/22 refusal
+before arm applicability, while cal-16/17 remain public feed metadata with
+their existing non-body capability outcome.
+
+The pre-review scoped proof records 255 passing unit cases. Its containerized
+integration evidence records 44 passes, one retained failed initial exact node,
+and one pass from its corrected exact rerun: 45 distinct passing cases overall,
+not one same-census 45-case run. The completed grant cohort adds 5 unit and 4
+integration passes, for 260 unit and 49 distinct integration cases across the
+cohorts. The immutable source bridge preserves the prior source bytes and
+identity evidence; it does not repin the retained calibration. Retained-Python
+static4, checks4 and scanner3 pass against source census
+`9fcdad0d1cd3283f52586796a6b651fbf6835fa8182a490f78e560a70c4d85bb`, with no
+threshold, denominator or debt change.
+
+The retained pair13-analysis4 report code analyzes the old 648-cell,
+216-comparison calibration source. Its report digest is
+`90b2a2a82abe25b1e08a6c0e3737c70908a1d0293c54659511c4ab40c0de97fd`.
+This is descriptive analysis of immutable historical evidence, not rescoring,
+current-source science acceptance, or full W5 acceptance.
+
+At publication, the introducing commit must record final review and fresh proof after
+the traversal, pin-issuance, classification and compatibility corrections.
+Hosted CI114 remains pending. The conditional grant allocated by ADR0145
+remains activation-gated before publication; no new model
+or optional attempt, runtime/application build, complete local suite, or local
+coverage follows from this scoped proof. Complete local unit, integration,
+smoke, staging, system and combined populations remain intentionally
+unselected, and public-main promotion remains separate.

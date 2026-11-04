@@ -3,17 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import replace
 from typing import Any
 
 from common_lore_index.retrieval.projection_build import CapturedTextProjection
-from common_lore_index.retrieval.projection_policy import BodyProjectionPolicy
-from common_lore_index.retrieval.publication_binding import (
-    CorrespondenceRefusal,
-    ProjectionInputs,
-    check_correspondence,
-)
 from common_lore_index.retrieval.query_contracts import CapabilityState, MatchSurface, QueryEnvelope
+from retrieval_semantic_baseline_inputs import _verify_actual_inputs
+from retrieval_semantic_baseline_envelope import _verify_envelope_scope
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
 from retrieval_evaluation_views import (
@@ -31,102 +26,7 @@ from retrieval_semantic_representation import RepresentationValidationError
 from retrieval_semantic_baseline_work import (
     CorrespondenceVerificationFailure, _CostClock, _MeteredArtifactStore,
 )
-def _accepted_matches_pin(accepted: Any, pin: VerifiedPublicationPin) -> bool:
-    return (
-        accepted.graph_id == pin.graph_id
-        and accepted.repository_id == pin.repository_identity
-        and accepted.backend == pin.backend
-        and str(accepted.run_id) == str(pin.run_id)
-        and accepted.publication_bundle_id == pin.publication_bundle_id
-        and accepted.job_id == str(pin.receipt.attempt.job_id)
-        and accepted.attempt == pin.receipt.attempt.attempt
-        and type(accepted.accepted_generation) is int
-        and accepted.accepted_generation == pin.generation
-        and accepted.snapshot_manifest_id == pin.snapshot_manifest_id
-        and accepted.extraction_receipt_id == pin.extraction_receipt_id
-    )
-def _verify_actual_inputs(
-    inputs: Any,
-    policy: Any,
-    pin: VerifiedPublicationPin,
-    clock: _CostClock,
-) -> Any:
-    if not isinstance(inputs, ProjectionInputs) or not isinstance(policy, BodyProjectionPolicy):
-        raise ExperimentRefusal("projection_inputs_incomplete")
-    try:
-        policy.validate()
-        if policy.graph_id != pin.graph_id or policy.policy_digest() != pin.policy_digest:
-            raise ExperimentRefusal("projection_policy_mismatch")
-        if set(policy.selected_binding_ids) != set(pin.admitted_public_bindings):
-            raise ExperimentRefusal("projection_binding_policy_mismatch")
-        metered = replace(inputs, store=_MeteredArtifactStore(inputs.store, clock))
-        checked = check_correspondence(metered)
-    except CorrespondenceRefusal as exc:
-        raise ExperimentRefusal(exc.code.value) from exc
-    except ExperimentRefusal:
-        raise
-    except (OSError, TypeError, ValueError) as exc:
-        raise ExperimentRefusal("projection_correspondence_failed") from exc
-    if not _accepted_matches_pin(checked, pin):
-        raise ExperimentRefusal("projection_pin_mismatch")
-    return inputs
 
-def _verify_envelope_scope(
-    envelope: QueryEnvelope,
-    task: EvaluationTask,
-    pin: VerifiedPublicationPin,
-    *,
-    arm_backend: str,
-    select_bindings: Callable[[EvaluationTask], tuple[str, ...]],
-) -> None:
-    try:
-        envelope.validate()
-    except Exception as exc:
-        raise ExperimentRefusal("invalid_query_envelope") from exc
-    scope = envelope.scope
-    selected = select_bindings(task)
-    if scope.graph_id != task.graph_id:
-        raise ExperimentRefusal("envelope_graph_id_mismatch")
-    if scope.backend != arm_backend:
-        raise ExperimentRefusal("envelope_observed_backend_mismatch")
-    if len(scope.selected_binding_ids) != len(set(scope.selected_binding_ids)) or set(scope.selected_binding_ids) != set(selected):
-        raise ExperimentRefusal("baseline_envelope_scope_mismatch")
-    if scope.source_path_prefix != task.source_path_prefix:
-        raise ExperimentRefusal("envelope_source_scope_mismatch")
-    if scope.publication_bundle_id is not None and scope.publication_bundle_id != pin.publication_bundle_id:
-        raise ExperimentRefusal("envelope_publication_bundle_mismatch")
-    if scope.snapshot_manifest_id is not None and scope.snapshot_manifest_id != pin.snapshot_manifest_id:
-        raise ExperimentRefusal("envelope_snapshot_manifest_mismatch")
-    for hit in envelope.hits:
-        loc = hit.locator
-        if loc.binding_id not in selected:
-            raise ExperimentRefusal("envelope_hit_binding_scope_mismatch")
-        if task.source_path_prefix is not None and not loc.source_relative_path.startswith(task.source_path_prefix):
-            raise ExperimentRefusal("envelope_hit_path_scope_mismatch")
-    provenance = envelope.provenance
-    if not isinstance(provenance, Mapping):
-        raise ExperimentRefusal("invalid_query_envelope")
-    for key, expected, code in (
-        ("graph_id", pin.graph_id, "envelope_graph_id_mismatch"),
-        ("generation", pin.generation, "envelope_generation_mismatch"),
-        ("publication_bundle_id", pin.publication_bundle_id, "envelope_publication_bundle_mismatch"),
-        ("snapshot_manifest_id", pin.snapshot_manifest_id, "envelope_snapshot_manifest_mismatch"),
-        ("extraction_receipt_id", pin.extraction_receipt_id, "envelope_extraction_receipt_mismatch"),
-        ("graph_candidate_id", pin.graph_candidate_id, "envelope_candidate_mismatch"),
-        ("repository_identity", pin.repository_identity, "envelope_repository_identity_mismatch"),
-    ):
-        if key in provenance and (type(provenance[key]) is not type(expected) or provenance[key] != expected):
-            raise ExperimentRefusal(code)
-    run_ids = []
-    for key in ("accepted_run_id", "run_id"):
-        if key not in provenance:
-            continue
-        value = provenance[key]
-        if type(value) is not int or value < 1:
-            raise ExperimentRefusal("envelope_run_id_invalid")
-        run_ids.append(value)
-    if run_ids and (len(set(run_ids)) != 1 or run_ids[0] != pin.run_id):
-        raise ExperimentRefusal("envelope_run_id_mismatch")
 
 def _verify_issued_capture(
     sidecar: Any,
@@ -367,10 +267,13 @@ def verify_strict_baseline_correspondence_sidecar(
         revalidated = _revalidate_query_pins(
             sidecar, task, target_pin, target_backend
         )
+        if arm_id.startswith("current_graph_baseline:") or arm_id == "postgres_native_fts:postgresql":
+            if sidecar.projection_inputs is not None or sidecar.projection_policy is not None:
+                _verify_actual_inputs(sidecar.projection_inputs, sidecar.projection_policy, revalidated, clock)
         if state != ExecutionState.COMPLETED or envelope.capability_state not in {CapabilityState.AVAILABLE, CapabilityState.PARTIAL}:
             raise ExperimentRefusal("baseline_execution_not_creditable")
         _verify_envelope_scope(
-            envelope, task, revalidated, arm_backend=observed_backends[arm_id], select_bindings=select_bindings
+            envelope, task, revalidated, arm_backend=observed_backends[arm_id], select_bindings=select_bindings, sidecar=sidecar, clock=clock
         )
         if arm_id == "native_tools_baseline":
             _verify_native_scope(sidecar, task, state, envelope, revalidated, clock, select_bindings=select_bindings)
