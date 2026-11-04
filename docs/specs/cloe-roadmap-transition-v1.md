@@ -517,10 +517,29 @@ phase commit and report. All complete local suites remain intentionally
 unselected. Runtime/library dependencies, debt ceilings and V1/V2 formats stay
 unchanged. The pure scalar grant-helper extraction preserves policy and aliases.
 
-ADR0149 conditionally binds one normal staging synchronization for CI116
+Historical CI116 preparation: ADR0149 conditionally bound one normal staging synchronization for CI116
 attempt1 and native AMD start 29 after28. CI115's spent grant stays rejected.
 No automatic retry, start 30, manual/duplicate trigger, main promotion, tag or
 history rewrite follows. Hosted CI remains AVAILABLE under the operator's
 standing authorization; CI116 is untriggered at this local preparation.
 All CI116 complete-population, coverage and assembled-system gates are pending.
 Full W5/scientific criteria and production remain reserved decisions.
+
+### CI116 remediation checkpoint
+
+CI116 published the component milestone but failed qualification: all 2,067
+selected staging tests passed before an unregistered dossier CLI coverage shard
+was rejected; the system sandbox SDK build separately failed before application
+work. The native SDK lane passed with the same pinned recipe. The actual CLI
+repair preserves isolated execution and measurement while explicitly invoking
+the maintained registration bootstrap through the observed launch family.
+Synthetic registration fixtures and real dossier build/check subprocesses prove
+receipt closure. Strict rejection of unknown shards remains unchanged.
+
+The SDK failure's underlying reason is not established from the retained
+generic diagnostic. Closed failure-category evidence is improved without a
+speculative base/dependency change or automatic retry. ADR 0150 authorizes one
+fresh CI117 attempt under the operator's repair request, with a new grant and
+CI116 replay rejection. Actual application starts remain 28 and the cumulative
+cap remains 29. Hosted coverage/system qualification and all scientific,
+held-out, production and full W5 decisions remain open.

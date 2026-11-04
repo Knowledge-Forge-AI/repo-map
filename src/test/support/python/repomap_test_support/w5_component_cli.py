@@ -8,10 +8,15 @@ from pathlib import Path
 import subprocess
 import sys
 
+from runner_coverage_execution import launch_observed_process
+from runner_coverage_template import generate_bootstrap_source
+
 
 def run_component_cli(argv: Sequence[str]) -> subprocess.CompletedProcess[str]:
     root = Path(__file__).resolve().parents[5]
-    code = f'''import importlib.abc, runpy, sys
+    # -I ignores the runner's PYTHONPATH, but not installed coverage .pth hooks.
+    # Register that collector before importing the dossier's source closure.
+    code = generate_bootstrap_source() + f'''\nimport importlib.abc, runpy, sys
 root={str(root)!r}
 sys.path[:0]=[root+'/tools',root+'/src/main/python',root+'/src/test/support/python']
 class RejectRuntime(importlib.abc.MetaPathFinder):
@@ -33,9 +38,10 @@ finally:
     environment = os.environ.copy()
     for key in ("PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "PYTHONINSPECT"):
         environment.pop(key, None)
-    return subprocess.run(
+    return launch_observed_process(
         [sys.executable,"-I","-B","-c",code], env=environment,
-        capture_output=True, text=True, check=False, timeout=30,
+        family="cli_module", pid_namespace_relation="shared",
+        text=True, check=False, timeout=30,
     )
 
 

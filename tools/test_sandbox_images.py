@@ -15,9 +15,28 @@ from test_sandbox_report import write_sandbox_diagnostic
 from test_sandbox_contract import Captured, HostSnapshot, Runner
 
 
+def _failure_reasons(stdout: str, stderr: str) -> list[str]:
+    """Project fixed reason codes only; arbitrary build text remains private."""
+    text = (stdout + "\n" + stderr).lower()
+    families = {
+        "tls": ("certificate verify failed", "certificate_verify_failed", "tls handshake timeout", "x509: certificate"),
+        "dns": ("temporary failure resolving", "could not resolve host", "no such host"),
+        "timeout": ("connection timed out", "read timed out", "i/o timeout", "context deadline exceeded"),
+        "http_rate_limit": ("429 too many requests", "http error 429", "toomanyrequests:"),
+        "http_service": ("503 service unavailable", "502 bad gateway", "http error 503", "http error 502"),
+        "apt_prerequisite_refused": ("apt prerequisites refused:",),
+        "apt_preservation_refused": ("transaction removes an installed package", "transaction changes installed "),
+        "archive_identity": ("hash sum mismatch", "does not match the frozen manifest", "trusted index identities", "sha256sum: warning:"),
+        "package_resolution": ("no matching distribution found", "could not find a version that satisfies", "unable to locate package", "unmet dependencies"),
+        "storage_exhausted": ("no space left on device",),
+    }
+    return sorted(name for name, phrases in families.items() if any(phrase in text for phrase in phrases))
+
+
 def _image_diagnostic(stage: str, result, category: str) -> None:
     """Emit a closed stderr projection; never emit image config or command argv."""
     stderr = result.stderr or ""
+    stdout = result.stdout or ""
     phrases = (
         "no such image", "permission denied", "cannot connect to the docker daemon",
         "error during connect", "no space left on device", "failed to solve",
@@ -30,6 +49,9 @@ def _image_diagnostic(stage: str, result, category: str) -> None:
         "stderr": "; ".join(safe) if safe else ("<redacted>" if stderr else ""),
         "stderr_bytes": len(stderr.encode("utf-8", errors="replace")),
         "stderr_sha256": hashlib.sha256(stderr.encode("utf-8", errors="replace")).hexdigest(),
+        "stdout_bytes": len(stdout.encode("utf-8", errors="replace")),
+        "stdout_sha256": hashlib.sha256(stdout.encode("utf-8", errors="replace")).hexdigest(),
+        "failure_reasons": _failure_reasons(stdout, stderr) if result.returncode else [],
     }, sort_keys=True))
 
 

@@ -1,17 +1,46 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
-Status: **CI115 qualified the preceding observed-context milestone** at staging
-`1275b4928b56bebe5700e9605cf163cccda505ae`, tree
-`a0a804e6b2348aa0270c0e3907e19fa09b33586c`. All nine hosted jobs and the
-independently validated same-attempt staging, native AMD and five-scenario
-system evidence pass. The component correspondence milestone below passes
-263 scoped unit cases, 15 core integration cases and the separately controlled
-synthetic ANN diagnostic. Final privacy/context review and the exact-commit
-report precede the one authorized CI116 staging publication. Full W5,
-scientific criteria, held-out usefulness and production remain open.
+Status: **CI116 failed qualification** at staging
+`6014088c4e8194868260f975f8f870cead844a28`, tree
+`2b4abd29779e253c235275f2b2e7d2a3c8308614`. Staging's 2,067 selected tests
+passed, but strict coverage reconciliation rejected a dossier CLI shard.
+The system sandbox SDK build also failed before application work; native AMD,
+unit, static, export, security and CodeQL lanes passed. The operator requested
+repair and another staging attempt. ADR 0150 defines the correction and fresh
+CI117 campaign without increasing the cumulative application-start cap of 29.
+CI115 remains the preceding qualified milestone. Full W5, scientific criteria,
+held-out usefulness and production remain open.
 
 Earlier checkpoint sections retain their historical state; the current
 qualification and publication boundary are this status and the final milestone.
+
+## CI116 remediation and CI117 boundary
+
+The dossier subprocess keeps isolated Python and its inference/archive import
+guards, explicitly executes the existing runner-owned coverage bootstrap, and
+uses the observed CLI launch family. Successful and refused calls retain their
+registered terminal and shard receipts; unknown shards remain rejected. No
+measurement source, threshold, exclusion, denominator or combination rule was
+weakened. Synthetic registration fixtures measure no candidate source.
+
+The system-lane SDK failure's raw reason was not retained. The identical SDK
+recipe succeeded in the native lane, so no base, dependency or SDK recipe is
+changed speculatively. Closed reason codes now distinguish known network,
+APT, package-resolution, identity and storage failures across both build output
+channels, without exposing raw text, arguments, paths or endpoints. A recurring
+SDK failure still refuses qualification and has no automatic retry.
+
+The first regression run reproduced missing receipts on both CLI outcomes.
+The corrected surrounding cohort passed 75 unit cases. Final campaign-bound
+unit/integration selectors and results are recorded in the phase commit and
+exact-commit report. Complete local suites, candidate coverage, application and
+SDK builds remain unselected; hosted CI117 owns complete qualification.
+
+CI116 consumed zero application starts. The fresh CI117 reservation retains
+28 cumulative actual starts and a cap of 29; CI116's nonce and reservation are
+rejected. Only one ordinary staging synchronization is authorized, with no
+manual/duplicate dispatch, automatic retry, CI118 rearm, start 30, main/tag
+mutation or scientific/production acceptance.
 
 ## Delivered scope
 

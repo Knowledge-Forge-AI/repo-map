@@ -81,3 +81,37 @@ def test_endpoint_failure_takes_precedence_over_missing_image(capsys):
     with pytest.raises(RuntimeError, match="endpoint_unavailable"):
         sandbox_owner._inspect_managed_image(runner, "fixture-recipe")
     assert json.loads(capsys.readouterr().err)["category"] == "endpoint_unavailable"
+
+
+@pytest.mark.parametrize("detail,expected", [
+    ("CERTIFICATE_VERIFY_FAILED at https://private.invalid/token", ["tls"]),
+    ("Temporary failure resolving private.invalid", ["dns"]),
+    ("connection timed out", ["timeout"]),
+    ("HTTP Error 429: Too Many Requests", ["http_rate_limit"]),
+    ("HTTP Error 503: Service Unavailable", ["http_service"]),
+    ("apt prerequisites refused: transaction changes installed private:amd64 1 -> 2", ["apt_prerequisite_refused", "apt_preservation_refused"]),
+    ("hash sum mismatch for private.deb", ["archive_identity"]),
+    ("No matching distribution found for private", ["package_resolution"]),
+    ("no space left on device at /private/operator", ["storage_exhausted"]),
+    ("unknown secret-token and /private/operator path", []),
+])
+@pytest.mark.parametrize("channel", ["stdout", "stderr"])
+def test_failure_reasons_are_closed_codes_across_both_build_channels(capsys, detail, expected, channel):
+    streams = {"stdout": "", "stderr": ""}
+    streams[channel] = detail
+    result = subprocess.CompletedProcess(["private-command"], 23, **streams)
+    sandbox_owner._images._image_diagnostic("build", result, "build_failed")
+    diagnostic = json.loads(capsys.readouterr().err)
+    assert diagnostic["failure_reasons"] == expected
+    for name, value in streams.items():
+        assert diagnostic[name + "_bytes"] == len(value.encode())
+        assert diagnostic[name + "_sha256"] == hashlib.sha256(value.encode()).hexdigest()
+    serialized = json.dumps(diagnostic)
+    for private in ("private.invalid", "private-command", "secret-token", "private.deb", "/private/operator"):
+        assert private not in serialized
+
+
+def test_success_does_not_report_reason_codes_from_echoed_build_text(capsys):
+    result = subprocess.CompletedProcess([], 0, "HTTP Error 503: Service Unavailable", "")
+    sandbox_owner._images._image_diagnostic("build", result, "built")
+    assert json.loads(capsys.readouterr().err)["failure_reasons"] == []
