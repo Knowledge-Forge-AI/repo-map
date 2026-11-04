@@ -1,16 +1,17 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
-Status: **CI114 qualified the ADR0144 evaluator successor** at staging
-`14f9d4e250e2cdcd0f0af89049dd36aeb048b728`, tree
-`730e1368310b5466ddae3992b49add06d720875f`. All nine jobs and independently
-validated same-attempt measured/abrupt, native AMD and five-scenario system
-evidence pass. The prior CI113 correspondence qualification remains a
-historical checkpoint. Independent review 4 reported no blockers; final public
-candidate scoped proof and the exact-commit report remain required before
-publication. ADR0146 implementation evidence is bounded and not final W5
-acceptance.
-Full W5, scientific criteria, held-out usefulness and public-main promotion
-remain open.
+Status: **CI115 qualified the preceding observed-context milestone** at staging
+`1275b4928b56bebe5700e9605cf163cccda505ae`, tree
+`a0a804e6b2348aa0270c0e3907e19fa09b33586c`. All nine hosted jobs and the
+independently validated same-attempt staging, native AMD and five-scenario
+system evidence pass. The component correspondence milestone below passes
+263 scoped unit cases, 15 core integration cases and the separately controlled
+synthetic ANN diagnostic. Final privacy/context review and the exact-commit
+report precede the one authorized CI116 staging publication. Full W5,
+scientific criteria, held-out usefulness and production remain open.
+
+Earlier checkpoint sections retain their historical state; the current
+qualification and publication boundary are this status and the final milestone.
 
 ## Delivered scope
 
@@ -139,7 +140,7 @@ The implementation commit was retained without rewriting when remote preflight
 found ordinals 110–112 consumed by Dependabot promotion-policy refusals. Their
 system/native jobs were skipped and added no application starts. The forward
 CI113 correction retires the unused CI110 nonce/reservation, preserves all ledger
-records and keeps the same single slot26 rather than granting another build.
+records and keeps the same single slot 26 rather than granting another build.
 
 ## CI113 qualification and admission/scope continuation
 
@@ -298,3 +299,47 @@ Exact final counts belong in the phase commit and candidate report. All complete
 local Python suites, coverage and
 application builds remain intentionally unselected, and the soft 87%/82% target
 remains pending hosted qualification.
+
+## CI115 qualification and component correspondence milestone
+
+CI115 qualified staging 1275b49 with nine successful hosted jobs, native AMD
+evidence and all five system scenarios. It authenticated cumulative application
+start 28. Hard coverage floors passed. The exact 87/82 branch-goal gaps were
+6 unit and 235 integration branches; rounded percentages do not close them.
+
+ADR0148 delivers three connected technical work items: original component-byte
+verification through the maintained parsers, a separate two-generation
+correspondence dossier/CLI, and one-generation real SQL provenance with an
+explicit synthetic384D supplier. The learned optional15 paired report remains
+3,703,442 bytes, SHA256
+3dbaf40b66115b410239510ce9e9ca14c30b6892252160e8784f990e21c1112f.
+Its dossier is5,729 bytes, SHA256
+ab2cbbdba639a7228460f94b61fce9b86fc42081077db76cc8502535f63d105d.
+No original artifact was rewritten, rescored, repinned or executed.
+
+The first functional diagnostic failed on its sixth index-selection check;
+its strict failed ResultV2 is retained and missing raw-journal bytes disclosed
+in ADR0148. The separately reviewed corrected diagnostic completed all three
+repetitions: six actual expected-index observations, six verified index
+cleanups and 6/6 confined EXPLAIN/candidate calls. Complete raw journal members decoded from verified stdout frames and strict
+ResultV2 agree. Canonical --report was refused before tests because coverage is
+excluded; no report policy was changed. Only exact registered ANN payloads
+receive enable_seqscan=off and enable_sort=off; exact-reference and other
+routes retain their original options. Separate default reader sessions keep
+both settings on. This is functional SQL provenance, with no learned-worker,
+calibration quality, performance, held-out or production acceptance.
+
+Scoped feature proof recorded 224 unit and 12 core integration cases, plus the
+single corrected optional case, without coverage or application/SDK builds.
+Final campaign/grant proof selectors and observed counts belong in the exact
+phase commit and report. All complete local suites remain intentionally
+unselected. Runtime/library dependencies, debt ceilings and V1/V2 formats stay
+unchanged. The pure scalar grant-helper extraction preserves policy and aliases.
+
+ADR0149 conditionally binds one normal staging synchronization for CI116
+attempt1 and native AMD start 29 after28. CI115's spent grant stays rejected.
+No automatic retry, start 30, manual/duplicate trigger, main promotion, tag or
+history rewrite follows. Hosted CI remains AVAILABLE under the operator's
+standing authorization; CI116 is untriggered at this local preparation.
+All CI116 complete-population, coverage and assembled-system gates are pending.
+Full W5/scientific criteria and production remain reserved decisions.

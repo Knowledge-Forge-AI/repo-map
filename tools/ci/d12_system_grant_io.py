@@ -8,7 +8,8 @@ import json
 import os
 from pathlib import Path
 import stat
-from typing import Any
+import re
+from typing import Any, TypeGuard
 
 class D12SystemGrantError(RuntimeError):
     """Raised when the Route B system build grant or admission proof fails closed."""
@@ -71,3 +72,24 @@ def read_regular_json_object(
         raise D12SystemGrantError(f"{label} exceeds {max_bytes} bytes: {path}")
     parsed = loads_strict_json_object(raw, label=label)
     return parsed, raw, hashlib.sha256(raw).hexdigest()
+
+
+_HEX32_RE = re.compile(r"[0-9a-f]{32}")
+_HEX40_RE = re.compile(r"[0-9a-f]{40}")
+_HEX64_RE = re.compile(r"[0-9a-f]{64}")
+
+
+def is_strict_int(value: object) -> TypeGuard[int]:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def is_hex32(value: object) -> bool:
+    return isinstance(value, str) and bool(_HEX32_RE.fullmatch(value))
+
+
+def is_hex40(value: object) -> bool:
+    return isinstance(value, str) and bool(_HEX40_RE.fullmatch(value))
+
+
+def is_hex64(value: object) -> bool:
+    return isinstance(value, str) and bool(_HEX64_RE.fullmatch(value))

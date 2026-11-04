@@ -389,10 +389,13 @@
         "src/test/int/python/repomap_kg/retrieval/baseline_pair_report.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_scope_correspondence.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_scope_matching.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/component_dossier.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/component_dossier_cli.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/context_identity_status.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/jsonb_evidence_workload.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_foundations.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_generator_admission.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/semantic_observed_ann.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_pgvector_experiment.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/w5_operation_orchestration.int.test.py",
         "src/test/unit/python/repomap_kg/retrieval/context_identity.unit.test.py",
@@ -421,6 +424,10 @@
         "src/test/unit/python/tools/retrieval_semantic_bridge_admission.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_bridge_ownership.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_bridge_transport.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_component_dossier.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_component_dossier_cli.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_component_dossier_imports.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_component_dossier_integrity.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_envelope_provenance.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_experiment.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_experiment_artifacts.unit.test.py",
@@ -443,8 +450,13 @@
         "src/test/unit/python/tools/retrieval_semantic_pair_report.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_pair_v2_fidelity.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_pair_v2_report.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_raw_component.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_raw_component_anchors.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_raw_component_io.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_records.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_representation.unit.test.py",
+        "src/test/unit/python/tools/w5_functional_planner_adapter.unit.test.py",
+        "src/test/unit/python/tools/w5_functional_supply.unit.test.py",
         "src/test/unit/python/tools/w5_operation_orchestration.unit.test.py"
       ],
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
@@ -456,6 +468,12 @@
       "id": "cloe.semantic1.test_support",
       "members": [
         "src/test/support/python/repomap_test_support/w5_admission_native_bytework.py",
+        "src/test/support/python/repomap_test_support/w5_component_artifacts.py",
+        "src/test/support/python/repomap_test_support/w5_component_cli.py",
+        "src/test/support/python/repomap_test_support/w5_component_functional_experiment.py",
+        "src/test/support/python/repomap_test_support/w5_component_functional_supply.py",
+        "src/test/support/python/repomap_test_support/w5_component_functional_transport.py",
+        "src/test/support/python/repomap_test_support/w5_component_planner_adapter.py",
         "src/test/support/python/repomap_test_support/w5_experiment_ann.py",
         "src/test/support/python/repomap_test_support/w5_experiment_ann_diagnostic.py",
         "src/test/support/python/repomap_test_support/w5_experiment_hnsw.py",
@@ -523,6 +541,9 @@
         "tools/retrieval_semantic_bridge_transport.py",
         "tools/retrieval_semantic_bridge_transport_bundle.py",
         "tools/retrieval_semantic_bridge_transport_io.py",
+        "tools/retrieval_semantic_component_dossier.py",
+        "tools/retrieval_semantic_component_dossier_contract.py",
+        "tools/retrieval_semantic_component_dossier_io.py",
         "tools/retrieval_semantic_experiment_artifacts.py",
         "tools/retrieval_semantic_experiment_bridge.py",
         "tools/retrieval_semantic_experiment_contracts.py",
@@ -579,6 +600,9 @@
         "tools/retrieval_semantic_pair_values.py",
         "tools/retrieval_semantic_primitives.py",
         "tools/retrieval_semantic_provenance.py",
+        "tools/retrieval_semantic_raw_component.py",
+        "tools/retrieval_semantic_raw_component_anchors.py",
+        "tools/retrieval_semantic_raw_component_io.py",
         "tools/retrieval_semantic_record_validation.py",
         "tools/retrieval_semantic_representation.py"
       ],
@@ -35399,6 +35423,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/component_dossier.int.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/component_dossier_cli.int.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/context_cli.int.test.py",
       "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
@@ -35554,6 +35596,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/semantic_generator_admission.int.test.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/semantic_observed_ann.int.test.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
       "root": "test_owners",
       "status": "active_integration_test"
     },
@@ -40693,6 +40744,60 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/w5_admission_native_bytework.py",
       "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_component_artifacts.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_component_cli.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_component_functional_experiment.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_component_functional_supply.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_component_functional_transport.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_component_planner_adapter.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -49853,6 +49958,42 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_component_dossier.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_component_dossier_cli.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_component_dossier_imports.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_component_dossier_integrity.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_semantic_envelope_provenance.unit.test.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "test_owners",
@@ -50044,6 +50185,33 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_semantic_pair_v2_report.unit.test.py",
       "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_raw_component.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_raw_component_anchors.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_raw_component_io.unit.test.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -51466,6 +51634,24 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_sandbox_workspace.unit.test.py",
       "rationale": "REVISE33 responsibility decomposition under original cohort and unchanged profile.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/w5_functional_planner_adapter.unit.test.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/w5_functional_supply.unit.test.py",
+      "rationale": "ADR0148 synthetic-vector functional SQL provenance and exact transport confinement owner; no learned-model or production admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -53354,6 +53540,33 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_semantic_component_dossier.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_component_dossier_contract.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_component_dossier_io.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_semantic_experiment_artifacts.py",
       "rationale": "ADR0136 bounded W5 scientific artifact retention: fixed inert frames, exact bytes and terminal identity; clean admission, existing profiles and debt ceilings unchanged.",
       "root": "tools",
@@ -53851,6 +54064,33 @@
       "maintained_executable": true,
       "path": "tools/retrieval_semantic_provenance.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_raw_component.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_raw_component_anchors.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_raw_component_io.py",
+      "rationale": "ADR0148 offline original-component correspondence and separate dossier owner; clean addition preserving historical obligations and every debt ceiling.",
       "root": "tools",
       "status": "active_tool"
     },

@@ -389,4 +389,9 @@ def _parse_generation(
     return SemanticGeneration(tuple(embeddings), cost, status_value, partial)
 
 
-__all__ = ["QueryEmbedding", "VerifiedWorkerResponse"]
+def read_worker_archive_inputs(raw: bytes) -> dict[str, bytes]:
+    """Return inert inputs using the unchanged worker archive grammar and caps."""
+    return _archive_files(raw)[1]
+
+
+__all__ = ["QueryEmbedding", "VerifiedWorkerResponse", "read_worker_archive_inputs"]

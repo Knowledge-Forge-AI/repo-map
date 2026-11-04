@@ -169,7 +169,7 @@ omissions and provenance in evaluation v2. Historical attempt7 has a separate
 raw-journal-bound v2 reprojection; its original artifacts remain unchanged.
 
 Corrected-source retained W3 calibration `w3-calibration-attempt-2` has24tasks ×6arms ×3repetitions:432query
-observations,144graded slots and1010journal records, bound to its pre-query
+observations,144graded slots and 1010journal records, bound to its pre-query
 source/input archive. It records zero execution failures or divergent tasks;
 refusal/unavailability and weak scores remain visible by cell. These observations
 do not establish superiority or accept proposed future criteria. All12held-out
@@ -471,8 +471,8 @@ at most 63 plan nodes and zero expected ANN-index-selected cases. This closes
 the not-run provenance-shape observation without claiming completed ANN or
 performance.
 
-The CI115 binder is a conditional ADR0147 preparation only: attempt 1 would be
-the native AMD start 28 after 27, but it is not triggered or spent. CI114 remains
+Historical pre-CI115 preparation: the CI115 binder was a conditional ADR0147 preparation only: attempt 1 would be
+the native AMD start 28 after 27, but it is not triggered or spent. CI114 was then
 the latest green hosted predecessor. Final scope combines W5 with the grant and
 refusal owners; final public-candidate
 scoped proof, publication disposition and exact-commit report remain pending.
@@ -480,3 +480,47 @@ Exact final counts belong in the phase commit and candidate report. All complete
 local Python suites, coverage and
 application builds remain intentionally unselected, and the soft 87%/82% target
 remains pending hosted qualification.
+
+## CI115 qualification and component correspondence milestone
+
+CI115 qualified staging 1275b49 with nine successful hosted jobs, native AMD
+evidence and all five system scenarios. It authenticated cumulative application
+start 28. Hard coverage floors passed. The exact 87/82 branch-goal gaps were
+6 unit and 235 integration branches; rounded percentages do not close them.
+
+ADR0148 delivers three connected technical work items: original component-byte
+verification through the maintained parsers, a separate two-generation
+correspondence dossier/CLI, and one-generation real SQL provenance with an
+explicit synthetic384D supplier. The learned optional15 paired report remains
+3,703,442 bytes, SHA256
+3dbaf40b66115b410239510ce9e9ca14c30b6892252160e8784f990e21c1112f.
+Its dossier is5,729 bytes, SHA256
+ab2cbbdba639a7228460f94b61fce9b86fc42081077db76cc8502535f63d105d.
+No original artifact was rewritten, rescored, repinned or executed.
+
+The first functional diagnostic failed on its sixth index-selection check;
+its strict failed ResultV2 is retained and missing raw-journal bytes disclosed
+in ADR0148. The separately reviewed corrected diagnostic completed all three
+repetitions: six actual expected-index observations, six verified index
+cleanups and 6/6 confined EXPLAIN/candidate calls. Complete raw journal members decoded from verified stdout frames and strict
+ResultV2 agree. Canonical --report was refused before tests because coverage is
+excluded; no report policy was changed. Only exact registered ANN payloads
+receive enable_seqscan=off and enable_sort=off; exact-reference and other
+routes retain their original options. Separate default reader sessions keep
+both settings on. This is functional SQL provenance, with no learned-worker,
+calibration quality, performance, held-out or production acceptance.
+
+Scoped feature proof recorded 224 unit and 12 core integration cases, plus the
+single corrected optional case, without coverage or application/SDK builds.
+Final campaign/grant proof selectors and observed counts belong in the exact
+phase commit and report. All complete local suites remain intentionally
+unselected. Runtime/library dependencies, debt ceilings and V1/V2 formats stay
+unchanged. The pure scalar grant-helper extraction preserves policy and aliases.
+
+ADR0149 conditionally binds one normal staging synchronization for CI116
+attempt1 and native AMD start 29 after28. CI115's spent grant stays rejected.
+No automatic retry, start 30, manual/duplicate trigger, main promotion, tag or
+history rewrite follows. Hosted CI remains AVAILABLE under the operator's
+standing authorization; CI116 is untriggered at this local preparation.
+All CI116 complete-population, coverage and assembled-system gates are pending.
+Full W5/scientific criteria and production remain reserved decisions.
