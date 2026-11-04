@@ -385,13 +385,17 @@
         "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_privacy.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_readback_publication.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_correspondence_validation.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/baseline_pair_context.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_pair_report.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_scope_correspondence.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/baseline_scope_matching.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/context_identity_status.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/jsonb_evidence_workload.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_foundations.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_generator_admission.int.test.py",
         "src/test/int/python/repomap_kg/retrieval/semantic_pgvector_experiment.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/w5_operation_orchestration.int.test.py",
+        "src/test/unit/python/repomap_kg/retrieval/context_identity.unit.test.py",
         "src/test/unit/python/tools/retrieval_evaluation_admission.unit.test.py",
         "src/test/unit/python/tools/retrieval_evaluation_admission_runner.unit.test.py",
         "src/test/unit/python/tools/retrieval_evaluation_correspondence_current_observations.unit.test.py",
@@ -424,6 +428,7 @@
         "src/test/unit/python/tools/retrieval_semantic_experiment_scope.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_experiment_timing.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_fusion.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_fusion_states.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_generator_artifacts.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_generator_inputs.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_generator_kernel.unit.test.py",
@@ -432,9 +437,15 @@
         "src/test/unit/python/tools/retrieval_semantic_generator_worker.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_grading.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_grading_precedence.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_observed_operation.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_observed_operation_capture.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_observed_operation_provenance.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_pair_report.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_pair_v2_fidelity.unit.test.py",
+        "src/test/unit/python/tools/retrieval_semantic_pair_v2_report.unit.test.py",
         "src/test/unit/python/tools/retrieval_semantic_records.unit.test.py",
-        "src/test/unit/python/tools/retrieval_semantic_representation.unit.test.py"
+        "src/test/unit/python/tools/retrieval_semantic_representation.unit.test.py",
+        "src/test/unit/python/tools/w5_operation_orchestration.unit.test.py"
       ],
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "test_owners"
@@ -447,6 +458,7 @@
         "src/test/support/python/repomap_test_support/w5_admission_native_bytework.py",
         "src/test/support/python/repomap_test_support/w5_experiment_ann.py",
         "src/test/support/python/repomap_test_support/w5_experiment_ann_diagnostic.py",
+        "src/test/support/python/repomap_test_support/w5_experiment_hnsw.py",
         "src/test/support/python/repomap_test_support/w5_experiment_journal.py",
         "src/test/support/python/repomap_test_support/w5_experiment_postgres.py",
         "src/test/support/python/repomap_test_support/w5_experiment_results.py",
@@ -455,6 +467,7 @@
         "src/test/support/python/repomap_test_support/w5_generator_support.py",
         "src/test/support/python/repomap_test_support/w5_jsonb_support.py",
         "src/test/support/python/repomap_test_support/w5_matching_fixture.py",
+        "src/test/support/python/repomap_test_support/w5_operation_orchestration.py",
         "src/test/support/python/repomap_test_support/w5_pair_fixtures.py",
         "src/test/support/python/repomap_test_support/w5_publication_privacy_fixtures.py",
         "src/test/support/python/repomap_test_support/w5_publication_readback.py",
@@ -535,6 +548,14 @@
         "tools/retrieval_semantic_generator_worker_contracts.py",
         "tools/retrieval_semantic_generator_worker_protocol.py",
         "tools/retrieval_semantic_grading.py",
+        "tools/retrieval_semantic_observed_operation.py",
+        "tools/retrieval_semantic_observed_operation_capture.py",
+        "tools/retrieval_semantic_observed_operation_digest.py",
+        "tools/retrieval_semantic_observed_operation_fusion.py",
+        "tools/retrieval_semantic_observed_operation_numbers.py",
+        "tools/retrieval_semantic_observed_operation_plan.py",
+        "tools/retrieval_semantic_observed_operation_relationships.py",
+        "tools/retrieval_semantic_observed_operation_results.py",
         "tools/retrieval_semantic_pair_artifacts.py",
         "tools/retrieval_semantic_pair_comparisons.py",
         "tools/retrieval_semantic_pair_metrics.py",
@@ -542,6 +563,19 @@
         "tools/retrieval_semantic_pair_rational.py",
         "tools/retrieval_semantic_pair_report.py",
         "tools/retrieval_semantic_pair_report_support.py",
+        "tools/retrieval_semantic_pair_v2_comparison_validation.py",
+        "tools/retrieval_semantic_pair_v2_context.py",
+        "tools/retrieval_semantic_pair_v2_cost.py",
+        "tools/retrieval_semantic_pair_v2_cost_fields.py",
+        "tools/retrieval_semantic_pair_v2_disclosures.py",
+        "tools/retrieval_semantic_pair_v2_envelope.py",
+        "tools/retrieval_semantic_pair_v2_projection.py",
+        "tools/retrieval_semantic_pair_v2_rational.py",
+        "tools/retrieval_semantic_pair_v2_report.py",
+        "tools/retrieval_semantic_pair_v2_report_identities.py",
+        "tools/retrieval_semantic_pair_v2_result_validation.py",
+        "tools/retrieval_semantic_pair_v2_rows.py",
+        "tools/retrieval_semantic_pair_v2_validation.py",
         "tools/retrieval_semantic_pair_values.py",
         "tools/retrieval_semantic_primitives.py",
         "tools/retrieval_semantic_provenance.py",
@@ -35329,6 +35363,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/baseline_pair_context.int.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/baseline_pair_report.int.test.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "test_owners",
@@ -35387,6 +35430,15 @@
       "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "root": "test_owners",
       "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/context_identity_status.int.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
     },
     {
       "confidence": 0.95,
@@ -35511,6 +35563,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/retrieval/semantic_pgvector_experiment.int.test.py",
       "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/w5_operation_orchestration.int.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
       "root": "test_owners",
       "status": "active_integration_test"
     },
@@ -40657,6 +40718,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_support",
       "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_experiment_hnsw.py",
+      "rationale": "ADR0146 disposable HNSW test orchestration remains in the test-support root; clean admission without historical debt or obligation changes.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/w5_experiment_journal.py",
       "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
       "root": "test_support",
@@ -40722,6 +40792,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/w5_matching_fixture.py",
       "rationale": "ADR0136/0137 connected W5 evaluator, fixed data transport and disposable proof owners; clean admission, all historical profiles and debt ceilings unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_operation_orchestration.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -44646,6 +44725,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/retrieval/context_contracts.unit.test.py",
       "rationale": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/retrieval/context_identity.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -49828,6 +49916,15 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_fusion_states.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_semantic_generator_artifacts.unit.test.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "test_owners",
@@ -49900,8 +49997,53 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_observed_operation.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_observed_operation_capture.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_observed_operation_provenance.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/unit/python/tools/retrieval_semantic_pair_report.unit.test.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_pair_v2_fidelity.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_semantic_pair_v2_report.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -51324,6 +51466,15 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/tools/test_sandbox_workspace.unit.test.py",
       "rationale": "REVISE33 responsibility decomposition under original cohort and unchanged profile.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/w5_operation_orchestration.unit.test.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
       "root": "test_owners",
       "status": "active_unit_test"
     },
@@ -53428,6 +53579,78 @@
       "confidence": 0.95,
       "governing_profile": "clean_tooling",
       "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_capture.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_digest.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_fusion.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_numbers.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_plan.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_relationships.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_observed_operation_results.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
       "path": "tools/retrieval_semantic_pair_artifacts.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
       "root": "tools",
@@ -53484,6 +53707,123 @@
       "maintained_executable": true,
       "path": "tools/retrieval_semantic_pair_report_support.py",
       "rationale": "ADR0136/0137 bounded W5 evaluator provenance, generator, fusion, ANN and JSONB evidence owners; clean admission with all predecessor profiles and debt ceilings unchanged.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_comparison_validation.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_context.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_cost.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_cost_fields.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_disclosures.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_envelope.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_projection.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_rational.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_report.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_report_identities.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_result_validation.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_rows.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_semantic_pair_v2_validation.py",
+      "rationale": "ADR0146 actual operation/context/cost and identity-state fidelity owner; clean admission with all historical obligations and debt ceilings preserved.",
       "root": "tools",
       "status": "active_tool"
     },

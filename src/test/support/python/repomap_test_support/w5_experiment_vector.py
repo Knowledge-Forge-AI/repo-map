@@ -8,11 +8,10 @@ from typing import Callable, Mapping, Protocol
 
 from common_lore_index.retrieval.query_contracts import QueryEnvelope
 from common_lore_index.storage.semantic_candidates import (
-    CandidatePublication, CandidateQuery, EmbeddingProfile,
+    CandidatePublication, CandidateQuery,
 )
 from repomap_test_support.w5_experiment_postgres import (
-    HNSW_OWNER_ROLE, HnswObservation, PostgresHandle,
-    cleanup_hnsw_index, create_hnsw_index, exact_candidates, hnsw_candidates,
+    PostgresHandle, exact_candidates,
 )
 from repomap_test_support.w5_experiment_support import (
     combine_scoped_cells, merge_candidate_rows, record_cell, selected_public_binding_ids,
@@ -20,17 +19,20 @@ from repomap_test_support.w5_experiment_support import (
 from retrieval_evaluation_attempts import AttemptJournal
 from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
-from retrieval_semantic_ann import HnswEvaluationQuery
-from retrieval_semantic_ann_lifecycle import HnswCleanupDisposition, HnswCreationReceipt
 from retrieval_semantic_arm_validation import FileIdentityTuple, _verify_envelope_against_pin
 from retrieval_semantic_experiment_contracts import (
-    ExperimentCell, ExperimentCostLedger, digest_json,
+    ExperimentCell, ExperimentCostLedger,
 )
 from retrieval_semantic_experiment_outcomes import require_admitted_vector_execution
 from retrieval_semantic_experiment_evaluator import (
     SealedComponent, build_candidate_rows_arm, grade_vector_arm,
 )
-from retrieval_semantic_fusion import AdmittedArmObservation
+from retrieval_semantic_observed_operation_capture import (
+    make_exact_operation, make_hnsw_operation, make_hybrid_operation,
+    make_unadmitted_operation,
+)
+from repomap_test_support.w5_experiment_hnsw import run_hnsw_binding
+from retrieval_semantic_fusion import AdmittedArmObservation, FileFusionResult
 from retrieval_semantic_grading import evaluate_arm_task_applicability, grade_w5_task_slot
 from retrieval_semantic_generator_inputs import PublicGenerationInput
 from retrieval_semantic_provenance import VerifiedPublicationPin
@@ -43,98 +45,6 @@ VECTOR_ARM_IDS: tuple[str, ...] = ("exact_vector", "hnsw_vector", "hybrid_rrf")
 
 class _JournalWriter(Protocol):
     def append(self, record: dict[str, object]) -> None: ...
-
-
-def run_hnsw_binding(
-    postgres: PostgresHandle, publication: CandidatePublication, profile: EmbeddingProfile, *,
-    rebuild_id: str, vector: tuple[float, ...], task_id: str, source_binding_id: str,
-    publication_pin: VerifiedPublicationPin, attempt_identity: str, limit: int = 20, evidence_limit: int = 5,
-) -> tuple[HnswObservation, HnswCreationReceipt | None, HnswCleanupDisposition | None, int, int, dict[str, object]]:
-    """Run one receipt-bound HNSW query and prove cleanup before returning."""
-    query = CandidateQuery(
-        publication, profile, rebuild_id, vector, selected=True, limit=limit,
-        evidence_limit=evidence_limit, source_binding_id=source_binding_id,
-    )
-    vector_digest = digest_json(list(vector))
-    try:
-        evaluation = HnswEvaluationQuery(
-            query, publication_pin, attempt_identity, owner_identity=HNSW_OWNER_ROLE,
-        ).validate()
-        query_digest = evaluation.index_spec.query_digest
-        source_scope = [list(pair) for pair in evaluation.public_source_scope]
-    except Exception:
-        query_digest = None
-        source_scope = []
-    receipt: dict[str, object] = {
-        "task_id": task_id,
-        "source_binding_id": source_binding_id,
-        "vector_digest": vector_digest,
-        "query_digest": query_digest,
-        "source_scope": source_scope,
-        "attempt_identity": attempt_identity,
-    }
-    started = time.perf_counter_ns()
-    try:
-        creation = create_hnsw_index(
-            postgres, candidate_query=query, publication_pin=publication_pin,
-            attempt_identity=attempt_identity,
-        )
-    except Exception as exc:
-        elapsed = time.perf_counter_ns() - started
-        failed_observation = hnsw_candidates(
-            postgres, task_id=task_id, candidate_query=query,
-            publication_pin=publication_pin, attempt_identity=attempt_identity,
-        )
-        code = getattr(exc, "code", type(exc).__name__)
-        failed_observation = HnswObservation(
-            replace(failed_observation.cell, reason=code if isinstance(code, str) else type(exc).__name__),
-            failed_observation.plan, failed_observation.plan_sha256,
-            failed_observation.candidates, failed_observation.result,
-        )
-        receipt["creation_error"] = code if isinstance(code, str) else type(exc).__name__
-        return failed_observation, None, None, elapsed, 0, receipt
-    index_ns = time.perf_counter_ns() - started
-    receipt["creation"] = creation.to_dict()
-    cleanup: HnswCleanupDisposition | None = None
-    observation: HnswObservation | None = None
-    query_started = time.perf_counter_ns()
-    cleanup_started = query_started
-    try:
-        observation = hnsw_candidates(
-            postgres, task_id=task_id, candidate_query=query,
-            publication_pin=publication_pin, attempt_identity=attempt_identity,
-            creation_receipt=creation,
-        )
-    finally:
-        cleanup_started = time.perf_counter_ns()
-        cleanup = cleanup_hnsw_index(
-            postgres, creation,
-            primary_reason=None if observation is None else observation.cell.reason,
-        )
-    cleanup_ns = time.perf_counter_ns() - cleanup_started
-    assert observation is not None and cleanup is not None
-    query_elapsed = cleanup_started - query_started
-    observation = HnswObservation(
-        replace(
-            observation.cell,
-            elapsed_ns=query_elapsed,
-            execution_state=(
-                observation.cell.execution_state
-                if cleanup.status == "verified_absent" else ExecutionState.FAILED
-            ),
-            reason=(
-                observation.cell.reason
-                if cleanup.status == "verified_absent" else "hnsw_cleanup_failed"
-            ),
-            cleanup_status="verified" if cleanup.status == "verified_absent" else "failed",
-        ),
-        observation.plan,
-        observation.plan_sha256,
-        observation.candidates,
-        observation.result,
-    )
-    receipt["cleanup"] = cleanup.to_dict()
-    return observation, creation, cleanup, index_ns, cleanup_ns, receipt
 
 
 def record_vector_query_starts(journal: _JournalWriter, task_id: str, repetition: int) -> None:
@@ -174,17 +84,29 @@ def run_vector_task(
                     cleanup_status="not_applicable",
                 ),
                 repetition,
+                generation=task.generation,
+                observed_operation=(
+                    make_unadmitted_operation(
+                        task, arm_id, repetition, state, query.reason or "query_not_admitted"
+                    ) if result_cell_sink is not None else None
+                ),
                 result_cell_sink=result_cell_sink,
             )
         return
     bindings = selected_public_binding_ids(task)
     exact_results: dict[str, tuple[ExperimentCell, tuple[dict[str, object], ...]]] = {}
+    query_descriptors: dict[str, str] = {}
     for binding in bindings:
         started = time.perf_counter_ns()
+        def observe_query(
+            _query: CandidateQuery, descriptor: str, source_binding: str = binding,
+        ) -> None:
+            query_descriptors[source_binding] = descriptor
         cell, rows = exact_candidates(
             postgres, publication, sealed.artifact.profile,
             rebuild_id=rebuild_id, vector=query.vector, task_id=task.task_id,
             publication_pin=pin, source_binding_id=binding,
+            query_observer=observe_query,
         )
         exact_results[binding] = (replace(cell, elapsed_ns=time.perf_counter_ns() - started), rows)
     exact_cells = tuple(result[0] for result in exact_results.values())
@@ -206,14 +128,60 @@ def run_vector_task(
         ) if exact_cell.execution_state == ExecutionState.COMPLETED else None
     )
     if exact_arm is not None:
-        exact_grade, exact_slot = grade_vector_arm(exact_arm, task, pin)
-        record_cell(journal, exact_grade, repetition, slot=exact_slot, result_cell_sink=result_cell_sink)
-        hybrid_grade, hybrid_slot = grade_vector_arm(
-            exact_arm, task, pin, lexical_arm=lexical_arm
+        exact_fusion_results: list[FileFusionResult] = []
+        exact_grade, exact_slot = grade_vector_arm(
+            exact_arm, task, pin,
+            fusion_sink=exact_fusion_results.append if result_cell_sink is not None else None,
         )
-        record_cell(journal, hybrid_grade, repetition, slot=hybrid_slot, result_cell_sink=result_cell_sink)
+        exact_operation = (
+            make_exact_operation(
+                task, repetition, publication=publication, pin=pin, profile=sealed.artifact.profile,
+                rebuild_id=rebuild_id, vector=query.vector, task_sha256=query.task_sha256,
+                results=exact_results, query_descriptors=query_descriptors,
+                fused=exact_fusion_results[0] if exact_fusion_results else None,
+            ) if result_cell_sink is not None else None
+        )
+        record_cell(
+            journal, exact_grade, repetition, generation=task.generation,
+            observed_operation=exact_operation, slot=exact_slot, result_cell_sink=result_cell_sink,
+        )
+        fusion_results: list[FileFusionResult] = []
+        hybrid_grade, hybrid_slot = grade_vector_arm(
+            exact_arm, task, pin, lexical_arm=lexical_arm,
+            fusion_sink=fusion_results.append if result_cell_sink is not None else None,
+        )
+        hybrid_operation = (
+            make_hybrid_operation(
+                task, repetition, publication=publication, pin=pin, profile=sealed.artifact.profile,
+                rebuild_id=rebuild_id, vector=query.vector, task_sha256=query.task_sha256,
+                selected_binding_ids=selected_public_binding_ids(task),
+                fused=fusion_results[0] if fusion_results else None,
+            ) if result_cell_sink is not None else None
+        )
+        record_cell(
+            journal, hybrid_grade, repetition, generation=task.generation,
+            observed_operation=hybrid_operation, slot=hybrid_slot, result_cell_sink=result_cell_sink,
+        )
     else:
-        record_cell(journal, exact_cell, repetition, result_cell_sink=result_cell_sink)
+        exact_operation = (
+            make_exact_operation(
+                task, repetition, publication=publication, pin=pin, profile=sealed.artifact.profile,
+                rebuild_id=rebuild_id, vector=query.vector, task_sha256=query.task_sha256,
+                results=exact_results, query_descriptors=query_descriptors,
+            ) if result_cell_sink is not None else None
+        )
+        record_cell(
+            journal, exact_cell, repetition, generation=task.generation,
+            observed_operation=exact_operation, result_cell_sink=result_cell_sink,
+        )
+        hybrid_operation = (
+            make_hybrid_operation(
+                task, repetition, publication=publication, pin=pin, profile=sealed.artifact.profile,
+                rebuild_id=rebuild_id, vector=query.vector, task_sha256=query.task_sha256,
+                selected_binding_ids=selected_public_binding_ids(task), fused=None,
+                upstream_state=exact_cell.execution_state, upstream_reason=exact_cell.reason,
+            ) if result_cell_sink is not None else None
+        )
         record_cell(
             journal,
             ExperimentCell(
@@ -222,6 +190,7 @@ def run_vector_task(
                 cleanup_status="not_applicable",
             ),
             repetition,
+            generation=task.generation, observed_operation=hybrid_operation,
             result_cell_sink=result_cell_sink,
         )
     hnsw_results = {
@@ -243,7 +212,8 @@ def run_vector_task(
             "event": "hnsw_binding_observed", "task_id": task.task_id,
             "repetition": repetition, "source_binding_id": binding,
             **observation.cell.to_dict(), "receipt": receipt,
-            "plan": observation.plan, "plan_sha256": observation.plan_sha256,
+            "plan": observation.plan if observation.plan else None,
+            "plan_sha256": observation.plan_sha256 if observation.plan else None,
         })
     hnsw_cell = combine_scoped_cells(hnsw_cells, arm_id="hnsw_vector", task_id=task.task_id)
     hnsw_rows = (
@@ -252,30 +222,49 @@ def run_vector_task(
     )
     plans = tuple(result[0].plan for result in hnsw_results.values() if result[0].plan)
     plan_digests = tuple(result[0].plan_sha256 for result in hnsw_results.values() if result[0].plan)
-    plan = plans[0] if len(plans) == 1 else list(plans)
+    plan = plans[0] if len(plans) == 1 else list(plans) if plans else None
     plan_sha256 = plan_digests[0] if len(plan_digests) == 1 else None
+    exact_keys = {
+        (row["source_binding_id"], row["input_digest"], row["canonical_key"])
+        for row in exact_rows
+    }
+    reference_recall: float | None = None
     if hnsw_cell.execution_state == ExecutionState.COMPLETED:
         hnsw_arm = build_candidate_rows_arm(
             hnsw_rows, arm_id="hnsw_vector", task=task, pin=pin, inputs=inputs
         )
-        hnsw_grade, hnsw_slot = grade_vector_arm(hnsw_arm, task, pin)
-        exact_keys = {
-            (row["source_binding_id"], row["input_digest"], row["canonical_key"])
-            for row in exact_rows
-        }
         hnsw_keys = {
             (row["source_binding_id"], row["input_digest"], row["canonical_key"])
             for row in hnsw_rows
         }
-        reference_recall = len(exact_keys & hnsw_keys) / len(exact_keys) if exact_keys else 1.0
+        if exact_cell.execution_state == ExecutionState.COMPLETED and exact_keys:
+            reference_recall = len(exact_keys & hnsw_keys) / len(exact_keys)
+    hnsw_fusion_results: list[FileFusionResult] = []
+    if hnsw_cell.execution_state == ExecutionState.COMPLETED:
+        hnsw_grade, hnsw_slot = grade_vector_arm(
+            hnsw_arm, task, pin,
+            fusion_sink=hnsw_fusion_results.append if result_cell_sink is not None else None,
+        )
+    hnsw_operation = (
+        make_hnsw_operation(
+            task, repetition, publication=publication, pin=pin, profile=sealed.artifact.profile,
+            rebuild_id=rebuild_id, vector=query.vector, task_sha256=query.task_sha256,
+            results=hnsw_results, exact_state=exact_cell.execution_state,
+            exact_count=len(exact_keys), reference_recall=reference_recall,
+            fused=hnsw_fusion_results[0] if hnsw_fusion_results else None,
+        ) if result_cell_sink is not None else None
+    )
+    if hnsw_cell.execution_state == ExecutionState.COMPLETED:
         record_cell(
             journal, hnsw_grade, repetition, plan=plan, plan_sha256=plan_sha256,
+            generation=task.generation, observed_operation=hnsw_operation,
             exact_reference_recall=reference_recall, slot=hnsw_slot,
             result_cell_sink=result_cell_sink,
         )
     else:
         record_cell(
             journal, hnsw_cell, repetition, plan=plan, plan_sha256=plan_sha256,
+            generation=task.generation, observed_operation=hnsw_operation,
             result_cell_sink=result_cell_sink,
         )
     # All cells and cleanup evidence are recorded before mechanical failure.

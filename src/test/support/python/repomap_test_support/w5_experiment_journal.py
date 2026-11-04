@@ -7,7 +7,8 @@ from retrieval_evaluation_accounting import summarize_timing_samples
 from retrieval_evaluation_execution import TaskOutcome
 from retrieval_evaluation_grading import ExecutionState, GradedSlotRecord, grade_task_execution
 from retrieval_evaluation_schema import EvaluationTask
-from retrieval_semantic_experiment_contracts import ExperimentCell
+from retrieval_semantic_experiment_contracts import ExperimentCell, ExperimentRefusal
+from retrieval_semantic_observed_operation import validate_observed_operation
 from retrieval_semantic_grading import W5_FILE_GRADING_POLICY_CURRENT
 
 def record_baseline(
@@ -62,6 +63,8 @@ def record_cell(
     cell: ExperimentCell,
     repetition: int,
     *,
+    generation: int | None = None,
+    observed_operation: Mapping[str, object] | None = None,
     plan: object | None = None,
     plan_sha256: str | None = None,
     exact_reference_recall: float | None = None,
@@ -80,6 +83,19 @@ def record_cell(
     if slot is not None:
         record["slot"] = slot.to_dict()
         record["file_grading_policy_version"] = W5_FILE_GRADING_POLICY_CURRENT
+    if observed_operation is not None:
+        if generation is None:
+            raise ValueError("observed operation generation is required")
+        operation = validate_observed_operation(
+            observed_operation,
+            identity={
+                "generation": generation, "task_id": cell.task_id,
+                "arm_id": cell.arm_id, "repetition": repetition,
+            },
+        )
+        if operation["state"] != cell.execution_state.value:
+            raise ExperimentRefusal("observed_operation_state_mismatch")
+        record["observed_operation"] = operation
     journal.append(record)
     if result_cell_sink is not None:
         result_cell_sink(

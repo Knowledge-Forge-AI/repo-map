@@ -306,14 +306,15 @@ utility and production model/pgvector/schema/index admission remain open; W5 is
 not complete. No successor source or public-main promotion is qualified here.
 
 
-The ADR0141 correspondence continuation now retains a fresh648-cell calibration,
+The ADR0141 correspondence continuation retained a fresh 648-cell calibration,
 backend-specific publication witnesses and current-run raw-observation comparison.
 Its original journals and supplementary V2 results remain separately bound.
 Absent-mailbox safety expectations and three normalized-FTS-prefix correspondence
 records remain explicit measured limits; no scientific aggregate is accepted.
 [ADR0142](../adr/2026/11/0142-w5-correspondence-milestone-staging-campaign.md)
-bounds the one-use CI110 staging campaign for this connected milestone. Hosted
-qualification of the successor and full W5 remain pending.
+bounds the one-use CI110 staging campaign for this connected milestone.
+At that historical checkpoint, hosted qualification of the successor and full
+W5 remained pending.
 
 [ADR0143](../adr/2026/11/0143-unpublished-staging-campaign-ordinal-reconciliation.md)
 transfers the unused ADR0142 allocation to CI113 after three unrelated Dependabot
@@ -334,11 +335,11 @@ at 22,346 branches. No rounded display, scoped proof or calibration closes it.
 The connected technical batch under
 [ADR0144](../adr/2026/11/0144-w5-admission-scope-and-paired-evidence-closure.md)
 addressed admission and refusal/applicability ordering, literal path/matching/page
-correspondence and adds traceable paired-artifact reporting. It preserves the
+correspondence and added traceable paired-artifact reporting. It preserves the
 frozen tasks, golds, old journals and source bindings. New scientific criteria,
 held-out evaluation, broader model/input choices, production admission and full
-W5 remain separate. This direction does not qualify successor code or promote
-public main.
+W5 remain separate. At that selection checkpoint, this direction did not qualify
+successor code or promote public main.
 
 ## W5 admission, scope and paired-evidence implementation
 
@@ -353,14 +354,21 @@ decision. Current policy-v2 grading evaluates the actual cal-21/22 refusal
 before arm applicability, while cal-16/17 remain public feed metadata with
 their existing non-body capability outcome.
 
-The pre-review scoped proof records 255 passing unit cases. Its containerized
-integration evidence records 44 passes, one retained failed initial exact node,
-and one pass from its corrected exact rerun: 45 distinct passing cases overall,
-not one same-census 45-case run. The completed grant cohort adds 5 unit and 4
-integration passes, for 260 unit and 49 distinct integration cases across the
-cohorts. The immutable source bridge preserves the prior source bytes and
-identity evidence; it does not repin the retained calibration. Retained-Python
-static4, checks4 and scanner3 pass against source census
+The ADR0146 predecessor source proof includes historical checkpoints: the
+pre-correction frozen 5f66 census recorded 315 unit and 26 core integration
+cases with full retention and scanner checks, while the 620c census recorded
+328 unit and 29 core integration cases. The earlier 260-unit/49-integration
+scoped cohort accounting is historical as well; none of these checkpoints
+qualifies the ADR0144 implementation. Reviews 2 and 3 are closed with findings.
+Resulting cohort 9 census
+`b589d41bf2fb3a77e8d23db46e9e11e9f1169f0f7ce8432e9e03624139c00d76` passed 342
+unit and 31 core integration cases with static, hygiene and privacy findings at
+zero. This is bounded evidence, not whole-candidate acceptance. Review 3's
+narrow cross-reader and activation-proof corrections are closed. The immutable
+source bridge preserves prior source identity evidence; independent review 4
+reported no blockers, while final public-candidate scoped proof and the exact
+commit report remain pending. Retained-Python
+static4, checks4 and scanner3 remain bound to the historical source census
 `9fcdad0d1cd3283f52586796a6b651fbf6835fa8182a490f78e560a70c4d85bb`, with no
 threshold, denominator or debt change.
 
@@ -370,11 +378,105 @@ The retained pair13-analysis4 report code analyzes the old 648-cell,
 This is descriptive analysis of immutable historical evidence, not rescoring,
 current-source science acceptance, or full W5 acceptance.
 
-At publication, the introducing commit must record final review and fresh proof after
-the traversal, pin-issuance, classification and compatibility corrections.
-Hosted CI114 remains pending. The conditional grant allocated by ADR0145
-remains activation-gated before publication; no new model
-or optional attempt, runtime/application build, complete local suite, or local
-coverage follows from this scoped proof. Complete local unit, integration,
-smoke, staging, system and combined populations remain intentionally
-unselected, and public-main promotion remains separate.
+At publication, the introducing commit must record final review and fresh proof
+after the traversal, pin-issuance, classification and compatibility corrections.
+CI114 has qualified the hosted ADR0144 candidate. Independent review 4 reported
+no blockers, while the final public candidate's scoped proof, exact-commit
+report and publication disposition remain open. The ADR0145 grant is spent.
+Optional attempt 15 is now complete with code 0 and clean custody; it is spent
+and has no automatic attempt 16. A conditional CI115 attempt-1 binder under
+[ADR0147](../adr/2026/11/0147-w5-observed-operation-and-paired-cost-disclosure-staging-campaign.md)
+is prepared with four grant owners, but no remote trigger or application start
+28 has occurred. The resulting calibration is bounded evidence, not publication
+or full W5 acceptance. No new model, runtime/application build, complete local
+suite or local coverage follows from this scoped proof.
+Complete local unit, integration, smoke, staging, system and combined
+populations remain intentionally unselected, and public-main promotion remains
+separate.
+
+
+## CI114 qualification and observed-context continuation
+
+[CI114 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41774180008)
+qualified staging `14f9d4e250e2cdcd0f0af89049dd36aeb048b728`, tree
+`730e1368310b5466ddae3992b49add06d720875f`. All nine jobs and independently
+validated same-attempt measured/abrupt, native AMD and five-scenario system
+evidence pass. CI114 consumed one actual application start, bringing cumulative
+actual consumption to 27; ADR0145 is spent. Unit coverage is 59,918/68,081
+statements and 19,430/22,346 branches; measured integration is
+61,000/68,081 statements and 18,086/22,346 branches. Hard gates pass. Exact
+branch counts remain 12 unit and 238 integration below 87%/82%.
+
+The separately predeclared same-model current-source calibration 14 completed
+648 cells and 216 descriptive comparisons, with whole/supported/graded/eligible
+counts of 648/339/285/264. Generation 1 produced 80 document and 4 query
+embeddings; Generation 2 produced 80 documents and observed zero-query
+inference. These counts were independently verified from retained raw model
+bundles; paired-evidence V1 does not record the query count. All 36 baseline
+safety refusals are correct. Eighteen vector/fusion refusals remain ungraded,
+and 12 HNSW observations retain `not_run/index_not_selected`. No ANN selection,
+scientific utility, held-out acceptance or full W5 closure is inferred. No new
+model, body or input representation, dependency, scientific criterion or main
+promotion is claimed. Optional calibration 14 is spent and immutable; its
+original journals/source pins remain immutable. The descriptive paired-report
+digest is
+`449d466006fdb97191ab81e4bfd74fab1315cca98316fb38833fefa4c5421410`.
+
+[ADR0146](../adr/2026/11/0146-w5-observed-operation-and-paired-cost-disclosure.md)
+advances actual operation/work capture, opt-in paired-report V2 context/cost
+disclosure and adjacent identity/state proof as one connected technical batch.
+Its implementation evidence is bounded and is not accepted as final public W5
+evidence by CI114. Old grade-only unknowns remain unchanged. Broader
+input/body representation, scientific criteria, held-out evaluation, production
+admission and main/release promotion remain separate. Review 3's narrow
+cross-reader and activation-proof corrections are closed; independent review 4
+reported no blockers. Optional attempt 15 is complete and spent, with no
+automatic attempt 16. The conditional CI115 attempt-1 binder is prepared under
+ADR0147 but has not been remotely triggered or spent; no start 28, new push or
+new public campaign has occurred.
+
+## Optional-15 observed-context calibration and CI115 preparation
+
+The optional-15 calibration completed with exit code 0 and clean custody. Its
+calibration source binding is
+`21fa1ee4bcbbda78c41e3c29ec62f6d21a698396effe5ced3eed28e2d700bfee`; the
+candidate head is `14f9d4e250e2cdcd0f0af89049dd36aeb048b728`, with dirty-source
+state disclosed explicitly. The pre-calibration scoped proof recorded 347 unit
+and 34 core integration cases with static, hygiene and privacy findings at
+zero; it is not final metadata qualification.
+
+The run covered 12:32:19–12:40:37 UTC and recorded 621+27 = 648 cells and
+216 comparisons. Its 216 actual vector-operation records were completed 24,
+`not_run` 12, unavailable 162 and refused 18. The unchanged denominators are
+648/339/285/264; baseline evidence includes 36 safety-correct cases, 18
+vector/fusion refusals and 12 HNSW `not_run/index_not_selected` cases. Raw
+Generation 1 contains 80 documents, 4 queries and 84 embeddings; Generation 2
+contains 80 documents, 0 queries and 80 embeddings, using public data and the
+same approved BGE profile. No completed ANN, performance, scientific, held-out,
+full-W5 or production acceptance is inferred.
+
+The retained report is 3,703,442 bytes with SHA-256
+`3dbaf40b66115b410239510ce9e9ca14c30b6892252160e8784f990e21c1112f`; no
+private paths are present. No application or SDK build and no model-wheel
+acquisition occurred. One pgvector 0.8.7 materialization ran on native ARM.
+Calibration proved the writer-to-journal-to-ResultV2-to-V2-reader composed
+seam. The final artifact analysis rejected all six tampered report derivatives.
+These are bounded source and report-integrity facts, not scientific or
+production acceptance.
+
+The optional-15 native HNSW provenance observation records 72 HNSW operation
+records, including 24 actual per-binding `HnswProvenance` records. All 24 have
+raw state `not_run`; EXPLAIN executed and cleanup was verified for all 24, with
+at most 63 plan nodes and zero expected ANN-index-selected cases. This closes
+the not-run provenance-shape observation without claiming completed ANN or
+performance.
+
+The CI115 binder is a conditional ADR0147 preparation only: attempt 1 would be
+the native AMD start 28 after 27, but it is not triggered or spent. CI114 remains
+the latest green hosted predecessor. Final scope combines W5 with the grant and
+refusal owners; final public-candidate
+scoped proof, publication disposition and exact-commit report remain pending.
+Exact final counts belong in the phase commit and candidate report. All complete
+local Python suites, coverage and
+application builds remain intentionally unselected, and the soft 87%/82% target
+remains pending hosted qualification.

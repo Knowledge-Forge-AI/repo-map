@@ -25,6 +25,7 @@ from retrieval_semantic_experiment_scope import (
     CorrespondenceCostSample,
 )
 from retrieval_semantic_provenance import VerifiedPublicationPin
+from retrieval_semantic_observed_operation_results import append_unadmitted_vector_observations
 from retrieval_evaluation_admission_w5_capture import retain_native_work
 
 
@@ -245,25 +246,18 @@ class ResultV2Run:
         journal: Any,
         *,
         task_id: str,
+        generation: int,
         repetition: int,
         state: ExecutionState,
         reason: str,
         arm_ids: tuple[str, ...],
         cell_sink: CellSink | None,
     ) -> None:
-        for arm_id in arm_ids:
-            cell = ExperimentCell(
-                arm_id, task_id, state, reason, cleanup_status="not_applicable",
-            ).validate()
-            journal.append({"event": "query_started", "task_id": task_id,
-                            "arm_id": arm_id, "repetition": repetition})
-            journal.append({"event": "query_observed", **cell.to_dict(),
-                            "repetition": repetition})
-            if cell_sink is not None:
-                cell_sink(
-                    {"arm_id": arm_id, "task_id": task_id, "repetition": repetition},
-                    cell,
-                )
+        append_unadmitted_vector_observations(
+            journal, task_id=task_id, generation=generation, repetition=repetition,
+            state=state, reason=reason, arm_ids=arm_ids, cell_sink=cell_sink,
+            include_operation=self.enabled,
+        )
 
     def execute_arm(
         self,

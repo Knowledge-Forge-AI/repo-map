@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 import math
 from typing import Any
@@ -18,6 +18,7 @@ from retrieval_semantic_experiment_contracts import (
 from retrieval_semantic_fusion import (
     AdmittedArmObservation,
     FileIdentityTuple,
+    FileFusionResult,
     VectorCandidateInput,
     fuse_arm_observations_rrf,
 )
@@ -41,6 +42,7 @@ class SealedComponent:
     artifact: GeneratedEnrichmentArtifact
     response_identity: Mapping[str, str]
     response_cost: Mapping[str, object]
+    response_counts: Mapping[str, object]
 
 
 def seal_component_response(
@@ -89,6 +91,12 @@ def seal_component_response(
             "truncated_records", "load_seconds", "inference_seconds", "total_seconds",
         )
     }
+    response_counts = {
+        "record_count": response.record_count,
+        "embedding_count": response.embedding_count,
+        "document_count": response.document_count,
+        "query_count": response.query_count,
+    }
     return SealedComponent(
         artifact,
         {
@@ -101,6 +109,7 @@ def seal_component_response(
             "admission": response.controller_admission_sha256,
         },
         response_cost,
+        response_counts,
     )
 
 
@@ -237,6 +246,7 @@ def grade_vector_arm(
     pin: VerifiedPublicationPin,
     *,
     lexical_arm: AdmittedArmObservation | None = None,
+    fusion_sink: Callable[[FileFusionResult], None] | None = None,
 ) -> tuple[ExperimentCell, GradedSlotRecord | None]:
     """Fuse exact-vector and current lexical observations, then grade separately."""
     if isinstance(arm, ExperimentCell):
@@ -247,6 +257,8 @@ def grade_vector_arm(
         expected_pin=pin,
         allow_explicit_single_arm_fallback=lexical_arm is None,
     )
+    if fusion_sink is not None:
+        fusion_sink(fused)
     try:
         slot = grade_w5_task_slot(
             task,

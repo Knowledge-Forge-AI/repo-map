@@ -296,7 +296,8 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                                     if query.state != "admitted" or query.vector is None:
                                         state = ExecutionState.REFUSED if query.state == "refused" else ExecutionState.UNAVAILABLE
                                         result_v2.record_unadmitted_vector_cells(
-                                            journal, task_id=task.task_id, repetition=repetition,
+                                            journal, task_id=task.task_id, generation=generation,
+                                            repetition=repetition,
                                             state=state, reason=query.reason or "query_not_admitted",
                                             arm_ids=VECTOR_ARM_IDS, cell_sink=cell_sink,
                                         )
@@ -320,6 +321,7 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                                 "held_out_executed": False,
                                 "component": sealed.response_identity,
                                 "component_response_cost": dict(sealed.response_cost),
+                                "component_counts": dict(sealed.response_counts),
                                 "timeout_policy": dict(TIMEOUT_POLICY),
                                 "rebuild_id": rebuild_id,
                             },
@@ -344,7 +346,9 @@ def test_w5_pgvector_component_paired_calibration_experiment(tmp_path: Path) -> 
                                     "failure_type": type(exc).__name__,
                                     "failure_code": failure_code,
                                     "timeout_policy": dict(TIMEOUT_POLICY),
+                                    **({"component": sealed.response_identity} if sealed is not None else {}),
                                     **({"component_response_cost": dict(sealed.response_cost)} if sealed is not None else {}),
+                                    **({"component_counts": dict(sealed.response_counts)} if sealed is not None else {}),
                                 },
                             ))
                         raise

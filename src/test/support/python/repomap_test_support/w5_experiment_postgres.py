@@ -7,7 +7,7 @@ publication JSON, or unscoped candidate query as proof of native execution.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 import json
 import os
@@ -31,7 +31,7 @@ from retrieval_evaluation_grading import ExecutionState
 from retrieval_semantic_ann import HnswResult
 from retrieval_semantic_ann_contracts import HnswIndexCatalogState
 from retrieval_semantic_ann_lifecycle import HnswCreationReceipt
-from retrieval_semantic_ann_scope import match_candidate_publication
+from retrieval_semantic_ann_scope import candidate_query_digest, match_candidate_publication
 from retrieval_semantic_ann_sql import (
     DEFAULT_OWNER_IDENTITY,
     HnswIndexSpec,
@@ -241,6 +241,7 @@ def exact_candidates(
     source_binding_id: str | None = None,
     limit: int = 20,
     evidence_limit: int = 5,
+    query_observer: Callable[[CandidateQuery, str], None] | None = None,
 ) -> tuple[ExperimentCell, tuple[dict[str, Any], ...]]:
     if publication_pin is None or source_binding_id is None:
         return (
@@ -255,8 +256,11 @@ def exact_candidates(
         evidence_limit=evidence_limit, source_binding_id=source_binding_id,
     )
     try:
-        _scope_for_query(query, publication_pin)
+        source_scope = _scope_for_query(query, publication_pin)
+        query.validate()
         result = _query(postgres, query)
+        if query_observer is not None:
+            query_observer(query, candidate_query_digest(query, source_scope))
         publication_pin.revalidate_current()
     except ExperimentRefusal as exc:
         return (
