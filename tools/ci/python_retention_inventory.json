@@ -51,6 +51,16 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.ci118repair1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/runner_recovery_probe.py"
+      ],
+      "rationale": "Deterministic discovery failure and real low-capacity refusal fixture; historical scope and debt unchanged.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
@@ -39638,6 +39648,15 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/run25_wave2_corpus.py",
       "rationale": "Run 25 wave 2 synthetic canonicalization corpus fixtures and verification tables.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/runner_recovery_probe.py",
+      "rationale": "ADR0152 discovery-only capacity fixture using the existing HostSignals seam; no operational runner-policy change.",
       "root": "test_support",
       "status": "active_test_support"
     },

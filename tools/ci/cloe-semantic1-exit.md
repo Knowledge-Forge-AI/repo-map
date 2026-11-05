@@ -1,5 +1,42 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
+Status: **CI118 failed qualification** at staging
+`d1b9f0f44947a1c324f9c480d025e1681fc6b1e6`, tree
+`76470ebef0e07dc097b2dc0784de2340447ec994`. SDK, native, all five system
+scenarios, unit, static, source/export, SBOM and CodeQL passed. One integration
+recovery probe hit the real disk-reserve refusal before its intended invalid
+selector reached discovery. CI118 consumed application start 29.
+
+## CI118 recovery fixture and CI119 boundary
+
+ADR 0152 isolates that discovery-only test's capacity inputs through the
+existing HostSignals seam. The real canonical entrypoint, admission decision,
+managed scratch lifecycle, discovery child and typed failure reports remain.
+The positive fixture must retain the original missing-selector failure; the
+zero-capacity fixture must still refuse admission. Both forbid workload
+execution. The enclosing canonical integration run retains actual host/sandbox
+admission; synthetic probe signals prove no physical capacity or qualification.
+Operational guards, configuration, quotas and policy remain unchanged.
+
+Exact final unit/containerized integration selectors and counts belong in the
+phase commit and exact-commit report, alongside static/privacy/hygiene proof
+and independent review. Complete local populations, candidate coverage and
+application/SDK builds remain intentionally unselected.
+
+CI118 unit coverage was 59,926/68,081 statements and 19,436/22,346 branches;
+integration was 61,004/68,081 and 18,088/22,346. Hard floors passed, but the
+87/82 branch goals still need 6 unit and 236 integration branches respectively.
+No rounding, denominator or threshold changes close those goals.
+
+The new operator retry request permits one CI119 attempt-1 staging publication
+and one additional native AMD application start, 30 after 29, with cumulative
+caps 30/30. Historical receipts/rows remain unchanged and CI118 replay is
+rejected. No automatic retry, CI120, start 31, main/tag/PR-state mutation,
+scientific, full-W5 or production acceptance follows. CI119 complete hosted
+qualification remains pending; CI115 remains the preceding qualified milestone.
+
+## Historical CI117 checkpoint
+
 Status: **CI117 failed qualification** at staging
 `1d98a7eb355d5b1ff34d6e677b8dd59bcf35af01`, tree
 `cdc420cfc33b8aa049c496ffcf7a6018bfb7d663`. Unit, static, source/export, SBOM

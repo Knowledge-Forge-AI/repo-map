@@ -560,3 +560,20 @@ those null fields. CI118 receives fresh campaign identities, denies CI117 replay
 and retains actual starts 28/cap 29. One operator-directed staging synchronization
 is permitted after final proof and independent review. Complete qualification,
 coverage goals and all scientific/full-W5/production decisions remain pending.
+
+### CI118 recovery-probe isolation and CI119 preparation
+
+CI118 passed all SDK/native/system scenarios and the source/unit/static/security
+lanes. Its one integration failure was a nested missing-selector recovery probe
+refused by the disk guard before discovery. ADR 0152 gives that discovery-only
+fixture controlled HostSignals while retaining real admission, discovery,
+managed cleanup and failure-report code. Positive and zero-capacity cases
+must preserve missing-node evidence and real admission refusal, and workload
+execution is forbidden. Ordinary runner policy and outer admission are unchanged.
+
+CI118's same-attempt system artifact authenticates one application start, making
+29 cumulative. The new operator retry request authorizes CI119 attempt 1 and
+one additional start 30, under fresh identities and caps 30/30. No automatic
+retry, CI120 or start31 is authorized. Hosted qualification and scientific,
+full-W5, held-out and production decisions remain pending. Hard coverage floors
+passed CI118; exact remaining 87/82 branch-goal gaps are 6 unit and 236 integration.

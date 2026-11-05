@@ -11,7 +11,8 @@ import coverage
 import pytest
 
 from repomap_test_support.d12_image_probes import restore_replay_shim_source
-from repomap_test_support.test_scratch import establish_run
+from repomap_test_support.test_scratch import establish_run, read_run_manifest
+from repomap_test_support.runner_recovery_probe import probe_command
 from runner_failure_evidence import CHILD_SCHEMA, DISCOVERY_SCHEMA, FAILURE_SCHEMA, read_diagnostic
 import runner_staging_discovery as discovery
 from runner_coverage import ChildCoverageSession, get_active_bootstrap_capability
@@ -71,13 +72,12 @@ def test_canonical_invalid_exact_selector_retains_unestablished_failure(tmp_path
         environment.pop(key, None)
     environment.update(REPOMAP_TEST_SCRATCH_ROOT=str(tmp_path / "scratch"),
                        REPOMAP_TEST_PHASE="CLOE-RUNNER-RECOVERY1-invalid-selector")
-    selector = "src/test/int/python/tools/runner_failure_recovery.int.test.py::test_missing_recovery_probe"
     result = _diagnostic_child(
-        [sys.executable, "-B", str(REPO / "tools/run_tests.py"), "--suite", "int", "--no-coverage",
-         "--jobs", "1", "--report-dir", str(reports), "--", selector],
+        probe_command(REPO, reports, capacity_available=True),
         cwd=REPO, env=environment, stdin=subprocess.DEVNULL, capture_output=True, timeout=150,
     )
     assert result.returncode == 1, (result.returncode, result.stdout[-2500:], result.stderr[-2500:])
+    assert b"discovery-only recovery probe must never execute tests" not in result.stderr
     directory = reports / "int/latest"
     report = json.loads((directory / "staging_contract_report.json").read_text())
     artifacts = list(directory.glob("staging_discovery_diagnostic.*.json"))
@@ -98,6 +98,29 @@ def test_canonical_invalid_exact_selector_retains_unestablished_failure(tmp_path
     assert failure["invocation_id"] == report["invocation_id"]
     assert failure["primary"]["stage"] == "discovery_collection"
     assert failure["primary"]["type"] == "PopulationDiscoveryError"
+
+
+def test_discovery_probe_preserves_real_low_capacity_refusal(tmp_path: Path):
+    reports = tmp_path / "reports"
+    environment = os.environ.copy()
+    for key in ("REPOMAP_TEST_RUN_ROOT", "GOCOVERDIR"):
+        environment.pop(key, None)
+    scratch = tmp_path / "scratch"
+    environment.update(REPOMAP_TEST_SCRATCH_ROOT=str(scratch),
+                       REPOMAP_TEST_PHASE="CLOE-RUNNER-RECOVERY1-low-capacity")
+    result = _diagnostic_child(
+        probe_command(REPO, reports, capacity_available=False), cwd=REPO,
+        env=environment, stdin=subprocess.DEVNULL, capture_output=True, timeout=150,
+    )
+    assert result.returncode == 2
+    assert b"discovery-only recovery probe must never execute tests" not in result.stderr
+    assert b"host_admission_refused: free_disk_reserve" in result.stderr
+    assert not list(reports.rglob("staging_contract_report.json"))
+    manifests = list(scratch.glob("r/*/manifest.json"))
+    assert len(manifests) == 1
+    terminal = read_run_manifest(manifests[0].parent)
+    assert (terminal["state"], terminal["exit_status"], terminal["live_runtime_residue"]) == ("failed", 2, False)
+    assert not list(scratch.rglob("discovery-*"))
 
 
 def test_real_child_failure_retains_safe_record_and_settles_process_group(tmp_path: Path):
