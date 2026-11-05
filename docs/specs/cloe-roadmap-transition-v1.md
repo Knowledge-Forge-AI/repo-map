@@ -577,3 +577,21 @@ one additional start 30, under fresh identities and caps 30/30. No automatic
 retry, CI120 or start31 is authorized. Hosted qualification and scientific,
 full-W5, held-out and production decisions remain pending. Hard coverage floors
 passed CI118; exact remaining 87/82 branch-goal gaps are 6 unit and 236 integration.
+
+### CI119 containerd capacity binding and fresh CI120 checkpoint
+
+CI119 passed the native/system and source/unit/static/security lanes. Staging
+failed before collection at outer capacity binding on its Ubuntu 26.04/Docker
+29.4.2 runner. The exact rejected path was not retained. ADR 0153 repairs the
+independently reproduced rejection of Docker's supported default system
+containerd overlayfs snapshot layout without weakening capacity or ownership
+checks. Scoped unit refusals and containerized process/filesystem protocol
+integration cover the new exact path and the retained managed layout. Controlled
+Engine/mount inputs do not establish native daemon qualification.
+
+The authenticated CI119 system intent/report and native seal establish one
+application start, making 30 cumulative. This operator retry request permits
+CI120 attempt 1 and one additional start 31, caps 31/31, with fresh identities
+and CI119 replay denial. No automatic retry, CI121 or start32 is authorized.
+CI119 integration coverage is unavailable; the CI118 integration measurement is
+historical. The 87/82 goals and scientific/full-W5/production decisions stay open.

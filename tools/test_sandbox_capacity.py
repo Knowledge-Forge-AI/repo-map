@@ -286,7 +286,11 @@ def validate_probe(
         upper_path = Path(value["upper"])
         if docker_root is not None:
             containerd_root = Path(docker_root) / "containerd"
-            if not upper_path.is_relative_to(containerd_root):
+            system_snapshot = docker_root == "/var/lib/docker" and re.fullmatch(
+                r"/var/lib/containerd/io\.containerd\.snapshotter\.v1\.overlayfs/snapshots/[1-9][0-9]*/fs",
+                value["upper"],
+            )
+            if not (upper_path.is_relative_to(containerd_root) or system_snapshot):
                 raise _outer_refuse("unbound_backing_evidence")
         else:
             if not ("containerd" in upper_path.parts and "snapshots" in upper_path.parts):

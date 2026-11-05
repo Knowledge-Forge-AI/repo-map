@@ -62,6 +62,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.ci119repair1.test_owners",
+      "members": [
+        "src/test/int/python/tools/containerd_capacity_binding.int.test.py"
+      ],
+      "rationale": "ADR0153 containerd capacity binding integration owner.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
@@ -37695,6 +37705,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/tools/compare_pg_connectors.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/containerd_capacity_binding.int.test.py",
+      "rationale": "ADR0153 bounded containerd capacity binding protocol and exclusive-file integration; immediate zero-debt enforcement.",
       "root": "test_owners",
       "status": "active_int_test"
     },

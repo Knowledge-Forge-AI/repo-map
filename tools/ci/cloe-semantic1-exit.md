@@ -1,5 +1,49 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
+Status: **CI119 failed qualification** at staging
+`c045be34f8cfc33d398dd32dd020fa693871bc42`, tree
+`19a3f50fdd5e589f9b797d72567cc00c736d6566`. Unit, static, source/export,
+SBOM, CodeQL, native and all five system scenarios passed. Staging built its SDK
+but refused outer capacity binding before test collection with
+`unbound_backing_evidence`. CI119 consumed application start 30.
+
+## CI119 containerd compatibility and CI120 boundary
+
+The failed lane used Ubuntu 26.04 with Docker 29.4.2. Docker documents the
+default system containerd snapshot store separately from DockerRootDir. The
+capacity mapper rejected that supported layout; a scoped RED case reproduces
+this compatibility defect. The exact rejected remote path was not retained,
+so this layout is a supported explanation rather than raw-path confirmation.
+
+ADR 0153 adds only the exact default Linux system overlayfs snapshot pattern,
+with a positive decimal snapshot ID, when DockerRootDir is the default root.
+Engine driver/snapshotter corroboration, strict schema, live capacity floors,
+mount/token binding and exclusive private receipt creation remain mandatory.
+Managed-containerd support is preserved. Custom, sibling, traversal and malformed
+paths and contradictory Engine metadata still refuse. Process/filesystem
+integration uses controlled Engine/mount inputs and real subprocess, statvfs,
+parser and exclusive receipt code; it is not native daemon qualification.
+It asserts the capacity decision from each actual probe: low space must refuse
+without creating a receipt; adequate space permits the exclusive-writer proof.
+
+Final scoped selectors/results belong in the phase commit and exact-commit
+report, alongside static/privacy/hygiene proof and independent review. Complete
+local populations, candidate coverage and application/SDK builds are unselected.
+CI119 unit coverage remains 59,926/68,081 statements and 19,436/22,346 branches.
+Its integration coverage is unavailable because staging never collected tests.
+The last integration branch measurement, 18,088/22,346 in CI118, is historical.
+The exact 87/82 branch goals remain unclosed: 6 unit branches and a last-measured
+236 integration branches. No threshold or denominator changes close those gaps.
+
+The current operator retry request permits one CI120 attempt-1 staging
+publication and one additional native AMD application start, 31 after 30, with
+caps 31/31. Every historical ledger row remains; CI119 replay is denied.
+No automatic retry, CI121, start 32, main/tag/PR-state mutation, scientific,
+full-W5 or production acceptance follows. CI120 hosted qualification is pending;
+CI115 remains the preceding qualified milestone.
+
+## Historical CI118 checkpoint
+
 Status: **CI118 failed qualification** at staging
 `d1b9f0f44947a1c324f9c480d025e1681fc6b1e6`, tree
 `76470ebef0e07dc097b2dc0784de2340447ec994`. SDK, native, all five system
