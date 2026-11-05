@@ -49,6 +49,22 @@ does not select a parser or close W6; parser/runtime adoption remains a
 separate decision. This prerequisite is accumulated into the next substantial
 milestone before public CI.
 
+The operator selected the bounded container-side Rust parser class on
+2026-11-05. `REPOMAP-CLOE-RUST-PILOT1` reserves the specific `CLOE-RUST-PILOT`
+family for the resulting ADR, isolated source helper, retained semantics and
+native component evidence. This class selection is not dependency adoption
+or W6/release acceptance. The reviewed foundation remains its prerequisite;
+the next publication accumulates this work into a substantial milestone.
+
+Its resulting design is accepted for implementation in
+[ADR 0155](../adr/2026/11/0155-isolated-rust-source-parser-pilot.md) with the
+[Rust parser pilot contract](cloe-rust-parser-pilot-v1.md). Source
+implementation, ARM component execution and the AMD gating step remain pending
+behind that contract's gates. Independent review corrections cover Rust
+attribute association, the closed D12/Rust workflow contract, per-platform
+scenarios and residue checks before publication; no native acceptance follows
+from the design disposition.
+
 W1 starts with [configuration compatibility](../ops/cloe-config-compatibility.md)
 under [ADR 0109](../adr/2026/10/0109-cloe-configuration-compatibility.md).
 Its usable new-format loader and inert filename planner are a preparatory
@@ -625,3 +641,21 @@ diagnostic proof and pending gates. Parser selection, native execution, Rust
 graph vocabulary and the remaining 10k–100k meaningful-LOC W6 milestone stay
 separate; this prerequisite is not published alone, and W6 and v0.1.0 are not
 complete.
+
+### W6 bounded Rust pilot source checkpoint
+
+The operator approved the bounded container-only Tree-sitter pilot in
+[ADR 0155](../adr/2026/11/0155-isolated-rust-source-parser-pilot.md), sharing one
+allocation across duplicate approval replies. The opt-in implementation adds
+confined per-file runtime construction, live parent-witnessed Rust semantics,
+offline/worker refusal, exact qualification manifests and one additional gate
+in the existing native AMD job. The default legacy `.rs` classification stays
+unchanged. The original fixture/gold window is frozen before native execution.
+
+The [pilot source exit](../../tools/ci/cloe-rust-pilot1-exit.md) records 616
+passing scoped unit cases, 22 passing containerized integration cases and a
+passing retained-code gate. Independent resulting-source review and native ARM
+qualification remain pending. No application build or public campaign is
+allocated by this checkpoint; actual application starts remain 31. This source
+proof is not native or hosted qualification. Container-free Local Rust, measured
+comparison against credible alternative parsers, full W6 and v0.1.0 stay open.

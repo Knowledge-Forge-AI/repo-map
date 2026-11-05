@@ -306,12 +306,16 @@ def test_license_assets_ship_in_the_wheel_and_the_image_with_the_inspected_sourc
         "package-data"]["common_lore_index"]
     assets = sorted(path.name for path in (REPO_ROOT / "src/main/python/common_lore_index/third_party_licenses").iterdir())
     assert package_data == ["third_party_licenses/*.json", "third_party_licenses/*.txt"]
-    assert assets == ["GPL-3.0.txt", "psycopg-LICENSE.txt", "psycopg-c-numutils-PostgreSQL.txt", "psycopg-source.json"]
+    psycopg_assets = ["GPL-3.0.txt", "psycopg-LICENSE.txt", "psycopg-c-numutils-PostgreSQL.txt", "psycopg-source.json"]
+    rust_assets = ["tree-sitter-core-LICENSE.txt", "tree-sitter-rust-pilot-source.json", "tree-sitter-unicode-LICENSE.txt"]
+    assert assets == sorted(psycopg_assets + rust_assets)
     dockerfile = render_server_dockerfile()
     assert 'install -D -m 0444 "/tmp/repomap-build/psycopg_c-3.3.6.tar.gz" "/build/psycopg-c-source/' in dockerfile
     assert "COPY --from=python-runtime /build/psycopg-c-source/ /usr/share/doc/repomap-kg/psycopg/source/" in dockerfile
-    for asset in assets:
+    for asset in psycopg_assets:
         assert f"test -s /usr/share/doc/repomap-kg/psycopg/{asset}" in dockerfile, asset
+        assert f"/third_party_licenses/{asset} " in dockerfile
+    assert not any(f"/third_party_licenses/{asset}" in dockerfile for asset in rust_assets)
     numutils = (REPO_ROOT / "src/main/python/common_lore_index/third_party_licenses/psycopg-c-numutils-PostgreSQL.txt")
     text = numutils.read_text(encoding="utf-8")
     assert " * Portions Copyright (c) 1996-2020, PostgreSQL Global Development Group\n" in text

@@ -15,6 +15,7 @@ from ci.python_retention_dynamic_loaders import file_loader_spec
 from ci.python_retention_dynamic_recipes import (
     fingerprint, guarded_symbol_import, literal_module_entry,
 )
+from ci.python_retention_dynamic_native_guest import external_native_guest_import
 from ci.python_retention_dynamic_substitution import optional_import_substitution
 from ci.python_retention_owner_contract import validate_owner_context
 
@@ -100,6 +101,13 @@ def validate_boundary(root: Path, candidates: set[str], graph: Mapping[str, Any]
     elif record["recipe"] == "guarded_symbol_import":
         assert isinstance(nodes[0], ast.Call)
         required = guarded_symbol_import(nodes[0], tree, record["parameters"], root, modules)
+    elif record["recipe"] == "external_native_guest_import":
+        if not isinstance(nodes[0], ast.Call):
+            raise ValueError("native guest recipe requires a call")
+        required = external_native_guest_import(
+            nodes[0], tree, record["parameters"], root, modules,
+            record=record, active_records=active_records,
+        )
     else:
         raise ValueError("unsupported dynamic recipe")
     found: set[tuple[str, str]] = set()

@@ -1,0 +1,151 @@
+{
+ "build_script_name": false,
+ "completeness": "complete",
+ "fixture": "unsupported_forms.rs",
+ "input_bytes": 761,
+ "input_sha256": "c83b8ab69be21d705669231586adfa4558dee1c2d0df591f01856ba2b9fd48ce",
+ "item_list": "complete",
+ "items": [
+  {
+   "end_byte": 293,
+   "end_line": 19,
+   "item_kind": "struct",
+   "name": "Buffer",
+   "namespace": "rust.type",
+   "pointer": "/struct:Buffer",
+   "start_byte": 252,
+   "start_line": 17,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 396,
+   "end_line": 27,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:1",
+   "start_byte": 295,
+   "start_line": 21,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 394,
+   "end_line": 26,
+   "item_kind": "fn",
+   "name": "chunk",
+   "namespace": "rust.function",
+   "pointer": "/impl:1/fn:chunk",
+   "start_byte": 343,
+   "start_line": 24,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 547,
+   "end_line": 33,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:2",
+   "start_byte": 398,
+   "start_line": 29,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 545,
+   "end_line": 32,
+   "item_kind": "fn",
+   "name": "fmt",
+   "namespace": "rust.function",
+   "pointer": "/impl:2/fn:fmt",
+   "start_byte": 431,
+   "start_line": 30,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 635,
+   "end_line": 37,
+   "item_kind": "fn",
+   "name": "swap_halves",
+   "namespace": "rust.function",
+   "pointer": "/fn:swap_halves",
+   "start_byte": 549,
+   "start_line": 35,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 760,
+   "end_line": 44,
+   "item_kind": "trait",
+   "name": "Codec",
+   "namespace": "rust.trait",
+   "pointer": "/trait:Codec",
+   "start_byte": 637,
+   "start_line": 39,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 758,
+   "end_line": 43,
+   "item_kind": "fn",
+   "name": "encode",
+   "namespace": "rust.function",
+   "pointer": "/trait:Codec/fn:encode",
+   "start_byte": 695,
+   "start_line": 43,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 44,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q05"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": [
+  {
+   "construct": "const_item",
+   "count": 1,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "extern_crate_declaration",
+   "count": 1,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "foreign_item",
+   "count": 2,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "inner_attribute",
+   "count": 1,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "static_item",
+   "count": 2,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "use_declaration",
+   "count": 2,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "const_item",
+   "count": 1,
+   "scope_pointer": "/impl:1"
+  },
+  {
+   "construct": "const_item",
+   "count": 1,
+   "scope_pointer": "/trait:Codec"
+  },
+  {
+   "construct": "other_item",
+   "count": 1,
+   "scope_pointer": "/trait:Codec"
+  }
+ ]
+}

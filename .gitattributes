@@ -1,0 +1,2 @@
+# Frozen Rust qualification bytes include deliberate BOM and CRLF spelling.
+src/test/fixtures/rust_pilot/q03_crlf_bom.rs -text whitespace=cr-at-eol

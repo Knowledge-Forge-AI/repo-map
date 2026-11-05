@@ -202,6 +202,15 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts.rust_bundle_guard",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts.source_sealer",
@@ -2200,6 +2209,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.rust_pilot_publication",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.ops.source_generation under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.source_generation",
@@ -2914,6 +2932,15 @@
       "justification": "Maintain repomap_kg.runtime.release_cluster under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.runtime.release_cluster",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_execution_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.runtime.release_dockerfile",
       "ownership_class": "python_retained"
     },
     {
@@ -4390,6 +4417,15 @@
       "justification": "Maintain repomap_kg.storage.staged_ingestion under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.staged_ingestion",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.staged_prepared_refresh",
       "ownership_class": "python_retained"
     },
     {

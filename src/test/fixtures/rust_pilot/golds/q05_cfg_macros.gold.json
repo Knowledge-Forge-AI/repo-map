@@ -1,0 +1,176 @@
+{
+ "build_script_name": false,
+ "completeness": "complete",
+ "fixture": "q05_cfg_macros.rs",
+ "input_bytes": 1128,
+ "input_sha256": "e9cb157e02af54251342d04c694f00ffa9b0c5bebb86ae6eacc0dfff737d2d44",
+ "item_list": "macro_incomplete",
+ "items": [
+  {
+   "end_byte": 139,
+   "end_line": 6,
+   "item_kind": "mod",
+   "name": "platform",
+   "namespace": "rust.module",
+   "pointer": "/mod:platform",
+   "start_byte": 126,
+   "start_line": 6,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 164,
+   "end_line": 9,
+   "item_kind": "mod",
+   "name": "tests",
+   "namespace": "rust.module",
+   "pointer": "/mod:tests",
+   "start_byte": 154,
+   "start_line": 9,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 217,
+   "end_line": 14,
+   "item_kind": "fn",
+   "name": "separator",
+   "namespace": "rust.function",
+   "pointer": "/fn:separator@1",
+   "start_byte": 179,
+   "start_line": 12,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 274,
+   "end_line": 19,
+   "item_kind": "fn",
+   "name": "separator",
+   "namespace": "rust.function",
+   "pointer": "/fn:separator@2",
+   "start_byte": 235,
+   "start_line": 17,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 403,
+   "end_line": 25,
+   "item_kind": "struct",
+   "name": "Options",
+   "namespace": "rust.type",
+   "pointer": "/struct:Options",
+   "start_byte": 359,
+   "start_line": 23,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 884,
+   "end_line": 52,
+   "item_kind": "mod",
+   "name": "backends",
+   "namespace": "rust.module",
+   "pointer": "/mod:backends",
+   "start_byte": 526,
+   "start_line": 33,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 627,
+   "end_line": 37,
+   "item_kind": "struct",
+   "name": "Engine",
+   "namespace": "rust.type",
+   "pointer": "/mod:backends/struct:Engine@1",
+   "start_byte": 578,
+   "start_line": 35,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 715,
+   "end_line": 42,
+   "item_kind": "struct",
+   "name": "Engine",
+   "namespace": "rust.type",
+   "pointer": "/mod:backends/struct:Engine@2",
+   "start_byte": 667,
+   "start_line": 40,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 882,
+   "end_line": 51,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/mod:backends/impl:1",
+   "start_byte": 782,
+   "start_line": 47,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 876,
+   "end_line": 50,
+   "item_kind": "fn",
+   "name": "lanes",
+   "namespace": "rust.function",
+   "pointer": "/mod:backends/impl:1/fn:lanes",
+   "start_byte": 804,
+   "start_line": 48,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1024,
+   "end_line": 61,
+   "item_kind": "macro",
+   "name": "ensure",
+   "namespace": "rust.macro",
+   "pointer": "/macro:ensure",
+   "start_byte": 902,
+   "start_line": 55,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1094,
+   "end_line": 65,
+   "item_kind": "fn",
+   "name": "helper_with_attributes",
+   "namespace": "rust.function",
+   "pointer": "/fn:helper_with_attributes",
+   "start_byte": 1053,
+   "start_line": 65,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1127,
+   "end_line": 68,
+   "item_kind": "enum",
+   "name": "Never",
+   "namespace": "rust.type",
+   "pointer": "/enum:Never",
+   "start_byte": 1110,
+   "start_line": 68,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 68,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q05"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": [
+  {
+   "construct": "inner_attribute",
+   "count": 2,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "macro_invocation",
+   "count": 2,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "macro_invocation",
+   "count": 1,
+   "scope_pointer": "/mod:backends"
+  }
+ ]
+}

@@ -81,6 +81,7 @@ from ci.qualification_native_contracts import (
     validate_d12_native_amd64_job as _validate_d12_native_amd64_job,
     validate_d12_system_hold_step as _validate_d12_system_hold_step,
 )
+from ci.qualification_rust_contracts import validate_rust_qualification_job
 
 
 def _contract_values() -> TopologyContractValues:
@@ -250,6 +251,7 @@ def check_topology(repo_root: Path) -> tuple[str, ...]:
     violations.extend(_pr_check_pre_review_static(release_wf, contracts))
     violations.extend(_pr_check_unit_tests(release_wf, contracts))
     violations.extend(_validate_d12_native_amd64_job(release_wf))
+    violations.extend(validate_rust_qualification_job(release_wf))
     violations.extend(_validate_d12_native_amd64_runner(release_wf))
     violations.extend(_validate_downstream_dependencies(release_wf))
     violations.extend(_validate_staging_runner_tokens(release_wf, "staging-integration-gate"))

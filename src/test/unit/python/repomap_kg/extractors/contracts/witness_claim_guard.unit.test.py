@@ -1,12 +1,13 @@
 """ADR 0154: no positive witness path and pre-dispatch claim refusal.
 
-Contract doubles here prove only refusal logic; no native observer exists.
+Contract doubles here prove only refusal logic and establish no native evidence.
 """
 
 from __future__ import annotations
 
 import copy
 import pickle
+from dataclasses import replace
 from typing import Any, cast
 
 import pytest
@@ -120,6 +121,19 @@ def test_batch_rejects_unbounded_iterables_before_consumption() -> None:
 def test_explicit_claims_are_recognized_on_any_kind(metadata: dict[str, Any], reason: str) -> None:
     assert capability_claim_reason(_python("tool.py", **metadata)) == reason
     assert capability_claim_reason(_file("src/lib.rs", **metadata)) == reason
+
+
+@pytest.mark.parametrize("kind", ["rust.parse", "rust.item", "rust.unsupported"])
+@pytest.mark.parametrize("metadata,reason", [
+    ({}, "rust_raw_kind"),
+    ({"language": "rust"}, "rust_raw_kind"),
+    ({"achieved_capabilities": ["syntax.tree"]}, "capability_claim_metadata"),
+    ({RECEIPT_REFERENCE_METADATA_KEY: "0" * 64}, "receipt_reference_metadata"),
+])
+def test_rust_raw_kind_refusal_precedence_is_independent_of_language_metadata(
+        kind: str, metadata: dict[str, Any], reason: str) -> None:
+    item = replace(_file("src/lib.rs"), kind=kind, metadata=metadata)
+    assert capability_claim_reason(item) == reason
 
 
 @pytest.mark.parametrize("observation", [

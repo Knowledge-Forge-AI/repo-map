@@ -129,8 +129,7 @@ def test_runtime_stage_orders_closure_ldconfig_and_fail_closed_include_rmdir() -
         ldconfig_idx = runtime_stage.index("RUN ldconfig\n")
         rmdir_idx = runtime_stage.index("RUN rmdir /usr/local/include\n")
         license_copy_idx = runtime_stage.index(
-            "COPY --from=python-runtime /build/src/main/python/common_lore_index/third_party_licenses/ "
-            "/usr/share/doc/repomap-kg/psycopg/\n"
+            "COPY --from=python-runtime /build/src/main/python/common_lore_index/third_party_licenses/GPL-3.0.txt "
         )
         first_python_idx = runtime_stage.index('RUN package_root="$(python -c ')
         probe_idx = runtime_stage.index("python -I /tmp/repomap-release-probe.py")

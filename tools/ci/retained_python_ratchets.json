@@ -773,7 +773,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "2639b792ba3fe54eac90221240a63563d32add4ea15b12297ff287ded7eafc18"
+    "sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472"
   },
   "ruff": {
     "findings": [
@@ -14257,6 +14257,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.artifacts.rust_bundle_guard",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/rust_bundle_guard.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.artifacts.source_sealer",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/source_sealer.py",
@@ -14513,6 +14519,12 @@
         "ownership_class": "cross_language_contract",
         "path": "src/main/python/common_lore_index/canonicalization/records.py",
         "tier": "T0"
+      },
+      {
+        "module": "common_lore_index.canonicalization.rust_pilot_family",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/canonicalization/rust_pilot_family.py",
+        "tier": "T1-future"
       },
       {
         "module": "common_lore_index.canonicalization.shell_awk_family",
@@ -15793,6 +15805,156 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.extractors.rust_pilot",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.archive_verifier",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/archive_verifier.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.bounded_exec",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/bounded_exec.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.component_lock",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.construction",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/construction.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.containment",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/containment.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.controller",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.controller_audit",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller_audit.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.docker_boundary",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/docker_boundary.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest.containment_probes",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/containment_probes.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest.install_readback",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/install_readback.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest.parse_helper",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest.runtime_probe",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest.setup_writer",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/setup_writer.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.guest_sources",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest_sources.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.helper_protocol",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/helper_protocol.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.observations",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/observations.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.pilot",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/pilot.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.prepared_profile",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/prepared_profile.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.probe_material",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/probe_material.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.readback",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/readback.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.receipts",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/receipts.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.selection",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/selection.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.rust_pilot.witness_state",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/witness_state.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.extractors.shared",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/extractors/shared/__init__.py",
@@ -16222,6 +16384,12 @@
         "module": "common_lore_index.graph.readback.zunit",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/graph/readback/zunit.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph.rust_keys",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/rust_keys.py",
         "tier": "T1-future"
       },
       {
@@ -16771,6 +16939,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops.rust_pilot_publication",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/rust_pilot_publication.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops.source_generation",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/source_generation.py",
@@ -17248,6 +17422,12 @@
         "module": "common_lore_index.runtime.release_cluster",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/runtime/release_cluster.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.runtime.release_dockerfile",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/runtime/release_dockerfile.py",
         "tier": "T1-future"
       },
       {
@@ -18232,6 +18412,12 @@
         "module": "common_lore_index.storage.staged_ingestion",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/staged_ingestion.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.storage.staged_prepared_refresh",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/staged_prepared_refresh.py",
         "tier": "T1-future"
       },
       {

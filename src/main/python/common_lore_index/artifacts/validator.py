@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import Mapping
+from typing import IO, Mapping, cast
 
 from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
 from common_lore_index.artifacts.receipt import ExtractionReceipt
 from common_lore_index.artifacts.references import ArtifactReference
 from common_lore_index.artifacts.store import ArtifactStore
 from common_lore_index.storage.staging_family_rows import StageFamily
+from common_lore_index.artifacts.rust_bundle_guard import GuardedBundleStream, reject_rust_claims
 
 
 from common_lore_index.artifacts._bundle_stream import (
@@ -103,9 +104,17 @@ class PublisherBundleValidator:
 
         parser = StreamingBundleParser(spool_dir=spool_dir, max_bundle_bytes=max_bundle_bytes)
         with store.open_stream(bundle_reference, max_bytes=max_bundle_bytes) as stream:
+            # This parser consumes only read/readline; the caller retains IO ownership.
             descriptor = parser.parse_and_validate(
-                stream, expectation, receipt, stage_id=stage_id, prior_attempt=prior
+                cast(IO[bytes], GuardedBundleStream(stream)), expectation, receipt,
+                stage_id=stage_id, prior_attempt=prior
             )
+        try:
+            if descriptor.family_spools is not None:
+                reject_rust_claims(descriptor.family_spools)
+        except BaseException:
+            descriptor.close()
+            raise
 
         identity = (receipt.receipt_id, descriptor.bundle_id, "completed")
         try:
@@ -183,6 +192,7 @@ class PublisherBundleValidator:
                         )
                 elif stage_id is not None:
                     raise ValueError("legacy bundle stage representation is ambiguous")
+        reject_rust_claims(bundle.families)
         _validate_family_links(bundle.families)
 
 

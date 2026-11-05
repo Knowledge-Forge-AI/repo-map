@@ -109,6 +109,9 @@ def test_offline_raw_jsonl_claims_are_refused_and_legacy_is_preserved(repository
                            confidence="unknown", extractor="example-rust-parser",
                            extractor_version="1", start_line=1, end_line=3, name="add"),
         ]
+        raw_template = forged[-1]
+        forged.extend(replace(raw_template, kind=kind, source_id="src/lib.rs#" + kind)
+                      for kind in ("rust.parse", "rust.item", "rust.unsupported"))
         legacy_path = Path(temporary) / "legacy.jsonl"
         mixed_path = Path(temporary) / "mixed.jsonl"
         write_observations_jsonl(legacy, legacy_path)
@@ -132,6 +135,9 @@ def test_offline_raw_jsonl_claims_are_refused_and_legacy_is_preserved(repository
         (start + 1, "capability_claim_metadata"),
         (start + 2, "receipt_reference_metadata"),
         (start + 3, "capability_claim_metadata"),
+        (start + 5, "rust_raw_kind"),
+        (start + 6, "rust_raw_kind"),
+        (start + 7, "rust_raw_kind"),
     ]
     unsupported = [item for item in result.diagnostics
                    if item.category == "unsupported_raw_observation_kind"

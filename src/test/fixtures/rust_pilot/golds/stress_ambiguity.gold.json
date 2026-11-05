@@ -1,0 +1,237 @@
+{
+ "build_script_name": false,
+ "completeness": "complete",
+ "fixture": "stress_ambiguity.rs",
+ "input_bytes": 1178,
+ "input_sha256": "7b9d0b37cd99efd0c9f2375198b15fc30d84670e6d8414d43b0617e82a744a96",
+ "item_list": "complete",
+ "items": [
+  {
+   "end_byte": 682,
+   "end_line": 34,
+   "item_kind": "mod",
+   "name": "codec",
+   "namespace": "rust.module",
+   "pointer": "/mod:codec",
+   "start_byte": 62,
+   "start_line": 3,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 182,
+   "end_line": 7,
+   "item_kind": "fn",
+   "name": "compress",
+   "namespace": "rust.function",
+   "pointer": "/mod:codec/fn:compress@1",
+   "start_byte": 111,
+   "start_line": 5,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 310,
+   "end_line": 12,
+   "item_kind": "fn",
+   "name": "compress",
+   "namespace": "rust.function",
+   "pointer": "/mod:codec/fn:compress@2",
+   "start_byte": 216,
+   "start_line": 10,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 445,
+   "end_line": 17,
+   "item_kind": "fn",
+   "name": "compress",
+   "namespace": "rust.function",
+   "pointer": "/mod:codec/fn:compress@3",
+   "start_byte": 372,
+   "start_line": 15,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 497,
+   "end_line": 21,
+   "item_kind": "struct",
+   "name": "Frame",
+   "namespace": "rust.type",
+   "pointer": "/mod:codec/struct:Frame@1",
+   "start_byte": 451,
+   "start_line": 19,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 595,
+   "end_line": 27,
+   "item_kind": "enum",
+   "name": "Frame",
+   "namespace": "rust.type",
+   "pointer": "/mod:codec/enum:Frame@2",
+   "start_byte": 534,
+   "start_line": 24,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 680,
+   "end_line": 33,
+   "item_kind": "mod",
+   "name": "compress",
+   "namespace": "rust.module",
+   "pointer": "/mod:codec/mod:compress",
+   "start_byte": 601,
+   "start_line": 29,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 674,
+   "end_line": 32,
+   "item_kind": "fn",
+   "name": "level",
+   "namespace": "rust.function",
+   "pointer": "/mod:codec/mod:compress/fn:level",
+   "start_byte": 628,
+   "start_line": 30,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 702,
+   "end_line": 36,
+   "item_kind": "struct",
+   "name": "Header",
+   "namespace": "rust.type",
+   "pointer": "/struct:Header",
+   "start_byte": 684,
+   "start_line": 36,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 764,
+   "end_line": 42,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:1",
+   "start_byte": 704,
+   "start_line": 38,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 762,
+   "end_line": 41,
+   "item_kind": "fn",
+   "name": "size",
+   "namespace": "rust.function",
+   "pointer": "/impl:1/fn:size",
+   "start_byte": 722,
+   "start_line": 39,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 841,
+   "end_line": 48,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:2",
+   "start_byte": 766,
+   "start_line": 44,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 839,
+   "end_line": 47,
+   "item_kind": "fn",
+   "name": "default",
+   "namespace": "rust.function",
+   "pointer": "/impl:2/fn:default",
+   "start_byte": 796,
+   "start_line": 45,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 919,
+   "end_line": 54,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:3",
+   "start_byte": 843,
+   "start_line": 50,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 917,
+   "end_line": 53,
+   "item_kind": "fn",
+   "name": "clone",
+   "namespace": "rust.function",
+   "pointer": "/impl:3/fn:clone",
+   "start_byte": 871,
+   "start_line": 51,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1008,
+   "end_line": 61,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:4",
+   "start_byte": 947,
+   "start_line": 57,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1006,
+   "end_line": 60,
+   "item_kind": "fn",
+   "name": "size",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:size",
+   "start_byte": 965,
+   "start_line": 58,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1079,
+   "end_line": 68,
+   "item_kind": "macro",
+   "name": "path_sep",
+   "namespace": "rust.macro",
+   "pointer": "/macro:path_sep@1",
+   "start_byte": 1023,
+   "start_line": 64,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1156,
+   "end_line": 75,
+   "item_kind": "macro",
+   "name": "path_sep",
+   "namespace": "rust.macro",
+   "pointer": "/macro:path_sep@2",
+   "start_byte": 1099,
+   "start_line": 71,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1177,
+   "end_line": 77,
+   "item_kind": "trait",
+   "name": "Header",
+   "namespace": "rust.trait",
+   "pointer": "/trait:Header",
+   "start_byte": 1158,
+   "start_line": 77,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 77,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q05"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": []
+}

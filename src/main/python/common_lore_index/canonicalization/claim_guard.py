@@ -32,7 +32,9 @@ LANGUAGE_CLAIM_KEYS = ("language", "dialect", "language_dialect")
 CONTENT_LANGUAGE_KINDS = frozenset({"markdown.code_fence", "html.document"})
 REASON_RECEIPT = "receipt_reference_metadata"
 REASON_CAPABILITY = "capability_claim_metadata"
+REASON_RUST_RAW_KIND = "rust_raw_kind"
 REASON_RUST = "rust_language_claim"
+RUST_RAW_KINDS = frozenset({"rust.parse", "rust.item", "rust.unsupported"})
 
 
 @dataclass(frozen=True)
@@ -70,6 +72,8 @@ def capability_claim_reason(observation: RawObservation) -> str | None:
         return REASON_RECEIPT
     if reserved:
         return REASON_CAPABILITY
+    if observation.kind in RUST_RAW_KINDS:
+        return REASON_RUST_RAW_KIND
     if observation.kind in CONTENT_LANGUAGE_KINDS:
         return None
     if any(_is_rust_assertion(metadata.get(key)) for key in LANGUAGE_CLAIM_KEYS):

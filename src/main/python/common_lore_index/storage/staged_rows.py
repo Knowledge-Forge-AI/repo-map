@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import nullcontext
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from common_lore_index.canonicalization.main import canonicalize_observations
 from common_lore_index.observations.raw import RawObservation
@@ -59,6 +59,9 @@ from common_lore_index.storage.staging_observability import (
     StagingMeasurements,
 )
 
+if TYPE_CHECKING:
+    from common_lore_index.canonicalization.rust_pilot_family import WitnessedCanonicalization
+
 __all__ = ("PreparedStageRows", "build_staged_rows")
 
 _stage_row = _stage_row
@@ -100,9 +103,18 @@ def build_staged_rows(
     stage_id: str,
     staging_measurements: StagingMeasurements | None = None,
     spool_artifact_observer: Callable[[str, int], None] | None = None,
+    witnessed: WitnessedCanonicalization | None = None,
 ) -> PreparedStageRows:
     """Adapt one canonicalized observation sequence to every stage family."""
 
+    if witnessed is not None:
+        from common_lore_index.canonicalization.rust_pilot_family import WitnessedCanonicalization
+        if type(witnessed) is not WitnessedCanonicalization:
+            raise StorageSchemaError("invalid Rust pilot witness")
+        if not witnessed.verify_live():
+            raise StorageSchemaError("Rust pilot witness is not live")
+        if type(observations) is not tuple or observations is not witnessed.observations:
+            raise StorageSchemaError("Rust pilot observation identity mismatch")
     file_rows = file_rows_from_observations(
         _measured_observation_replay(
             observations,
@@ -112,7 +124,9 @@ def build_staged_rows(
             expected_replays=1,
         )
     )
-    if staging_measurements is None:
+    if witnessed is not None:
+        result = witnessed.result
+    elif staging_measurements is None:
         result = canonicalize_observations(
             cast(Sequence[RawObservation], observations),
             repository_scope=repository_name,
@@ -149,6 +163,8 @@ def build_staged_rows(
             family: prepared.rows
             for family, prepared in prepared_families.items()
         }
+        if witnessed is not None and not witnessed.verify_live():
+            raise StorageSchemaError("Rust pilot witness changed before staging rows were returned")
         del result
         checksums: dict[str, FamilyChecksum] = {}
         for family_str, prepared in prepared_families.items():

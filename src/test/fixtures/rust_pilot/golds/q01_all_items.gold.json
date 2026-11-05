@@ -1,0 +1,353 @@
+{
+ "build_script_name": false,
+ "completeness": "complete",
+ "fixture": "q01_all_items.rs",
+ "input_bytes": 2267,
+ "input_sha256": "580046a84ffca8029055f51a65799a3bcd95fdfd1f04300520bc6ed0c26ed62a",
+ "item_list": "complete",
+ "items": [
+  {
+   "end_byte": 1411,
+   "end_line": 61,
+   "item_kind": "mod",
+   "name": "geometry",
+   "namespace": "rust.module",
+   "pointer": "/mod:geometry",
+   "start_byte": 58,
+   "start_line": 3,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 471,
+   "end_line": 23,
+   "item_kind": "mod",
+   "name": "units",
+   "namespace": "rust.module",
+   "pointer": "/mod:geometry/mod:units",
+   "start_byte": 81,
+   "start_line": 4,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 127,
+   "end_line": 5,
+   "item_kind": "type",
+   "name": "Meters",
+   "namespace": "rust.type",
+   "pointer": "/mod:geometry/mod:units/type:Meters",
+   "start_byte": 105,
+   "start_line": 5,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 268,
+   "end_line": 11,
+   "item_kind": "struct",
+   "name": "Point",
+   "namespace": "rust.type",
+   "pointer": "/mod:geometry/mod:units/struct:Point",
+   "start_byte": 186,
+   "start_line": 8,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 349,
+   "end_line": 16,
+   "item_kind": "enum",
+   "name": "Axis",
+   "namespace": "rust.type",
+   "pointer": "/mod:geometry/mod:units/enum:Axis",
+   "start_byte": 278,
+   "start_line": 13,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 465,
+   "end_line": 22,
+   "item_kind": "union",
+   "name": "Bits",
+   "namespace": "rust.type",
+   "pointer": "/mod:geometry/mod:units/union:Bits",
+   "start_byte": 378,
+   "start_line": 19,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 639,
+   "end_line": 31,
+   "item_kind": "trait",
+   "name": "Measure",
+   "namespace": "rust.trait",
+   "pointer": "/mod:geometry/trait:Measure",
+   "start_byte": 477,
+   "start_line": 25,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 539,
+   "end_line": 26,
+   "item_kind": "fn",
+   "name": "length",
+   "namespace": "rust.function",
+   "pointer": "/mod:geometry/trait:Measure/fn:length",
+   "start_byte": 505,
+   "start_line": 26,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 633,
+   "end_line": 30,
+   "item_kind": "fn",
+   "name": "describe",
+   "namespace": "rust.function",
+   "pointer": "/mod:geometry/trait:Measure/fn:describe",
+   "start_byte": 549,
+   "start_line": 28,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 735,
+   "end_line": 36,
+   "item_kind": "struct",
+   "name": "Segment",
+   "namespace": "rust.type",
+   "pointer": "/mod:geometry/struct:Segment",
+   "start_byte": 645,
+   "start_line": 33,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1182,
+   "end_line": 52,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/mod:geometry/impl:1",
+   "start_byte": 741,
+   "start_line": 38,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 872,
+   "end_line": 41,
+   "item_kind": "fn",
+   "name": "new",
+   "namespace": "rust.function",
+   "pointer": "/mod:geometry/impl:1/fn:new",
+   "start_byte": 764,
+   "start_line": 39,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1176,
+   "end_line": 51,
+   "item_kind": "fn",
+   "name": "axis",
+   "namespace": "rust.function",
+   "pointer": "/mod:geometry/impl:1/fn:axis",
+   "start_byte": 882,
+   "start_line": 43,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1409,
+   "end_line": 60,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/mod:geometry/impl:2",
+   "start_byte": 1188,
+   "start_line": 54,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1403,
+   "end_line": 59,
+   "item_kind": "fn",
+   "name": "length",
+   "namespace": "rust.function",
+   "pointer": "/mod:geometry/impl:2/fn:length",
+   "start_byte": 1223,
+   "start_line": 55,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1490,
+   "end_line": 67,
+   "item_kind": "macro",
+   "name": "square",
+   "namespace": "rust.macro",
+   "pointer": "/macro:square",
+   "start_byte": 1413,
+   "start_line": 63,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1567,
+   "end_line": 71,
+   "item_kind": "fn",
+   "name": "fetch_scale",
+   "namespace": "rust.function",
+   "pointer": "/fn:fetch_scale",
+   "start_byte": 1492,
+   "start_line": 69,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1647,
+   "end_line": 75,
+   "item_kind": "fn",
+   "name": "read_word",
+   "namespace": "rust.function",
+   "pointer": "/fn:read_word",
+   "start_byte": 1569,
+   "start_line": 73,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1715,
+   "end_line": 79,
+   "item_kind": "fn",
+   "name": "exported_callback",
+   "namespace": "rust.function",
+   "pointer": "/fn:exported_callback",
+   "start_byte": 1649,
+   "start_line": 77,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1891,
+   "end_line": 88,
+   "item_kind": "trait",
+   "name": "Visitor",
+   "namespace": "rust.trait",
+   "pointer": "/trait:Visitor",
+   "start_byte": 1717,
+   "start_line": 81,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1817,
+   "end_line": 84,
+   "item_kind": "fn",
+   "name": "visit",
+   "namespace": "rust.function",
+   "pointer": "/trait:Visitor/fn:visit",
+   "start_byte": 1770,
+   "start_line": 84,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1889,
+   "end_line": 87,
+   "item_kind": "fn",
+   "name": "finish",
+   "namespace": "rust.function",
+   "pointer": "/trait:Visitor/fn:finish",
+   "start_byte": 1822,
+   "start_line": 85,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1939,
+   "end_line": 92,
+   "item_kind": "struct",
+   "name": "Collector",
+   "namespace": "rust.type",
+   "pointer": "/struct:Collector",
+   "start_byte": 1893,
+   "start_line": 90,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2177,
+   "end_line": 105,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:1",
+   "start_byte": 1941,
+   "start_line": 94,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2006,
+   "end_line": 95,
+   "item_kind": "type",
+   "name": "Output",
+   "namespace": "rust.type",
+   "pointer": "/impl:1/type:Output",
+   "start_byte": 1990,
+   "start_line": 95,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2117,
+   "end_line": 100,
+   "item_kind": "fn",
+   "name": "visit",
+   "namespace": "rust.function",
+   "pointer": "/impl:1/fn:visit",
+   "start_byte": 2012,
+   "start_line": 97,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2175,
+   "end_line": 104,
+   "item_kind": "fn",
+   "name": "finish",
+   "namespace": "rust.function",
+   "pointer": "/impl:1/fn:finish",
+   "start_byte": 2123,
+   "start_line": 102,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2195,
+   "end_line": 107,
+   "item_kind": "struct",
+   "name": "Unit",
+   "namespace": "rust.type",
+   "pointer": "/struct:Unit",
+   "start_byte": 2179,
+   "start_line": 107,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2229,
+   "end_line": 109,
+   "item_kind": "struct",
+   "name": "Pair",
+   "namespace": "rust.type",
+   "pointer": "/struct:Pair",
+   "start_byte": 2197,
+   "start_line": 109,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2266,
+   "end_line": 111,
+   "item_kind": "type",
+   "name": "Callback",
+   "namespace": "rust.type",
+   "pointer": "/type:Callback",
+   "start_byte": 2231,
+   "start_line": 111,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 111,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q01"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": [
+  {
+   "construct": "other_item",
+   "count": 1,
+   "scope_pointer": "/trait:Visitor"
+  }
+ ]
+}

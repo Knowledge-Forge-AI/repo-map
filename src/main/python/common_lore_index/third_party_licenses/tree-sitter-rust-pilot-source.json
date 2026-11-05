@@ -1,0 +1,62 @@
+{
+  "adr": "docs/adr/2026/11/0155-isolated-rust-source-parser-pilot.md",
+  "components": [
+    {
+      "distribution_form": "prebuilt manylinux wheels pinned by exact SHA-256 in extractors/rust_pilot/component_lock.py",
+      "license_expression": "MIT",
+      "license_file_in_wheel": "tree_sitter-0.26.0.dist-info/licenses/LICENSE",
+      "license_sha256": "1af0790543fffac99dd3bd290bf83ca963f4f8029065eb6f35638f4df863ae8e",
+      "license_url": "https://raw.githubusercontent.com/tree-sitter/py-tree-sitter/v0.26.0/LICENSE",
+      "name": "tree-sitter",
+      "tags": ["cp313-cp313-manylinux_2_17_aarch64", "cp313-cp313-manylinux_2_17_x86_64"],
+      "upstream_tag": "v0.26.0",
+      "version": "0.26.0"
+    },
+    {
+      "distribution_form": "prebuilt manylinux wheels pinned by exact SHA-256 in extractors/rust_pilot/component_lock.py",
+      "license_expression": "MIT",
+      "license_file_in_wheel": "tree_sitter_rust-0.24.2.dist-info/licenses/LICENSE",
+      "license_sha256": "31d5b6f4243d5c7c6e1c4ebbbb9f6407bd1457a08bcc4f706521710341acba36",
+      "license_url": "https://raw.githubusercontent.com/tree-sitter/tree-sitter-rust/v0.24.2/LICENSE",
+      "name": "tree-sitter-rust",
+      "tags": ["cp39-abi3-manylinux_2_17_aarch64", "cp39-abi3-manylinux_2_5_x86_64"],
+      "upstream_tag": "v0.24.2",
+      "version": "0.24.2"
+    }
+  ],
+  "limitations": [
+    "Provenance is unverified: all four PyPI provenance requests returned HTTP 404 and no publisher attestation was verified.",
+    "No source-to-wheel reproduction was performed; an artifact digest is not publisher authenticity.",
+    "Retaining the complete Unicode notice does not assert that its dictionary or conversion components occur in the wheels.",
+    "No absence of vulnerabilities, general memory safety or legal conclusion is asserted."
+  ],
+  "redistribution": {
+    "constructed_runtime_redistributed": false,
+    "project_license_unchanged": "AGPL-3.0-or-later with separate commercial licensing",
+    "wheels_redistributed_by_repomap": false
+  },
+  "schema": "cloe-third-party-source-record-v1",
+  "supplemental_notices": [
+    {
+      "bytes": 1080,
+      "declared_core_commit": "7f534862c3ec939c3a6ee147f7600ef5c1bf900f",
+      "file": "tree-sitter-core-LICENSE.txt",
+      "installed_as": "notices/tree-sitter-core-LICENSE",
+      "license_expression": "MIT",
+      "reason": "The tree-sitter binding vendors the Tree-sitter C core, whose MIT notice the wheels do not carry.",
+      "sha256": "c5cfb43042b6b72045f4ba997834d0a7786d2793d91680868b5815b39f14fc78",
+      "upstream_url": "https://github.com/tree-sitter/tree-sitter/blob/7f534862c3ec939c3a6ee147f7600ef5c1bf900f/LICENSE"
+    },
+    {
+      "bytes": 21001,
+      "declared_core_commit": "7f534862c3ec939c3a6ee147f7600ef5c1bf900f",
+      "file": "tree-sitter-unicode-LICENSE.txt",
+      "installed_as": "notices/tree-sitter-unicode-LICENSE",
+      "license_expression": null,
+      "license_label": "complete upstream ICU 58 and later Unicode notice, including its historical third-party sections",
+      "reason": "The declared core includes ICU Unicode headers used through lib/src/unicode.h; the complete upstream notice is retained unchanged.",
+      "sha256": "6a18c5fac70d7860b57f5b72b4e2c9a1ba6b3d2741eef7ff9767c5379364f10d",
+      "upstream_url": "https://github.com/tree-sitter/tree-sitter/blob/7f534862c3ec939c3a6ee147f7600ef5c1bf900f/lib/src/unicode/LICENSE"
+    }
+  ]
+}

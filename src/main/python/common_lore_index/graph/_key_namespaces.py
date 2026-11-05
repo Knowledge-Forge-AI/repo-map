@@ -112,4 +112,11 @@ _SEGMENT_COUNTS = {
     "dynamic": 2,
     "external": 2,
     "unknown": 2,
+    "rust.source_file": 1,
+    "rust.module": 2,
+    "rust.function": 2,
+    "rust.type": 2,
+    "rust.trait": 2,
+    "rust.impl": 2,
+    "rust.macro": 2,
 }

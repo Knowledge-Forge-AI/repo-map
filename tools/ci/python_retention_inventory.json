@@ -407,6 +407,95 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.rust_pilot1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/extractors/rust_pilot/pilot_storage_readback.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/rust_pilot/qualification_import_closure.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/rust_pilot/runtime_protocol.int.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/rust_bundle_guard.unit.test.py",
+        "src/test/unit/python/repomap_kg/canonicalization/rust_pilot_family.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/contracts/rust_raw_kind_claim_guard.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/archive_verifier.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/bounded_exec.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/component_lock.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/controller.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/controller_positive.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/docker_boundary.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_input.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_parse_direct.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_probe_direct.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_readback_direct.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_setup_direct.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_setup_writer.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_source_guards.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/helper_protocol.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/observations.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/pilot_routing.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/prepared_profile.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/readback.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/receipts.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/runtime_boundary.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/selection.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/witness_state.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/rust_keys.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/rust_pilot_publication.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/release_dockerfile_boundary.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/staged_rows_witness.unit.test.py",
+        "src/test/unit/python/tools/ci/python_retention_native_guest_import.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_accounting.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_acquisition.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_cleanup_timing.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_closure.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_commit_binding.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_import_guard.unit.test.py",
+        "src/test/unit/python/tools/ci/qualification_rust_workflow.unit.test.py"
+      ],
+      "rationale": "ADR0155 exact pilot cohort with zero-new-debt enforcement; native acceptance remains separate.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.rust_pilot1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_docker.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/__init__.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter/__init__.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter/_grammar.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter/_lexer.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter_rust/__init__.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/wheels.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_inline_guest.py",
+        "src/test/support/python/repomap_test_support/rust_pilot_semantic_fixtures.py"
+      ],
+      "rationale": "ADR0155 exact pilot cohort with zero-new-debt enforcement; native acceptance remains separate.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "cloe.rust_pilot1.tools",
+      "members": [
+        "tools/ci/python_retention_dynamic_native_guest.py",
+        "tools/ci/qualification_rust_accounting.py",
+        "tools/ci/qualification_rust_acquisition.py",
+        "tools/ci/qualification_rust_cleanup.py",
+        "tools/ci/qualification_rust_closure.py",
+        "tools/ci/qualification_rust_contracts.py",
+        "tools/ci/qualification_rust_import_guard.py",
+        "tools/ci/qualification_rust_manifest.py",
+        "tools/ci/qualification_rust_runtime.py",
+        "tools/ci/qualification_rust_scenarios.py",
+        "tools/ci/qualification_rust_shape.py",
+        "tools/ci/rust_pilot_qualification.py"
+      ],
+      "rationale": "ADR0155 exact pilot cohort with zero-new-debt enforcement; native acceptance remains separate.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.rustfoundation1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/extractors/contracts/canonical_claim_refusal.int.test.py",
@@ -27220,6 +27309,78 @@
       ],
       "test": "src/test/unit/python/repomap_test_support/cli.unit.test.py",
       "test_sha256": "62620ebb03736f35ed4143cb65657b3bb53e9eb0cb9ef8d101b3f62f832bde5b"
+    },
+    {
+      "fingerprint": "de41e6e980455c140afd1d38305fba7b3f6e48f4df04850037876edb1b991e23",
+      "id": "adr0155.rust_pilot.native_guest_import.parse_helper",
+      "kind": "import_module",
+      "owner": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+      "owner_sha256": "84c672753dd6b2eabe5685eab864f572c8ececd0ef0201aa1eafb0f26b635463",
+      "parameters": {
+        "component_lock_id": "rust-pilot-lock-1",
+        "component_lock_path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+        "component_lock_sha256": "f9c7040f9f57126aad99cdae0750a9280eaa5d067026ad05a3aaf001b881a0f8",
+        "component_lock_source_sha256": "5fe8660f90dcf163932446c7b057a390096cd3f9fd972f1077e215367108849a",
+        "guest_owners": [
+          {
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+            "sha256": "84c672753dd6b2eabe5685eab864f572c8ececd0ef0201aa1eafb0f26b635463"
+          },
+          {
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+            "sha256": "e973a0d7b17179f0e3ef8c9351061fc7a9a5f3ac2e7adc5ef9b2b3a6c7562e59"
+          }
+        ],
+        "import_module": "importlib.import_module",
+        "loop": "literal-tuple-once-v1",
+        "modules": [
+          "tree_sitter",
+          "tree_sitter_rust"
+        ],
+        "schema": "external-native-guest-import-v1"
+      },
+      "recipe": "external_native_guest_import",
+      "supersedes": null,
+      "symbol": "main",
+      "targets": [],
+      "test": "src/test/unit/python/tools/ci/python_retention_native_guest_import.unit.test.py",
+      "test_sha256": "e47e6c3d77ca5aa426ee5f38a98c04476b29f4f6dfd9ce062e2611fc0365cd3a"
+    },
+    {
+      "fingerprint": "de41e6e980455c140afd1d38305fba7b3f6e48f4df04850037876edb1b991e23",
+      "id": "adr0155.rust_pilot.native_guest_import.runtime_probe",
+      "kind": "import_module",
+      "owner": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+      "owner_sha256": "e973a0d7b17179f0e3ef8c9351061fc7a9a5f3ac2e7adc5ef9b2b3a6c7562e59",
+      "parameters": {
+        "component_lock_id": "rust-pilot-lock-1",
+        "component_lock_path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+        "component_lock_sha256": "f9c7040f9f57126aad99cdae0750a9280eaa5d067026ad05a3aaf001b881a0f8",
+        "component_lock_source_sha256": "5fe8660f90dcf163932446c7b057a390096cd3f9fd972f1077e215367108849a",
+        "guest_owners": [
+          {
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+            "sha256": "84c672753dd6b2eabe5685eab864f572c8ececd0ef0201aa1eafb0f26b635463"
+          },
+          {
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+            "sha256": "e973a0d7b17179f0e3ef8c9351061fc7a9a5f3ac2e7adc5ef9b2b3a6c7562e59"
+          }
+        ],
+        "import_module": "importlib.import_module",
+        "loop": "literal-tuple-once-v1",
+        "modules": [
+          "tree_sitter",
+          "tree_sitter_rust"
+        ],
+        "schema": "external-native-guest-import-v1"
+      },
+      "recipe": "external_native_guest_import",
+      "supersedes": null,
+      "symbol": "main",
+      "targets": [],
+      "test": "src/test/unit/python/tools/ci/python_retention_native_guest_import.unit.test.py",
+      "test_sha256": "e47e6c3d77ca5aa426ee5f38a98c04476b29f4f6dfd9ce062e2611fc0365cd3a"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",
@@ -55897,6 +56058,843 @@
       "rationale": "REVISE32 cohesive decomposition of tools/run_windows_async15_tests.py; same maintained responsibility and quality profile.",
       "root": "tools",
       "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/rust_bundle_guard.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/canonicalization/rust_pilot_family.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/__init__.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/archive_verifier.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/bounded_exec.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/construction.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/containment.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller_audit.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/docker_boundary.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/__init__.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/containment_probes.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/install_readback.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/setup_writer.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest_sources.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/helper_protocol.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/observations.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/pilot.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/prepared_profile.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/probe_material.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/readback.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/receipts.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/selection.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/witness_state.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/rust_keys.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/rust_pilot_publication.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/runtime/release_dockerfile.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/staged_prepared_refresh.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/rust_pilot/pilot_storage_readback.int.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/rust_pilot/qualification_import_closure.int.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/rust_pilot/runtime_protocol.int.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_docker.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/__init__.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter/__init__.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter/_grammar.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter/_lexer.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/tree_sitter_rust/__init__.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_fake_tree_sitter/wheels.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_inline_guest.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_semantic_fixtures.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/rust_bundle_guard.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/canonicalization/rust_pilot_family.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/contracts/rust_raw_kind_claim_guard.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/archive_verifier.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/bounded_exec.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/component_lock.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/controller.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/controller_positive.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/docker_boundary.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_input.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_parse_direct.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_probe_direct.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_readback_direct.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_setup_direct.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_setup_writer.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_source_guards.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/helper_protocol.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/observations.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/pilot_routing.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/prepared_profile.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/readback.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/receipts.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/runtime_boundary.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/selection.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/witness_state.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/rust_keys.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/rust_pilot_publication.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/release_dockerfile_boundary.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/staged_rows_witness.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/python_retention_native_guest_import.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_accounting.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_acquisition.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_closure.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_commit_binding.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_import_guard.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_workflow.unit.test.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/python_retention_dynamic_native_guest.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_accounting.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_acquisition.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_closure.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_contracts.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_import_guard.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_manifest.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_runtime.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_scenarios.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_shape.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/rust_pilot_qualification.py",
+      "rationale": "ADR0155 bounded isolated Rust pilot; mandatory clean source enforcement, no new debt allocation.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/ci/qualification_rust_cleanup.py",
+      "rationale": "ADR0155 source-review cleanup and timing correction; immediate clean enforcement with no new debt.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_cleanup_timing.unit.test.py",
+      "rationale": "ADR0155 source-review cleanup and timing correction; immediate clean enforcement with no new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

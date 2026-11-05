@@ -1,0 +1,45 @@
+{
+ "build_script_name": false,
+ "completeness": "truncated",
+ "fixture": "stress_attributes.rs",
+ "input_bytes": 921,
+ "input_sha256": "164501b1eb5a477583e65506460d29630b8588850257eb8e4f33a80cebdde408",
+ "item_list": "partial",
+ "items": [
+  {
+   "end_byte": 666,
+   "end_line": 24,
+   "item_kind": "struct",
+   "name": "Record",
+   "namespace": "rust.type",
+   "pointer": "/struct:Record",
+   "start_byte": 572,
+   "start_line": 20,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 837,
+   "end_line": 30,
+   "item_kind": "fn",
+   "name": "record_flags",
+   "namespace": "rust.function",
+   "pointer": "/fn:record_flags",
+   "start_byte": 690,
+   "start_line": 28,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 32,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q04"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": [
+  {
+   "construct": "other_item",
+   "count": 1,
+   "scope_pointer": "/"
+  }
+ ]
+}

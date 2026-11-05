@@ -222,6 +222,26 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Run Rust parser component qualification
+        if: always()
+        run: |
+          python3 tools/ci/rust_pilot_qualification.py amd64 \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --d12-state-dir "${RUNNER_TEMP}/d12-native-amd64-evidence" \
+            --d12-sealed-json "${RUNNER_TEMP}/d12-native-amd64-evidence/d12-native-amd64-sealed-evidence.json" \
+            --manifest "${GITHUB_WORKSPACE}/tools/ci/rust_pilot_qualification_manifest.json" \
+            --work-dir "${RUNNER_TEMP}/rust-pilot-amd64-work" \
+            --report-dir "${RUNNER_TEMP}/rust-pilot-amd64-report"
+
+      - name: Upload Rust parser component evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: repomap-rust-pilot-amd64-${{ github.run_id }}-a${{ github.run_attempt }}-${{ github.sha }}
+          path: ${{ runner.temp }}/rust-pilot-amd64-report
+          if-no-files-found: error
+          retention-days: 14
+
   staging-integration-gate:
     name: staging-integration-gate
     needs: [source-and-export-policy]
