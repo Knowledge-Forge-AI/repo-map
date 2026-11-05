@@ -42,6 +42,16 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.ci117repair1.test_owners",
+      "members": [
+        "src/test/int/python/tools/sandbox_apt_failure.int.test.py"
+      ],
+      "rationale": "Canonical APT failure retention through a real subprocess; existing debt and cohorts unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
@@ -37702,6 +37712,15 @@
       "maintained_executable": true,
       "path": "src/test/int/python/tools/runner_failure_recovery.int.test.py",
       "rationale": "ADR0115 bounded failure observations and recovery; immediate zero-debt enforcement.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 1.0,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/sandbox_apt_failure.int.test.py",
+      "rationale": "ADR0151 actual failed builder subprocess diagnostic retention with strict zero-debt admission.",
       "root": "test_owners",
       "status": "active_int_test"
     },

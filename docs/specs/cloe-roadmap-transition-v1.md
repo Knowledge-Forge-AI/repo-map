@@ -543,3 +543,20 @@ fresh CI117 attempt under the operator's repair request, with a new grant and
 CI116 replay rejection. Actual application starts remain 28 and the cumulative
 cap remains 29. Hosted coverage/system qualification and all scientific,
 held-out, production and full W5 decisions remain open.
+
+### CI117 SDK preparation and fresh CI118 checkpoint
+
+CI117 passed unit/static/source/security lanes but its three container lanes
+failed at APT prerequisite resolution during SDK setup, before container tests
+or application work. The canonical helper explanation was lost by the outer
+diagnostic. ADR 0151 repairs that specific reporting defect with redaction
+before bounds, exact-line identity and scoped subprocess regression proof.
+Unchanged ARM and inert AMD package graphs currently resolve; the exact hosted
+failure remains unconfirmed, so no dependency or mirror change is inferred.
+
+The native failed seal's application counters remain null. The separate parent
+control-flow/job-step observation establishes no application entry and preserves
+those null fields. CI118 receives fresh campaign identities, denies CI117 replay
+and retains actual starts 28/cap 29. One operator-directed staging synchronization
+is permitted after final proof and independent review. Complete qualification,
+coverage goals and all scientific/full-W5/production decisions remain pending.

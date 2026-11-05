@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -13,6 +14,24 @@ from typing import Callable
 from test_sandbox_report import write_sandbox_diagnostic
 
 from test_sandbox_contract import Captured, HostSnapshot, Runner
+from native_apt_prerequisites import bounded_tail, redact
+
+
+def _apt_failure(stdout: str, stderr: str) -> dict[str, object] | None:
+    """Retain the canonical helper's explanation, redacted before bounding."""
+    marker = re.compile(r"^(?:#\d+\s+\d+(?:\.\d+)?\s+)?apt prerequisites refused:\s*(.+)$")
+    ansi = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+    for stream in (stderr, stdout):
+        for line in stream.splitlines():
+            clean = ansi.sub("", line)
+            match = marker.fullmatch(clean)
+            if match is not None:
+                return {
+                    "redacted_message": bounded_tail(redact(match.group(1), os.environ)),
+                    "source_line_bytes": len(line.encode("utf-8", errors="replace")),
+                    "source_line_sha256": hashlib.sha256(line.encode("utf-8", errors="replace")).hexdigest(),
+                }
+    return None
 
 
 def _failure_reasons(stdout: str, stderr: str) -> list[str]:
@@ -52,6 +71,7 @@ def _image_diagnostic(stage: str, result, category: str) -> None:
         "stdout_bytes": len(stdout.encode("utf-8", errors="replace")),
         "stdout_sha256": hashlib.sha256(stdout.encode("utf-8", errors="replace")).hexdigest(),
         "failure_reasons": _failure_reasons(stdout, stderr) if result.returncode else [],
+        "apt_failure": _apt_failure(stdout, stderr) if result.returncode else None,
     }, sort_keys=True))
 
 

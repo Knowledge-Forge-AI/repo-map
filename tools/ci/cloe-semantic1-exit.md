@@ -1,5 +1,43 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
+Status: **CI117 failed qualification** at staging
+`1d98a7eb355d5b1ff34d6e677b8dd59bcf35af01`, tree
+`cdc420cfc33b8aa049c496ffcf7a6018bfb7d663`. Unit, static, source/export, SBOM
+and CodeQL passed. All three container lanes failed at SDK preparation before
+container tests/application work. The operator requested one fresh attempt;
+ADR 0151 defines CI118 with unchanged package inputs and application cap 29.
+CI115 remains the preceding qualified milestone. Full W5, scientific criteria,
+held-out usefulness and production remain open.
+
+## CI117 remediation and CI118 boundary
+
+Closed diagnostics identified APT prerequisite refusal and package resolution,
+but lost the canonical helper's already-redacted cause. The fix retains only
+that canonical line, redacts again before bounding, and records its digest and
+byte count. Unit and actual-subprocess integration owners cover both channels,
+progress prefixes, privacy, bounds, noncanonical context refusal, successful
+output refusal and no retry. Exact final selectors/results belong in the
+phase commit and exact-commit report. Zero-debt admission preserves every
+existing Python retention row and ceiling.
+
+Unchanged package graphs resolve in native ARM and inert AMD-metadata
+simulations. These are diagnostic observations, not native AMD acceptance or
+a reproduction of CI117's cause. The invalid capability and syntax probes
+are excluded from positive evidence. No speculative base/dependency, mirror,
+resolver or retry change is made. SDK qualification remains pending.
+
+CI117's native application counters remain null. A separate parent observation
+binds failed preparation, skipped downstream steps and prepare-before-build
+source control flow; it does not claim a qualified zero-build native seal.
+Actual cumulative starts remain 28. A fresh CI118 attempt-1 grant reserves only
+the unspent 29th start and rejects CI117 replay, with caps unchanged. One normal
+staging synchronization may trigger automatic CI. No duplicate dispatch,
+automatic retry, CI119 rearm, start 30, main/tag mutation or production acceptance.
+Complete local suites, candidate coverage and application/SDK builds remain
+intentionally unselected. Hard floors and 87/82 goals stay unchanged.
+
+Earlier sections below are historical checkpoints, not current authority.
+
 Status: **CI116 failed qualification** at staging
 `6014088c4e8194868260f975f8f870cead844a28`, tree
 `2b4abd29779e253c235275f2b2e7d2a3c8308614`. Staging's 2,067 selected tests
@@ -14,7 +52,7 @@ held-out usefulness and production remain open.
 Earlier checkpoint sections retain their historical state; the current
 qualification and publication boundary are this status and the final milestone.
 
-## CI116 remediation and CI117 boundary
+## Historical CI116 remediation and CI117 preparation
 
 The dossier subprocess keeps isolated Python and its inference/archive import
 guards, explicitly executes the existing runner-owned coverage bootstrap, and
@@ -31,7 +69,7 @@ channels, without exposing raw text, arguments, paths or endpoints. A recurring
 SDK failure still refuses qualification and has no automatic retry.
 
 The first regression run reproduced missing receipts on both CLI outcomes.
-The corrected surrounding cohort passed 75 unit cases. Final campaign-bound
+The interim surrounding cohort passed 75 unit cases; final CI117 proof passed 80 unit and 16 integration cases. Final campaign-bound
 unit/integration selectors and results are recorded in the phase commit and
 exact-commit report. Complete local suites, candidate coverage, application and
 SDK builds remain unselected; hosted CI117 owns complete qualification.
