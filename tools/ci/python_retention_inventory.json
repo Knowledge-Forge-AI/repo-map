@@ -407,6 +407,34 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.rustfoundation1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/extractors/contracts/canonical_claim_refusal.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/contracts/receipt_storage.int.test.py",
+        "src/test/unit/python/repomap_kg/extractors/contracts/bounded_io.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/contracts/legacy_registry.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/contracts/receipt_codec.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/contracts/vocabulary_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/contracts/witness_claim_guard.unit.test.py"
+      ],
+      "rationale": "ADR0154 capability foundation unit and containerized integration owners.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.rustfoundation1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/extractor_contracts/__init__.py",
+        "src/test/support/python/repomap_test_support/extractor_contracts/legacy_source.py",
+        "src/test/support/python/repomap_test_support/extractor_contracts/receipt_fixtures.py"
+      ],
+      "rationale": "ADR0154 public-safe receipt fixtures and static AST legacy source resolution that never executes inspected modules.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.semantic1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/retrieval/baseline_admission_publication.int.test.py",
@@ -27551,6 +27579,15 @@
       "confidence": 0.95,
       "governing_profile": "retained_python_ratchets",
       "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/canonicalization/claim_guard.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
       "path": "src/main/python/common_lore_index/canonicalization/config_family.py",
       "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
       "root": "product",
@@ -29155,6 +29192,69 @@
       "maintained_executable": true,
       "path": "src/main/python/common_lore_index/extractors/config/yaml_reference_contracts.py",
       "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/__init__.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/bounded_io.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/legacy_registry.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/receipt_codec.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/receipt_schema.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/vocabulary.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/extractors/contracts/witness.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
       "root": "product",
       "status": "retained_ratchet"
     },
@@ -35174,6 +35274,24 @@
       "confidence": 0.95,
       "governing_profile": "clean_test_owners",
       "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/contracts/canonical_claim_refusal.int.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/contracts/receipt_storage.int.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
       "path": "src/test/int/python/repomap_kg/ops/graph_files.int.test.py",
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
@@ -38074,6 +38192,33 @@
       "maintained_executable": true,
       "path": "src/test/support/python/repomap_test_support/executable_authority.py",
       "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/extractor_contracts/__init__.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/extractor_contracts/legacy_source.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/extractor_contracts/receipt_fixtures.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
       "root": "test_support",
       "status": "active_test_support"
     },
@@ -43060,6 +43205,51 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/extractors/config/portable_numbers.unit.test.py",
       "rationale": "First-party unit test owner.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/contracts/bounded_io.unit.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/contracts/legacy_registry.unit.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/contracts/receipt_codec.unit.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/contracts/vocabulary_contracts.unit.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/contracts/witness_claim_guard.unit.test.py",
+      "rationale": "ADR0154 dependency-free extractor capability, legacy registry, receipt, bounded IO and claim-refusal foundation; immediate zero-debt clean admission.",
       "root": "test_owners",
       "status": "active_unit_test"
     },

@@ -201,7 +201,7 @@ def canonicalize_observations(
 
     state = CanonicalizationState()
     go_context = build_go_canonical_context(
-        observations,
+        state.refuse_capability_claims(observations),
         repository_scope=repository_scope,
     )
     state.diagnostics.extend(go_context.diagnostics)
@@ -212,7 +212,7 @@ def canonicalize_observations(
     edge_evidence_links = state.edge_evidence_links
     diagnostics = state.diagnostics
 
-    for ordinal, observation in enumerate(observations):
+    for ordinal, observation in state.unrefused(observations):
         if observation.kind == "file":
             _canonicalize_file_observation(
                 observation=observation,

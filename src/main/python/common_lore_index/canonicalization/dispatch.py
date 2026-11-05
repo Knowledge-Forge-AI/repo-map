@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 
+from common_lore_index.canonicalization.claim_guard import find_claim_refusals
 from common_lore_index.canonicalization.records import (
     CanonicalEdge,
     CanonicalEdgeEvidenceLink,
@@ -26,6 +28,34 @@ class CanonicalizationState:
     node_evidence_links: list[CanonicalNodeEvidenceLink] = field(default_factory=list)
     edge_evidence_links: list[CanonicalEdgeEvidenceLink] = field(default_factory=list)
     diagnostics: list[CanonicalizationDiagnostic] = field(default_factory=list)
+    refused_claim_ordinals: frozenset[int] | None = None
+
+    def refuse_capability_claims(
+        self, observations: Sequence[RawObservation]
+    ) -> tuple[RawObservation, ...]:
+        """Record claim refusals once and return the observations left to dispatch."""
+
+        if self.refused_claim_ordinals is not None:
+            raise RuntimeError("capability claims were already checked")
+        refusals = find_claim_refusals(observations)
+        refused = frozenset(item.ordinal for item in refusals)
+        self.refused_claim_ordinals = refused
+        self.diagnostics.extend(item.diagnostic() for item in refusals)
+        return tuple(item for ordinal, item in enumerate(observations) if ordinal not in refused)
+
+    def unrefused(
+        self, observations: Sequence[RawObservation]
+    ) -> Iterator[tuple[int, RawObservation]]:
+        """Return ``(ordinal, observation)`` pairs, skipping refused claims.
+
+        Ordinals stay those of the original raw sequence, so evidence keys and
+        diagnostics for admitted observations are unchanged.
+        """
+
+        refused = self.refused_claim_ordinals
+        if refused is None:
+            raise RuntimeError("capability claims must be checked before dispatch")
+        return (pair for pair in enumerate(observations) if pair[0] not in refused)
 
 
 def append_unsupported_observation_diagnostic(

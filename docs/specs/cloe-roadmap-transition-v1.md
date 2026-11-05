@@ -41,6 +41,14 @@ move; do not reset or mirror public content over protected private work.
 | W7 | Measure and govern actual expensive work; qualify first useful Local/Server and mixed-material experiences. |
 | W8 | Exact-candidate installed/release qualification and an evidence-backed v0.2.0 search-engine decision. |
 
+W6's dependency-free prerequisite is assigned
+`REPOMAP-CLOE-RUST-FOUNDATION1` under
+[ADR0154](../adr/2026/11/0154-extractor-capability-receipt-foundation.md).
+This reserves the specific `CLOE-RUST-FOUNDATION` family. Its implementation
+does not select a parser or close W6; parser/runtime adoption remains a
+separate decision. This prerequisite is accumulated into the next substantial
+milestone before public CI.
+
 W1 starts with [configuration compatibility](../ops/cloe-config-compatibility.md)
 under [ADR 0109](../adr/2026/10/0109-cloe-configuration-compatibility.md).
 Its usable new-format loader and inert filename planner are a preparatory
@@ -595,3 +603,25 @@ CI120 attempt 1 and one additional start 31, caps 31/31, with fresh identities
 and CI119 replay denial. No automatic retry, CI121 or start32 is authorized.
 CI119 integration coverage is unavailable; the CI118 integration measurement is
 historical. The 87/82 goals and scientific/full-W5/production decisions stay open.
+
+### CI120 outcome and W6 dependency-free foundation
+
+CI120 attempt 1 is `EXECUTED_FAIL`: eight jobs succeeded and the sole
+independent failure was an HTTP 504 during native AMD SDK APT preparation.
+Native preflight was not entered, seal cleanup/parity is not accepted and the
+native application counters are null. Staging passed with hard coverage floors;
+the exact 87/82 branch goals remain 6 unit and 235 integration branches short.
+Actual application starts are 31. No CI121 grant or start 32 exists; hosted
+capacity stays AVAILABLE and no remote action belongs to this checkpoint. See
+the [semantic exit](../../tools/ci/cloe-semantic1-exit.md) for the evidence header.
+
+Under the operator's direction to proceed, `REPOMAP-CLOE-RUST-FOUNDATION1`
+implements ADR 0154's
+[dependency-free capability foundation](cloe-extractor-capability-foundation-v1.md):
+closed vocabularies, the legacy registry, strict receipts, bounded storage, a
+witness contract with no positive path and canonical refusal of raw capability
+claims. Its [exit](../../tools/ci/cloe-rust-foundation1-exit.md) records scoped
+diagnostic proof and pending gates. Parser selection, native execution, Rust
+graph vocabulary and the remaining 10k–100k meaningful-LOC W6 milestone stay
+separate; this prerequisite is not published alone, and W6 and v0.1.0 are not
+complete.

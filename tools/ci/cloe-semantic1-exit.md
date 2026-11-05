@@ -1,11 +1,29 @@
 # REPOMAP-CLOE-SEMANTIC1 Exit: Evaluator and retrieval evidence milestone
 
-Status: **CI119 failed qualification** at staging
-`c045be34f8cfc33d398dd32dd020fa693871bc42`, tree
-`19a3f50fdd5e589f9b797d72567cc00c736d6566`. Unit, static, source/export,
-SBOM, CodeQL, native and all five system scenarios passed. Staging built its SDK
-but refused outer capacity binding before test collection with
-`unbound_backing_evidence`. CI119 consumed application start 30.
+Status: **CI120 failed qualification** (`EXECUTED_FAIL`) at staging
+`7bb9ef67dc7a4e4ffe422bf69a2334230bf194fa`, tree
+`a755093f07250fdbaea5ab49575e48df640996e5`, tested merge
+`faa70d96ece7f0b98135234f085bf8b0b1dea290`
+([CI120 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/41964087790)).
+Eight jobs succeeded. The sole independent failure was an HTTP 504 while the
+native AMD SDK preparation downloaded an APT package; native preflight was not
+entered, so seal cleanup/parity was not accepted and every native application
+counter is null rather than zero. The whole candidate is not accepted.
+
+## CI120 current evidence
+
+The staging lane collected and passed with its retained obligations
+independently checked. Measured integration coverage is 61,014/68,081
+statements and 18,089/22,346 branches; unit coverage is 59,926/68,081
+statements and 19,436/22,346 branches. Both hard floors pass. The exact 87%/82%
+branch goals remain open two-point-margin goals, 6 unit and 235 integration
+branches short; skips and deselections are not passes. All five system scenarios
+passed with verified cleanup, and the same-attempt system evidence authenticates
+one application start, making 31 actual cumulative starts. No CI121 grant,
+automatic retry or start 32 allocation exists. The operator disposition for
+this outcome is to proceed with the roadmap; that is not native qualification.
+W6 continues under ADR 0154 as
+[REPOMAP-CLOE-RUST-FOUNDATION1](cloe-rust-foundation1-exit.md).
 
 ## CI119 containerd compatibility and CI120 boundary
 

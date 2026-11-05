@@ -14359,6 +14359,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.canonicalization.claim_guard",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/canonicalization/claim_guard.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.canonicalization.config_family",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/canonicalization/config_family.py",
@@ -15430,6 +15436,48 @@
         "module": "common_lore_index.extractors.config.yaml_reference_contracts",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/extractors/config/yaml_reference_contracts.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts.bounded_io",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/bounded_io.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts.legacy_registry",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/legacy_registry.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts.receipt_codec",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/receipt_codec.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts.receipt_schema",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/receipt_schema.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts.vocabulary",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/vocabulary.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.extractors.contracts.witness",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/extractors/contracts/witness.py",
         "tier": "T1-future"
       },
       {
