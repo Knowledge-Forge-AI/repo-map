@@ -47,6 +47,8 @@ from common_lore_index.ops.config import (
     graph_database,
 )
 from common_lore_index.ops.preflight import _scan_preflight_root
+from common_lore_index.ops.resource_view import ResourceObserver, begin, observer_kwargs
+from common_lore_index.ops.resource_view._projections import finish_server
 from common_lore_index.ops.readback import _container_psql_execution
 from common_lore_index.ops.refresh_graphs import (
     _find_graph,
@@ -106,6 +108,35 @@ def refresh_graph(
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
     _postgres_route: PostgresRoute | None = None,
+    resource_observer: ResourceObserver | None = None,
+) -> OpsRefreshGraphResult:
+    """Refresh with optional reporting outside the owner's interrupt handler."""
+    def invoke() -> OpsRefreshGraphResult:
+        return _refresh_graph_call(
+            config, graph_id, psql_command=psql_command,
+            publication_receipt=publication_receipt, ingestion_mode=ingestion_mode,
+            staged_authority=staged_authority, backend_telemetry=backend_telemetry,
+            staging_measurements=staging_measurements, _postgres_route=_postgres_route,
+            **observer_kwargs(resource_observer),
+        )
+    if resource_observer is None:
+        return invoke()
+    begin(resource_observer, "server_refresh", "postgresql")
+    return finish_server(resource_observer, invoke())
+
+
+def _refresh_graph_call(
+    config: OpsConfig,
+    graph_id: str,
+    *,
+    psql_command: str | None = None,
+    publication_receipt: RunPublicationReceipt | None = None,
+    ingestion_mode: str = "staged",
+    staged_authority: IngestionAuthority | None = None,
+    backend_telemetry: BackendTelemetry | None = None,
+    staging_measurements: StagingMeasurements | None = None,
+    _postgres_route: PostgresRoute | None = None,
+    resource_observer: ResourceObserver | None = None,
 ) -> OpsRefreshGraphResult:
     started_at = _utc_now_text()
     try:
@@ -120,6 +151,7 @@ def refresh_graph(
                 backend_telemetry=backend_telemetry,
                 staging_measurements=None,
                 postgres_route=_postgres_route,
+                **observer_kwargs(resource_observer),
             )
         with staging_measurements.phase("refresh.total"):
             return _refresh_graph_impl(
@@ -132,6 +164,7 @@ def refresh_graph(
                 backend_telemetry=backend_telemetry,
                 staging_measurements=staging_measurements,
                 postgres_route=_postgres_route,
+                **observer_kwargs(resource_observer),
             )
     except KeyboardInterrupt:
         graph = _find_graph(config, graph_id)
@@ -169,6 +202,7 @@ def _refresh_graph_impl(
     backend_telemetry: BackendTelemetry | None,
     staging_measurements: StagingMeasurements | None,
     postgres_route: PostgresRoute | None,
+    resource_observer: ResourceObserver | None = None,
 ) -> OpsRefreshGraphResult:
     """Execute the selected portable production route without legacy fallback."""
     del psql_command
@@ -212,6 +246,7 @@ def _refresh_graph_impl(
             postgres_route=postgres_route,
             backend_telemetry=backend_telemetry,
             staging_measurements=staging_measurements,
+            **observer_kwargs(resource_observer),
         )
     except OpsRefreshGenerationChangedError:
         raise

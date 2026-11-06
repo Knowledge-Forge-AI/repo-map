@@ -267,3 +267,33 @@ def test_context_pack_and_select_run_without_the_postgres_driver(tmp_path: Path)
     assert packet["effective_mode"] == "ranked_discovery"
     assert packet["items"]
     assert harness.shim_invocations() == ""
+
+
+def test_local_refresh_and_resource_view_import_without_postgres_driver(tmp_path: Path) -> None:
+    """The observed Local boundary stays importable before any PostgreSQL path."""
+    harness = LocalHarness(tmp_path / "resource-view-import", block_psycopg=True)
+    forbidden = POSTGRES_IMPLEMENTATION | {
+        "common_lore_index.ops.resource_view._projections",
+    }
+    # Driver-free staging records already arrive through portable_refresh;
+    # Server implementations and the new projection adapter must stay absent.
+    code = (
+        "import runpy, sys\n"
+        f"guard = runpy.run_path({str(Path(sqlite_local_guard.__file__))!r})\n"
+        "guard['_install_psycopg_blocker']()\n"
+        "from common_lore_index.ops import local_refresh, resource_view\n"
+        "assert local_refresh.refresh_local_graph is not None\n"
+        "assert resource_view.ResourceObserver is not None\n"
+        f"for name in {tuple(sorted(forbidden))!r}:\n"
+        "    assert name not in sys.modules, name\n"
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", code],
+        env=harness.environment(),
+        cwd=harness.cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert harness.forbidden_events() == [], harness.forbidden_events()

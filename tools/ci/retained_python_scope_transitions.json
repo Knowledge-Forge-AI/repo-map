@@ -5304,6 +5304,82 @@
       "source_commit": "a06142b17d026431ecf7596d246218d5c0883849",
       "source_manifest_sha256": "2639b792ba3fe54eac90221240a63563d32add4ea15b12297ff287ded7eafc18",
       "status_path": "tools/ci/cloe-rust-pilot1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.ops._portable_worker_terms",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/_portable_worker_terms.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._contracts",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_contracts.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._controls",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_controls.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._observer",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_observer.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._observer_reporting",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_observer_reporting.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._projections",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_projections.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "4f809b335b3f75b59a52883f57c6bf4a170dcb606c0c4297dc2b0a8ee7a8f69e",
+      "new_selected_set_sha256": "47e30f15bb9635db1c002eb9e69d75cdb44efafd37b6115d27b9682b5372066a",
+      "old_ownership_manifest_sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472",
+      "old_selected_set_sha256": "e91899e06521fb4751ad3ec3442ad0b7231d36ded8355e328757465e3b858ea6",
+      "phase": "REPOMAP-CLOE-RESOURCE-EXPERIENCE1",
+      "reason": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "source_commit": "4c61936725ed711cc0fe655eec143d90ea5f6143",
+      "source_manifest_sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472",
+      "status_path": "tools/ci/cloe-resource-experience1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

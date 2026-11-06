@@ -13,6 +13,8 @@ from common_lore_index.ops.config_local import (
     local_graph_binding,
 )
 from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.ops.resource_view import ResourceObserver, begin, note_lexical_limits
+from common_lore_index.ops.resource_view._projections import finish_lexical
 from common_lore_index.ops.lexical_publication import (
     LexicalBuildOutcome,
     build_and_publish_lexical_generation,
@@ -111,10 +113,20 @@ def build_graph_lexical_generation(
     max_projected_file_bytes: int = PRODUCTION_MAX_PROJECTED_FILE_BYTES,
     max_chunk_lines: int = PRODUCTION_MAX_CHUNK_LINES,
     max_chunk_bytes: int = PRODUCTION_MAX_CHUNK_BYTES,
+    resource_observer: ResourceObserver | None = None,
 ) -> LexicalBuildOutcome:
     """Build and publish a cloe_lexical generation for a configured PostgreSQL graph."""
+    begin(resource_observer, "lexical_build", "postgresql")
+    note_lexical_limits(
+        resource_observer, max_projected_files=max_projected_files,
+        max_aggregate_input_bytes=max_aggregate_input_bytes,
+        max_input_artifact_bytes=max_input_artifact_bytes,
+        max_projected_file_bytes=max_projected_file_bytes,
+        max_chunk_lines=max_chunk_lines, max_chunk_bytes=max_chunk_bytes,
+        statement_timeout_ms=DEFAULT_BUILD_STATEMENT_TIMEOUT_MS,
+    )
     live_config = _fresh_ops_config(config)
-    return build_and_publish_lexical_generation(
+    return finish_lexical(resource_observer, build_and_publish_lexical_generation(
         live_config,
         graph_id,
         connection_factory=connection_factory,
@@ -129,7 +141,7 @@ def build_graph_lexical_generation(
         max_projected_file_bytes=max_projected_file_bytes,
         max_chunk_lines=max_chunk_lines,
         max_chunk_bytes=max_chunk_bytes,
-    )
+    ))
 
 
 def query_graph_lexical_generation(

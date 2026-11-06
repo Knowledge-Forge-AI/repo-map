@@ -69,6 +69,10 @@ from common_lore_index.ops.portable_refresh import (
     portable_publication_binding,
     validate_portable_capture,
 )
+from common_lore_index.ops.resource_view import (
+    ResourceObserver, begin, end_stage, finish_local, mark,
+    note_validated, observer_kwargs,
+)
 from common_lore_index.storage.publication import PortablePublicationBinding, RunPublicationReceipt
 from common_lore_index.storage.sqlite_local import investigation_queries
 from common_lore_index.storage.sqlite_local.connection import (
@@ -165,8 +169,10 @@ def refresh_local_graph(
     graph_id: str,
     *,
     limits: object | None = None,
+    resource_observer: ResourceObserver | None = None,
 ) -> LocalRefreshResult:
     """Reconcile a pending attempt, then capture, validate and publish one generation."""
+    begin(resource_observer, "local_refresh", "sqlite")
     graph = _graph(config, graph_id)
     if not graph.enabled:
         raise LocalRefreshError(f"graph {graph_id!r} is disabled")
@@ -176,20 +182,28 @@ def refresh_local_graph(
     identity = local_graph_binding(graph)
     if not path.is_file():
         raise LocalStoreError(NOT_INITIALIZED, "run ops sqlite-init for this graph first")
+    mark(resource_observer, "lock_and_reconcile")
     with publisher_lock(path):
         replay = _reconcile(config, graph, path, identity)
+        end_stage(resource_observer, "lock_and_reconcile")
         if replay is not None:
-            return replay
+            return finish_local(resource_observer, replay)
         for binding in graph.effective_source_bindings:
             if not Path(binding.root_path_expanded).is_dir():
                 raise LocalRefreshError(f"graph {graph_id!r} source root is unavailable")
         expected = read_accepted_generation(path, identity)
+        mark(resource_observer, "capture")
         capture = capture_portable_candidate(
             config, graph, authority=None, limits=limits,
             attempts_namespace=attempts_namespace(graph.id),
+            **observer_kwargs(resource_observer),
         )
+        end_stage(resource_observer, "capture")
+        mark(resource_observer, "validation")
         receipt, validated = validate_portable_capture(capture, stage_id=LOCAL_STAGE_ID)
         try:
+            end_stage(resource_observer, "validation")
+            note_validated(resource_observer, validated)
             try:
                 portable = portable_publication_binding(
                     capture, receipt, validated, stage_id=LOCAL_STAGE_ID
@@ -216,6 +230,7 @@ def refresh_local_graph(
                 _settle(capture, accepted=False)  # the publisher was never entered
                 raise
             try:
+                mark(resource_observer, "publication")
                 result = publish_generation(
                     path,
                     publication,
@@ -231,14 +246,14 @@ def refresh_local_graph(
             _settle(capture, accepted=True)
         finally:
             validated.close()
-    return LocalRefreshResult(
+    return finish_local(resource_observer, LocalRefreshResult(
         graph_id=graph.id,
         generation=result.generation,
         run_id=result.run_id,
         previous_run_id=result.previous_run_id,
         publication=portable.public_mapping(),
         family_counts=result.family_counts,
-    )
+    ))
 
 
 def _settle(capture: PortableCapture, *, accepted: bool) -> None:

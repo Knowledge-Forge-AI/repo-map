@@ -684,3 +684,69 @@ command/two exact wheel transfers. Spent CI121 authority is rejected. Existing
 native reports stay immutable; the repaired source has pending hosted evidence.
 No automatic retry, main promotion, Local Rust or full W6/scientific acceptance
 follows. Coverage-only deficits accrue with the next substantive milestone.
+
+### CI122 outcome and W7 resource-experience design
+
+CI122 passed all nine hosted jobs on the CI121 repair candidate, public staging
+`4c61936725ed711cc0fe655eec143d90ea5f6143`. The parent's independent
+same-source obligations validator qualifies that result. Public main remains
+`5ad00d162ad8a04430874275246a53227578c533`; there is no main or tag
+promotion.
+
+The registered CI122 qualification input, as read and attested by the
+independent design review, records these results:
+
+- run 42164983397, attempt 1, classified `EXECUTED_PASS`;
+- 33 cumulative application starts;
+- native AMD component command count 2 and transfer count 8;
+- unit branch coverage of 86.86%, which is 34 branches short of 87;
+- integration branch coverage of 80.04%, which is 463 branches short of 82.
+
+The hard gates are unchanged, and the desired 87/82 margins remain open. CI122
+qualifies the CI121 repair candidate only. It does not establish full W6, Local
+Rust, release or installed acceptance, or learned or scientific acceptance.
+
+Under the operator's roadmap-continuation instruction,
+`REPOMAP-CLOE-RESOURCE-EXPERIENCE1` is the next W7 milestone. Its bounded source implementation is assigned
+under accepted
+[ADR 0159](../adr/2026/11/0159-resource-view-and-first-use-workflows.md) and
+the [resource experience specification](cloe-resource-experience-v1.md) (design
+checkpoint 3), in two epics:
+
+- a report-only, internal, call-owned `cloe-resource-view-v1` observer over
+  SQLite Local and PostgreSQL refresh, the existing lexical build and bounded
+  compact context. It reports descriptive, non-additive values that are
+  already in memory, and it attributes existing controls truthfully. It adds
+  no limit, refusal, CLI flag, CLI or MCP field, staging tier, or SQL. Staging
+  resource values are projected only from events that a caller independently
+  selected;
+- reproducible source-level first-use workflows for Local, Server and mixed
+  material over the public `mixed-v1` fixture, through the existing commands.
+  Local stays free of Psycopg, Docker, parsers and enrichment. Each workflow
+  asserts only its stated delta over the existing Local operator and lexical
+  round-trip owners.
+
+The observer's hooks never sit where an owner handler could relabel a
+committed publication as failed or cancelled.
+
+The source checkpoint implements both epics and passes 141 scoped unit cases,
+57 containerized integration cases and retained-code enforcement with zero new
+debt. Real-boundary proof includes clock degradation, post-commit interrupt
+custody and observed Local/Server concurrency. Its
+[source exit](../../tools/ci/cloe-resource-experience1-exit.md) binds the exact
+selectors and source hashes. Final acceptance requires independent
+resulting-state review, with its disposition recorded in the phase commit.
+Several items remain separate:
+
+- public exposure of the view, numeric governance and worker-side attribution;
+- the lexical query, vector and Rust views;
+- the missing sealing I/O cap (manifest caps are checked only after capture);
+- the W7-owned namespace19042 int32-ID limit;
+- held-out tasks;
+- publication.
+
+Publication waits for final independent review and the fresh candidate binding
+in [ADR0160](../adr/2026/11/0160-resource-experience-staging-campaign.md).
+That conditional CI123 campaign permits one application start34 after33,
+native AMD Rust command3 and two exact wheel transfers for cumulative10;
+it is not execution or rearm of CI122. W7, W6 and v0.1.0 are not complete.

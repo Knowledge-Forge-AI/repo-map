@@ -1453,6 +1453,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._portable_worker_terms",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.ops._refresh_preflight under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops._refresh_preflight",
@@ -2203,6 +2212,60 @@
       "justification": "Existing retention forecast preserved; dependency-coherent Python implementation enrolled after clean profile checks, with cumulative quality lineage and no architecture relocation.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resolved_config",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._contracts",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._controls",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._observer",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._observer_reporting",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._projections",
       "ownership_class": "python_retained"
     },
     {

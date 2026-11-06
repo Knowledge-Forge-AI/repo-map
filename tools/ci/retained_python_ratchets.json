@@ -773,7 +773,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472"
+    "sha256": "4f809b335b3f75b59a52883f57c6bf4a170dcb606c0c4297dc2b0a8ee7a8f69e"
   },
   "ruff": {
     "findings": [
@@ -16435,6 +16435,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops._portable_worker_terms",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_portable_worker_terms.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops._refresh_preflight",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/_refresh_preflight.py",
@@ -16936,6 +16942,42 @@
         "module": "common_lore_index.ops.resolved_config",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resolved_config.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._contracts",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_contracts.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._controls",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_controls.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._observer",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_observer.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._observer_reporting",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_observer_reporting.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._projections",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_projections.py",
         "tier": "T1-future"
       },
       {

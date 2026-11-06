@@ -152,3 +152,10 @@ lexical operations. Native lexical tests prove the BIGINT lease/final-fence key
 expressions and competition, plus an ordinary-ID publication/build/query/revoke
 round trip. They do not qualify end-to-end graph publication for large IDs.
 That publisher compatibility work remains a named W7 follow-up.
+
+## First-use workflow
+
+The bounded Server and mixed-privacy sequence is documented in
+[First-use workflows](first-use-workflows.md). It reuses this page's native
+FTS build/query/revoke commands and records feed/mailbox lexical refusal as a
+policy outcome. The guide is source-level; installed proof remains pending.

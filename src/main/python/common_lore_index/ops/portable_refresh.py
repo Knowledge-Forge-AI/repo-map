@@ -22,7 +22,13 @@ from common_lore_index.coordinator._portable_capability import PortableExecution
 from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
 from common_lore_index.coordinator._portable_materialization import _directory_identity, _remove_attempt_root
 from common_lore_index.coordinator._portable_semantic_adapter import WORKER_CAPABILITY_IDENTITY
-from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.ops._portable_worker_terms import (
+    PORTABLE_MAX_ARTIFACT_BYTES, _worker_references, effective_leaf_limits,
+)
+from common_lore_index.ops.resource_view import (
+    ResourceObserver, end_stage, mark, note_manifest, note_validated,
+    note_worker_launch, observer_kwargs,
+)
 from common_lore_index.ops.config_records import OpsConfig, OpsGraphConfig
 from common_lore_index.ops.generations import canonicalizer_generation, extractor_generation
 from common_lore_index.ops.graph_registry import GraphRegistryConfig
@@ -101,16 +107,26 @@ def execute_portable_refresh(
     staging_measurements: StagingMeasurements | None = None,
     limits: object | None = None,
     postgres_route: PostgresRoute | None = None,
+    resource_observer: ResourceObserver | None = None,
 ) -> PortableRefreshOutcome:
     """Seal, execute once, validate, and publish through one trusted adapter."""
 
     execution_postgres = (postgres_route or effective_postgres_route(config)).apply(config.postgres)
-    capture = capture_portable_candidate(config, graph, authority=authority, limits=limits)
+    mark(resource_observer, "capture")
+    capture = capture_portable_candidate(
+        config, graph, authority=authority, limits=limits,
+        **observer_kwargs(resource_observer),
+    )
+    end_stage(resource_observer, "capture")
     stage_id = stage_id_for_authority(capture.authority)
+    mark(resource_observer, "validation")
     receipt, validated = validate_portable_capture(capture, stage_id=stage_id)
     try:
+        end_stage(resource_observer, "validation")
+        note_validated(resource_observer, validated)
         binding = portable_publication_binding(capture, receipt, validated, stage_id=stage_id)
         try:
+            mark(resource_observer, "publication")
             summary = run_staged_portable_refresh(
                 execution_postgres.psql_args_for_database(database),
                 validated,
@@ -145,6 +161,7 @@ def capture_portable_candidate(
     authority: IngestionAuthority | None,
     limits: object | None = None,
     attempts_namespace: str | None = None,
+    resource_observer: ResourceObserver | None = None,
 ) -> PortableCapture:
     """Seal the configured sources and run the database-independent worker once.
 
@@ -178,6 +195,7 @@ def capture_portable_candidate(
         extractor_generation=extractor,
         canonicalizer_generation=canonicalizer,
     )
+    note_manifest(resource_observer, manifest)
     resolved_authority = authority or IngestionAuthority(
         operation_id=operation_id,
         attempt=attempt,
@@ -215,19 +233,13 @@ def capture_portable_candidate(
             config_generation=manifest.config_generation,
             extractor_generation=manifest.extractor_generation,
             canonicalizer_generation=manifest.canonicalizer_generation,
-            max_artifact_bytes=4 * 1024 * 1024 * 1024,
+            max_artifact_bytes=PORTABLE_MAX_ARTIFACT_BYTES,
             max_bundle_bytes=STREAMING_MAX_BUNDLE_BYTES,
         ).validate()
         capability_path = create_portable_capability(workspace_root, capability)
-        leaf_limits = limits
-        if leaf_limits is None:
-            leaf_deadline = authority.process_deadline_seconds if authority is not None else None
-            if leaf_deadline is not None:
-                from dataclasses import replace
-                leaf_limits = replace(DEFAULT_LIMITS, process_deadline_seconds=leaf_deadline)
-            else:
-                leaf_limits = DEFAULT_LIMITS
+        leaf_limits = effective_leaf_limits(limits, authority)
         try:
+            note_worker_launch(resource_observer, capability, leaf_limits)
             worker = run_portable_worker(
                 capability_path,
                 {"job_id": capability.job_id, "attempt": capability.attempt},
@@ -357,34 +369,6 @@ def _private_directory(path):
         os.fchmod(descriptor, 0o700)
     finally:
         os.close(descriptor)
-
-
-def _worker_references(terminal):
-    extension = terminal.get("portable_snapshot")
-    if terminal.get("status") != "succeeded" or not isinstance(extension, dict):
-        from common_lore_index.coordinator._protocol_validation import _ERROR_CATEGORIES
-
-        raw = terminal.get("error_category")
-        category = raw if isinstance(raw, str) and raw in _ERROR_CATEGORIES else "worker_crash"
-        # Preserve deterministic refusals. Other classes retain the previous
-        # retry policy until independently qualified; no diagnostic parsing.
-        if category not in {"contract_validation", "unsupported_contract", "unsupported_capability"}:
-            category = "worker_crash"
-        reason = terminal.get("reason")
-        if reason in {"process_timeout", "heartbeat_timeout"}:
-            category = "worker_timeout"
-        elif reason == "protocol":
-            category = "protocol"
-        raise PortableRefreshError(
-            f"portable worker did not complete ({category})", category=category
-        )
-    try:
-        return (
-            ArtifactReference.from_mapping(extension["receipt"]),
-            ArtifactReference.from_mapping(extension["bundle"]),
-        )
-    except (KeyError, TypeError, ValueError) as error:
-        raise PortableRefreshError("portable worker result is malformed") from error
 
 
 __all__ = (

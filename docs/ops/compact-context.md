@@ -185,3 +185,10 @@ Explicit edge kinds form a lexical set. A returned relation between two admitted
 seeds is retained even when only one was expanded, without duplicating the other
 seed as a neighbor. Omission counters describe their category units and can
 overlap; they are not a distinct-node cardinality total.
+
+## First-use workflow
+
+See [First-use workflows](first-use-workflows.md) for the bounded mixed-v1
+Local and Server walkthrough. It demonstrates alias-qualified metadata
+provenance, pinned-selection staleness and source-blind packets without
+adding body authorization. Installed and native qualification are pending.
