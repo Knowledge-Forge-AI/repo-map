@@ -14,10 +14,11 @@ def test_repository_run_prefix_selects_stable_or_historical_identity() -> None:
         git_commit=None,
         run_status="complete",
     )
-    assert "name, root_path, repository_identity" in stable[1]
-    assert "ON CONFLICT (repository_identity)" in stable[1]
-    assert "WHERE repository_identity IS NOT NULL" in stable[1]
-    assert "root_path = EXCLUDED.root_path" in stable[1]
+    stable_upsert = next(sql for sql in stable if sql.startswith("INSERT INTO repositories"))
+    assert "name, root_path, repository_identity" in stable_upsert
+    assert "ON CONFLICT (repository_identity)" in stable_upsert
+    assert "WHERE repository_identity IS NOT NULL" in stable_upsert
+    assert "root_path = EXCLUDED.root_path" in stable_upsert
 
     historical = repository_run_prefix_sql(
         repository_name="fixture",
@@ -25,8 +26,9 @@ def test_repository_run_prefix_selects_stable_or_historical_identity() -> None:
         git_commit=None,
         run_status="complete",
     )
-    assert "repository_identity" not in historical[1]
-    assert "ON CONFLICT (root_path)" in historical[1]
+    historical_upsert = next(sql for sql in historical if sql.startswith("INSERT INTO repositories"))
+    assert "repository_identity" not in historical_upsert
+    assert "ON CONFLICT (root_path)" in historical_upsert
 
 
 def test_direct_publication_forwards_optional_repository_identity() -> None:

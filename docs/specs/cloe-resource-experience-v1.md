@@ -35,7 +35,7 @@ each cited line again before editing.
 | `ops/_portable_retention.py` | This module was already extracted from `portable_refresh` and is imported back by it. It imports nothing from `portable_refresh`, so a sibling extraction there is an established pattern with no cycle. |
 | `artifacts/manifest.py` | `PortableSnapshotManifest.total_files` and `.total_bytes` (49–50) are set when the manifest is created (116, 132). |
 | `artifacts/_manifest_records.py` | `ArtifactLimits` (32–38) caps 100,000 artifacts and 4 GiB in total. `_validate_inventory` (166–191) enforces both when the manifest is created. |
-| `artifacts/source_sealer.py` | Sealing scans (40), reads, hashes and stores every entry (50–68), and scans again (77–79) before creating the manifest (94). The manifest bounds are therefore checked only after all sealing I/O. |
+| `artifacts/source_sealer.py` | ADR0162 adds inventory admission after the first real scan, before sealing body copies/store writes, and streams bodies with exact digest/size guards. Final manifest validation and the second real scan remain. Discovery, retries and store verification still have no aggregate sealing-I/O cap. |
 | `ops/local_refresh.py` (367 lines) | `refresh_local_graph(config, graph_id, *, limits=None)` (163–241). It takes the lock (179), then reconciles (180–182). A replay returns `reconciled=True` (341–349) without capture, a worker or publication. It then captures (187), validates (191), publishes (219–224) and settles (231). Refusals raise `LocalRefreshError` or `LocalStoreError`. |
 | `ops/refresh.py` (354 lines) | `refresh_graph(..., staging_measurements=None)` (98–158). Only `KeyboardInterrupt` becomes a returned failure, with `error_category="cancelled"` and `publication_state="rolled_back"` (136–158). `SystemExit` propagates. `_refresh_graph_impl` returns failure results with `not_started` or `commit_unknown` (218–240), and success with `committed` (241–253). `OpsRefreshError` propagates. |
 | `storage/staging_observability.py` | `_emit` catches only `Exception` (282–293). `_emit_operation` and `_emit_phase` count a `KeyboardInterrupt` and re-raise it (295–347). `SystemExit` is not caught. `timed` emits in `finally` (176–197), so a sink's `BaseException` there replaces an exception already in flight. `bind_direct_publication_attempt` calls its sink unguarded (88–103). |
@@ -183,7 +183,7 @@ in that case. Metrics are non-additive:
 |---|---|---|---|
 | `worker_process_deadline` (s) | `process_deadline_seconds` on the leaf-limits object actually passed to `run_portable_worker`. A non-integer value omits the row. | `parent_supervised` | `true` |
 | `worker_max_artifact_bytes`, `worker_max_bundle_bytes` | The validated capability's fields | `declared_to_worker` | `true` |
-| `manifest_max_artifacts`, `manifest_max_total_bytes` | `DEFAULT_ARTIFACT_LIMITS` | `post_capture_validation` (checked after all sealing I/O) | `true` only after manifest construction/validation; otherwise unknown |
+| `manifest_max_artifacts`, `manifest_max_total_bytes` | `DEFAULT_ARTIFACT_LIMITS` | `post_capture_validation` (final validation; ADR0162 also preflights the captured inventory) | `true` only after manifest construction/validation; early refusal never reaches the normal-path hook and remains unknown |
 | `sealing_io_limit` | `null` | `absent` | `null` |
 | The six lexical `max_*` projection limits | The arguments given to `build_graph_lexical_generation` | `owner_enforced` | `true` |
 | `lexical_build_statement_timeout` (ms) | `DEFAULT_BUILD_STATEMENT_TIMEOUT_MS` | `database_statement_timeout` | `true` |
@@ -713,8 +713,8 @@ command or transfer.
 - worker-reported counters and RSS;
 - the lexical query, revoke, vector, Rust and coordinator views;
 - staging duration projection;
-- a sealing I/O cap;
-- the namespace19042 int32-ID limit;
+- a complete sealing I/O cap (ADR0162 admits existing inventory policy earlier and streams body copies only);
+- BIGINT staged-publication qualification under ADR0162, preserving namespace19042 for low IDs;
 - Local Rust and full W6;
 - held-out criteria;
 - installed or W8 qualification.

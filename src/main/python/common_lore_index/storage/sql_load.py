@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Sequence
 
+from common_lore_index.storage._repository_publication_lock import repository_admission_guard_sql
 from common_lore_index.storage.rows import (
     CanonicalEdgeEvidenceLinkRow,
     CanonicalEdgeRow,
@@ -84,6 +85,7 @@ def repository_run_prefix_sql(
         )
     return [
         "BEGIN;",
+        repository_admission_guard_sql(root_path, repository_identity),
         repository_upsert_sql(repository_name, root_path, repository_identity),
         "\\gset repo_",
         (

@@ -210,8 +210,9 @@ W3 retains its first successful observation at its original source and the
 independent-review corrections at attempt2; neither is repinned. Before future
 criteria acceptance, disposition the native comparator output above the proposed
 65,536-byte ceiling and the incumbent PostgreSQL graph absent-answer discrepancy.
-The separate namespace19042 staged-publisher int32-ID limit remains W7-owned;
-this milestone qualifies lexical lock expressions, not all large-ID publication.
+That W3 milestone qualifies lexical lock expressions, not all large-ID
+publication. ADR0162's later W7 work separately addresses the staged publisher
+with high-ID row exclusion and admission guards; low IDs retain namespace19042.
 
 ## W3 hosted qualification and W4 selection
 
@@ -741,7 +742,7 @@ Several items remain separate:
 - public exposure of the view, numeric governance and worker-side attribution;
 - the lexical query, vector and Rust views;
 - the missing sealing I/O cap (manifest caps are checked only after capture);
-- the W7-owned namespace19042 int32-ID limit;
+- the W7-owned staged-publisher BIGINT gap, addressed by the later ADR0162 phase;
 - held-out tasks;
 - publication.
 
@@ -750,3 +751,36 @@ in [ADR0160](../adr/2026/11/0160-resource-experience-staging-campaign.md).
 That conditional CI123 campaign permits one application start34 after33,
 native AMD Rust command3 and two exact wheel transfers for cumulative10;
 it is not execution or rearm of CI122. W7, W6 and v0.1.0 are not complete.
+
+### W7 resource governance continuation
+
+CI124 attempt 1 passed all nine jobs for the repaired resource-experience
+candidate. Retained M/A, system, native and Rust artifacts were reconciled
+against its exact source. Application starts are 35; native AMD Rust commands
+are 4 and exact wheel transfers 12. Unit branches are 20,674/23,826 (86.77%);
+integration branches are 19,113/23,826 (80.22%). Hard floors pass; the desired
+87/82 margins still require 55/425 branches at this denominator. These counts
+do not qualify a successor candidate.
+
+The operator's continuation selects `REPOMAP-CLOE-RESOURCE-GOVERNANCE1`,
+under [ADR 0162](../adr/2026/11/0162-early-sealing-admission-and-bigint-publication.md):
+early admission against existing manifest policy and descriptor-streamed
+sealing, followed by BIGINT staged-publication exclusion with matching
+admission guards. The writer-conflict inventory is resolved in ADR 0162;
+real competing-connection proof remains required. Both epics form one
+batched milestone; no intermediate
+design-only publication is planned. Existing numeric limits and debt ceilings
+remain unchanged. Whole-I/O governance, installed qualification and full W7
+completion remain open.
+
+Both resource-governance epics pass 223 scoped unit and 36 containerized
+integration cases, including actual maximum-BIGINT publication under the
+standard refresh role, cross-mode contention, admission, lexical lifecycle
+and first-use compatibility. Retained enforcement preserves all 2,805 debt
+comparisons and admits the new owners cleanly. The
+[phase exit](../../tools/ci/cloe-resource-governance1-exit.md) records exact
+selectors and limitations. Conditional
+[ADR0163](../adr/2026/11/0163-resource-governance-staging-campaign.md) selects
+one fresh reviewed CI125 attempt1 (application cap36 after actual35, native
+AMD Rust command5 and cumulative wheel transfers14). Independent final review
+and exact-candidate binding precede publication. No successor has executed.

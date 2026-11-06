@@ -13,6 +13,7 @@ import psycopg
 from psycopg.types.json import Jsonb
 
 from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage._repository_publication_lock import guard_existing_large_repository
 from common_lore_index.storage.authority import GraphRunId, StageId
 from common_lore_index.storage.backend_telemetry import BackendTelemetry
 from common_lore_index.storage.errors import (
@@ -120,6 +121,7 @@ def _ensure_repository(
             "DO UPDATE SET name = EXCLUDED.name, root_path = EXCLUDED.root_path RETURNING id"
         )
         values = (name, root_path, repository_identity)
+    guard_existing_large_repository(connection, root_path, repository_identity)
     row = connection.execute(sql, values).fetchone()
     if row is None:
         raise StorageSchemaError("staged repository identity was not returned")

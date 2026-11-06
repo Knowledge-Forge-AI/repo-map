@@ -360,6 +360,22 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.resource-governance1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/artifacts/source_sealer_admission.int.test.py",
+        "src/test/int/python/repomap_kg/storage/bigint_portable_lexical.int.test.py",
+        "src/test/int/python/repomap_kg/storage/bigint_publication_exclusion.int.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/source_sealer_admission.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/source_sealing_io.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/publication_lock_bounds.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/repository_admission_lock.unit.test.py"
+      ],
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.retrieval1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/retrieval/corpus_publication.int.test.py",
@@ -57302,6 +57318,87 @@
       "rationale": "ADR0161 real PostgreSQL lexical source boundaries and SQLite resource refusal/admission proof; all inherited quality ceilings preserved, zero new debt.",
       "root": "test_owners",
       "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_source_sealing_io.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/_repository_publication_lock.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/source_sealer_admission.int.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/bigint_portable_lexical.int.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/bigint_publication_exclusion.int.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/source_sealer_admission.unit.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/source_sealing_io.unit.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/publication_lock_bounds.unit.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/repository_admission_lock.unit.test.py",
+      "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

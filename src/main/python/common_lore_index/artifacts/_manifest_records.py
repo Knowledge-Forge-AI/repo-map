@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 import re
 
@@ -44,6 +45,15 @@ class ArtifactLimits:
 
 
 DEFAULT_ARTIFACT_LIMITS = ArtifactLimits()
+
+_LIMIT_FIELDS = (
+    "max_artifacts",
+    "max_total_bytes",
+    "max_path_bytes",
+    "max_manifest_bytes",
+    "max_diagnostics",
+    "max_diagnostic_bytes",
+)
 
 
 @dataclass(frozen=True, order=True)
@@ -163,32 +173,56 @@ class ManifestArtifact:
         }
 
 
-def _validate_inventory(
-    bindings: tuple[ManifestBinding, ...],
-    entries: tuple[ManifestArtifact, ...],
+def _validate_limits(limits: ArtifactLimits) -> None:
+    if not isinstance(limits, ArtifactLimits):
+        raise ValueError("artifact limits are invalid")
+    for field in _LIMIT_FIELDS:
+        if getattr(limits, field) > getattr(DEFAULT_ARTIFACT_LIMITS, field):
+            raise ValueError("artifact limits exceed defaults")
+
+
+def _validate_inventory_shape(
+    binding_ids: Sequence[str],
+    records: Sequence[tuple[str, str, int]],
     limits: ArtifactLimits,
 ) -> None:
-    if not bindings:
+    if not binding_ids:
         raise ValueError("snapshot manifest requires a binding")
-    binding_ids = [item.binding_id for item in bindings]
     if len(binding_ids) != len(set(binding_ids)):
         raise ValueError("duplicate snapshot binding")
-    if len(entries) > limits.max_artifacts:
+    if len(records) > limits.max_artifacts:
         raise ValueError("artifact count bounds exceeded")
     known = set(binding_ids)
-    keys = [(item.binding_id, item.source_relative_path) for item in entries]
-    if any(item.binding_id not in known for item in entries):
+    keys = [(binding_id, path) for binding_id, path, _size in records]
+    if any(binding_id not in known for binding_id, _path, _size in records):
         raise ValueError("artifact binding is absent")
+    for _binding, path, _size in records:
+        _portable_path(path)
     if len(keys) != len(set(keys)):
         raise ValueError("duplicate artifact path")
     folded = [(binding, path.casefold()) for binding, path in keys]
     if len(folded) != len(set(folded)):
         raise ValueError("case-ambiguous artifact path")
-    if any(len(item.source_relative_path.encode("utf-8")) > limits.max_path_bytes for item in entries):
+    if any(len(path.encode("utf-8")) > limits.max_path_bytes for _binding, path, _size in records):
         raise ValueError("artifact path bounds exceeded")
-    total = sum(item.reference.size_bytes for item in entries)
+    total = sum(size for _binding, _path, size in records)
     if total > limits.max_total_bytes:
         raise ValueError("artifact byte bounds exceeded")
+
+
+def _validate_inventory(
+    bindings: tuple[ManifestBinding, ...],
+    entries: tuple[ManifestArtifact, ...],
+    limits: ArtifactLimits,
+) -> None:
+    _validate_inventory_shape(
+        [item.binding_id for item in bindings],
+        [
+            (item.binding_id, item.source_relative_path, item.reference.size_bytes)
+            for item in entries
+        ],
+        limits,
+    )
 
 
 _PRIVACY_RANK = {
@@ -329,4 +363,6 @@ __all__ = [
     "_portable_path",
     "_str",
     "_validate_inventory",
+    "_validate_inventory_shape",
+    "_validate_limits",
 ]

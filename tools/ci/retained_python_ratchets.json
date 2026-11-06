@@ -773,7 +773,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "4f809b335b3f75b59a52883f57c6bf4a170dcb606c0c4297dc2b0a8ee7a8f69e"
+    "sha256": "3ce2ff3654201fafc321fdf6627b75a28e838aea0dcbcbad0fe06ff5d9c79506"
   },
   "ruff": {
     "findings": [
@@ -14197,6 +14197,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.artifacts._source_sealing_io",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_source_sealing_io.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.artifacts._store_common",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/_store_common.py",
@@ -17830,6 +17836,12 @@
         "module": "common_lore_index.storage._publication_fencing_sql",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/_publication_fencing_sql.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.storage._repository_publication_lock",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/_repository_publication_lock.py",
         "tier": "T1-future"
       },
       {

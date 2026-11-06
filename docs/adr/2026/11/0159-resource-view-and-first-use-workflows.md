@@ -38,6 +38,12 @@ parser command, image build, public campaign or release promotion.
 
 ## Context
 
+This section records the introducing phase's source state. Accepted
+[ADR 0162](0162-early-sealing-admission-and-bigint-publication.md) subsequently
+adds early inventory admission and streamed sealing. Final manifest validation
+still governs normal-path report applicability; an aggregate sealing-I/O cap
+remains absent.
+
 W7 covers two goals: measuring and governing actual expensive work, and
 qualifying the first useful SQLite Local, PostgreSQL Server and mixed-material
 experiences ([roadmap](../../../specs/cloe-roadmap-transition-v1.md)). The

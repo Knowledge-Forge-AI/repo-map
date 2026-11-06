@@ -29,6 +29,9 @@ from common_lore_index.storage.staged_connection_telemetry import (
 )
 
 
+from common_lore_index.storage._repository_publication_lock import acquire_publication_lock
+
+
 _DIRECT_LOCK_CLASS = 19042
 
 
@@ -113,12 +116,7 @@ def execute_final_transaction(
     """Run the final graph mutation and receipt statements in one transaction."""
 
     owner = handoff.merge.owner
-    lock = connection.execute(
-        "SELECT pg_try_advisory_xact_lock(%s, %s)",
-        (_DIRECT_LOCK_CLASS, owner.repository_id),
-    ).fetchone()
-    if lock is None or lock[0] is not True:
-        raise StorageSchemaError("graph publication already active")
+    acquire_publication_lock(connection, owner.repository_id, legacy_class=_DIRECT_LOCK_CLASS)
     if staging_measurements is None:
         _execute(connection, build_publication_prepare_statements(handoff))
         _execute(connection, build_source_index_merge_statements(handoff.merge))
