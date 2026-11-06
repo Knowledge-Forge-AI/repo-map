@@ -113,7 +113,9 @@ class _Parser:
         while True:
             token = self.peek()
             if token is None:
-                end = len(self.data)
+                # ARM1's missing-brace token is at the last concrete child,
+                # before trailing whitespace, rather than at the input EOF.
+                end = children[-1].end_byte
                 children.append(Node("}", end, end, named=False, missing=True))
                 return Node("declaration_list", opener[1], end, children)
             if self.punct(token, b"}"):

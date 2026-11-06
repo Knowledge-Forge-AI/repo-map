@@ -1027,7 +1027,7 @@
       },
       {
         "path": "tools/ci/qualification_rust_cleanup.py",
-        "sha256": "5e1330248a7dabcf2edb663b5ca4613c22d78d1e7461b50c0c5144a6f329fd9f"
+        "sha256": "6d0955a8cddb04b599aea69763324755c4f54a55c047a06974a70e1b798ecb9c"
       },
       {
         "path": "tools/ci/qualification_rust_closure.py",
@@ -1039,11 +1039,11 @@
       },
       {
         "path": "tools/ci/qualification_rust_manifest.py",
-        "sha256": "2b6e1d39c3423e1242ee9fe46a25f26a935f080a24e1802c5c935351cacd6ba7"
+        "sha256": "6f7922bea7e215a51eb40458f157ed7804738751be25f4b90ad349db8e7083d1"
       },
       {
         "path": "tools/ci/qualification_rust_runtime.py",
-        "sha256": "acbd56c885fb94f8880799495fed5f9896566d4f0e64b68a82c8cd89565cb547"
+        "sha256": "d6adcd040359308d36c1639393eed84bcc7e4a232d0a5606c678be3ed990070d"
       },
       {
         "path": "tools/ci/qualification_rust_scenarios.py",
@@ -1051,11 +1051,11 @@
       },
       {
         "path": "tools/ci/qualification_rust_shape.py",
-        "sha256": "e06194fb32ee9f241389f20a386d28d1fc251946ba9d666a2e4801ea9b7cfd19"
+        "sha256": "5e533ceda0dd106b76cce53d6748a2385025e943f285d953932bcd3d3466c5cb"
       },
       {
         "path": "tools/ci/rust_pilot_qualification.py",
-        "sha256": "5d5fbdba51c57b7cb8a279d4d484566859343b2d964571bb76589dba3f16f0d7"
+        "sha256": "f12f96109a6a321b4ffd0743758e7155d405d01ab57ba053074368b6c0b11cc2"
       },
       {
         "path": "tools/d12_libpq_runtime_probe.py",
@@ -1374,7 +1374,7 @@
       },
       "golds/q04_missing_brace.gold.json": {
         "bytes": 1510,
-        "sha256": "facab4089e23a32dc05e5f21691cfc9c51a191a7f1db89e488ab3b1afbb03ff7"
+        "sha256": "ee01719de993be1d5e8f058b0ed6851b1fc9a2099a3f291a675bff51daca056f"
       },
       "golds/q05_build__build.gold.json": {
         "bytes": 1116,
@@ -1630,5 +1630,5 @@
       "url": "https://files.pythonhosted.org/packages/ca/45/a051bbd3045a61182dde25b93ae9a33d2677c935b16952283e12eaf46051/tree_sitter_rust-0.24.2-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
     }
   ],
-  "window": "RUST-PILOT-QW1"
+  "window": "RUST-PILOT-QW2"
 }

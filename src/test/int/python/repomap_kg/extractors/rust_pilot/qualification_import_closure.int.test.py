@@ -252,20 +252,37 @@ with tempfile.TemporaryDirectory(prefix="rust-pilot-qualification-t1-") as raw:
         real_compare = runtime_module.compare_gold_claims
         def compare_with_public_failure_detail(controller, summary, fixture_root, source_paths, manifest):
             try:
-                return real_compare(controller, summary, fixture_root, source_paths, manifest)
+                result = real_compare(controller, summary, fixture_root, source_paths, manifest)
             except runtime_module.RuntimeGap as error:
-                relative = error.evidence.get("fixture")
-                if relative in source_paths:
-                    entry = manifest["fixture"]["files"][relative]
-                    data = (fixture_root / relative).read_bytes()
-                    actual = runtime_module._document(
-                        relative, data, controller.admit(relative).observations,
-                        dict(summary.file_outcomes)[relative], entry["scenario"])
-                    expected = json.loads((fixture_root / entry["gold"]).read_bytes())
-                    print(json.dumps({"reason": error.code, "fixture": relative,
-                                      "mismatched_fields": error.evidence.get("mismatched_fields"),
-                                      "actual": actual, "expected": expected}, sort_keys=True), file=sys.stderr)
+                print(json.dumps({"reason": error.code,
+                                  "mismatches": error.evidence.get("mismatches", [])},
+                                 sort_keys=True), file=sys.stderr)
                 raise
+            assert result["comparison_complete"] is True
+            assert len(result["comparisons"]) == 13
+            missing = next(row for row in result["comparisons"]
+                           if row["fixture"] == "q04_missing_brace.rs")
+            assert missing["actual"]["items"][2]["end_byte"] == 252
+            assert missing["actual_document_sha256"] == (
+                "d738feee3215c67b3b928572ef259768059865186f6e973ea851169b2b56f92e")
+            real_document = runtime_module._document
+            targets = {"q01_all_items.rs", "unsupported_forms.rs"}
+            def altered_document(relative, *args):
+                document = real_document(relative, *args)
+                if relative in targets:
+                    document["line_count"] += 1
+                return document
+            with patch.object(runtime_module, "_document", new=altered_document):
+                try:
+                    real_compare(controller, summary, fixture_root, source_paths, manifest)
+                except runtime_module.RuntimeGap as error:
+                    assert error.code == "gold_mismatch"
+                    assert error.evidence["comparison_complete"] is True
+                    assert len(error.evidence["comparisons"]) == 13
+                    assert {row["fixture"] for row in error.evidence["mismatches"]} == targets
+                else:
+                    raise AssertionError("two comparison mismatches were admitted")
+            return result
 
         with (
             patch.object(runtime_module, "compare_gold_claims", new=compare_with_public_failure_detail),
@@ -284,6 +301,8 @@ with tempfile.TemporaryDirectory(prefix="rust-pilot-qualification-t1-") as raw:
                 root, fixture_root, scratch / "profile", IMAGE, audit_dir, manifest,
                 platform="linux/arm64", cross_cpu_profile=scratch / "cross-profile",
             )
+    from repomap_test_support.rust_pilot_qualification_report import assert_t1_amd_report_fits
+    print("T1_AMD_REPORT_BYTES=" + str(assert_t1_amd_report_fits(root, scratch, result)))
 
 assert {name for kind, name in qualification_events if kind == "containment"} == set(ALL_PROBES)
 assert max(i for i, (kind, _) in enumerate(qualification_events) if kind == "containment") < min(
@@ -324,6 +343,9 @@ assert not any(name.startswith(("psycopg", "psycopg2", "sqlite3", "sqlalchemy"))
         text=True, capture_output=True, check=False, timeout=120,
     )
     assert result.returncode == 0, result.stderr
+    size_line = next(line for line in result.stdout.splitlines() if line.startswith("T1_AMD_REPORT_BYTES="))
+    assert 748_847 < int(size_line.split("=", 1)[1]) <= 1_048_576
+    print(size_line)
 
 
 def test_missing_live_call_source_pin_is_refused_by_real_guard() -> None:

@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
+import hashlib
 import math
 import time
 
 from common_lore_index.extractors.contracts.vocabulary import ContractError
 from typing import Any
+
+MAX_QUALIFICATION_REPORT_BYTES = 1_048_576
+GOLD_METADATA_RESERVE_BYTES = 256 * 1024
+MAX_GOLD_COMPARISON_BYTES = MAX_QUALIFICATION_REPORT_BYTES - GOLD_METADATA_RESERVE_BYTES
 
 
 class ShapeRefused(ValueError):
@@ -119,3 +124,38 @@ def require_work_deadline(deadline: float | None) -> None:
         raise ContractError("invalid_work_deadline")
     if deadline is not None and time.monotonic() >= deadline:
         raise ContractError("internal_deadline_exceeded")
+
+
+def _value(item: object, name: str, default: Any = None) -> Any:
+    return getattr(item, name, default)
+
+
+def _claim(item: object) -> dict[str, Any]:
+    metadata = dict(_value(item, "metadata", {}))
+    return {"end_byte": metadata["end_byte"], "end_line": _value(item, "end_line"),
+            "item_kind": metadata["item_kind"], "name": _value(item, "name"),
+            "namespace": metadata["namespace"], "pointer": metadata["pointer"],
+            "start_byte": metadata["start_byte"], "start_line": _value(item, "start_line"),
+            "usable_scope": metadata["usable_scope"]}
+
+
+def gold_document(relative: str, data: bytes, observations: Sequence[object],
+                  fallback: str, scenario: str) -> dict[str, Any]:
+    """Project the fixed public-fixture document; never include runtime text."""
+    parse = next((item for item in observations if _value(item, "kind") == "rust.parse"), None)
+    metadata = dict(_value(parse, "metadata", {})) if parse is not None else {}
+    unsupported = []
+    for item in observations:
+        if _value(item, "kind") == "rust.unsupported":
+            details = dict(_value(item, "metadata", {}))
+            unsupported.append({key: details[key] for key in ("construct", "count", "scope_pointer")})
+    return {
+        "build_script_name": relative.rsplit("/", 1)[-1] == "build.rs",
+        "completeness": metadata.get("completeness", "none"), "fixture": relative,
+        "input_bytes": len(data), "input_sha256": hashlib.sha256(data).hexdigest(),
+        "item_list": metadata.get("item_list"),
+        "items": [_claim(item) for item in observations if _value(item, "kind") == "rust.item"],
+        "line_count": metadata.get("line_count", data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0)),
+        "outcome": metadata.get("outcome", fallback), "scenarios": [scenario],
+        "schema": "cloe-rust-pilot-gold-v1", "unsupported": unsupported,
+    }

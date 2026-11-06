@@ -495,6 +495,26 @@
     },
     {
       "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.rust_pilot1.window2.report_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/rust_pilot_qualification_report.py"
+      ],
+      "rationale": "Exact T1 report-envelope support owner; inherited rows, cohorts and debt stay unchanged.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "cloe.rust_pilot1.window2.test_owners",
+      "members": [
+        "src/test/unit/python/tools/ci/qualification_rust_gold.unit.test.py"
+      ],
+      "rationale": "Exact window2 regression owner; every inherited cohort and debt ceiling is unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
       "governing_profile": "clean_test_owners",
       "id": "cloe.rustfoundation1.test_owners",
       "members": [
@@ -56895,6 +56915,24 @@
       "rationale": "ADR0155 source-review cleanup and timing correction; immediate clean enforcement with no new debt.",
       "root": "test_owners",
       "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/qualification_rust_gold.unit.test.py",
+      "rationale": "ADR0155 approved window2 native-finding regressions; clean immediate enforcement, no new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/rust_pilot_qualification_report.py",
+      "rationale": "ADR0155 window2 actual AMD report-envelope T1 fixture; clean enforcement and no new debt.",
+      "root": "test_support",
+      "status": "active_test_support"
     }
   ],
   "historical_revise10_counts": {

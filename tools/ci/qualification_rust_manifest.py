@@ -11,7 +11,7 @@ import re
 from typing import Any
 
 SCHEMA = "cloe-rust-pilot-qualification-manifest-v1"
-WINDOW = "RUST-PILOT-QW1"
+WINDOW = "RUST-PILOT-QW2"
 GOLD_SCHEMA = "cloe-rust-pilot-gold-v1"
 EXPECTED_ITEM_CLAIMS = 420
 EXPECTED_SOURCES = (

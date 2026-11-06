@@ -10,8 +10,13 @@ import shutil
 import time
 from typing import TYPE_CHECKING, Any
 
+from common_lore_index.extractors.contracts.vocabulary import ContractError
+
 if TYPE_CHECKING:
     from common_lore_index.extractors.rust_pilot.controller import RustPilotController
+from ci.qualification_rust_shape import MAX_GOLD_COMPARISON_BYTES as MAX_GOLD_EVIDENCE_BYTES
+from ci.qualification_rust_shape import gold_document as _document
+
 PLATFORM_FACTS = {"linux/amd64": ("x86_64", "amd64"), "linux/arm64": ("aarch64", "arm64")}
 
 
@@ -21,83 +26,73 @@ class RuntimeGap(RuntimeError):
         self.code, self.evidence = code, dict(evidence or {})
 
 
-def _value(item: object, name: str, default: Any = None) -> Any:
-    return getattr(item, name, default)
-
-
-def _claim(item: object) -> dict[str, Any]:
-    metadata = dict(_value(item, "metadata", {}))
-    return {"end_byte": metadata["end_byte"], "end_line": _value(item, "end_line"),
-            "item_kind": metadata["item_kind"], "name": _value(item, "name"),
-            "namespace": metadata["namespace"], "pointer": metadata["pointer"],
-            "start_byte": metadata["start_byte"], "start_line": _value(item, "start_line"),
-            "usable_scope": metadata["usable_scope"]}
-
-
-def _document(relative: str, data: bytes, observations: Sequence[object],
-              fallback: str, scenario: str) -> dict[str, Any]:
-    parse = next((item for item in observations if _value(item, "kind") == "rust.parse"), None)
-    metadata = dict(_value(parse, "metadata", {})) if parse is not None else {}
-    unsupported = []
-    for item in observations:
-        if _value(item, "kind") == "rust.unsupported":
-            details = dict(_value(item, "metadata", {}))
-            unsupported.append({key: details[key] for key in ("construct", "count", "scope_pointer")})
-    return {
-        "build_script_name": relative.rsplit("/", 1)[-1] == "build.rs",
-        "completeness": metadata.get("completeness", "none"), "fixture": relative,
-        "input_bytes": len(data), "input_sha256": hashlib.sha256(data).hexdigest(),
-        "item_list": metadata.get("item_list"),
-        "items": [_claim(item) for item in observations if _value(item, "kind") == "rust.item"],
-        "line_count": metadata.get("line_count", data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0)),
-        "outcome": metadata.get("outcome", fallback), "scenarios": [scenario],
-        "schema": "cloe-rust-pilot-gold-v1", "unsupported": unsupported,
-    }
-
-
 def compare_gold_claims(controller: RustPilotController, summary: object, fixture_root: Path,
                         source_paths: Sequence[str], manifest: Mapping[str, Any]) -> dict[str, Any]:
     outcomes = dict(getattr(summary, "file_outcomes", ()))
     fixture, files = manifest["fixture"], manifest["fixture"]["files"]
-    result, claims = [], 0
-    for relative in source_paths:
-        entry = files[relative]
-        try:
-            data = (fixture_root / relative).read_bytes()
-            gold_path = fixture_root / entry["gold"]
-            gold_bytes = gold_path.read_bytes()
-            gold = json.loads(gold_bytes.decode("utf-8"))
-            admission = controller.admit(relative)
-        except (OSError, UnicodeDecodeError, ValueError):
-            raise RuntimeGap("gold_read_failed") from None
-        required = {"build_script_name", "completeness", "fixture", "input_bytes", "input_sha256",
-                    "item_list", "items", "line_count", "outcome", "scenarios", "schema", "unsupported"}
-        if set(gold) != required or gold.get("schema") != "cloe-rust-pilot-gold-v1":
-            raise RuntimeGap("gold_schema")
-        if gold.get("input_sha256") != entry["sha256"] or gold.get("scenarios") != [entry["scenario"]]:
-            raise RuntimeGap("gold_binding")
-        actual = _document(relative, data, tuple(getattr(admission, "observations", ())),
-                           outcomes.get(relative, "not_executed"), entry["scenario"])
-        if actual != gold:
+    result: list[dict[str, Any]] = []
+    comparisons: list[dict[str, Any]] = []
+    mismatches: list[dict[str, Any]] = []
+    claims, retained = 0, 2
+    try:
+        for relative in source_paths:
+            entry = files[relative]
+            try:
+                data = (fixture_root / relative).read_bytes()
+                gold_bytes = (fixture_root / entry["gold"]).read_bytes()
+                gold = json.loads(gold_bytes.decode("utf-8"))
+                admission = controller.admit(relative)
+            except (OSError, UnicodeDecodeError, ValueError):
+                raise RuntimeGap("gold_read_failed") from None
+            required = {"build_script_name", "completeness", "fixture", "input_bytes", "input_sha256",
+                        "item_list", "items", "line_count", "outcome", "scenarios", "schema", "unsupported"}
+            if set(gold) != required or gold.get("schema") != "cloe-rust-pilot-gold-v1":
+                raise RuntimeGap("gold_schema")
+            if gold.get("input_sha256") != entry["sha256"] or gold.get("scenarios") != [entry["scenario"]]:
+                raise RuntimeGap("gold_binding")
+            actual = _document(relative, data, tuple(getattr(admission, "observations", ())),
+                               outcomes.get(relative, "not_executed"), entry["scenario"])
             mismatched = tuple(sorted(key for key in required if actual.get(key) != gold.get(key)))
             actual_bytes = json.dumps(actual, sort_keys=True, separators=(",", ":")).encode("utf-8")
             expected_bytes = json.dumps(gold, sort_keys=True, separators=(",", ":")).encode("utf-8")
-            raise RuntimeGap("gold_mismatch", {
+            detail = {
                 "fixture": relative, "gold": entry["gold"],
                 "gold_file_sha256": hashlib.sha256(gold_bytes).hexdigest(),
                 "gold_document_sha256": hashlib.sha256(expected_bytes).hexdigest(),
                 "actual_document_sha256": hashlib.sha256(actual_bytes).hexdigest(),
-                "mismatched_fields": list(mismatched)})
-        if gold["outcome"] == "input_not_utf8":
-            if getattr(admission, "observations", ()):
-                raise RuntimeGap("invalid_utf8_was_executed")
-        elif not getattr(admission, "observations", ()):
-            raise RuntimeGap("admission_missing")
-        claims += len(actual["items"])
-        result.append({"fixture": relative, "outcome": actual["outcome"], "item_claims": len(actual["items"])})
+                "mismatched_fields": list(mismatched)}
+            record = {**detail, "actual": actual, "expected": gold}
+            size = len(json.dumps(record, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+            size += 1 if comparisons else 0
+            if retained + size > MAX_GOLD_EVIDENCE_BYTES:
+                raise RuntimeGap("gold_evidence_bound", detail)
+            comparisons.append(record)
+            retained += size
+            if mismatched:
+                mismatches.append(detail)
+            if gold["outcome"] == "input_not_utf8":
+                if getattr(admission, "observations", ()):
+                    raise RuntimeGap("invalid_utf8_was_executed")
+            elif not getattr(admission, "observations", ()):
+                raise RuntimeGap("admission_missing")
+            claims += len(actual["items"])
+            result.append({"fixture": relative, "outcome": actual["outcome"], "item_claims": len(actual["items"])})
+    except RuntimeGap as error:
+        error.evidence.update(comparisons=comparisons, comparison_complete=False,
+                              retained_document_bytes=retained, mismatch_count=len(mismatches))
+        raise
+    except Exception as error:
+        code = error.code if isinstance(error, ContractError) else "gold_comparison_failed"
+        raise RuntimeGap(code, {"comparisons": comparisons, "comparison_complete": False,
+                               "retained_document_bytes": retained,
+                               "mismatch_count": len(mismatches)}) from None
+    evidence = {"comparisons": comparisons, "comparison_complete": True,
+                "retained_document_bytes": retained, "mismatch_count": len(mismatches)}
+    if mismatches:
+        raise RuntimeGap("gold_mismatch", {**mismatches[0], **evidence, "mismatches": mismatches})
     if claims != fixture["expected_item_claims"]:
-        raise RuntimeGap("gold_claim_count")
-    return {"files": result, "item_claims": claims, "source": "native_controller_admissions"}
+        raise RuntimeGap("gold_claim_count", evidence)
+    return {"files": result, "item_claims": claims, "source": "native_controller_admissions", **evidence}
 
 
 def _audit(controller: RustPilotController, source_paths: Sequence[str],
@@ -300,7 +295,6 @@ def _run_native_component(repo_root: Path, fixture_root: Path, profile_dir: Path
     profile_cpu, docker_arch = PLATFORM_FACTS.get(platform, (None, None))
     if profile_cpu is None or docker_arch is None:
         raise RuntimeGap("unsupported_platform")
-    from common_lore_index.extractors.contracts.vocabulary import ContractError
     from common_lore_index.extractors.rust_pilot.prepared_profile import load_profile
     try:
         expected_profile = manifest["closure"]["profile_digests"][docker_arch]
@@ -339,6 +333,7 @@ def _run_native_component(repo_root: Path, fixture_root: Path, profile_dir: Path
     controller._boundary.limit_work_deadline(work_deadline)
     original_gap: RuntimeGap | None = None
     audited: dict[str, Any] | None = None
+    gold: dict[str, Any] | None = None
     try:
         summary = controller.process(fixture_root, infos)
         require_work_deadline(work_deadline)
@@ -373,7 +368,7 @@ def _run_native_component(repo_root: Path, fixture_root: Path, profile_dir: Path
         require_work_deadline(work_deadline)
         return result
     except Exception as error:
-        original_gap = native_failure(controller, error, audited, preflights, containment)
+        original_gap = native_failure(controller, error, audited, preflights, containment, gold=gold)
         raise original_gap from None
     finally:
-        close_native_controller(controller, original_gap)
+        close_native_controller(controller, original_gap, gold=gold)

@@ -1,10 +1,10 @@
 # REPOMAP-CLOE-RUST-PILOT1 Exit: Isolated Rust parser source candidate
 
-Status: scoped source proof and independent resulting-source review passed
-with the bounded limitations below; native qualification remains pending.
-Candidate accepted: false. No staging
-publication, image acceptance or full W6 completion is claimed. This record
-follows the public export's `tools/ci` exit convention.
+Status: window2 scoped source proof passed. Fresh independent review and the
+remaining native ARM qualification are required. Window1 stays failed and
+immutable. Candidate accepted: false. No staging publication, image acceptance
+or full W6 completion is claimed. This record follows the public export's
+`tools/ci` exit convention.
 
 Authority: [ADR 0155](../../docs/adr/2026/11/0155-isolated-rust-source-parser-pilot.md)
 and the approved bounded Rust pilot. The duplicate approval responses share
@@ -43,7 +43,7 @@ Python gate passes with no cohort regressions or unenforced eligible owners.
 
 ## Scoped source verification
 
-Unit: 616 passed across 44 exact owners.
+Unit: 639 passed across 45 exact owners.
 Integration: 22 passed across 4 exact owners
 inside the existing disposable container sandbox, with PostgreSQL publication
 and readback. A second connected owner exercises the complete qualifier call
@@ -129,6 +129,7 @@ tools/run_tests.py --suite unit --no-coverage --jobs 1 -- \
   src/test/unit/python/tools/ci/qualification_rust_cleanup_timing.unit.test.py \
   src/test/unit/python/tools/ci/qualification_rust_closure.unit.test.py \
   src/test/unit/python/tools/ci/qualification_rust_commit_binding.unit.test.py \
+  src/test/unit/python/tools/ci/qualification_rust_gold.unit.test.py \
   src/test/unit/python/tools/ci/qualification_rust_import_guard.unit.test.py \
   src/test/unit/python/tools/ci/qualification_rust_workflow.unit.test.py
 tools/run_tests.py --suite int --no-coverage --jobs 1 --pg-container-port 55433 -- \
@@ -157,6 +158,37 @@ protocol and parent behavior only. Native ARM/AMD correctness and containment,
 hosted coverage, container-free Local support, credible alternative-parser
 comparison and full W6 completion remain open.
 
+## Approved window2 correction
+
+Window1's native ARM command failed at the missing-brace gold comparison.
+Its original source and failed report remain immutable. The retained actual
+document digest binds exactly one changed endpoint:252 instead of253 for the
+unfinished module, excluding the trailing newline. All15 containment probes
+reached their expected outcomes and cleanup/resource equality passed; the
+failed comparison still confers no native qualification for window1.
+
+The operator approved `RUST-PILOT-QW2`. Only that one gold digit changes;
+all13 source fixtures, the other12 golds and420 claims remain unchanged.
+The test-only EOF stand-in now follows the observed boundary. Production guest
+offsets and parser semantics are unchanged. Pure document projection moved to
+the existing shape owner to keep the runtime adapter within its file ceiling.
+
+Comparison retains actual/expected canonical documents for every compared
+public fixture and accumulates mismatch fields before refusing. The compact
+comparison collection is capped at768KiB, reserving256KiB inside the unchanged
+1MiB AMD report envelope. Collection overflow refuses with incomplete evidence;
+whole-report overflow writes a bounded failed report with unknown counters and
+an omission digest, then fails the command. A connected guarded integration regression
+checks both the corrected endpoint and two distinct mismatches across all13
+fixtures, without executing a native parser. The passing population above
+supersedes the retained failing development diagnostics. Initial census-order
+and type-annotation findings were corrected without changing inherited cohort
+records, numerical debt, scanner configuration or any threshold.
+
+ARM1 is spent; window2 has only the original remaining ARM command after fresh
+source review, a local commit and the frozen window. AMD remains0/1, application
+starts remain31, and no start32/campaign/publication allocation is created.
+
 ## Resulting-source review limitations
 
 Independent review found no P1/P2 blocker. The parent accepted the remaining
@@ -180,13 +212,64 @@ manifest and source binding retain a same-user trust boundary for gold reads.
 Interrupted oversized-input probes may retain public synthetic source in the
 audit upload root; selected and mutated wheels remain outside upload roots.
 
+## Window2 report-envelope correction
+
+The first window2 independent review recommended ARM2 but identified a future
+AMD report conflict. It was corrected before the final native attempt: the
+comparison collection reserves256KiB of the unchanged1MiB report envelope for
+metadata. Whole-report overflow writes a bounded failed report, keeps counters
+unknown and records the omitted report's digest, then fails the command. The
+byte bound includes the final newline. Unexpected comparison failures retain
+prior documents as incomplete without copying exception text.
+
+The fresh connected T1 test exercises the actual CLI and serialized report in
+a separate isolated interpreter over the complete current fixture result.
+Its report is824,451 bytes within1,048,576, leaving224,125 bytes. This proves
+the current report shape fits under synthetic prerequisites; it supplies no
+native AMD, D12, image or hosted credit. The test helper stays outside the
+native import closure. The earlier same-interpreter fixture failure remains
+retained; the production import guard is unchanged.
+
+Fresh source proof is639 unit cases and22 containerized integration cases,
+with complete static enforcement and no added numerical debt. Both added
+clean cohorts (the unit owner and report support) preserve every inherited
+inventory/cohort row. Intermediate manifest hashes in development receipts
+remain historical; current source and manifest hashes are bound by the fresh
+review packet and eventual committed window. Fresh corrective review and
+ARM2 remain required before native acceptance.
+
+## Window2 completed-comparison retention
+
+Completed gold documents now survive later measurement, graph, accounting,
+deadline and cleanup-only refusals. This includes both post-adapter driver
+paths: the public CLI and the private ARM wrapper. The retained field is
+`completed_gold`; a refusal never supplies whole-command qualification.
+Actual adapter regressions cover graph, accounting and cleanup failures after
+a passing13-file/420-claim comparison. The connected T1 CLI test additionally
+proves late accounting refusal retains all comparisons, and forces report
+overflow to verify nonzero failure, a bounded failed file and owned work cleanup.
+
+The private parent reader treats missing, malformed, wrong-schema and wrongly
+typed child reports as unqualified while retaining the available report digest
+and terminal command receipt. Eight inert reader cases and three failure-handler
+cases pass; these are private harness checks, not native qualification.
+Unexpected acquisition exceptions with no authenticated completed-transfer
+evidence now report unknown downloads. Ordinary acquisition refusals retain
+their exact known completed count.
+
+Two diagnostic limitations remain: bounded whole-report fallback retains the
+omitted report digest rather than its original primary reason; existing admit
+refusals that subclass `ValueError` may be classified as gold-read failure.
+Both remain failed and preserve no positive native credit. F1–F7 and the
+test-only EOF model's limited grammar coverage also remain explicit.
+
 ## Hosted CI
 
 - State: `AVAILABLE` under the operator's standing selection.
 - Remote write or trigger: none for this source candidate.
 - Automatic lanes expected: none from the local checkpoint.
 - Classification: `NOT_REQUESTED_CONSERVATION`.
-- Pending gates: the bounded native ARM command,
+- Pending gates: fresh window2 source review and the final native ARM command,
   fresh one-use campaign/application allocation, and exact-candidate hosted
   qualification including the new native AMD Rust gate.
 - Local evidence sufficiency: scoped source contracts only; no whole-candidate,

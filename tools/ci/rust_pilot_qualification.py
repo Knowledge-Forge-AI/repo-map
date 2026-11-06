@@ -25,6 +25,7 @@ from ci.qualification_rust_accounting import AccountingGap, require_component_ac
 from ci.qualification_rust_shape import command_work_deadline, require_work_deadline
 from ci.qualification_rust_import_guard import HostImportRefused, host_import_guard
 from ci.qualification_rust_shape import source_digests
+from ci.qualification_rust_shape import MAX_QUALIFICATION_REPORT_BYTES as MAX_REPORT_BYTES
 from ci.qualification_rust_manifest import ManifestError, fixture_paths, validate_manifest
 from ci.qualification_rust_runtime import RuntimeGap, run_native_component
 
@@ -53,10 +54,25 @@ def _initial() -> dict[str, Any]:
 def _write_report(directory: Path, report: dict[str, Any]) -> None:
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     data = json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
-    if len(data) > 1_048_576:
-        raise RuntimeError("report_bound_exceeded")
+    overflow = len(data) + 1 > MAX_REPORT_BYTES
+    if overflow:
+        candidate = report.get("candidate_sha")
+        candidate = candidate if (type(candidate) is str and len(candidate) == 40
+                                  and set(candidate) <= set("0123456789abcdef")) else None
+        failed = {
+            "schema": REPORT_SCHEMA, "result": "failed", "qualified": False,
+            "reason": "report_bound_exceeded", "candidate_sha": candidate,
+            "files": [], "costs": {}, "counter_scope": "unavailable_after_report_bound",
+            "counters": {name: _counter(None, "report_bound_exceeded", False) for name in
+                         ("downloads", "containers", "parses", "commands", "builds", "pulls", "images", "volumes")},
+            "evidence_retention": {"complete": False, "original_report_bytes": len(data) + 1,
+                                   "original_report_sha256": hashlib.sha256(data).hexdigest()},
+        }
+        data = json.dumps(failed, sort_keys=True, separators=(",", ":")).encode("ascii")
     with (directory / "rust-pilot-qualification.json").open("xb") as handle:
         handle.write(data + b"\n")
+    if overflow:
+        raise RuntimeError("report_bound_exceeded")
 
 
 def _intent(directory: Path) -> None:
@@ -222,6 +238,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     work_deadline = command_work_deadline()
     report, phase, work_created = _initial(), "before-work", False
     intent_created = False
+    native: dict[str, Any] | None = None
     guard = ExitStack()
     try:
         _intent(args.report_dir)
@@ -287,8 +304,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         code = getattr(error, "code", "qualification_failed")
         report.update({"result": "prerequisite-refused" if phase in {"before-work", "manifest"} else "failed",
                        "reason": code})
-        evidence = getattr(error, "evidence", {})
+        evidence = dict(getattr(error, "evidence", {}))
+        if native is not None and isinstance(native.get("gold"), dict):
+            evidence.setdefault("completed_gold", native["gold"])
         report["failure_evidence"] = evidence
+        if phase == "acquisition":
+            report["counters"]["downloads"] = _counter(None, "acquisition_outcome_unknown", False)
         if isinstance(evidence, dict) and evidence.get("counters"):
             report["counters"].update(evidence["counters"])
             report["counter_scope"] = "source_controller_only"
@@ -300,6 +321,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     except Exception as error:
         report.update({"result": "failed", "qualified": False, "reason": "bounded_operation_failed",
                        "exception_type": type(error).__name__})
+        if native is not None and isinstance(native.get("gold"), dict):
+            report["failure_evidence"] = {"completed_gold": native["gold"]}
+        if phase == "acquisition":
+            report["counters"]["downloads"] = _counter(None, "acquisition_outcome_unknown", False)
         if phase != "before-work":
             _null_after(report, "bounded_operation_failed")
         return 1

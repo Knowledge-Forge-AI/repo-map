@@ -19,7 +19,7 @@ class CleanupController(Protocol):
 
 
 def close_native_controller(controller: CleanupController,
-                            original: RuntimeGap | None) -> None:
+                            original: RuntimeGap | None, *, gold: Mapping[str, Any] | None = None) -> None:
     """Close without hiding a structured native refusal or cleanup audit."""
     try:
         controller.close()
@@ -36,6 +36,8 @@ def close_native_controller(controller: CleanupController,
         audit = None
     if isinstance(audit, Mapping):
         cleanup["cleanup_audit"] = dict(audit)
+    if gold is not None:
+        cleanup["completed_gold"] = dict(gold)
     if original is None:
         raise RuntimeGap("cleanup_incomplete", cleanup) from None
     evidence = dict(original.evidence)
@@ -45,7 +47,7 @@ def close_native_controller(controller: CleanupController,
 
 def native_failure(controller: CleanupController, error: Exception,
                    audited: Mapping[str, Any] | None, preflights: Mapping[str, Any],
-                   containment: Mapping[str, Any]) -> RuntimeGap:
+                   containment: Mapping[str, Any], *, gold: Mapping[str, Any] | None = None) -> RuntimeGap:
     """Preserve closed primary evidence before any cleanup adapter can fail."""
 
     evidence = dict(error.evidence) if isinstance(error, (RuntimeGap, AccountingGap)) else {}
@@ -63,4 +65,6 @@ def native_failure(controller: CleanupController, error: Exception,
         evidence["costs"], evidence["counters"] = audited.get("costs"), audited.get("counters")
         evidence["counter_scope"] = "source_controller_only"
     evidence["preflights"], evidence["containment"] = dict(preflights), dict(containment)
+    if gold is not None:
+        evidence["completed_gold"] = dict(gold)
     return RuntimeGap(code, evidence)

@@ -24,7 +24,7 @@
       "const": "cloe-rust-pilot-qualification-manifest-v1"
     },
     "window": {
-      "const": "RUST-PILOT-QW1"
+      "const": "RUST-PILOT-QW2"
     },
     "candidate_binding": {
       "const": "sealed_d12.pr_binding"

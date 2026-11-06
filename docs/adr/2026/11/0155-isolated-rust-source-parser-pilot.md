@@ -773,3 +773,44 @@ Nothing indispensable to the pilot exceeds A. These would need new decisions:
 ## Specification
 
 [CLOE Rust parser pilot v1](../../../specs/cloe-rust-parser-pilot-v1.md).
+
+## Approved window2 correction after ARM1
+
+The operator approved a replacement `RUST-PILOT-QW2` after window1 refused
+its native ARM gold comparison. The retained native document's digest binds
+one exact difference: `q04_missing_brace.rs`'s unfinished module ends at byte252,
+while its original gold expected253, including the trailing newline. Window1
+and its failed evidence remain immutable and unqualified.
+
+Window2 changes only that one digit in one gold. All13 source fixtures, the
+other12 golds and the420-claim population remain unchanged. The current
+manifest and validator bind window2, with the original window recoverable from
+its committed source. Correct the test-only EOF stand-in to reflect the
+observed boundary; do not pad native parser spans to fit an inaccurate gold.
+Retain bounded canonical documents and mismatch fields across every compared
+public fixture, refusing qualification on any mismatch or incomplete evidence.
+The compact canonical comparison collection is capped at768KiB, reserving
+256KiB inside the unchanged1MiB AMD report envelope for other evidence.
+Reaching the collection cap refuses with incomplete retention. If the complete
+report nevertheless exceeds its envelope, write a bounded failed report with
+unknown counters and the omitted report digest, then fail the command. No
+report overflow may retain qualification or discard its refusal report.
+
+Before ARM2, run scoped unit/containerized integration checks, obtain fresh
+independent `dynamic_default` review, commit the corrected source and freeze
+window2. The replacement shares the original two-command ARM allocation:
+ARM1 is spent, ARM2 is the last command, and no retry/refund is granted.
+The exhausted three-checkpoint `claude_only` recovery is not reused. No build,
+acquisition, campaign, public publication, Local Rust, image or full W6
+acceptance follows from this correction. Existing F1–F7 limitations remain.
+
+### Window2 diagnostic completeness after corrective review
+
+Completed canonical gold comparisons remain in failure evidence if any later
+measurement, graph, accounting, deadline or cleanup stage refuses. A passing
+comparison never gives whole-command qualification after such a refusal.
+The parent ARM wrapper retains its failed command receipt even when the child
+report is absent, truncated or malformed. An unexpected acquisition failure
+without authenticated completed-transfer evidence reports unknown downloads,
+not a zero. The unchanged report envelope is proved through both successful
+serialization and overflow failure with work-directory cleanup in T1 only.

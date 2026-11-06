@@ -953,7 +953,7 @@ retained for audit and never consulted for admission, selection or replay.
 `tools/ci/rust_pilot_qualification_manifest.json`, schema
 `cloe-rust-pilot-qualification-manifest-v1`, binds:
 
-- the window ID `RUST-PILOT-QW1`;
+- the current window ID `RUST-PILOT-QW2` (the approved replacement of failed window1);
 - the lock digest;
 - the per-CPU profile digests;
 - the helper-closure digests: setup writer, install readback, runtime probe,
@@ -988,6 +988,31 @@ expected completeness and unsupported counts, together with the probe gold.
 Fixtures and golds are committed and bound before the first native execution,
 and are never tuned afterwards. A changed fixture or gold is a new window.
 Every window shares the same ARM budget.
+
+The operator explicitly approved window2 after the frozen window1 native run
+found one exclusive endpoint mismatch. Only the unfinished module's
+`end_byte` in `q04_missing_brace.gold.json` changes253→252; all13 source
+fixtures, the other12 golds and420 claims are preserved. Window1 stays failed
+and immutable. This is a declared replacement window, not a tuned pass for
+window1, and it adds no ARM attempt. Test-only EOF recovery follows the observed
+native span; production helper offsets remain unmodified.
+
+The comparator retains actual and expected canonical documents for every
+compared public fixture, together with closed mismatch field names and hashes.
+It accumulates mismatches instead of stopping at the first, then refuses the
+command if any exist. The compact comparison collection is capped at768KiB,
+reserving256KiB of the unchanged1MiB AMD report envelope for other evidence.
+Collection overflow marks evidence incomplete and refuses. If the complete
+report still exceeds1MiB, retain a bounded failed report with unknown counters
+and the omitted report digest, then fail the command; never discard its report.
+These reports contain only the manifest-bound public fixture comparison;
+no arbitrary runtime text, wheel payloads or private repository input is added.
+
+After a complete comparison, a later measurement, graph, accounting, deadline
+or cleanup refusal retains that document set as `completed_gold`, including
+the public CLI and private ARM post-adapter failure handlers. It remains a
+failed command, never native qualification. A bounded whole-report fallback
+can retain only its omitted-report digest; this diagnostic limit is explicit.
 
 ### 14.2 Scenarios
 
