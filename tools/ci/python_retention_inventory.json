@@ -72,6 +72,24 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.ci121-repair1.test-owners",
+      "members": [
+        "src/test/int/python/repomap_kg/extractors/contracts/legacy_discovery_corpus.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/contracts/persisted_receipt_states.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/rust_pilot/controller_refusal_settlement.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/rust_pilot/guest_archive_protocol_refusals.int.test.py",
+        "src/test/int/python/repomap_kg/extractors/rust_pilot/witness_publication_refusals.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/d12_json_report_bounds.int.test.py",
+        "src/test/unit/python/repomap_kg/canonicalization/rust_pilot_family_domain.unit.test.py",
+        "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_parse_helper_edges.unit.test.py",
+        "src/test/unit/python/tools/ci/d12_json_depth.unit.test.py"
+      ],
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
@@ -56933,6 +56951,87 @@
       "rationale": "ADR0155 window2 actual AMD report-envelope T1 fixture; clean enforcement and no new debt.",
       "root": "test_support",
       "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/contracts/legacy_discovery_corpus.int.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/contracts/persisted_receipt_states.int.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/rust_pilot/controller_refusal_settlement.int.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/rust_pilot/guest_archive_protocol_refusals.int.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/extractors/rust_pilot/witness_publication_refusals.int.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/d12_json_report_bounds.int.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/canonicalization/rust_pilot_family_domain.unit.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/extractors/rust_pilot/guest_parse_helper_edges.unit.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/ci/d12_json_depth.unit.test.py",
+      "rationale": "ADR0158 source regression and connected receipt/parser/publication proof; clean test enforcement with all existing debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

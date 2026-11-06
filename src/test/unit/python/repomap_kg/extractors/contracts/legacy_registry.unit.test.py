@@ -170,3 +170,14 @@ def test_registry_source_has_no_loader_wildcard_or_hash_freeze() -> None:
     assert called.isdisjoint({"__import__", "eval", "exec", "compile", "getattr", "open"})
     assert re.search(r"[0-9a-f]{64}", source) is None
     assert "*" not in "".join(name for names in LEGACY_EXTRACTOR_OWNERS.values() for name in names)
+
+
+
+def test_opt_in_pilot_is_explicitly_outside_the_legacy_source_census() -> None:
+    assert legacy_source.NON_LEGACY_PRODUCT_PREFIXES == (
+        "common_lore_index.extractors.rust_pilot",
+    )
+    assert not any(name == prefix or name.startswith(prefix + ".")
+                   for name in TREES for prefix in legacy_source.NON_LEGACY_PRODUCT_PREFIXES)
+    assert not registry.is_legacy_extractor_name("rust-pilot-tree-sitter")
+    assert "common_lore_index.extractors.languages.python" in TREES

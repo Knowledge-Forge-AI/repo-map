@@ -19,6 +19,7 @@ PACKAGE = "common_lore_index"
 DISPATCH_MODULE = "common_lore_index.graph.discovery"
 DISPATCH_FUNCTION = "extract_observations_from_repository_files"
 _MAX_DEPTH = 8
+NON_LEGACY_PRODUCT_PREFIXES = (f"{PACKAGE}.extractors.rust_pilot",)
 
 
 def product_root() -> Path:
@@ -36,7 +37,11 @@ def product_trees(root: Path | None = None) -> dict[str, ast.Module]:
         parts = list(path.relative_to(base).with_suffix("").parts)
         if parts[-1] == "__init__":
             parts.pop()
-        trees[".".join(parts)] = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        module = ".".join(parts)
+        if any(module == prefix or module.startswith(prefix + ".")
+               for prefix in NON_LEGACY_PRODUCT_PREFIXES):
+            continue
+        trees[module] = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     return trees
 
 

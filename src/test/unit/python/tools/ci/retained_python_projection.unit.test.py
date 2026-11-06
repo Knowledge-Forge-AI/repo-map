@@ -256,6 +256,7 @@ FORWARD_ADMISSIONS = (
     "REPOMAP-CLOE-RETRIEVAL1",
     "REPOMAP-CLOE-LEXICAL1",
     "REPOMAP-CLOE-CONTEXT1",
+    "REPOMAP-CLOE-RUST-PILOT1",
 )
 
 
@@ -351,7 +352,26 @@ def test_inherited_public_edge_uses_the_exact_recovered_proof(pytestconfig: pyte
             assert bridge["after_selection_sha256"] == after["old_selected_set_sha256"]
         else:
             assert after["old_ownership_manifest_sha256"] == before["new_ownership_manifest_sha256"]
-            assert after["old_selected_set_sha256"] == before["new_selected_set_sha256"]
+            if after["phase"] == "REPOMAP-CLOE-RUST-PILOT1":
+                assert before["phase"] == "REPOMAP-CLOE-CONTEXT1"
+                source = "a06142b17d026431ecf7596d246218d5c0883849"
+                assert after["source_commit"] == source
+                assert after["source_manifest_sha256"] == before["new_ownership_manifest_sha256"]
+                prior = json.loads(git(repo, "show", f"{source}^:{BASELINE_PATH}").stdout)
+                clean = json.loads(git(repo, "show", f"{source}:{BASELINE_PATH}").stdout)
+                assert selection_digest(prior) == before["new_selected_set_sha256"]
+                assert selection_digest(clean) == after["old_selected_set_sha256"]
+                changes, additions, restricted = selection_delta(prior, clean)
+                assert not restricted and all(change["old"] is None for change in changes)
+                assert {item["module"] for item in additions} == {
+                    "common_lore_index.canonicalization.claim_guard",
+                    "common_lore_index.extractors.contracts",
+                    *(f"common_lore_index.extractors.contracts.{name}" for name in (
+                        "bounded_io", "legacy_registry", "receipt_codec", "receipt_schema", "vocabulary", "witness"
+                    )),
+                }
+            else:
+                assert after["old_selected_set_sha256"] == before["new_selected_set_sha256"]
     # The audit consumes exactly that authority: one key per hop and per forward admission.
     assert result.scope_transitions == len(expected)
     assert result.namespace_transitions == 1

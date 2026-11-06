@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 import hashlib
 import json
 from pathlib import Path
@@ -27,6 +27,7 @@ VERIFIED_AMD64_BASE_METADATA: dict[str, dict[str, str]] = {
 }
 
 MAX_SAFE_JSON_REPORT_BYTES = 8 * 1024 * 1024
+_MAX_SAFE_JSON_REPORT_DEPTH = 256
 PREPARE_REFUSAL_SCHEMA = "repomap-d12-prepare-refusal-v1"
 PREPARE_REFUSAL_FILENAME = "prepare-refusal.json"
 PREPARE_STATE_FILENAME = "prepare-state.json"
@@ -66,14 +67,23 @@ def _prov(
 
 
 def _validate_parsed_tree(value: Any) -> None:
-    if isinstance(value, Mapping):
-        for key, item in value.items():
-            if not isinstance(key, str):
-                raise ValueError("mapping key must be a string")
-            _validate_parsed_tree(item)
-    elif isinstance(value, (list, tuple)):
-        for item in value:
-            _validate_parsed_tree(item)
+    pending: list[tuple[Iterator[Any], int]] = [(iter((value,)), 0)]
+    while pending:
+        values, depth = pending[-1]
+        try:
+            current = next(values)
+        except StopIteration:
+            pending.pop()
+            continue
+        if depth > _MAX_SAFE_JSON_REPORT_DEPTH:
+            raise ValueError("report exceeds maximum JSON value depth")
+        if isinstance(current, Mapping):
+            for key in current:
+                if not isinstance(key, str):
+                    raise ValueError("mapping key must be a string")
+            pending.append((iter(current.values()), depth + 1))
+        elif isinstance(current, (list, tuple)):
+            pending.append((iter(current), depth + 1))
 
 
 def _apply_redact(value: Any, redact_fn: Callable[[Any], Any] | None) -> Any:

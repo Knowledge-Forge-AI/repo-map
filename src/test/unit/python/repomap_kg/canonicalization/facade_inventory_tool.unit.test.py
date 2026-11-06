@@ -118,3 +118,30 @@ def test_canon_facade3_inventory_tool_has_no_update_mode() -> None:
 
     assert stdout.getvalue() == ""
     assert "unrecognized arguments: --update" in stderr.getvalue()
+
+def test_late_internal_children_preserve_the_exact_legacy_facade(monkeypatch) -> None:
+    from types import ModuleType
+    import common_lore_index.canonicalization as canonicalization
+
+    baseline = canonicalization.__all__
+    assert len(baseline) == 172
+    assert canonicalization._NON_FACADE_MODULES == {"claim_guard", "rust_pilot_family"}
+    from common_lore_index.canonicalization import claim_guard, rust_pilot_family
+
+    children = (
+        ("claim_guard", claim_guard),
+        ("rust_pilot_family", rust_pilot_family),
+    )
+    for child, module in children:
+        assert getattr(canonicalization, child) is module
+        assert child not in canonicalization.__all__
+    assert canonicalization.__all__ == baseline
+    assert inventory_tool.collect_inventory().check_passed
+
+    unknown = ModuleType(canonicalization.__name__ + ".unclassified_extension")
+    with monkeypatch.context() as patch:
+        patch.setattr(canonicalization, "unclassified_extension", unknown, raising=False)
+        inventory = inventory_tool.collect_inventory()
+        assert not inventory.check_passed
+        assert inventory.missing_all_names == ("unclassified_extension",)
+    assert inventory_tool.collect_inventory().check_passed

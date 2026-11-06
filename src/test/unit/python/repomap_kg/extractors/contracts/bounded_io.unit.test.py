@@ -7,7 +7,7 @@ import os
 from collections.abc import Iterator
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, cast
 from unittest import mock
 
 import pytest
@@ -203,3 +203,24 @@ def test_removal_requires_the_recorded_identity(directory: tuple[int, Path]) -> 
     assert list(root.iterdir()) == []
     with pytest.raises(BoundedIOError):
         remove_owned_file(fd, "a.json", identity)
+
+
+
+def test_invalid_descriptor_and_non_bytes_refuse_without_mutation(directory: tuple[int, Path]) -> None:
+    fd, root = directory
+    with pytest.raises(BoundedIOError) as bad_fd:
+        read_regular_file(-1, "payload", max_bytes=8)
+    assert bad_fd.value.code == "unsafe_directory"
+    with pytest.raises(BoundedIOError) as bad_payload:
+        write_new_regular_file(fd, "payload", cast(Any, bytearray(b"x")), max_bytes=8)
+    assert bad_payload.value.code == "invalid_bytes"
+    assert list(root.iterdir()) == []
+
+
+def test_read_open_failure_retains_only_the_closed_code(directory: tuple[int, Path]) -> None:
+    fd, _ = directory
+    with mock.patch.object(bounded_io.os, "open", side_effect=OSError(errno.EACCES, "private detail")):
+        with pytest.raises(BoundedIOError) as raised:
+            read_regular_file(fd, "payload", max_bytes=8)
+    assert raised.value.code == "open_failed"
+    assert "private detail" not in str(raised.value)

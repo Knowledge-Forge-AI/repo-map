@@ -659,3 +659,28 @@ qualification remain pending. No application build or public campaign is
 allocated by this checkpoint; actual application starts remain 31. This source
 proof is not native or hosted qualification. Container-free Local Rust, measured
 comparison against credible alternative parsers, full W6 and v0.1.0 stay open.
+
+### CI121 outcome and contract-repair checkpoint
+
+CI121 passed native AMD D12/Rust qualification and all five assembled-product
+scenarios. Its bounded Rust component evidence records 13 fixture comparisons,
+420 claims and15 containment probes; this is component evidence for the tested
+source, not full W6 acceptance. Nine unit assertions failed. All2,108 staging
+behavioral tests passed before branch coverage failed at 18,786/23,552.
+Actual application starts are 32. Hard 85/85 and 80/80 gates stay unchanged;
+the 87/82 branch-margin goals remain open.
+
+[ADR 0158](../adr/2026/11/0158-ci121-contract-and-coverage-repair.md) repairs
+facade/census drift, redundant raw traversal, report-depth portability and stale
+historical assertions. Its [repair exit](../../tools/ci/cloe-ci121-repair1-exit.md)
+records225 scoped unit cases, a later five-case overlapping facade proof,
+55 product integration cases and three grant/manifest integration cases, with
+no local Python coverage, build or native parser execution. Connected receipt,
+protocol, static discovery and publication regressions add useful coverage.
+
+Fresh conditional CI122 bindings permit one normal staging synchronization,
+application start 33 after 32 and the separately recorded necessary AMD component
+command/two exact wheel transfers. Spent CI121 authority is rejected. Existing
+native reports stay immutable; the repaired source has pending hosted evidence.
+No automatic retry, main promotion, Local Rust or full W6/scientific acceptance
+follows. Coverage-only deficits accrue with the next substantive milestone.

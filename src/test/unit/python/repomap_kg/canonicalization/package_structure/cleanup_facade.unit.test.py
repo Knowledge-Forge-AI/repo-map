@@ -203,7 +203,8 @@ def test_canon_facade0_package_root_all_preserves_current_surface() -> None:
     assert getattr(canonicalization, "FILE_METADATA_KEYS") is getattr(main, "FILE_METADATA_KEYS")
 
     public_names = {
-        name for name in dir(canonicalization) if not name.startswith("_")
+        name for name in dir(canonicalization)
+        if not name.startswith("_") and name not in canonicalization._NON_FACADE_MODULES
     }
     assert set(canonicalization.__all__) == public_names
     assert all(not name.startswith("_") for name in canonicalization.__all__)
@@ -274,7 +275,8 @@ def test_canon_facade1_package_root_static_surface_preserves_main_exports() -> N
     assert getattr(canonicalization, "FILE_METADATA_KEYS") is getattr(main, "FILE_METADATA_KEYS")
 
     public_names = {
-        name for name in dir(canonicalization) if not name.startswith("_")
+        name for name in dir(canonicalization)
+        if not name.startswith("_") and name not in canonicalization._NON_FACADE_MODULES
     }
     assert set(canonicalization.__all__) == public_names
 

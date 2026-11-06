@@ -29,6 +29,9 @@ class CanonicalizationState:
     edge_evidence_links: list[CanonicalEdgeEvidenceLink] = field(default_factory=list)
     diagnostics: list[CanonicalizationDiagnostic] = field(default_factory=list)
     refused_claim_ordinals: frozenset[int] | None = None
+    _unrefused_pairs: tuple[tuple[int, RawObservation], ...] = field(
+        default=(), init=False, repr=False, compare=False
+    )
 
     def refuse_capability_claims(
         self, observations: Sequence[RawObservation]
@@ -41,7 +44,10 @@ class CanonicalizationState:
         refused = frozenset(item.ordinal for item in refusals)
         self.refused_claim_ordinals = refused
         self.diagnostics.extend(item.diagnostic() for item in refusals)
-        return tuple(item for ordinal, item in enumerate(observations) if ordinal not in refused)
+        self._unrefused_pairs = tuple(
+            (ordinal, item) for ordinal, item in enumerate(observations) if ordinal not in refused
+        )
+        return tuple(item for _, item in self._unrefused_pairs)
 
     def unrefused(
         self, observations: Sequence[RawObservation]
@@ -49,13 +55,14 @@ class CanonicalizationState:
         """Return ``(ordinal, observation)`` pairs, skipping refused claims.
 
         Ordinals stay those of the original raw sequence, so evidence keys and
-        diagnostics for admitted observations are unchanged.
+        diagnostics for admitted observations are unchanged. The checked input
+        is cached; the argument remains for compatibility and is not replayed.
         """
 
         refused = self.refused_claim_ordinals
         if refused is None:
             raise RuntimeError("capability claims must be checked before dispatch")
-        return (pair for pair in enumerate(observations) if pair[0] not in refused)
+        return iter(self._unrefused_pairs)
 
 
 def append_unsupported_observation_diagnostic(

@@ -322,4 +322,9 @@ _COMPATIBILITY_EXPORT_NAMES = (
 
 globals().update({name: getattr(_impl, name) for name in _COMPATIBILITY_EXPORT_NAMES})
 
-__all__ = tuple(name for name in globals() if not name.startswith("_"))
+_NON_FACADE_MODULES = frozenset({"claim_guard", "rust_pilot_family"})
+
+__all__ = tuple(
+    name for name in globals()
+    if not name.startswith("_") and name not in _NON_FACADE_MODULES
+)

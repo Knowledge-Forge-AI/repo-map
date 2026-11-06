@@ -31,7 +31,7 @@
       },
       {
         "path": "src/main/python/common_lore_index/canonicalization/__init__.py",
-        "sha256": "e8c2914179f6cedf4a78e275a2c6aa4f8eb3d007ec27a53e659db0398aebcb0a"
+        "sha256": "bc4db8dac0c789f1c32fa87619ff5b70aad10eb330313c710b213c35e1e365f4"
       },
       {
         "path": "src/main/python/common_lore_index/canonicalization/_document_dispatch.py",
@@ -107,7 +107,7 @@
       },
       {
         "path": "src/main/python/common_lore_index/canonicalization/dispatch.py",
-        "sha256": "c40e7d7188fe10ec94db6ac081ed1447517fbba29fab3491f24e830ae582179a"
+        "sha256": "37979df4b2f4f41af1da245ddc629e40da633819471837b654c5d565fa396e1e"
       },
       {
         "path": "src/main/python/common_lore_index/canonicalization/dispatch_helpers.py",
@@ -1003,11 +1003,11 @@
       },
       {
         "path": "tools/ci/d12_hosted_state.py",
-        "sha256": "e2e852b8291e90e0876625e9651510687ea8d6b05b3722742b1e5e231f728e91"
+        "sha256": "ce39b766909d0cfe525d6c6eb1d339be9fc7bd99532a1f0bf1e81e08f15a2590"
       },
       {
         "path": "tools/ci/d12_system_grant.py",
-        "sha256": "3ef020bb400f61816beda3d2d767e6bbdf410d5813145d0f88a7591b325d48c6"
+        "sha256": "82fe8c556ee6be6193e40f478cdaa20f897390233d8d0a8ec2545a98a7a24c11"
       },
       {
         "path": "tools/ci/d12_system_grant_io.py",

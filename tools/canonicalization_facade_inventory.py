@@ -162,7 +162,8 @@ def collect_inventory() -> FacadeInventory:
     )
     package_root_names = tuple(dir(canonicalization))
     public_names = tuple(
-        name for name in package_root_names if not name.startswith("_")
+        name for name in package_root_names
+        if not name.startswith("_") and name not in canonicalization._NON_FACADE_MODULES
     )
     all_names = tuple(canonicalization.__all__)
     return build_inventory(
