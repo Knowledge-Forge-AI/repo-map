@@ -6,12 +6,15 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from common_lore_index.ops.config_local import load_graph_registry_config_home
 from common_lore_index.ops.config_records import OpsConfig
 from common_lore_index.ops.lexical_service import build_graph_lexical_generation
 from common_lore_index.ops.refresh import refresh_graph
 from common_lore_index.ops.resource_view import ResourceObserver
 from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.lexical_driver import LexicalStorageError
 from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
 from repomap_test_support.retrieval_evaluation_fixture import (
     MIXED_V1_GRAPH_ID,
@@ -93,3 +96,52 @@ def test_metadata_only_lexical_refusals_are_private_in_reports(tmp_path: Path) -
             if outcome.refusal_code:
                 assert outcome.refusal_code not in encoded
             assert "TRUNCATABLE_PROSE_PREFIX_MARKER_V1" not in encoded
+
+
+def test_lexical_build_without_accepted_publication_is_not_recorded(
+    tmp_path: Path,
+) -> None:
+    """A missing accepted Server publication cannot produce a lexical report."""
+    with temporary_postgres() as postgres:
+        working_copy = materialize_mixed_v1_working_copy(tmp_path / "working-copy")
+        home = write_mixed_v1_postgres_home(
+            tmp_path / "postgres-home",
+            working_copy,
+            host=postgres.host,
+            port=postgres.port,
+            database=postgres.database,
+            user=postgres.user,
+            password=postgres.password,
+            declared_aliases=("core", "companion"),
+        )
+        config = load_graph_registry_config_home(home)
+        assert isinstance(config, OpsConfig)
+        apply_migrations(
+            default_rdbms_root(),
+            config.postgres.psql_args_for_database(postgres.database),
+            psql_command=postgres.psql_command,
+        )
+        observer = ResourceObserver()
+        with pytest.raises(LexicalStorageError) as raised:
+            build_graph_lexical_generation(
+                config,
+                MIXED_V1_GRAPH_ID,
+                selected_binding_ids=(binding_id_for_alias("core"),),
+                authorize_body=True,
+                resource_observer=observer,
+            )
+        assert raised.value.code == "cloe_lexical_no_accepted_publication"
+        payload: dict[str, Any] = observer.report().to_payload()
+        assert payload["schema"] == "cloe-resource-view-v1"
+        assert payload["operation"] == "lexical_build"
+        assert payload["backend"] == "postgresql"
+        assert payload["outcome"] == "not_recorded"
+        assert payload["instrumentation"] == "incomplete"
+        assert all(item["availability"] == "unavailable" for item in payload["metrics"])
+        assert payload["limits"]
+        assert all(item["applies_this_call"] is None for item in payload["limits"])
+        encoded = json.dumps(payload, sort_keys=True)
+        assert_canary_free(payload)
+        assert str(home) not in encoded
+        assert (not postgres.password) or postgres.password not in encoded
+        assert "cloe_lexical_no_accepted_publication" not in encoded

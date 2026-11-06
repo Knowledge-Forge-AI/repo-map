@@ -90,6 +90,17 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.ci123-repair1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/retrieval/lexical_capture_source_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/retrieval/resource_context_boundaries.int.test.py"
+      ],
+      "rationale": "ADR0161 real PostgreSQL lexical source boundaries and SQLite resource refusal/admission proof; all inherited quality ceilings preserved, zero new debt.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.config1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/cli/cloe_config.int.test.py",
@@ -57273,6 +57284,24 @@
       "rationale": "ADR0159 review correction: actual candidate context binding proof; clean owner, no inherited debt change.",
       "root": "test_owners",
       "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/lexical_capture_source_boundaries.int.test.py",
+      "rationale": "ADR0161 real PostgreSQL lexical source boundaries and SQLite resource refusal/admission proof; all inherited quality ceilings preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/resource_context_boundaries.int.test.py",
+      "rationale": "ADR0161 real PostgreSQL lexical source boundaries and SQLite resource refusal/admission proof; all inherited quality ceilings preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
     }
   ],
   "historical_revise10_counts": {

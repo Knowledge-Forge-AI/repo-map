@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 from typing import Any
@@ -13,10 +14,12 @@ from common_lore_index.ops.lexical_service import (
     build_graph_lexical_generation,
     query_graph_lexical_generation,
 )
+from common_lore_index.ops.resource_view import ResourceObserver
 from common_lore_index.retrieval.lexical_envelopes import LexicalQueryRequest
 from common_lore_index.retrieval.projection_policy import ExclusionReason
 from common_lore_index.retrieval.query_contracts import CapabilityState
 from repomap_test_support.postgres_harness import temporary_postgres
+from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
 from repomap_test_support.retrieval_evaluation_fixture import (
     MIXED_V1_GRAPH_ID,
     binding_id_for_alias,
@@ -192,6 +195,7 @@ def test_real_aggregate_refusal_preserves_prior_published_authority(tmp_path: Pa
         assert prior.published is not None
         prior_generation_id = prior.published.lexical_generation_id
 
+        refusal_observer = ResourceObserver()
         refused = build_graph_lexical_generation(
             config,
             MIXED_V1_GRAPH_ID,
@@ -199,10 +203,41 @@ def test_real_aggregate_refusal_preserves_prior_published_authority(tmp_path: Pa
             authorize_body=True,
             max_input_artifact_bytes=1024,
             max_aggregate_input_bytes=1024,
+            resource_observer=refusal_observer,
         )
         assert refused.result == "refused"
         assert refused.refusal_code == ExclusionReason.AGGREGATE_BUDGET_EXCEEDED.value
         assert refused.published is None
+        refusal_report: dict[str, Any] = refusal_observer.report().to_payload()
+        assert refusal_report["schema"] == "cloe-resource-view-v1"
+        assert refusal_report["operation"] == "lexical_build"
+        assert refusal_report["backend"] == "postgresql"
+        assert refusal_report["outcome"] == "refused"
+        assert refusal_report["instrumentation"] == "complete"
+        lexical_metrics = {
+            item["name"]: item
+            for item in refusal_report["metrics"]
+            if item["name"].startswith("lexical_")
+        }
+        assert set(lexical_metrics) == {
+            "lexical_input_bytes",
+            "lexical_projected_bytes",
+            "lexical_documents",
+            "lexical_omissions",
+        }
+        assert all(
+            item["availability"] == "unavailable"
+            and item["value"] is None
+            and item["reason"] == "not_reached"
+            for item in lexical_metrics.values()
+        )
+        assert refusal_report["limits"]
+        assert all(item["applies_this_call"] is None for item in refusal_report["limits"])
+        encoded_refusal = json.dumps(refusal_report, sort_keys=True)
+        assert_canary_free(refusal_report)
+        assert str(home) not in encoded_refusal
+        assert core_id not in encoded_refusal
+        assert refused.refusal_code not in encoded_refusal
 
         after_refusal = query_graph_lexical_generation(
             config,

@@ -285,6 +285,60 @@ def test_selected_staging_events_project_real_server_events_without_sql_or_sink_
             assert metric.reason in {"not_observed", "not_emitted", "observer_failed"}
 
 
+def test_staging_measurement_failure_does_not_relabel_commit(
+    tmp_path: Path,
+) -> None:
+    with temporary_postgres() as postgres:
+        config, _home, psql_command = _setup(tmp_path, postgres)
+        events: list[object] = []
+        sink_calls = 0
+
+        def failing_sink(event: object) -> None:
+            nonlocal sink_calls
+            sink_calls += 1
+            events.append(event)
+            raise RuntimeError("injected staging sink failure")
+
+        measurements = StagingMeasurements(failing_sink, event_limit=1024)
+        result = refresh_graph(
+            config,
+            MIXED_V1_GRAPH_ID,
+            psql_command=psql_command,
+            staging_measurements=measurements,
+        )
+        assert result.result == "success"
+        assert result.publication_state == "committed"
+        assert sink_calls == 1
+        assert events
+        assert measurements.failed is True
+        accepted = query_graph_summary(
+            config, MIXED_V1_GRAPH_ID, psql_command=psql_command,
+        )
+        assert accepted.result == "success"
+        assert accepted.latest_run_status == "complete"
+        assert accepted.latest_run_id == result.run_id
+
+        projected = project_staging_resources(
+            tuple(events), measurements_failed=measurements.failed,
+        )
+
+    values = {item.name: item for item in projected}
+    expected_bases = {
+        "wal_upper_bound": "shared_upper_bound",
+        "temporary_byte_upper_bound": "shared_upper_bound",
+        "postgresql_memory": "sampled_max",
+        "client_memory": "process_lifetime_peak",
+    }
+    assert set(values) == set(expected_bases)
+    for name, basis in expected_bases.items():
+        metric = values[name]
+        assert metric.basis == basis
+        assert metric.availability == "unavailable"
+        assert metric.value is None
+        assert metric.reason == "observer_failed"
+    assert_canary_free([item.to_payload() for item in projected])
+
+
 def test_concurrent_observed_server_refreshes_keep_publication_and_reports_separate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:

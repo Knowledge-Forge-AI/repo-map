@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import threading
 from types import SimpleNamespace
 from typing import Any, cast
-import threading
 
 import pytest
 
@@ -44,6 +44,56 @@ def test_absent_observer_is_inert_and_finish_returns_same_object() -> None:
     mark(None, "capture")
     assert finish_local(None, result) is result
     assert observer_kwargs(None) == {}
+
+
+@pytest.mark.parametrize(
+    ("operation", "backend"),
+    (
+        ("compact_context", "sqlite"),
+        ("unknown_operation", "sqlite"),
+        ("local_refresh", "postgresql"),
+        ("server_refresh", "sqlite"),
+        ("lexical_build", "sqlite"),
+        ("local_refresh", "unsupported_backend"),
+    ),
+)
+def test_invalid_or_unowned_begin_degrades_to_a_safe_unbegun_report(
+    operation: str, backend: str,
+) -> None:
+    observer = ResourceObserver(_monotonic_ns=_Clock(0), _process_time_ns=_Clock(0))
+    begin(observer, operation, backend)
+    report = observer.report()
+    assert report.operation is None and report.backend is None
+    assert report.outcome == "not_recorded"
+    assert report.instrumentation == "degraded"
+    assert report.metrics == () and report.limits == ()
+
+
+@pytest.mark.parametrize("clock", ("monotonic", "process"))
+def test_ordinary_clock_failure_degrades_without_business_exception(clock: str) -> None:
+    def bad_clock() -> int:
+        raise ValueError("clock detail must stay private")
+
+    observer = ResourceObserver(
+        _monotonic_ns=bad_clock if clock == "monotonic" else lambda: 0,
+        _process_time_ns=bad_clock if clock == "process" else lambda: 0,
+    )
+    begin(observer, "local_refresh", "sqlite")
+    report = observer.report()
+    assert report.outcome == "not_recorded"
+    assert report.instrumentation == "degraded"
+    assert all(metric.value is None for metric in report.metrics)
+    assert all(limit.applies_this_call is None for limit in report.limits)
+
+
+@pytest.mark.parametrize("value", (True, -1, 1.5, "private-clock-detail"))
+def test_invalid_clock_values_degrade_without_entering_the_payload(value: Any) -> None:
+    observer = ResourceObserver(_monotonic_ns=lambda: value)
+    begin(observer, "local_refresh", "sqlite")
+    report = observer.report()
+    assert report.instrumentation == "degraded" and report.outcome == "not_recorded"
+    assert all(metric.value is None for metric in report.metrics)
+    assert "private-clock-detail" not in str(report.to_payload())
 
 
 def test_local_success_records_stages_totals_and_reuses_frozen_report() -> None:

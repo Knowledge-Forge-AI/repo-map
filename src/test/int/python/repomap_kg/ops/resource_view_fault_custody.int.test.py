@@ -11,12 +11,13 @@ from typing import Any
 
 import pytest
 
-from common_lore_index.ops import portable_refresh
+from common_lore_index.ops import lexical_service, portable_refresh
 from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
 from common_lore_index.ops.config_records import OpsConfig
+from common_lore_index.ops.lexical_service import build_graph_lexical_generation
 from common_lore_index.ops.local_refresh import initialize_local_graph, refresh_local_graph
 from common_lore_index.ops.refresh import query_graph_summary, refresh_graph
-from common_lore_index.ops.resource_view import ResourceObserver
+from common_lore_index.ops.resource_view import ResourceObserver, begin
 from common_lore_index.ops.resource_view._projections import project_compact_context
 from common_lore_index.retrieval.context_assembly import build_compact_context
 from common_lore_index.retrieval.context_contracts import ContextRequest
@@ -29,7 +30,7 @@ from repomap_test_support.context_fixture import (
 from repomap_test_support.postgres_harness import temporary_postgres
 from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
 from repomap_test_support.retrieval_evaluation_fixture import (
-    MIXED_V1_GRAPH_ID, materialize_mixed_v1_working_copy,
+    MIXED_V1_GRAPH_ID, binding_id_for_alias, materialize_mixed_v1_working_copy,
     write_mixed_v1_postgres_home, write_mixed_v1_sqlite_home,
 )
 
@@ -104,6 +105,26 @@ def test_reused_observer_degrades_while_both_local_refreshes_publish(tmp_path: P
     _private(payload)
 
 
+def test_local_survives_caller_poisoned_unsupported_begin(tmp_path: Path) -> None:
+    working = materialize_mixed_v1_working_copy(tmp_path / "working")
+    home = write_mixed_v1_sqlite_home(tmp_path / "home", working)
+    config = load_graph_registry_config_home(home)
+    assert isinstance(config, LocalSqliteConfig)
+    initialize_local_graph(config, MIXED_V1_GRAPH_ID)
+    observer = ResourceObserver()
+    begin(observer, "compact_context", "sqlite")
+
+    result = refresh_local_graph(config, MIXED_V1_GRAPH_ID, resource_observer=observer)
+    database = home / "state/sqlite-local/graphs" / f"{MIXED_V1_GRAPH_ID}.sqlite3"
+    assert result.generation == 1 and result.reconciled is False
+    assert _accepted_local(database) == (result.generation, result.run_id)
+    payload: dict[str, Any] = observer.report().to_payload()
+    assert payload["operation"] is None and payload["backend"] is None
+    assert payload["outcome"] == "not_recorded"
+    assert payload["instrumentation"] == "degraded"
+    _private(payload)
+
+
 @pytest.mark.parametrize("error_type", [KeyboardInterrupt, SystemExit])
 def test_server_finish_interrupt_propagates_after_accepted_commit_without_relabeling(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, error_type: type[BaseException],
@@ -146,6 +167,56 @@ def test_server_finish_interrupt_propagates_after_accepted_commit_without_relabe
         assert payload["outcome"] == "not_recorded" and payload["instrumentation"] == "incomplete"
         publication = next(row for row in payload["metrics"] if row["name"] == "publication_elapsed")
         assert publication["value"] is None and publication["reason"] == "not_reached"
+        _private(payload)
+
+
+def test_lexical_finish_clock_error_degrades_report_without_relabeling_publication(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    working = materialize_mixed_v1_working_copy(tmp_path / "working")
+    with temporary_postgres() as postgres:
+        home = write_mixed_v1_postgres_home(
+            tmp_path / "home", working,
+            host=postgres.host, port=postgres.port, database=postgres.database,
+            user=postgres.user, password=postgres.password,
+            declared_aliases=("core", "companion"),
+        )
+        config = load_graph_registry_config_home(home)
+        assert isinstance(config, OpsConfig)
+        apply_migrations(
+            default_rdbms_root(), config.postgres.psql_args_for_database(postgres.database),
+            psql_command=postgres.psql_command,
+        )
+        published = refresh_graph(config, MIXED_V1_GRAPH_ID, psql_command=postgres.psql_command)
+        assert published.result == "success" and published.publication_state == "committed"
+        build = lexical_service.build_and_publish_lexical_generation
+        completed = False
+
+        def record_completion(*args: Any, **kwargs: Any) -> Any:
+            nonlocal completed
+            outcome = build(*args, **kwargs)
+            completed = True
+            return outcome
+
+        monkeypatch.setattr(lexical_service, "build_and_publish_lexical_generation", record_completion)
+
+        def clock() -> int:
+            if completed:
+                raise ValueError("private-clock-detail")
+            return time.monotonic_ns()
+
+        observer = ResourceObserver(_monotonic_ns=clock)
+        outcome = build_graph_lexical_generation(
+            config, MIXED_V1_GRAPH_ID,
+            selected_binding_ids=(binding_id_for_alias("core"),),
+            authorize_body=True, resource_observer=observer,
+        )
+        assert outcome.result == "published" and outcome.published is not None
+        payload: dict[str, Any] = observer.report().to_payload()
+        assert payload["outcome"] == "not_recorded"
+        assert payload["instrumentation"] == "degraded"
+        assert all(row["value"] is None for row in payload["metrics"])
+        assert all(row["applies_this_call"] is None for row in payload["limits"])
         _private(payload)
 
 

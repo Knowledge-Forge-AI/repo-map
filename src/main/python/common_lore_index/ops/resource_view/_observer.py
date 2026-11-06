@@ -31,6 +31,13 @@ _STAGES = {
     "publication": "publication_elapsed",
 }
 _STAGE_UNITS = {name: Unit.NANOSECONDS for name in _STAGES.values()}
+_OBSERVED_OPERATIONS = frozenset(
+    {
+        Operation.LOCAL_REFRESH.value,
+        Operation.SERVER_REFRESH.value,
+        Operation.LEXICAL_BUILD.value,
+    }
+)
 
 
 def _int(value: object, label: str) -> int:
@@ -113,8 +120,8 @@ class ResourceObserver:
         if self._begun:
             self._degrade()
             raise ValueError("resource observer began more than once")
-        if operation not in {item.value for item in Operation}:
-            raise ValueError("resource operation is invalid")
+        if operation not in _OBSERVED_OPERATIONS:
+            raise ValueError("resource observer operation is unsupported")
         if backend not in {item.value for item in Backend}:
             raise ValueError("resource backend is invalid")
         if operation == Operation.LOCAL_REFRESH.value and backend != Backend.SQLITE.value:
