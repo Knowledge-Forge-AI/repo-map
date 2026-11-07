@@ -173,7 +173,8 @@ def test_run_insert_and_post_commit_receipt_are_optional_and_atomic():
         git_commit=None,
         run_status="complete",
     )
-    assert "source_generation" not in legacy[3]
+    legacy_insert = next(sql for sql in legacy if sql.startswith("INSERT INTO runs"))
+    assert "source_generation" not in legacy_insert
 
     expected = receipt()
     fenced = repository_run_prefix_sql(
@@ -183,15 +184,16 @@ def test_run_insert_and_post_commit_receipt_are_optional_and_atomic():
         run_status="complete",
         publication_receipt=expected,
     )
+    run_insert = next(sql for sql in fenced if sql.startswith("INSERT INTO runs"))
     assert (
         "source_generation, config_generation, extractor_generation, "
-        "canonicalizer_generation" in fenced[3]
+        "canonicalizer_generation" in run_insert
     )
-    assert "publication_job_id, publication_attempt" in fenced[3]
-    assert expected.attempt.job_id in fenced[3]
-    assert str(expected.attempt.attempt) in fenced[3]
+    assert "publication_job_id, publication_attempt" in run_insert
+    assert expected.attempt.job_id in run_insert
+    assert str(expected.attempt.attempt) in run_insert
     for value in expected.generations.values():
-        assert value in fenced[3]
+        assert value in run_insert
 
     summary = file_load_summary_select_sql(
         1, include_publication_receipt=True

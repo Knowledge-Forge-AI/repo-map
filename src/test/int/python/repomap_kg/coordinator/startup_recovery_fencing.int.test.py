@@ -256,7 +256,9 @@ def test_connected_startup_recovery_contention_preserves_singleton_liveness() ->
                 coord.startup(coord.recover_startup)
                 report = cast(StartupRecoveryReport, coord.startup_recovery_report)
                 assert (report.pending, report.refused, report.unexpected) == (1, 1, ())
+                assert coord.recovery_diagnostics == ()
                 assert coord.heartbeat() is True  # Coordinator singleton remains alive
+                assert coord.recovery_diagnostics == ()
                 assert time.monotonic() - started < 5
                 assert store.status(sub.job_id).state == "reconciliation_required"
                 assert _publication_phase.publication_state(cap_dir, claim) == "commit_unknown"
@@ -264,6 +266,7 @@ def test_connected_startup_recovery_contention_preserves_singleton_liveness() ->
             assert coord.heartbeat() is True
             report = cast(StartupRecoveryReport, coord.startup_recovery_report)
             assert (report.resolved, report.pending, report.refused, report.unexpected) == (1, 0, 0, ())
+            assert coord.recovery_diagnostics == ()
             assert store.status(sub.job_id).state == "queued"
         finally:
             coord.shutdown()

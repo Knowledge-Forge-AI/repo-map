@@ -784,3 +784,23 @@ selectors and limitations. Conditional
 one fresh reviewed CI125 attempt1 (application cap36 after actual35, native
 AMD Rust command5 and cumulative wheel transfers14). Independent final review
 and exact-candidate binding precede publication. No successor has executed.
+
+### CI125 forward repair
+
+CI125 attempt 1 executed and failed two tests: an old positional run-INSERT
+assertion and connected startup recovery's classification of sanitized
+admission contention. The other seven jobs passed, including the five system
+scenarios, native D12 and Rust checks. Retained artifacts authenticate actual
+application starts 36, native AMD Rust commands 5 and wheel transfers 14.
+Unit branches are 20,713/23,886 (86.72%); measured integration branches
+are 19,148/23,886 (80.16%). Both hard floors pass; desired 87/82 margins remain
+open (68/439 branches at this denominator).
+
+`REPOMAP-CLOE-CI125REPAIR1` repairs those regressions under
+[ADR0164](../adr/2026/11/0164-publication-contention-recovery-and-ci126.md).
+Busy refusals retain storage-error compatibility and become expected durable
+recovery contention; unrelated schema failures remain unexpected. Receipt
+assertions select the actual run INSERT while retaining field/value checks.
+Scoped proof and independent review precede one fresh CI126 attempt 1; the
+[repair exit](../../tools/ci/cloe-ci125repair1-exit.md) records the exact
+selectors, limitations and pending hosted boundary. Full W7 remains open.

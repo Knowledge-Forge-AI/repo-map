@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from common_lore_index.storage._repository_publication_lock import (
+    PublicationContentionError,
     guard_existing_large_repository,
     repository_admission_guard_sql,
 )
@@ -51,8 +52,9 @@ def test_malformed_admission_response_fails_closed(row):
 
 
 def test_busy_admission_has_sanitized_error_without_driver_cause():
-    with pytest.raises(StorageSchemaError, match="^graph publication already active$") as caught:
+    with pytest.raises(PublicationContentionError, match="^graph publication already active$") as caught:
         guard_existing_large_repository(_Database(error=_DriverError("private diagnostic")), "fixture-root", None)
+    assert isinstance(caught.value, StorageSchemaError)
     assert caught.value.__cause__ is None and caught.value.__suppress_context__
 
 

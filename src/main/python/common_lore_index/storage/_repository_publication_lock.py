@@ -15,12 +15,16 @@ _BUSY = "graph publication already active"
 _ROW_LOCK = "FOR NO KEY UPDATE NOWAIT"
 
 
+class PublicationContentionError(StorageSchemaError):
+    """Internal, sanitized publication/admission contention refusal."""
+
+
 def _lock_row(connection: Any, sql: str, values: tuple[object, ...]) -> Any:
     try:
         return connection.execute(sql, values).fetchone()
     except Exception as error:
         if getattr(error, "sqlstate", None) == "55P03":
-            raise StorageSchemaError(_BUSY) from None
+            raise PublicationContentionError(_BUSY) from None
         raise
 
 
@@ -47,7 +51,7 @@ def acquire_publication_lock(
         if row is None:
             raise StorageSchemaError("staged repository identity was not returned")
     if row is None or not row or row[0] is not True:
-        raise StorageSchemaError(_BUSY)
+        raise PublicationContentionError(_BUSY)
 
 
 def guard_existing_large_repository(

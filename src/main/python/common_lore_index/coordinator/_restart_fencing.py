@@ -10,6 +10,7 @@ from psycopg.errors import LockNotAvailable, QueryCanceled
 
 from common_lore_index.coordinator._control_types import ConnectionFactory, JobClaim
 from common_lore_index.coordinator._publication_phase import WorkerFencingProof, _issue_fencing_proof
+from common_lore_index.storage._repository_publication_lock import PublicationContentionError
 from common_lore_index.coordinator._supervisor_registration import (
     FencingContentionError as FencingContentionError,
     StaleDurableAuthorityError as StaleDurableAuthorityError,
@@ -42,7 +43,7 @@ def make_store_closure_context_factory(
                     # The external storage transaction may take time; recheck lease liveness.
                     _require_currency(cursor, claim, **authority)
                     yield connection
-        except (LockNotAvailable, QueryCanceled) as error:
+        except (LockNotAvailable, QueryCanceled, PublicationContentionError) as error:
             raise FencingContentionError("durable lock contention") from error
     return closure_context
 
@@ -217,7 +218,7 @@ def quarantine_legacy_attempt(
                 )
             connection.commit()
             return True
-    except (LockNotAvailable, QueryCanceled):
+    except (LockNotAvailable, QueryCanceled, PublicationContentionError):
         return False
     except StaleDurableAuthorityError:
         return False
