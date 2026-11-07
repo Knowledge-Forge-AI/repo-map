@@ -4,17 +4,17 @@ from dataclasses import replace
 from unittest.mock import Mock, patch
 import pytest
 import psycopg
-from repomap_kg.storage._staged_ingestion_stages import _handle_refresh_failure
-from repomap_kg.storage.authority import AttemptNumber, JobId, StageId
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.publication import (
+from common_lore_index.storage._staged_ingestion_stages import _handle_refresh_failure
+from common_lore_index.storage.authority import AttemptNumber, JobId, StageId
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.publication import (
     PortablePublicationBinding,
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.staged_publication import (
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.staged_publication import (
     _mark_commit_unknown,
     _publication_marker,
     execute_final_transaction,
@@ -292,9 +292,9 @@ def test_mark_failed_before_publication_rowcount_zero_raises() -> None:
 
 
 def test_execute_final_transaction_measurement_contracts() -> None:
-    from repomap_kg.storage.staging_observability import StagingMeasurements
-    from repomap_kg.storage.staging_merge_operations import MergeScope
-    from repomap_kg.storage.staged_publication import _execute_measured_merge
+    from common_lore_index.storage.staging_observability import StagingMeasurements
+    from common_lore_index.storage.staging_merge_operations import MergeScope
+    from common_lore_index.storage.staged_publication import _execute_measured_merge
 
     connection = Mock()
     connection.execute.return_value.fetchone.return_value = (True,)
@@ -302,7 +302,7 @@ def test_execute_final_transaction_measurement_contracts() -> None:
     measurements = StagingMeasurements(lambda _event: None)
 
     with patch(
-        "repomap_kg.storage.staged_publication.build_publication_prepare_statements",
+        "common_lore_index.storage.staged_publication.build_publication_prepare_statements",
         return_value=("one",),
     ):
         with pytest.raises(
@@ -313,7 +313,7 @@ def test_execute_final_transaction_measurement_contracts() -> None:
             )
 
     with patch(
-        "repomap_kg.storage.staged_publication.build_publication_finalize_statements",
+        "common_lore_index.storage.staged_publication.build_publication_finalize_statements",
         return_value=("one",),
     ):
         with pytest.raises(

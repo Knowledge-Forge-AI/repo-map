@@ -7,7 +7,7 @@ from repomap_test_support.bash import (
     observations_by_kind,
 )
 
-from repomap_kg.extractors.shell.bash import extract_bash_file_observations
+from common_lore_index.extractors.shell.bash import extract_bash_file_observations
 
 
 class BashCommandExtractorUnitTests(unittest.TestCase):

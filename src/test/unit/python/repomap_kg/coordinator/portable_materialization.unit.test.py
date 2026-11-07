@@ -4,14 +4,14 @@ import os
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ManifestArtifact,
     ManifestBinding,
     PortableSnapshotManifest,
 )
-from repomap_kg.artifacts.store import ArtifactIntegrityError, FileSystemArtifactStore
-from repomap_kg.coordinator._portable_materialization import MaterializedWorkspace
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.store import ArtifactIntegrityError, FileSystemArtifactStore
+from common_lore_index.coordinator._portable_materialization import MaterializedWorkspace
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 BINDING_ID = "bind1:" + "1" * 64

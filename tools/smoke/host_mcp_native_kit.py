@@ -4,7 +4,7 @@ The kit mirrors the repository layout (``cli_in_process`` and the fixture
 helpers resolve siblings through fixed parent offsets) and contains the runner,
 the AST-computed import closure under ``tools`` and ``src/test/support/python``,
 the two offline fixture inputs, ``run.sh`` and the operator README. The
-interpreter, the ``repomap-kg`` console script and the editable ``repomap_kg``
+interpreter, the ``cloe`` console script and the editable ``common_lore_index``
 package (with its migrations and installed dependencies) still come from the
 pinned checkout; the kit manifest records the checkout product bytes it was
 built against so a mismatched checkout is refused before any resource exists.
@@ -40,7 +40,7 @@ FIXTURE_INPUTS = (
 )
 RENAMED = {"tools/smoke/host_mcp_native_kit_run.sh": "run.sh",
            "docs/ops/host-mcp-native-qualification.md": "README.md"}
-PRODUCT_PATHS = ("src/main/python/repomap_kg", "src/main/resources", "pyproject.toml")
+PRODUCT_PATHS = ("src/main/python/common_lore_index", "src/main/resources", "pyproject.toml")
 Runner = Callable[..., subprocess.CompletedProcess[str]]
 
 
@@ -132,8 +132,8 @@ def build_kit(repo: Path, out_dir: Path, *, runner: Runner = subprocess.run) -> 
         "product": product_manifest(repo, runner=runner),
         "build_checkout": {"head": head[0], "tree": head[1], "role": "evidence only; not a gate"},
         "from_checkout": ["<checkout>/.venv/bin/python (parent and child interpreter)",
-                          "<checkout>/.venv/bin/repomap-kg (the MCP acceptance process)",
-                          "editable repomap_kg under <checkout>/src/main/python with src/main/resources",
+                          "<checkout>/.venv/bin/cloe (the MCP acceptance process)",
+                          "editable common_lore_index under <checkout>/src/main/python with src/main/resources",
                           "installed psycopg and pytest in <checkout>/.venv"],
     }
     files[MANIFEST] = ((json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode(), 0o644)

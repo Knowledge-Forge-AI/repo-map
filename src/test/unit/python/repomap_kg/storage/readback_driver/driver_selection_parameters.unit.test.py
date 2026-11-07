@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
     _psycopg_connection_params_from_psql_args,
@@ -147,7 +147,7 @@ def test_psycopg7_psycopg_helper_returns_decoded_object(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=({"ok": True},))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
         payload = execute_json_readback(
@@ -164,7 +164,7 @@ def test_psycopg7_psycopg_helper_returns_decoded_array(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=([{"node_key": "file:README.md"}],))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
         payload = execute_json_readback(
@@ -181,7 +181,7 @@ def test_psycopg7_psycopg_helper_handles_json_text(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=(json.dumps({"ok": True}),))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
         payload = execute_json_readback(
@@ -198,7 +198,7 @@ def test_psycopg7_psycopg_helper_rejects_unexpected_result_shape(monkeypatch) ->
     fake_psycopg = _FakePsycopg(row=({"ok": True},))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
         with pytest.raises(StorageSchemaError, match="JSON array"):

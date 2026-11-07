@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.bulk import (
+from common_lore_index.ops.ingestion.bulk import (
     BulkPolicyError,
     bulk_observations_from_plan,
     build_bulk_plan,

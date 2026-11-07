@@ -12,10 +12,10 @@ import sqlite3
 from collections.abc import Sequence
 from pathlib import Path
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.storage.publication import RunPublicationReceipt
-from repomap_kg.storage.sqlite_local.publisher import LocalPublication
-from repomap_kg.storage.sqlite_local.schema import LocalGraphBinding
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.sqlite_local.publisher import LocalPublication
+from common_lore_index.storage.sqlite_local.schema import LocalGraphBinding
 from repomap_test_support.portable_publication_fixtures import (
     _authority,
     _binding,
@@ -113,8 +113,8 @@ def generation_bundle(generation: int) -> PublicationBundle:
 
 def published_sqlite_database(root: Path, *, generations: int = 1) -> Path:
     """A real current store with the maintained portable publication corpus."""
-    from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
-    from repomap_kg.storage.sqlite_local.publisher import publish_generation
+    from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
+    from common_lore_index.storage.sqlite_local.publisher import publish_generation
 
     root.mkdir(mode=0o700, parents=True, exist_ok=True)
     path = root / "portable-fixture.sqlite3"

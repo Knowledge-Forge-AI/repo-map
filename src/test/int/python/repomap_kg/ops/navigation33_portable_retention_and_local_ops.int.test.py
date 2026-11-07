@@ -11,8 +11,8 @@ import socket
 
 import pytest
 
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.ops._portable_retention import (
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.ops._portable_retention import (
     EXPIRED_TERMINAL,
     INCOMPLETE,
     RETAINED_TERMINAL,
@@ -30,34 +30,34 @@ from repomap_kg.ops._portable_retention import (
     _write_retained_result,
     remove_expired_terminal_attempt,
 )
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.config_helpers import OpsConfigDiagnostic
-from repomap_kg.ops.config_local import (
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.config_helpers import OpsConfigDiagnostic
+from common_lore_index.ops.config_local import (
     LocalSqliteConfig,
     build_local_sqlite_config_from_payload,
 )
-from repomap_kg.ops.local_cleanup import (
+from common_lore_index.ops.local_cleanup import (
     LocalCleanupError,
     cleanup_local_graph,
 )
-from repomap_kg.ops.local_ops_status import (
+from common_lore_index.ops.local_ops_status import (
     format_local_config_status_table,
     format_local_graph_registry_table,
 )
-from repomap_kg.ops.local_refresh import (
+from common_lore_index.ops.local_refresh import (
     ATTEMPT_BLOCK,
     LocalRefreshError,
     initialize_local_graph,
     refresh_local_graph,
 )
-from repomap_kg.ops.portable_refresh import _attempt_root, _worker_references
-from repomap_kg.ops.readback import (
+from common_lore_index.ops.portable_refresh import _attempt_root, _worker_references
+from common_lore_index.ops.readback import (
     MissingDatabaseReadbackError,
     execute_ops_json_readback,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 
 

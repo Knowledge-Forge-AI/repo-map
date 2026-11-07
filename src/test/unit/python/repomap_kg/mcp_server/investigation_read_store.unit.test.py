@@ -6,8 +6,8 @@ from dataclasses import replace
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.graph.keys import GRAPH_KEY_VERSION
-from repomap_kg.server.investigation_read_store import (
+from common_lore_index.graph.keys import GRAPH_KEY_VERSION
+from common_lore_index.server.investigation_read_store import (
     ConfiguredNeighborhoodQuery,
     GraphRefreshStatusQuery,
     GraphSearchQuery,
@@ -17,7 +17,7 @@ from repomap_kg.server.investigation_read_store import (
     PostgresInvestigationReadStore,
     ProjectSummaryQuery,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalEdgeRecord,
     CanonicalNeighborhoodRecord,
     CanonicalNodeRecord,
@@ -102,7 +102,7 @@ class FakeInvestigationReadStore:
 
 class InvestigationReadStoreDispatchTests(McpServerTestSupport):
     def _call_all(self) -> list[dict]:
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
 
         return [handle_tool_call(name, dict(args)) for name, args in TOOL_CALLS]
 
@@ -122,7 +122,7 @@ class InvestigationReadStoreDispatchTests(McpServerTestSupport):
             factory_calls.append(config)
             return Binding()
 
-        with env, patch("repomap_kg.server.ops.investigation_stores", factory):
+        with env, patch("common_lore_index.server.ops.investigation_stores", factory):
             seam_results = self._call_all()
 
         def search_owner(config, *, limit, **_kwargs):
@@ -130,7 +130,7 @@ class InvestigationReadStoreDispatchTests(McpServerTestSupport):
             return {"results": rows[:limit], "has_more": len(rows) > limit}
 
         with env, patch.multiple(
-            "repomap_kg.server.ops",
+            "common_lore_index.server.ops",
             query_refresh_status=lambda *a, **k: _statuses(self),
             query_mcp_search=search_owner,
             query_canonical_storage_summary=lambda *a, **k: SUMMARY,
@@ -157,7 +157,7 @@ class InvestigationReadStoreDispatchTests(McpServerTestSupport):
         self.assertEqual(seam_results[7]["structuredContent"]["result"]["center"]["canonical_key"], NODE.canonical_key)
 
     def test_invalid_arguments_and_graphs_refuse_before_store_access(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError, handle_tool_call
+        from common_lore_index.server.mcp import RepoMapMcpError, handle_tool_call
 
         search = {"graph_id": "repo-map", "query": "x"}
         cases = (
@@ -181,7 +181,7 @@ class InvestigationReadStoreDispatchTests(McpServerTestSupport):
         )
         env = self.patch_mcp_and_ops_config(self.write_empty_mcp_config(), self.write_visible_ops_config())
         with env, patch.multiple(
-            "repomap_kg.server.ops",
+            "common_lore_index.server.ops",
             investigation_stores=failing_store_binding,
             query_refresh_status=fail_if_reached,
             query_mcp_search=fail_if_reached,
@@ -197,7 +197,7 @@ class InvestigationReadStoreDispatchTests(McpServerTestSupport):
 
 class PostgresInvestigationReadStoreScopeTests(McpServerTestSupport):
     def _store(self, calls: list[tuple[str, tuple, dict]], body: str | None = None) -> PostgresInvestigationReadStore:
-        from repomap_kg.ops.config import load_ops_config
+        from common_lore_index.ops.config import load_ops_config
 
         def make(name, result):
             def query(*args, **kwargs):
@@ -224,7 +224,7 @@ class PostgresInvestigationReadStoreScopeTests(McpServerTestSupport):
             self.assertEqual((kwargs["readback_mode"], kwargs["psql_command"]), ("host_only", None))
 
     def test_adapter_refuses_unknown_disabled_and_hidden_graphs_defensively(self) -> None:
-        from repomap_kg.server.ops import McpOpsError
+        from common_lore_index.server.ops import McpOpsError
 
         calls: list[tuple[str, tuple, dict]] = []
         store = self._store(calls)
@@ -244,7 +244,7 @@ class PostgresInvestigationReadStoreScopeTests(McpServerTestSupport):
         self.assertEqual(calls, [])
 
     def test_readback_unsupported_graph_is_a_status_row_but_refuses_reads(self) -> None:
-        from repomap_kg.server.ops import McpOpsError
+        from common_lore_index.server.ops import McpOpsError
         from repomap_test_support.host_read_store_config import setup_owned_config
 
         body = setup_owned_config().replace(

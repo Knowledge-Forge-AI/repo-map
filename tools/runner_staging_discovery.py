@@ -14,6 +14,10 @@ import time
 from typing import Any
 
 from repomap_test_support.test_scratch import establish_run
+from runner_failure_evidence import (
+    CHILD_SCHEMA, DISCOVERY_SCHEMA, candidate_at_start, diagnostic_path, error_record,
+    persist_diagnostic, print_diagnostic, read_diagnostic,
+)
 from runner_integration_obligations import MAINTAINED_ABRUPT_DECLARATIONS, validate_declarations
 from runner_integration_population import SealedPopulationPartition, partition_population
 from runner_staging_discovery_contract import (
@@ -85,6 +89,30 @@ def require_canonical_optional_owner(optional: Mapping[str, Any], *, scoped: boo
     require_registered_optional(optional, scoped=scoped)
 
 
+def _retain_failure(args, invocation, candidate, primary, secondary, process, receipt_exit, child_path):
+    """Export observations before temporary child evidence is removed; never admit a population."""
+    child_error = None
+    try:
+        child_error = read_diagnostic(child_path, CHILD_SCHEMA)["error"]
+    except FileNotFoundError:
+        pass
+    except Exception as error:
+        secondary.append(error_record(error, "discovery_receipt"))
+    payload = {
+        "schema": DISCOVERY_SCHEMA, "invocation_id": invocation,
+        "candidate_at_start": candidate_at_start(candidate), "partition_state": "not_established",
+        "collected_count": None, "process_exit": process.returncode if process is not None else None,
+        "receipt_exit": receipt_exit, "primary": primary, "secondary": secondary,
+        "secondary_omitted": 0, "child_error": child_error,
+    }
+    print_diagnostic(primary, primary=True)
+    try:
+        directory = Path(args.report_dir) / args.suite / "latest"
+        persist_diagnostic(diagnostic_path(directory, "staging_discovery_diagnostic", invocation), payload)
+    except Exception as error:
+        print_diagnostic(error_record(error, "diagnostic_persistence"), primary=False)
+
+
 def discover_staging_population(
     args: Any, pytest_args: Sequence[str], *, repo_root: Path, source_root: Path,
     test_support_root: Path, invocation_id: str, candidate_identity: dict[str, str],
@@ -113,24 +141,54 @@ def discover_staging_population(
         request_path, receipt_path = root / "request.json", root / "receipt.json"
         write_document(request_path, request)
         command = [sys.executable, "-I", str(script), str(request_path), str(receipt_path)]
-        process = subprocess.Popen(command, cwd=repo_root, env=environment,
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                   start_new_session=True)
+        process, primary_error, receipt_exit = None, None, None
+        primary = None
+        secondary: list[dict[str, Any]] = []
+        stage = "discovery_startup"
         try:
+            process = subprocess.Popen(command, cwd=repo_root, env=environment,
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                       start_new_session=True)
+            stage = "discovery_collection"
             try:
                 code = process.wait(timeout=timeout_seconds)
             except subprocess.TimeoutExpired as error:
                 raise PopulationDiscoveryError("discovery child timed out") from error
             if code != 0:
                 detail = discovery_failure_detail(receipt_path, request=request, exit_code=code)
+                try:
+                    failed_receipt = validate_discovery_receipt(receipt_path, request=request, require_success=False)
+                    if failed_receipt["exit_code"] == code:
+                        receipt_exit = code
+                except PopulationDiscoveryError:
+                    pass
                 raise PopulationDiscoveryError(f"discovery child failed with exit {code}; {detail}")
+            stage = "discovery_receipt"
             receipt = validate_discovery_receipt(receipt_path, request=request)
+            receipt_exit = receipt["exit_code"]
             partition = partition_population(
                 receipt["eligible"], declarations=declarations, suite=args.suite, scoped=scoped,
                 collected_nodes=receipt["collected"], deferred_nodes=receipt["deferred"],
             )
             require_canonical_optional_owner(receipt["optional"], scoped=scoped)
             partition = replace(partition, optional_population=receipt["optional"])
+        except BaseException as error:
+            primary_error, primary = error, error_record(error, stage)
         finally:
-            terminate_and_reap(process)
+            if process is not None:
+                try:
+                    terminate_and_reap(process)
+                except BaseException as error:
+                    record = error_record(error, "discovery_cleanup")
+                    if primary is None:
+                        primary_error, primary = error, record
+                    else:
+                        secondary.append(record)
+                        if not isinstance(error, Exception):
+                            primary_error = error
+            if primary is not None:
+                _retain_failure(args, invocation_id, candidate_identity, primary, secondary,
+                                process, receipt_exit, root / "child_error.json")
+        if primary_error is not None:
+            raise primary_error
         return partition

@@ -28,7 +28,7 @@ from ci.d12_hosted_evidence import (
 )
 from ci.d12_hosted_reports import load_safe_json_report, project_canonical_boundary_counts
 from ci.d12_hosted_state import load_prepare_or_refusal_state, write_prepare_refusal_state
-from repomap_kg.runtime.release import DYNAMIC_PACKAGE_MANIFEST, PSYCOPG_LIBPQ_VERSION
+from common_lore_index.runtime.release import DYNAMIC_PACKAGE_MANIFEST, PSYCOPG_LIBPQ_VERSION
 from repomap_test_support import d12_core_image
 import test_sandbox
 import test_sandbox_images

@@ -6,12 +6,12 @@ import json
 import sys
 from types import ModuleType, SimpleNamespace
 import unittest
-from repomap_kg.cli._ops_control_dispatch import dispatch_ops_control_command
-from repomap_kg.cli._ops_refresh_dispatch import dispatch_ops_refresh_command
-from repomap_kg.cli.source_commands import dispatch_source_acquisition_command
-from repomap_kg.ops.config_loading_records import merge_ops_config_payloads
-from repomap_kg.ops.graph_file_sql import GraphFileFilters, validate_graph_file_query
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.cli._ops_control_dispatch import dispatch_ops_control_command
+from common_lore_index.cli._ops_refresh_dispatch import dispatch_ops_refresh_command
+from common_lore_index.cli.source_commands import dispatch_source_acquisition_command
+from common_lore_index.ops.config_loading_records import merge_ops_config_payloads
+from common_lore_index.ops.graph_file_sql import GraphFileFilters, validate_graph_file_query
+from common_lore_index.storage.errors import StorageSchemaError
 
 
 def _command_module(**members: object) -> ModuleType:

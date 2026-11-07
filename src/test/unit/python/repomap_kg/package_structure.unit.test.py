@@ -2,62 +2,62 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import repomap_kg
+import common_lore_index
 
 
 SAFE_PACKAGE_NAMES = [
-    "repomap_kg.cli",
-    "repomap_kg.extractors",
-    "repomap_kg.extractors.shell",
-    "repomap_kg.extractors.languages",
-    "repomap_kg.extractors.documents",
-    "repomap_kg.extractors.config",
-    "repomap_kg.extractors.shared",
-    "repomap_kg.canonicalization",
-    "repomap_kg.ops",
-    "repomap_kg.runtime",
-    "repomap_kg.server",
-    "repomap_kg.graph",
-    "repomap_kg.observations",
-    "repomap_kg.storage",
+    "common_lore_index.cli",
+    "common_lore_index.extractors",
+    "common_lore_index.extractors.shell",
+    "common_lore_index.extractors.languages",
+    "common_lore_index.extractors.documents",
+    "common_lore_index.extractors.config",
+    "common_lore_index.extractors.shared",
+    "common_lore_index.canonicalization",
+    "common_lore_index.ops",
+    "common_lore_index.runtime",
+    "common_lore_index.server",
+    "common_lore_index.graph",
+    "common_lore_index.observations",
+    "common_lore_index.storage",
 ]
 
 
 def _package_root() -> Path:
-    return Path(repomap_kg.__file__).resolve().parent
+    return Path(common_lore_index.__file__).resolve().parent
 
 
 def test_pkg1_non_conflicting_package_skeleton_imports() -> None:
-    import repomap_kg.cli as pkg_cli
-    import repomap_kg.extractors as pkg_extractors
-    import repomap_kg.extractors.shell as pkg_extractors_shell
-    import repomap_kg.extractors.languages as pkg_extractors_languages
-    import repomap_kg.extractors.documents as pkg_extractors_documents
-    import repomap_kg.extractors.config as pkg_extractors_config
-    import repomap_kg.extractors.shared as pkg_extractors_shared
-    import repomap_kg.canonicalization as pkg_canonicalization
-    import repomap_kg.ops as pkg_ops
-    import repomap_kg.runtime as pkg_runtime
-    import repomap_kg.server as pkg_server
-    import repomap_kg.graph as pkg_graph
-    import repomap_kg.observations as pkg_observations
-    import repomap_kg.storage as pkg_storage
+    import common_lore_index.cli as pkg_cli
+    import common_lore_index.extractors as pkg_extractors
+    import common_lore_index.extractors.shell as pkg_extractors_shell
+    import common_lore_index.extractors.languages as pkg_extractors_languages
+    import common_lore_index.extractors.documents as pkg_extractors_documents
+    import common_lore_index.extractors.config as pkg_extractors_config
+    import common_lore_index.extractors.shared as pkg_extractors_shared
+    import common_lore_index.canonicalization as pkg_canonicalization
+    import common_lore_index.ops as pkg_ops
+    import common_lore_index.runtime as pkg_runtime
+    import common_lore_index.server as pkg_server
+    import common_lore_index.graph as pkg_graph
+    import common_lore_index.observations as pkg_observations
+    import common_lore_index.storage as pkg_storage
 
     packages = {
-        "repomap_kg.cli": pkg_cli,
-        "repomap_kg.extractors": pkg_extractors,
-        "repomap_kg.extractors.shell": pkg_extractors_shell,
-        "repomap_kg.extractors.languages": pkg_extractors_languages,
-        "repomap_kg.extractors.documents": pkg_extractors_documents,
-        "repomap_kg.extractors.config": pkg_extractors_config,
-        "repomap_kg.extractors.shared": pkg_extractors_shared,
-        "repomap_kg.canonicalization": pkg_canonicalization,
-        "repomap_kg.ops": pkg_ops,
-        "repomap_kg.runtime": pkg_runtime,
-        "repomap_kg.server": pkg_server,
-        "repomap_kg.graph": pkg_graph,
-        "repomap_kg.observations": pkg_observations,
-        "repomap_kg.storage": pkg_storage,
+        "common_lore_index.cli": pkg_cli,
+        "common_lore_index.extractors": pkg_extractors,
+        "common_lore_index.extractors.shell": pkg_extractors_shell,
+        "common_lore_index.extractors.languages": pkg_extractors_languages,
+        "common_lore_index.extractors.documents": pkg_extractors_documents,
+        "common_lore_index.extractors.config": pkg_extractors_config,
+        "common_lore_index.extractors.shared": pkg_extractors_shared,
+        "common_lore_index.canonicalization": pkg_canonicalization,
+        "common_lore_index.ops": pkg_ops,
+        "common_lore_index.runtime": pkg_runtime,
+        "common_lore_index.server": pkg_server,
+        "common_lore_index.graph": pkg_graph,
+        "common_lore_index.observations": pkg_observations,
+        "common_lore_index.storage": pkg_storage,
     }
 
     for package_name in SAFE_PACKAGE_NAMES:
@@ -69,12 +69,12 @@ def test_pkg1_non_conflicting_package_skeleton_imports() -> None:
 
 
 def test_pkg1_current_public_root_modules_still_import() -> None:
-    import repomap_kg.cli as cli
-    import repomap_kg.storage as storage
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.observations as observations
-    import repomap_kg.ops_refresh as ops_refresh
-    import repomap_kg.local_runtime as local_runtime
+    import common_lore_index.cli as cli
+    import common_lore_index.storage as storage
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.observations as observations
+    import common_lore_index.ops_refresh as ops_refresh
+    import common_lore_index.local_runtime as local_runtime
 
     assert callable(cli.main)
     assert not hasattr(storage, "load_file_observations")

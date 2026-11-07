@@ -10,13 +10,13 @@ import pytest
 
 pytestmark = pytest.mark.requires_build_profile
 
-from repomap_kg.runtime.backup import init_database_from_source
-from repomap_kg.runtime.local import (
+from common_lore_index.runtime.backup import init_database_from_source
+from common_lore_index.runtime.local import (
     down_local_runtime,
     setup_local_runtime,
     up_local_runtime,
 )
-from repomap_kg.runtime.plan import build_local_runtime_plan
+from common_lore_index.runtime.plan import build_local_runtime_plan
 from scale14_postgres_storage import PostgresStorageAuthority
 
 

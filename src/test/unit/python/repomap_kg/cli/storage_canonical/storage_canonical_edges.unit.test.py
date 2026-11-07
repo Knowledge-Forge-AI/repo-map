@@ -4,8 +4,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import CanonicalEdgeRecord, StorageSchemaError
+from common_lore_index.cli import main
+from common_lore_index.storage import CanonicalEdgeRecord, StorageSchemaError
 
 
 class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
@@ -29,7 +29,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_edge_records",
+            "common_lore_index.cli.query_canonical_edge_records",
             return_value=records,
         ) as query:
             with redirect_stdout(stdout):
@@ -88,7 +88,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_edge_records",
+            "common_lore_index.cli.query_canonical_edge_records",
             return_value=records,
         ):
             with redirect_stdout(stdout):
@@ -113,7 +113,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
     def test_storage_canonical_edges_validates_source_key(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_edge_records") as query:
+        with patch("common_lore_index.cli.query_canonical_edge_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -134,7 +134,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
     def test_storage_canonical_edges_validates_target_key(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_edge_records") as query:
+        with patch("common_lore_index.cli.query_canonical_edge_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -155,7 +155,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
     def test_storage_canonical_edges_rejects_unsupported_kind(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_edge_records") as query:
+        with patch("common_lore_index.cli.query_canonical_edge_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -176,7 +176,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
     def test_storage_canonical_edges_rejects_unsupported_graph_key_version(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_edge_records") as query:
+        with patch("common_lore_index.cli.query_canonical_edge_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -198,7 +198,7 @@ class CliStorageCanonicalEdgesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_edge_records",
+            "common_lore_index.cli.query_canonical_edge_records",
             side_effect=StorageSchemaError("psql did not return canonical edges"),
         ):
             with redirect_stderr(stderr):

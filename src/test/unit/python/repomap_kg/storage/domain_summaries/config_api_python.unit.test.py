@@ -3,13 +3,13 @@ import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_python_summary,
     python_summary_from_storage_payload,
     python_summary_to_jsonable,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV
 
 class StorageDomainPythonSummaryUnitTests(unittest.TestCase):
     def test_query_python_summary_returns_safe_counts(self):
@@ -51,7 +51,7 @@ class StorageDomainPythonSummaryUnitTests(unittest.TestCase):
             )
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed) as run:
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed) as run:
             summary = query_python_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -81,7 +81,7 @@ class StorageDomainPythonSummaryUnitTests(unittest.TestCase):
     def test_query_python_summary_rejects_malformed_json(self):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             with self.assertRaisesRegex(StorageSchemaError, "python summary"):
                 query_python_summary(["-d", "postgres"], root_path="/tmp/fixture")
 

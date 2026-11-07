@@ -5,17 +5,17 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
-from repomap_kg.storage.staging_merge import (
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
+from common_lore_index.storage.staging_merge import (
     MergeContext,
     build_source_index_merge_statements,
 )
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_ownership import StageOwner
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

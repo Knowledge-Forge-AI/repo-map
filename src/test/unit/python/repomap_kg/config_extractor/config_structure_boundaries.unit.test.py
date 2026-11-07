@@ -1,6 +1,6 @@
 import unittest
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config.jsonc import (
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.jsonc import (
     JsoncNormalizationError,
     normalize_jsonc,
     _strip_jsonc_comments,

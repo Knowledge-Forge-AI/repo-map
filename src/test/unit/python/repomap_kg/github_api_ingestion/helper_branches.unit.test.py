@@ -4,7 +4,7 @@ from pathlib import Path
 
 from repomap_test_support.github_api_ingestion import GitHubApiIngestionTestSupport
 
-from repomap_kg.ops.ingestion import github_api as github
+from common_lore_index.ops.ingestion import github_api as github
 
 
 class GitHubApiIngestionHelperBranchUnitTests(unittest.TestCase):

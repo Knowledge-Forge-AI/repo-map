@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     JSFrameworkSummaryRecord,
     NixSummaryRecord,
     PythonSummaryRecord,

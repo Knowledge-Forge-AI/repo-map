@@ -8,24 +8,24 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.artifacts.parity_harness import seal_graph
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.artifacts.parity_harness import seal_graph
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability,
 )
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator._protocol_core import ProtocolError
-from repomap_kg.graph.multi_source import (
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator._protocol_core import ProtocolError
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 def fixture_graph(root: Path) -> OpsGraphConfig:
     binding = OpsGraphSourceBindingConfig(
@@ -62,7 +62,7 @@ def test_real_worker_negotiates_and_emits_receipt_and_bundle_without_publication
     if with_go:
         (source / "helper.go").write_text("package main\nfunc Greet() string { return \"hello\" }\n", encoding="utf-8")
         from repomap_test_support.portable_worker_scenarios import package_worker_code
-        monkeypatch.setattr("repomap_kg.coordinator._portable_worker_launch.__file__", package_worker_code(tmp_path / "package"))
+        monkeypatch.setattr("common_lore_index.coordinator._portable_worker_launch.__file__", package_worker_code(tmp_path / "package"))
     graph = fixture_graph(source)
     incumbent = capture_multi_source_candidate(graph)
     store = FileSystemArtifactStore(tmp_path / "store")
@@ -343,10 +343,10 @@ def test_parent_preserves_primary_failure_when_exact_cleanup_also_fails(
         raise OSError("secondary cleanup failure")
 
     monkeypatch.setattr(
-        "repomap_kg.coordinator._portable_worker_launch.run_worker_spec", primary
+        "common_lore_index.coordinator._portable_worker_launch.run_worker_spec", primary
     )
     monkeypatch.setattr(
-        "repomap_kg.coordinator._portable_worker_launch._remove_attempt_root", cleanup
+        "common_lore_index.coordinator._portable_worker_launch._remove_attempt_root", cleanup
     )
 
     with pytest.raises(ProtocolError, match="primary_protocol_failure") as caught:

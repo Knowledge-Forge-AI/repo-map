@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from repomap_kg.storage import LoadSummary
+from common_lore_index.storage import LoadSummary
 
 
 class GitHubApiIngestionTestSupport(unittest.TestCase):

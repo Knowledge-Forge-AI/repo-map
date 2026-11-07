@@ -4,7 +4,7 @@ from collections.abc import Iterator
 from typing import Any
 
 import pytest
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     PsycopgJsonReadbackConnector,
     _resolve_diagnostic_options,
 )

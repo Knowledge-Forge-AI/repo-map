@@ -68,7 +68,8 @@ class SourceDigest:
     sha256: str
 
 
-FROZEN_SUCCESSOR_SOURCE_DIGESTS = (
+PRE_NAMESPACE_SOURCE_COMMIT = "6d818ad6d43d38d47c64b8c474c2b64b853f631a"
+PRE_NAMESPACE_SUCCESSOR_SOURCE_DIGESTS = (
     SourceDigest(
         "tools/scale15_actual_path_readback.py",
         "2a67a8ec2eee4fab3de049a489976351a7b7b328bf935cc1beba62b04a3ff606",
@@ -114,6 +115,52 @@ FROZEN_SUCCESSOR_SOURCE_DIGESTS = (
         "cbd10fb98e42aee0d13c66728e969d8462326795c8f99668024fdd92b0ca05ed",
     ),
 )
+FROZEN_SUCCESSOR_SOURCE_DIGESTS = (
+    SourceDigest(
+        "tools/scale15_actual_path_readback.py",
+        "0d672b01f8ea519968b6dd9fc7e9bc3e971312500ace89898a5c4cc64102b417",
+    ),
+    SourceDigest(
+        "tools/scale15_readback_records.py",
+        "abc58ca1d5477dee9ef75c9faf7e7ccc05a5b639d921c03974bce735ca20c754",
+    ),
+    SourceDigest(
+        "tools/scale15_readback_contracts.py",
+        "82d926d3041bd74f5c094240c2ba759973b45bbdca67ae6144dfe95ceb383056",
+    ),
+    SourceDigest(
+        "tools/scale28_backend_observer_session.py",
+        "5a82b9053cf9305cddb927c904f7571079a7ba875ffefb238861f0016f380fce",
+    ),
+    SourceDigest(
+        "tools/scale28_backend_observer_session_values.py",
+        "8dd549a0458cec893c1e1aa9a45b62605d869ed2dff4ccdea4dffe50bd6293a0",
+    ),
+    SourceDigest(
+        "tools/scale28_backend_observer_session_startup.py",
+        "116da58e7c83927c6578fef562a8de83d660b3451ec41e56e4ac79855809bb1c",
+    ),
+    SourceDigest(
+        "tools/scale28_backend_observer_session_cleanup.py",
+        "eb6e3d79bec896245a606d39e6e3346281b6271d7e966433c14f656a34b65fc6",
+    ),
+    SourceDigest(
+        "tools/scale28_observer_deadlines.py",
+        "c8443c8ce449d1dbcb00a0dbb93e33b8defbcc1cab3d780c0058c35e8c35a858",
+    ),
+    SourceDigest(
+        "tools/scale14_backend_monitor.py",
+        "7b07792ae4b1998dc29a7657932b90183b777556e2f9e3fa8b69b8bd3bbed02a",
+    ),
+    SourceDigest(
+        "tools/scale14_backend_monitor_events.py",
+        "c810f5b6a77f8956f1a0693c20b33289f39724bd6cff1537a7d0dbc9b4340f3a",
+    ),
+    SourceDigest(
+        "tools/scale14_backend_monitor_reporting.py",
+        "cbd10fb98e42aee0d13c66728e969d8462326795c8f99668024fdd92b0ca05ed",
+    ),
+)
 
 
 def _digest(value: object) -> str:
@@ -131,6 +178,12 @@ POLICY_DIGEST = _digest(
         "expectations": ADR_0046_EXPECTATIONS.as_tuple(),
         "thresholds_ms": FROZEN_THRESHOLDS_MS,
     }
+)
+PRE_NAMESPACE_SOURCE_MANIFEST_DIGEST = _digest(
+    [
+        (item.relative_path, item.sha256)
+        for item in PRE_NAMESPACE_SUCCESSOR_SOURCE_DIGESTS
+    ]
 )
 SOURCE_MANIFEST_DIGEST = _digest(
     [
@@ -322,6 +375,9 @@ __all__ = [
     "FROZEN_THRESHOLDS_MS",
     "OperationAuthority",
     "POLICY_DIGEST",
+    "PRE_NAMESPACE_SOURCE_COMMIT",
+    "PRE_NAMESPACE_SOURCE_MANIFEST_DIGEST",
+    "PRE_NAMESPACE_SUCCESSOR_SOURCE_DIGESTS",
     "QualificationPlan",
     "SOURCE_MANIFEST_DIGEST",
     "SourceDigest",

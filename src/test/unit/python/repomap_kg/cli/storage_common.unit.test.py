@@ -9,19 +9,19 @@ from unittest.mock import patch
 from types import SimpleNamespace
 
 from typing import TYPE_CHECKING
-from repomap_kg.cli import main
+from common_lore_index.cli import main
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
-    from repomap_kg.observations.raw import RawObservation, write_observations_jsonl
+    from common_lore_index.cli.parser import build_parser
+    from common_lore_index.observations.raw import RawObservation, write_observations_jsonl
 else:
-    from repomap_kg.cli import build_parser
-    from repomap_kg.observations import RawObservation, write_observations_jsonl
-from repomap_kg.storage import (
+    from common_lore_index.cli import build_parser
+    from common_lore_index.observations import RawObservation, write_observations_jsonl
+from common_lore_index.storage import (
     LoadSummary,
     StorageSchemaError,
 )
-from repomap_kg.storage.readback_driver import READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import READBACK_DRIVER_ENV
 
 class CliStorageCommonUnitTests(unittest.TestCase):
     def test_storage_subcommands_accept_shared_connection_options(self):
@@ -120,7 +120,7 @@ class CliStorageCommonUnitTests(unittest.TestCase):
                 self.assertEqual(args.repo_map_home, "/tmp/repo-map-home")
 
     def test_configured_edge_readback_passes_stable_repository_identity(self):
-        from repomap_kg.cli import storage_readback_edge_commands as owner
+        from common_lore_index.cli import storage_readback_edge_commands as owner
 
         source = SimpleNamespace(
             id="graph-a", root_path="~/source", root_path_expanded="/public/source",
@@ -138,7 +138,7 @@ class CliStorageCommonUnitTests(unittest.TestCase):
                 owner, "load_ops_config_home"
             ), patch.object(owner, "readback_postgres_authority", return_value=authority), patch.object(
                 owner, "resolve_ops_config", return_value=SimpleNamespace(graph=lambda _id: graph)
-            ), patch("repomap_kg.cli.query_canonical_edge_records", return_value=[]) as query:
+            ), patch("common_lore_index.cli.query_canonical_edge_records", return_value=[]) as query:
                 with redirect_stdout(io.StringIO()):
                     result = main([
                         "storage", "edges", "--repo-map-home", "/public/home",
@@ -189,12 +189,12 @@ class CliStorageCommonUnitTests(unittest.TestCase):
         cases = (
             (
                 "storage summary",
-                "repomap_kg.cli.query_canonical_storage_summary",
+                "common_lore_index.cli.query_canonical_storage_summary",
                 ["storage", "summary", *common_connection_args],
             ),
             (
                 "storage nodes",
-                "repomap_kg.cli.query_canonical_node_records",
+                "common_lore_index.cli.query_canonical_node_records",
                 [
                     "storage",
                     "nodes",
@@ -205,7 +205,7 @@ class CliStorageCommonUnitTests(unittest.TestCase):
             ),
             (
                 "storage edges",
-                "repomap_kg.cli.query_canonical_edge_records",
+                "common_lore_index.cli.query_canonical_edge_records",
                 [
                     "storage",
                     "edges",
@@ -216,17 +216,17 @@ class CliStorageCommonUnitTests(unittest.TestCase):
             ),
             (
                 "storage python-summary",
-                "repomap_kg.cli.query_python_summary",
+                "common_lore_index.cli.query_python_summary",
                 ["storage", "python-summary", *common_connection_args],
             ),
             (
                 "storage bulk-summary",
-                "repomap_kg.cli.query_bulk_summary",
+                "common_lore_index.cli.query_bulk_summary",
                 ["storage", "bulk-summary", *common_connection_args],
             ),
             (
                 "storage nix-summary",
-                "repomap_kg.cli.query_nix_summary",
+                "common_lore_index.cli.query_nix_summary",
                 ["storage", "nix-summary", *common_connection_args],
             ),
         )
@@ -325,7 +325,7 @@ class CliStorageCommonUnitTests(unittest.TestCase):
             stdout = io.StringIO()
 
             with patch(
-                "repomap_kg.cli.publish_observation_generation",
+                "common_lore_index.cli.publish_observation_generation",
                 return_value=LoadSummary(repository_id=7, run_id=11, files=1),
             ) as load:
                 with redirect_stdout(stdout):
@@ -378,7 +378,7 @@ class CliStorageCommonUnitTests(unittest.TestCase):
             stderr = io.StringIO()
 
             with patch(
-                "repomap_kg.cli.publish_observation_generation",
+                "common_lore_index.cli.publish_observation_generation",
                 side_effect=StorageSchemaError("psql did not return a summary"),
             ):
                 with redirect_stderr(stderr):

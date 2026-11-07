@@ -3,11 +3,11 @@ import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.storage import LoadSummary
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.graph_files import GraphFileFilters, query_graph_files
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.storage import LoadSummary
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.graph_files import GraphFileFilters, query_graph_files
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 
 

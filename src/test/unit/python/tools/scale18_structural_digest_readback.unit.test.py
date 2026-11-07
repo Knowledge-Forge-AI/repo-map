@@ -7,7 +7,7 @@ from typing import Any, cast
 import psycopg
 import pytest
 
-from repomap_kg.storage.structural_digest import STRUCTURAL_DIGEST_FAMILY_CODES
+from common_lore_index.storage.structural_digest import STRUCTURAL_DIGEST_FAMILY_CODES
 from scale15_actual_path_readback import _read_semantic_digest
 from scale15_terminal_contracts import FINAL_FAMILY_CODES
 

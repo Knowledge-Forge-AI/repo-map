@@ -11,11 +11,11 @@ _file_observation,
 _shell_observation,
 )
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage import rows
-from repomap_kg.graph.discovery import classify_path
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage import rows
+from common_lore_index.graph.discovery import classify_path
+from common_lore_index.storage.staged_rows import build_staged_rows
 
 
 def test_discovery_files_supply_seven_durable_rows_and_preserve_source_relative_paths(tmp_path):

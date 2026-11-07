@@ -347,7 +347,7 @@ def ensure_canonical_runtime_image(
     *, repo_root: Path, resource_run: Any, client: Any, boundary: Any
 ) -> str:
     """Ensure the repository's one canonical dependency-only smoke image."""
-    from repomap_kg.runtime.release import (
+    from common_lore_index.runtime.release import (
         PSYCOPG_RELEASE_VERSION,
         PYTHON_RELEASE_IMAGE,
         PYTHON_RELEASE_VERSION,

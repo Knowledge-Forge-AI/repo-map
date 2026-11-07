@@ -15,35 +15,28 @@ import pytest
 
 from ci.d12_hosted_evidence import validate_expected_candidate_record
 from ci.d12_system_grant import (
-    DEFAULT_CANDIDATE_RELPATH,
-    DEFAULT_GRANT_RELPATH,
-    EXPECTED_APPROVAL_SHA256,
-    EXPECTED_BASE_SHA,
-    EXPECTED_BEFORE_SHA,
-    EXPECTED_LEDGER_BEFORE_SHA256,
-    EXPECTED_PHASE_ID,
-    SPENT_CI69_NONCE,
-    SPENT_CI69_RESERVATION_SHA256,
-    SPENT_CI70_NONCE,
-    SPENT_CI70_RESERVATION_SHA256,
-    SPENT_CI71_NONCE,
-    SPENT_CI71_RESERVATION_SHA256,
-    SPENT_CI72_NONCE,
-    SPENT_CI72_RESERVATION_SHA256,
-    SPENT_CI85_NONCE,
-    SPENT_CI85_RESERVATION_SHA256,
-    SPENT_CI86_NONCE,
-    SPENT_CI86_RESERVATION_SHA256,
-    D12SystemGrantError,
-    SYSTEM_ADMISSION_PROOF_SCHEMA,
-    SYSTEM_BUILD_GRANT_SCHEMA,
+    DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH,
+    EXPECTED_APPROVAL_SHA256, EXPECTED_BASE_SHA, EXPECTED_BEFORE_SHA,
+    EXPECTED_LEDGER_BEFORE_SHA256, EXPECTED_PHASE_ID,
+    SPENT_CI69_NONCE, SPENT_CI69_RESERVATION_SHA256, SPENT_CI70_NONCE, SPENT_CI70_RESERVATION_SHA256,
+    SPENT_CI71_NONCE, SPENT_CI71_RESERVATION_SHA256, SPENT_CI72_NONCE, SPENT_CI72_RESERVATION_SHA256,
+    SPENT_CI85_NONCE, SPENT_CI85_RESERVATION_SHA256, SPENT_CI86_NONCE, SPENT_CI86_RESERVATION_SHA256,
+    SPENT_CI87_NONCE, SPENT_CI87_RESERVATION_SHA256, SPENT_CI91_NONCE, SPENT_CI91_RESERVATION_SHA256,
+    SPENT_CI92_NONCE, SPENT_CI92_RESERVATION_SHA256, SPENT_CI93_NONCE, SPENT_CI93_RESERVATION_SHA256,
+    SPENT_CI94_NONCE, SPENT_CI94_RESERVATION_SHA256,
+    SPENT_CI95_NONCE, SPENT_CI95_RESERVATION_SHA256,
+    SPENT_CI96_NONCE, SPENT_CI96_RESERVATION_SHA256,
+    SPENT_CI97_NONCE, SPENT_CI97_RESERVATION_SHA256,
+    SPENT_CI98_NONCE, SPENT_CI98_RESERVATION_SHA256,
+    SPENT_CI99_NONCE, SPENT_CI99_RESERVATION_SHA256,
+    SUPERSEDED_W2_NONCE, SUPERSEDED_W2_RESERVATION_SHA256,
+    SUPERSEDED_W2_REV2_NONCE, SUPERSEDED_W2_REV2_RESERVATION_SHA256, SUPERSEDED_W3_REV1_NONCE, SUPERSEDED_W3_REV1_RESERVATION_SHA256,
+    SPENT_CI100_NONCE, SPENT_CI100_RESERVATION_SHA256, SPENT_CI101_NONCE, SPENT_CI101_RESERVATION_SHA256, SPENT_CI102_NONCE, SPENT_CI102_RESERVATION_SHA256, SPENT_CI103_NONCE, SPENT_CI103_RESERVATION_SHA256, SPENT_CI104_NONCE, SPENT_CI104_RESERVATION_SHA256, SPENT_CI105_NONCE, SPENT_CI105_RESERVATION_SHA256, SPENT_CI106_NONCE, SPENT_CI106_RESERVATION_SHA256, SPENT_CI107_NONCE, SPENT_CI107_RESERVATION_SHA256, SPENT_CI108_NONCE, SPENT_CI108_RESERVATION_SHA256, SPENT_CI109_NONCE, SPENT_CI109_RESERVATION_SHA256, SPENT_CI113_NONCE, SPENT_CI113_RESERVATION_SHA256, SPENT_CI114_NONCE, SPENT_CI114_RESERVATION_SHA256, SPENT_CI115_NONCE, SPENT_CI115_RESERVATION_SHA256, SPENT_CI116_NONCE, SPENT_CI116_RESERVATION_SHA256, SPENT_CI117_NONCE, SPENT_CI117_RESERVATION_SHA256, SPENT_CI118_NONCE, SPENT_CI118_RESERVATION_SHA256, SPENT_CI119_NONCE, SPENT_CI119_RESERVATION_SHA256, SPENT_CI120_NONCE, SPENT_CI120_RESERVATION_SHA256, SPENT_CI121_NONCE, SPENT_CI121_RESERVATION_SHA256, SPENT_CI122_NONCE, SPENT_CI122_RESERVATION_SHA256, SPENT_CI123_NONCE, SPENT_CI123_RESERVATION_SHA256, SPENT_CI124_NONCE, SPENT_CI124_RESERVATION_SHA256, SPENT_CI125_NONCE, SPENT_CI125_RESERVATION_SHA256, SPENT_CI126_NONCE, SPENT_CI126_RESERVATION_SHA256, SUPERSEDED_CI123_REVIEW1_NONCE, SUPERSEDED_CI123_REVIEW1_RESERVATION_SHA256, SUPERSEDED_CI110_NONCE, SUPERSEDED_CI110_RESERVATION_SHA256, SUPERSEDED_CI106_REV1_NONCE, SUPERSEDED_CI106_REV1_RESERVATION_SHA256, SUPERSEDED_CONTEXT_REV3_NONCE, SUPERSEDED_CONTEXT_REV3_RESERVATION_SHA256, SUPERSEDED_CONTEXT_REV2_NONCE, SUPERSEDED_CONTEXT_REV2_RESERVATION_SHA256, SUPERSEDED_CONTEXT_REV1_NONCE, SUPERSEDED_CONTEXT_REV1_RESERVATION_SHA256,
+    D12SystemGrantError, SYSTEM_ADMISSION_PROOF_SCHEMA, SYSTEM_BUILD_GRANT_SCHEMA,
     build_system_admission_proof,
-    load_and_validate_system_admission_proof,
-    load_and_validate_system_build_grant,
-    validate_system_admission_proof,
-    validate_system_build_grant,
-    verify_host_system_proof_for_dispatch,
-    write_system_admission_proof,
+    load_and_validate_system_admission_proof, load_and_validate_system_build_grant,
+    validate_system_admission_proof, validate_system_build_grant,
+    verify_host_system_proof_for_dispatch, write_system_admission_proof,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
@@ -51,7 +44,7 @@ REPO_ROOT = Path(__file__).resolve().parents[6]
 
 def _event_payload(grant: dict[str, Any], *, draft: object = True) -> dict[str, Any]:
     pr: dict[str, Any] = {
-        "number": 13,
+        "number": 23,
         "base": {
             "ref": "main",
             "sha": grant["base"],
@@ -69,7 +62,7 @@ def _event_payload(grant: dict[str, Any], *, draft: object = True) -> dict[str, 
         "action": "synchronize",
         "before": grant["before"],
         "after": "d" * 40,
-        "number": 13,
+        "number": 23,
         "pull_request": pr,
     }
 
@@ -120,7 +113,7 @@ def _coherent_candidate_record(grant: dict[str, Any]) -> tuple[dict[str, Any], b
     return validate_expected_candidate_record(cand_doc), raw, hashlib.sha256(raw).hexdigest()
 
 
-def test_load_tracked_system_build_grant_matches_ci87_and_refuses_drifted_candidate() -> None:
+def test_load_tracked_system_build_grant_matches_ci127_and_refuses_drifted_candidate() -> None:
     cand_path = REPO_ROOT / DEFAULT_CANDIDATE_RELPATH
     grant_path = REPO_ROOT / DEFAULT_GRANT_RELPATH
     raw_grant, _ = load_and_validate_system_build_grant(grant_path)
@@ -141,31 +134,52 @@ def test_load_tracked_system_build_grant_matches_ci87_and_refuses_drifted_candid
             expected_candidate=live_cand,
             frozen_identity=dict(live_cand["d12_context"]),
         )
-    assert EXPECTED_PHASE_ID == "REPOMAP-PRODUCT6-NAVIGATION47-CI86REPAIR1"
+    assert (EXPECTED_PHASE_ID, SPENT_CI113_NONCE, SPENT_CI113_RESERVATION_SHA256) == ('REPOMAP-CLOE-RESOURCE-REPORT1', "e64f3c00f5e534736056558e3048ad5a", "c8944eaa5913f57cd94cb6f72ddb4eda0380925c54193e1f0e65163d4766b565"); assert (SPENT_CI114_NONCE, SPENT_CI114_RESERVATION_SHA256) == ("1e26115a9014b0d1426080a7caa57138", "2b66689167899aafb2f537ae4db3d50ddceb8e464128f71979693c9eb0dc2fe6"); assert (SPENT_CI115_NONCE, SPENT_CI115_RESERVATION_SHA256) == ("c7ce7c0b96549e046af7a5ec4e9b95e4", "e9d68de8dbf1a127bd9c1786606aa5e5015b2e6961ba18bca3c9c4422db50b4f")
     assert SPENT_CI70_NONCE == "2ca8d5a3ad7645798437728db064e8d4"
-    assert SPENT_CI70_RESERVATION_SHA256 == (
-        "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
-    )
+    assert SPENT_CI70_RESERVATION_SHA256 == "aba49e31a10db6bb6326e48f0fd681ede763e3be0fa86f37ddda1bae0df76a91"
     assert SPENT_CI71_NONCE == "549ee11fd8a44b4f8723030412032fa3"
-    assert SPENT_CI71_RESERVATION_SHA256 == (
-        "159885801ce51461100eaf345163f02fb2b7ebc91eef71ff146acac66bc131be"
-    )
+    assert SPENT_CI71_RESERVATION_SHA256 == "159885801ce51461100eaf345163f02fb2b7ebc91eef71ff146acac66bc131be"
     assert SPENT_CI85_NONCE == "e2833d583de847a7859fb5250d5f37c6"
     assert SPENT_CI85_RESERVATION_SHA256 == "04c66536b5f655be479934d1086bec6895ac9015bdcf3da96c197a7f9d28bc4f"
     assert SPENT_CI86_NONCE == "3777470657bc4361b42b3e4de8ba8586"
     assert SPENT_CI86_RESERVATION_SHA256 == "dfa6d5670c156ce86a43fb45edf59d6f432bad71f11c139a09b2de864c6e5ba6"
+    assert SPENT_CI87_NONCE == "8f2ad7e4086946c9818c8ba1bad4c4f7"
+    assert SPENT_CI87_RESERVATION_SHA256 == "ac70c59663ff37177c5e072066d38d93d09caf7aca1aa8b0e90074dfaa849273"
+    assert SPENT_CI91_NONCE == "60454e3a42db44d697f22e2d9654c1ba"
+    assert SPENT_CI91_RESERVATION_SHA256 == "8e43691e6a1e36030ceee05dcee444cfcd2b97005ff535e61f3cfcd4b235badf"
+    assert SPENT_CI92_NONCE == "ba621a38a1f74b6296f9d29bb703aeac"
+    assert SPENT_CI92_RESERVATION_SHA256 == "d3beeb1e8c29d47d05730786772f2a2807fa89b934ca315d96737860f921436d"
+    assert SPENT_CI93_NONCE == "4f57c05c6efd46d486c2cf948611ad30"
+    assert SPENT_CI93_RESERVATION_SHA256 == "955ea803325ac5486092824740c6c648146b4a110e6dcd447272d09f1773bd11"
+    assert SPENT_CI94_NONCE == "57a15c277787496bbfdaca7d8e47b439"
+    assert SPENT_CI94_RESERVATION_SHA256 == "99b66797facf70177b057a644d74d9b9214b49bde2fbaee89ef680552ada244e"
+    assert SPENT_CI95_NONCE == "d4ea67e655f54742ac8ddc6a06174acf"
+    assert SPENT_CI95_RESERVATION_SHA256 == "ea75f3855f0e1fdb0246e8850511a8ec227d173b614f885401183f7db1a8f85e"
+    assert SPENT_CI96_NONCE == "8cf0db5228e2467b991ff5a0a2eba5ea"
+    assert SPENT_CI96_RESERVATION_SHA256 == "9564f2cd46bb25aca763c3ab9e7bf321ec0a9e2d043283f57cbf2d3147812498"
+    assert SPENT_CI97_NONCE == "a3b8757061cd4f1881b2d2bf96340539"
+    assert SPENT_CI97_RESERVATION_SHA256 == "62a1f0359398652f8e2524f468f61763eda84d6d20fba52c58bc941c16e78192"
+    assert SPENT_CI98_NONCE == "d20a514d6d3144edb9f1408d55cfd408"
+    assert SPENT_CI98_RESERVATION_SHA256 == "60a7a3a141d49c4fb0cf9a440afb9fb7c7215b4b523cc2841ea5bd518c802fd7"
+    assert SPENT_CI99_NONCE == "9fbd0f97ac4945a4a3bc231cbc512b5f"
+    assert SPENT_CI99_RESERVATION_SHA256 == "dfe02b643a6dafc7161d37b841ab97e9dbf34a6bf0f9dcc41c91e9c2a855f65e"
+    assert SPENT_CI100_NONCE == "10f975ff610e4030bd68cc09eba9d53b"
+    assert SPENT_CI100_RESERVATION_SHA256 == "12fad920fef49dc9604bbc4c69108fcf7867503787244b6bfd85feac66836e68"
+    assert SUPERSEDED_W2_NONCE == "cb637c3b41e4427491dcf7bc2c83e0ec"
+    assert SUPERSEDED_W2_RESERVATION_SHA256 == "922395c6167f8ebe47f192a32b2e7834c8f5c53a1c7bfbe04d1d1ad2f422e3a8"
+    assert SUPERSEDED_W2_REV2_NONCE == "d16a2474e8f841e489cf44e0d789da8b"
+    assert SUPERSEDED_W2_REV2_RESERVATION_SHA256 == "aa7ff667131b61c8070a3dfb45ae0efea197fe2fb89e5b509fd30bfed31aac5b"
     assert grant["schema"] == SYSTEM_BUILD_GRANT_SCHEMA
     assert grant["platform"] == "linux/amd64"
     assert grant["owner"] == "main-system-gate"
-    assert grant["workflow_ordinal"] == 87
+    assert grant["workflow_ordinal"] == 127
     assert grant["workflow_attempt"] == 1
-    assert grant["maximum_total"] == 7
-    assert grant["maximum_per_platform"] == 7
+    assert (grant["maximum_total"], grant["maximum_per_platform"]) == (38, 38)
     assert grant["before"] == EXPECTED_BEFORE_SHA
     assert grant["base"] == EXPECTED_BASE_SHA
     assert grant["approval_sha256"] == EXPECTED_APPROVAL_SHA256
     assert grant["ledger_before_sha256"] == EXPECTED_LEDGER_BEFORE_SHA256
-    assert grant["pull_request"] == 13
+    assert grant["pull_request"] == 23
     assert len(grant_sha) == 64
 
 
@@ -181,48 +195,34 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         validate_system_build_grant(bad_owner)
 
     for field, bad_val in (
-        ("workflow_ordinal", 69),
-        ("workflow_ordinal", 70),
-        ("workflow_ordinal", 71),
-        ("workflow_ordinal", 73),
-        ("workflow_ordinal", 85),
-        ("workflow_ordinal", 86),
-        ("workflow_attempt", 2),
-        ("maximum_per_platform", 1),
-        ("maximum_per_platform", 2),
-        ("maximum_per_platform", 3),
-        ("maximum_total", 1),
-        ("maximum_total", 2),
-        ("maximum_total", 3),
-        ("maximum_total", 5),
-        ("maximum_total", 6),
-        ("maximum_per_platform", 6),
-        ("maximum_per_platform", 5),
-        ("nonce", SPENT_CI69_NONCE),
-        ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
-        ("nonce", SPENT_CI70_NONCE),
-        ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
-        ("nonce", SPENT_CI71_NONCE),
-        ("nonce", SPENT_CI72_NONCE),
-        ("nonce", SPENT_CI85_NONCE),
-        ("nonce", SPENT_CI86_NONCE),
-        ("reservation_sha256", SPENT_CI86_RESERVATION_SHA256),
-        ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256),
-        ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
-        ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256),
-        ("nonce", str(grant["nonce"]) + "\n"),
-        ("before", str(grant["before"]) + "\n"),
-        ("reservation_sha256", str(grant["reservation_sha256"]) + "\n"),
-        ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"),
-        ("before", "a0c1f1d99b24fb26a4bf6041356187249d726ee9"),
-        ("before", "1" * 40),
-        ("base", "2" * 40),
-        ("approval_sha256", "88a3672196430bf30091672621771af4160fa22c28fe35b671145e2ed4e870b1"),
+        ("workflow_ordinal", 69), ("approval_sha256", 'fff7a7643d574cd21f6e96194db97f8d009d1dc4bc5fc991e7cc5e84d6a7480a'), ("ledger_before_sha256", '567cd53609651ea3d9517d9a91b962f6a50fbad20849115e1453631df22e9901'), ("before", '443752769defcb16c2a2f0774401a6fe507c75b1'),  ("workflow_ordinal", 70), ("workflow_ordinal", 71), ("workflow_ordinal", 73), ("workflow_ordinal", 85), ("workflow_ordinal", 86), ("workflow_ordinal", 87),
+        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 97), ("workflow_ordinal", 98), ("workflow_ordinal", 99), ("workflow_ordinal", 100), ("workflow_ordinal", 96), ("workflow_ordinal", 95), ("workflow_attempt", 2), ("maximum_per_platform", 1), ("maximum_per_platform", 2), ("maximum_per_platform", 3),
+        ("maximum_total", 1), ("maximum_total", 2), ("maximum_total", 3), ("maximum_total", 5), ("maximum_total", 6), ("maximum_total", 7), ("maximum_total", 8), ("maximum_total", 9), ("maximum_per_platform", 9),
+        ("maximum_total", 10), ("maximum_per_platform", 10),
+        ("maximum_total", 11), ("maximum_per_platform", 11), ("maximum_total", 12), ("maximum_per_platform", 12), ("maximum_total", 13), ("maximum_per_platform", 13), ("maximum_total", 14), ("maximum_per_platform", 14), ("maximum_total", 15), ("maximum_per_platform", 15), ("maximum_total", 17), ("maximum_per_platform", 17), ("maximum_total", 16), ("maximum_per_platform", 16), ("maximum_total", 20), ("maximum_per_platform", 20), ("maximum_total", 21), ("maximum_per_platform", 21), ("maximum_total", 22), ("maximum_per_platform", 22), ("maximum_total", 23), ("maximum_per_platform", 23), ("maximum_total", 24), ("maximum_per_platform", 24), ("maximum_total", 25), ("maximum_per_platform", 25), ("maximum_total", 26), ("maximum_per_platform", 26), ("maximum_total", 27), ("maximum_total", 28), ("maximum_total", 29), ("maximum_total", 30), ("maximum_total", 31), ("maximum_total", 32), ("maximum_total", 33), ("maximum_total", 34), ("maximum_total", 35), ("maximum_total", 36), ("maximum_total", 39), ("maximum_per_platform", 27), ("maximum_per_platform", 28), ("maximum_per_platform", 29), ("maximum_per_platform", 30), ("maximum_per_platform", 31), ("maximum_per_platform", 32), ("maximum_per_platform", 33), ("maximum_per_platform", 34), ("maximum_per_platform", 35), ("maximum_per_platform", 36), ("maximum_per_platform", 39), ("workflow_ordinal", 103), ("workflow_ordinal", 104), ("workflow_ordinal", 105), ("workflow_ordinal", 106), ("workflow_ordinal", 107), ("workflow_ordinal", 108), ("workflow_ordinal", 109), ("workflow_ordinal", 110), ("workflow_ordinal", 111), ("workflow_ordinal", 112), ("workflow_ordinal", 113), ("workflow_ordinal", 114), ("workflow_ordinal", 115), ("workflow_ordinal", 116), ("workflow_ordinal", 117), ("workflow_ordinal", 118), ("workflow_ordinal", 119), ("workflow_ordinal", 120), ("workflow_ordinal", 121), ("workflow_ordinal", 122), ("workflow_ordinal", 123), ("workflow_ordinal", 124), ("workflow_ordinal", 125), ("workflow_ordinal", 128), ("approval_sha256", '7df5a7dfbc07627894a7d78a0a203de8644445cb8deb2ac9822bd26f0f2ae209'), ("ledger_before_sha256", 'd70b6d3b402d523bc097076fb5d043bdf6845b46084cf08dc3eeac0071908705'), ("before", '7631077c3a8c24aa6fd8151e0730f2acac7eb904'), ("approval_sha256", "41e7ec23c67e816e36e12162da1c9a0ba2c61343fd9f4e70d176240793c8f023"), ("ledger_before_sha256", "3e0c7e7d739bca0b088e110b61a66e839f6f9b0d433130de51b15914817518b1"), ("before", "c045be34f8cfc33d398dd32dd020fa693871bc42"), ("approval_sha256", "f40c69d144471124ddf1613eec401dc2833928b950c13a34a764b79c67b73574"), ("ledger_before_sha256", "ed5c06fe1c5f232d40317fc9321239235dddcb5af3205da9026307b6d822b6c9"), ("before", "d1b9f0f44947a1c324f9c480d025e1681fc6b1e6"), ("approval_sha256", "e31f351fc1489b8af392abbfd3c43d14fdf82d8b8a96e18f11d1f2778ba0717b"), ("ledger_before_sha256", "6a1642682891b6766b42bafe29aba756c96d2035ef2c8b1f7c623f0dca466a1e"), ("before", "1d98a7eb355d5b1ff34d6e677b8dd59bcf35af01"), ("approval_sha256", "32f630bd125d5c96cf36924d4120f68d395bc79a977b34cb496620767aea3767"), ("ledger_before_sha256", "a86ce6bf6569bda2334444afe3e676b8018c92602ea14d0863e8f73efd79b267"), ("before", "6014088c4e8194868260f975f8f870cead844a28"), ("approval_sha256", "27742c2f48ad6e01797e26c9d397bbeb899da5301b8d7b7b21f0969d932c75ed"), ("ledger_before_sha256", "719780b175819847f89f96ff7626f76e9acef7817cb9197ae2cd6c62fa8a68dd"), ("before", "1275b4928b56bebe5700e9605cf163cccda505ae"), ("approval_sha256", "2ec56b7268e96ddd09635fdfb1db92ae315646a3deb7e768289763ce452dfb69"), ("ledger_before_sha256", "7d65ed15301a4ce029c66140ea1e16a78af8a08256edeaf0a464b27512c941f5"), ("before", "14f9d4e250e2cdcd0f0af89049dd36aeb048b728"), ("approval_sha256", "40f1e519a3941b9f2dff55b963dad375f49405060aeb8ddb2ca87805e5005f9e"), ("ledger_before_sha256", "405f04f0798607acde65065a6848b504d7fb53addb5b854a5769b2d0eddf60e9"), ("before", "228716d8bfa2858d0d1c31cf39af0636fa7e855d"), ("approval_sha256", "5bf8569fc3e53929bce2e76502fbee8cdd30391ee65f9baaae8e0bebf8068a9d"), ("ledger_before_sha256", "ddbfc942761b9fe36b58f36d0144c6980198260678ff179e50582c2008fe57ed"), ("before", "a300dc82d317ecde5646e4e90717b5eaa4aee8db"), ("approval_sha256", "699086d89957ef443bb20e89ac992fdedc9a453f3b0fea3b6cc4e32da7a5ce98"), ("ledger_before_sha256", "64713af933e2647f9adc74836d8f30966bd36f960547b3fa7615215fdba28892"), ("before", "e012f0180b7e2b85112e46a361fc4cd7fcd66472"), ("approval_sha256", "db2ee5245619312ab14a2f1404b9158978491aad77b09e08c1c86095dd6be6f8"), ("ledger_before_sha256", "19566afcdb4f27f67ad53c3da8fbaa1a57d1948e5e812ef91252058d28f7ff6c"), ("before", "748cc31e221dd8d052b4c11034ffbf3404db32a2"), ("approval_sha256", "d0dbe324e39df3cf5e8d719c9e8918f705cf986ae280f83f5f4863e0b71dfc1a"), ("ledger_before_sha256", "f9ecb3bf8555fd19b485261001a13b7fa90f5147026d581f0e6c09d3b3be1dca"), ("maximum_per_platform", 8),
+        ("maximum_per_platform", 7), ("maximum_per_platform", 6), ("maximum_per_platform", 5), ("nonce", SPENT_CI69_NONCE), ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256), ("nonce", SPENT_CI70_NONCE),
+        ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256), ("nonce", SPENT_CI71_NONCE), ("nonce", SPENT_CI72_NONCE), ("nonce", SPENT_CI85_NONCE), ("nonce", SPENT_CI86_NONCE), ("nonce", SPENT_CI87_NONCE), ("nonce", SPENT_CI91_NONCE),
+        ("nonce", SPENT_CI92_NONCE), ("nonce", SPENT_CI93_NONCE), ("reservation_sha256", SPENT_CI93_RESERVATION_SHA256), ("nonce", SPENT_CI94_NONCE), ("reservation_sha256", SPENT_CI94_RESERVATION_SHA256),
+        ("nonce", SPENT_CI95_NONCE), ("reservation_sha256", SPENT_CI95_RESERVATION_SHA256), ("nonce", SPENT_CI97_NONCE), ("reservation_sha256", SPENT_CI97_RESERVATION_SHA256),
+        ("nonce", SPENT_CI98_NONCE), ("reservation_sha256", SPENT_CI98_RESERVATION_SHA256), ("nonce", SPENT_CI99_NONCE), ("reservation_sha256", SPENT_CI99_RESERVATION_SHA256),
+        ("nonce", SPENT_CI100_NONCE), ("reservation_sha256", SPENT_CI100_RESERVATION_SHA256), ("nonce", SPENT_CI101_NONCE), ("reservation_sha256", SPENT_CI101_RESERVATION_SHA256), ("nonce", SPENT_CI102_NONCE), ("reservation_sha256", SPENT_CI102_RESERVATION_SHA256), ("nonce", SPENT_CI103_NONCE), ("reservation_sha256", SPENT_CI103_RESERVATION_SHA256), ("nonce", SPENT_CI104_NONCE), ("reservation_sha256", SPENT_CI104_RESERVATION_SHA256), ("nonce", SPENT_CI105_NONCE), ("reservation_sha256", SPENT_CI105_RESERVATION_SHA256), ("nonce", SPENT_CI106_NONCE), ("reservation_sha256", SPENT_CI106_RESERVATION_SHA256), ("nonce", SPENT_CI107_NONCE), ("reservation_sha256", SPENT_CI107_RESERVATION_SHA256), ("nonce", SUPERSEDED_CI106_REV1_NONCE), ("reservation_sha256", SUPERSEDED_CI106_REV1_RESERVATION_SHA256), ("nonce", SUPERSEDED_CONTEXT_REV3_NONCE), ("reservation_sha256", SUPERSEDED_CONTEXT_REV3_RESERVATION_SHA256), ("nonce", SUPERSEDED_CONTEXT_REV2_NONCE), ("reservation_sha256", SUPERSEDED_CONTEXT_REV2_RESERVATION_SHA256), ("nonce", SUPERSEDED_CONTEXT_REV1_NONCE), ("reservation_sha256", SUPERSEDED_CONTEXT_REV1_RESERVATION_SHA256),
+        ("nonce", SPENT_CI108_NONCE), ("reservation_sha256", SPENT_CI108_RESERVATION_SHA256), ("nonce", SPENT_CI109_NONCE), ("reservation_sha256", SPENT_CI109_RESERVATION_SHA256), ("nonce", SPENT_CI113_NONCE), ("reservation_sha256", SPENT_CI113_RESERVATION_SHA256), ("nonce", SPENT_CI114_NONCE), ("reservation_sha256", SPENT_CI114_RESERVATION_SHA256), ("nonce", SPENT_CI115_NONCE), ("reservation_sha256", SPENT_CI115_RESERVATION_SHA256), ("nonce", SPENT_CI116_NONCE), ("reservation_sha256", SPENT_CI116_RESERVATION_SHA256), ("nonce", SPENT_CI117_NONCE), ("reservation_sha256", SPENT_CI117_RESERVATION_SHA256), ("nonce", SPENT_CI118_NONCE), ("reservation_sha256", SPENT_CI118_RESERVATION_SHA256), ("nonce", SPENT_CI119_NONCE), ("reservation_sha256", SPENT_CI119_RESERVATION_SHA256), ("nonce", SPENT_CI120_NONCE), ("reservation_sha256", SPENT_CI120_RESERVATION_SHA256), ("nonce", SPENT_CI121_NONCE), ("reservation_sha256", SPENT_CI121_RESERVATION_SHA256), ("nonce", SPENT_CI122_NONCE), ("reservation_sha256", SPENT_CI122_RESERVATION_SHA256), ("nonce", SPENT_CI123_NONCE), ("reservation_sha256", SPENT_CI123_RESERVATION_SHA256), ("nonce", SPENT_CI124_NONCE), ("reservation_sha256", SPENT_CI124_RESERVATION_SHA256), ("nonce", SPENT_CI125_NONCE), ("reservation_sha256", SPENT_CI125_RESERVATION_SHA256), ("nonce", SPENT_CI126_NONCE), ("reservation_sha256", SPENT_CI126_RESERVATION_SHA256), ("nonce", SUPERSEDED_CI123_REVIEW1_NONCE), ("reservation_sha256", SUPERSEDED_CI123_REVIEW1_RESERVATION_SHA256), ("nonce", SUPERSEDED_CI110_NONCE), ("reservation_sha256", SUPERSEDED_CI110_RESERVATION_SHA256), ("nonce", SUPERSEDED_W2_REV2_NONCE), ("reservation_sha256", SUPERSEDED_W2_REV2_RESERVATION_SHA256), ("nonce", SUPERSEDED_W3_REV1_NONCE), ("reservation_sha256", SUPERSEDED_W3_REV1_RESERVATION_SHA256), ("nonce", SUPERSEDED_W2_NONCE), ("reservation_sha256", SUPERSEDED_W2_RESERVATION_SHA256),
+        ("nonce", SPENT_CI96_NONCE), ("reservation_sha256", SPENT_CI96_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI92_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI91_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI86_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256), ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI72_RESERVATION_SHA256), ("nonce", str(grant["nonce"]) + "\n"), ("before", str(grant["before"]) + "\n"), ("reservation_sha256", str(grant["reservation_sha256"]) + "\n"),
+        ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"), ("before", "a0c1f1d99b24fb26a4bf6041356187249d726ee9"), ("before", "433a2edf89284f71f10996d20c88bcf3e311c9de"), ("before", "bec838a210f3ffea84986ae85986e4081b2e8291"),
+        ("before", "35d9235cefd740e13ae7228a791338d5a5fcf9ee"), ("before", "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe"), ("before", "d6aeb61826ed4ee0eb114152d04fd09ab3512cfb"), ("before", "b90fa8e9c8126be2eac73620001c3869b2cf8e33"),
+        ("before", "6d818ad6d43d38d47c64b8c474c2b64b853f631a"), ("before", "3c326f254aaffcdc382434f7a9cd86429fbb0b6c"), ("before", "1" * 40), ("base", "2" * 40), ("approval_sha256", "88a3672196430bf30091672621771af4160fa22c28fe35b671145e2ed4e870b1"),
         ("approval_sha256", "36aabdbb9b35dcd540d88cb67b8054e8c89fecc92b9f24fb1c9a569b8fd3544c"),
-        ("approval_sha256", "3" * 64),
-        ("ledger_before_sha256", "1cc8dea0eed060628e427f052df5968118e91d015b8fc3c8792516314b84f6d5"),
+        ("approval_sha256", "afb7670b0a5353d112a5ee161b2c2518a829147940f889ab923560b0c31a015f"), ("approval_sha256", "94d71498c0cccaea469394b9ab7b76677659daba16dd99eff5300acf90e4e831"),
+        ("approval_sha256", "fb8c1490d7d8f630b667a508022fcb56716741ee4e0b53fcb667f107445f3795"), ("approval_sha256", "e88b10a33b75584d6bf06bb5ba13e11280a8f779443c41da03a5ad3b01cd34f7"),
+        ("approval_sha256", "5073476b8c17f77f56cc127ea701a5bd37c9c2d3605547a27e721939e59c9183"), ("approval_sha256", "86c2230c40de636d2333c1282e170b5951be374a3721b163dd968bd29a2edbb1"),
+        ("approval_sha256", "335e5452cd2ba9e5c19ddbdac3d9256404a23501ba975c73e5ace6145ef75bc1"), ("approval_sha256", "8d984243d7d56599b1e96005b03f5953d93246cf467986a3590b291a7ff9f44e"), ("approval_sha256", "3" * 64), ("ledger_before_sha256", "1cc8dea0eed060628e427f052df5968118e91d015b8fc3c8792516314b84f6d5"),
         ("ledger_before_sha256", "cc8f1d659c10d4d3ed36bd38daf8cc95ddb21cf2781026a89d30061e85af8ed6"),
-        ("ledger_before_sha256", "4" * 64),
+        ("ledger_before_sha256", "54787ff8a0f8692bff0a2d47221bc20ac12be67610f8e937b770ef8671c24fc7"), ("ledger_before_sha256", "2129c892344ea4e276c0fcc01059fae7871493a36e27c1ae2bfdb51f35edc383"),
+        ("ledger_before_sha256", "dea9cb989fbf576ca127158ee1940c223abe8293dcbfecba0c3a24e11578665e"), ("ledger_before_sha256", "624951d3066611d824430d8eeccb3f1870aae1202f69c61a6f7c25025dc295eb"),
+        ("ledger_before_sha256", "7bf85a672ab5a416b1c3a90d5d7f1feabb4cd115e7f2f75f0fbafbda1fd77147"), ("ledger_before_sha256", "3ccb9b6c63856d830059ab479803d5c8064cd3ffc46631ede1cb5d12a20c8811"),
+        ("ledger_before_sha256", "a20cacab1cfd1984f62002b89d3b9ed74ba31a100b4a09e8bb2576c35a7dccbc"), ("ledger_before_sha256", "cf16233c91f9fdeec71cc65ae437eb46bf4c076bc1a197dff46604ec967a6739"), ("ledger_before_sha256", "4" * 64),
     ):
         with pytest.raises(D12SystemGrantError):
             validate_system_build_grant({**grant, field: bad_val})
@@ -231,25 +231,31 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
     proof = _make_proof(grant, grant_sha, cand_sha)
     assert "maximum_total" not in proof and "maximum_per_platform" not in proof
     for max_key in ("maximum_total", "maximum_per_platform"):
-        for bad_max in (3, 4):
+        for bad_max in (3, 4, 32, 33, 34, 35, 36, 38, 39):
             with pytest.raises(D12SystemGrantError, match="closed schema"):
                 validate_system_admission_proof({**proof, max_key: bad_max})
     for proof_field, bad_proof_val in (
-        ("workflow_ordinal", 69),
-        ("workflow_ordinal", 70),
-        ("workflow_ordinal", 71),
-        ("workflow_ordinal", 73),
-        ("workflow_ordinal", 85),
-        ("workflow_ordinal", 86),
-        ("workflow_attempt", 2),
-        ("nonce", SPENT_CI69_NONCE),
-        ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256),
-        ("nonce", SPENT_CI70_NONCE),
-        ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256),
-        ("nonce", SPENT_CI71_NONCE),
-        ("nonce", SPENT_CI72_NONCE),
-        ("nonce", SPENT_CI85_NONCE),
+        ("workflow_ordinal", 69), ("approval_sha256", 'fff7a7643d574cd21f6e96194db97f8d009d1dc4bc5fc991e7cc5e84d6a7480a'), ("ledger_before_sha256", '567cd53609651ea3d9517d9a91b962f6a50fbad20849115e1453631df22e9901'), ("before", '443752769defcb16c2a2f0774401a6fe507c75b1'),  ("workflow_ordinal", 70), ("workflow_ordinal", 71), ("workflow_ordinal", 73), ("workflow_ordinal", 85), ("workflow_ordinal", 86), ("workflow_ordinal", 87),
+        ("workflow_ordinal", 91), ("workflow_ordinal", 92), ("workflow_ordinal", 93), ("workflow_ordinal", 94), ("workflow_ordinal", 97), ("workflow_ordinal", 98), ("workflow_ordinal", 99), ("workflow_ordinal", 100), ("workflow_ordinal", 96), ("workflow_ordinal", 95), ("workflow_ordinal", 103), ("workflow_ordinal", 104), ("workflow_ordinal", 105), ("workflow_ordinal", 106), ("workflow_ordinal", 107), ("workflow_ordinal", 108), ("workflow_ordinal", 109), ("workflow_ordinal", 110), ("workflow_ordinal", 111), ("workflow_ordinal", 112), ("workflow_ordinal", 113), ("workflow_ordinal", 114), ("workflow_ordinal", 115), ("workflow_ordinal", 116), ("workflow_ordinal", 117), ("workflow_ordinal", 118), ("workflow_ordinal", 119), ("workflow_ordinal", 120), ("workflow_ordinal", 121), ("workflow_ordinal", 122), ("workflow_ordinal", 123), ("workflow_ordinal", 124), ("workflow_ordinal", 125), ("workflow_ordinal", 128), ("approval_sha256", '7df5a7dfbc07627894a7d78a0a203de8644445cb8deb2ac9822bd26f0f2ae209'), ("ledger_before_sha256", 'd70b6d3b402d523bc097076fb5d043bdf6845b46084cf08dc3eeac0071908705'), ("before", '7631077c3a8c24aa6fd8151e0730f2acac7eb904'), ("approval_sha256", "41e7ec23c67e816e36e12162da1c9a0ba2c61343fd9f4e70d176240793c8f023"), ("ledger_before_sha256", "3e0c7e7d739bca0b088e110b61a66e839f6f9b0d433130de51b15914817518b1"), ("before", "c045be34f8cfc33d398dd32dd020fa693871bc42"), ("approval_sha256", "f40c69d144471124ddf1613eec401dc2833928b950c13a34a764b79c67b73574"), ("ledger_before_sha256", "ed5c06fe1c5f232d40317fc9321239235dddcb5af3205da9026307b6d822b6c9"), ("before", "d1b9f0f44947a1c324f9c480d025e1681fc6b1e6"), ("approval_sha256", "e31f351fc1489b8af392abbfd3c43d14fdf82d8b8a96e18f11d1f2778ba0717b"), ("ledger_before_sha256", "6a1642682891b6766b42bafe29aba756c96d2035ef2c8b1f7c623f0dca466a1e"), ("before", "1d98a7eb355d5b1ff34d6e677b8dd59bcf35af01"), ("approval_sha256", "32f630bd125d5c96cf36924d4120f68d395bc79a977b34cb496620767aea3767"), ("ledger_before_sha256", "a86ce6bf6569bda2334444afe3e676b8018c92602ea14d0863e8f73efd79b267"), ("before", "6014088c4e8194868260f975f8f870cead844a28"), ("approval_sha256", "27742c2f48ad6e01797e26c9d397bbeb899da5301b8d7b7b21f0969d932c75ed"), ("ledger_before_sha256", "719780b175819847f89f96ff7626f76e9acef7817cb9197ae2cd6c62fa8a68dd"), ("before", "1275b4928b56bebe5700e9605cf163cccda505ae"), ("approval_sha256", "2ec56b7268e96ddd09635fdfb1db92ae315646a3deb7e768289763ce452dfb69"), ("ledger_before_sha256", "7d65ed15301a4ce029c66140ea1e16a78af8a08256edeaf0a464b27512c941f5"), ("before", "14f9d4e250e2cdcd0f0af89049dd36aeb048b728"), ("approval_sha256", "40f1e519a3941b9f2dff55b963dad375f49405060aeb8ddb2ca87805e5005f9e"), ("ledger_before_sha256", "405f04f0798607acde65065a6848b504d7fb53addb5b854a5769b2d0eddf60e9"), ("before", "228716d8bfa2858d0d1c31cf39af0636fa7e855d"), ("approval_sha256", "5bf8569fc3e53929bce2e76502fbee8cdd30391ee65f9baaae8e0bebf8068a9d"), ("ledger_before_sha256", "ddbfc942761b9fe36b58f36d0144c6980198260678ff179e50582c2008fe57ed"), ("before", "a300dc82d317ecde5646e4e90717b5eaa4aee8db"), ("approval_sha256", "699086d89957ef443bb20e89ac992fdedc9a453f3b0fea3b6cc4e32da7a5ce98"), ("ledger_before_sha256", "64713af933e2647f9adc74836d8f30966bd36f960547b3fa7615215fdba28892"), ("before", "e012f0180b7e2b85112e46a361fc4cd7fcd66472"), ("approval_sha256", "db2ee5245619312ab14a2f1404b9158978491aad77b09e08c1c86095dd6be6f8"), ("ledger_before_sha256", "19566afcdb4f27f67ad53c3da8fbaa1a57d1948e5e812ef91252058d28f7ff6c"), ("before", "748cc31e221dd8d052b4c11034ffbf3404db32a2"), ("approval_sha256", "d0dbe324e39df3cf5e8d719c9e8918f705cf986ae280f83f5f4863e0b71dfc1a"), ("ledger_before_sha256", "f9ecb3bf8555fd19b485261001a13b7fa90f5147026d581f0e6c09d3b3be1dca"),
+        ("workflow_attempt", 2), ("nonce", SPENT_CI108_NONCE), ("reservation_sha256", SPENT_CI108_RESERVATION_SHA256), ("nonce", SPENT_CI109_NONCE), ("reservation_sha256", SPENT_CI109_RESERVATION_SHA256), ("nonce", SPENT_CI113_NONCE), ("reservation_sha256", SPENT_CI113_RESERVATION_SHA256), ("nonce", SPENT_CI114_NONCE), ("reservation_sha256", SPENT_CI114_RESERVATION_SHA256), ("nonce", SPENT_CI115_NONCE), ("reservation_sha256", SPENT_CI115_RESERVATION_SHA256), ("nonce", SPENT_CI116_NONCE), ("reservation_sha256", SPENT_CI116_RESERVATION_SHA256), ("nonce", SPENT_CI117_NONCE), ("reservation_sha256", SPENT_CI117_RESERVATION_SHA256), ("nonce", SPENT_CI118_NONCE), ("reservation_sha256", SPENT_CI118_RESERVATION_SHA256), ("nonce", SPENT_CI119_NONCE), ("reservation_sha256", SPENT_CI119_RESERVATION_SHA256), ("nonce", SPENT_CI120_NONCE), ("reservation_sha256", SPENT_CI120_RESERVATION_SHA256), ("nonce", SPENT_CI121_NONCE), ("reservation_sha256", SPENT_CI121_RESERVATION_SHA256), ("nonce", SPENT_CI122_NONCE), ("reservation_sha256", SPENT_CI122_RESERVATION_SHA256), ("nonce", SPENT_CI123_NONCE), ("reservation_sha256", SPENT_CI123_RESERVATION_SHA256), ("nonce", SPENT_CI124_NONCE), ("reservation_sha256", SPENT_CI124_RESERVATION_SHA256), ("nonce", SPENT_CI125_NONCE), ("reservation_sha256", SPENT_CI125_RESERVATION_SHA256), ("nonce", SPENT_CI126_NONCE), ("reservation_sha256", SPENT_CI126_RESERVATION_SHA256), ("nonce", SUPERSEDED_CI123_REVIEW1_NONCE), ("reservation_sha256", SUPERSEDED_CI123_REVIEW1_RESERVATION_SHA256), ("nonce", SUPERSEDED_CI110_NONCE), ("reservation_sha256", SUPERSEDED_CI110_RESERVATION_SHA256), ("nonce", SPENT_CI69_NONCE), ("reservation_sha256", SPENT_CI69_RESERVATION_SHA256), ("nonce", SPENT_CI70_NONCE), ("reservation_sha256", SPENT_CI70_RESERVATION_SHA256), ("nonce", SPENT_CI71_NONCE),
+        ("nonce", SPENT_CI72_NONCE), ("nonce", SPENT_CI85_NONCE),
         ("nonce", SPENT_CI86_NONCE),
+        ("nonce", SPENT_CI87_NONCE),
+        ("nonce", SPENT_CI91_NONCE),
+        ("nonce", SPENT_CI92_NONCE),
+        ("nonce", SPENT_CI93_NONCE), ("reservation_sha256", SPENT_CI93_RESERVATION_SHA256),
+        ("nonce", SPENT_CI94_NONCE), ("reservation_sha256", SPENT_CI94_RESERVATION_SHA256),
+        ("nonce", SPENT_CI95_NONCE), ("reservation_sha256", SPENT_CI95_RESERVATION_SHA256),
+        ("nonce", SPENT_CI97_NONCE), ("reservation_sha256", SPENT_CI97_RESERVATION_SHA256),
+        ("nonce", SPENT_CI98_NONCE), ("reservation_sha256", SPENT_CI98_RESERVATION_SHA256),
+        ("nonce", SPENT_CI99_NONCE), ("reservation_sha256", SPENT_CI99_RESERVATION_SHA256),
+        ("nonce", SPENT_CI100_NONCE), ("reservation_sha256", SPENT_CI100_RESERVATION_SHA256), ("nonce", SPENT_CI101_NONCE), ("reservation_sha256", SPENT_CI101_RESERVATION_SHA256), ("nonce", SPENT_CI102_NONCE), ("reservation_sha256", SPENT_CI102_RESERVATION_SHA256), ("nonce", SPENT_CI103_NONCE), ("reservation_sha256", SPENT_CI103_RESERVATION_SHA256), ("nonce", SPENT_CI104_NONCE), ("reservation_sha256", SPENT_CI104_RESERVATION_SHA256), ("nonce", SPENT_CI105_NONCE), ("reservation_sha256", SPENT_CI105_RESERVATION_SHA256), ("nonce", SPENT_CI106_NONCE), ("reservation_sha256", SPENT_CI106_RESERVATION_SHA256), ("nonce", SPENT_CI107_NONCE), ("reservation_sha256", SPENT_CI107_RESERVATION_SHA256), ("nonce", SUPERSEDED_CI106_REV1_NONCE), ("reservation_sha256", SUPERSEDED_CI106_REV1_RESERVATION_SHA256), ("nonce", SUPERSEDED_CONTEXT_REV3_NONCE), ("reservation_sha256", SUPERSEDED_CONTEXT_REV3_RESERVATION_SHA256), ("nonce", SUPERSEDED_CONTEXT_REV2_NONCE), ("reservation_sha256", SUPERSEDED_CONTEXT_REV2_RESERVATION_SHA256), ("nonce", SUPERSEDED_CONTEXT_REV1_NONCE), ("reservation_sha256", SUPERSEDED_CONTEXT_REV1_RESERVATION_SHA256),
+        ("nonce", SUPERSEDED_W2_REV2_NONCE), ("reservation_sha256", SUPERSEDED_W2_REV2_RESERVATION_SHA256), ("nonce", SUPERSEDED_W3_REV1_NONCE), ("reservation_sha256", SUPERSEDED_W3_REV1_RESERVATION_SHA256),
+        ("nonce", SUPERSEDED_W2_NONCE), ("reservation_sha256", SUPERSEDED_W2_RESERVATION_SHA256),
+        ("nonce", SPENT_CI96_NONCE), ("reservation_sha256", SPENT_CI96_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI92_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI91_RESERVATION_SHA256),
+        ("reservation_sha256", SPENT_CI87_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI86_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI85_RESERVATION_SHA256),
         ("reservation_sha256", SPENT_CI71_RESERVATION_SHA256),
@@ -259,7 +265,12 @@ def test_validate_system_build_grant_rejects_boolean_or_tampered_fields() -> Non
         ("reservation_sha256", str(proof["reservation_sha256"]) + "\n"),
         ("before", "51a3e055b3ea35dc4e9f0bba7966e4799881b159"),
         ("before", "a0c1f1d99b24fb26a4bf6041356187249d726ee9"),
-        ("before", "1" * 40),
+        ("before", "433a2edf89284f71f10996d20c88bcf3e311c9de"), ("before", "bec838a210f3ffea84986ae85986e4081b2e8291"),
+        ("before", "35d9235cefd740e13ae7228a791338d5a5fcf9ee"),
+        ("before", "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe"),
+        ("before", "d6aeb61826ed4ee0eb114152d04fd09ab3512cfb"),
+        ("before", "b90fa8e9c8126be2eac73620001c3869b2cf8e33"),
+        ("before", "6d818ad6d43d38d47c64b8c474c2b64b853f631a"), ("before", "3c326f254aaffcdc382434f7a9cd86429fbb0b6c"), ("before", "1" * 40),
         ("base", "2" * 40),
     ):
         with pytest.raises(D12SystemGrantError):
@@ -294,7 +305,7 @@ def test_write_and_load_system_admission_proof_enforces_0600_and_no_overwrite(
         require_parent_mode_0700=True,
     )
     assert loaded_sha == written_sha
-    assert loaded["approval_id"] == "pr-13"
+    assert loaded["approval_id"] == "pr-23"
 
     os.chmod(proof_file, 0o644)
     with pytest.raises(D12SystemGrantError, match="mode 0600"):
@@ -330,7 +341,7 @@ def test_verify_host_system_proof_for_dispatch_validates_live_bindings(tmp_path:
         "GITHUB_REPOSITORY": str(grant["repository"]),
         "GITHUB_BASE_REF": "main",
         "GITHUB_HEAD_REF": "staging",
-        "GITHUB_WORKFLOW_REF": f"{grant['repository']}/{grant['workflow_path']}@refs/pull/13/merge",
+        "GITHUB_WORKFLOW_REF": f"{grant['repository']}/{grant['workflow_path']}@refs/pull/23/merge",
         "GITHUB_RUN_NUMBER": str(grant["workflow_ordinal"]),
         "GITHUB_RUN_ID": "12345678",
         "GITHUB_RUN_ATTEMPT": "1",
@@ -358,8 +369,8 @@ def test_verify_host_system_proof_for_dispatch_validates_live_bindings(tmp_path:
         candidate_tree="b" * 40,
         candidate_base_parent=str(grant["base"]),
         candidate_head_parent="d" * 40,
-        approval_id="pr-13",
-        pr_number="13",
+        approval_id="pr-23",
+        pr_number="23",
         repository=str(grant["repository"]),
     )
     verified = verify_host_system_proof_for_dispatch(

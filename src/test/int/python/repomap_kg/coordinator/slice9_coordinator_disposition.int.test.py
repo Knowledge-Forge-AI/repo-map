@@ -8,8 +8,8 @@ import threading
 from typing import Any, Iterator, cast
 import unittest
 
-from repomap_kg.coordinator._control_types import JobClaim, JobStatus
-from repomap_kg.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator._control_types import JobClaim, JobStatus
+from common_lore_index.coordinator.core import SyntheticCoordinator
 
 
 def _make_coordinator(

@@ -33,7 +33,7 @@ TEST_POSTGRES_IMAGE = (
 )
 PRODUCTION_POSTGRES_IMAGE = (
     "postgres:16.15-trixie@sha256:"
-    "1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c"
+    "5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a"
 )
 ALPINE_PROBE_IMAGE = (
     "alpine:latest@sha256:"
@@ -41,7 +41,7 @@ ALPINE_PROBE_IMAGE = (
 )
 PYTHON_RELEASE_IMAGE = (
     "python:3.12-slim-trixie@sha256:"
-    "aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+    "b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
 )
 GO_RELEASE_IMAGE = (
     "golang:1.26.10-bookworm@sha256:"

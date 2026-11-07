@@ -13,14 +13,14 @@ from typing import Any
 import psutil
 import pytest
 
-from repomap_kg.coordinator.local_lifecycle import initialize_coordinator_control
-from repomap_kg.runtime._backup_observation import observe_database_provenance
-from repomap_kg.runtime._backup_provenance import MAX_QUERY_OBSERVED_OUTPUT_BYTES, run_bounded_popen
-from repomap_kg.runtime.backup import dump_database
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import build_local_runtime_plan
-from repomap_kg.runtime.maintenance import MAINTENANCE_LOCK_KEY, maintenance_window
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.coordinator.local_lifecycle import initialize_coordinator_control
+from common_lore_index.runtime._backup_observation import observe_database_provenance
+from common_lore_index.runtime._backup_provenance import MAX_QUERY_OBSERVED_OUTPUT_BYTES, run_bounded_popen
+from common_lore_index.runtime.backup import dump_database
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import build_local_runtime_plan
+from common_lore_index.runtime.maintenance import MAINTENANCE_LOCK_KEY, maintenance_window
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.local_db_backup import connect_real_postgres, setup_real_backup_home
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.test_scratch import short_test_directory

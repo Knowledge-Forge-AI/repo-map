@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from repomap_test_support.resource_ledger import ResourceLedger, RunIdentity
-from repomap_kg.runtime.release import PSYCOPG_RELEASE_VERSION
+from common_lore_index.runtime.release import PSYCOPG_RELEASE_VERSION
 import smoke
 from smoke.container_smoke import SmokeConfig, run_container_smoke
 
@@ -321,7 +321,7 @@ def test_smoke_package_import_is_dependency_free_under_isolated_interpreter() ->
         "forbidden = [\n"
         "    'smoke.container_smoke',\n"
         "    'smoke.lifecycle',\n"
-        "    'repomap_kg',\n"
+        "    'common_lore_index',\n"
         "    'docker',\n"
         "    'psycopg',\n"
         "    'pytest',\n"

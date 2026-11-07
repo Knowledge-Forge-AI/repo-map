@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from typing import Any
 
-from repomap_kg.storage.psql import run_psql
+from common_lore_index.storage.psql import run_psql
 
 ENRICHMENT_CLEANUP_SQL = (
     "DROP TABLE IF EXISTS repomap_enrichment.embeddings; "
@@ -104,10 +104,9 @@ def cleanup_optional_sql_fixture(
     primary: BaseException | None = None,
 ) -> None:
     """Attempt optional schema and role cleanup best-effort without CASCADE."""
-    role_drops = " ".join(
-        f"DROP ROLE IF EXISTS {role};" for role in (reader, writer, *extra_roles)
-    )
-    roles_sql = f"DROP OWNED BY {reader}, {writer}; {role_drops}"
+    roles = (reader, writer, *extra_roles)
+    role_drops = " ".join(f"DROP ROLE IF EXISTS {role};" for role in roles)
+    roles_sql = f"DROP OWNED BY {', '.join(roles)}; {role_drops}"
     steps: list[tuple[str, Callable[[], None]]] = []
     if schema_teardown_fn is not None:
         steps.append(

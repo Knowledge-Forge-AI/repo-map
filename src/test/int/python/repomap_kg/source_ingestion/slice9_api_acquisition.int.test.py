@@ -6,13 +6,13 @@ from unittest.mock import MagicMock
 from dataclasses import replace
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.github_api_records import GitHubRequestPlan
+from common_lore_index.ops.ingestion.github_api_records import GitHubRequestPlan
 
-from repomap_kg.ops.ingestion._github_api_transport import (
+from common_lore_index.ops.ingestion._github_api_transport import (
     github_public_rest_url,
     validate_transport_response,
 )
-from repomap_kg.ops.ingestion.api import (
+from common_lore_index.ops.ingestion.api import (
     ApiPolicyError,
     ApiTransportResponse,
     FixtureApiTransport,
@@ -20,7 +20,7 @@ from repomap_kg.ops.ingestion.api import (
     build_api_plan_from_config,
     load_api_source_config,
 )
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.ops.ingestion.github_api import (
     FixtureGitHubApiTransport,
     GitHubApiPolicyError,
     GitHubTransportResponse,

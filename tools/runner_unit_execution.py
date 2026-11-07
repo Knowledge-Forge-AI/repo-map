@@ -104,7 +104,7 @@ def run_smoke_suite(
 
     if str(source_root) not in sys.path:
         sys.path.insert(0, str(source_root))
-    from repomap_kg.runtime.release import PSYCOPG_RELEASE_VERSION
+    from common_lore_index.runtime.release import PSYCOPG_RELEASE_VERSION
 
     image_reference = args.smoke_image_reference
     if image_reference is None:

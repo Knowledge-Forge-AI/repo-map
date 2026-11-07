@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any, Callable
 
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator.startup_recovery import (
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator.startup_recovery import (
     PublicationRouteChangedError,
     recover_startup,
 )
@@ -268,7 +268,7 @@ def test_startup_recovery_observable_refusal_and_unexpected_diagnostics() -> Non
     claim2 = Claim("unexpected-job")
     store.claims = [claim1, claim2]
 
-    from repomap_kg.coordinator._restart_fencing import StaleDurableAuthorityError
+    from common_lore_index.coordinator._restart_fencing import StaleDurableAuthorityError
 
     def mock_prove(cl, *, reconciler_instance_id, reconciler_epoch):
         if cl.job_id == "refused-job":

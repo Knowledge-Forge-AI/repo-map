@@ -3,7 +3,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
+from common_lore_index.runtime.local import LocalRuntimeIdentity
 
 
 def write_warc_config(

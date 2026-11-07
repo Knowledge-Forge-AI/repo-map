@@ -3,8 +3,8 @@ import zipfile
 from io import BytesIO
 from pathlib import Path
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.observations.raw import RawObservation
 
 ODF_NS = (
     'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" '

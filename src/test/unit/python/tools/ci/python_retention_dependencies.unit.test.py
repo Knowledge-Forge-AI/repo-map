@@ -68,51 +68,51 @@ def test_is_external_name() -> None:
     assert is_external_name("json.decoder") is True
     assert is_external_name("pytest") is True
     assert is_external_name("typing_extensions") is True
-    assert is_external_name("repomap_kg") is False
+    assert is_external_name("common_lore_index") is False
     assert is_external_name("unknown_nonexistent_mod") is False
 
 
 def test_map_candidate_modules(tmp_path: Path) -> None:
     files = {
-        "src/main/python/repomap_kg/__init__.py": "",
-        "src/main/python/repomap_kg/core.py": "x = 1\n",
+        "src/main/python/common_lore_index/__init__.py": "",
+        "src/main/python/common_lore_index/core.py": "x = 1\n",
         "tools/ci/runner.py": "y = 2\n",
     }
     c_paths = _setup_tree(tmp_path, files)
     mod_map, inits = map_candidate_modules(c_paths)
-    assert mod_map["repomap_kg"] == "src/main/python/repomap_kg/__init__.py"
-    assert mod_map["repomap_kg.core"] == "src/main/python/repomap_kg/core.py"
+    assert mod_map["common_lore_index"] == "src/main/python/common_lore_index/__init__.py"
+    assert mod_map["common_lore_index.core"] == "src/main/python/common_lore_index/core.py"
     assert mod_map["ci.runner"] == "tools/ci/runner.py"
-    assert "src/main/python/repomap_kg/__init__.py" in inits["src/main/python/repomap_kg/core.py"]
+    assert "src/main/python/common_lore_index/__init__.py" in inits["src/main/python/common_lore_index/core.py"]
 
 
 def test_build_dependency_graph_basic_and_pkg_init(tmp_path: Path) -> None:
     files = {
-        "src/main/python/repomap_kg/__init__.py": "# init\n",
-        "src/main/python/repomap_kg/a.py": "def f(): return 1\n",
-        "src/main/python/repomap_kg/b.py": "from repomap_kg.a import f\n",
+        "src/main/python/common_lore_index/__init__.py": "# init\n",
+        "src/main/python/common_lore_index/a.py": "def f(): return 1\n",
+        "src/main/python/common_lore_index/b.py": "from common_lore_index.a import f\n",
     }
     c_paths = _setup_tree(tmp_path, files)
     graph = build_dependency_graph(tmp_path, c_paths)
-    b_deps = graph["dependencies"]["src/main/python/repomap_kg/b.py"]
-    assert "src/main/python/repomap_kg/a.py" in b_deps
-    assert "src/main/python/repomap_kg/__init__.py" in b_deps
-    assert not graph["unresolved_imports"].get("src/main/python/repomap_kg/b.py")
+    b_deps = graph["dependencies"]["src/main/python/common_lore_index/b.py"]
+    assert "src/main/python/common_lore_index/a.py" in b_deps
+    assert "src/main/python/common_lore_index/__init__.py" in b_deps
+    assert not graph["unresolved_imports"].get("src/main/python/common_lore_index/b.py")
 
 
 def test_build_dependency_graph_relative_imports(tmp_path: Path) -> None:
     files = {
-        "src/main/python/repomap_kg/__init__.py": "",
-        "src/main/python/repomap_kg/sub/__init__.py": "",
-        "src/main/python/repomap_kg/sub/helper.py": "VAL = 42\n",
-        "src/main/python/repomap_kg/sub/consumer.py": "from .helper import VAL\n",
+        "src/main/python/common_lore_index/__init__.py": "",
+        "src/main/python/common_lore_index/sub/__init__.py": "",
+        "src/main/python/common_lore_index/sub/helper.py": "VAL = 42\n",
+        "src/main/python/common_lore_index/sub/consumer.py": "from .helper import VAL\n",
     }
     c_paths = _setup_tree(tmp_path, files)
     graph = build_dependency_graph(tmp_path, c_paths)
-    c_deps = graph["dependencies"]["src/main/python/repomap_kg/sub/consumer.py"]
-    assert "src/main/python/repomap_kg/sub/helper.py" in c_deps
-    assert "src/main/python/repomap_kg/sub/__init__.py" in c_deps
-    assert "src/main/python/repomap_kg/__init__.py" in c_deps
+    c_deps = graph["dependencies"]["src/main/python/common_lore_index/sub/consumer.py"]
+    assert "src/main/python/common_lore_index/sub/helper.py" in c_deps
+    assert "src/main/python/common_lore_index/sub/__init__.py" in c_deps
+    assert "src/main/python/common_lore_index/__init__.py" in c_deps
 
 
 def test_build_dependency_graph_escaping_relative_import(tmp_path: Path) -> None:
@@ -176,11 +176,11 @@ def test_build_dependency_graph_docker_reload_negative_and_aliased_dynamic(
 
 def test_build_dependency_graph_detects_unresolved_imports(tmp_path: Path) -> None:
     files = {
-        "tools/broken.py": "import repomap_kg.nonexistent\n",
+        "tools/broken.py": "import common_lore_index.nonexistent\n",
     }
     c_paths = _setup_tree(tmp_path, files)
     graph = build_dependency_graph(tmp_path, c_paths)
-    assert "repomap_kg.nonexistent" in graph["unresolved_imports"].get("tools/broken.py", [])
+    assert "common_lore_index.nonexistent" in graph["unresolved_imports"].get("tools/broken.py", [])
 
 
 def test_build_dependency_graph_handles_syntax_error(tmp_path: Path) -> None:
@@ -196,11 +196,11 @@ def test_build_dependency_graph_handles_syntax_error(tmp_path: Path) -> None:
 def test_cohort_leaving_dependencies() -> None:
     members = ["tools/a.py", "tools/b.py"]
     deps = {
-        "tools/a.py": ["tools/b.py", "src/main/python/repomap_kg/core.py"],
+        "tools/a.py": ["tools/b.py", "src/main/python/common_lore_index/core.py"],
         "tools/b.py": ["tools/a.py", "tools/util.py"],
     }
     leaving = cohort_leaving_dependencies(members, deps)
-    assert leaving == ["src/main/python/repomap_kg/core.py", "tools/util.py"]
+    assert leaving == ["src/main/python/common_lore_index/core.py", "tools/util.py"]
 
 
 def test_find_cross_cohort_cycles_detects_cycle() -> None:

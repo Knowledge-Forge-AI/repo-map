@@ -5,8 +5,8 @@ import stat
 
 import pytest
 
-from repomap_kg.storage import external_row_sort
-from repomap_kg.storage.external_row_sort import (
+from common_lore_index.storage import external_row_sort
+from common_lore_index.storage.external_row_sort import (
     ExternalRowSortError,
     external_sort_encoded_rows,
     external_sort_rows,

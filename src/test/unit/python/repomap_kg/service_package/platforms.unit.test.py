@@ -2,16 +2,16 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.service_package.contract import (
+from common_lore_index.service_package.contract import (
     build_service_package_spec,
     service_semantics,
 )
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
-from repomap_kg.service_package.platforms import (
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.platforms import (
     NativeServiceUnavailable,
     select_service_adapter,
 )
-from repomap_kg.service_package.systemd import SystemdUserAdapter
+from common_lore_index.service_package.systemd import SystemdUserAdapter
 
 
 def test_platform_selection_is_explicit_and_never_falls_back(tmp_path):

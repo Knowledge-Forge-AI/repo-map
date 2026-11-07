@@ -6,11 +6,11 @@ import sys
 
 import pytest
 
-from repomap_kg.coordinator import _supervisor_fencing as fencing
-from repomap_kg.coordinator._protocol_execution import _run_protocol_worker
-from repomap_kg.coordinator.limits import CoordinatorLimits
-from repomap_kg.coordinator.process_supervision import launch_managed_process
-from repomap_kg.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
+from common_lore_index.coordinator import _supervisor_fencing as fencing
+from common_lore_index.coordinator._protocol_execution import _run_protocol_worker
+from common_lore_index.coordinator.limits import CoordinatorLimits
+from common_lore_index.coordinator.process_supervision import launch_managed_process
+from common_lore_index.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
 from repomap_test_support.fencing_control_fakes import FencingControl
 
 
@@ -38,7 +38,7 @@ def sealed_launch(tmp_path):
         coordinator_instance_id="owner", singleton_fencing_epoch=3, graph_lease_fencing_epoch=91,
     )
     path = create_refresh_capability(tmp_path, cap)
-    argv = (sys.executable, "-m", "repomap_kg.coordinator.refresh_worker", "--capability",
+    argv = (sys.executable, "-m", "common_lore_index.coordinator.refresh_worker", "--capability",
             str(path), "--job-id", cap.job_id, "--attempt", str(cap.attempt))
     ticket = fencing.register_worker_launch(cap, argv)
     yield cap, path, argv, ticket
@@ -135,8 +135,8 @@ def test_registration_digest_persisted_no_raw_token_persisted(sealed_launch, tmp
 
 
 def test_store_validates_one_use_digest_and_rejects_replay(sealed_launch, tmp_path):
-    from repomap_kg.coordinator._control_types import JobClaim
-    from repomap_kg.coordinator._restart_fencing import in_process_currency_context, StaleDurableAuthorityError
+    from common_lore_index.coordinator._control_types import JobClaim
+    from common_lore_index.coordinator._restart_fencing import in_process_currency_context, StaleDurableAuthorityError
 
     cap, _path, argv, ticket = sealed_launch
     control = FencingControl(cap)
@@ -172,14 +172,14 @@ def test_store_validates_one_use_digest_and_rejects_replay(sealed_launch, tmp_pa
     with pytest.raises(StaleDurableAuthorityError, match="turned over"):
         with in_process_currency_context(control.connect, claim, ticket.registration_digest):
             pass
-    from repomap_kg.coordinator._supervisor_registration import persist_supervisor_registration
+    from common_lore_index.coordinator._supervisor_registration import persist_supervisor_registration
     with pytest.raises(PermissionError, match="consumed"):
         persist_supervisor_registration(control.connect, claim, ticket.registration_digest)
 
 
 def test_store_rejects_forged_and_restarted_digest(sealed_launch, tmp_path):
-    from repomap_kg.coordinator._control_types import JobClaim
-    from repomap_kg.coordinator._restart_fencing import in_process_currency_context, StaleDurableAuthorityError
+    from common_lore_index.coordinator._control_types import JobClaim
+    from common_lore_index.coordinator._restart_fencing import in_process_currency_context, StaleDurableAuthorityError
 
     cap, _path, argv, ticket = sealed_launch
     claim = JobClaim(
@@ -228,7 +228,7 @@ def test_durable_reservation_blocks_another_registration_after_module_restart(se
     control = FencingControl(cap)
     fencing.bind_durable_launch(ticket, cap, control.connect)
     assert control.attempt["supervisor_registration_digest"] == ticket.registration_digest
-    from repomap_kg.coordinator._supervisor_registration import persist_supervisor_registration
+    from common_lore_index.coordinator._supervisor_registration import persist_supervisor_registration
     # The row remains authoritative even with another nonce and no Python map.
     with pytest.raises(PermissionError, match="already exists"):
         persist_supervisor_registration(control.connect, fencing._claim_from_identity(fencing._fencing_identity(cap)), "b" * 64)
@@ -245,7 +245,7 @@ def test_store_rejects_registration_after_durable_identity_turnover(sealed_launc
         previous = control.attempt[field]
         assert isinstance(previous, int)
         control.attempt[field] = previous + 1
-    from repomap_kg.coordinator._supervisor_registration import in_process_currency_context
+    from common_lore_index.coordinator._supervisor_registration import in_process_currency_context
     with pytest.raises(PermissionError, match="turned over"):
         with in_process_currency_context(control.connect, fencing._claim_from_identity(fencing._fencing_identity(cap)), ticket.registration_digest):
             pytest.fail("stale identity admitted")
@@ -255,7 +255,7 @@ def test_file_decision_error_still_consumes_registration_durably(sealed_launch):
     cap, _path, _argv, ticket = sealed_launch
     control = FencingControl(cap)
     fencing.bind_durable_launch(ticket, cap, control.connect)
-    from repomap_kg.coordinator._supervisor_registration import in_process_currency_context
+    from common_lore_index.coordinator._supervisor_registration import in_process_currency_context
     claim = fencing._claim_from_identity(fencing._fencing_identity(cap))
     control.committed = False
     with pytest.raises(OSError, match="file refusal"):
@@ -283,8 +283,8 @@ def test_unregistered_reaped_process_cannot_mint_durable_closure(sealed_launch, 
 
 def test_contention_in_in_process_proof_raises_permission_error(sealed_launch, tmp_path):
     from psycopg.errors import LockNotAvailable, QueryCanceled
-    from repomap_kg.coordinator._control_types import JobClaim
-    from repomap_kg.coordinator._restart_fencing import in_process_currency_context, persist_supervisor_registration
+    from common_lore_index.coordinator._control_types import JobClaim
+    from common_lore_index.coordinator._restart_fencing import in_process_currency_context, persist_supervisor_registration
 
     cap, _path, argv, ticket = sealed_launch
     claim = JobClaim(

@@ -1,4 +1,4 @@
-from repomap_kg.ops.graph_file_records import graph_file_record_from_payload
+from common_lore_index.ops.graph_file_records import graph_file_record_from_payload
 
 
 def test_graph_file_readback_exposes_source_qualified_candidate_membership():
@@ -65,12 +65,12 @@ def test_database_independent_single_source_root_observation_and_projection():
     from pathlib import Path
     from types import SimpleNamespace
     from typing import TYPE_CHECKING, cast
-    from repomap_kg.graph.multi_source_pipeline import _CapturedSource, _namespaced_observation
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.graph.multi_source_pipeline import _CapturedSource, _namespaced_observation
+    from common_lore_index.observations.raw import RawObservation
 
     if TYPE_CHECKING:
-        from repomap_kg.graph.multi_source_records import SourceSnapshot
-        from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
+        from common_lore_index.graph.multi_source_records import SourceSnapshot
+        from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
 
     raw = RawObservation(
         kind="file",

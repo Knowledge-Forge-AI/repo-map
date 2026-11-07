@@ -10,12 +10,12 @@ import time
 from pathlib import Path
 from typing import Any, Callable, TypeAlias
 
-from repomap_kg.runtime.system_test_pause import (
+from common_lore_index.runtime.system_test_pause import (
     SYSTEM_TEST_STATUS_TIMEOUT_SECONDS,
     SYSTEM_TEST_INTERRUPTION_TIMEOUT_SECONDS,
     validate_pause_window_contract,
 )
-from repomap_kg.runtime.plan import LocalRuntimePlan
+from common_lore_index.runtime.plan import LocalRuntimePlan
 from tools.system.scenario_readback import _fixture_status, _parse_json
 from tools.system.scenario_restart_fence import verify_restart_fence
 from tools.system.config import SystemTestError
@@ -40,7 +40,7 @@ def _compose(
     return run_compose(compose_dir, args, env=env, timeout=timeout, timer=timer, check=check)
 
 def _ops(*args: str) -> list[str]:
-    return ["exec", "-T", "coordinator", "python", "-m", "repomap_kg", "ops", *args]
+    return ["exec", "-T", "coordinator", "python", "-m", "common_lore_index", "ops", *args]
 
 
 

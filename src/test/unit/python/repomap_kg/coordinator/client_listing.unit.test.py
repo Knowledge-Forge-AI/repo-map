@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from repomap_kg.coordinator.client import LocalCoordinatorClient
+from common_lore_index.coordinator.client import LocalCoordinatorClient
 
 
 def test_client_list_jobs_uses_only_bounded_listing_fields(tmp_path):

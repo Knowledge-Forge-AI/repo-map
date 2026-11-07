@@ -26,8 +26,8 @@ from ci.python_retention_operations import dynamic_operations
 import d12_dependency_preflight as preflight
 import d12_libpq_runtime_probe as runtime
 import native_apt_prerequisites as apt
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime.release import GO_RELEASE_IMAGE as GO, POSTGRES_RELEASE_IMAGE as PG, PYTHON_RELEASE_IMAGE as PY
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime.release import GO_RELEASE_IMAGE as GO, POSTGRES_RELEASE_IMAGE as PG, PYTHON_RELEASE_IMAGE as PY
 from repomap_test_support import d12_core_image as d12
 import runner_arguments
 import test_sandbox
@@ -180,7 +180,7 @@ def test_owner_imports_the_support_lazily_through_the_canonical_tools_path_only(
     imported |= {str(n.module) for n in ast.walk(support_tree) if isinstance(n, ast.ImportFrom)}
     allowed = {
         "d12_libpq_runtime_probe", "d12_native_python_observer", "d12_python_closure", "native_apt_prerequisites",
-        "repomap_kg.runtime.release", "repomap_test_support", "repomap_test_support.d12_core_image", "__future__"}
+        "common_lore_index.runtime.release", "repomap_test_support", "repomap_test_support.d12_core_image", "__future__"}
     assert {name for name in imported if name.split(".")[0] not in sys.stdlib_module_names} <= allowed, imported
     assert "sys.path" not in ast.unparse(support_tree) and "sys.path" not in OWNER.read_text(encoding="utf-8")
     assert dynamic_operations(owner_tree) == [] and dynamic_operations(support_tree) == []

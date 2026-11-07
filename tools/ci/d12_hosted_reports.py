@@ -20,7 +20,7 @@ from ci.d12_hosted_state import (
 )
 import d12_libpq_runtime_probe
 import d12_python_closure
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PRODUCT_MINIMUM_LIBPQ_VERSION, PYTHON_RELEASE_IMAGE,
     DebPackage, PlatformPackages, validate_package_manifest,
 )

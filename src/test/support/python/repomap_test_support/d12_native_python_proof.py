@@ -13,11 +13,11 @@ from pathlib import Path
 import re
 from typing import Any, Mapping, Sequence
 
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 
 COMPONENT_SCHEMA = "repomap-d12-python31216-component-v1"
 ENVELOPE_PATH = "tools/ci/d12_python31216_native_inputs.json"
-ENVELOPE_SHA256 = "cce7fccabbde1fe56bf6a543ed03c49243457708300c061202a96caf6ce137de"
+ENVELOPE_SHA256 = "65aaa7a679893aba9328d407aa13225f52f5ea56de58e215f2fd056ea6cb3cd8"
 ENVELOPE_SCHEMA = "repomap-python31216-native-inputs-v1"
 ENVELOPE_LIMIT, CAPTURE_LIMIT, RECORD_LIMIT = 65_536, 1_000_000, 700_000
 METADATA_KEYS = ("amd64-config", "amd64-manifest", "arm64-config", "arm64-manifest", "index")

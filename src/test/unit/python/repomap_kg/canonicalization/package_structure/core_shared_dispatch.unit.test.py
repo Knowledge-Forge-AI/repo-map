@@ -4,8 +4,8 @@ from pathlib import Path
 
 
 def test_canon1_canonicalization_package_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
 
     assert hasattr(canonicalization, "__path__")
     assert canonicalization.__file__ is not None
@@ -15,34 +15,34 @@ def test_canon1_canonicalization_package_imports() -> None:
 
 
 def test_canon1_family_modules_import() -> None:
-    import repomap_kg.canonicalization.file_family as owner_0
-    import repomap_kg.canonicalization.config_family as owner_1
-    import repomap_kg.canonicalization.document_family as owner_2
-    import repomap_kg.canonicalization.feed_family as owner_3
-    import repomap_kg.canonicalization.shell_family as owner_4
-    import repomap_kg.canonicalization.language_family as owner_5
-    import repomap_kg.canonicalization.nix_family as owner_6
-    import repomap_kg.canonicalization.email_family as owner_7
+    import common_lore_index.canonicalization.file_family as owner_0
+    import common_lore_index.canonicalization.config_family as owner_1
+    import common_lore_index.canonicalization.document_family as owner_2
+    import common_lore_index.canonicalization.feed_family as owner_3
+    import common_lore_index.canonicalization.shell_family as owner_4
+    import common_lore_index.canonicalization.language_family as owner_5
+    import common_lore_index.canonicalization.nix_family as owner_6
+    import common_lore_index.canonicalization.email_family as owner_7
 
     for module_name, module in (
-        ('repomap_kg.canonicalization.file_family', owner_0),
-        ('repomap_kg.canonicalization.config_family', owner_1),
-        ('repomap_kg.canonicalization.document_family', owner_2),
-        ('repomap_kg.canonicalization.feed_family', owner_3),
-        ('repomap_kg.canonicalization.shell_family', owner_4),
-        ('repomap_kg.canonicalization.language_family', owner_5),
-        ('repomap_kg.canonicalization.nix_family', owner_6),
-        ('repomap_kg.canonicalization.email_family', owner_7),
+        ('common_lore_index.canonicalization.file_family', owner_0),
+        ('common_lore_index.canonicalization.config_family', owner_1),
+        ('common_lore_index.canonicalization.document_family', owner_2),
+        ('common_lore_index.canonicalization.feed_family', owner_3),
+        ('common_lore_index.canonicalization.shell_family', owner_4),
+        ('common_lore_index.canonicalization.language_family', owner_5),
+        ('common_lore_index.canonicalization.nix_family', owner_6),
+        ('common_lore_index.canonicalization.email_family', owner_7),
     ):
         assert module.__name__ == module_name
 
 
 def test_canon_shared0_shared_helper_modules_import() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.metadata_helpers as metadata_helpers
-    import repomap_kg.canonicalization.diagnostic_helpers as diagnostic_helpers
-    import repomap_kg.canonicalization.file_helpers as file_helpers
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.metadata_helpers as metadata_helpers
+    import common_lore_index.canonicalization.diagnostic_helpers as diagnostic_helpers
+    import common_lore_index.canonicalization.file_helpers as file_helpers
 
     assert (
         canonicalization.canonicalize_observations
@@ -80,10 +80,10 @@ def test_canon_shared0_shared_helper_modules_import() -> None:
 
 
 def test_canon_shared1_evidence_helper_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.evidence_helpers as evidence_helpers
-    import repomap_kg.canonicalization.shell_family as shell_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.evidence_helpers as evidence_helpers
+    import common_lore_index.canonicalization.shell_family as shell_family
 
     assert (
         getattr(canonicalization, "_evidence_from_observation")
@@ -108,11 +108,11 @@ def test_canon_shared1_evidence_helper_module_imports() -> None:
 
 
 def test_canon_shared2_core_route_helper_modules_import() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.node_edge_helpers as node_edge_helpers
-    import repomap_kg.canonicalization.value_helpers as value_helpers
-    import repomap_kg.canonicalization.document_family as document_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.node_edge_helpers as node_edge_helpers
+    import common_lore_index.canonicalization.value_helpers as value_helpers
+    import common_lore_index.canonicalization.document_family as document_family
 
     assert canonicalization._upsert_node is node_edge_helpers._upsert_node
     assert getattr(canonicalization, "_upsert_edge") is getattr(node_edge_helpers, "_upsert_edge")
@@ -146,10 +146,10 @@ def test_canon_shared2_core_route_helper_modules_import() -> None:
 
 
 def test_canon_dispatch0_dispatch_helper_module_imports() -> None:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization.dispatch_helpers as dispatch_helpers
-    import repomap_kg.canonicalization.shell_family as shell_family
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization.dispatch_helpers as dispatch_helpers
+    import common_lore_index.canonicalization.shell_family as shell_family
 
     assert (
         canonicalization.canonicalize_observations
@@ -182,8 +182,8 @@ def test_canon_dispatch0_dispatch_helper_module_imports() -> None:
 
 
 def test_rootpkg33_document_dispatch_remains_private_to_main() -> None:
-    import repomap_kg.canonicalization.main as main
-    import repomap_kg.canonicalization._document_dispatch as document_dispatch
+    import common_lore_index.canonicalization.main as main
+    import common_lore_index.canonicalization._document_dispatch as document_dispatch
 
     assert callable(document_dispatch._try_canonicalize_document_observation)
     assert not hasattr(main, "_try_canonicalize_document_observation")

@@ -19,30 +19,30 @@ from pathlib import Path
 import threading
 from typing import Any
 
-import repomap_kg
+import common_lore_index
 
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import PortableExecutionCapability
-from repomap_kg.coordinator._portable_semantic_adapter import execute_portable_extraction
-from repomap_kg.graph.multi_source import SourceKind, graph_source_binding_id, source_selection_policy_id
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.ops._portable_retention import _write_retained_result
-from repomap_kg.ops.portable_refresh import (
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
+from common_lore_index.coordinator._portable_semantic_adapter import execute_portable_extraction
+from common_lore_index.graph.multi_source import SourceKind, graph_source_binding_id, source_selection_policy_id
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.ops._portable_retention import _write_retained_result
+from common_lore_index.ops.portable_refresh import (
     PortableCapture,
     portable_publication_binding,
     validate_portable_capture,
 )
-from repomap_kg.storage.psql import run_psql
-from repomap_kg.storage.publication_readback import read_latest_publication
-from repomap_kg.storage.semantic_candidate_import import build_embedding_import_sql
-from repomap_kg.storage.semantic_candidates import (
+from common_lore_index.storage.psql import run_psql
+from common_lore_index.storage.publication_readback import read_latest_publication
+from common_lore_index.storage.semantic_candidate_import import build_embedding_import_sql
+from common_lore_index.storage.semantic_candidates import (
     CandidatePublication,
     EmbeddingEntry,
     EmbeddingProfile,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     new_direct_authority,
     run_staged_portable_refresh,
     stage_id_for_authority,
@@ -354,14 +354,14 @@ def run_mcp_stdio_requests(
     reader_role: str | None = None,
     timeout: float = 30.0,
 ) -> list[dict[str, Any]]:
-    """Traverse python -m repomap_kg.server.mcp subprocess via public stdio JSON-RPC."""
+    """Traverse python -m common_lore_index.server.mcp subprocess via public stdio JSON-RPC."""
     import subprocess
     import sys
 
 
     env = os.environ.copy()
     # Parent pytest sys.path changes do not cross the interpreter boundary.
-    env["PYTHONPATH"] = str(Path(repomap_kg.__file__).resolve().parent.parent)
+    env["PYTHONPATH"] = str(Path(common_lore_index.__file__).resolve().parent.parent)
     env["REPOMAP_OPS_CONFIG"] = str(config_path)
     env["REPOMAP_PSQL_COMMAND"] = psql_command
     if reader_role:
@@ -371,7 +371,7 @@ def run_mcp_stdio_requests(
 
     input_text = "".join(json.dumps(req) + "\n" for req in requests)
     proc = subprocess.run(
-        [sys.executable, "-m", "repomap_kg.server.mcp"],
+        [sys.executable, "-m", "common_lore_index.server.mcp"],
         input=input_text,
         capture_output=True,
         text=True,

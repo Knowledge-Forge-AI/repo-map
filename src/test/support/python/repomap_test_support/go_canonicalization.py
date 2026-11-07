@@ -3,7 +3,7 @@
 from collections.abc import Mapping
 from typing import Any
 
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 def observation(

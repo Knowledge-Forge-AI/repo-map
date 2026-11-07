@@ -13,9 +13,9 @@ import unittest
 from unittest.mock import patch
 
 import coverage
-import repomap_kg.coordinator._portable_worker_launch as pwl
-from repomap_kg.coordinator._protocol_validation import WorkerLaunchError
-from repomap_kg.coordinator._worker_launch import WorkerLaunchSpec
+import common_lore_index.coordinator._portable_worker_launch as pwl
+from common_lore_index.coordinator._protocol_validation import WorkerLaunchError
+from common_lore_index.coordinator._worker_launch import WorkerLaunchSpec
 from repomap_test_support.run25_portable_workflows import (
     TINY_PORTABLE_CHILD_CODE as CHILD_CODE,
     build_run25_worker_limits,
@@ -210,7 +210,7 @@ class RunnerPortableCoverageUnitTests(unittest.TestCase):
         mock_running.kill_tree.assert_called_once()
 
     def test_default_portable_environment_has_no_instrumentation_or_credentials(self) -> None:
-        from repomap_kg.coordinator._worker_environment import build_portable_worker_environment
+        from common_lore_index.coordinator._worker_environment import build_portable_worker_environment
         original = pwl.run_worker_spec
         with patch.dict(os.environ, {"AWS_SECRET_ACCESS_KEY": "fixture-only", "PYTHONPATH": "/foreign"}):
             env = build_portable_worker_environment(workspace_root=self.tmpdir, python_path=self.src_main)
@@ -249,7 +249,7 @@ class RunnerPortableCoverageUnitTests(unittest.TestCase):
     def test_relocated_package_does_not_inherit_source_measurement_authority(self) -> None:
         copied = self.tmpdir / "package/src/main/python"
         copied.mkdir(parents=True)
-        (copied / "repomap_kg").mkdir()
+        (copied / "common_lore_index").mkdir()
         def unexpected_launch(*args, **kwargs):
             self.fail("a foreign package root reached process launch")
         adapter = make_portable_worker_spec_adapter(unexpected_launch, self.cap, self.session)

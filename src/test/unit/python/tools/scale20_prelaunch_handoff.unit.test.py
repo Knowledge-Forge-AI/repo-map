@@ -7,7 +7,7 @@ import operator
 from typing import Any, cast
 import pytest
 
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 from scale15_terminal_contracts import (
     ExpectedRefreshAuthority,
     FINAL_FAMILY_CODES,

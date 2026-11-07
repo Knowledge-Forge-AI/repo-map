@@ -4,10 +4,10 @@ from typing import Callable
 
 import pytest
 
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._restart_fencing import StaleDurableAuthorityError
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.startup_recovery import (
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._restart_fencing import StaleDurableAuthorityError
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.startup_recovery import (
     PublicationRouteChangedError, StartupRecoveryReport, recover_startup,
 )
 from repomap_test_support.coordinator_core_fakes import FakeStore, terminal

@@ -13,8 +13,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from repomap_kg.coordinator import transport
-from repomap_kg.coordinator.endpoint import (
+from common_lore_index.coordinator import transport
+from common_lore_index.coordinator.endpoint import (
     EndpointDescriptorError,
     LoopbackEndpointDescriptor,
 )
@@ -351,11 +351,11 @@ def test_loopback_tcp_service_descriptor_errors_and_exit_lifecycle() -> None:
         disp = transport.LocalRequestDispatcher(valid_tok, {op: lambda _: {} for op in transport._OPERATIONS}, max_in_flight=1)
 
         ep_fail = parent / "fail.json"
-        with patch("repomap_kg.coordinator.transport.write_endpoint_descriptor", side_effect=OSError("write err")):
+        with patch("common_lore_index.coordinator.transport.write_endpoint_descriptor", side_effect=OSError("write err")):
             with pytest.raises(transport.TransportError, match="endpoint_descriptor_failed"):
                 transport.LoopbackTcpService(ep_fail, disp, auth_token=valid_tok, instance_id="inst", fencing_epoch=1, max_connections=1)
 
-        with patch("repomap_kg.coordinator.transport._ThreadedTcpServer", side_effect=OSError("bind err")):
+        with patch("common_lore_index.coordinator.transport._ThreadedTcpServer", side_effect=OSError("bind err")):
             with pytest.raises(transport.TransportError, match="endpoint_descriptor_failed"):
                 transport.LoopbackTcpService(ep_fail, disp, auth_token=valid_tok, instance_id="inst", fencing_epoch=1, max_connections=1)
 
@@ -372,7 +372,7 @@ def test_loopback_tcp_service_descriptor_errors_and_exit_lifecycle() -> None:
 
         ep3 = parent / "ep3.json"
         svc3 = transport.LoopbackTcpService(ep3, disp, auth_token=valid_tok, instance_id="inst-3", fencing_epoch=1, max_connections=1)
-        with patch("repomap_kg.coordinator.transport.load_endpoint_descriptor", side_effect=EndpointDescriptorError("corrupt")):
+        with patch("common_lore_index.coordinator.transport.load_endpoint_descriptor", side_effect=EndpointDescriptorError("corrupt")):
             svc3.__exit__(None, None, None)
 
         ep4 = parent / "ep4.json"
@@ -381,6 +381,6 @@ def test_loopback_tcp_service_descriptor_errors_and_exit_lifecycle() -> None:
             schema_version=1, host="127.0.0.1", port=9999,
             instance_id="other", fencing_epoch=2, auth_token=valid_tok,
         )
-        with patch("repomap_kg.coordinator.transport.load_endpoint_descriptor", return_value=other):
+        with patch("common_lore_index.coordinator.transport.load_endpoint_descriptor", return_value=other):
             svc4.__exit__(None, None, None)
             assert ep4.exists()

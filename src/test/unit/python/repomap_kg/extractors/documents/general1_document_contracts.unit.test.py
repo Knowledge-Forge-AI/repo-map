@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.graph.keys import (
     config_path_key,
     css_document_key,
     external_key,

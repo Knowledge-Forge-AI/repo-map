@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.config.nix import extract_nix_file_observations, resolve_repo_path
+from common_lore_index.extractors.config.nix import extract_nix_file_observations, resolve_repo_path
 
 
 class NixExtractorImportsAndPathsUnitTests(unittest.TestCase):

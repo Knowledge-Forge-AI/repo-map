@@ -10,16 +10,16 @@ from typing import Any
 import unittest
 from unittest import mock
 
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.readback import (
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.readback import (
     MISSING_DATABASE_MESSAGE,
     MissingDatabaseReadbackError,
     OpsPsqlExecution,
     _OpsContainerReadbackPlan,
     execute_ops_json_readback,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
 )
@@ -62,11 +62,11 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
             with mock.patch.dict("os.environ", {PG_CONNECTOR_ENV: "psql"}):
                 os.environ.pop(READBACK_DRIVER_ENV, None)
                 with mock.patch(
-                    "repomap_kg.storage.readback_driver.run_psql",
+                    "common_lore_index.storage.readback_driver.run_psql",
                     side_effect=OSError("host connection refused"),
                 ) as mock_run:
                     with mock.patch(
-                        "repomap_kg.ops.readback._resolve_container_readback_plan",
+                        "common_lore_index.ops.readback._resolve_container_readback_plan",
                         return_value=empty_plan,
                     ) as mock_plan:
                         with self.assertRaises(StorageSchemaError) as cm:
@@ -101,14 +101,14 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
                     stderr="",
                 )
                 with mock.patch(
-                    "repomap_kg.storage.readback_driver.run_psql",
+                    "common_lore_index.storage.readback_driver.run_psql",
                     side_effect=[
                         OSError("host connect refused"),
                         mock_proc,
                     ],
                 ) as mock_run:
                     with mock.patch(
-                        "repomap_kg.ops.readback._resolve_container_readback_plan",
+                        "common_lore_index.ops.readback._resolve_container_readback_plan",
                         return_value=valid_plan,
                     ):
                         result = execute_ops_json_readback(
@@ -137,10 +137,10 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
                 os.environ.pop(READBACK_DRIVER_ENV, None)
                 # 1. SQL syntax error
                 with mock.patch(
-                    "repomap_kg.storage.readback_driver.run_psql",
+                    "common_lore_index.storage.readback_driver.run_psql",
                     side_effect=StorageSchemaError("psql failed with code 1: ERROR: syntax error at or near 'SELEC'"),
                 ) as mock_run:
-                    with mock.patch("repomap_kg.ops.readback._resolve_container_readback_plan") as mock_plan:
+                    with mock.patch("common_lore_index.ops.readback._resolve_container_readback_plan") as mock_plan:
                         with self.assertRaises(StorageSchemaError) as cm_syntax:
                             execute_ops_json_readback(
                                 config,
@@ -162,10 +162,10 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
                     stderr="",
                 )
                 with mock.patch(
-                    "repomap_kg.storage.readback_driver.run_psql",
+                    "common_lore_index.storage.readback_driver.run_psql",
                     return_value=shape_proc,
                 ) as mock_run_shape:
-                    with mock.patch("repomap_kg.ops.readback._resolve_container_readback_plan") as mock_plan_shape:
+                    with mock.patch("common_lore_index.ops.readback._resolve_container_readback_plan") as mock_plan_shape:
                         with self.assertRaises(StorageSchemaError) as cm_shape:
                             execute_ops_json_readback(
                                 config,
@@ -189,7 +189,7 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
                 os.environ.pop("PGCONNECT_TIMEOUT", None)
                 os.environ.pop("PGOPTIONS", None)
 
-                with mock.patch("repomap_kg.storage.readback_driver._import_psycopg") as mock_import:
+                with mock.patch("common_lore_index.storage.readback_driver._import_psycopg") as mock_import:
                     mock_psycopg = mock.MagicMock()
                     mock_import.return_value = mock_psycopg
 
@@ -246,12 +246,12 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
 
             with mock.patch.dict("os.environ", {PG_CONNECTOR_ENV: "psycopg"}):
                 os.environ.pop(READBACK_DRIVER_ENV, None)
-                with mock.patch("repomap_kg.storage.readback_driver._import_psycopg") as mock_import:
+                with mock.patch("common_lore_index.storage.readback_driver._import_psycopg") as mock_import:
                     mock_psycopg = mock.MagicMock()
                     mock_import.return_value = mock_psycopg
                     mock_psycopg.connect.side_effect = ConnectionError("psycopg connection refused")
 
-                    with mock.patch("repomap_kg.ops.readback._resolve_container_readback_plan") as mock_plan:
+                    with mock.patch("common_lore_index.ops.readback._resolve_container_readback_plan") as mock_plan:
                         with self.assertRaises(StorageSchemaError) as cm:
                             execute_ops_json_readback(
                                 config,
@@ -278,7 +278,7 @@ class Slice8ReadbackTopologyIntegrationTests(unittest.TestCase):
                     stderr="",
                 )
                 with mock.patch(
-                    "repomap_kg.storage.readback_driver.run_psql",
+                    "common_lore_index.storage.readback_driver.run_psql",
                     return_value=mock_proc,
                 ) as mock_run:
                     result = execute_ops_json_readback(

@@ -8,8 +8,8 @@ from repomap_test_support.ops_refresh import (
     VALID_REFRESH_CONFIG,
 )
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import (
     OpsRefreshError,
     format_preflight_table,
     preflight_graph,
@@ -69,15 +69,15 @@ class OpsRefreshPreflightUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.refresh.discover_observations",
+                    "common_lore_index.ops.refresh.discover_observations",
                     side_effect=AssertionError("discovery extraction should not run"),
                 ),
                 patch(
-                    "repomap_kg.ops.refresh.run_staged_full_refresh",
+                    "common_lore_index.ops.refresh.run_staged_full_refresh",
                     side_effect=AssertionError("storage load should not run"),
                 ),
                 patch(
-                    "repomap_kg.ops.refresh.run_psql",
+                    "common_lore_index.ops.refresh.run_psql",
                     side_effect=AssertionError("database should not be queried"),
                 ),
                 patch("pathlib.Path.open", side_effect=AssertionError("file content read")),

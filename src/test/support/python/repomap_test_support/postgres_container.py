@@ -114,13 +114,7 @@ class PostgresContainerHarness:
         if resource_identity is None and self._current_owner is not None:
             resource_identity = self._current_owner.identity
         if resource_identity is not None:
-            labels.update(
-                ownership_labels(
-                    resource_identity,
-                    role="postgres",
-                    retained=False,
-                )
-            )
+            labels.update(ownership_labels(resource_identity, role="postgres", retained=False))
         if self.profile == PGVECTOR_PROFILE:
             labels["org.repomap.test.profile"] = PGVECTOR_PROFILE
         return labels
@@ -224,6 +218,7 @@ class PostgresContainerHarness:
 
     def reset_database(self):
         sql = f"""
+DROP SCHEMA IF EXISTS cloe_lexical CASCADE;
 DROP SCHEMA IF EXISTS public CASCADE;
 CREATE SCHEMA public;
 GRANT ALL ON SCHEMA public TO {self.config.user};

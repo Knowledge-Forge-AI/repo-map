@@ -2,11 +2,11 @@ import unittest
 from collections.abc import Iterator, Sequence
 from unittest.mock import patch
 
-from repomap_kg.extractors.documents import css_html_matching
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.css_html_matching import extract_css_selector_match_observations
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.documents import css_html_matching
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.css_html_matching import extract_css_selector_match_observations
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 class _CountingElements(Sequence[css_html_matching._HtmlElement]):

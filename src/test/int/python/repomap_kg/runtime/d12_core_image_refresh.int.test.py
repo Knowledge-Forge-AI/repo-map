@@ -8,7 +8,7 @@ import subprocess
 import uuid
 from pathlib import Path
 import pytest
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE,
     POSTGRES_RELEASE_IMAGE,
     PSYCOPG_LIBPQ_VERSION,
@@ -145,7 +145,7 @@ def test_d12_core_image_refresh_candidate_round_trip() -> None:
                                    "labels": attrs["Config"]["Labels"], "log_tail": log})
         assert f"{attrs['Os']}/{attrs['Architecture']}" == platform
         assert {k: attrs["Config"]["Labels"].get(k) for k in labels} == labels
-        assert attrs["Config"]["Entrypoint"] == ["python", "-m", "repomap_kg"]
+        assert attrs["Config"]["Entrypoint"] == ["python", "-m", "common_lore_index"]
         observe_and_assess_candidate(
             owner, client, image_id=image_id, platform=platform, server_id=server_id,
             server_env=server_env, server_side=server_side, server_inventory=server_inventory,

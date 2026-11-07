@@ -48,8 +48,8 @@ LOG_EXCERPT_BYTES = 200_000
 # Raw collection, exclusion and reason recorded for runner discovery; separate from build-profile debt.
 POPULATION_ATTR = "_repomap_d12_optional_population"
 CANDIDATE_LABEL = "org.repomap.d12.candidate"
-# Official registry metadata refreshed 2026-10-28 under ADR0105; runtime proof remains hosted.
-BASE_CONFIG_DIGESTS = {"sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c": {
+# Official registry metadata refreshed 2026-11-02 under ADR0105; runtime proof remains hosted.
+BASE_CONFIG_DIGESTS = {"sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a": {
     "linux/arm64": "sha256:6162f3765f7563b273a879894c5751d41285f922dd75ba0ba508a89e024e43ca",
     "linux/amd64": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1"}}
 _PROFILE_ATTR, _COMPANIONS = "d12_core_image_profile", ("d12_core_image_source_sha256", "d12_core_image_budget_ledger")

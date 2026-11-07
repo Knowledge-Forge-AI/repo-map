@@ -7,11 +7,11 @@ from unittest.mock import patch
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import main
-from repomap_kg.storage import (
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import main
+from common_lore_index.storage import (
     CanonicalEdgeRecord,
     CanonicalNeighborhoodRecord,
     CanonicalNodeRecord,
@@ -66,7 +66,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_neighborhood",
+            "common_lore_index.cli.query_canonical_neighborhood",
             return_value=record,
         ) as query:
             with redirect_stdout(stdout):
@@ -158,7 +158,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_neighborhood",
+            "common_lore_index.cli.query_canonical_neighborhood",
             return_value=record,
         ):
             with redirect_stdout(stdout):
@@ -188,7 +188,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_neighborhood",
+            "common_lore_index.cli.query_canonical_neighborhood",
             return_value=CanonicalNeighborhoodRecord(
                 center=None,
                 nodes=(),
@@ -238,7 +238,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
     def test_storage_canonical_neighborhood_validates_node_key(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_neighborhood") as query:
+        with patch("common_lore_index.cli.query_canonical_neighborhood") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -261,7 +261,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
     ):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_neighborhood") as query:
+        with patch("common_lore_index.cli.query_canonical_neighborhood") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -284,7 +284,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
     def test_storage_canonical_neighborhood_rejects_depth_above_one(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_neighborhood") as query:
+        with patch("common_lore_index.cli.query_canonical_neighborhood") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -329,7 +329,7 @@ class CliStorageCanonicalNeighborhoodUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_neighborhood",
+            "common_lore_index.cli.query_canonical_neighborhood",
             side_effect=StorageSchemaError(
                 "psql did not return canonical neighborhood"
             ),

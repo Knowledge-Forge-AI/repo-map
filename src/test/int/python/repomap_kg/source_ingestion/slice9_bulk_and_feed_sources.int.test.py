@@ -2,15 +2,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.bulk import (
+from common_lore_index.ops.ingestion.bulk import (
     BulkPolicyError,
     build_bulk_plan,
     classify_bulk_route,
     load_bulk_source_config,
 )
-from repomap_kg.ops.ingestion.source_common import SourcePolicyError
-from repomap_kg.ops.ingestion.source_feed import load_feed_source_config
-from repomap_kg.ops.ingestion.source_warc import (
+from common_lore_index.ops.ingestion.source_common import SourcePolicyError
+from common_lore_index.ops.ingestion.source_feed import load_feed_source_config
+from common_lore_index.ops.ingestion.source_warc import (
     _next_warc_record,
     _parse_header_lines,
     _parse_http_message_payload,

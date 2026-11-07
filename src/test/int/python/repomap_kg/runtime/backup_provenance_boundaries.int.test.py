@@ -16,15 +16,15 @@ from typing import Any, Iterator
 import psycopg
 import pytest
 
-from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority, initialize_coordinator_control
-from repomap_kg.runtime import _backup_provenance as prov_mod
-from repomap_kg.runtime import _backup_support as sup_mod
-from repomap_kg.runtime.backup import dump_database
-from repomap_kg.runtime.backup_inspection import verify_archive_toc_for_restore
-from repomap_kg.runtime.backup_manifests import read_manifest_file
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import build_local_runtime_plan
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.coordinator.local_lifecycle import LocalControlAuthority, initialize_coordinator_control
+from common_lore_index.runtime import _backup_provenance as prov_mod
+from common_lore_index.runtime import _backup_support as sup_mod
+from common_lore_index.runtime.backup import dump_database
+from common_lore_index.runtime.backup_inspection import verify_archive_toc_for_restore
+from common_lore_index.runtime.backup_manifests import read_manifest_file
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import build_local_runtime_plan
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.backup_provenance_boundaries import (
     malformed_database_catalog_cases, malformed_format2_manifest_cases,
     malformed_server_provenance_cases, malformed_toc_bytes_cases,

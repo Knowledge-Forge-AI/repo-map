@@ -5,7 +5,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from repomap_kg.cli import main
+from common_lore_index.cli import main
 
 
 class CliLocalOpsConfigGraphsBoundariesUnitTests(unittest.TestCase):

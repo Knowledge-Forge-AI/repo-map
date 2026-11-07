@@ -8,7 +8,7 @@ import pytest
 
 from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.coordinator.job_control import (
+from common_lore_index.coordinator.job_control import (
     coordinator_health,
     coordinator_job_status,
     format_coordinator_health_table,
@@ -17,22 +17,22 @@ from repomap_kg.coordinator.job_control import (
     list_coordinator_jobs,
     wait_for_coordinator_job,
 )
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator.local_mode import (
     CoordinatorModeError,
     format_coordinator_refresh_table,
     run_coordinator_refresh,
     serve_configured_coordinator,
     start_configured_coordinator,
 )
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.local_lifecycle import (
     LocalControlAuthority,
     initialize_coordinator_control,
 )
-from repomap_kg.runtime.database_roles import (
+from common_lore_index.runtime.database_roles import (
     read_role_secrets,
     render_database_role_sql,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

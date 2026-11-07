@@ -24,7 +24,7 @@ class _RejectCase(TypedDict):
 
 class McpServerRegistryUnitTests(McpServerTestSupport):
     def test_mcp_harden4_projects_compatibility_modes_are_stable(self):
-        from repomap_kg.server.mcp import repomap_list_graphs, repomap_projects
+        from common_lore_index.server.mcp import repomap_list_graphs, repomap_projects
 
         legacy_config = {
             "default_project": "repo-map",
@@ -147,7 +147,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
     def test_mcp_harden4_graph_registry_visibility_rules_reject_hidden_and_disabled(
         self,
     ):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             RepoMapMcpError,
             repomap_graph_status,
             repomap_list_graphs,
@@ -161,25 +161,25 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
             {
                 "label": "project_summary_disabled",
                 "call": lambda: repomap_project_summary(graph_id="disabled"),
-                "patch_target": "repomap_kg.server.ops.query_canonical_storage_summary",
+                "patch_target": "common_lore_index.server.ops.query_canonical_storage_summary",
                 "message": "not enabled",
             },
             {
                 "label": "project_summary_hidden",
                 "call": lambda: repomap_project_summary(graph_id="hidden"),
-                "patch_target": "repomap_kg.server.ops.query_canonical_storage_summary",
+                "patch_target": "common_lore_index.server.ops.query_canonical_storage_summary",
                 "message": "not MCP-visible",
             },
             {
                 "label": "graph_status_disabled",
                 "call": lambda: repomap_graph_status(graph_id="disabled"),
-                "patch_target": "repomap_kg.server.ops.query_refresh_status",
+                "patch_target": "common_lore_index.server.ops.query_refresh_status",
                 "message": "not enabled",
             },
             {
                 "label": "graph_status_hidden",
                 "call": lambda: repomap_graph_status(graph_id="hidden"),
-                "patch_target": "repomap_kg.server.ops.query_refresh_status",
+                "patch_target": "common_lore_index.server.ops.query_refresh_status",
                 "message": "not MCP-visible",
             },
             {
@@ -188,7 +188,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
                     graph_id="disabled",
                     node="python.module:pkg.app",
                 ),
-                "patch_target": "repomap_kg.server.ops.query_canonical_neighborhood",
+                "patch_target": "common_lore_index.server.ops.query_canonical_neighborhood",
                 "message": "not enabled",
             },
             {
@@ -197,7 +197,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
                     graph_id="hidden",
                     node="python.module:pkg.app",
                 ),
-                "patch_target": "repomap_kg.server.ops.query_canonical_neighborhood",
+                "patch_target": "common_lore_index.server.ops.query_canonical_neighborhood",
                 "message": "not MCP-visible",
             },
             {
@@ -206,7 +206,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
                     graph_id="disabled",
                     query="pkg",
                 ),
-                "patch_target": "repomap_kg.server.ops.query_mcp_search",
+                "patch_target": "common_lore_index.server.ops.query_mcp_search",
                 "message": "not enabled",
             },
             {
@@ -215,7 +215,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
                     graph_id="hidden",
                     query="pkg",
                 ),
-                "patch_target": "repomap_kg.server.ops.query_mcp_search",
+                "patch_target": "common_lore_index.server.ops.query_mcp_search",
                 "message": "not MCP-visible",
             },
         ]
@@ -239,7 +239,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
                     query.assert_not_called()
 
     def test_mcp_harden4_private_visible_graph_hints_are_redacted(self):
-        from repomap_kg.server.mcp import repomap_list_graphs, repomap_projects
+        from common_lore_index.server.mcp import repomap_list_graphs, repomap_projects
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
@@ -269,7 +269,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
         self.assert_no_synthetic_private_root(graphs_payload)
 
     def test_mcp_harden4_projects_registry_unavailable_diagnostic_is_safe(self):
-        from repomap_kg.server.mcp import repomap_projects
+        from common_lore_index.server.mcp import repomap_projects
 
         mcp_config_path = self.write_empty_mcp_config()
 
@@ -279,7 +279,7 @@ class McpServerRegistryUnitTests(McpServerTestSupport):
             clear=True,
         ):
             with patch(
-                "repomap_kg.server.mcp.load_mcp_ops_config",
+                "common_lore_index.server.mcp.load_mcp_ops_config",
                 side_effect=ValueError("synthetic-private-root /Users/example"),
             ):
                 payload = repomap_projects()

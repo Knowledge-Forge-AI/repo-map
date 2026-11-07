@@ -1,1 +1,1 @@
-"""Future server package namespace."""
+"""Transitional legacy namespace for the MCP stdio launch path."""

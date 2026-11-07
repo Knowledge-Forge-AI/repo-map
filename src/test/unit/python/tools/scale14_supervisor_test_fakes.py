@@ -1,11 +1,11 @@
 from __future__ import annotations
 from types import SimpleNamespace
 from actual_refresh_startup import ActualRefreshStartup
-from repomap_kg.storage.authority import AttemptNumber, JobId, PublicationGenerations
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.staging_launch_authority import DirectLaunchAuthorityEvent
-from repomap_kg.storage.staging_operation_contracts import operation_descriptor
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.authority import AttemptNumber, JobId, PublicationGenerations
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.staging_launch_authority import DirectLaunchAuthorityEvent
+from common_lore_index.storage.staging_operation_contracts import operation_descriptor
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEvent,
     StagingOperationEventCategory,
 )

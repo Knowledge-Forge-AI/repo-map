@@ -4,20 +4,20 @@ from __future__ import annotations
 import io
 import struct
 import unittest
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.backend_telemetry_contracts import (
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.backend_telemetry_contracts import (
     ConnectionTelemetryError,
     TelemetryEventKind,
     make_telemetry_event,
 )
-from repomap_kg.storage.backend_telemetry_events import (
+from common_lore_index.storage.backend_telemetry_events import (
     MAX_TELEMETRY_FRAME_BYTES,
     frame_telemetry_event,
     parse_telemetry_frame,
     read_telemetry_event,
 )
-from repomap_kg.storage.staging_family_catalog import family_privacy_classifications
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staging_family_catalog import family_privacy_classifications
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
 
 
 class Slice14StagingLifecycleUnitTests(unittest.TestCase):

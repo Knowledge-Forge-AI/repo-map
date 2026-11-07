@@ -4,21 +4,21 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from repomap_kg.coordinator._control_types import ControlSchemaError
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator._control_types import ControlSchemaError
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     LocalControlAuthority,
     coordinator_control_status,
     initialize_coordinator_control,
 )
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.refresh_adapter import (
     build_refresh_worker_runner,
 )
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.graph.multi_source import graph_source_binding_id
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.graph.multi_source import graph_source_binding_id
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

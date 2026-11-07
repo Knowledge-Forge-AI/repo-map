@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, JobId
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.staging_event_transport import StagingEventFrame
-from repomap_kg.storage.staging_launch_authority import DirectLaunchAuthorityEvent
+from common_lore_index.storage.authority import AttemptNumber, JobId
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.staging_event_transport import StagingEventFrame
+from common_lore_index.storage.staging_launch_authority import DirectLaunchAuthorityEvent
 from scale16_launch_binding import LaunchBindingError, LaunchBindingState
 
 

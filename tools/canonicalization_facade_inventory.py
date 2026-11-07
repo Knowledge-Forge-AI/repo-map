@@ -12,10 +12,10 @@ from typing import Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src" / "main" / "python"
-CANONICALIZATION_ROOT = SRC_ROOT / "repomap_kg" / "canonicalization"
+CANONICALIZATION_ROOT = SRC_ROOT / "common_lore_index" / "canonicalization"
 PACKAGE_INIT = CANONICALIZATION_ROOT / "__init__.py"
 FAMILY_SCAFFOLD_MARKERS = (
-    'sys.modules["repomap_kg.canonicalization.main"]',
+    'sys.modules["common_lore_index.canonicalization.main"]',
     "globals().update",
 )
 
@@ -151,8 +151,8 @@ def build_inventory(
 
 
 def collect_inventory() -> FacadeInventory:
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
 
     ledger_names = tuple(canonicalization._COMPATIBILITY_EXPORT_NAMES)
     generated_main_surface = tuple(
@@ -162,7 +162,8 @@ def collect_inventory() -> FacadeInventory:
     )
     package_root_names = tuple(dir(canonicalization))
     public_names = tuple(
-        name for name in package_root_names if not name.startswith("_")
+        name for name in package_root_names
+        if not name.startswith("_") and name not in canonicalization._NON_FACADE_MODULES
     )
     all_names = tuple(canonicalization.__all__)
     return build_inventory(

@@ -2,7 +2,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.ops.ingestion.github_api import (
     GitHubApiPolicyError,
     build_github_api_plan_from_config,
     load_github_api_source_config,

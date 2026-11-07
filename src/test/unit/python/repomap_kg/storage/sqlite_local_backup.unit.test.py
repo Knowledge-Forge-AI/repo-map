@@ -23,25 +23,25 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import backup, connection, migrations
-from repomap_kg.storage.sqlite_local.backup import (
+from common_lore_index.storage.sqlite_local import backup, connection, migrations
+from common_lore_index.storage.sqlite_local.backup import (
     check_backup_output,
     inspect_sealed_database,
     write_backup,
 )
-from repomap_kg.storage.sqlite_local.backup_manifest import (
+from common_lore_index.storage.sqlite_local.backup_manifest import (
     BackupManifest,
     BackupPublication,
     parse_manifest,
 )
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.storage.sqlite_local.connection import (
     initialize_graph_database,
     publisher_lock,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.durability import DURABILITY_FAILED, DURABILITY_UNAVAILABLE
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError, accepted_identity
+from common_lore_index.storage.sqlite_local.durability import DURABILITY_FAILED, DURABILITY_UNAVAILABLE
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError, accepted_identity
 from repomap_test_support.sqlite_local_fixtures import generation_bundle, local_binding, publication_for
 
 BINDING = local_binding()

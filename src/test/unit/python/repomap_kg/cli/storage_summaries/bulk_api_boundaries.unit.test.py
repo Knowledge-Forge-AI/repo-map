@@ -6,8 +6,8 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.cli import main
+from common_lore_index.storage import StorageSchemaError
 
 
 class CliStorageBulkApiSummaryBoundariesUnitTests(unittest.TestCase):
@@ -15,7 +15,7 @@ class CliStorageBulkApiSummaryBoundariesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_bulk_summary",
+            "common_lore_index.cli.query_bulk_summary",
             side_effect=StorageSchemaError("psql did not return bulk summary"),
         ):
             with redirect_stderr(stderr):
@@ -32,7 +32,7 @@ class CliStorageBulkApiSummaryBoundariesUnitTests(unittest.TestCase):
         self.assertIn("psql did not return bulk summary", stderr.getvalue())
 
     def test_smoke_harden3_bulk_api_summary_json_omits_raw_manifest_values(self):
-        from repomap_kg.storage.summary_rows_manifest import (
+        from common_lore_index.storage.summary_rows_manifest import (
             api_manifest_summary_payload,
             api_summary_from_storage_payload,
             bulk_manifest_summary_payload,
@@ -159,7 +159,7 @@ class CliStorageBulkApiSummaryBoundariesUnitTests(unittest.TestCase):
 
         bulk_stdout = io.StringIO()
         api_stdout = io.StringIO()
-        with patch("repomap_kg.cli.query_bulk_summary", return_value=bulk_summary):
+        with patch("common_lore_index.cli.query_bulk_summary", return_value=bulk_summary):
             with redirect_stdout(bulk_stdout):
                 bulk_exit = main(
                     [
@@ -170,7 +170,7 @@ class CliStorageBulkApiSummaryBoundariesUnitTests(unittest.TestCase):
                         "--json",
                     ]
                 )
-        with patch("repomap_kg.cli.query_api_summary", return_value=api_summary):
+        with patch("common_lore_index.cli.query_api_summary", return_value=api_summary):
             with redirect_stdout(api_stdout):
                 api_exit = main(
                     [
@@ -205,7 +205,7 @@ class CliStorageBulkApiSummaryBoundariesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_api_summary",
+            "common_lore_index.cli.query_api_summary",
             side_effect=StorageSchemaError("psql did not return api summary"),
         ):
             with redirect_stderr(stderr):

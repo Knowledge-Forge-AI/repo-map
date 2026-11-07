@@ -3,8 +3,8 @@ import json
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.coordinator.local_lifecycle import CoordinatorControlError
+from common_lore_index.cli import main
+from common_lore_index.coordinator.local_lifecycle import CoordinatorControlError
 
 
 def test_coordinator_control_status_returns_nonzero_when_absent():
@@ -16,7 +16,7 @@ def test_coordinator_control_status_returns_nonzero_when_absent():
         "schema_compatible": None,
         "schema_version": None,
     }
-    with patch("repomap_kg.cli.coordinator_control_status", return_value=payload) as status:
+    with patch("common_lore_index.cli.coordinator_control_status", return_value=payload) as status:
         with redirect_stdout(stdout):
             exit_code = main(
                 [
@@ -40,7 +40,7 @@ def test_coordinator_control_init_is_explicit_and_reports_ready():
         "database_created": True,
         "schema_version": 1,
     }
-    with patch("repomap_kg.cli.initialize_coordinator_control", return_value=payload) as init:
+    with patch("common_lore_index.cli.initialize_coordinator_control", return_value=payload) as init:
         with redirect_stdout(stdout):
             exit_code = main(
                 [
@@ -64,7 +64,7 @@ def test_coordinator_control_upgrade_delegates_backup_confirmation_and_dry_run()
         "backup_verified": False,
     }
     with patch(
-        "repomap_kg.cli.upgrade_coordinator_control", return_value=payload
+        "common_lore_index.cli.upgrade_coordinator_control", return_value=payload
     ) as upgrade:
         with redirect_stdout(stdout):
             exit_code = main(
@@ -96,7 +96,7 @@ def test_coordinator_control_upgrade_delegates_backup_confirmation_and_dry_run()
 def test_coordinator_control_failure_is_bounded():
     stderr = io.StringIO()
     with patch(
-        "repomap_kg.cli.initialize_coordinator_control",
+        "common_lore_index.cli.initialize_coordinator_control",
         side_effect=CoordinatorControlError("coordinator_control_init_failed"),
     ):
         with redirect_stderr(stderr):

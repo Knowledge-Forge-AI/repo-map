@@ -50,7 +50,7 @@ class TestPublicExportPolicy(unittest.TestCase):
             pyproject = repo_root / "pyproject.toml"
             pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.2"\n')
 
-            pkg_dir = repo_root / "src/main/python/repomap_kg"
+            pkg_dir = repo_root / "src/main/python/common_lore_index"
             pkg_dir.mkdir(parents=True)
             (pkg_dir / "__init__.py").write_text('__version__ = "0.0.2"\n')
 
@@ -63,7 +63,7 @@ class TestPublicExportPolicy(unittest.TestCase):
             pyproject = repo_root / "pyproject.toml"
             pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.1.0"\n')
 
-            pkg_dir = repo_root / "src/main/python/repomap_kg"
+            pkg_dir = repo_root / "src/main/python/common_lore_index"
             pkg_dir.mkdir(parents=True)
             (pkg_dir / "__init__.py").write_text('__version__ = "0.0.1"\n')
 
@@ -76,7 +76,7 @@ class TestPublicExportPolicy(unittest.TestCase):
         self.assertEqual(check_version_consistency(Path(__file__).resolve().parents[6]), [])
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
-            pkg_dir = repo_root / "src/main/python/repomap_kg"
+            pkg_dir = repo_root / "src/main/python/common_lore_index"
             pkg_dir.mkdir(parents=True)
             for version in ("0.0.3", "0.0.2"):
                 (repo_root / "pyproject.toml").write_text(f'[project]\nversion = "{version}"\n')
@@ -160,7 +160,7 @@ class TestPublicExportPolicy(unittest.TestCase):
             pyproject = repo_root / "pyproject.toml"
             pyproject.write_text('[project]\nname = "repomap-kg"\nversion = "0.0.2"\n')
 
-            pkg_dir = repo_root / "src/main/python/repomap_kg"
+            pkg_dir = repo_root / "src/main/python/common_lore_index"
             pkg_dir.mkdir(parents=True)
             (pkg_dir / "__init__.py").write_text('__version__ = "0.0.2"\n')
 

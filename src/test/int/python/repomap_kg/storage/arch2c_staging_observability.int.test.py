@@ -4,18 +4,18 @@ import json
 
 import psycopg
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementAvailability,
     StagingMeasurementCategory,
     StagingMeasurementEvent,

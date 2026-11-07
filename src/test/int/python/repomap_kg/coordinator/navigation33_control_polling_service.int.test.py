@@ -9,43 +9,43 @@ import time
 from typing import Any, cast
 import unittest
 
-from repomap_kg.coordinator._control_maintenance import (
+from common_lore_index.coordinator._control_maintenance import (
     _sanitize_error_category,
     cleanup_terminal,
 )
-from repomap_kg.coordinator._control_polling import (
+from common_lore_index.coordinator._control_polling import (
     _safe_graph_id,
     _validate,
     record_condition,
 )
-from repomap_kg.coordinator._control_state import (
+from common_lore_index.coordinator._control_state import (
     _validate_progress,
     schedule_retry,
     validate_state_publication,
 )
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._lifecycle_authority import (
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._lifecycle_authority import (
     CoordinatorControlError,
     LocalControlAuthority,
     _maintenance_window,
     _reconcile_control_roles,
     _validate_reference_database,
 )
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.desired_state import (
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.desired_state import (
     DesiredStateReconciler,
     PollOutcome,
     WatcherHint,
 )
-from repomap_kg.coordinator.polling import PollingScheduler
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.startup_recovery import (
+from common_lore_index.coordinator.polling import PollingScheduler
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.startup_recovery import (
     RecoveryDiagnostic,
     _format_unexpected_diagnostic,
     _record_marker,
     recover_startup,
 )
-from repomap_kg.ops.source_generation import SourceGenerationResult
+from common_lore_index.ops.source_generation import SourceGenerationResult
 from repomap_test_support.test_scratch import short_test_directory
 
 
@@ -280,7 +280,7 @@ class Navigation33ControlPollingServiceIntegrationTests(unittest.TestCase):
         self.assertEqual(rep_stop_after_legacy.pending, 2)
 
         from psycopg.errors import LockNotAvailable
-        from repomap_kg.coordinator._restart_fencing import StaleDurableAuthorityError
+        from common_lore_index.coordinator._restart_fencing import StaleDurableAuthorityError
 
         class _RecStoreWithProver(_RecStore):
             def prove_worker_fenced(self, *_a: Any, **_kw: Any) -> object:

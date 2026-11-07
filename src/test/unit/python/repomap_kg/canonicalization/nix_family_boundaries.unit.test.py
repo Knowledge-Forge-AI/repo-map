@@ -1,9 +1,9 @@
 import unittest
 
-from repomap_kg.canonicalization.main import (
+from common_lore_index.canonicalization.main import (
     canonicalize_observations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 class CanonicalizationNixFamilyBoundariesUnitTests(unittest.TestCase):
@@ -227,8 +227,8 @@ class CanonicalizationNixFamilyBoundariesUnitTests(unittest.TestCase):
 
     def test_nix_patterns_and_resolver_validation(self):
         from typing import Any
-        import repomap_kg.extractors.config.nix as nix
-        import repomap_kg.extractors.config.nix_resolver as nr
+        import common_lore_index.extractors.config.nix as nix
+        import common_lore_index.extractors.config.nix_resolver as nr
 
         self.assertEqual(nix._dynamic_output_pattern("eachDefaultSystem (system:"), "eachDefaultSystem")
         self.assertEqual(nix._dynamic_output_pattern("genAttrs ["), "genAttrs")

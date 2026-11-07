@@ -5,8 +5,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import call, patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import CanonicalEdgeRecord, StorageSchemaError
+from common_lore_index.cli import main
+from common_lore_index.storage import CanonicalEdgeRecord, StorageSchemaError
 
 PACKAGE_TARGET = "host.category:package-management"
 NETWORK_TARGET = "host.category:network"
@@ -41,7 +41,7 @@ def run_cli(argv, by_kind=None, side_effect=None):
             return by_kind[kwargs["kind"]]
     stdout = io.StringIO()
     stderr = io.StringIO()
-    with patch("repomap_kg.cli.query_canonical_edge_records", side_effect=side_effect) as query:
+    with patch("common_lore_index.cli.query_canonical_edge_records", side_effect=side_effect) as query:
         with redirect_stdout(stdout), redirect_stderr(stderr):
             exit_code = main(argv)
     return exit_code, stdout.getvalue(), stderr.getvalue(), query

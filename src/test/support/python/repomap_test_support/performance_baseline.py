@@ -15,14 +15,14 @@ from repomap_test_support.performance_baseline_values import (
     nearest_rank as nearest_rank,
 )
 
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementAvailability,
     StagingMeasurementCategory,
     StagingMeasurementEvent,
 )
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
-from repomap_kg.storage.staging_phase_events import (
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage.staging_phase_events import (
     STAGING_PHASE_CODES,
     StagingPhaseEvent,
     StagingPhaseEventCategory,

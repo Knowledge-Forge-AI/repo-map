@@ -9,18 +9,18 @@ import subprocess
 import psycopg
 import pytest
 
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.local_lifecycle import (
     initialize_coordinator_control,
     maintenance_window_for_graph_upgrade,
 )
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
-from repomap_kg.runtime.schema_upgrade import (
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.schema_upgrade import (
     inspect_backup,
     query_schema_ledger,
     upgrade_graph_schema,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     GraphSchemaStatus,
     apply_migrations,
     default_rdbms_root,
@@ -28,7 +28,7 @@ from repomap_kg.storage import (
     graph_schema_readiness,
     run_psql,
 )
-from repomap_kg.storage.main import _migration_script
+from common_lore_index.storage.main import _migration_script
 from repomap_test_support.local_db_backup import setup_real_backup_home
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,

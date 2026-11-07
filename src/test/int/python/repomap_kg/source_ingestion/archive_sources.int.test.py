@@ -11,7 +11,7 @@ from repomap_test_support.source_ingestion_integration import (
     source_ingestion_fixture_root,
 )
 from repomap_test_support.test_scratch import select_scratch_root
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     archive_observations_from_manifest,
     build_archive_manifest,

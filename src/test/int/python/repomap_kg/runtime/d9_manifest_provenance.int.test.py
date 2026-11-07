@@ -12,26 +12,26 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.coordinator._lifecycle_upgrade import upgrade_coordinator_control
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator._lifecycle_upgrade import upgrade_coordinator_control
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     LocalControlAuthority,
     initialize_coordinator_control,
     maintenance_window_for_database_drop,
 )
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     drop_database,
     dump_all_databases,
     dump_database,
     init_database_from_dump,
     inspect_backup,
 )
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
-from repomap_kg.runtime.maintenance import MAINTENANCE_LOCK_KEY
-from repomap_kg.runtime.release_cluster import ReleaseClusterError, initialize_release_cluster
-from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
-from repomap_kg.storage import (
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.backup_restore_sets import restore_coordinated_backup
+from common_lore_index.runtime.maintenance import MAINTENANCE_LOCK_KEY
+from common_lore_index.runtime.release_cluster import ReleaseClusterError, initialize_release_cluster
+from common_lore_index.runtime.schema_upgrade import upgrade_graph_schema
+from common_lore_index.storage import (
     GraphSchemaStatus,
     apply_migrations,
     default_rdbms_root,
@@ -39,7 +39,7 @@ from repomap_kg.storage import (
     graph_schema_readiness,
     run_psql,
 )
-from repomap_kg.storage.main import _migration_script
+from common_lore_index.storage.main import _migration_script
 from repomap_test_support.local_db_backup import (
     connect_real_postgres as _connect,
     setup_real_backup_home as _setup_real_home,
@@ -273,8 +273,8 @@ def test_real_schema_upgrade_control_upgrade_and_release_cluster_refusals(
             initialize_coordinator_control(home)
 
             # Positive release-cluster upgrade on baseline behind graph + preledger control DB
-            import repomap_kg.runtime._backup_support as bs_mod
-            import repomap_kg.runtime.release_cluster as rc_mod
+            import common_lore_index.runtime._backup_support as bs_mod
+            import common_lore_index.runtime.release_cluster as rc_mod
 
             admin_root = root / "admin"
             admin_root.mkdir(mode=0o700)

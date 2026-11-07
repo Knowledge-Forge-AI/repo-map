@@ -4,8 +4,8 @@ from pathlib import Path
 import shutil
 import tomllib
 
-from repomap_kg.coordinator._control_schema import discover_control_migrations
-from repomap_kg.runtime.commands import render_server_dockerfile
+from common_lore_index.coordinator._control_schema import discover_control_migrations
+from common_lore_index.runtime.commands import render_server_dockerfile
 
 
 ROOT = Path(__file__).resolve().parents[6]
@@ -36,7 +36,7 @@ def transform_pyproject_for_public(text: str) -> str:
 def test_october_has_exact_explicit_destination_and_maintained_glob():
     metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
     assert metadata["tool"]["setuptools"]["data-files"][
-        "share/repomap-kg/coordinator-rdbms/2026/10"
+        "share/common-lore-index/coordinator-rdbms/2026/10"
     ] == ["src/main/resources/coordinator-rdbms/2026/10/*.sql"]
     october = set(CONTROL_ROOT.glob("2026/10/*.sql"))
     assert october
@@ -50,7 +50,7 @@ def test_changelog_catalog_resolves_only_packaged_migrations(tmp_path):
         target = tmp_path / destination
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
-    installed_root = tmp_path / "share/repomap-kg/coordinator-rdbms"
+    installed_root = tmp_path / "share/common-lore-index/coordinator-rdbms"
     assert (installed_root / "changelog.yaml").read_bytes() == (
         CONTROL_ROOT / "changelog.yaml"
     ).read_bytes()
@@ -59,7 +59,7 @@ def test_changelog_catalog_resolves_only_packaged_migrations(tmp_path):
     encode = lambda catalog: [(m.relative_path, m.changeset_id, m.checksum) for m in catalog]
     assert source_catalog and encode(installed_catalog) == encode(source_catalog)
     for migration in source_catalog:
-        assert f"share/repomap-kg/coordinator-rdbms/{migration.relative_path}" in manifest
+        assert f"share/common-lore-index/coordinator-rdbms/{migration.relative_path}" in manifest
 
 
 def test_release_install_consumes_manifest_and_verifies_installed_control_catalog():
@@ -92,7 +92,7 @@ def test_public_transformation_preserves_october_manifest_and_metadata():
     ]
     assert (
         data["tool"]["setuptools"]["data-files"][
-            "share/repomap-kg/coordinator-rdbms/2026/10"
+            "share/common-lore-index/coordinator-rdbms/2026/10"
         ]
         == ["src/main/resources/coordinator-rdbms/2026/10/*.sql"]
     )
@@ -119,7 +119,7 @@ def test_dynamic_exact_catalog_accommodates_added_october_schema(tmp_path: Path)
 
     manifest = _manifest(root=simulated_root)
     added_installed_key = (
-        "share/repomap-kg/coordinator-rdbms/2026/10/02-999-dynamic-schema-by-q2.sql"
+        "share/common-lore-index/coordinator-rdbms/2026/10/02-999-dynamic-schema-by-q2.sql"
     )
     assert added_installed_key in manifest
     assert manifest[added_installed_key] == added_sql

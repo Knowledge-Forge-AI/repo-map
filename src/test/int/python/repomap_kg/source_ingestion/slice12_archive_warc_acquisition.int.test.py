@@ -20,12 +20,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     build_warc_manifest,
     load_warc_source_config,
     warc_observations_from_manifest,
 )
-from repomap_kg.storage.canonical_rows import prepare_canonical_load
+from common_lore_index.storage.canonical_rows import prepare_canonical_load
 from repomap_test_support.source_ingestion_integration import fixed_clock
 from repomap_test_support.test_scratch import select_scratch_root
 

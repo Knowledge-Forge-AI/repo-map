@@ -20,16 +20,16 @@ import tempfile
 from typing import Mapping, Sequence
 import unittest
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.store import ArtifactIntegrityError, FileSystemArtifactStore
-from repomap_kg.artifacts.validator import (
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.store import ArtifactIntegrityError, FileSystemArtifactStore
+from common_lore_index.artifacts.validator import (
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 from repomap_test_support.test_scratch import select_scratch_root
 
 

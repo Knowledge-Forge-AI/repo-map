@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
     execute_json_readback,
@@ -97,7 +97,7 @@ class _RecordingConnector:
 
 def test_psycopg2_readback_driver_returns_last_nonblank_json_object(monkeypatch) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed('\nNOTICE: ignored\n{"files": 2}\n')
 
         payload = execute_json_readback(
@@ -110,7 +110,7 @@ def test_psycopg2_readback_driver_returns_last_nonblank_json_object(monkeypatch)
     assert payload == {"files": 2}
 def test_psycopg2_readback_driver_accepts_array_payloads(monkeypatch) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed('[{"node_key": "file:README.md"}]\n')
 
         payload = execute_json_readback(
@@ -123,7 +123,7 @@ def test_psycopg2_readback_driver_accepts_array_payloads(monkeypatch) -> None:
     assert payload == [{"node_key": "file:README.md"}]
 def test_psycopg2_readback_driver_rejects_empty_stdout(monkeypatch) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed("\n")
 
         with pytest.raises(
@@ -142,7 +142,7 @@ def test_psycopg2_readback_driver_rejects_malformed_json_without_retry(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed("not-json\n")
 
         with pytest.raises(
@@ -161,7 +161,7 @@ def test_psycopg2_readback_driver_rejects_object_shape_mismatch_without_retry(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed("[]\n")
 
         with pytest.raises(
@@ -180,7 +180,7 @@ def test_psycopg2_readback_driver_rejects_array_shape_mismatch_without_retry(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed("{}\n")
 
         with pytest.raises(
@@ -199,7 +199,7 @@ def test_psycopg2_readback_driver_preserves_psql_failures_as_storage_schema_erro
     monkeypatch,
 ) -> None:
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psql")
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.side_effect = StorageSchemaError("psql failed: connection failed")
 
         with pytest.raises(StorageSchemaError, match="psql failed"):

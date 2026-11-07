@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch
 
 import psycopg
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
 from repomap_test_support.public_branch_contracts import owned_container_result
 
 
@@ -234,11 +234,11 @@ def unit_maintenance_window_patch(
     mock_conn.execute.side_effect = _exec
     with (
         patch(
-            "repomap_kg.runtime._backup_operations.psycopg.connect",
+            "common_lore_index.runtime._backup_operations.psycopg.connect",
             return_value=mock_conn,
         ),
         patch(
-            "repomap_kg.runtime._backup_operations.maintenance_window",
+            "common_lore_index.runtime._backup_operations.maintenance_window",
             side_effect=lambda *args, **kwargs: contextlib.nullcontext(),
         ),
     ):

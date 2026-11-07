@@ -81,3 +81,84 @@ def test_endpoint_failure_takes_precedence_over_missing_image(capsys):
     with pytest.raises(RuntimeError, match="endpoint_unavailable"):
         sandbox_owner._inspect_managed_image(runner, "fixture-recipe")
     assert json.loads(capsys.readouterr().err)["category"] == "endpoint_unavailable"
+
+
+@pytest.mark.parametrize("detail,expected", [
+    ("CERTIFICATE_VERIFY_FAILED at https://private.invalid/token", ["tls"]),
+    ("Temporary failure resolving private.invalid", ["dns"]),
+    ("connection timed out", ["timeout"]),
+    ("HTTP Error 429: Too Many Requests", ["http_rate_limit"]),
+    ("HTTP Error 503: Service Unavailable", ["http_service"]),
+    ("apt prerequisites refused: transaction changes installed private:amd64 1 -> 2", ["apt_prerequisite_refused", "apt_preservation_refused"]),
+    ("hash sum mismatch for private.deb", ["archive_identity"]),
+    ("No matching distribution found for private", ["package_resolution"]),
+    ("no space left on device at /private/operator", ["storage_exhausted"]),
+    ("unknown secret-token and /private/operator path", []),
+])
+@pytest.mark.parametrize("channel", ["stdout", "stderr"])
+def test_failure_reasons_are_closed_codes_across_both_build_channels(capsys, detail, expected, channel):
+    streams = {"stdout": "", "stderr": ""}
+    streams[channel] = detail
+    result = subprocess.CompletedProcess(["private-command"], 23, **streams)
+    sandbox_owner._images._image_diagnostic("build", result, "build_failed")
+    diagnostic = json.loads(capsys.readouterr().err)
+    assert diagnostic["failure_reasons"] == expected
+    for name, value in streams.items():
+        assert diagnostic[name + "_bytes"] == len(value.encode())
+        assert diagnostic[name + "_sha256"] == hashlib.sha256(value.encode()).hexdigest()
+    serialized = json.dumps(diagnostic)
+    for private in ("private.invalid", "private-command", "secret-token", "private.deb", "/private/operator"):
+        assert private not in serialized
+
+
+def test_success_does_not_report_reason_codes_from_echoed_build_text(capsys):
+    result = subprocess.CompletedProcess([], 0, "HTTP Error 503: Service Unavailable", "")
+    sandbox_owner._images._image_diagnostic("build", result, "built")
+    assert json.loads(capsys.readouterr().err)["failure_reasons"] == []
+
+
+@pytest.mark.parametrize("progress", ["", "#12 8.125 ", "\x1b[31m#12 8.125 \x1b[0m"])
+@pytest.mark.parametrize("channel", ["stdout", "stderr"])
+def test_canonical_apt_explanation_survives_the_outer_projection(capsys, monkeypatch, progress, channel):
+    private = "fixture-sensitive-value"
+    monkeypatch.setenv("CREDENTIAL_FOR_TEST", private)
+    message = "apt-get install --simulate failed with exit 100; libssl-dev depends on libssl3t64 (= 3.5.5-1~deb13u1)"
+    line = progress + "apt prerequisites refused: " + message + " | " + private + " at /private/operator/config https://mirror.example.invalid/path"
+    streams = {"stdout": "", "stderr": ""}
+    streams[channel] = line
+    sandbox_owner._images._image_diagnostic("build", subprocess.CompletedProcess([], 1, **streams), "build_failed")
+    diagnostic = json.loads(capsys.readouterr().err)
+    detail = diagnostic["apt_failure"]
+    assert "exit 100" in detail["redacted_message"]
+    assert "libssl-dev" in detail["redacted_message"]
+    assert "3.5.5-1~deb13u1" in detail["redacted_message"]
+    assert detail["source_line_bytes"] == len(line.encode())
+    assert detail["source_line_sha256"] == hashlib.sha256(line.encode()).hexdigest()
+    for value in (private, "/private/operator", "mirror.example.invalid"):
+        assert value not in json.dumps(diagnostic)
+
+
+@pytest.mark.parametrize("text", [
+    'RUN print("apt prerequisites refused: untrusted echo")',
+    "ERROR apt prerequisites refused: arbitrary context",
+    "#3 [stage 2/4] RUN apt prerequisites refused: echoed command",
+])
+def test_arbitrary_build_context_is_not_a_canonical_failure_line(text):
+    assert sandbox_owner._images._apt_failure(text, "") is None
+
+
+def test_apt_explanation_is_bounded_after_redaction(monkeypatch):
+    private = "fixture-sensitive-" + "x" * 6000
+    monkeypatch.setenv("CREDENTIAL_FOR_TEST", private)
+    text = "#1 1.2 apt prerequisites refused: " + private + " | " + "public detail " * 600
+    result = sandbox_owner._images._apt_failure("", text)
+    assert result is not None
+    message = result["redacted_message"]
+    assert isinstance(message, str) and len(message) <= 4000
+    assert "fixture-sensitive" not in message
+
+
+def test_success_does_not_retain_echoed_apt_failure(capsys):
+    line = "apt prerequisites refused: an echoed test fixture"
+    sandbox_owner._images._image_diagnostic("build", subprocess.CompletedProcess([], 0, line, ""), "built")
+    assert json.loads(capsys.readouterr().err)["apt_failure"] is None

@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 from typing import Any, Callable, Protocol
 
-from repomap_kg.runtime.system_test_pause import (
+from common_lore_index.runtime.system_test_pause import (
     SYSTEM_TEST_CONSUMER_DEADLINE_SECONDS,
     SYSTEM_TEST_CONSUMER_EXEC_TIMEOUT_SECONDS,
     SYSTEM_TEST_SUBMISSION_REAP_TIMEOUT_SECONDS,

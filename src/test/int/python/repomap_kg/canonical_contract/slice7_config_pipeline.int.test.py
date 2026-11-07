@@ -3,14 +3,14 @@ from __future__ import annotations
 import json
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config.nix_resolver import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.nix_resolver import (
     NixBindingView,
     ResolutionOutcome,
     resolve_nix_relations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 class Slice7ConfigPipelineIntegrationTests(unittest.TestCase):

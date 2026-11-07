@@ -20,9 +20,9 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.psql import run_psql
-from repomap_kg.storage.publication_readback import read_latest_publication
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.psql import run_psql
+from common_lore_index.storage.publication_readback import read_latest_publication
 from repomap_test_support.postgres_logical_backup import (
     dump_plain_database,
     restore_plain_database,

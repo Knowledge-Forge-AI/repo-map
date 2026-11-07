@@ -8,10 +8,10 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class ConfiguredStorageIdentityTests(McpServerTestSupport):
     def test_configured_target_selection_carries_identity_and_binding_forwards_it(self) -> None:
-        from repomap_kg.server.canonical_read_store import read_storage_connection
-        from repomap_kg.server.mcp import storage_connection
-        from repomap_kg.server.mcp_core import StorageConnection
-        from repomap_kg.server.ops import graph_context
+        from common_lore_index.server.canonical_read_store import read_storage_connection
+        from common_lore_index.server.mcp import storage_connection
+        from common_lore_index.server.mcp_core import StorageConnection
+        from common_lore_index.server.ops import graph_context
 
         config_path = self.write_ops_config(self.visible_ops_config())
         env = {"REPOMAP_OPS_CONFIG": str(config_path), "REPOMAP_MCP_CONFIG": str(self.write_empty_mcp_config())}
@@ -26,7 +26,7 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
         # connection has no selection and forwards none.
         configured = target.stores.canonical_store(target.selection).connection
         mock_query = MagicMock(return_value="readback_result")
-        with patch("repomap_kg.server.canonical_read_store.readback_postgres_authority",
+        with patch("common_lore_index.server.canonical_read_store.readback_postgres_authority",
                    return_value=MagicMock(password=None)) as authority:
             self.assertEqual(read_storage_connection(configured, mock_query), "readback_result")
         self.assertIs(authority.call_args.args[0], configured.context.config)
@@ -43,7 +43,7 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
         self.assertEqual(legacy_mock.call_args.kwargs["root_path"], "/tmp/legacy")
 
     def test_all_eleven_exposed_tools_forward_configured_identity(self) -> None:
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_canonical_edges,
             repomap_canonical_neighborhood,
             repomap_canonical_nodes,
@@ -56,7 +56,7 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
             repomap_source_summary,
             repomap_status,
         )
-        from repomap_kg.storage import (
+        from common_lore_index.storage import (
             CanonicalEdgeExplanationRecord,
             CanonicalEdgeRecord,
             CanonicalNeighborhoodRecord,
@@ -72,10 +72,10 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
 
         config_path = self.write_ops_config(self.visible_ops_config())
         node = CanonicalNodeRecord(
-            canonical_key="python.module:repomap_kg.cli",
+            canonical_key="python.module:common_lore_index.cli",
             graph_key_version=1,
             kind="python.module",
-            display_name="repomap_kg.cli",
+            display_name="common_lore_index.cli",
             confidence="extracted",
             conflict=False,
             metadata={},
@@ -83,9 +83,9 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
             last_seen_run_id=2,
         )
         edge = CanonicalEdgeRecord(
-            source_key="python.module:repomap_kg.cli",
+            source_key="python.module:common_lore_index.cli",
             edge_kind="imports",
-            target_key="python.module:repomap_kg.storage",
+            target_key="python.module:common_lore_index.storage",
             graph_key_version=1,
             identity_metadata={},
             identity_metadata_hash=identity_metadata_hash({}),
@@ -177,7 +177,7 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
         source_ref = SourceReferenceRecord(
             source_item_key="feed.item:example:1",
             relation="targets",
-            target_key="python.module:repomap_kg.cli",
+            target_key="python.module:common_lore_index.cli",
             target_display="cli",
             not_fetched=False,
             media_type=None,
@@ -188,17 +188,17 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
 
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
-            patch("repomap_kg.server.mcp.query_canonical_storage_summary", return_value=status_summary) as mock_status,
-            patch("repomap_kg.server.mcp.query_canonical_node_records", return_value=(node,)) as mock_nodes,
-            patch("repomap_kg.server.mcp.query_canonical_edge_records", return_value=(edge,)) as mock_edges,
-            patch("repomap_kg.server.mcp.query_canonical_edge_explanation", return_value=edge_explanation) as mock_explain_edge,
-            patch("repomap_kg.server.mcp.query_canonical_neighborhood", return_value=neighborhood) as mock_neighborhood,
-            patch("repomap_kg.server.mcp.query_ingested_source_records", return_value=(ingested_source,)) as mock_sources,
-            patch("repomap_kg.server.mcp.query_source_summary", return_value=src_summary) as mock_source_summary,
-            patch("repomap_kg.server.mcp.query_source_run_records", return_value=(source_run,)) as mock_source_runs,
-            patch("repomap_kg.server.mcp.query_source_feed_item_records", return_value=(feed_item,)) as mock_feed_items,
-            patch("repomap_kg.server.mcp.query_source_feed_item_explanation", return_value={"item_key": "feed.item:example:1"}) as mock_explain_feed,
-            patch("repomap_kg.server.mcp.query_source_reference_records", return_value=(source_ref,)) as mock_source_refs,
+            patch("common_lore_index.server.mcp.query_canonical_storage_summary", return_value=status_summary) as mock_status,
+            patch("common_lore_index.server.mcp.query_canonical_node_records", return_value=(node,)) as mock_nodes,
+            patch("common_lore_index.server.mcp.query_canonical_edge_records", return_value=(edge,)) as mock_edges,
+            patch("common_lore_index.server.mcp.query_canonical_edge_explanation", return_value=edge_explanation) as mock_explain_edge,
+            patch("common_lore_index.server.mcp.query_canonical_neighborhood", return_value=neighborhood) as mock_neighborhood,
+            patch("common_lore_index.server.mcp.query_ingested_source_records", return_value=(ingested_source,)) as mock_sources,
+            patch("common_lore_index.server.mcp.query_source_summary", return_value=src_summary) as mock_source_summary,
+            patch("common_lore_index.server.mcp.query_source_run_records", return_value=(source_run,)) as mock_source_runs,
+            patch("common_lore_index.server.mcp.query_source_feed_item_records", return_value=(feed_item,)) as mock_feed_items,
+            patch("common_lore_index.server.mcp.query_source_feed_item_explanation", return_value={"item_key": "feed.item:example:1"}) as mock_explain_feed,
+            patch("common_lore_index.server.mcp.query_source_reference_records", return_value=(source_ref,)) as mock_source_refs,
         ):
             # 1. status
             repomap_status(project="repo-map")
@@ -215,15 +215,15 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
             # 4. canonical explain
             repomap_explain_canonical_edge(
                 project="repo-map",
-                source_key="python.module:repomap_kg.cli",
+                source_key="python.module:common_lore_index.cli",
                 kind="imports",
-                target_key="python.module:repomap_kg.storage",
+                target_key="python.module:common_lore_index.storage",
                 identity_metadata={},
             )
             self.assertEqual(mock_explain_edge.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
             # 5. canonical neighborhood
-            repomap_canonical_neighborhood(project="repo-map", node="python.module:repomap_kg.cli")
+            repomap_canonical_neighborhood(project="repo-map", node="python.module:common_lore_index.cli")
             self.assertEqual(mock_neighborhood.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
             # 6. ingested sources
@@ -251,13 +251,13 @@ class ConfiguredStorageIdentityTests(McpServerTestSupport):
             self.assertEqual(mock_source_refs.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
     def test_configured_status_repository_name_from_row_and_root_display_marker(self) -> None:
-        from repomap_kg.server.mcp import repomap_status
-        from repomap_kg.storage import CanonicalStorageSummaryRecord
+        from common_lore_index.server.mcp import repomap_status
+        from common_lore_index.storage import CanonicalStorageSummaryRecord
 
         config_path = self.write_ops_config(self.visible_ops_config())
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
-            patch("repomap_kg.server.mcp.query_canonical_storage_summary") as mock_summary,
+            patch("common_lore_index.server.mcp.query_canonical_storage_summary") as mock_summary,
         ):
             # 1. Public graph: repository_name comes from selected current row; root stays display marker
             mock_summary.return_value = CanonicalStorageSummaryRecord(

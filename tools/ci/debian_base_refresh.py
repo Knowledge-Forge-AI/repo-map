@@ -19,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if __package__ in (None, ""):
     sys.path.insert(0, str(REPO_ROOT / "src/main/python"))
 
-from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
+from common_lore_index.runtime.release import POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
 
 ACCEPT = ", ".join(("application/vnd.oci.image.index.v1+json", "application/vnd.oci.image.manifest.v1+json",
                     "application/vnd.docker.distribution.manifest.v2+json"))

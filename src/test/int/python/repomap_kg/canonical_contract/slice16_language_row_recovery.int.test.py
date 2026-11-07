@@ -2,10 +2,10 @@
 from dataclasses import replace
 import pytest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.staged_rows import build_staged_rows
 
 
 CASES = [

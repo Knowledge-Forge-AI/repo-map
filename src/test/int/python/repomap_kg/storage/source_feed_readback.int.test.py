@@ -9,8 +9,8 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.ingestion.source import FeedFetchResponse, ingest_feed_source
-from repomap_kg.storage import (
+from common_lore_index.ops.ingestion.source import FeedFetchResponse, ingest_feed_source
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_canonical_edge_records,
@@ -292,7 +292,7 @@ class StorageSourceFeedReadbackIntegrationTests(unittest.TestCase):
                 body=feed_body,
             )
 
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_explain_source_feed_item,
             repomap_ingested_sources,
             repomap_source_feed_items,

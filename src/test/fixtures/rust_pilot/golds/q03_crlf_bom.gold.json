@@ -1,0 +1,83 @@
+{
+ "build_script_name": false,
+ "completeness": "complete",
+ "fixture": "q03_crlf_bom.rs",
+ "input_bytes": 376,
+ "input_sha256": "d9e3d5b1c529f5152909496f1bea8f7ca143e32f4791a40d2903c92f59087b90",
+ "item_list": "complete",
+ "items": [
+  {
+   "end_byte": 115,
+   "end_line": 5,
+   "item_kind": "struct",
+   "name": "Settings",
+   "namespace": "rust.type",
+   "pointer": "/struct:Settings",
+   "start_byte": 67,
+   "start_line": 3,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 207,
+   "end_line": 11,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:1",
+   "start_byte": 119,
+   "start_line": 7,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 204,
+   "end_line": 10,
+   "item_kind": "fn",
+   "name": "quiet",
+   "namespace": "rust.function",
+   "pointer": "/impl:1/fn:quiet",
+   "start_byte": 140,
+   "start_line": 8,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 293,
+   "end_line": 15,
+   "item_kind": "fn",
+   "name": "parse_flag",
+   "namespace": "rust.function",
+   "pointer": "/fn:parse_flag",
+   "start_byte": 211,
+   "start_line": 13,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 374,
+   "end_line": 22,
+   "item_kind": "mod",
+   "name": "nested",
+   "namespace": "rust.module",
+   "pointer": "/mod:nested",
+   "start_byte": 297,
+   "start_line": 17,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 371,
+   "end_line": 21,
+   "item_kind": "enum",
+   "name": "Level",
+   "namespace": "rust.type",
+   "pointer": "/mod:nested/enum:Level",
+   "start_byte": 319,
+   "start_line": 18,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 22,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q03"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": []
+}

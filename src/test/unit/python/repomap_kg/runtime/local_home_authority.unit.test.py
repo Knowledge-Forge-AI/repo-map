@@ -5,9 +5,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.runtime import _home_authority as authority
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import LocalRuntimeError
+from common_lore_index.runtime import _home_authority as authority
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import LocalRuntimeError
 
 
 def test_fresh_setup_private_under_permissive_umask(tmp_path):
@@ -98,7 +98,7 @@ def test_windows_acl_error_is_bounded(tmp_path, monkeypatch):
 def test_private_creation_failure_has_local_runtime_diagnostic(tmp_path, monkeypatch):
     def refuse(*args):
         raise ValueError("fixture-secret")
-    monkeypatch.setattr("repomap_kg.runtime.local.create_private_file", refuse)
+    monkeypatch.setattr("common_lore_index.runtime.local.create_private_file", refuse)
     with pytest.raises(LocalRuntimeError) as error:
         setup_local_runtime(tmp_path / "home")
     assert error.value.diagnostics[0].code == "generated-local-admin-credential-unsafe"

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 
 import test_sandbox as sandbox_owner
-from repomap_kg.runtime import release
+from common_lore_index.runtime import release
 
 
 from pathlib import Path
@@ -84,7 +84,7 @@ def test_inner_python_prerequisite_is_the_release_python_pin():
     assert sandbox_owner.PYTHON_RELEASE_IMAGE == release.PYTHON_RELEASE_IMAGE
     assert release.PYTHON_RELEASE_VERSION == "3.12.16"
     assert release.PYTHON_RELEASE_IMAGE.endswith(
-        "@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+        "@sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
     )
 
 

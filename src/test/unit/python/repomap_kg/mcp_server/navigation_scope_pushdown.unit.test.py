@@ -9,11 +9,11 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.server._navigation_groups import group_page, location_in_scope
-from repomap_kg.storage.navigation_search import NavigationSearchQuery
-from repomap_kg.storage.sqlite_local import navigation_queries as queries
-from repomap_kg.storage.sqlite_local.connection import read_transaction
+from common_lore_index.server import mcp
+from common_lore_index.server._navigation_groups import group_page, location_in_scope
+from common_lore_index.storage.navigation_search import NavigationSearchQuery
+from common_lore_index.storage.sqlite_local import navigation_queries as queries
+from common_lore_index.storage.sqlite_local.connection import read_transaction
 from repomap_test_support.navigation_pushdown_fixtures import add_alternatives, fixture_oracle, pushdown_home
 from repomap_test_support.navigation_search_fixtures import BINDING, GRAPH
 
@@ -124,7 +124,7 @@ def test_one_bound_read_snapshot_fixed_queries_and_no_payloads(tmp_path, monkeyp
             connection.set_trace_callback(statements.append)
             yield connection
 
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", traced):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", traced):
         result = call(source_path_prefix="docs/zzz")
     assert result["status"] == "ok" and len(entries) == 1
     reads = [s for s in statements if s.lstrip().startswith(("SELECT", "WITH"))]
@@ -203,7 +203,7 @@ def test_exact_component_and_case_scope(tmp_path, monkeypatch, prefix, expected)
 
 
 def test_newest_history_chosen_before_source_not_older_convenient_path(tmp_path, monkeypatch):
-    from repomap_kg.storage.sqlite_local.publisher import publish_generation
+    from common_lore_index.storage.sqlite_local.publisher import publish_generation
     from repomap_test_support.navigation_search_fixtures import navigation_bundle, navigation_home
     from repomap_test_support.sqlite_local_fixtures import publication_for
 

@@ -17,7 +17,7 @@ TOOLS = ROOT / "tools"
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
-from repomap_kg.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.publication import RunPublicationReceipt
 from tools.system.report import _snapshot_details, write_system_diagnostic
 from tools.system.scenario_journal import (
     ScenarioJournal,

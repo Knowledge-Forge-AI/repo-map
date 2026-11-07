@@ -5,14 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.runtime import release
+from common_lore_index.runtime import release
 
 
 def test_security_release_selects_exact_inspected_python_31216() -> None:
     assert release.PYTHON_RELEASE_VERSION == "3.12.16"
     assert release.PYTHON_RELEASE_IMAGE == (
         "python:3.12-slim-trixie@sha256:"
-        "aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+        "b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
     )
 
 
@@ -22,11 +22,11 @@ def test_python_31216_payload_oci_identities_and_native_arm_baseline() -> None:
 
     import pytest
 
-    from repomap_kg.runtime import python_payload as payload
-    from repomap_kg.runtime import release_manifest as historical
+    from common_lore_index.runtime import python_payload as payload
+    from common_lore_index.runtime import release_manifest as historical
 
     assert payload.PYTHON_31216_INDEX == (
-        "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159"
+        "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30"
     )
     assert payload.PYTHON_31216_ARM64_MANIFEST == (
         "sha256:b224e2fe306f9d303251ada22961635e5b52a69c0414a0050611be31c59f5f5b"
@@ -74,7 +74,7 @@ def test_amd64_expected_default_is_a_separate_literal_bound_to_the_refreshed_can
     import ast
     import hashlib
 
-    from repomap_kg.runtime import python_payload as payload
+    from common_lore_index.runtime import python_payload as payload
 
     tree = ast.parse(Path(str(payload.__file__)).read_text())
     declared = {n.target.id: n.value for n in tree.body if isinstance(n, ast.AnnAssign)
@@ -86,7 +86,7 @@ def test_amd64_expected_default_is_a_separate_literal_bound_to_the_refreshed_can
     assert hashlib.sha256(" ".join(names).encode()).hexdigest() == (
         "049267074bee42d4449e7a3ed866076d6529b44106e0e3676f41a5e1da277a1b")
     assert payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"] == payload.build_31216_exclusion("amd64", names) == (
-        "amd64", "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+        "amd64", "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30",
         "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b",
         "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e",
         "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
@@ -101,8 +101,8 @@ def test_default_exclusions_refuse_amd64_observation_with_unchanged_frozen_tkint
     import subprocess
     import sys
 
-    from repomap_kg.runtime import python_payload as payload
-    from repomap_kg.runtime import release_manifest as historical
+    from common_lore_index.runtime import python_payload as payload
+    from common_lore_index.runtime import release_manifest as historical
 
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
     amd_hist = historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
@@ -161,7 +161,7 @@ def test_default_exclusions_refuse_amd64_observation_with_unchanged_frozen_tkint
 
 
 def _amd_observed(entry: Any, *, raw: bool = True) -> dict[str, Any]:
-    from repomap_kg.runtime import python_payload as payload
+    from common_lore_index.runtime import python_payload as payload
 
     names = sorted((*entry.baseline_imports, *(["_tkinter"] if raw else [])))
     return {"machine": "x86_64", "dynload_real": payload.DYNLOAD, "targets": {}, "elves": {entry.path: {
@@ -179,8 +179,8 @@ def test_default_map_refuses_amd64_carrying_the_exact_frozen_tkinter_identity_an
     import json
     import sys
 
-    from repomap_kg.runtime import python_payload as payload
-    from repomap_kg.runtime import release_manifest as historical
+    from common_lore_index.runtime import python_payload as payload
+    from common_lore_index.runtime import release_manifest as historical
 
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
     amd = historical.HISTORICAL_31215_PYTHON_PAYLOAD_EXCLUSIONS["amd64"]
@@ -205,7 +205,7 @@ def test_default_map_trims_exactly_the_admitted_amd64_entry(capsys: Any, monkeyp
     import json
     import sys
 
-    from repomap_kg.runtime import python_payload as payload
+    from common_lore_index.runtime import python_payload as payload
 
     monkeypatch.setattr(sys, "dont_write_bytecode", True)
     entry = payload.PYTHON_PAYLOAD_EXCLUSIONS["amd64"]

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-import repomap_kg.coordinator.local_lifecycle as lifecycle
-from repomap_kg.coordinator.local_lifecycle import (
+import common_lore_index.coordinator.local_lifecycle as lifecycle
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     LocalControlAuthority,
     maintenance_activity_for_home,
@@ -11,11 +11,11 @@ from repomap_kg.coordinator.local_lifecycle import (
     maintenance_window_for_database_drop,
     maintenance_window_for_graph_upgrade,
 )
-from repomap_kg.runtime.database_role_contract import (
+from common_lore_index.runtime.database_role_contract import (
     COORDINATOR_CONTROL_ROLE,
     REFRESH_PUBLICATION_ROLE,
 )
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
+from common_lore_index.runtime.maintenance import MaintenanceUnavailableError
 from repomap_test_support.coordinator_control_fixtures import (
     BareAuthority,
     CaptureConnection,

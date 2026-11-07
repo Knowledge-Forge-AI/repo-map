@@ -27,14 +27,14 @@ import hashlib
 import json
 from typing import Any
 
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.refresh import query_refresh_status
-from repomap_kg.server._mcp_dispatch import MCP_PROTOCOL_VERSION
-from repomap_kg.server._ops_records import McpOpsGraphContext
-from repomap_kg.server._ops_sanitization import sanitize_jsonable
-from repomap_kg.server.mcp_schemas import tool_definitions
-from repomap_kg.server.ops import list_graphs_payload, refresh_graph_status_payload
-from repomap_kg.storage import (
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.refresh import query_refresh_status
+from common_lore_index.server._mcp_dispatch import MCP_PROTOCOL_VERSION
+from common_lore_index.server._ops_records import McpOpsGraphContext
+from common_lore_index.server._ops_sanitization import sanitize_jsonable
+from common_lore_index.server.mcp_schemas import tool_definitions
+from common_lore_index.server.ops import list_graphs_payload, refresh_graph_status_payload
+from common_lore_index.storage import (
     canonical_neighborhood_to_jsonable, canonical_node_records_to_jsonable, ingested_source_records_to_jsonable,
     public_embedded_read_result_to_jsonable, public_read_page, public_read_page_to_jsonable,
     query_canonical_neighborhood, query_canonical_node_records, query_canonical_storage_summary,
@@ -53,7 +53,7 @@ from repomap_test_support.host_mcp_stdio import initialize_request, tool_request
 from .host_mcp_native_fixture import FEED_SOURCE_ID, VISIBLE_GRAPHS, NativeFixture, stored_repository_facts
 from .host_mcp_native_launch import Expectation
 
-CATALOG_SHA256 = "c487dc30ffa570f6ec80af68fabbb15d5b96bdb273e5fc375676c7174321189d"  # 31 read tools
+CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"  # 31 read tools
 BAD_ITEM = "python.module:not-a-feed-item"
 HIDDEN = "graph 'host-hidden' is not MCP-visible"
 RESTART_IDS = (20, 33, 45)  # one canonical, investigation and source/feed read

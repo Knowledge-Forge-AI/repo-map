@@ -11,7 +11,7 @@ from repomap_test_support.executable_authority import (
     private_bin_directory,
     search_path_for,
 )
-from repomap_kg.coordinator._refresh_capability_io import (
+from common_lore_index.coordinator._refresh_capability_io import (
     validate_config_file,
     validate_psql,
     validate_search_path,

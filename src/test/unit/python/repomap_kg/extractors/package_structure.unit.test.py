@@ -2,14 +2,14 @@ from __future__ import annotations
 
 
 def test_pkg5_discovery_routes_to_shell_package_functions() -> None:
-    import repomap_kg.graph.discovery as discovery
+    import common_lore_index.graph.discovery as discovery
 
-    import repomap_kg.extractors.shell.awk as owner_0
-    import repomap_kg.extractors.shell.bash as owner_1
-    import repomap_kg.extractors.shell.bats as owner_2
-    import repomap_kg.extractors.shell.powershell as owner_3
-    import repomap_kg.extractors.shell.zsh as owner_4
-    import repomap_kg.extractors.shell.zunit as owner_5
+    import common_lore_index.extractors.shell.awk as owner_0
+    import common_lore_index.extractors.shell.bash as owner_1
+    import common_lore_index.extractors.shell.bats as owner_2
+    import common_lore_index.extractors.shell.powershell as owner_3
+    import common_lore_index.extractors.shell.zsh as owner_4
+    import common_lore_index.extractors.shell.zunit as owner_5
 
     for package_module, function_name in (
         (owner_0, 'extract_awk_file_observations'),

@@ -9,15 +9,15 @@ from threading import Event, Lock, Thread
 import time
 import psycopg
 from psycopg.conninfo import make_conninfo
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.backend_observer import BackendOwnershipObserver
+from common_lore_index.storage.backend_telemetry import (
     TelemetryEventKind,
     read_telemetry_event,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
 )

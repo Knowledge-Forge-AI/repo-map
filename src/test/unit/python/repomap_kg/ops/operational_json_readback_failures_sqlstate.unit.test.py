@@ -7,15 +7,15 @@ import subprocess
 from typing import TypedDict
 import psycopg
 import pytest
-import repomap_kg.ops.readback as readback
-from repomap_kg.ops.config import OpsConfig, load_ops_config_home
-from repomap_kg.ops.refresh import (
+import common_lore_index.ops.readback as readback
+from common_lore_index.ops.config import OpsConfig, load_ops_config_home
+from common_lore_index.ops.refresh import (
     MISSING_DATABASE_DIAGNOSTIC_CODE,
     graph_summary_to_jsonable,
     query_graph_summary,
 )
-from repomap_kg.storage import StorageSchemaError
-import repomap_kg.storage.readback_driver as storage_readback
+from common_lore_index.storage import StorageSchemaError
+import common_lore_index.storage.readback_driver as storage_readback
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 from smoke.lifecycle import validate_target_database_absent
 
@@ -181,7 +181,7 @@ def test_sqlstate_less_target_absence_with_positive_catalog_evidence_produces_mi
     assert summary.diagnostics[0]["code"] == MISSING_DATABASE_DIAGNOSTIC_CODE
     assert summary.diagnostics[0]["message"] == readback.MISSING_DATABASE_MESSAGE
     payload = graph_summary_to_jsonable(config, summary)
-    completed = subprocess.CompletedProcess(("python", "-m", "repomap_kg"), 1, json.dumps(payload), "")
+    completed = subprocess.CompletedProcess(("python", "-m", "common_lore_index"), 1, json.dumps(payload), "")
     validated = validate_target_database_absent(completed)
     assert validated["graph"]["diagnostics"][0]["code"] == MISSING_DATABASE_DIAGNOSTIC_CODE
     assert len(connect_calls) >= 2
@@ -237,7 +237,7 @@ def test_sqlstate_less_connect_failure_without_positive_absence_is_not_missing(
     assert summary.result == "failure"
     assert summary.diagnostics[0]["code"] == expected_code
     payload = graph_summary_to_jsonable(config, summary)
-    completed = subprocess.CompletedProcess(("python", "-m", "repomap_kg"), 1, json.dumps(payload), "")
+    completed = subprocess.CompletedProcess(("python", "-m", "common_lore_index"), 1, json.dumps(payload), "")
     with pytest.raises(RuntimeError, match="product command did not prove typed target absence"):
         validate_target_database_absent(completed)
 

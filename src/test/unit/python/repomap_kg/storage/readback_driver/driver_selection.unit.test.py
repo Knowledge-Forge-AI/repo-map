@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
     execute_json_readback,
@@ -109,7 +109,7 @@ def test_psycopg2_readback_driver_uses_existing_psql_path_without_psycopg_import
         return real_import(name, *args, **kwargs)
 
     with patch("builtins.__import__", side_effect=guarded_import):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             run_psql.return_value = _completed('{"ok": true}\n')
 
             payload = execute_json_readback(
@@ -138,10 +138,10 @@ def test_psycopg24_unset_driver_uses_psycopg_connector(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=({"ok": True},))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             run_psql.side_effect = AssertionError("unexpected psql connector")
             payload = execute_json_readback(
                 "SELECT json_build_object('ok', true);",
@@ -164,7 +164,7 @@ def test_psycopg7_psql_driver_uses_psql_without_psycopg_import(monkeypatch) -> N
         return real_import(name, *args, **kwargs)
 
     with patch("builtins.__import__", side_effect=guarded_import):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             run_psql.return_value = _completed('{"ok": true}\n')
 
             payload = execute_json_readback(
@@ -191,10 +191,10 @@ def test_psycopg7_explicit_psycopg_uses_psycopg_path(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=({"ok": True},))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             payload = execute_json_readback(
                 "SELECT json_build_object('ok', true);",
                 psql_args=("-h", "localhost", "-p", "5432", "-U", "tester", "-d", "db"),
@@ -212,7 +212,7 @@ def test_psycopg7_explicit_psycopg_unavailable_is_sanitized(monkeypatch) -> None
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psycopg")
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         side_effect=StorageSchemaError("Psycopg readback driver is unavailable"),
     ):
         with pytest.raises(StorageSchemaError, match="Psycopg readback driver"):
@@ -228,7 +228,7 @@ def test_psycopg7_explicit_psycopg_unsupported_psql_args_are_sanitized(
     monkeypatch.setenv(READBACK_DRIVER_ENV, "psycopg")
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=_FakePsycopg(row=({"ok": True},)),
     ):
         with pytest.raises(StorageSchemaError) as error:
@@ -248,10 +248,10 @@ def test_psycopg7_no_fallback_after_psycopg_execution_failure(monkeypatch) -> No
     fake_psycopg = _FakePsycopg(execute_error=RuntimeError("private-db failed"))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             with pytest.raises(StorageSchemaError) as error:
                 execute_json_readback(
                     "SELECT summary;",
@@ -268,10 +268,10 @@ def test_psycopg7_no_fallback_after_psycopg_shape_mismatch(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=([],))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             with pytest.raises(StorageSchemaError, match="JSON object"):
                 execute_json_readback(
                     "SELECT summary;",
@@ -286,10 +286,10 @@ def test_psycopg7_no_fallback_after_psycopg_malformed_json(monkeypatch) -> None:
     fake_psycopg = _FakePsycopg(row=("not-json-for-private-db",))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             with pytest.raises(StorageSchemaError) as error:
                 execute_json_readback(
                     "SELECT summary;",

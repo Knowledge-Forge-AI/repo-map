@@ -8,10 +8,10 @@ import time
 import psycopg
 import pytest
 
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.contracts import normalize_request
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.contracts import normalize_request
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.storage import ControlStore
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

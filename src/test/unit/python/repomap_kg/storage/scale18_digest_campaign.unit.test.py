@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 from repomap_test_support.scale18_digest_campaign import (
     SCALE18_BANDS,
     SCALE18_PROFILES,

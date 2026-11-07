@@ -12,22 +12,22 @@ from types import SimpleNamespace
 
 import psycopg
 import pytest
-from repomap_kg.coordinator._control_schema import (
+from common_lore_index.coordinator._control_schema import (
     ControlSchemaError,
     ControlSchemaStatus,
     _ledger_create_statements,
     _ledger_insert_statement,
     discover_control_migrations,
 )
-from repomap_kg.coordinator._lifecycle_authority import LocalControlAuthority
-from repomap_kg.coordinator._lifecycle_upgrade import (
+from common_lore_index.coordinator._lifecycle_authority import LocalControlAuthority
+from common_lore_index.coordinator._lifecycle_upgrade import (
     CoordinatorControlError,
     _reference_database_name,
     upgrade_coordinator_control,
 )
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.runtime.database_role_contract import ensure_role_secrets
-from repomap_kg.runtime.backup_manifests import (
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.runtime.database_role_contract import ensure_role_secrets
+from common_lore_index.runtime.backup_manifests import (
     summarize_pg_restore_toc,
     verify_dump_file_checksum_for_inspection,
 )

@@ -13,7 +13,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import coverage
-from repomap_kg.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
+from common_lore_index.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
 from repomap_test_support.synthetic_worker_adapter import run_synthetic_worker
 import runner_coverage
 from runner_coverage_execution import prepare_child_coverage_environment

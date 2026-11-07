@@ -15,8 +15,8 @@ from actual_refresh_startup import ActualRefreshStartup
 from actual_refresh_terminal_coordinator import (
     _ActualRefreshTerminalCoordinator,
 )
-from repomap_kg.storage.staging_event_transport import StagingEventFrame
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_event_transport import StagingEventFrame
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEventCategory,
 )
 from scale11_threshold_evaluator import IncrementalThresholdMonitor

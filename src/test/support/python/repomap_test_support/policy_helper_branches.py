@@ -10,7 +10,7 @@ from pathlib import Path
 from repomap_test_support.policy_observations import raw_observation as raw_observation
 
 
-UNIT_REPOMAP_TEST_ROOT = Path(__file__).parents[3] / "unit" / "python" / "repomap_kg"
+UNIT_REPOMAP_TEST_ROOT = Path(__file__).parents[3] / "unit" / "python" / "common_lore_index"
 
 
 def load_unit_contract_class(

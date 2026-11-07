@@ -39,11 +39,11 @@ for import_root in (SOURCE_ROOT, TEST_SUPPORT_ROOT):
     if import_root_text not in sys.path:
         sys.path.insert(0, import_root_text)
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.direct_publication import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.direct_publication import (
     publish_observation_generation,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_canonical_edge_explanation,
@@ -51,7 +51,7 @@ from repomap_kg.storage import (
     query_canonical_node_records,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
 )
@@ -260,12 +260,12 @@ def synthetic_observations() -> tuple[RawObservation, ...]:
             path="src/app.py",
             start_line=3,
             end_line=3,
-            name="python -m repomap_kg",
+            name="python -m common_lore_index",
             target="tool:python",
             confidence="heuristic",
             extractor="psycopg21-fixture-shell",
             extractor_version="0.1.0",
-            metadata={"argv": ["python", "-m", "repomap_kg"]},
+            metadata={"argv": ["python", "-m", "common_lore_index"]},
         ),
         RawObservation(
             kind="python.import",

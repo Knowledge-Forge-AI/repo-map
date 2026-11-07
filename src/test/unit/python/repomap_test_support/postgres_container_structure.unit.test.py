@@ -317,7 +317,7 @@ def test_build_psql_wrapper_restores_docker_host_under_sanitized_psql_environmen
     import json
     import subprocess
     import sys
-    from repomap_kg.coordinator.configured_refresh import _psql_environment
+    from common_lore_index.coordinator.configured_refresh import _psql_environment
     from repomap_test_support.postgres_container_config import build_psql_wrapper_script
 
     bin_dir = tmp_path / "bin"
@@ -354,11 +354,7 @@ def test_build_psql_wrapper_restores_docker_host_under_sanitized_psql_environmen
     monkeypatch.delenv("DOCKER_CONTEXT", raising=False)
     wrapper_unforwarded_path = tmp_path / "psql_unforwarded.py"
     wrapper_unforwarded_path.write_text(
-        build_psql_wrapper_script(
-            password="test-pg-password",
-            runtime="docker",
-            container_name="test-container",
-        ),
+        build_psql_wrapper_script(password="test-pg-password", runtime="docker", container_name="test-container"),
         encoding="utf-8",
     )
     wrapper_unforwarded_path.chmod(0o755)
@@ -381,3 +377,23 @@ def test_build_psql_wrapper_restores_docker_host_under_sanitized_psql_environmen
     subprocess.run([sys.executable, str(wrapper_unforwarded_path), "-c", "SELECT 1"], env=sanitized_env, check=True)
     unforwarded_data = json.loads(record_file_unf.read_text(encoding="utf-8"))
     assert unforwarded_data["DOCKER_HOST"] is None
+
+
+def test_reset_database_drops_lexical_and_public_schemas_in_order(monkeypatch: MonkeyPatch) -> None:
+    from common_lore_index.runtime._lexical_restore import LEXICAL_SCHEMA
+    from repomap_test_support.postgres_container import PostgresContainerConfig, PostgresContainerHarness
+
+    assert LEXICAL_SCHEMA == "cloe_lexical"
+    harness = PostgresContainerHarness(PostgresContainerConfig(user="repomap_test"))
+    captured: list[str] = []
+
+    def _fake_psql(sql: str, *, scalar_output: bool = False) -> subprocess.CompletedProcess[str]:
+        captured.append(sql)
+        return subprocess.CompletedProcess([], 0, "", "")
+
+    monkeypatch.setattr(harness, "run_psql", _fake_psql)
+    harness.reset_database()
+    assert captured == [
+        "\nDROP SCHEMA IF EXISTS cloe_lexical CASCADE;\nDROP SCHEMA IF EXISTS public CASCADE;\n"
+        "CREATE SCHEMA public;\nGRANT ALL ON SCHEMA public TO repomap_test;\nGRANT ALL ON SCHEMA public TO public;\n"
+    ]

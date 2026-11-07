@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import repomap_kg.storage as storage
+import common_lore_index.storage as storage
 if TYPE_CHECKING:
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.observations import RawObservation
-from repomap_kg.storage import main as storage_main
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES
-from repomap_kg.storage.staging_family_catalog import merge_operations_for_scope
-from repomap_kg.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
-from repomap_kg.storage.staging_merge_operations import MergeOperation, MergeScope
+    from common_lore_index.observations import RawObservation
+from common_lore_index.storage import main as storage_main
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES
+from common_lore_index.storage.staging_family_catalog import merge_operations_for_scope
+from common_lore_index.storage.staging_family_contracts import STAGING_FAMILY_DESCRIPTORS
+from common_lore_index.storage.staging_merge_operations import MergeOperation, MergeScope
 
 
 _ACTIVE_FAMILIES = (

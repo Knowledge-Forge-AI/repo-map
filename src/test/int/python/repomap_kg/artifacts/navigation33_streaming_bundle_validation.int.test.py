@@ -8,23 +8,23 @@ import threading
 from typing import Any, cast
 import unittest
 
-from repomap_kg.artifacts._bundle_stream_encode import (
+from common_lore_index.artifacts._bundle_stream_encode import (
     PublicationExpectation,
     StreamingBundleEncoder,
 )
-from repomap_kg.artifacts._bundle_stream_links import DiskFamilyLinkValidator
-from repomap_kg.artifacts._bundle_stream_parse import StreamingBundleParser
-from repomap_kg.artifacts._bundle_stream_sort import BoundedExternalRowSorter
-from repomap_kg.artifacts._canonical import canonical_json, decode_canonical_json
-from repomap_kg.artifacts.bundle import (
+from common_lore_index.artifacts._bundle_stream_links import DiskFamilyLinkValidator
+from common_lore_index.artifacts._bundle_stream_parse import StreamingBundleParser
+from common_lore_index.artifacts._bundle_stream_sort import BoundedExternalRowSorter
+from common_lore_index.artifacts._canonical import canonical_json, decode_canonical_json
+from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_LINE_BYTES,
     PUBLICATION_FAMILIES,
     PublicationBundle,
 )
-from repomap_kg.artifacts.receipt import ExtractionReceipt, _int, _str, _vector
-from repomap_kg.artifacts.store import InMemoryArtifactStore
-from repomap_kg.artifacts.validator import PublisherBundleValidator, _validate_family_links
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.receipt import ExtractionReceipt, _int, _str, _vector
+from common_lore_index.artifacts.store import InMemoryArtifactStore
+from common_lore_index.artifacts.validator import PublisherBundleValidator, _validate_family_links
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def _meta() -> dict[str, Any]:

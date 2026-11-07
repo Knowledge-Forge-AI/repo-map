@@ -7,19 +7,19 @@ from typing import Any, cast
 
 import pytest
 
-from repomap_kg.coordinator.client import CoordinatorClientError
-from repomap_kg.coordinator.deployment import (
+from common_lore_index.coordinator.client import CoordinatorClientError
+from common_lore_index.coordinator.deployment import (
     CoordinatorDeploymentError,
     coordinator_startup_lock,
     require_native_mode,
 )
-from repomap_kg.coordinator.endpoint import (
+from common_lore_index.coordinator.endpoint import (
     EndpointDescriptorError,
     LoopbackEndpointDescriptor,
     load_endpoint_descriptor,
     write_endpoint_descriptor,
 )
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator.local_mode import (
     CoordinatorModeError,
     format_coordinator_refresh_table,
     run_coordinator_refresh,
@@ -29,10 +29,10 @@ from repomap_test_support.test_scratch import short_test_directory
 
 
 def test_authenticated_native_endpoint_blocks_container_start(monkeypatch):
-    from repomap_kg.coordinator.local_mode import coordinator_runtime_paths
-    from repomap_kg.coordinator.transport import LocalRequestDispatcher, UnixSocketService
-    from repomap_kg.runtime import local
-    from repomap_kg.runtime.coordinator_transition import native_coordinator_state
+    from common_lore_index.coordinator.local_mode import coordinator_runtime_paths
+    from common_lore_index.coordinator.transport import LocalRequestDispatcher, UnixSocketService
+    from common_lore_index.runtime import local
+    from common_lore_index.runtime.coordinator_transition import native_coordinator_state
 
     with short_test_directory("mode-", "coordinator/coordinator.sock") as directory:
         home = Path(directory)
@@ -60,7 +60,7 @@ def test_authenticated_native_endpoint_blocks_container_start(monkeypatch):
 
 
 def test_packaged_container_mode_rejected_before_runtime_factory(tmp_path):
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
 
     setup_local_runtime(tmp_path)
     calls: list[object] = []
@@ -136,7 +136,7 @@ def test_endpoint_descriptor_validation_lock_and_rollback_contracts(
     ).validate()
     with monkeypatch.context() as mp:
         mp.setattr(
-            "repomap_kg.coordinator.endpoint._fsync_parent",
+            "common_lore_index.coordinator.endpoint._fsync_parent",
             lambda _p: (_ for _ in ()).throw(OSError("fsync failed")),
         )
         with pytest.raises(EndpointDescriptorError, match="endpoint descriptor publication failed"):
@@ -165,7 +165,7 @@ def test_endpoint_descriptor_validation_lock_and_rollback_contracts(
 
 def test_local_mode_serve_retry_psql_resolution_and_client_submission_errors(tmp_path: Path) -> None:
     """serve_configured_coordinator retries start failure, forwards psql_path, and validates responses."""
-    from repomap_kg.runtime.local import setup_local_runtime
+    from common_lore_index.runtime.local import setup_local_runtime
 
     tmp_path.chmod(0o700)
     setup_local_runtime(tmp_path)

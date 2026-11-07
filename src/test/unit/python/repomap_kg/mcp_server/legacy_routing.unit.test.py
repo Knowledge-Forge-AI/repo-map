@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalEdgeRecord,
     CanonicalNodeRecord,
     CanonicalStorageSummaryRecord,
@@ -11,7 +11,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
     def test_status_uses_default_project_from_config(self):
-        from repomap_kg.server.mcp import repomap_status
+        from common_lore_index.server.mcp import repomap_status
 
         config_path = self.write_mcp_config(
             {
@@ -30,7 +30,7 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
 
         with patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(config_path)}):
             with patch(
-                "repomap_kg.server.mcp.query_canonical_storage_summary",
+                "common_lore_index.server.mcp.query_canonical_storage_summary",
                 return_value=CanonicalStorageSummaryRecord(
                     root_path="/workspace/repo-map",
                     repository_name="repo-map",
@@ -54,7 +54,7 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         self.assertEqual(query.call_args.kwargs["root_path"], "/workspace/repo-map")
 
     def test_canonical_nodes_resolves_named_project_config(self):
-        from repomap_kg.server.mcp import repomap_canonical_nodes
+        from common_lore_index.server.mcp import repomap_canonical_nodes
 
         config_path = self.write_mcp_config(
             {
@@ -67,10 +67,10 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
             }
         )
         record = CanonicalNodeRecord(
-            canonical_key="python.module:repomap_kg.cli",
+            canonical_key="python.module:common_lore_index.cli",
             graph_key_version=1,
             kind="python.module",
-            display_name="repomap_kg.cli",
+            display_name="common_lore_index.cli",
             confidence="extracted",
             conflict=False,
             metadata={},
@@ -79,7 +79,7 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         )
         with patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(config_path)}):
             with patch(
-                "repomap_kg.server.mcp.query_canonical_node_records",
+                "common_lore_index.server.mcp.query_canonical_node_records",
                 return_value=(record,),
             ) as query:
                 payload = repomap_canonical_nodes(
@@ -90,13 +90,13 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         assert isinstance(payload, dict)
         self.assertEqual(
             payload["items"][0]["canonical_key"],
-            "python.module:repomap_kg.cli",
+            "python.module:common_lore_index.cli",
         )
         self.assertEqual(query.call_args.args[0], ["-d", "repomap_repo_map"])
         self.assertEqual(query.call_args.kwargs["root_path"], "/workspace/repo-map")
 
     def test_live_ops2_legacy_project_resolution_prefers_legacy_config(self):
-        from repomap_kg.server.mcp import repomap_canonical_nodes
+        from common_lore_index.server.mcp import repomap_canonical_nodes
 
         mcp_config_path = self.write_mcp_config(
             {
@@ -110,10 +110,10 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         )
         ops_config_path = self.write_visible_ops_config()
         record = CanonicalNodeRecord(
-            canonical_key="python.module:repomap_kg.cli",
+            canonical_key="python.module:common_lore_index.cli",
             graph_key_version=1,
             kind="python.module",
-            display_name="repomap_kg.cli",
+            display_name="common_lore_index.cli",
             confidence="extracted",
             conflict=False,
             metadata={},
@@ -123,7 +123,7 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
 
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
             with patch(
-                "repomap_kg.server.mcp.query_canonical_node_records",
+                "common_lore_index.server.mcp.query_canonical_node_records",
                 return_value=(record,),
             ) as query:
                 payload = repomap_canonical_nodes(
@@ -134,13 +134,13 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         assert isinstance(payload, dict)
         self.assertEqual(
             payload["items"][0]["canonical_key"],
-            "python.module:repomap_kg.cli",
+            "python.module:common_lore_index.cli",
         )
         self.assertEqual(query.call_args.args[0], ["-d", "legacy_repo_map"])
         self.assertEqual(query.call_args.kwargs["root_path"], "/legacy/repo-map")
 
     def test_live_ops2_legacy_project_tools_resolve_graph_registry_graphs(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_canonical_edges,
             repomap_canonical_nodes,
             repomap_status,
@@ -149,10 +149,10 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
         node = CanonicalNodeRecord(
-            canonical_key="python.module:repomap_kg.cli",
+            canonical_key="python.module:common_lore_index.cli",
             graph_key_version=1,
             kind="python.module",
-            display_name="repomap_kg.cli",
+            display_name="common_lore_index.cli",
             confidence="extracted",
             conflict=False,
             metadata={},
@@ -160,9 +160,9 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
             last_seen_run_id=2,
         )
         edge = CanonicalEdgeRecord(
-            source_key="python.module:repomap_kg.cli",
+            source_key="python.module:common_lore_index.cli",
             edge_kind="imports",
-            target_key="python.module:repomap_kg.storage",
+            target_key="python.module:common_lore_index.storage",
             graph_key_version=1,
             identity_metadata={},
             identity_metadata_hash=identity_metadata_hash({}),
@@ -176,7 +176,7 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
             with (
                 patch(
-                    "repomap_kg.server.mcp.query_canonical_storage_summary",
+                    "common_lore_index.server.mcp.query_canonical_storage_summary",
                     return_value=CanonicalStorageSummaryRecord(
                         root_path="/tmp/fixture",
                         repository_name="fixture",
@@ -190,11 +190,11 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
                     ),
                 ) as status_query,
                 patch(
-                    "repomap_kg.server.mcp.query_canonical_node_records",
+                    "common_lore_index.server.mcp.query_canonical_node_records",
                     return_value=(node,),
                 ) as node_query,
                 patch(
-                    "repomap_kg.server.mcp.query_canonical_edge_records",
+                    "common_lore_index.server.mcp.query_canonical_edge_records",
                     return_value=(edge,),
                 ) as edge_query,
             ):
@@ -224,7 +224,7 @@ class McpServerLegacyRoutingUnitTests(McpServerTestSupport):
         assert isinstance(edges, dict)
         self.assertEqual(
             nodes["items"][0]["canonical_key"],
-            "python.module:repomap_kg.cli",
+            "python.module:common_lore_index.cli",
         )
         self.assertEqual(edges["items"][0]["edge_kind"], "imports")
         self.assertEqual(status_query.call_args.args[0], expected_psql_args)

@@ -9,24 +9,24 @@ from pathlib import Path
 from unittest.mock import Mock
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ArtifactIntegrityError,
     FileSystemArtifactStore,
     PublicationBundle,
     PublicationExpectation,
 )
-from repomap_kg.artifacts._bundle_stream import (
+from common_lore_index.artifacts._bundle_stream import (
     StreamingBundleEncoder,
     StreamingBundleParser,
 )
-from repomap_kg.artifacts.bundle import (
+from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_LINE_BYTES,
     STREAMING_MAX_BUNDLE_BYTES,
 )
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 VECTOR = (("bind1:" + "1" * 64, 1, "snap1:" + "2" * 64),)
 
@@ -176,7 +176,7 @@ def test_streaming_parser_record_limit_refusal(tmp_path: Path, monkeypatch: pyte
     receipt = _make_receipt("test-ref", bundle)
     expectation = _make_expectation(bundle)
     parser = StreamingBundleParser(spool_dir=tmp_path / "spool_recs")
-    import repomap_kg.artifacts._bundle_stream_parse as pmod
+    import common_lore_index.artifacts._bundle_stream_parse as pmod
     monkeypatch.setattr(pmod, "MAX_BUNDLE_RECORDS", 2)
     with pytest.raises(ValueError, match="publication bundle record bounds exceeded"):
         parser.parse_and_validate(io.BytesIO(data), expectation, receipt, stage_id="stg-rec")
@@ -192,7 +192,7 @@ def test_filesystem_iterable_put_does_not_materialize(tmp_path: Path, monkeypatc
             yielded.append(i)
             yield f"chunk-{i}\n".encode()
 
-    import repomap_kg.artifacts._store_common as scommon
+    import common_lore_index.artifacts._store_common as scommon
     mat_spy = Mock(side_effect=AssertionError("_materialize was called"))
     monkeypatch.setattr(scommon, "_materialize", mat_spy)
 

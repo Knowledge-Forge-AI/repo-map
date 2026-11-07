@@ -17,7 +17,7 @@ import pytest
 
 import d12_dependency_preflight as preflight
 import d12_native_python_observer as observer
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support import d12_native_python_proof as proof
 from repomap_test_support import resource_run

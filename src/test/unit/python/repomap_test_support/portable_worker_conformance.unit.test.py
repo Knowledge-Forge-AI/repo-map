@@ -6,7 +6,7 @@ from types import ModuleType
 import unittest
 from unittest import mock
 
-from repomap_kg.coordinator._portable_semantic_adapter import PortableExecutionError
+from common_lore_index.coordinator._portable_semantic_adapter import PortableExecutionError
 from repomap_test_support.portable_worker_conformance import _exercise_authority
 
 
@@ -15,8 +15,8 @@ class TestPortableWorkerConformanceProbes(unittest.TestCase):
         cases = (
             ("lazy-import", "email.message"),
             ("database-import", "psycopg"),
-            ("publisher-import", "repomap_kg.storage.staged_ingestion"),
-            ("control-import", "repomap_kg.coordinator._control_schema"),
+            ("publisher-import", "common_lore_index.storage.staged_ingestion"),
+            ("control-import", "common_lore_index.coordinator._control_schema"),
         )
         for probe, module in cases:
             with self.subTest(probe=probe), mock.patch.dict(sys.modules):
@@ -33,8 +33,8 @@ class TestPortableWorkerConformanceProbes(unittest.TestCase):
         cases = (
             ("lazy-import", "email.message", "contract_validation"),
             ("database-import", "psycopg", "semantic_workload"),
-            ("publisher-import", "repomap_kg.storage.staged_ingestion", "semantic_workload"),
-            ("control-import", "repomap_kg.coordinator._control_schema", "semantic_workload"),
+            ("publisher-import", "common_lore_index.storage.staged_ingestion", "semantic_workload"),
+            ("control-import", "common_lore_index.coordinator._control_schema", "semantic_workload"),
         )
         for probe, module, code in cases:
             sentinel = ModuleType(module)

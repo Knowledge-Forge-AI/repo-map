@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from repomap_kg.ops.ingestion.api import ApiPolicyError, acquire_api_source
+from common_lore_index.ops.ingestion.api import ApiPolicyError, acquire_api_source
 from repomap_test_support.policy_helper_branches import write_api_fixture
 
 

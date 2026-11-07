@@ -6,18 +6,18 @@ import pytest
 
 from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase
 
-from repomap_kg.coordinator._control_types import ControlSchemaError
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator._control_types import ControlSchemaError
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     initialize_coordinator_control,
 )
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     LocalDbBackupError,
     init_database_from_dump,
     init_database_from_source,
 )
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
-from repomap_kg.storage import discover_migrations
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.storage import discover_migrations
 
 
 class _GraphProvisionRunner:

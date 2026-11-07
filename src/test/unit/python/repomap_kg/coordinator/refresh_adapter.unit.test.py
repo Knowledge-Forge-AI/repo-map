@@ -1,4 +1,4 @@
-from repomap_kg.runtime.postgres_route import PostgresRoute
+from common_lore_index.runtime.postgres_route import PostgresRoute
 from dataclasses import fields, replace
 import os
 from pathlib import Path
@@ -9,9 +9,9 @@ import pytest
 
 from repomap_test_support.executable_authority import approved_psql, search_path_for
 from repomap_test_support.portable_worker_scenarios import coordinator_test_limits
-from repomap_kg.ops.report_records import OpsRefreshError
-from repomap_kg.coordinator.limits import HARD_MAX_LIMITS, CoordinatorLimits
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.ops.report_records import OpsRefreshError
+from common_lore_index.coordinator.limits import HARD_MAX_LIMITS, CoordinatorLimits
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability, RefreshConfigurationError, RefreshSourceError, ResolvedRefreshAuthority,
     _refresh_attempt_supervision_limits, build_refresh_worker_runner, create_refresh_capability,
     execute_refresh, load_refresh_capability, refresh_terminal, run_refresh_worker,
@@ -107,7 +107,7 @@ def test_capability_accepts_private_config_home_and_rejects_unsafe_home(tmp_path
 
 def test_capability_write_failure_removes_partial_private_file(tmp_path: Path) -> None:
     config_path = _cfg(tmp_path)
-    with patch("repomap_kg.coordinator.refresh_adapter.os.write", return_value=0):
+    with patch("common_lore_index.coordinator.refresh_adapter.os.write", return_value=0):
         with pytest.raises(ValueError, match="invalid refresh capability"):
             create_refresh_capability(tmp_path, capability(tmp_path, config_path))
     assert not tuple(tmp_path.glob("refresh-*.json"))
@@ -216,12 +216,12 @@ def test_execute_refresh_emits_bounded_system_interruption_marker(tmp_path: Path
             pause_path.unlink()
 
     with (
-        patch("repomap_kg.coordinator._refresh_execution.time.sleep", side_effect=_observe_and_resume),
-        patch("repomap_kg.ops.config.load_ops_config", return_value="loaded-config"),
-        patch("repomap_kg.ops.refresh.refresh_graph", return_value="complete"),
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
+        patch("common_lore_index.coordinator._refresh_execution.time.sleep", side_effect=_observe_and_resume),
+        patch("common_lore_index.ops.config.load_ops_config", return_value="loaded-config"),
+        patch("common_lore_index.ops.refresh.refresh_graph", return_value="complete"),
+        patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations"),
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
+        patch("common_lore_index.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
     ):
         assert execute_refresh(target) == "complete"
     assert len(observed) == 1
@@ -233,12 +233,12 @@ def test_execute_refresh_ignores_unapproved_system_interruption_path(tmp_path: P
     target, unapproved_path = capability(tmp_path, _cfg(tmp_path)), tmp_path / "unapproved-pause"
     monkeypatch.setenv("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", str(unapproved_path))
     with (
-        patch("repomap_kg.ops.config.load_ops_config", return_value="loaded-config"),
-        patch("repomap_kg.ops.refresh.refresh_graph", return_value="complete"),
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
-        patch("repomap_kg.coordinator._refresh_execution.time.sleep") as sleep,
+        patch("common_lore_index.ops.config.load_ops_config", return_value="loaded-config"),
+        patch("common_lore_index.ops.refresh.refresh_graph", return_value="complete"),
+        patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations"),
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
+        patch("common_lore_index.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
+        patch("common_lore_index.coordinator._refresh_execution.time.sleep") as sleep,
     ):
         assert execute_refresh(target) == "complete"
     assert not unapproved_path.with_name("unapproved-pause.ready").exists()
@@ -252,13 +252,13 @@ def test_execute_refresh_does_not_follow_system_marker_symlink(tmp_path: Path, m
     ready_path.symlink_to(victim_path)
     monkeypatch.setenv("_REPOMAP_SYSTEM_TEST_PAUSE_PATH", str(pause_path))
     with (
-        patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", pause_path),
-        patch("repomap_kg.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", ready_path),
-        patch("repomap_kg.ops.config.load_ops_config", return_value="loaded-config"),
-        patch("repomap_kg.ops.refresh.refresh_graph", return_value="complete"),
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
+        patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_PAUSE_PATH", pause_path),
+        patch("common_lore_index.coordinator._refresh_execution._SYSTEM_TEST_READY_PATH", ready_path),
+        patch("common_lore_index.ops.config.load_ops_config", return_value="loaded-config"),
+        patch("common_lore_index.ops.refresh.refresh_graph", return_value="complete"),
+        patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations"),
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
+        patch("common_lore_index.runtime.database_role_contract.project_database_role_config", return_value="execution-config"),
     ):
         assert execute_refresh(target) == "complete"
     assert victim_path.read_text(encoding="utf-8") == "preserved\n"
@@ -266,21 +266,21 @@ def test_execute_refresh_does_not_follow_system_marker_symlink(tmp_path: Path, m
 
 def test_execute_refresh_distinguishes_preflight_from_operation_failure(tmp_path: Path) -> None:
     target = capability(tmp_path, _cfg(tmp_path))
-    with patch("repomap_kg.ops.config.load_ops_config", side_effect=ValueError("invalid")), pytest.raises(RefreshConfigurationError):
+    with patch("common_lore_index.ops.config.load_ops_config", side_effect=ValueError("invalid")), pytest.raises(RefreshConfigurationError):
         execute_refresh(target)
-    with (patch("repomap_kg.ops.config.load_ops_config", return_value="loaded"), patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")), patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value="projected"), patch("repomap_kg.ops.refresh.refresh_graph", side_effect=OSError("publication state unknown")), pytest.raises(OSError, match="publication state unknown")):
+    with (patch("common_lore_index.ops.config.load_ops_config", return_value="loaded"), patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations"),
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")), patch("common_lore_index.runtime.database_role_contract.project_database_role_config", return_value="projected"), patch("common_lore_index.ops.refresh.refresh_graph", side_effect=OSError("publication state unknown")), pytest.raises(OSError, match="publication state unknown")):
         execute_refresh(target)
 
 
 @pytest.mark.parametrize("err", [RefreshConfigurationError("multi-source-refresh-unsupported"), OpsRefreshError("multi-source-refresh-unsupported")])
 def test_execute_refresh_unsupported_configuration_errors(tmp_path: Path, err: Exception) -> None:
     with (
-        patch("repomap_kg.ops.config.load_ops_config", return_value="loaded"),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value="projected"),
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations", side_effect=err if isinstance(err, RefreshConfigurationError) else None),
-        patch("repomap_kg.ops.refresh.refresh_graph", side_effect=err if isinstance(err, OpsRefreshError) else None),
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
+        patch("common_lore_index.ops.config.load_ops_config", return_value="loaded"),
+        patch("common_lore_index.runtime.database_role_contract.project_database_role_config", return_value="projected"),
+        patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations", side_effect=err if isinstance(err, RefreshConfigurationError) else None),
+        patch("common_lore_index.ops.refresh.refresh_graph", side_effect=err if isinstance(err, OpsRefreshError) else None),
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
         pytest.raises(RefreshConfigurationError, match="^multi-source-refresh-unsupported$"),
     ):
         execute_refresh(capability(tmp_path, _cfg(tmp_path)))
@@ -298,7 +298,7 @@ def test_run_refresh_worker_timeout_trigger_seam(tmp_path: Path, monkeypatch: py
         d = tmp_path / f"r{len(tuple(tmp_path.iterdir()))}"
         d.mkdir(mode=0o700)
         cap_file = create_refresh_capability(d, target)
-        with patch("repomap_kg.coordinator.refresh_adapter._run_protocol_worker", return_value=fake_res) as m:
+        with patch("common_lore_index.coordinator.refresh_adapter._run_protocol_worker", return_value=fake_res) as m:
             run_refresh_worker(cap_file, ident, _RUNNER_LIMITS, job_context=ctx)
         return m
 
@@ -341,7 +341,7 @@ def test_runner_reports_psql_authority_failure_before_worker_launch(tmp_path: Pa
     psql.write_text("not executable", encoding="utf-8")
     psql.chmod(0o644)
     runner = build_refresh_worker_runner(lambda _graph_id: _authority(tmp_path, _cfg(tmp_path), psql_path=psql), tmp_path, _RUNNER_LIMITS)
-    with patch("repomap_kg.coordinator.refresh_adapter.run_refresh_worker") as launch:
+    with patch("common_lore_index.coordinator.refresh_adapter.run_refresh_worker") as launch:
         terminal = runner(_claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=7), threading.Event())
     assert not launch.called and (terminal["publication_state"], terminal["error_category"], terminal["diagnostics"], terminal["_termination_proved"]) == ("not_started", "configuration", ["psql_authority_invalid"], True)
     assert not tuple(tmp_path.glob("refresh-*.json"))
@@ -350,7 +350,7 @@ def test_runner_reports_psql_authority_failure_before_worker_launch(tmp_path: Pa
 def test_runner_preserves_distinct_graph_claim_epoch(tmp_path: Path) -> None:
     worker_res = SimpleNamespace(terminal={"status": "succeeded"}, protocol_error=None, process_timed_out=False, heartbeat_timed_out=False, synthesized_terminal=False, waited=True, process_group_cleaned=True)
     runner = build_refresh_worker_runner(lambda _graph_id: _authority(tmp_path, _cfg(tmp_path)), tmp_path, _RUNNER_LIMITS)
-    with patch("repomap_kg.coordinator.refresh_adapter.create_refresh_capability", return_value=tmp_path / "capability.json") as create, patch("repomap_kg.coordinator.refresh_adapter.run_refresh_worker", return_value=worker_res):
+    with patch("common_lore_index.coordinator.refresh_adapter.create_refresh_capability", return_value=tmp_path / "capability.json") as create, patch("common_lore_index.coordinator.refresh_adapter.run_refresh_worker", return_value=worker_res):
         runner(_claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=101), threading.Event())
     assert (create.call_args.args[1].singleton_fencing_epoch, create.call_args.args[1].graph_lease_fencing_epoch) == (7, 101)
 
@@ -370,7 +370,7 @@ def test_runner_delivers_leaf_deadline_to_refresh_capability(tmp_path: Path) -> 
     authority = _authority(tmp_path, _cfg(tmp_path))
     worker_res = SimpleNamespace(terminal={"status": "succeeded"}, protocol_error=None, process_timed_out=False, heartbeat_timed_out=False, synthesized_terminal=False, waited=True, process_group_cleaned=True)
     runner = build_refresh_worker_runner(lambda _graph_id: authority, tmp_path, {"process_deadline_seconds": 450, "refresh_attempt_deadline_seconds": 1800})
-    with patch("repomap_kg.coordinator.refresh_adapter.create_refresh_capability", return_value=tmp_path / "capability.json") as create, patch("repomap_kg.coordinator.refresh_adapter.run_refresh_worker", return_value=worker_res):
+    with patch("common_lore_index.coordinator.refresh_adapter.create_refresh_capability", return_value=tmp_path / "capability.json") as create, patch("common_lore_index.coordinator.refresh_adapter.run_refresh_worker", return_value=worker_res):
         runner(_claim(instance_id="instance-refresh-1", fencing_epoch=7, graph_lease_fencing_epoch=101), threading.Event())
     assert create.call_args.args[1].process_deadline_seconds == 450
 

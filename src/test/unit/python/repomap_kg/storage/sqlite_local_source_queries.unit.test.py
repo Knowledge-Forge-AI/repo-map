@@ -20,13 +20,13 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.ingestion.source import FeedIngestionSummary
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.sqlite_local import source_feed_queries, source_queries
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.ingestion.source import FeedIngestionSummary
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.sqlite_local import source_feed_queries, source_queries
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.sqlite_local_feed_corpus import (
     ATOM,
     RSS,

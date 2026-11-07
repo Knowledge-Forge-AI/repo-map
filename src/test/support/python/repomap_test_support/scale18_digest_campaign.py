@@ -7,10 +7,10 @@ from dataclasses import dataclass
 import gc
 import time
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.structural_digest import digest_prepared_stage_rows
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.structural_digest import digest_prepared_stage_rows
 from repomap_test_support.scale18_digest_fixtures import (
     Scale18DigestCampaignError,
     _observations,

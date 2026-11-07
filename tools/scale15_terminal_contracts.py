@@ -7,9 +7,9 @@ from enum import StrEnum
 import re
 from typing import Any, Mapping
 
-from repomap_kg.storage.authority import PublicationGenerations
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.repository_identity import validate_repository_identity
+from common_lore_index.storage.authority import PublicationGenerations
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.repository_identity import validate_repository_identity
 
 
 FINAL_FAMILY_CODES = (

@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import psycopg
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.canonical_staging_merge import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.canonical_staging_merge import (
     build_canonical_merge_statements,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staged_ingestion import (
     _refresh_canonical_node_evidence_statistics,
 )
 from repomap_test_support.postgres_harness import (

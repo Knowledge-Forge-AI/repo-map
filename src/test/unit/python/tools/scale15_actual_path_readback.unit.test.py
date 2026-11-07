@@ -5,18 +5,18 @@ from dataclasses import replace
 
 import pytest
 
-from repomap_kg.storage.authority import (
+from common_lore_index.storage.authority import (
     AttemptNumber,
     GraphRunId,
     JobId,
     PublicationGenerations,
 )
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_readback import RunPublicationRecord
-from repomap_kg.storage.run_authority import (
+from common_lore_index.storage.publication_readback import RunPublicationRecord
+from common_lore_index.storage.run_authority import (
     ReceiptBearingPublication,
     RecordedRun,
     RunAuthoritySnapshot,

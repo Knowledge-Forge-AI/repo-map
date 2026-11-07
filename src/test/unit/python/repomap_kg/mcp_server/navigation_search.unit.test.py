@@ -11,11 +11,13 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.server import mcp
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.storage.navigation_search import NavigationSearchQuery
-from repomap_kg.storage.sqlite_local.navigation_queries import navigation_candidates
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.runtime.database_role_contract import read_role_secrets
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.server import mcp
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.storage.navigation_search import NavigationSearchQuery
+from common_lore_index.storage.sqlite_local.navigation_queries import navigation_candidates
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.navigation_search_fixtures import (
     ALPHA_DOC, BINDING, GRAPH, navigation_bundle, navigation_home, publish_navigation_generation,
 )
@@ -169,11 +171,11 @@ def test_scan_caps_fail_explicitly_and_use_constant_query_count(store: Path) -> 
     assert scan["scan"]["complete"] and len(statements) <= 5
     assert not any("payload_json" in statement for statement in statements)
     for cap in ("NODE_SCAN_LIMIT", "EVIDENCE_SCAN_LIMIT"):
-        with patch("repomap_kg.storage.sqlite_local.navigation_queries." + cap, 1):
+        with patch("common_lore_index.storage.sqlite_local.navigation_queries." + cap, 1):
             result = call(grouping="source_document")
         assert result["status"] == "incomplete" and result["has_more"]
         assert result["results"] == [] and not result["scan"]["complete"]
-    with patch("repomap_kg.storage.sqlite_local.navigation_queries.NODE_SCAN_LIMIT", 1):
+    with patch("common_lore_index.storage.sqlite_local.navigation_queries.NODE_SCAN_LIMIT", 1):
         narrow = call(source_binding_id=BINDING, source_path_prefix="docs/beta.md")
     assert narrow["status"] == "ok" and narrow["scan"]["nodes"] == 1 and not narrow["has_more"]
 
@@ -183,7 +185,7 @@ def test_scan_caps_fail_explicitly_and_use_constant_query_count(store: Path) -> 
                                     {"source_path_prefix": "src"}, {"source_binding_id": ""},
                                     {"source_binding_id": "b", "source_path_prefix": "../src"}])
 def test_invalid_options_precede_io(store: Path, options: dict[str, Any]) -> None:
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("IO")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("IO")):
         with pytest.raises(RepoMapMcpError):
             call(**options)
 
@@ -202,13 +204,58 @@ def test_graph_repository_and_optional_backend_boundaries(store: Path, tmp_path:
     edit(store, "UPDATE graph_binding SET repository_identity = 'repo1:foreign'")
     with pytest.raises(RepoMapMcpError, match="graph-database-graph-mismatch"):
         call()
+    unauth = tmp_path / "pg-unauth"
+    unauth.mkdir()
+    (unauth / "repomap.rpl.toml").write_text(setup_owned_config(), encoding="utf-8")
+    monkeypatch.setenv("REPOMAP_HOME", str(unauth))
+    with patched_guards(NO_FALLBACK_GUARDS), patch(
+        "common_lore_index.storage.postgres_navigation_search.execute_json_readback", side_effect=AssertionError("io"),
+    ):
+        with pytest.raises(RepoMapMcpError, match="read/status credential unavailable or unsafe") as exc_info:
+            call(graph_id="host-one")
+        assert str(tmp_path) not in str(exc_info.value) and "REPOMAP_READ_STATUS_PASSWORD" not in str(exc_info.value)
     home = tmp_path / "pg-home"
-    home.mkdir()
-    (home / "repomap.rpl.toml").write_text(setup_owned_config())
+    setup_local_runtime(home)
+    (home / "repomap.rpl.toml").write_text(setup_owned_config(), encoding="utf-8")
+    secret = read_role_secrets(home / "runtime" / ".env").read_status
     monkeypatch.setenv("REPOMAP_HOME", str(home))
-    with patched_guards(NO_FALLBACK_GUARDS):
-        result = call(graph_id="host-one")
-    assert result["reason"] == "backend_unsupported" and result["status"] == "unavailable"
+    calls: list[tuple[str, dict[str, Any]]] = []
+
+    def fake_nav(sql: str, **kwargs: Any) -> dict[str, Any]:
+        calls.append((sql, kwargs))
+        return {
+            "has_accepted": True,
+            "accepted": {"generation": 2, "run_id": 7, "publication_bundle_id": "bundle1:" + "a" * 64},
+            "candidate_nodes": [{"id": 11, "canonical_key": "doc.page:alpha", "kind": "doc.page",
+                                 "display_name": "Beacon Guide", "first_seen_run_id": 7, "last_seen_run_id": 7}],
+            "direct_evidence": [{
+                "evidence_key": "ev1:11", "link_kind": "observed", "run_id": 7, "raw_observation_ordinal": 1,
+                "payload_hash": "b" * 64, "raw_kind": "markdown.document", "raw_source_id": "src1:1",
+                "path": "root/docs/alpha.md", "start_line": None, "end_line": None, "extractor": "markdown",
+                "extractor_version": "1", "confidence": "extracted",
+                "metadata_json": {"binding_id": "src1:alpha", "binding_alias": "root", "binding_revision": 1,
+                                  "snapshot_id": "snap1:alpha", "source_relative_path": "docs/alpha.md"},
+                "publication_bundle_id": "bundle1:" + "a" * 64, "snapshot_manifest_id": "snapmanifest1:" + "c" * 64,
+                "extraction_receipt_id": "receipt1:" + "d" * 64, "graph_candidate_id": "cand1:" + "e" * 64,
+                "snapshot_vector_json": [{"binding_id": "src1:alpha", "revision": 1, "snapshot_id": "snap1:alpha"}],
+                "evidence_role": "direct", "node_id": 11,
+            }],
+        }
+
+    with patched_guards(NO_FALLBACK_GUARDS), patch(
+        "common_lore_index.storage.postgres_navigation_search.execute_json_readback", side_effect=fake_nav,
+    ):
+        result = call(graph_id="host-one", scope="docs", grouping="source_document")
+    assert len(calls) == 1
+    sql, kwargs = calls[0]
+    assert kwargs["psql_args"] == ["-h", "127.0.0.1", "-p", "55439", "-U", "repomap_read_status", "-d", "repomap_host_one"]
+    assert kwargs["password"] == secret and kwargs["label"] == "navigation search" and kwargs["expected_shape"] == "object"
+    assert sql.startswith("WITH matched_repo AS MATERIALIZED") and "cloe_lexical" not in sql
+    assert result["status"] == "ok" and result["result_count"] == 1 and result["fallback"] == "native_search"
+    assert members(result)[0]["canonical_key"] == "doc.page:alpha"
+    serialized = json.dumps(result)
+    assert secret not in serialized and str(tmp_path) not in serialized
+    assert "chunk_text" not in serialized and "normalized_text" not in serialized
 
 
 def test_schema_discovery_and_new_tool_default_equivalence(store: Path) -> None:

@@ -4,9 +4,9 @@ from repomap_test_support.policy_observations import (
     raw_observation,
 )
 
-from repomap_kg.canonicalization import main as canon
-from repomap_kg.canonicalization.diagnostics import CanonicalizationDiagnostic
-from repomap_kg.graph.keys import GraphKeyError
+from common_lore_index.canonicalization import main as canon
+from common_lore_index.canonicalization.diagnostics import CanonicalizationDiagnostic
+from common_lore_index.graph.keys import GraphKeyError
 
 
 class CanonicalizationHelperBranchUnitTests(unittest.TestCase):

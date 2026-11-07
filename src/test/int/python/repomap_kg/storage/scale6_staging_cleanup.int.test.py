@@ -4,47 +4,47 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import (
     AttemptNumber,
     JobId,
     OperationId,
 )
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     PublicationHandoff,
     PublicationReconciliationOutcome,
     build_publication_finalize_statements,
     build_publication_prepare_statements,
     build_publication_reconciliation_statements,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.sql_core import sql_literal
-from repomap_kg.storage.staging_cleanup import (
+from common_lore_index.storage.sql_core import sql_literal
+from common_lore_index.storage.staging_cleanup import (
     CleanupRequest,
     build_stage_cleanup_statements,
     execute_stage_cleanup,
 )
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurements,
 )
-from repomap_kg.storage.staging_operation_events import (
+from common_lore_index.storage.staging_operation_events import (
     StagingOperationEvent,
     StagingOperationEventCategory,
 )
-from repomap_kg.storage.staging_merge import (
+from common_lore_index.storage.staging_merge import (
     MergeContext,
     build_source_index_merge_statements,
 )
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_ownership import StageOwner
 from repomap_test_support.postgres_harness import (
     PostgresContainerDatabase,
     require_postgres_binaries,

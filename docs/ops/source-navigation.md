@@ -30,7 +30,7 @@ observation search includes retained payload text, not arbitrary workspace text.
 
 Search eligibility, key order, metadata and pagination are unchanged. The locator
 is an opt-in MCP tool, also callable as
-`repomap_kg.server.mcp.repomap_node_locations`; it performs no acquisition,
+`common_lore_index.server.mcp.repomap_node_locations`; it performs no acquisition,
 source-tree reads or refresh. PostgreSQL reports `backend_unsupported` for this
 helper; existing PostgreSQL read tools retain their contracts.
 

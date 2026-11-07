@@ -4,7 +4,7 @@ import ast
 from collections import Counter
 from pathlib import Path
 
-from repomap_kg.storage.rowwise_caller_contracts import (
+from common_lore_index.storage.rowwise_caller_contracts import (
     RECEIPTLESS_BINDINGS,
     ROWWISE_CALLER_CONTRACTS,
 )
@@ -15,7 +15,7 @@ _LOADERS = {"load_canonical_observations", "load_file_observations"}
 
 def _repository_root() -> Path:
     for parent in Path(__file__).resolve().parents:
-        if (parent / "src/main/python/repomap_kg").is_dir():
+        if (parent / "src/main/python/common_lore_index").is_dir():
             return parent
     raise AssertionError("repository root is unavailable")
 
@@ -52,7 +52,7 @@ class _ReceiptlessBindingVisitor(ast.NodeVisitor):
 def _discovered_bindings() -> Counter[tuple[str, str, str, str]]:
     root = _repository_root()
     paths = [
-        *(root / "src/main/python/repomap_kg").rglob("*.py"),
+        *(root / "src/main/python/common_lore_index").rglob("*.py"),
         *(root / "tools").glob("*.py"),
     ]
     discovered: Counter[tuple[str, str, str, str]] = Counter()

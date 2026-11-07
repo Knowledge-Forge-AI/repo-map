@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations
 
 
 class ConfigExtractorJavascriptBoundariesUnitTests(unittest.TestCase):
@@ -141,7 +141,7 @@ class ConfigExtractorJavascriptBoundariesUnitTests(unittest.TestCase):
         )
         self.assertEqual(ang_obs[0].kind, "config.document")
 
-        from repomap_kg.extractors.config.javascript import _script_is_secret_prone
+        from common_lore_index.extractors.config.javascript import _script_is_secret_prone
         self.assertFalse(_script_is_secret_prone(None))
         self.assertFalse(_script_is_secret_prone(123))
 

@@ -1,7 +1,7 @@
 import json
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalStorageSummaryRecord,
     JSFrameworkSummaryRecord,
     OpenAPISummaryRecord,
@@ -13,7 +13,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
     def test_load_mcp_config_reads_environment_override(self):
-        from repomap_kg.server.mcp import load_mcp_config
+        from common_lore_index.server.mcp import load_mcp_config
 
         config_path = self.write_mcp_config(
             {
@@ -49,7 +49,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         self.assertEqual(config.projects["repo-map"].pg_user, "repo_map")
 
     def test_repomap_projects_lists_configured_projects(self):
-        from repomap_kg.server.mcp import repomap_projects
+        from common_lore_index.server.mcp import repomap_projects
 
         config_path = self.write_mcp_config(
             {
@@ -96,7 +96,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         self.assertIn("legacy project config", payload["message"])
 
     def test_ops_mcp_list_graphs_exposes_only_enabled_visible_graphs(self):
-        from repomap_kg.server.mcp import repomap_list_graphs
+        from common_lore_index.server.mcp import repomap_list_graphs
 
         config_path = self.write_visible_ops_config()
 
@@ -117,12 +117,12 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         self.assertNotIn("~/.codex/codex-vc/mcp/server-memory", serialized)
 
     def test_ops_mcp_graph_selection_rejects_disabled_or_hidden_graphs(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_project_summary
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_project_summary
 
         config_path = self.write_visible_ops_config()
 
         with self.patch_ops_config(config_path):
-            with patch("repomap_kg.server.ops.query_canonical_storage_summary") as query:
+            with patch("common_lore_index.server.ops.query_canonical_storage_summary") as query:
                 with self.assertRaisesRegex(RepoMapMcpError, "not enabled"):
                     repomap_project_summary(graph_id="disabled")
                 with self.assertRaisesRegex(RepoMapMcpError, "not MCP-visible"):
@@ -131,7 +131,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         query.assert_not_called()
 
     def test_ops_mcp_project_summary_uses_unified_toml_storage_profile(self):
-        from repomap_kg.server.mcp import repomap_project_summary
+        from common_lore_index.server.mcp import repomap_project_summary
 
         config_path = self.write_visible_ops_config()
         with patch.dict(
@@ -142,7 +142,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
             },
         ):
             with patch(
-                "repomap_kg.server.ops.query_canonical_storage_summary",
+                "common_lore_index.server.ops.query_canonical_storage_summary",
                 return_value=CanonicalStorageSummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",
@@ -180,7 +180,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         self.assertEqual(query.call_args.kwargs["psql_command"], "/usr/local/bin/psql")
 
     def test_ops_mcp_searches_are_bounded_and_redacted(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_search_files,
             repomap_search_nodes,
             repomap_search_observations,
@@ -218,7 +218,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
 
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_mcp_search",
+                "common_lore_index.server.ops.query_mcp_search",
                 side_effect=[node_payload, observation_payload, files_payload],
             ) as query:
                 nodes = repomap_search_nodes(
@@ -250,7 +250,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         self.assertTrue(all(call.kwargs["limit"] <= 100 for call in query.call_args_list))
 
     def test_ops_mcp_summary_wrappers_include_graph_context(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_js_framework_summary,
             repomap_openapi_summary,
             repomap_python_summary,
@@ -260,7 +260,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
         config_path = self.write_ops_config(self.visible_ops_config())
         with patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}):
             with patch(
-                "repomap_kg.server.ops.query_python_summary",
+                "common_lore_index.server.ops.query_python_summary",
                 return_value=PythonSummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",
@@ -280,7 +280,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
             ) as query_py:
                 python_payload = repomap_python_summary(graph_id="repo-map")
             with patch(
-                "repomap_kg.server.ops.query_terraform_summary",
+                "common_lore_index.server.ops.query_terraform_summary",
                 return_value=TerraformSummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",
@@ -298,7 +298,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
             ) as query_tf:
                 terraform_payload = repomap_terraform_summary(graph_id="repo-map")
             with patch(
-                "repomap_kg.server.ops.query_openapi_summary",
+                "common_lore_index.server.ops.query_openapi_summary",
                 return_value=OpenAPISummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",
@@ -316,7 +316,7 @@ class McpServerConfigAndSummaryUnitTests(McpServerTestSupport):
             ) as query_oa:
                 openapi_payload = repomap_openapi_summary(graph_id="repo-map")
             with patch(
-                "repomap_kg.server.ops.query_js_framework_summary",
+                "common_lore_index.server.ops.query_js_framework_summary",
                 return_value=JSFrameworkSummaryRecord(
                     root_path="/tmp/fixture",
                     repository_name="fixture",

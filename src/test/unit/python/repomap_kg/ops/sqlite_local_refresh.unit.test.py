@@ -19,25 +19,25 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from repomap_kg.cli import _ops_sqlite_dispatch
-from repomap_kg.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
-from repomap_kg.ops import local_refresh
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.ops.local_refresh import LocalRefreshResult, refresh_local_graph
-from repomap_kg.storage.sqlite_local.connection import publisher_lock
-from repomap_kg.storage.sqlite_local.publisher import FAMILY_ORDER
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.cli import _ops_sqlite_dispatch
+from common_lore_index.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
+from common_lore_index.ops import local_refresh
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.ops.local_refresh import LocalRefreshResult, refresh_local_graph
+from common_lore_index.storage.sqlite_local.connection import publisher_lock
+from common_lore_index.storage.sqlite_local.publisher import FAMILY_ORDER
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.host_read_store_config import fail_if_reached, setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import graph_toml, sqlite_home_toml, write_sqlite_home
 
 PG_WRITE_TRIPWIRES = (
-    "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
-    "repomap_kg.ops.portable_refresh.effective_postgres_route",
-    "repomap_kg.cli.refresh_graph",
-    "repomap_kg.cli.maintenance_activity_for_home",
-    "repomap_kg.cli.run_coordinator_refresh",
-    "repomap_kg.ops.refresh.refresh_graph",
+    "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
+    "common_lore_index.ops.portable_refresh.effective_postgres_route",
+    "common_lore_index.cli.refresh_graph",
+    "common_lore_index.cli.maintenance_activity_for_home",
+    "common_lore_index.cli.run_coordinator_refresh",
+    "common_lore_index.ops.refresh.refresh_graph",
 )
 
 
@@ -91,7 +91,7 @@ def test_sqlite_init_refuses_a_postgres_home(tmp_path: Path) -> None:
 def test_local_refresh_routes_without_postgres_or_admission(tmp_path: Path) -> None:
     home = _home(tmp_path)
     fake = LocalRefreshResult("one", 1, 1, None, {"execution_route": "portable-worker-v1"}, {"files": 1})
-    with patch("repomap_kg.cli._ops_sqlite_dispatch.refresh_local_graph", return_value=fake) as called:
+    with patch("common_lore_index.cli._ops_sqlite_dispatch.refresh_local_graph", return_value=fake) as called:
         code, stdout, stderr = _cli("ops", "refresh-graph", "--repo-map-home", str(home), "--graph", "one", "--json")
     assert code == 0, stderr
     assert json.loads(stdout)["accepted_generation"] == 1 and called.call_count == 1
@@ -109,7 +109,7 @@ def test_local_refresh_refuses_postgres_only_options(
     tmp_path: Path, extra: tuple[str, ...], code_text: str
 ) -> None:
     home = _home(tmp_path)
-    with patch("repomap_kg.cli._ops_sqlite_dispatch.refresh_local_graph", fail_if_reached):
+    with patch("common_lore_index.cli._ops_sqlite_dispatch.refresh_local_graph", fail_if_reached):
         code, _, stderr = _cli("ops", "refresh-graph", "--repo-map-home", str(home), "--graph", "one", *extra)
     assert code == 1 and code_text in stderr, stderr
 
@@ -133,19 +133,19 @@ def test_postgres_home_falls_through_to_the_unchanged_dispatcher(tmp_path: Path)
         command="ops", ops_command="refresh-graph", repo_map_home=str(home), config=None,
         graph="host-one", mode="direct", psql_command=None, json=True,
     )
-    with patch("repomap_kg.cli._ops_sqlite_dispatch.refresh_local_graph", fail_if_reached):
+    with patch("common_lore_index.cli._ops_sqlite_dispatch.refresh_local_graph", fail_if_reached):
         assert dispatch_ops_sqlite_command(args, fail_if_reached) is None
         missing = argparse.Namespace(**{**vars(args), "repo_map_home": str(tmp_path / "absent")})
         assert dispatch_ops_sqlite_command(missing, fail_if_reached) is None
     coordinator = argparse.Namespace(command="ops", ops_command="refresh-graph", mode="coordinator")
-    with patch("repomap_kg.cli._ops_sqlite_dispatch.declared_storage_backend", fail_if_reached):
+    with patch("common_lore_index.cli._ops_sqlite_dispatch.declared_storage_backend", fail_if_reached):
         assert dispatch_ops_sqlite_command(coordinator, fail_if_reached) is None
 
 
 def test_refresh_refuses_before_capture_when_uninitialized_disabled_or_rootless(tmp_path: Path) -> None:
     config = _local(_home(tmp_path))
     store = config.graph_store_root
-    with patch("repomap_kg.ops.local_refresh.capture_portable_candidate", fail_if_reached):
+    with patch("common_lore_index.ops.local_refresh.capture_portable_candidate", fail_if_reached):
         for graph_id in ("one", "gone"):  # not-initialized now outranks a missing source root
             with pytest.raises(LocalStoreError) as caught:
                 refresh_local_graph(config, graph_id)
@@ -166,7 +166,7 @@ def test_refresh_refuses_while_another_publisher_holds_the_graph(tmp_path: Path)
     config = _local(home)
     database = config.graph_store_root / "one.sqlite3"
     with publisher_lock(database), patch(
-        "repomap_kg.ops.local_refresh.capture_portable_candidate", fail_if_reached
+        "common_lore_index.ops.local_refresh.capture_portable_candidate", fail_if_reached
     ):
         with pytest.raises(LocalStoreError) as caught:
             refresh_local_graph(config, "one")
@@ -193,9 +193,9 @@ def test_validation_failure_publishes_nothing(tmp_path: Path) -> None:
         assert stage_id == "sqlite-local"
         raise ValueError("publication bundle framing is invalid")
 
-    with patch("repomap_kg.ops.local_refresh.capture_portable_candidate", return_value=capture), patch(
-        "repomap_kg.ops.local_refresh.validate_portable_capture", reject
-    ), patch("repomap_kg.ops.local_refresh.publish_generation", fail_if_reached):
+    with patch("common_lore_index.ops.local_refresh.capture_portable_candidate", return_value=capture), patch(
+        "common_lore_index.ops.local_refresh.validate_portable_capture", reject
+    ), patch("common_lore_index.ops.local_refresh.publish_generation", fail_if_reached):
         with pytest.raises(ValueError):
             refresh_local_graph(config, "one")
     assert database.read_bytes() == before

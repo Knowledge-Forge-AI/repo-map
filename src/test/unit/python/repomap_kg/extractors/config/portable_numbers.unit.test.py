@@ -2,11 +2,11 @@ import math
 
 import pytest
 
-from repomap_kg.artifacts._canonical import (
+from common_lore_index.artifacts._canonical import (
     CanonicalEncodingError, canonical_json, decode_canonical_json,
 )
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.extractors.config.generic_values import (
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.extractors.config.generic_values import (
     _safe_value_summary, _stable_array_members, _value_type,
 )
 

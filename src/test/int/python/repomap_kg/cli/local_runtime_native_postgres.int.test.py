@@ -1,9 +1,9 @@
 def test_native_mode_observes_direct_postgres_binding(tmp_path):
     """Real Engine inspection without a release-image build in the integration runner."""
     import socket
-    from repomap_kg.runtime.local import setup_local_runtime, query_local_runtime_status
-    from repomap_kg.runtime.plan import build_local_runtime_plan
-    from repomap_kg.runtime.compose import render_compose_yaml
+    from common_lore_index.runtime.local import setup_local_runtime, query_local_runtime_status
+    from common_lore_index.runtime.plan import build_local_runtime_plan
+    from common_lore_index.runtime.compose import render_compose_yaml
     from repomap_test_support.postgres_container import PostgresContainerHarness
     from repomap_test_support.postgres_container_config import PostgresContainerConfig
 

@@ -7,7 +7,7 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.server._mcp_core_validation import (
+from common_lore_index.server._mcp_core_validation import (
     RepoMapMcpError,
     validate_canonical_limit,
     validate_feed_item_key,
@@ -18,7 +18,7 @@ from repomap_kg.server._mcp_core_validation import (
     validate_read_schema_version,
     validate_source_id_arg,
 )
-from repomap_kg.server._mcp_dispatch import (
+from common_lore_index.server._mcp_dispatch import (
     handle_jsonrpc_message,
     handle_tool_call,
     jsonrpc_error,
@@ -26,18 +26,18 @@ from repomap_kg.server._mcp_dispatch import (
     tool_input_schema,
     validate_tool_call_arguments,
 )
-from repomap_kg.server._ops_search import (
+from common_lore_index.server._ops_search import (
     like_escape,
     validate_limit as validate_ops_limit,
     validate_offset as validate_ops_offset,
     validate_query as validate_ops_query,
 )
-from repomap_kg.server._server_memory_parsing import (
+from common_lore_index.server._server_memory_parsing import (
     validate_server_memory_limit,
     validate_server_memory_offset,
     validate_server_memory_query,
 )
-from repomap_kg.server.ops import McpOpsError
+from common_lore_index.server.ops import McpOpsError
 
 
 def test_core_validation_source_id_errors() -> None:
@@ -185,7 +185,7 @@ def test_server_memory_validation_boundaries() -> None:
 
 
 def test_mcp_projects_decomposition() -> None:
-    from repomap_kg.server._mcp_projects import (
+    from common_lore_index.server._mcp_projects import (
         ProjectDependencies,
         graph_registry_projects_hint,
         repomap_projects,
@@ -217,7 +217,7 @@ def test_mcp_projects_decomposition() -> None:
 
 def _server_dir() -> Path:
     for parent in Path(__file__).resolve().parents:
-        candidate = parent / "src/main/python/repomap_kg/server"
+        candidate = parent / "src/main/python/common_lore_index/server"
         if candidate.is_dir():
             return candidate
     raise AssertionError("server dir unavailable")
@@ -249,7 +249,7 @@ def test_server_import_graph_is_strictly_acyclic() -> None:
     server_sccs = [
         sorted(component)
         for component in _strongly_connected_components(graph)
-        if any("repomap_kg.server." in mod for mod in component)
+        if any("common_lore_index.server." in mod for mod in component)
     ]
     assert server_sccs == [], f"Server import graph contains cycles: {server_sccs}"
 

@@ -199,7 +199,7 @@ class ChildCoverageSession:
         suite: str | None = None,
         revision: str | None = None,
         permitted_python_paths: Sequence[Path | str] = (),
-        portable_command: tuple[str, ...] = ("-m", "repomap_kg.coordinator.portable_worker"),
+        portable_command: tuple[str, ...] = ("-m", "common_lore_index.coordinator.portable_worker"),
         allow_test_conformance: bool = False,
     ) -> Any:
         from runner_coverage_capability import prepare_session_capability

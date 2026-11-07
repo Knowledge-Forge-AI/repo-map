@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
+    from common_lore_index.cli import build_parser
 
 
-PRODUCTION_ROOT = Path("src/main/python/repomap_kg")
+PRODUCTION_ROOT = Path("src/main/python/common_lore_index")
 STORAGE_ROOT = PRODUCTION_ROOT / "storage"
 
 OBSOLETE_MODULES = {
@@ -33,7 +33,7 @@ OBSOLETE_MODULES = {
 }
 
 OBSOLETE_IMPORT_PREFIXES = tuple(
-    f"repomap_kg.storage.{path.removesuffix('.py')}" for path in OBSOLETE_MODULES
+    f"common_lore_index.storage.{path.removesuffix('.py')}" for path in OBSOLETE_MODULES
 )
 
 

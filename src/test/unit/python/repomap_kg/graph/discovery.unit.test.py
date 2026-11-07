@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.graph.discovery import classify_path, discover_repository
+from common_lore_index.graph.discovery import classify_path, discover_repository
 
 
 class DiscoveryClassificationUnitTests(unittest.TestCase):
@@ -163,7 +163,7 @@ class DiscoveryClassificationUnitTests(unittest.TestCase):
                 return real_classify_path(repository_root, file_path, profile=profile)
 
             with patch(
-                "repomap_kg.graph.discovery.classify_path",
+                "common_lore_index.graph.discovery.classify_path",
                 side_effect=guarded_classify_path,
             ):
                 files = discover_repository(

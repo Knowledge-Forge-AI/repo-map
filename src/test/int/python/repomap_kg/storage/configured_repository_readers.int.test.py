@@ -7,28 +7,28 @@ from typing import Literal
 
 import pytest
 
-from repomap_kg.storage import StorageSchemaError, apply_migrations, default_rdbms_root, run_psql
-from repomap_kg.storage.canonical_readback_rows import (
+from common_lore_index.storage import StorageSchemaError, apply_migrations, default_rdbms_root, run_psql
+from common_lore_index.storage.canonical_readback_rows import (
     canonical_edge_evidence_record_from_storage_payload,
     canonical_edge_explanation_from_storage_payload,
     canonical_edge_record_from_storage_payload,
     canonical_neighborhood_from_storage_payload,
     canonical_node_record_from_storage_payload,
 )
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.publication_readback import (
     read_latest_receipt_bearing_publication,
     read_run_publication,
 )
-from repomap_kg.storage.readback_driver import execute_json_readback
-from repomap_kg.storage.sql_canonical import (
+from common_lore_index.storage.readback_driver import execute_json_readback
+from common_lore_index.storage.sql_canonical import (
     build_canonical_edge_query_sql,
     build_canonical_neighborhood_query_sql,
     build_canonical_node_query_sql,
     build_canonical_storage_summary_query_sql,
     build_explain_canonical_edge_query_sql,
 )
-from repomap_kg.storage.sql_core import sql_literal
-from repomap_kg.storage.sql_sources import (
+from common_lore_index.storage.sql_core import sql_literal
+from common_lore_index.storage.sql_sources import (
     build_ingested_source_query_sql,
     build_source_feed_item_explanation_query_sql,
     build_source_feed_item_query_sql,

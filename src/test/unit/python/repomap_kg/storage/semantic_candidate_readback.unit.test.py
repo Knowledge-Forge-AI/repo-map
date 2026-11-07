@@ -5,13 +5,13 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.semantic_candidate_readback import query_semantic_candidates
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.semantic_candidate_readback import query_semantic_candidates
 from repomap_test_support.semantic_candidate_fixtures import candidate_query
 
 FACTS = {"installed_version": "0.8.7", "installation_schema": "repomap_vector",
          "schema_version": "repomap-enrichment-schema:1", "objects_present": True}
-OWNER = "repomap_kg.storage.semantic_candidate_readback.execute_json_readback"
+OWNER = "common_lore_index.storage.semantic_candidate_readback.execute_json_readback"
 
 
 def test_disabled_query_performs_no_database_io() -> None:

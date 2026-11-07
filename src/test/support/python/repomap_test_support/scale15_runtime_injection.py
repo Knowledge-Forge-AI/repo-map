@@ -5,9 +5,9 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 
 from actual_refresh_failure_causality import FailureCausalityAuthority
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
-from repomap_kg.storage.backend_telemetry_contracts import ConnectionTelemetryEvent
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.backend_observer import BackendOwnershipObserver
+from common_lore_index.storage.backend_telemetry_contracts import ConnectionTelemetryEvent
+from common_lore_index.storage.staging_event_transport import (
     StagingEventFrame,
 )
 from scale14_backend_monitor import BackendMonitorError

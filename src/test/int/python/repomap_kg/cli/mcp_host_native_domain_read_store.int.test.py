@@ -28,9 +28,9 @@ import uuid
 
 import pytest
 
-from repomap_kg.runtime.database_roles import READ_STATUS_ROLE
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.server.mcp_schemas import tool_definitions
+from common_lore_index.runtime.database_roles import READ_STATUS_ROLE
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.server.mcp_schemas import tool_definitions
 from repomap_test_support.host_mcp_domain_publication import (
     ABSENT_DATABASE, FEED_URL, domain_snapshot, publish_domain_fixture, write_domain_config,
 )
@@ -43,7 +43,7 @@ from repomap_test_support.host_mcp_stdio import (
 )
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
-CATALOG_SHA256 = "c487dc30ffa570f6ec80af68fabbb15d5b96bdb273e5fc375676c7174321189d"  # 31 read tools
+CATALOG_SHA256 = "3869c9dac88c0a497e539b5d944409a00a3519eef1c9e2b8643420c1d77f6503"  # 31 read tools
 CANARY_KEY = "REPOMAP_ENV_CANARY_PASSWORD_PROBE"
 BAD_ITEM = "python.module:not-a-feed-item"
 

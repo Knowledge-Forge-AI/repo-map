@@ -4,15 +4,15 @@ import subprocess
 from typing import Any, Callable
 from unittest.mock import patch
 
-import repomap_kg.graph.multi_source_pipeline as multi_source_pipeline
-import repomap_kg.ops.direct_publication as direct_publication
-import repomap_kg.ops.refresh as ops_refresh
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.server.ops import (
+import common_lore_index.graph.multi_source_pipeline as multi_source_pipeline
+import common_lore_index.ops.direct_publication as direct_publication
+import common_lore_index.ops.refresh as ops_refresh
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.server.ops import (
     build_mcp_search_sql,
     query_mcp_search,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 from repomap_test_support.host_read_store_config import patched_guards, setup_owned_home
 from repomap_test_support.mcp_server import McpServerTestSupport
@@ -51,7 +51,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
         rows = [{"path": "one"}, {"path": "two"}]
 
         with patch(
-            "repomap_kg.server.ops.execute_ops_json_readback",
+            "common_lore_index.server.ops.execute_ops_json_readback",
             return_value=rows,
             create=True,
         ) as execute:
@@ -89,7 +89,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
         )
 
     def test_psycopg108_search_payload_reaches_the_bound_search_owner(self):
-        from repomap_kg.server.mcp import repomap_search_files
+        from common_lore_index.server.mcp import repomap_search_files
 
         config_path = self.write_ops_config(self.visible_ops_config())
         with (
@@ -99,7 +99,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
                 clear=True,
             ),
             patch(
-                "repomap_kg.server.ops.query_mcp_search",
+                "common_lore_index.server.ops.query_mcp_search",
                 return_value={
                     "results": [{"path": "src/main.py"}],
                     "total": 1,
@@ -116,7 +116,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
         self.assertIsNone(query.call_args.kwargs["psql_command"])
 
     def test_psycopg108_validation_precedes_search_database_access(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_search_files
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_search_files
 
         config_path = self.write_ops_config(self.visible_ops_config())
         with (
@@ -126,7 +126,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
                 clear=True,
             ),
             patch(
-                "repomap_kg.server.ops.query_mcp_search",
+                "common_lore_index.server.ops.query_mcp_search",
                 side_effect=AssertionError("database accessed"),
             ) as query,
         ):
@@ -138,7 +138,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
         query.assert_not_called()
 
     def test_psycopg108_adapter_failure_remains_public_mcp_error(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_search_files
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_search_files
 
         config_path = self.write_ops_config(self.visible_ops_config())
         with (
@@ -148,7 +148,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
                 clear=True,
             ),
             patch(
-                "repomap_kg.server.ops.execute_ops_json_readback",
+                "common_lore_index.server.ops.execute_ops_json_readback",
                 side_effect=StorageSchemaError("bounded search failure"),
                 create=True,
             ),
@@ -159,7 +159,7 @@ class McpSearchReadbackUnitTests(McpServerTestSupport):
     def test_psycopg108_query_uses_the_operational_readback_owner(self):
         import inspect
 
-        from repomap_kg.server import ops
+        from common_lore_index.server import ops
 
         query_source = inspect.getsource(ops.query_mcp_search)
         self.assertIn("execute_ops_json_readback", query_source)
@@ -175,13 +175,13 @@ class McpSearchSideEffectGuardTests(McpServerTestSupport):
                                          "REPOMAP_HOME": str(home)}, clear=True)
 
     def test_configured_search_reads_host_only_through_real_binding_without_side_effects(self):
-        from repomap_kg.runtime.database_role_contract import read_read_status_password
-        from repomap_kg.server.mcp import repomap_search_files
+        from common_lore_index.runtime.database_role_contract import read_read_status_password
+        from common_lore_index.server.mcp import repomap_search_files
 
         home = setup_owned_home(self)
         recorder = _DriverRecorder()
         with self._env(home), patched_guards(), \
-                patch("repomap_kg.ops.readback.execute_json_readback_with_driver", recorder):
+                patch("common_lore_index.ops.readback.execute_json_readback_with_driver", recorder):
             payload = repomap_search_files(graph_id="host-one", query="main", limit=1)
 
         self.assertEqual(payload["results"], ROWS[:1])
@@ -197,7 +197,7 @@ class McpSearchSideEffectGuardTests(McpServerTestSupport):
         # Synthetic canary: a store bound through the real factory seam tries
         # one lifecycle/source/container action; the same guards must fire and
         # the refusal must escape the tool rather than become a read result.
-        from repomap_kg.server.mcp import repomap_search_files
+        from common_lore_index.server.mcp import repomap_search_files
 
         home = setup_owned_home(self)
         for label, attempt in SIDE_EFFECT_ATTEMPTS:
@@ -214,6 +214,6 @@ class McpSearchSideEffectGuardTests(McpServerTestSupport):
                     return _SideEffectStore()
 
             with self.subTest(attempt=label), self._env(home), patched_guards(), \
-                    patch("repomap_kg.server.ops.investigation_stores", lambda _config: _Binding()), \
+                    patch("common_lore_index.server.ops.investigation_stores", lambda _config: _Binding()), \
                     self.assertRaisesRegex(AssertionError, "container, or subprocess path"):
                 repomap_search_files(graph_id="host-one", query="main")

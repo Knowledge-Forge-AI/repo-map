@@ -12,10 +12,10 @@ import subprocess
 import tempfile
 from typing import Any
 
-from repomap_kg.runtime._extension_restore_template import parse_template_baseline, template_baseline_sql
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
-from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.runtime._extension_restore_template import parse_template_baseline, template_baseline_sql
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.runtime.release import POSTGRES_RELEASE_IMAGE
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.local_db_backup import connect_real_postgres
 from repomap_test_support.pgvector_profile import PGVECTOR_PROFILE, current_pg_test_profile
 from repomap_test_support.postgres_container import (

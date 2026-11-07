@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cloe-rust-pilot-qualification-manifest-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "window",
+    "candidate_binding",
+    "source_checkpoint",
+    "sdk",
+    "closure",
+    "fixture",
+    "wheels",
+    "incumbent",
+    "scenarios",
+    "navigation",
+    "budget",
+    "stopping",
+    "replacement"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cloe-rust-pilot-qualification-manifest-v1"
+    },
+    "window": {
+      "const": "RUST-PILOT-QW2"
+    },
+    "candidate_binding": {
+      "const": "sealed_d12.pr_binding"
+    },
+    "source_checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha",
+        "tree"
+      ],
+      "properties": {
+        "sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    },
+    "sdk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "architecture",
+        "image_id_binding",
+        "recipe_sha256",
+        "recipe_files",
+        "profile_sha256"
+      ],
+      "properties": {
+        "architecture": {
+          "const": "amd64"
+        },
+        "image_id_binding": {
+          "const": "sealed_d12.sdk_materialization.sdk_image_id"
+        },
+        "recipe_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "recipe_files": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "python_paths",
+        "python_digests",
+        "guest_digests",
+        "profile_digests",
+        "component_lock",
+        "helper_closure_sha256"
+      ],
+      "properties": {
+        "profile_digests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "amd64",
+            "arm64"
+          ],
+          "properties": {
+            "amd64": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "arm64": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "python_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "python_digests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "guest_digests": {
+          "type": "object",
+          "minProperties": 5,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "component_lock": {
+          "type": "object",
+          "required": [
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "helper_closure_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "required": [
+        "root",
+        "expected_item_claims",
+        "files"
+      ],
+      "properties": {
+        "root": {
+          "const": "src/test/fixtures/rust_pilot"
+        },
+        "expected_item_claims": {
+          "const": 420
+        },
+        "files": {
+          "type": "object",
+          "minProperties": 26
+        }
+      }
+    },
+    "wheels": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "incumbent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantics",
+        "report_path",
+        "sha256",
+        "schema",
+        "files_key",
+        "items_key",
+        "input_digests_key",
+        "navigation_key",
+        "graph_quality_key",
+        "discovery_ms_key",
+        "fixture_digests"
+      ],
+      "properties": {
+        "semantics": {
+          "const": "actual-file-only"
+        },
+        "report_path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "files_key": {
+          "type": "string"
+        },
+        "items_key": {
+          "type": "string"
+        },
+        "input_digests_key": {
+          "type": "string"
+        },
+        "navigation_key": {
+          "type": "string"
+        },
+        "graph_quality_key": {
+          "type": "string"
+        },
+        "discovery_ms_key": {
+          "type": "string"
+        },
+        "fixture_digests": {
+          "type": "object",
+          "minProperties": 13
+        }
+      }
+    },
+    "scenarios": {
+      "type": "object"
+    },
+    "navigation": {
+      "type": "object",
+      "required": [
+        "incumbent_key",
+        "tasks"
+      ],
+      "properties": {
+        "incumbent_key": {
+          "type": "string"
+        },
+        "tasks": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "commands",
+        "amd_wheel_transfers",
+        "arm_wheel_transfers",
+        "redirects",
+        "retries"
+      ],
+      "properties": {
+        "commands": {
+          "const": 1
+        },
+        "amd_wheel_transfers": {
+          "const": 2
+        },
+        "arm_wheel_transfers": {
+          "const": 0
+        },
+        "redirects": {
+          "const": false
+        },
+        "retries": {
+          "const": false
+        }
+      }
+    },
+    "stopping": {
+      "const": "one-command-over-whole-manifest"
+    },
+    "replacement": {
+      "const": "none"
+    }
+  }
+}

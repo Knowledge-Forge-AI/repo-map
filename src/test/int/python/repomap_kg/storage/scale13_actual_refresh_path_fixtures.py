@@ -125,7 +125,7 @@ def _actual_refresh_argv(
         postgres.psql_command,
         "--json",
     )
-    arguments: tuple[str, ...] = (sys.executable, "-m", "repomap_kg", *product_arguments)
+    arguments: tuple[str, ...] = (sys.executable, "-m", "common_lore_index", *product_arguments)
     if event_fd is None:
         return arguments
     arguments = (*arguments, "--staging-event-fd", str(event_fd))

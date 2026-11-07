@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import argparse
 
-import repomap_kg.cli as cli
-import repomap_kg.cli.parser as parser_module
-import repomap_kg.cli.dispatch as dispatch_module
-from repomap_kg.cli.main import (
+import common_lore_index.cli as cli
+import common_lore_index.cli.parser as parser_module
+import common_lore_index.cli.dispatch as dispatch_module
+from common_lore_index.cli.main import (
     main as main_func,
     canonical_node_kind_from_args as main_canonical_node_kind_from_args,
     psql_args_from_args as main_psql_args_from_args,
@@ -44,4 +44,4 @@ def test_pkg2_cli_parser_keeps_representative_commands() -> None:
 
 def test_pkg2_cli_package_path_main_builds_parser() -> None:
     assert main_build_parser is parser_module.build_parser
-    assert main_build_parser().prog == "repomap-kg"
+    assert main_build_parser().prog == "cloe"

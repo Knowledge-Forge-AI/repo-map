@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.documents.markdown import (
+from common_lore_index.extractors.documents.markdown import (
     extract_markdown_file_observations,
 )
 
@@ -98,13 +98,13 @@ Here is a link with valid escape: [escaped](file%20name.md).
         adr = next(o for o in observations if o.kind == "markdown.adr_metadata")
         self.assertEqual(adr.metadata["title"], "My Decision")
 
-        from repomap_kg.extractors.documents.markdown import (
+        from common_lore_index.extractors.documents.markdown import (
             _document_observation,
             _code_fence_observation,
             _resolve_repo_relative_path,
             _section_value,
         )
-        from repomap_kg.extractors.documents.markdown_structure import parse_frontmatter
+        from common_lore_index.extractors.documents.markdown_structure import parse_frontmatter
 
         doc_obs = _document_observation("doc.md", title="Title", frontmatter_present=False, content_hash="hash123", generated=True)
         self.assertEqual(doc_obs.metadata["content_hash"], "hash123")

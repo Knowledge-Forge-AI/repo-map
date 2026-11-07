@@ -4,13 +4,13 @@ import unittest
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import RawObservation
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import RawObservation
 
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     awk_function_key, awk_program_key, bash_function_key, bash_script_key,
     bats_expectation_key, bats_file_key, bats_test_case_key,
     env_key, external_key, external_url_key, file_key, host_category_key, tool_key,

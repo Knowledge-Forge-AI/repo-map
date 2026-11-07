@@ -10,21 +10,21 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import _extension_restore_native as native_mod
-from repomap_kg.runtime import _extension_restore_toc_custody as toc_mod
-from repomap_kg.runtime._backup_provenance import parse_toc_entries
-from repomap_kg.runtime._extension_restore_custody import DatabaseCreationIntent
-from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
-from repomap_kg.runtime._extension_restore_lifecycle import cleanup_extension_restore_intents
-from repomap_kg.runtime._extension_restore_native import owned_private_input, run_bounded_ext_command
-from repomap_kg.runtime._extension_restore_toc import (
+from common_lore_index.runtime import _extension_restore_native as native_mod
+from common_lore_index.runtime import _extension_restore_toc_custody as toc_mod
+from common_lore_index.runtime._backup_provenance import parse_toc_entries
+from common_lore_index.runtime._extension_restore_custody import DatabaseCreationIntent
+from common_lore_index.runtime._extension_restore_exec import bound_exec_custody
+from common_lore_index.runtime._extension_restore_lifecycle import cleanup_extension_restore_intents
+from common_lore_index.runtime._extension_restore_native import owned_private_input, run_bounded_ext_command
+from common_lore_index.runtime._extension_restore_toc import (
     build_derived_toc_plan,
 )
-from repomap_kg.runtime._extension_restore_toc_custody import (
+from common_lore_index.runtime._extension_restore_toc_custody import (
     private_derived_toc_custody,
 )
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import LocalRuntimeDiagnostic, build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import LocalRuntimeDiagnostic, build_local_runtime_plan, setup_local_runtime
 
 
 def _make_runtime_home(tmp_path: Path) -> Any:

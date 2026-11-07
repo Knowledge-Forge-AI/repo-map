@@ -9,9 +9,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.backend_connection_telemetry import BackendTelemetry
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.backend_telemetry_events import (
+from common_lore_index.storage.backend_connection_telemetry import BackendTelemetry
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.backend_telemetry_events import (
     ConnectionTelemetryError,
     ConnectionTelemetryEvent,
     TelemetryEventKind,
@@ -190,7 +190,7 @@ def test_prior_instance_acknowledgement_cannot_release_a_new_instance() -> None:
     source_connection = _Connection()
     try:
         with patch(
-            "repomap_kg.storage.backend_connection_telemetry.secrets.randbits",
+            "common_lore_index.storage.backend_connection_telemetry.secrets.randbits",
             side_effect=(10, 20),
         ):
             prior = BackendTelemetry(prior_events.append, monotonic_ns=lambda: 123)

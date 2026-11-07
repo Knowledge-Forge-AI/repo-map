@@ -2,14 +2,14 @@
 import json
 from pathlib import Path
 import pytest
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.graph.keys import file_key
-from repomap_kg.ops.graph_files import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.graph.keys import file_key
+from common_lore_index.ops.graph_files import (
     query_graph_files, GraphFileFilters, GraphFileRecord, OpsRefreshError,
     graph_file_page_to_jsonable, format_graph_file_table,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root, run_psql
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.storage import apply_migrations, default_rdbms_root, run_psql
+from common_lore_index.storage.sql_core import sql_literal
 from repomap_test_support.postgres_harness import temporary_postgres
 
 

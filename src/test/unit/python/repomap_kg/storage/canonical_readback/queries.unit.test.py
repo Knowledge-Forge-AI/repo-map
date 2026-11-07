@@ -4,14 +4,14 @@ import json
 import os
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_canonical_neighborhood,
     query_canonical_edge_explanation,
     query_canonical_edge_records,
     query_canonical_node_records,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 class StorageCanonicalQueryUnitTests(unittest.TestCase):
     def test_query_canonical_records_parse_psql_json_arrays(self):
@@ -50,7 +50,7 @@ class StorageCanonicalQueryUnitTests(unittest.TestCase):
         )
 
         with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql"}):
-            with patch("repomap_kg.storage.subprocess.run") as run:
+            with patch("common_lore_index.storage.subprocess.run") as run:
                 run.side_effect = [
                     subprocess.CompletedProcess(["psql"], 0, stdout=node_payload + "\n"),
                     subprocess.CompletedProcess(["psql"], 0, stdout=edge_payload + "\n"),
@@ -94,7 +94,7 @@ class StorageCanonicalQueryUnitTests(unittest.TestCase):
         )
 
         with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql"}):
-            with patch("repomap_kg.storage.subprocess.run") as run:
+            with patch("common_lore_index.storage.subprocess.run") as run:
                 run.return_value = subprocess.CompletedProcess(
                     ["psql"],
                     0,
@@ -169,7 +169,7 @@ class StorageCanonicalQueryUnitTests(unittest.TestCase):
         os.environ.pop(PG_CONNECTOR_ENV, None)
         os.environ[READBACK_DRIVER_ENV] = "psql"
         try:
-            with patch("repomap_kg.storage.subprocess.run") as run:
+            with patch("common_lore_index.storage.subprocess.run") as run:
                 run.return_value = subprocess.CompletedProcess(
                     ["psql"],
                     0,
@@ -234,7 +234,7 @@ class StorageCanonicalQueryUnitTests(unittest.TestCase):
         empty_array = "[]\n"
         empty_object = '{"edge": null, "evidence": []}\n'
         with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql"}):
-            with patch("repomap_kg.storage.subprocess.run") as run:
+            with patch("common_lore_index.storage.subprocess.run") as run:
                 run.side_effect = [
                     subprocess.CompletedProcess(["psql"], 0, stdout=empty_array),
                     subprocess.CompletedProcess(["psql"], 0, stdout=empty_array),

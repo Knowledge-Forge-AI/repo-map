@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from typing import Any
-from repomap_kg.runtime.release import POSTGRES_RELEASE_VERSION, PYTHON_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release import POSTGRES_RELEASE_VERSION, PYTHON_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support.d12_image_probes import SERVER, CLIENTS, NOTICES
 
 LIBC = "/usr/lib/x86_64-linux-gnu/libc.so.6"
@@ -59,7 +59,7 @@ def _valid_round_trip() -> dict[str, Any]:
         "server_version": f"{POSTGRES_RELEASE_VERSION} (Debian {POSTGRES_RELEASE_VERSION}-1.pgdg13+1)",
         "fixture_rows": 2000, "fixture_md5": "0123456789abcdef0123456789abcdef",
         "graph_schema": "CURRENT", "extensions": ["plpgsql"], "replication_slots": 0,
-        "index_access_methods": ["btree"],
+        "index_access_methods": ["btree", "gin"],
     }
     return {
         "archive_sha256_before": "a" * 64, "archive_sha256_after": "a" * 64,

@@ -9,10 +9,10 @@ from pathlib import Path
 from typing import Literal, TypeAlias
 
 from psycopg import sql
-from repomap_kg.coordinator._control_types import ControlSchemaError
-from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.runtime.database_role_contract import RoleSecrets
+from common_lore_index.coordinator._control_types import ControlSchemaError
+from common_lore_index.coordinator.local_lifecycle import LocalControlAuthority
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.runtime.database_role_contract import RoleSecrets
 from repomap_test_support.coordinator_client_fixtures import (
     CustomPageClient, FakeCoordinatorClient, ItemClient, fixed_client_factory,
 )

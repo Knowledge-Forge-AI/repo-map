@@ -14,16 +14,16 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.ops._portable_retention import PortableRefreshError
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.ops.local_refresh import LocalRefreshError, LocalRefreshResult
-from repomap_kg.ops.local_refresh_enabled import (
+from common_lore_index.ops._portable_retention import PortableRefreshError
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.ops.local_refresh import LocalRefreshError, LocalRefreshResult
+from common_lore_index.ops.local_refresh_enabled import (
     LocalRefreshFailure,
     format_local_refresh_enabled_table,
     local_refresh_enabled_to_jsonable,
     refresh_enabled_local_graphs,
 )
-from repomap_kg.storage.sqlite_local.schema import PUBLICATION_IN_PROGRESS, LocalStoreError
+from common_lore_index.storage.sqlite_local.schema import PUBLICATION_IN_PROGRESS, LocalStoreError
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_sqlite_home
 
 

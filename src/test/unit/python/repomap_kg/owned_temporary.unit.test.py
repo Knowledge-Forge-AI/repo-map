@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg._temporary import OwnedTemporaryDirectory
-from repomap_kg.coordinator import _portable_authority as authority
+from common_lore_index._temporary import OwnedTemporaryDirectory
+from common_lore_index.coordinator import _portable_authority as authority
 
 
 def test_context_cleans_nested_readonly_files_and_is_idempotent(tmp_path):

@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.cli import main
+from common_lore_index.cli import main
 
 class CliLocalOpsMcpServeUnitTests(unittest.TestCase):
     def test_mcp_serve_sets_ops_config_and_delegates_to_stdio_server(self):
@@ -14,7 +14,7 @@ class CliLocalOpsMcpServeUnitTests(unittest.TestCase):
 
             with patch.dict("os.environ", {}, clear=True):
                 with patch(
-                    "repomap_kg.server.mcp.serve_stdio",
+                    "common_lore_index.server.mcp.serve_stdio",
                     return_value=0,
                 ) as serve_stdio:
                     exit_code = main(
@@ -31,7 +31,7 @@ class CliLocalOpsMcpServeUnitTests(unittest.TestCase):
 
             with patch.dict("os.environ", {}, clear=True):
                 with patch(
-                    "repomap_kg.server.mcp.serve_stdio",
+                    "common_lore_index.server.mcp.serve_stdio",
                     return_value=0,
                 ) as serve_stdio:
                     exit_code = main(

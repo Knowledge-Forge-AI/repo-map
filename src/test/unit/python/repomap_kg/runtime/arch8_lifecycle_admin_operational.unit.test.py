@@ -4,19 +4,19 @@ from typing import TYPE_CHECKING, cast
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.runtime.backup_commands import CommandRunner
+    from common_lore_index.runtime.backup_commands import CommandRunner
 
-import repomap_kg.runtime.backup_commands as backup_commands
-from repomap_kg.runtime.backup import inspect_owned_postgres_container
-from repomap_kg.runtime.backup_commands import (
+import common_lore_index.runtime.backup_commands as backup_commands
+from common_lore_index.runtime.backup import inspect_owned_postgres_container
+from common_lore_index.runtime.backup_commands import (
     backup_root,
     planned_pg_restore_command,
     planned_psql_command,
 )
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import build_local_runtime_plan
-from repomap_kg.runtime.release import PACKAGED_PG_RESTORE, PACKAGED_PSQL
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import build_local_runtime_plan
+from common_lore_index.runtime.release import PACKAGED_PG_RESTORE, PACKAGED_PSQL
 
 
 def test_lifecycle_admin_backup_root_uses_private_admin_volume(

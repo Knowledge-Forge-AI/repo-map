@@ -6,14 +6,14 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.runtime.local import LocalRuntimePlan, setup_local_runtime
-from repomap_kg.runtime.schema_upgrade import (
+from common_lore_index.runtime.local import LocalRuntimePlan, setup_local_runtime
+from common_lore_index.runtime.schema_upgrade import (
     RepositoryIdentityState,
     _repository_identity_target,
     query_repository_identity_state,
     upgrade_graph_schema,
 )
-from repomap_kg.storage import discover_migrations
+from common_lore_index.storage import discover_migrations
 
 
 def test_exact_current_path_keyed_state_reconciles_after_verified_backup(
@@ -53,15 +53,15 @@ def test_exact_current_path_keyed_state_reconciles_after_verified_backup(
         return action
 
     with (
-        patch("repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container"),
-        patch("repomap_kg.runtime.schema_upgrade.database_exists", return_value=True),
-        patch("repomap_kg.runtime.schema_upgrade.schema_ledger_exists", return_value=True),
+        patch("common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container"),
+        patch("common_lore_index.runtime.schema_upgrade.database_exists", return_value=True),
+        patch("common_lore_index.runtime.schema_upgrade.schema_ledger_exists", return_value=True),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+            "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
             return_value=expected_ledger,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade._repository_identity_target",
+            "common_lore_index.runtime.schema_upgrade._repository_identity_target",
             return_value=(
                 "repo1:public-fixture",
                 "public-fixture",
@@ -69,23 +69,23 @@ def test_exact_current_path_keyed_state_reconciles_after_verified_backup(
             ),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_repository_identity_state",
+            "common_lore_index.runtime.schema_upgrade.query_repository_identity_state",
             side_effect=[path_keyed, stable],
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.dump_database",
+            "common_lore_index.runtime.schema_upgrade.dump_database",
             record("backup", backup),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_backup",
+            "common_lore_index.runtime.schema_upgrade.inspect_backup",
             record("verify-backup", inspection),
         ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.apply_repository_identity_reconciliation",
+                "common_lore_index.runtime.schema_upgrade.apply_repository_identity_reconciliation",
                 record("reconcile"),
             ),
             patch(
-                "repomap_kg.runtime.schema_upgrade.reconcile_graph_database_roles",
+                "common_lore_index.runtime.schema_upgrade.reconcile_graph_database_roles",
                 record("roles"),
             ),
         ):
@@ -120,15 +120,15 @@ def test_conflicting_stable_identity_is_refused_before_backup(
         for migration in discover_migrations()
     )
     with (
-        patch("repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container"),
-        patch("repomap_kg.runtime.schema_upgrade.database_exists", return_value=True),
-        patch("repomap_kg.runtime.schema_upgrade.schema_ledger_exists", return_value=True),
+        patch("common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container"),
+        patch("common_lore_index.runtime.schema_upgrade.database_exists", return_value=True),
+        patch("common_lore_index.runtime.schema_upgrade.schema_ledger_exists", return_value=True),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+            "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
             return_value=expected_ledger,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade._repository_identity_target",
+            "common_lore_index.runtime.schema_upgrade._repository_identity_target",
             return_value=(
                 "repo1:public-fixture",
                 "public-fixture",
@@ -136,10 +136,10 @@ def test_conflicting_stable_identity_is_refused_before_backup(
             ),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_repository_identity_state",
+            "common_lore_index.runtime.schema_upgrade.query_repository_identity_state",
             return_value=RepositoryIdentityState(2, 0, 1, 1),
         ),
-        patch("repomap_kg.runtime.schema_upgrade.dump_database") as backup,
+        patch("common_lore_index.runtime.schema_upgrade.dump_database") as backup,
     ):
         with pytest.raises(Exception, match="repository identity is diverged"):
             upgrade_graph_schema(
@@ -164,7 +164,7 @@ def test_identity_state_parser_and_configured_target_are_bounded() -> None:
         ),
     )
     with patch(
-        "repomap_kg.runtime.repository_identity_migration.run_container_command",
+        "common_lore_index.runtime.repository_identity_migration.run_container_command",
         return_value=subprocess.CompletedProcess(
             [], 0, stdout=b"2\t0\t0\t1\n", stderr=b""
         ),
@@ -189,7 +189,7 @@ def test_identity_state_parser_and_configured_target_are_bounded() -> None:
         ),
     )
     with patch(
-        "repomap_kg.runtime.repository_identity_migration.resolve_ops_config",
+        "common_lore_index.runtime.repository_identity_migration.resolve_ops_config",
         return_value=SimpleNamespace(graphs=(graph,)),
     ):
         assert _repository_identity_target(plan, "repomap") == (

@@ -73,7 +73,7 @@ def retention_candidate(
     ownership = {
         "schema": "repomap-python-type-ownership-v1",
         "resolution": "longest-component-prefix-wins", "entries": [{
-            "module_prefix": "repomap_kg", "match": "exact",
+            "module_prefix": "common_lore_index", "match": "exact",
             "ownership_class": "python_retained", "architecture_box": "go_control_and_api",
             "enforcement_tier": "T1-future", "justification": "Synthetic maintained product owner",
             "disposition": "retained_python_ratcheted",

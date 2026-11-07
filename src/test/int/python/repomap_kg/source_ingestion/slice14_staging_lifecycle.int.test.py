@@ -6,16 +6,16 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
     capture_multi_source_candidate,
 )
-from repomap_kg.graph.multi_source_records import (
+from common_lore_index.graph.multi_source_records import (
     SourceKind,
     graph_source_binding_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 from repomap_test_support.test_scratch import select_scratch_root
 
 

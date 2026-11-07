@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.graph.readback.files import (
+from common_lore_index.graph.readback.files import (
     FileFilters,
     FileRecord,
     file_records_from_observations,
@@ -8,7 +8,7 @@ from repomap_kg.graph.readback.files import (
     format_file_table,
     records_to_jsonable,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 class FilesUnitTests(unittest.TestCase):

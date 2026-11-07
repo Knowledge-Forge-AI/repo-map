@@ -1,12 +1,12 @@
 import unittest
 
-from repomap_kg.extractors.languages.ruby import extract_ruby_file_observations
+from common_lore_index.extractors.languages.ruby import extract_ruby_file_observations
 
 
 class RubyExtractorUnitTests(unittest.TestCase):
     def test_rootpkg35_ruby_profile_helpers_are_reexported(self):
-        import repomap_kg.extractors.languages.ruby as ruby
-        import repomap_kg.extractors.languages.ruby_profiles as ruby_profiles
+        import common_lore_index.extractors.languages.ruby as ruby
+        import common_lore_index.extractors.languages.ruby_profiles as ruby_profiles
         helper_names = (
             "_definition_observation",
             "_gem_dependency_observations",

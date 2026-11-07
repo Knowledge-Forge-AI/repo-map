@@ -26,8 +26,8 @@ from ci.d12_hosted_qualification import (
     run_system_hold,
     seal_hosted_d12,
 )
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime.release import PRODUCT_MINIMUM_LIBPQ_VERSION
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime.release import PRODUCT_MINIMUM_LIBPQ_VERSION
 from src.test.unit.python.tools.ci.d12_hosted_fixtures import (
     BASE_PARENT_SHA, CANDIDATE_SHA, CANDIDATE_TREE, HEAD_PARENT_SHA,
     SYNTHETIC_D12_SOURCE_SHA256, SYNTHETIC_SDK_RECIPE_SHA256,

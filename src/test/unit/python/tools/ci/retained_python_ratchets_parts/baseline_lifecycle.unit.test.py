@@ -43,8 +43,8 @@ def snapshot_fixture() -> SnapshotDocument:
             "tiers": ["T0", "T1-future", "T1-seed"],
             "modules": [
                 {
-                    "module": "repomap_kg.future",
-                    "path": "src/main/python/repomap_kg/future.py",
+                    "module": "common_lore_index.future",
+                    "path": "src/main/python/common_lore_index/future.py",
                     "ownership_class": "python_retained",
                     "tier": "T1-future",
                 }
@@ -112,7 +112,7 @@ def test_check_result_schema_is_closed_and_improvement_stays_blocking() -> None:
     snapshot = snapshot_fixture()
     baseline = baseline_document(snapshot)
     baseline["ruff"]["findings"] = [
-        {"path": "src/main/python/repomap_kg/future.py", "code": "F401", "message": "unused", "fingerprint": "f" * 64, "count": 1}
+        {"path": "src/main/python/common_lore_index/future.py", "code": "F401", "message": "unused", "fingerprint": "f" * 64, "count": 1}
     ]
 
     result = compare_snapshot(snapshot, baseline, mode="check")
@@ -165,7 +165,7 @@ def test_check_is_read_only_and_generation_refuses_upward_laundering(
     )
     assert main(["--baseline", "baseline.json"]) == 0
     snapshot["ruff"]["findings"] = [
-        {"path": "src/main/python/repomap_kg/future.py", "code": "F401", "message": "unused", "fingerprint": "f" * 64, "count": 1}
+        {"path": "src/main/python/common_lore_index/future.py", "code": "F401", "message": "unused", "fingerprint": "f" * 64, "count": 1}
     ]
     assert main(["--baseline", "baseline.json", "--generate-baseline"]) == 1
     assert json.loads(baseline.read_text(encoding="utf-8"))["ruff"]["findings"] == []
@@ -196,7 +196,7 @@ def test_generation_refuses_retained_hard_file_length_failure(
 ) -> None:
     snapshot = snapshot_fixture()
     snapshot["file_length"]["hard_failures"] = [
-        {"path": "src/main/python/repomap_kg/future.py", "line_count": 1001}
+        {"path": "src/main/python/common_lore_index/future.py", "line_count": 1001}
     ]
     monkeypatch.setattr("ci.retained_python_ratchets.ROOT", tmp_path)
     destination = tmp_path / "baseline.json"
@@ -215,21 +215,21 @@ def test_generation_refuses_retained_hard_file_length_failure(
 
 def test_unclassified_maintained_module_raises_ownership_manifest_error(tmp_path: Path) -> None:
     manifest = OwnershipManifest(tuple())
-    modules = {"repomap_kg.unclassified": tmp_path / "unclassified.py"}
+    modules = {"common_lore_index.unclassified": tmp_path / "unclassified.py"}
     with pytest.raises(OwnershipManifestError, match="unclassified maintained modules"):
         classify_modules(modules, manifest)
 
 
 def test_assert_clean_additions_enforces_zero_findings_and_line_limits() -> None:
     additions: tuple[SelectionModuleRecord, ...] = ({
-        "module": "repomap_kg.dirty",
-        "path": "src/main/python/repomap_kg/dirty.py",
+        "module": "common_lore_index.dirty",
+        "path": "src/main/python/common_lore_index/dirty.py",
         "ownership_class": "python_retained",
         "tier": "T1-future",
     },)
     after = baseline_document(snapshot_fixture())
     after["ruff"]["findings"] = [{
-        "path": "src/main/python/repomap_kg/dirty.py",
+        "path": "src/main/python/common_lore_index/dirty.py",
         "code": "F401",
         "message": "unused",
         "fingerprint": "f" * 64,
@@ -240,20 +240,20 @@ def test_assert_clean_additions_enforces_zero_findings_and_line_limits() -> None
 
     # Line limit ceiling violation is also rejected
     long_additions: tuple[SelectionModuleRecord, ...] = ({
-        "module": "repomap_kg.long",
-        "path": "src/main/python/repomap_kg/long.py",
+        "module": "common_lore_index.long",
+        "path": "src/main/python/common_lore_index/long.py",
         "ownership_class": "python_retained",
         "tier": "T1-future",
     },)
     after_long = baseline_document(snapshot_fixture())
-    after_long["file_length"]["ceilings"] = [{"path": "src/main/python/repomap_kg/long.py", "line_count": 401}]
+    after_long["file_length"]["ceilings"] = [{"path": "src/main/python/common_lore_index/long.py", "line_count": 401}]
     with pytest.raises(LineagePolicyError, match="new retained module is not clean"):
         _assert_clean_additions(long_additions, after_long)
 
     # Clean addition passes
     clean_additions: tuple[SelectionModuleRecord, ...] = ({
-        "module": "repomap_kg.clean",
-        "path": "src/main/python/repomap_kg/clean.py",
+        "module": "common_lore_index.clean",
+        "path": "src/main/python/common_lore_index/clean.py",
         "ownership_class": "python_retained",
         "tier": "T1-future",
     },)

@@ -4,8 +4,8 @@ from dataclasses import replace
 import pytest
 
 from repomap_test_support.executable_authority import approved_psql, search_path_for
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability, RefreshConfigurationError, create_refresh_capability, load_refresh_capability,
 )
 
@@ -25,9 +25,9 @@ def write_config(path: Path, root: Path) -> None:
 
 def test_native_route_is_bound_and_worker_rejects_route_change(tmp_path, monkeypatch):
     from dataclasses import replace
-    from repomap_kg.coordinator.refresh_adapter import RefreshCapability, execute_refresh
-    from repomap_kg.coordinator._refresh_contracts import RefreshGenerationChangedError
-    from repomap_kg.runtime.postgres_route import execution_postgres
+    from common_lore_index.coordinator.refresh_adapter import RefreshCapability, execute_refresh
+    from common_lore_index.coordinator._refresh_contracts import RefreshGenerationChangedError
+    from common_lore_index.runtime.postgres_route import execution_postgres
 
     repository = tmp_path / "source"
     repository.mkdir()
@@ -53,19 +53,19 @@ def test_native_route_is_bound_and_worker_rejects_route_change(tmp_path, monkeyp
         postgres_route_kind=authority.postgres_route_kind,
         coordinator_instance_id="route-instance", singleton_fencing_epoch=1, graph_lease_fencing_epoch=1,
     )
-    with patch("repomap_kg.ops.refresh.refresh_graph", return_value="complete") as refresh:
+    with patch("common_lore_index.ops.refresh.refresh_graph", return_value="complete") as refresh:
         assert execute_refresh(capability) == "complete"
         executed = refresh.call_args.args[0]
         assert executed.postgres.host == "postgres"
         assert execution_postgres(executed).port == 55891
         bound = refresh.call_args.kwargs["_postgres_route"]
         assert (bound.host, bound.port, bound.kind) == ("127.0.0.1", 55891, "local-native")
-    with patch("repomap_kg.ops.refresh.refresh_graph") as refresh:
+    with patch("common_lore_index.ops.refresh.refresh_graph") as refresh:
         with pytest.raises(RefreshGenerationChangedError):
             execute_refresh(replace(capability, postgres_port=55892))
         refresh.assert_not_called()
     config_path.write_text(config_path.read_text().replace("55891", "55892"))
-    with patch("repomap_kg.ops.refresh.refresh_graph") as refresh:
+    with patch("common_lore_index.ops.refresh.refresh_graph") as refresh:
         with pytest.raises(RefreshGenerationChangedError):
             execute_refresh(capability)
         refresh.assert_not_called()
@@ -108,12 +108,12 @@ def test_native_capability_route_round_trip(tmp_path):
         path.unlink()
 
 
-from repomap_kg.runtime.postgres_route import PostgresRoute
+from common_lore_index.runtime.postgres_route import PostgresRoute
 
 
 def test_ops_refresh_error_is_strictly_preflight_configuration_error() -> None:
-    from repomap_kg.ops.report_records import OpsRefreshError
-    from repomap_kg.coordinator._refresh_execution import execute_refresh_attempt
+    from common_lore_index.ops.report_records import OpsRefreshError
+    from common_lore_index.coordinator._refresh_execution import execute_refresh_attempt
 
     capability = MagicMock()
     capability.config_path.exists.return_value = True
@@ -124,32 +124,32 @@ def test_ops_refresh_error_is_strictly_preflight_configuration_error() -> None:
     capability.postgres_route_kind = "configured"
 
     with (
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
-        patch("repomap_kg.ops.config.load_ops_config"),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config"),
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.ops.refresh.refresh_graph") as mock_refresh,
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
+        patch("common_lore_index.ops.config.load_ops_config"),
+        patch("common_lore_index.runtime.database_role_contract.project_database_role_config"),
+        patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations"),
+        patch("common_lore_index.ops.refresh.refresh_graph") as mock_refresh,
     ):
         mock_refresh.side_effect = OpsRefreshError("graph 'test-graph' is disabled")
         with pytest.raises(RefreshConfigurationError, match="disabled"):
             execute_refresh_attempt(capability)
 
 
-from repomap_kg.coordinator.refresh_adapter import execute_refresh
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import RunPublicationReceipt, RunPublicationAttempt, RunPublicationGenerations
-from repomap_kg.storage.staged_ingestion import IngestionAuthority
+from common_lore_index.coordinator.refresh_adapter import execute_refresh
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import RunPublicationReceipt, RunPublicationAttempt, RunPublicationGenerations
+from common_lore_index.storage.staged_ingestion import IngestionAuthority
 
 
 def test_execute_refresh_delegates_once_to_existing_forced_full_operation(tmp_path: Path) -> None:
     config_path, target = _cfg(tmp_path), capability(tmp_path, _cfg(tmp_path))
     existing_result, execution_config = object(), object()
     with (
-        patch("repomap_kg.ops.config.load_ops_config", return_value="loaded-config") as load,
-        patch("repomap_kg.ops.refresh.refresh_graph", return_value=existing_result) as refresh,
-        patch("repomap_kg.coordinator._refresh_execution.validate_configured_generations"),
-        patch("repomap_kg.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
-        patch("repomap_kg.runtime.database_role_contract.project_database_role_config", return_value=execution_config) as project,
+        patch("common_lore_index.ops.config.load_ops_config", return_value="loaded-config") as load,
+        patch("common_lore_index.ops.refresh.refresh_graph", return_value=existing_result) as refresh,
+        patch("common_lore_index.coordinator._refresh_execution.validate_configured_generations"),
+        patch("common_lore_index.coordinator._refresh_execution.effective_postgres_route", return_value=PostgresRoute("127.0.0.1", 5432, "configured")),
+        patch("common_lore_index.runtime.database_role_contract.project_database_role_config", return_value=execution_config) as project,
     ):
         assert execute_refresh(target) is existing_result
     load.assert_called_once_with(config_path)

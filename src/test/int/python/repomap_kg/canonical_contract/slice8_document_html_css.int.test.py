@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.extractors.documents.css_html_matching import (
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.extractors.documents.css_html_matching import (
     extract_css_selector_match_observations,
 )
-from repomap_kg.extractors.documents.html import extract_html_file_observations
-from repomap_kg.storage.canonical_rows import prepare_canonical_load
+from common_lore_index.extractors.documents.html import extract_html_file_observations
+from common_lore_index.storage.canonical_rows import prepare_canonical_load
 
 
 class Slice8DocumentHtmlCssIntegrationTests(unittest.TestCase):

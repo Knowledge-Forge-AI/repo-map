@@ -13,23 +13,23 @@ RAW_OBSERVATION_EXPORTS = [
 
 
 def test_pkg6_observations_package_exports_raw_symbols() -> None:
-    import repomap_kg.observations as observations
-    import repomap_kg.observations.raw as raw
+    import common_lore_index.observations as observations
+    import common_lore_index.observations.raw as raw
     for symbol_name in RAW_OBSERVATION_EXPORTS:
         assert getattr(observations, symbol_name) is getattr(raw, symbol_name)
 
 
 def test_pkg6_graph_keys_round_trip_through_package_path() -> None:
-    import repomap_kg.graph.keys as graph_keys
-    key = graph_keys.file_key("src/main/python/repomap_kg/cli.py")
+    import common_lore_index.graph.keys as graph_keys
+    key = graph_keys.file_key("src/main/python/common_lore_index/cli.py")
 
-    assert graph_keys.parse_key(key).path == "src/main/python/repomap_kg/cli.py"
+    assert graph_keys.parse_key(key).path == "src/main/python/common_lore_index/cli.py"
 
 
 def test_pkg6_observation_and_normalization_work_through_package_paths() -> None:
-    import repomap_kg.observations as observations
-    import repomap_kg.observations.raw as raw
-    import repomap_kg.observations.normalization as normalization
+    import common_lore_index.observations as observations
+    import common_lore_index.observations.raw as raw
+    import common_lore_index.observations.normalization as normalization
     observation = raw.RawObservation(
         kind="file",
         source_id="pkg6",

@@ -11,13 +11,13 @@ from repomap_test_support.postgres_harness import (
 from repomap_test_support.storage_integration import (
     canonicalization_fixture,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     query_terraform_summary,
     terraform_summary_to_jsonable,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 from src.test.int.python.repomap_kg.storage.terraform_summary_readback_contracts import (
     WRAPPER_FIELDS,
@@ -229,7 +229,7 @@ def test_psycopg77_terraform_summary_connector_cli_and_mcp_parity() -> None:
 
 
 def _mcp_payloads(postgres, *, public_root: str, private_root: str):
-    from repomap_kg.server.mcp import repomap_terraform_summary
+    from common_lore_index.server.mcp import repomap_terraform_summary
 
     with tempfile.TemporaryDirectory() as tmpdir:
         config_path = Path(tmpdir) / "psycopg77.local.toml"

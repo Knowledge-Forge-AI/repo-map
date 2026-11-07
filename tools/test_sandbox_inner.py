@@ -111,7 +111,7 @@ def prepare_workspace_and_identity(
             "mkdir",
             "-p",
             "/workspace/build",
-            "/workspace/src/main/python/repomap_kg.egg-info",
+            "/workspace/src/main/python/common_lore_index.egg-info",
         ),
     )
     require_inner_command(
@@ -131,7 +131,7 @@ def prepare_workspace_and_identity(
             "mount",
             "--bind",
             "/sandbox-scratch/project-egg-info",
-            "/workspace/src/main/python/repomap_kg.egg-info",
+            "/workspace/src/main/python/common_lore_index.egg-info",
         ),
     )
     passwd_probe = (
@@ -147,11 +147,12 @@ def prepare_workspace_and_identity(
         container_id,
         ("python3", "-c", passwd_probe),
     )
+    # Canonical-main test shim; installed legacy branding is proved separately.
     cli_wrapper = (
         "#!/bin/sh\n"
         'PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}/workspace/tools:'
         '/workspace/src/main/python:/workspace/src/test/support/python" '
-        "exec python3 -c 'from repomap_kg.cli import main; "
+        "exec python3 -c 'from common_lore_index.cli import main; "
         "raise SystemExit(main())' \"$@\"\n"
     )
     wrapper_probe = (

@@ -64,7 +64,7 @@ directory and uses no network: the operator kit installs with
 `--no-index --require-hashes` from the kit's own wheels. It proves:
 
 - Psycopg is absent;
-- `repomap_kg` imports from the venv;
+- `common_lore_index` imports from the venv;
 - `--help` and `--version`;
 - `ops config-check`, `ops graphs --check-db`, `ops sqlite-init`,
   `ops refresh-preflight` and a direct `ops refresh-graph` on a two-file
@@ -798,3 +798,11 @@ reported as `legacy-unresolved-attempt` and kept. RepoMap cannot tell which
 graph or backend wrote it, so it never guesses. To dispose of it, stop every
 RepoMap process, confirm each graph's accepted state read-only, and move the
 directory into a quarantine directory outside the home.
+
+## Mixed-v1 first use
+
+For the bounded source-level Local workflow over four declared mixed-v1 test bindings,
+see [First-use workflows](first-use-workflows.md). It adds context selection
+and packing, source-blind context across an accepted-generation change, and
+recovery after a refused source refresh. Installed-wheel and native-host
+proof remain pending.

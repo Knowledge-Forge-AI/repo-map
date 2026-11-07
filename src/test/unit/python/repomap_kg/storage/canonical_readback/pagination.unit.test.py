@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     build_canonical_edge_query_sql,
     build_canonical_neighborhood_query_sql,
@@ -10,7 +10,7 @@ from repomap_kg.storage import (
     public_embedded_read_result_to_jsonable,
     public_read_page,
 )
-from repomap_kg.storage.canonical import (
+from common_lore_index.storage.canonical import (
     query_canonical_edge_records,
     query_canonical_node_records,
 )
@@ -61,7 +61,7 @@ class StorageCanonicalPaginationUnitTests(unittest.TestCase):
 
     def test_canonical_queries_forward_pagination_to_sql(self):
         with patch(
-            "repomap_kg.storage.canonical.execute_json_readback",
+            "common_lore_index.storage.canonical.execute_json_readback",
             return_value=[],
         ) as execute:
             query_canonical_node_records(

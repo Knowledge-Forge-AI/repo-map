@@ -14,7 +14,7 @@ from repomap_test_support.local_db_backup import (
     unit_maintenance_window_patch,
 )
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
+from common_lore_index.runtime.local import LocalRuntimeIdentity
 
 
 class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
@@ -152,7 +152,7 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=toc.encode("utf-8"), stderr=b"")
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=fake_runner):
                 inspect_exit, inspect_stdout, inspect_stderr = self.run_repo_map_in_process(
                     "local", "db", "backup-inspect", "--repo-map-home", str(home), manifest["backup_id"], "--json",
                 )
@@ -218,10 +218,10 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
             with (
                 unit_maintenance_window_patch(),
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
                 ),
-                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner),
+                patch("common_lore_index.runtime.backup.subprocess.run", side_effect=fake_runner),
             ):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "dump", "--repo-map-home", str(home), "--database", "repomap", "--json",
@@ -262,8 +262,8 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
 
             with (
                 unit_maintenance_window_patch(),
-                patch("repomap_kg.cli.maintenance_window_for_coordinated_backup", return_value=nullcontext()),
-                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=fake_runner),
+                patch("common_lore_index.cli.maintenance_window_for_coordinated_backup", return_value=nullcontext()),
+                patch("common_lore_index.runtime.backup.subprocess.run", side_effect=fake_runner),
             ):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "db", "dump-all", "--repo-map-home", str(home), "--json",
@@ -319,10 +319,10 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
             with (
                 unit_maintenance_window_patch(),
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
                 ),
-                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=unowned_runner),
+                patch("common_lore_index.runtime.backup.subprocess.run", side_effect=unowned_runner),
             ):
                 unowned_exit, unowned_stdout, unowned_stderr = self.run_repo_map_in_process(
                     "local", "db", "dump", "--repo-map-home", str(home), "--database", "repomap", "--json",
@@ -341,10 +341,10 @@ class CliLocalDbDumpBackupInspectIntegrationTests(CliIntegrationTestCase):
             with (
                 unit_maintenance_window_patch(),
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
                 ),
-                patch("repomap_kg.runtime.backup.subprocess.run", side_effect=failing_runner),
+                patch("common_lore_index.runtime.backup.subprocess.run", side_effect=failing_runner),
             ):
                 fail_exit, fail_stdout, fail_stderr = self.run_repo_map_in_process(
                     "local", "db", "dump", "--repo-map-home", str(home), "--database", "repomap", "--json",

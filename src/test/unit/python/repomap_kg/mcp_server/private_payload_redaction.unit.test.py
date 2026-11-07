@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalNeighborhoodRecord,
     CanonicalNodeRecord,
     JSFrameworkSummaryRecord,
@@ -24,8 +24,8 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 def test_public_neighborhood_real_endpoints_and_unchanged_sanitization(
     tmp_path, monkeypatch, center, direction, expected,
 ):
-    from repomap_kg.server import mcp, ops, _ops_summaries
-    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from common_lore_index.server import mcp, ops, _ops_summaries
+    from common_lore_index.server._ops_sanitization import sanitize_jsonable
     from repomap_test_support.related_context_fixtures import (
         EXPECTED_IMPORTS, EXPECTED_LINKS, GRAPH, related_home,
     )
@@ -85,7 +85,7 @@ def test_public_neighborhood_real_endpoints_and_unchanged_sanitization(
 def test_legacy_canonical_routes_preserve_existing_endpoint_policy(
     tmp_path, monkeypatch, privacy, tool, schema,
 ):
-    from repomap_kg.server import mcp, _ops_summaries
+    from common_lore_index.server import mcp, _ops_summaries
     from repomap_test_support.related_context_fixtures import (
         EXPECTED_IMPORTS, GRAPH, MODULE, related_home,
     )
@@ -132,7 +132,7 @@ def _mixed_multi_source_ops_config() -> str:
 
 class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
     def test_mcp_multi_source_storage_routes_to_logical_graph_root(self):
-        from repomap_kg.server.mcp import storage_connection
+        from common_lore_index.server.mcp import storage_connection
 
         config_path = self.write_ops_config(_mixed_multi_source_ops_config())
 
@@ -144,9 +144,9 @@ class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(connection.project, "mixed")
 
     def test_mcp_private_markers_include_all_multi_source_binding_roots(self):
-        from repomap_kg.server.mcp import storage_connection
-        from repomap_kg.server.mcp_core import private_storage_payload
-        from repomap_kg.server.ops import graph_context, readback_path_markers
+        from common_lore_index.server.mcp import storage_connection
+        from common_lore_index.server.mcp_core import private_storage_payload
+        from common_lore_index.server.ops import graph_context, readback_path_markers
 
         config_path = self.write_ops_config(_mixed_multi_source_ops_config())
 
@@ -185,7 +185,7 @@ class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(payload["logical"]["role"], bindings[0].role)
 
     def test_mcp_harden2_private_graph_payloads_redact_roots_across_tools(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_js_framework_summary,
             repomap_list_graphs,
             repomap_neighborhood,
@@ -212,18 +212,18 @@ class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
 
         cases = [
             ("list_graphs", None, None, repomap_list_graphs, lambda p: p["graphs"][1], lambda p: self.assertTrue(p["graphs"][1]["warnings"])),
-            ("project_summary", "repomap_kg.server.ops.query_canonical_storage_summary", CanonicalStorageSummaryRecord(
+            ("project_summary", "common_lore_index.server.ops.query_canonical_storage_summary", CanonicalStorageSummaryRecord(
                 root_path="synthetic-private-root", repository_name="private-visible", latest_run_id=44, runs=1, files=2,
                 raw_observations=13, canonical_nodes=3, canonical_edges=4, canonical_evidence=5,
             ), lambda: repomap_project_summary(graph_id="private-visible"), lambda p: p["graph"], lambda p: self.assertEqual(p["summary"]["root_path"], "[private-root]")),
-            ("js_framework_summary", "repomap_kg.server.ops.query_js_framework_summary", JSFrameworkSummaryRecord(
+            ("js_framework_summary", "common_lore_index.server.ops.query_js_framework_summary", JSFrameworkSummaryRecord(
                 root_path="synthetic-private-root", repository_name="private-visible", framework_observations=6, framework_profiles={"node": 1},
                 node={}, express={}, nest={}, next={}, jest={}, jquery={}, generic_js={}, diagnostics={}, safety={"no_execution": True},
             ), lambda: repomap_js_framework_summary(graph_id="private-visible"), lambda p: p["graph"], lambda p: self.assertEqual(p["summary"]["root_path"], "[private-root]")),
-            ("neighborhood", "repomap_kg.server.ops.query_canonical_neighborhood", neighborhood,
+            ("neighborhood", "common_lore_index.server.ops.query_canonical_neighborhood", neighborhood,
              lambda: repomap_neighborhood(graph_id="private-visible", node="python.module:private.app"), lambda p: p["graph"],
              lambda p: self.assertEqual(p["result"]["center"]["canonical_key"], "python.module:private.app")),
-            ("search_files", "repomap_kg.server.ops.query_mcp_search", {"results": [{"path": "src/private_app.py", "language": "python"}], "total": 1},
+            ("search_files", "common_lore_index.server.ops.query_mcp_search", {"results": [{"path": "src/private_app.py", "language": "python"}], "total": 1},
              lambda: repomap_search_files(graph_id="private-visible", query="private"), lambda p: p["graph"], lambda p: self.assertEqual(p["result_count"], 1)),
         ]
 
@@ -243,14 +243,14 @@ class McpServerPrivatePayloadRedactionUnitTests(McpServerTestSupport):
     def test_smoke_harden2_mcp_private_graph_metadata_redacts_connection_values(
         self,
     ):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_graph_status,
             repomap_js_framework_summary,
             repomap_list_graphs,
             repomap_project_summary,
             repomap_refresh_status,
         )
-        from repomap_kg.ops.reports import OpsRefreshGraphStatus
+        from common_lore_index.ops.reports import OpsRefreshGraphStatus
 
         private_root = "/Users/synthetic-user/private-repo"
         synthetic_values = (
@@ -346,10 +346,10 @@ mode = "read_only"
         )
         cases = (
             ("list_graphs", repomap_list_graphs, None, None, lambda p: p["graphs"][0]),
-            ("graph_status", lambda: repomap_graph_status(graph_id="private-visible"), "repomap_kg.server.ops.query_refresh_status", {"private-visible": refresh_status}, lambda p: p["graph"]),
-            ("refresh_status", lambda: repomap_refresh_status(graph_id="private-visible"), "repomap_kg.server.ops.query_refresh_status", {"private-visible": refresh_status}, lambda p: p["graphs"][0]),
-            ("project_summary", lambda: repomap_project_summary(graph_id="private-visible"), "repomap_kg.server.ops.query_canonical_storage_summary", storage_summary, lambda p: p["graph"]),
-            ("js_framework_summary", lambda: repomap_js_framework_summary(graph_id="private-visible"), "repomap_kg.server.ops.query_js_framework_summary", js_framework_summary, lambda p: p["graph"]),
+            ("graph_status", lambda: repomap_graph_status(graph_id="private-visible"), "common_lore_index.server.ops.query_refresh_status", {"private-visible": refresh_status}, lambda p: p["graph"]),
+            ("refresh_status", lambda: repomap_refresh_status(graph_id="private-visible"), "common_lore_index.server.ops.query_refresh_status", {"private-visible": refresh_status}, lambda p: p["graphs"][0]),
+            ("project_summary", lambda: repomap_project_summary(graph_id="private-visible"), "common_lore_index.server.ops.query_canonical_storage_summary", storage_summary, lambda p: p["graph"]),
+            ("js_framework_summary", lambda: repomap_js_framework_summary(graph_id="private-visible"), "common_lore_index.server.ops.query_js_framework_summary", js_framework_summary, lambda p: p["graph"]),
         )
 
         with self.patch_ops_config(ops_config_path):

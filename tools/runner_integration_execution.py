@@ -9,13 +9,13 @@ import json
 import os
 from pathlib import Path
 import subprocess
-import sys
 from typing import Any
 from uuid import uuid4
 
 from runner_abrupt_evidence import AbruptRunnerContext
 from runner_integration_population import LegPartitionPytestPlugin
 from runner_coverage import ChildCoverageSession
+from runner_failure_evidence import FailureEvidence
 from staging_report_contract import (
     SCHEMA, POLICY, digest_partition, execution_succeeded, persist_staging_report,
     StagingReportValidationError, validate_report,
@@ -60,7 +60,7 @@ def record_smoke_refusal(args) -> None:
     """Export a failed admission without pretending a population was executed."""
     payload: dict[str, Any] = {
         "schema": SCHEMA, "policy": POLICY, "invocation_id": uuid4().hex,
-        "candidate": candidate_identity(Path(__file__).resolve().parents[1]),
+        "candidate": None,
         "scoped": False, "coverage_enabled": not args.no_coverage,
         "smoke": "failed", "partition": {}, "go_coverage": None,
         "legs": {name: _leg_record((), not args.no_coverage, name) for name in ("M", "A")},
@@ -68,8 +68,16 @@ def record_smoke_refusal(args) -> None:
     }
     for entry in payload["legs"].values():
         entry["status"] = "blocked"
-    persist_staging_report(
-        Path(args.report_dir) / "staging" / "latest" / "staging_contract_report.json", payload)
+    output = Path(args.report_dir) / "staging" / "latest" / "staging_contract_report.json"
+    failure = FailureEvidence(output, payload, contract_writer=persist_staging_report)
+    try:
+        payload["candidate"] = candidate_identity(Path(__file__).resolve().parents[1])
+    except BaseException as error:
+        failure.capture(error, "candidate_identity")
+        if not isinstance(error, Exception):
+            raise
+    finally:
+        failure.persist_contract()
 
 
 def execute_staging_decision_b(
@@ -81,7 +89,7 @@ def execute_staging_decision_b(
     discovery_fn=None,
 ) -> int:
     invocation = uuid4().hex
-    identity = candidate_identity(repo_root)
+    identity: dict[str, str] | None = None
     enabled = not args.no_coverage
     scoped = bool(forwarded_selection_args_fn(forwarded_pytest_args))
     report: dict[str, Any] = {"schema": SCHEMA, "policy": POLICY, "invocation_id": invocation,
@@ -91,6 +99,8 @@ def execute_staging_decision_b(
               "partition": {}, "legs": {"M": _leg_record((), enabled),
                                           "A": _leg_record((), enabled, "A")}, "errors": []}
     output = Path(args.report_dir) / args.suite / "latest" / "staging_contract_report.json"
+    failure = FailureEvidence(output, report, contract_writer=persist_staging_report)
+    stage = "candidate_identity"
     sessions = []
     records: list[TestRecord] = []
     measured = None
@@ -98,10 +108,17 @@ def execute_staging_decision_b(
     collectors: dict[str, Any] = {}
 
     def verify_source():
+        nonlocal stage
+        previous = stage
+        stage = "source_verify"
         if candidate_identity(repo_root) != identity:
             raise RuntimeError("candidate source changed during invocation")
+        stage = previous
 
     try:
+        identity = candidate_identity(repo_root)
+        report["candidate"] = identity
+        stage = "discovery_collection"
         if discovery_fn is None:
             from runner_staging_discovery import discover_staging_population
             discovery_fn = discover_staging_population
@@ -123,13 +140,15 @@ def execute_staging_decision_b(
         report["legs"] = {name: _leg_record(nodes, enabled, name)
                           for name, nodes in (("M", partition.m_nodes), ("A", partition.a_nodes))}
         # The sealed plan is exported before either execution, including refusals.
-        persist_staging_report(output, report)
+        if not failure.persist_contract():
+            return 1
         safe = True
         for leg, nodes in (("M", partition.m_nodes), ("A", partition.a_nodes)):
             entry = report["legs"][leg]
             if not nodes or not safe:
                 continue
             verify_source()
+            stage = "execute_M" if leg == "M" else "execute_A"
             plugin = LegPartitionPytestPlugin(partition, leg, suite=args.suite,
                                               full_population=not scoped)
             abrupt = None
@@ -163,6 +182,8 @@ def execute_staging_decision_b(
                         collectors[leg] = cov_runner
                         instrumentation_error = getattr(cov_runner, "_instrumentation_error", None)
                         if instrumentation_error:
+                            if isinstance(instrumentation_error, BaseException):
+                                failure.capture(instrumentation_error, "measurement_M" if leg == "M" else "measurement_A")
                             entry["measurement"]["state"] = "incomplete"
                             report["errors"].append(f"{leg}: ordinary measurement incomplete")
                             # Missing child completion can also mean unsettled
@@ -192,7 +213,7 @@ def execute_staging_decision_b(
             except BaseException as error:
                 # Interrupted/setup/collector failures retain all available records
                 # and block unsafe continuation. No hidden retry of either leg.
-                report["errors"].append(f"{leg}: execution {type(error).__name__}")
+                failure.capture(error, stage)
                 safe = False
             finally:
                 if leg == "A":
@@ -213,19 +234,18 @@ def execute_staging_decision_b(
                     safe and entry["pytest_exit"] == 0 and entry["measurement"]["valid"]
                     and len(entry["records"]) == len(nodes)
                     and (leg != "A" or len(entry["abrupt_roles"]) == len(nodes))) else "failed"
-                persist_staging_report(output, report)
+                safe = failure.persist_contract() and safe
         verify_source()
     except BaseException as error:
-        report["errors"].append(f"accounting: {type(error).__name__}")
+        failure.capture(error, stage)
     finally:
         try:
+            failure.persist()  # Preserve the first cause before later validation/cleanup.
             try:
                 validate_report(report)
             except StagingReportValidationError as error:
-                diagnostic = f"report validation: {error}"[:512]
-                report["errors"].append(diagnostic)
-                print(diagnostic, file=sys.stderr)
-            persist_staging_report(output, report)
+                failure.capture(error, "report_validation")
+            failure.persist_contract()
             if args.report:
                 state = report["legs"]["M"]["measurement"]["state"]
                 try:
@@ -233,19 +253,33 @@ def execute_staging_decision_b(
                         test_records=tuple(records), coverage=measured, repo_root=repo_root,
                         go_coverage=go_summary, coverage_status=CoverageStatus(state),
                         staging_obligations=report)
-                except Exception as error:
-                    report["errors"].append(f"rendering: {type(error).__name__}")
-                    persist_staging_report(output, report)
+                except BaseException as error:
+                    failure.capture(error, "report_rendering")
+                    failure.persist_contract()
+                    if not isinstance(error, Exception):
+                        raise
         finally:
             from go_runner_coverage import restore_go_environment
-            restore_go_environment()
+            control_signal: BaseException | None = None
+            try:
+                restore_go_environment()
+            except BaseException as error:
+                failure.capture(error, "go_cleanup")
+                if not isinstance(error, Exception):
+                    control_signal = error
             for session in sessions:
                 try:
                     session.cleanup()
-                except Exception as error:
-                    report["errors"].append(f"measurement cleanup: {type(error).__name__}")
+                except BaseException as error:
+                    failure.capture(error, "measurement_cleanup")
+                    if control_signal is None and not isinstance(error, Exception):
+                        control_signal = error
                     for entry in report["legs"].values():
                         if entry["measurement"]["session_id"] == session.session_dir.name:
                             entry.update(cleanup="unknown", status="failed")
-            persist_staging_report(output, report)
-    return 0 if execution_succeeded(report) else 1
+            try:
+                failure.persist_contract()
+            finally:
+                if control_signal is not None:
+                    raise control_signal
+    return 0 if failure.primary is None and execution_succeeded(report) else 1

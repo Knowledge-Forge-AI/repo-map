@@ -3,7 +3,7 @@ import socket
 
 import pytest
 
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
 
 
 def test_client_fails_explicitly_without_endpoint_and_never_falls_back(tmp_path):
@@ -105,10 +105,10 @@ def test_ordinary_rpc_timeout_stays_short_and_submit_accepts_longer_budget(
 
     monkeypatch.setattr(socket, "socket", lambda *_args: FakeSocket())
     monkeypatch.setattr(
-        "repomap_kg.coordinator.client.time.time", lambda: 100.0
+        "common_lore_index.coordinator.client.time.time", lambda: 100.0
     )
     monkeypatch.setattr(
-        "repomap_kg.coordinator.client.time.monotonic", lambda: 0.0
+        "common_lore_index.coordinator.client.time.monotonic", lambda: 0.0
     )
     client = LocalCoordinatorClient(tmp_path / "coordinator.sock", token_path)
 
@@ -144,7 +144,7 @@ def test_client_timeout_validation(tmp_path):
 
 def test_client_token_from_endpoint_descriptor(tmp_path, monkeypatch):
     endpoint_path = tmp_path / "coordinator.endpoint.json"
-    from repomap_kg.coordinator.endpoint import LoopbackEndpointDescriptor, write_endpoint_descriptor
+    from common_lore_index.coordinator.endpoint import LoopbackEndpointDescriptor, write_endpoint_descriptor
 
     desc = LoopbackEndpointDescriptor(
         schema_version=1,

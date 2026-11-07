@@ -11,15 +11,15 @@ import uuid
 
 import psycopg
 
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.contracts import normalize_request
-from repomap_kg.coordinator.desired_state import DesiredStateReconciler
-from repomap_kg.coordinator.polling import PollingScheduler
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.ops.source_generation import (
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.contracts import normalize_request
+from common_lore_index.coordinator.desired_state import DesiredStateReconciler
+from common_lore_index.coordinator.polling import PollingScheduler
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.ops.source_generation import (
     SourceGenerationLimits, SourceGenerationResult, scan_source_generation,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

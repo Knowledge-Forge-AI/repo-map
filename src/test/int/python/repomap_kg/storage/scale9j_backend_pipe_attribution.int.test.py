@@ -5,17 +5,17 @@ from threading import Event, Thread
 
 import psycopg
 
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
-from repomap_kg.storage.backend_ownership import (
+from common_lore_index.storage.backend_observer import BackendOwnershipObserver
+from common_lore_index.storage.backend_ownership import (
     BackendClassification,
     ConnectionRole,
 )
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.backend_telemetry import (
     TelemetryEventKind,
     read_telemetry_event,
     telemetry_from_inherited_fds,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 from repomap_test_support.postgres_harness import (

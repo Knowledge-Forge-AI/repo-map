@@ -11,7 +11,7 @@ import pytest
 
 from ci import check_generated_drift as drift
 from ci import psycopg_bootstrap as bootstrap
-from repomap_kg.runtime import release
+from common_lore_index.runtime import release
 from src.test.unit.python.tools.ci.psycopg_custody_fixture import (
     DIVERTED_USR_BIN,
     LIBPQ_DEV_ORIGINAL_MD5,

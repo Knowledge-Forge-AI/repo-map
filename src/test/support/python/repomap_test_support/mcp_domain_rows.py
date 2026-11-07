@@ -38,10 +38,10 @@ from pathlib import Path
 import tempfile
 from unittest import TestCase
 
-from repomap_kg.graph.keys import file_key, python_function_key, python_module_key
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.publication_readback import read_run_publication
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.graph.keys import file_key, python_function_key, python_module_key
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.publication_readback import read_run_publication
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.portable_publication_fixtures import (
     publish_portable_bundle,

@@ -105,10 +105,10 @@ def test_bad_member_fails_closed(tmp_path: Path) -> None:
 
 
 def test_bad_member_root_mismatch_fails_closed(tmp_path: Path) -> None:
-    c_paths = _make_tree(tmp_path, {"src/main/python/repomap_kg/prod.py": "x = 1\n"})
+    c_paths = _make_tree(tmp_path, {"src/main/python/common_lore_index/prod.py": "x = 1\n"})
     cohorts = [{
         "id": "c_bad_root", "root": "tools", "governing_profile": "clean_tooling",
-        "members": ["src/main/python/repomap_kg/prod.py"], "rationale": "mismatch", "admission": "admitted",
+        "members": ["src/main/python/common_lore_index/prod.py"], "rationale": "mismatch", "admission": "admitted",
     }]
     checks = {"tools": _make_check([])}
     res = evaluate_cohorts(cohorts, checks, tmp_path, c_paths, [])
@@ -240,8 +240,8 @@ def test_same_cohort_scc_atomic_passes_when_clean(tmp_path: Path, debt: str | No
 
 def test_missing_stub_fails_closed(tmp_path: Path) -> None:
     c_paths = _make_tree(tmp_path, {
-        "tools/caller.py": "from src.main.python.repomap_kg.stubbed import val\n",
-        "src/main/python/repomap_kg/stubbed.py": "val = 1\n",
+        "tools/caller.py": "from src.main.python.common_lore_index.stubbed import val\n",
+        "src/main/python/common_lore_index/stubbed.py": "val = 1\n",
     })
     cohorts = [{
         "id": "c_caller", "root": "tools", "governing_profile": "clean_tooling",
@@ -250,11 +250,11 @@ def test_missing_stub_fails_closed(tmp_path: Path) -> None:
     checks = {"tools": _make_check(
         ["tools/caller.py"],
         mypy_findings=[{
-            "path": "src/main/python/repomap_kg/stubbed.py",
+            "path": "src/main/python/common_lore_index/stubbed.py",
             "code": "import-untyped", "message": "missing library stub",
         }],
     )}
-    res = evaluate_cohorts(cohorts, checks, tmp_path, c_paths, ["src/main/python/repomap_kg/stubbed.py"])
+    res = evaluate_cohorts(cohorts, checks, tmp_path, c_paths, ["src/main/python/common_lore_index/stubbed.py"])
     assert res["cohort_results"]["c_caller"]["status"] == "failed"
     assert any("missing stub" in b for b in res["cohort_results"]["c_caller"]["dependency_blockers"])
 
@@ -348,9 +348,9 @@ def test_source_identity_binding_preservation(tmp_path: Path) -> None:
 
 def test_packaging_resolution_init_and_relative(tmp_path: Path) -> None:
     c_paths = _make_tree(tmp_path, {
-        "src/main/python/repomap_kg/__init__.py": "# init\n",
-        "src/main/python/repomap_kg/core.py": "def f(): return 1\n",
-        "tools/user.py": "from repomap_kg.core import f\n",
+        "src/main/python/common_lore_index/__init__.py": "# init\n",
+        "src/main/python/common_lore_index/core.py": "def f(): return 1\n",
+        "tools/user.py": "from common_lore_index.core import f\n",
     })
     cohorts = [{
         "id": "c_user", "root": "tools", "governing_profile": "clean_tooling",
@@ -359,14 +359,14 @@ def test_packaging_resolution_init_and_relative(tmp_path: Path) -> None:
     checks = {"tools": _make_check(["tools/user.py"])}
     # Product seed missing __init__.py -> blocks
     res_blocked = evaluate_cohorts(
-        cohorts, checks, tmp_path, c_paths, ["src/main/python/repomap_kg/core.py"]
+        cohorts, checks, tmp_path, c_paths, ["src/main/python/common_lore_index/core.py"]
     )
     assert res_blocked["cohort_results"]["c_user"]["status"] == "failed"
 
     # Both product files in seed -> passes
     res_passed = evaluate_cohorts(
         cohorts, checks, tmp_path, c_paths,
-        ["src/main/python/repomap_kg/__init__.py", "src/main/python/repomap_kg/core.py"],
+        ["src/main/python/common_lore_index/__init__.py", "src/main/python/common_lore_index/core.py"],
     )
     assert res_passed["cohort_results"]["c_user"]["status"] == "passed"
 
@@ -384,7 +384,7 @@ def test_dynamic_import_uncertainty_fails_closed(tmp_path: Path) -> None:
 
 
 def test_unresolved_repository_import_fails_closed(tmp_path: Path) -> None:
-    c_paths = _make_tree(tmp_path, {"tools/unresolved.py": "import repomap_kg.missing_mod\n"})
+    c_paths = _make_tree(tmp_path, {"tools/unresolved.py": "import common_lore_index.missing_mod\n"})
     cohorts = [{
         "id": "c_unresolved", "root": "tools", "governing_profile": "clean_tooling",
         "members": ["tools/unresolved.py"], "rationale": "missing import", "admission": "admitted",

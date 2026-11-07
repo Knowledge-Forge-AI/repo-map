@@ -7,14 +7,14 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.cli.parser import build_parser
-from repomap_kg.ops.config import (
+from common_lore_index.cli.parser import build_parser
+from common_lore_index.ops.config import (
     build_postgres_status_sql,
     check_ops_graph_storage_status,
     check_ops_postgres_status,
     load_ops_config,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 
 CONFIG = """\
@@ -69,7 +69,7 @@ def _config(tmp_path: Path):
 
 
 def _patch_adapter(monkeypatch: pytest.MonkeyPatch, implementation) -> None:
-    import repomap_kg.ops.config as module
+    import common_lore_index.ops.config as module
     monkeypatch.setattr(
         module,
         "execute_ops_json_readback",
@@ -278,7 +278,7 @@ def test_psycopg98_readiness_failures_never_plan_topology(
     psql_command: str | None,
 ) -> None:
     config = _config(tmp_path)
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     calls: list[dict[str, Any]] = []
 
     def select_driver():
@@ -362,7 +362,7 @@ def test_psycopg98_graph_storage_short_circuits_and_continues_later_database(
 
 
 def test_psycopg98_readiness_moves_without_other_operational_owners() -> None:
-    import repomap_kg.ops.config as module
+    import common_lore_index.ops.config as module
     readiness_source = inspect.getsource(module.check_ops_postgres_status)
     graph_source = inspect.getsource(module.check_ops_graph_storage_status)
 

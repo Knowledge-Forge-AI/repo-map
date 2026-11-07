@@ -20,7 +20,7 @@ BATS_OBSERVATION_EXPORTS = (
 
 
 def test_rootpkg22_bats_reexports_observation_builders() -> None:
-    import repomap_kg.extractors.shell.bats as bats
-    import repomap_kg.extractors.shell.bats_observations as observations
+    import common_lore_index.extractors.shell.bats as bats
+    import common_lore_index.extractors.shell.bats_observations as observations
     for name in BATS_OBSERVATION_EXPORTS:
         assert getattr(bats, name) is getattr(observations, name)

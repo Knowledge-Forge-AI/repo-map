@@ -6,10 +6,10 @@ from repomap_test_support.ops_refresh import (
     OpsRefreshUnitTestCase,
 )
 
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.refresh import (
     run_storage_readback_with_ops_psql,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 
 class OpsRefreshRuntimeDiagnosticsUnitTests(OpsRefreshUnitTestCase):
@@ -43,12 +43,12 @@ class OpsRefreshRuntimeDiagnosticsUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     return_value="/usr/bin/docker",
                     create=True,
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                     create=True,
                 ),
@@ -92,12 +92,12 @@ class OpsRefreshRuntimeDiagnosticsUnitTests(OpsRefreshUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.ops.readback.shutil.which",
+                    "common_lore_index.ops.readback.shutil.which",
                     return_value="/usr/bin/docker",
                     create=True,
                 ),
                 patch(
-                    "repomap_kg.runtime.local.inspect_container",
+                    "common_lore_index.runtime.local.inspect_container",
                     return_value=ContainerStatus(),
                     create=True,
                 ),

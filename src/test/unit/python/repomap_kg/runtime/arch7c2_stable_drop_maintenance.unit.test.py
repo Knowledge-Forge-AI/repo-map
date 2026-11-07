@@ -5,15 +5,15 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.cli import main
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.cli import main
+from common_lore_index.coordinator.local_lifecycle import (
     maintenance_window_for_database_drop,
 )
-from repomap_kg.runtime.backup_records import (
+from common_lore_index.runtime.backup_records import (
     LocalDbBackupError,
     LocalRuntimeDiagnostic,
 )
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
+from common_lore_index.runtime.maintenance import MaintenanceUnavailableError
 
 
 class _Authority:
@@ -45,7 +45,7 @@ def test_drop_maintenance_scope_is_exact_for_graph_and_control_targets(
 ) -> None:
     events: list[tuple[str, tuple[str, ...]]] = []
     with patch(
-        "repomap_kg.coordinator.local_lifecycle.LocalControlAuthority",
+        "common_lore_index.coordinator.local_lifecycle.LocalControlAuthority",
         return_value=_Authority(events),
     ):
         with maintenance_window_for_database_drop("/tmp/repo-map-home", database):
@@ -60,7 +60,7 @@ def test_drop_maintenance_scope_is_exact_for_graph_and_control_targets(
 def test_drop_maintenance_refuses_unrelated_target_before_lock() -> None:
     events: list[tuple[str, tuple[str, ...]]] = []
     with patch(
-        "repomap_kg.coordinator.local_lifecycle.LocalControlAuthority",
+        "common_lore_index.coordinator.local_lifecycle.LocalControlAuthority",
         return_value=_Authority(events),
     ):
         with pytest.raises(
@@ -78,7 +78,7 @@ def test_drop_maintenance_refuses_unrelated_target_before_lock() -> None:
 
 def test_drop_maintenance_bounds_authority_construction_failure() -> None:
     with patch(
-        "repomap_kg.coordinator.local_lifecycle.LocalControlAuthority",
+        "common_lore_index.coordinator.local_lifecycle.LocalControlAuthority",
         side_effect=RuntimeError("private authority detail"),
     ):
         with pytest.raises(
@@ -105,7 +105,7 @@ def test_drop_maintenance_preserves_operation_failure_and_releases_lock() -> Non
         )
     )
     with patch(
-        "repomap_kg.coordinator.local_lifecycle.LocalControlAuthority",
+        "common_lore_index.coordinator.local_lifecycle.LocalControlAuthority",
         return_value=_Authority(events),
     ):
         with pytest.raises(LocalDbBackupError, match="synthetic backup failure"):
@@ -151,10 +151,10 @@ def test_cli_drop_holds_maintenance_through_operation_and_releases_on_failure() 
 
     with (
         patch(
-            "repomap_kg.cli.maintenance_window_for_database_drop",
+            "common_lore_index.cli.maintenance_window_for_database_drop",
             side_effect=maintenance_window,
         ),
-        patch("repomap_kg.cli.drop_database", side_effect=failed_drop),
+        patch("common_lore_index.cli.drop_database", side_effect=failed_drop),
         redirect_stdout(io.StringIO()),
         redirect_stderr(stderr),
     ):
@@ -191,10 +191,10 @@ def test_cli_drop_dry_run_does_not_acquire_maintenance() -> None:
     )
     with (
         patch(
-            "repomap_kg.cli.maintenance_window_for_database_drop",
+            "common_lore_index.cli.maintenance_window_for_database_drop",
             side_effect=AssertionError("dry-run acquired maintenance"),
         ),
-        patch("repomap_kg.cli.drop_database", return_value=result) as drop,
+        patch("common_lore_index.cli.drop_database", return_value=result) as drop,
         redirect_stdout(io.StringIO()),
     ):
         exit_code = main(

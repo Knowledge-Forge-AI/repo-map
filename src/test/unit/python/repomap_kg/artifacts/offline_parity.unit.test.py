@@ -5,23 +5,23 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.artifacts._parity_sealing import (
+from common_lore_index.artifacts._parity_sealing import (
     _harness_owned_source_graph,
     _seal_graph,
 )
-from repomap_kg.artifacts.parity_harness import (
+from common_lore_index.artifacts.parity_harness import (
     compare_incumbent_and_portable_parity,
     compare_incumbent_and_subprocess_parity,
 )
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.graph.multi_source import (
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def binding(root: Path, alias: str) -> OpsGraphSourceBindingConfig:
@@ -231,7 +231,7 @@ def test_seal_graph_detects_tampered_source(tmp_path, monkeypatch) -> None:
 
 
 def test_compare_incumbent_and_subprocess_parity_detects_worker_failure(tmp_path, monkeypatch) -> None:
-    import repomap_kg.artifacts.parity_harness as harness_mod
+    import common_lore_index.artifacts.parity_harness as harness_mod
 
     source = tmp_path / "source"
     source.mkdir()
@@ -255,7 +255,7 @@ def test_compare_incumbent_and_subprocess_parity_detects_worker_failure(tmp_path
 
 
 def test_compare_incumbent_and_subprocess_parity_detects_missing_extension(tmp_path, monkeypatch) -> None:
-    import repomap_kg.artifacts.parity_harness as harness_mod
+    import common_lore_index.artifacts.parity_harness as harness_mod
 
     source = tmp_path / "source"
     source.mkdir()
@@ -282,7 +282,7 @@ def test_compare_incumbent_and_subprocess_parity_detects_missing_extension(tmp_p
 def test_capability_acquisition_preserves_directory_ownership(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, existing_capability: bool,
 ) -> None:
-    import repomap_kg.artifacts.parity_harness as harness
+    import common_lore_index.artifacts.parity_harness as harness
 
     source = tmp_path / "source"
     source.mkdir()
@@ -325,7 +325,7 @@ def test_capability_acquisition_preserves_directory_ownership(
 def test_partial_source_copy_failure_cleans_owned_copies(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import repomap_kg.artifacts._parity_sealing as sealing
+    import common_lore_index.artifacts._parity_sealing as sealing
 
     roots = (tmp_path / "entry", tmp_path / "module")
     for root in roots:
@@ -356,7 +356,7 @@ def test_partial_source_copy_failure_cleans_owned_copies(
 def test_stage_family_iteration_failure_closes_prepared_owner(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import repomap_kg.artifacts.parity_harness as harness
+    import common_lore_index.artifacts.parity_harness as harness
 
     failure = OSError("injected staged row read failure")
     closed = []

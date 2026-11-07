@@ -1,0 +1,63 @@
+{
+  "composition_limitation": "legacy .rs is file-only",
+  "discovery_ms": 3,
+  "file_nodes": {
+    "q01_all_items.rs": 1,
+    "q02_long_positions.rs": 1,
+    "q03_crlf_bom.rs": 1,
+    "q03_unicode_raw.rs": 1,
+    "q04_malformed_scopes.rs": 1,
+    "q04_missing_brace.rs": 1,
+    "q05_build/build.rs": 1,
+    "q05_cfg_macros.rs": 1,
+    "q06_invalid_utf8.rs": 1,
+    "stress_ambiguity.rs": 1,
+    "stress_attributes.rs": 1,
+    "stress_depth.rs": 1,
+    "unsupported_forms.rs": 1
+  },
+  "graph_quality": {
+    "edges": 0,
+    "evidence": 13,
+    "nodes": 13,
+    "raw_observations": 13
+  },
+  "input_digests": {
+    "q01_all_items.rs": "580046a84ffca8029055f51a65799a3bcd95fdfd1f04300520bc6ed0c26ed62a",
+    "q02_long_positions.rs": "aa45c89fefcedeff9b78d155591017e70f4f0ca09ed8a3070b0db6415f46cccd",
+    "q03_crlf_bom.rs": "d9e3d5b1c529f5152909496f1bea8f7ca143e32f4791a40d2903c92f59087b90",
+    "q03_unicode_raw.rs": "a1585daa8e0aa1d02ae63d569dfae6a6f01722f0b1e8c6c153a9f4cf017f4311",
+    "q04_malformed_scopes.rs": "54914f1f49d0b79e24425498b854ab4c14aed0e0ac73aaaca0f0e43192f3909a",
+    "q04_missing_brace.rs": "2325dffcaa7ed9ebc3d829ac1ade8375caf277a2af1cfeba6ac2e43ba55d1cbf",
+    "q05_build/build.rs": "243120b5ef581182b9cdc8103fb3bbc4f897fbe58039a0db6fe2b1a241764724",
+    "q05_cfg_macros.rs": "e9cb157e02af54251342d04c694f00ffa9b0c5bebb86ae6eacc0dfff737d2d44",
+    "q06_invalid_utf8.rs": "e36938b797b9ba0d000d03afca95f501641befcf6c00f2362d98b9253d11205b",
+    "stress_ambiguity.rs": "7b9d0b37cd99efd0c9f2375198b15fc30d84670e6d8414d43b0617e82a744a96",
+    "stress_attributes.rs": "164501b1eb5a477583e65506460d29630b8588850257eb8e4f33a80cebdde408",
+    "stress_depth.rs": "922a307bf255c5e626837b339a66ecd6fa48d98f84724bbff11bf5553ab4bbf9",
+    "unsupported_forms.rs": "c83b8ab69be21d705669231586adfa4558dee1c2d0df591f01856ba2b9fd48ce"
+  },
+  "item_nodes": {
+    "q01_all_items.rs": 0,
+    "q02_long_positions.rs": 0,
+    "q03_crlf_bom.rs": 0,
+    "q03_unicode_raw.rs": 0,
+    "q04_malformed_scopes.rs": 0,
+    "q04_missing_brace.rs": 0,
+    "q05_build/build.rs": 0,
+    "q05_cfg_macros.rs": 0,
+    "q06_invalid_utf8.rs": 0,
+    "stress_ambiguity.rs": 0,
+    "stress_attributes.rs": 0,
+    "stress_depth.rs": 0,
+    "unsupported_forms.rs": 0
+  },
+  "navigation": {
+    "locate_function": false,
+    "locate_impl": false,
+    "locate_macro": false,
+    "locate_module": false,
+    "locate_trait": false
+  },
+  "schema": "cloe-rust-pilot-actual-file-only-v1"
+}

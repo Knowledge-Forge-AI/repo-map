@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.extractors.languages.go_protocol import GoHelperUnavailableError
-from repomap_kg.extractors.languages.golang import (
+from common_lore_index.extractors.languages.go_protocol import GoHelperUnavailableError
+from common_lore_index.extractors.languages.golang import (
     extract_go_repository_observations,
 )
 

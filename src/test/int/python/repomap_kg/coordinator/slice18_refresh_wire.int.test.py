@@ -9,7 +9,7 @@ from threading import Thread
 
 import pytest
 
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator.local_mode import (
     CoordinatorModeError, coordinator_runtime_paths, run_coordinator_refresh,
 )
 from repomap_test_support.test_scratch import short_test_directory

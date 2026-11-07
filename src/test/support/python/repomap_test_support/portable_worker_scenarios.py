@@ -8,24 +8,24 @@ import threading
 from types import SimpleNamespace
 from unittest import TestCase
 
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability,
 )
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator._protocol_core import ProtocolError
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS, HARD_MAX_LIMITS
-from repomap_kg.graph.multi_source import (
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator._protocol_core import ProtocolError
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS, HARD_MAX_LIMITS
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def coordinator_test_limits() -> SimpleNamespace:
@@ -339,11 +339,11 @@ def portable_corpus_dependencies(corpus: str) -> dict[str, str]:
 def package_worker_code(root: Path) -> Path:
     """Copy the product package and runner-owned Go helper to a disposable installed layout."""
     import shutil
-    from repomap_kg.coordinator import _portable_worker_launch
-    from repomap_kg.extractors.languages.go_helper import HELPER_NAME, platform_tag, resolve_go_helper_command
+    from common_lore_index.coordinator import _portable_worker_launch
+    from common_lore_index.extractors.languages.go_helper import HELPER_NAME, platform_tag, resolve_go_helper_command
 
     source = Path(_portable_worker_launch.__file__).resolve().parents[1]
-    package = root / "src/main/python/repomap_kg"
+    package = root / "src/main/python/common_lore_index"
     shutil.copytree(source, package, ignore=shutil.ignore_patterns("__pycache__", "_bin"))
     helper = Path(resolve_go_helper_command()[0])
     installed = package / "_bin" / platform_tag() / HELPER_NAME

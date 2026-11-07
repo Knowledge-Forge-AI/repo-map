@@ -12,7 +12,7 @@ from repomap_test_support.source_ingestion_integration import (
     fixed_clock,
     source_fixture,
 )
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     FeedFetchResponse,
     FeedSourceConfig,
     SourceAcquisitionError,

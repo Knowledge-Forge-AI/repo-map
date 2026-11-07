@@ -5,9 +5,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 from repomap_test_support.local_db_backup import LocalDbBackupUnitTestCase, maybe_provenance_runner_result
-from repomap_kg.runtime.backup import LocalDbBackupError, format_init_result_table, init_database_from_dump, init_database_from_source
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
-from repomap_kg.storage import StorageSchemaError, discover_migrations
+from common_lore_index.runtime.backup import LocalDbBackupError, format_init_result_table, init_database_from_dump, init_database_from_source
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.storage import StorageSchemaError, discover_migrations
 
 
 def _ready_ledger_output() -> bytes:
@@ -366,11 +366,11 @@ class LocalDbBackupInitLifecycleUnitTests(LocalDbBackupUnitTestCase):
 
             with (
                 patch(
-                    "repomap_kg.runtime._backup_operations.graph_schema_initialization_sql",
+                    "common_lore_index.runtime._backup_operations.graph_schema_initialization_sql",
                     side_effect=StorageSchemaError("missing migrations"),
                 ) as resolver,
                 patch(
-                    "repomap_kg.runtime._backup_lifecycle.reconcile_graph_database_roles",
+                    "common_lore_index.runtime._backup_lifecycle.reconcile_graph_database_roles",
                     side_effect=AssertionError("roles must not run after schema resolution failure"),
                 ) as roles,
             ):

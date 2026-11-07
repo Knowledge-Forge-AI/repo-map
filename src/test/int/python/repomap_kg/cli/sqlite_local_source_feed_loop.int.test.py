@@ -32,12 +32,12 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.ops.ingestion.source import FeedIngestionSummary
-from repomap_kg.server.mcp_schemas import tool_definitions
-from repomap_kg.storage.sqlite_local import source_feed_queries
-from repomap_kg.storage.sqlite_local.connection import read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.ops.ingestion.source import FeedIngestionSummary
+from common_lore_index.server.mcp_schemas import tool_definitions
+from common_lore_index.storage.sqlite_local import source_feed_queries
+from common_lore_index.storage.sqlite_local.connection import read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.sqlite_local_feed_corpus import (
     ATOM,
     RSS,
@@ -83,8 +83,8 @@ def _dump(path: Path) -> str:
 
 def _publish(path: Path, runs: dict[str, FeedIngestionSummary], generation: int) -> None:
     bundle = feed_bundle(FEEDS, generation, generation_observations(runs, generation))
-    with patch("repomap_kg.storage.staged_ingestion.run_staged_portable_refresh", _pg_fail), \
-            patch("repomap_kg.ops.portable_refresh.run_staged_portable_refresh", _pg_fail), \
+    with patch("common_lore_index.storage.staged_ingestion.run_staged_portable_refresh", _pg_fail), \
+            patch("common_lore_index.ops.portable_refresh.run_staged_portable_refresh", _pg_fail), \
             patch("psycopg.connect", _pg_fail):
         result = publish_generation(path, publication_for(bundle, FEEDS), bundle.families,
                                     expected_generation=generation - 1)

@@ -3,14 +3,14 @@ from pathlib import Path
 import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.storage.staging_family_contracts import (
     STAGING_FAMILY_DESCRIPTORS,
 )
-from repomap_kg.storage.staging_operation_contracts import (
+from common_lore_index.storage.staging_operation_contracts import (
     STAGING_OPERATION_DESCRIPTORS,
 )
 from repomap_test_support.postgres_harness import (

@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.languages.javascript import extract_javascript_file_observations
+from common_lore_index.extractors.languages.javascript import extract_javascript_file_observations
 
 
 class JavaScriptExtractorUnitTests(unittest.TestCase):

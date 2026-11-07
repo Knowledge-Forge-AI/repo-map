@@ -5,11 +5,11 @@ import time
 
 import pytest
 
-from repomap_kg.coordinator._control_types import JobListPage
-from repomap_kg.coordinator.contracts import normalize_request
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.startup_recovery import RecoveryDiagnostic
-from repomap_kg.coordinator.transport import TransportError, validate_public_result
+from common_lore_index.coordinator._control_types import JobListPage
+from common_lore_index.coordinator.contracts import normalize_request
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.startup_recovery import RecoveryDiagnostic
+from common_lore_index.coordinator.transport import TransportError, validate_public_result
 
 
 class FakeCoordinator:
@@ -112,7 +112,7 @@ class FakePolling:
 
 
 def test_windows_default_transport_is_the_loopback_adapter():
-    import repomap_kg.coordinator.service as service_module
+    import common_lore_index.coordinator.service as service_module
 
     assert service_module.default_transport_factory("nt") is service_module.LoopbackTcpService
 

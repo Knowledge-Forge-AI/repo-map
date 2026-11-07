@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     build_source_feed_item_query_sql,
     build_source_feed_item_explanation_query_sql,
     build_source_reference_query_sql,
@@ -52,11 +52,11 @@ class StorageSourceReferenceAdapterUnitTests(unittest.TestCase):
 
         with (
             patch(
-                "repomap_kg.storage.source_readback.execute_json_readback",
+                "common_lore_index.storage.source_readback.execute_json_readback",
                 side_effect=fake_execute_json_readback,
             ) as execute_json_readback,
             patch(
-                "repomap_kg.storage.readback_driver.run_psql",
+                "common_lore_index.storage.readback_driver.run_psql",
                 side_effect=AssertionError("source feed items must use the adapter"),
             ),
         ):
@@ -143,11 +143,11 @@ class StorageSourceReferenceAdapterUnitTests(unittest.TestCase):
 
         with (
             patch(
-                "repomap_kg.storage.source_readback.execute_json_readback",
+                "common_lore_index.storage.source_readback.execute_json_readback",
                 side_effect=fake_execute_json_readback,
             ) as execute_json_readback,
             patch(
-                "repomap_kg.storage.readback_driver.run_psql",
+                "common_lore_index.storage.readback_driver.run_psql",
                 side_effect=AssertionError("source references must use the adapter"),
             ),
         ):
@@ -266,11 +266,11 @@ class StorageSourceReferenceAdapterUnitTests(unittest.TestCase):
 
         with (
             patch(
-                "repomap_kg.storage.source_readback.execute_json_readback",
+                "common_lore_index.storage.source_readback.execute_json_readback",
                 side_effect=fake_execute_json_readback,
             ) as execute_json_readback,
             patch(
-                "repomap_kg.storage.readback_driver.run_psql",
+                "common_lore_index.storage.readback_driver.run_psql",
                 side_effect=AssertionError("source feed explanation must use the adapter"),
             ),
         ):

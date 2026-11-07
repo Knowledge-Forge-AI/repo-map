@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any
 from unittest import TestCase
 
-from repomap_kg.server import ops as mcp_ops
+from common_lore_index.server import ops as mcp_ops
 
 
 def assert_mcp_validation_cases(case: TestCase) -> None:

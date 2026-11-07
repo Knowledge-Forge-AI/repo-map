@@ -304,7 +304,7 @@ def validate_d12_native_amd64_job(workflow: Workflow) -> list[str]:
     prep_idxs = [i for i, s in enumerate(steps) if D12_NATIVE_AMD64_PREPARE_MARKER in str(s.get("run", ""))]
     run_idxs = [i for i, s in enumerate(steps) if "tools/run_tests.py" in str(s.get("run", ""))]
     seal_idxs = [i for i, s in enumerate(steps) if D12_NATIVE_AMD64_SEAL_MARKER in str(s.get("run", ""))]
-    up_idxs = [i for i, s in enumerate(steps) if str(s.get("uses", "")).startswith("actions/upload-artifact@")]
+    up_idxs = [i for i, s in enumerate(steps) if s.get("name") == "Upload native D12 qualification evidence" and str(s.get("uses", "")).startswith("actions/upload-artifact@")]
     if (len(bind_idxs), len(prep_idxs), len(run_idxs), len(seal_idxs), len(up_idxs)) != (1, 1, 1, 1, 1):
         return violations + [prefix + "d12-native-amd64 requires exact bind, prepare, runner, seal, and upload steps"]
     if not (bind_idxs[0] < prep_idxs[0] < run_idxs[0] < seal_idxs[0] < up_idxs[0]):

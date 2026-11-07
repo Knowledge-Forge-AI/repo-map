@@ -6,15 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.runtime.database_role_contract import (
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.runtime.database_role_contract import (
     READ_STATUS_PASSWORD_ENV,
     READ_STATUS_ROLE,
     read_configured_postgres_password,
     read_read_status_password,
 )
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.postgres_route import readback_postgres_authority
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.postgres_route import readback_postgres_authority
 
 
 def _local_config(tmp_path: Path):
@@ -61,7 +61,7 @@ def test_custom_user_and_password_env_remain_custom_and_do_not_read_runtime_secr
 ) -> None:
     home, config = _local_config(tmp_path)
     monkeypatch.setenv("CUSTOM_READBACK_PASSWORD", "custom-secret")
-    monkeypatch.setattr("repomap_kg.runtime.postgres_route.read_read_status_password",
+    monkeypatch.setattr("common_lore_index.runtime.postgres_route.read_read_status_password",
                         lambda _home: pytest.fail("custom authority read runtime secrets"))
     custom = replace(
         config,
@@ -166,7 +166,7 @@ def test_missing_or_oversized_read_status_value_refuses(tmp_path, text):
 def test_ineligible_config_never_loads_runtime_secret(tmp_path, monkeypatch, case):
     home, config = _local_config(tmp_path)
     monkeypatch.delenv("REPOMAP_PG_PASSWORD", raising=False)
-    monkeypatch.setattr("repomap_kg.runtime.postgres_route.read_read_status_password",
+    monkeypatch.setattr("common_lore_index.runtime.postgres_route.read_read_status_password",
                         lambda _home: pytest.fail("ineligible config read runtime secrets"))
     if case == "remote":
         config = replace(config, postgres=replace(config.postgres, host="db.example.invalid"))
@@ -185,14 +185,14 @@ def test_ineligible_config_never_loads_runtime_secret(tmp_path, monkeypatch, cas
     else:
         marker = tmp_path / "container-marker"
         marker.touch()
-        monkeypatch.setattr("repomap_kg.runtime.postgres_route.CONTAINER_INTERNAL_MARKER", marker)
+        monkeypatch.setattr("common_lore_index.runtime.postgres_route.CONTAINER_INTERNAL_MARKER", marker)
     assert readback_postgres_authority(config).projected_read_status is False
 
 
 @pytest.mark.parametrize("kind", ["literal", "file", "environment"])
 def test_explicit_credential_authority_is_preserved(tmp_path, monkeypatch, kind):
     home, config = _local_config(tmp_path)
-    monkeypatch.setattr("repomap_kg.runtime.postgres_route.read_read_status_password",
+    monkeypatch.setattr("common_lore_index.runtime.postgres_route.read_read_status_password",
                         lambda _home: pytest.fail("explicit authority read runtime secrets"))
     if kind == "literal":
         postgres = replace(config.postgres, password_env=None, password="explicit-value")

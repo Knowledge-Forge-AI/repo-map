@@ -5,8 +5,8 @@ import unittest
 from datetime import timedelta
 import psycopg
 
-from repomap_kg.coordinator import JobRequest, normalize_request
-from repomap_kg.coordinator.storage import ControlStore, SingletonActiveError
+from common_lore_index.coordinator import JobRequest, normalize_request
+from common_lore_index.coordinator.storage import ControlStore, SingletonActiveError
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 
 

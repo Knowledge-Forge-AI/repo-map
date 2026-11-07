@@ -14,7 +14,7 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.baselines import (
+from common_lore_index.ops.baselines import (
     _atomic_write_text,
     _baseline_kinds,
     _baseline_path_segment,
@@ -26,10 +26,10 @@ from repomap_kg.ops.baselines import (
     _normalize_baseline_payload,
     _normalize_preflight_baseline_payload,
 )
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.ingestion.github_api_config import validate_source_identity
-from repomap_kg.ops.ingestion.github_api_helpers import GitHubApiPolicyError
-from repomap_kg.ops.ingestion.source_common import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.ingestion.github_api_config import validate_source_identity
+from common_lore_index.ops.ingestion.github_api_helpers import GitHubApiPolicyError
+from common_lore_index.ops.ingestion.source_common import (
     SourcePolicyError,
     _mapping,
     _optional_bool,
@@ -37,13 +37,13 @@ from repomap_kg.ops.ingestion.source_common import (
     _required_text,
     _validate_source_id,
 )
-from repomap_kg.ops.readback import execute_ops_json_readback
-from repomap_kg.ops.refresh import query_refresh_status, refresh_status_to_jsonable
-from repomap_kg.ops.reports import OpsGraphSummary, OpsRefreshError
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import RefreshResult
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.ops.readback import execute_ops_json_readback
+from common_lore_index.ops.refresh import query_refresh_status, refresh_status_to_jsonable
+from common_lore_index.ops.reports import OpsGraphSummary, OpsRefreshError
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import RefreshResult
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.sql_core import sql_literal
 
 
 def test_psycopg94_operational_refresh_status_connector_cli_and_mcp_parity() -> None:
@@ -140,7 +140,7 @@ def test_psycopg94_operational_refresh_status_connector_cli_and_mcp_parity() -> 
             assert psql_cli == default_cli == expected
             assert psql_raw == default_raw == json.dumps(expected, sort_keys=True) + "\n"
 
-            from repomap_kg.server.mcp import repomap_graph_status, repomap_refresh_status
+            from common_lore_index.server.mcp import repomap_graph_status, repomap_refresh_status
 
             _select(None, None, postgres=postgres)
             with patch.dict(

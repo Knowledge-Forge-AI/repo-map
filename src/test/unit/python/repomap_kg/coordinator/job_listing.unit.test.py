@@ -1,6 +1,6 @@
 import pytest
 
-from repomap_kg.coordinator.job_listing import (
+from common_lore_index.coordinator.job_listing import (
     JobListCursor,
     decode_job_cursor,
     encode_job_cursor,

@@ -18,23 +18,23 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     js_framework_summary_to_jsonable,
     nix_summary_to_jsonable,
     openapi_summary_to_jsonable,
     python_summary_to_jsonable,
     terraform_summary_to_jsonable,
 )
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.sqlite_local import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.sqlite_local import (
     api_summary_queries,
     nix_summary_queries,
     raw_payload,
     summary_queries,
 )
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.sqlite_local_fixtures import local_binding, publication_for
 from repomap_test_support.sqlite_local_read_corpus import read_corpus_bundle
 
@@ -80,6 +80,7 @@ def test_flag_refuses_where_the_postgresql_cast_errors(text: str) -> None:
 
 def test_predicates_use_where_clause_null_semantics() -> None:
     assert raw_payload.like("repomapXkg/x.py", "%repomap_kg%")  # ``_`` stays a wildcard
+    assert raw_payload.like("commonXloreYindex/x.py", "%common_lore_index%")
     assert not raw_payload.like("Requirements.txt", "requirements%")  # case-sensitive
     assert raw_payload.like("100%", "100\\%") and not raw_payload.like("100x", "100\\%")
     assert raw_payload.like("a\nb/c", "%/c")
@@ -200,3 +201,18 @@ def test_summaries_refuse_unpublished_graphs_and_invalid_flags(tmp_path: Path) -
     publish_generation(bad, publication_for(bundle), bundle.families, expected_generation=0)
     with read_transaction(bad, BINDING) as opened, pytest.raises(StorageSchemaError):
         _summary(opened, "js_framework")
+
+
+@pytest.mark.parametrize(("field", "value", "expected"), [
+    ("path", "synthetic/repomap_kg/requirements.txt", True),
+    ("path", "synthetic/common_lore_index/requirements.txt", True),
+    ("project_name", "repo-map-sample", True),
+    ("project_name", "common-lore-index-sample", True),
+    ("name", "common-lore-index-sample", True),
+    ("path", "synthetic/unrelated/requirements.txt", False),
+])
+def test_dogfood_marker_keeps_legacy_and_current_captured_names(connection, monkeypatch, field, value, expected):
+    payload = {"metadata": {field: value}} if field == "project_name" else {field: value}
+    monkeypatch.setattr(summary_queries, "raw_rows", lambda *_args, **_kwargs: iter((("python.package_file", "", payload),)))
+    summary = _summary(connection, "python")
+    assert summary["dogfooding"]["repo_map_profile_observed"] is expected

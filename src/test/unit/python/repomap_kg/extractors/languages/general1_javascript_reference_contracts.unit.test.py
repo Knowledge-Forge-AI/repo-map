@@ -1,8 +1,8 @@
 import unittest
 from urllib.parse import unquote
 
-from repomap_kg.extractors.languages.javascript import extract_javascript_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.languages.javascript import extract_javascript_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 SOURCE_PATH = "src/app/main.js"

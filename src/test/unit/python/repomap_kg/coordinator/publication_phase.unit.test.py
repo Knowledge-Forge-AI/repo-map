@@ -7,9 +7,9 @@ from typing import Any, cast
 import pytest
 
 
-from repomap_kg.coordinator import _publication_phase as phase
-from repomap_kg.coordinator.semantics import RetryPolicy
-from repomap_kg.ops.portable_refresh import PortableRefreshError, _worker_references
+from common_lore_index.coordinator import _publication_phase as phase
+from common_lore_index.coordinator.semantics import RetryPolicy
+from common_lore_index.ops.portable_refresh import PortableRefreshError, _worker_references
 
 
 def _attempt():
@@ -21,9 +21,9 @@ def _attempt():
 
 
 def _proof(claim, root):
-    from repomap_kg.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability, run_refresh_worker
-    from repomap_kg.coordinator._supervisor_fencing import bind_durable_launch, earn_in_process_fencing_proof
-    from repomap_kg.coordinator.limits import CoordinatorLimits
+    from common_lore_index.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability, run_refresh_worker
+    from common_lore_index.coordinator._supervisor_fencing import bind_durable_launch, earn_in_process_fencing_proof
+    from common_lore_index.coordinator.limits import CoordinatorLimits
     from repomap_test_support.fencing_control_fakes import FencingControl
 
     control = FencingControl(claim)
@@ -219,7 +219,7 @@ def test_startup_recovery_still_succeeds_when_evidence_is_legitimately_retained(
 
 
 def test_worker_fencing_proof_cannot_be_fabricated(tmp_path):
-    from repomap_kg.coordinator import _supervisor_fencing as supervisor
+    from common_lore_index.coordinator import _supervisor_fencing as supervisor
 
     claim = _attempt()
     with pytest.raises(PermissionError, match="cannot be fabricated"):
@@ -263,7 +263,7 @@ def test_real_supervisor_proof_binds_full_attempt_identity(tmp_path):
 
 
 def test_adversarial_alternate_worker_rejected(tmp_path):
-    from repomap_kg.coordinator import _supervisor_fencing as supervisor
+    from common_lore_index.coordinator import _supervisor_fencing as supervisor
 
     claim = _attempt()
     # Alternate worker command is rejected
@@ -274,7 +274,7 @@ def test_adversarial_alternate_worker_rejected(tmp_path):
     with pytest.raises(PermissionError, match="identity mismatch"):
         supervisor.register_worker_launch(
             claim,
-            (sys.executable, "-m", "repomap_kg.coordinator.refresh_worker",
+            (sys.executable, "-m", "common_lore_index.coordinator.refresh_worker",
              "--capability", str(tmp_path), "--job-id", "different-job", "--attempt", str(claim.attempt)),
         )
 

@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 import hashlib
 import json
 from pathlib import Path
 import stat as stat_mod
 from typing import Any
 
-from repomap_kg.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
+from common_lore_index.runtime.release import GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE
 
 VERIFIED_AMD64_BASE_METADATA: dict[str, dict[str, str]] = {
     "go": {"reference": GO_RELEASE_IMAGE, "platform": "linux/amd64",
@@ -17,16 +17,17 @@ VERIFIED_AMD64_BASE_METADATA: dict[str, dict[str, str]] = {
            "manifest": "sha256:88750ccdd0f2a77fcc00a14b1a48d6409bd8ddb5d7c2dd6ec0b4a2e916daf9d9",
            "config": "sha256:0d494ea9b5863337de0dfb4f938062bf0261a919016eb162d2be26381dbadafe"},
     "python": {"reference": PYTHON_RELEASE_IMAGE, "platform": "linux/amd64",
-               "index": "sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+               "index": "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30",
                "manifest": "sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b",
                "config": "sha256:ae4e8b7c575fabea88a029b6cae757f342ca2525e07f7c22272d5105c346b35e"},
     "postgres": {"reference": POSTGRES_RELEASE_IMAGE, "platform": "linux/amd64",
-                 "index": "sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c",
+                 "index": "sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a",
                  "manifest": "sha256:b95b87e93ceb7594715d5c71fb6e09f6fc878851ab537735d617325eb9ba8b1b",
                  "config": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1"},
 }
 
 MAX_SAFE_JSON_REPORT_BYTES = 8 * 1024 * 1024
+_MAX_SAFE_JSON_REPORT_DEPTH = 256
 PREPARE_REFUSAL_SCHEMA = "repomap-d12-prepare-refusal-v1"
 PREPARE_REFUSAL_FILENAME = "prepare-refusal.json"
 PREPARE_STATE_FILENAME = "prepare-state.json"
@@ -66,14 +67,23 @@ def _prov(
 
 
 def _validate_parsed_tree(value: Any) -> None:
-    if isinstance(value, Mapping):
-        for key, item in value.items():
-            if not isinstance(key, str):
-                raise ValueError("mapping key must be a string")
-            _validate_parsed_tree(item)
-    elif isinstance(value, (list, tuple)):
-        for item in value:
-            _validate_parsed_tree(item)
+    pending: list[tuple[Iterator[Any], int]] = [(iter((value,)), 0)]
+    while pending:
+        values, depth = pending[-1]
+        try:
+            current = next(values)
+        except StopIteration:
+            pending.pop()
+            continue
+        if depth > _MAX_SAFE_JSON_REPORT_DEPTH:
+            raise ValueError("report exceeds maximum JSON value depth")
+        if isinstance(current, Mapping):
+            for key in current:
+                if not isinstance(key, str):
+                    raise ValueError("mapping key must be a string")
+            pending.append((iter(current.values()), depth + 1))
+        elif isinstance(current, (list, tuple)):
+            pending.append((iter(current), depth + 1))
 
 
 def _apply_redact(value: Any, redact_fn: Callable[[Any], Any] | None) -> Any:

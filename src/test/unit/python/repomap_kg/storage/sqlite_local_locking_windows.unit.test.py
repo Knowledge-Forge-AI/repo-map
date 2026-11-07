@@ -22,8 +22,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local.locking import _locked, _WindowsBackend
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.sqlite_local.locking import _locked, _WindowsBackend
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 
 IN_PROGRESS = "graph-publication-in-progress"
 NOT_PRIVATE = "graph-database-unavailable: graph lock file is not private"

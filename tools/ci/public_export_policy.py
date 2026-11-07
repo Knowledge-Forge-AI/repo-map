@@ -57,7 +57,7 @@ def check_version_consistency(
     repo_root: Path,
     expected_version: str = DEFAULT_TARGET_VERSION,
 ) -> list[str]:
-    """Verify version consistency between pyproject.toml and repomap_kg.__version__."""
+    """Verify version consistency between pyproject.toml and common_lore_index.__version__."""
     violations: list[str] = []
 
     pyproject_path = repo_root / "pyproject.toml"
@@ -72,15 +72,15 @@ def check_version_consistency(
         else:
             pyproject_version = match.group(1)
 
-    init_path = repo_root / "src/main/python/repomap_kg/__init__.py"
+    init_path = repo_root / "src/main/python/common_lore_index/__init__.py"
     init_version: str | None = None
     if not init_path.is_file():
-        violations.append("src/main/python/repomap_kg/__init__.py is missing")
+        violations.append("src/main/python/common_lore_index/__init__.py is missing")
     else:
         text = init_path.read_text(encoding="utf-8")
         match = re.search(r'(?m)^__version__\s*=\s*"([^"]+)"', text)
         if not match:
-            violations.append("could not parse __version__ from repomap_kg/__init__.py")
+            violations.append("could not parse __version__ from common_lore_index/__init__.py")
         else:
             init_version = match.group(1)
 
@@ -90,11 +90,11 @@ def check_version_consistency(
         )
     if init_version and init_version != expected_version:
         violations.append(
-            f"repomap_kg.__version__ {init_version!r} does not match expected target version {expected_version!r}"
+            f"common_lore_index.__version__ {init_version!r} does not match expected target version {expected_version!r}"
         )
     if pyproject_version and init_version and pyproject_version != init_version:
         violations.append(
-            f"version mismatch: pyproject.toml has {pyproject_version!r} while repomap_kg.__version__ has {init_version!r}"
+            f"version mismatch: pyproject.toml has {pyproject_version!r} while common_lore_index.__version__ has {init_version!r}"
         )
 
     return violations

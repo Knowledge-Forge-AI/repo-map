@@ -3,9 +3,9 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations as _canonicalize
+    from common_lore_index.canonicalization.main import canonicalize_observations as _canonicalize
 else:
-    from repomap_kg.canonicalization import canonicalize_observations as _canonicalize
+    from common_lore_index.canonicalization import canonicalize_observations as _canonicalize
 from repomap_test_support.go_canonicalization import (
     accounting,
     observation,

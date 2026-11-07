@@ -43,13 +43,13 @@ from repomap_test_support.sqlite_local_harness import (
 )
 
 POSTGRES_IMPLEMENTATION = {
-    "repomap_kg.coordinator.local_mode",
-    "repomap_kg.coordinator.local_lifecycle",
-    "repomap_kg.service_package.api",
-    "repomap_kg.storage.staged_ingestion",
-    "repomap_kg.runtime.maintenance",
-    "repomap_kg.runtime.release_cluster",
-    "repomap_kg.ops.refresh",
+    "common_lore_index.coordinator.local_mode",
+    "common_lore_index.coordinator.local_lifecycle",
+    "common_lore_index.service_package.api",
+    "common_lore_index.storage.staged_ingestion",
+    "common_lore_index.runtime.maintenance",
+    "common_lore_index.runtime.release_cluster",
+    "common_lore_index.ops.refresh",
     "psycopg",
 }
 
@@ -167,7 +167,7 @@ def test_sqlite_local_operator_workflow_without_postgres(tmp_path: Path) -> None
         assert refused.returncode == 1, refused.stderr
         assert "sqlite-local-refresh-rejects-coordinator-mode" in refused.stderr, refused.stderr
     assert _tree(home) == before, "coordinator refusal changed the private store"
-    assert "repomap_kg.coordinator.local_mode" not in harness.imported_modules()
+    assert "common_lore_index.coordinator.local_mode" not in harness.imported_modules()
 
     # 11: source-blind MCP read after publication; the hidden graph stays hidden.
     databases = {graph: _digest(_database(home, graph)) for graph in ("zulu", "alpha")}

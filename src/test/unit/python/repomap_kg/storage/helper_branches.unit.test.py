@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Callable, Mapping
 
 
-from repomap_kg import storage
+from common_lore_index import storage
 
 
 class StorageHelperBranchUnitTests(unittest.TestCase):

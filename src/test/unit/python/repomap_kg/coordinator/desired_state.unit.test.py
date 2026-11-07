@@ -8,7 +8,7 @@ import time
 
 import pytest
 
-from repomap_kg.coordinator.desired_state import (
+from common_lore_index.coordinator.desired_state import (
     DesiredStateReconciler,
     PollOutcome,
     PollingSnapshot,
@@ -16,10 +16,10 @@ from repomap_kg.coordinator.desired_state import (
     Resolver,
     WatcherHint,
 )
-from repomap_kg.coordinator.polling import PollingScheduler
-from repomap_kg.coordinator.contracts import JobRequest
-from repomap_kg.ops.source_generation import SourceGenerationResult
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.coordinator.polling import PollingScheduler
+from common_lore_index.coordinator.contracts import JobRequest
+from common_lore_index.ops.source_generation import SourceGenerationResult
+from common_lore_index.storage.errors import StorageSchemaError
 
 
 def _source(token: str = "sg1:source", category: str = "ready") -> SourceGenerationResult:

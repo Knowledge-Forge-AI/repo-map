@@ -13,19 +13,19 @@ import unittest
 from unittest import mock
 
 FIXTURE_ROOT = Path(__file__).resolve().parents[6] / "src" / "test" / "fixtures"
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.languages.go_helper import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.languages.go_helper import (
     GoHelperUnavailableError,
     resolve_go_helper_command,
 )
-from repomap_kg.extractors.languages.go_protocol import (
+from common_lore_index.extractors.languages.go_protocol import (
     GoProtocolError,
     iter_go_protocol_observations,
 )
-from repomap_kg.extractors.languages.golang import (
+from common_lore_index.extractors.languages.golang import (
     extract_go_repository_observations,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 GO_FIXTURE_ROOT = FIXTURE_ROOT / "go"

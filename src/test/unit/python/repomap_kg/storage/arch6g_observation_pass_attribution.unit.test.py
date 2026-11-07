@@ -9,12 +9,12 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.canonicalization import _go_context as go_context_module
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage import staged_rows as staged_rows_module
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage._staged_row_adapters import _MeasuredObservationReplay
-from repomap_kg.storage.staging_observability import StagingMeasurementCategory, StagingMeasurements
+from common_lore_index.canonicalization import _go_context as go_context_module
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage import staged_rows as staged_rows_module
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage._staged_row_adapters import _MeasuredObservationReplay
+from common_lore_index.storage.staging_observability import StagingMeasurementCategory, StagingMeasurements
 
 
 @pytest.mark.parametrize("sized", [True, False])
@@ -197,22 +197,12 @@ def _measure(size):
 
 def test_arch6g_attributes_every_small_medium_full_observation_pass():
     measurements = [_measure(size) for size in (32, 512, 4_200)]
-    labels = (
-        "canonical_dispatch",
-        "file_projection",
-        "go_context_filter",
-        "raw_projection",
-    )
+    counts = (("canonical_dispatch", 2), ("file_projection", 1), ("raw_projection", 1))
 
-    assert [item.passes for item in measurements] == [
-        tuple((label, 1) for label in labels),
-        tuple((label, 1) for label in labels),
-        tuple((label, 1) for label in labels),
-    ]
+    assert [item.passes for item in measurements] == [counts, counts, counts]
     assert [item.visits for item in measurements] == [
-        tuple((label, 32) for label in labels),
-        tuple((label, 512) for label in labels),
-        tuple((label, 4_200) for label in labels),
+        tuple((label, count * size) for label, count in counts)
+        for size in (32, 512, 4_200)
     ]
     assert [item.prepared_rows for item in measurements] == [160, 2_560, 21_000]
     assert [item.family_handles for item in measurements] == [7, 7, 7]

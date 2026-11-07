@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     JSFrameworkSummaryRecord,
     StorageSchemaError,
     build_js_framework_summary_query_sql,
@@ -83,15 +83,15 @@ def test_psycopg71_query_js_framework_summary_uses_object_readback_adapter() -> 
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             return_value=payload,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.js_framework_summary_from_storage_payload",
+            "common_lore_index.storage.summaries.js_framework_summary_from_storage_payload",
             wraps=js_framework_summary_from_storage_payload,
         ) as convert,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("framework summary must use the adapter"),
         ),
     ):
@@ -135,7 +135,7 @@ def test_psycopg71_query_js_framework_summary_preserves_complete_defaults(
     )
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_js_framework_summary(
@@ -176,7 +176,7 @@ def test_psycopg71_query_js_framework_summary_preserves_count_map_errors(
     mutate(payload)
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match=error_label):
@@ -194,7 +194,7 @@ def test_psycopg71_query_js_framework_summary_preserves_strict_safety(
     _summary_map(payload, "safety")["no_fetch"] = value
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match="safety"):
@@ -211,7 +211,7 @@ def test_psycopg71_query_js_framework_summary_preserves_count_coercion() -> None
     _summary_map(payload, "express")["apps"] = -2
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_js_framework_summary(
@@ -232,7 +232,7 @@ def test_psycopg71_query_js_framework_summary_preserves_scalar_errors(
     payload["framework_observations"] = value
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match="framework_observations"):
@@ -249,7 +249,7 @@ def test_psycopg71_query_js_framework_summary_preserves_extra_key_behavior() -> 
     payload["extra_top_level"] = "public-safe-synthetic"
 
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         record = query_js_framework_summary(
@@ -263,7 +263,7 @@ def test_psycopg71_query_js_framework_summary_preserves_extra_key_behavior() -> 
 
     _summary_map(payload, "node")["extra_invalid"] = "not-a-count"
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ):
         with pytest.raises(StorageSchemaError, match="node"):
@@ -278,11 +278,11 @@ def test_psycopg71_query_js_framework_summary_propagates_shape_error() -> None:
 
     with (
         patch(
-            "repomap_kg.storage.summaries.execute_json_readback",
+            "common_lore_index.storage.summaries.execute_json_readback",
             side_effect=expected,
         ) as execute_json_readback,
         patch(
-            "repomap_kg.storage.summaries.run_psql",
+            "common_lore_index.storage.summaries.run_psql",
             side_effect=AssertionError("framework summary must not fall back"),
         ),
     ):
@@ -332,7 +332,7 @@ def test_build_js_framework_summary_query_sql_invalid_identity() -> None:
 def test_query_js_framework_summary_forwards_identity() -> None:
     payload = _summary_payload()
     with patch(
-        "repomap_kg.storage.summaries.execute_json_readback",
+        "common_lore_index.storage.summaries.execute_json_readback",
         return_value=payload,
     ) as execute_json_readback:
         record = query_js_framework_summary(

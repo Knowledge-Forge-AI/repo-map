@@ -2,13 +2,13 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-    from repomap_kg.observations import RawObservation
+    from common_lore_index.canonicalization import canonicalize_observations
+    from common_lore_index.observations import RawObservation
 
-from repomap_kg.graph.keys import feed_channel_key, feed_document_key
+from common_lore_index.graph.keys import feed_channel_key, feed_document_key
 
 
 class CanonicalizationFeedXmlBoundariesUnitTests(unittest.TestCase):

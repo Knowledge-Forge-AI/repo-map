@@ -4,17 +4,17 @@ import tempfile
 
 import pytest
 
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config import OpsConfigError, load_ops_config
-from repomap_kg.ops.graph_file_sql import GraphFileFilters
-from repomap_kg.ops.graph_files import query_graph_files
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config import OpsConfigError, load_ops_config
+from common_lore_index.ops.graph_file_sql import GraphFileFilters
+from common_lore_index.ops.graph_files import query_graph_files
+from common_lore_index.ops.ingestion.github_api import (
     GitHubApiPolicyError,
     PublicGitHubRestTransport,
     acquire_github_api_source,
     load_github_api_source_config,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,

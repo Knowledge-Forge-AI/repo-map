@@ -156,7 +156,7 @@ python3 -m pip install -e '.[test,scale-tools,static-analysis,postgres]'
 
 The `scale-tools` group owns the exact-pinned psutil and Docker SDK
 dependencies used by repository operational sampling; neither is a shipped
-`repomap_kg` dependency. The `postgres` extra supplies Psycopg, which test
+`common_lore_index` dependency. The `postgres` extra supplies Psycopg, which test
 collection imports. It is the PostgreSQL Server Engine extra, not a base
 dependency.
 
@@ -256,7 +256,7 @@ Smoke runner:
   label-free runtime materializer, registers their exact returned IDs
   in the active resource ledger, and proves exact cleanup and baseline
   restoration;
-- runs bounded dependency/import plus `python -m repomap_kg --help` sanity
+- runs bounded dependency/import plus `python -m common_lore_index --help` sanity
   commands;
 - fails clearly when the container runtime is missing, a smoke command fails,
   or a timeout expires.

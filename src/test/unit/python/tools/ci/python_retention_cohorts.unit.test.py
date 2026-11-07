@@ -36,7 +36,7 @@ def _valid_inventory() -> dict[str, Any]:
             _file("tools/ci/tool_b.py", "tools", "clean_tooling"),
             _file("src/test/support/python/repomap_test_support/helper.py", "test_support", "clean_test_support"),
             _file("src/test/unit/python/test_owner.unit.test.py", "test_owners", "clean_test_owners"),
-            _file("src/main/python/repomap_kg/core.py", "product", "retained_python_ratchets"),
+            _file("src/main/python/common_lore_index/core.py", "product", "retained_python_ratchets"),
         ],
         "cohorts": [
             {
@@ -224,7 +224,7 @@ def test_eligible_files_missing_from_cohort_fails() -> None:
 
 def test_non_applicable_root_file_in_cohort_fails() -> None:
     data = _valid_inventory()
-    data["cohorts"][0]["members"].append("src/main/python/repomap_kg/core.py")
+    data["cohorts"][0]["members"].append("src/main/python/common_lore_index/core.py")
     data["cohorts"][0]["members"].sort()
     with pytest.raises(HistoryValidationError, match="cohort member root mismatch"):
         validate_cohorts(data)

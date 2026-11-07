@@ -9,7 +9,7 @@ import os
 
 import pytest
 
-from repomap_kg.coordinator.protocol import (
+from common_lore_index.coordinator.protocol import (
     ProtocolError,
     WorkerLaunchError,
     WorkerLaunchSpec,
@@ -145,7 +145,7 @@ def test_popen_boundary_receives_exact_argv_and_no_shell(monkeypatch):
         captured["kwargs"] = kwargs
         return real_popen(*args, **kwargs)
 
-    monkeypatch.setattr("repomap_kg.coordinator.protocol.subprocess.Popen", recording_popen)
+    monkeypatch.setattr("common_lore_index.coordinator.protocol.subprocess.Popen", recording_popen)
     result = run_synthetic_worker("success", IDENTITY, LIMITS)
     expected = (
         sys.executable, "-m", "repomap_test_support.synthetic_async_worker",
@@ -370,7 +370,7 @@ def test_portable_worker_authority_containment_refusal_and_supervised_reaping(tm
     script = f"""
 import sys, json
 from pathlib import Path
-from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
+from common_lore_index.coordinator._portable_authority import install_portable_authority_guard
 install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Path(sys.argv[2]), code_roots=[Path(sys.argv[3])])
 print(json.dumps(dict(schema_version=1, message_type="worker_hello", protocol_versions=[1], capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="nonce")), flush=True)
 start = json.loads(sys.stdin.readline())

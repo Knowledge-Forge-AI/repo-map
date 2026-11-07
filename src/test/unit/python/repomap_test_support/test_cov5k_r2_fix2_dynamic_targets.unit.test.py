@@ -88,7 +88,7 @@ def test_external_targets_are_pure_tool_identifiers() -> None:
 def test_supported_resolutions_independently_succeed() -> None:
     supported_pure_targets = (
         ("run_tests", "main"),
-        ("repomap_kg.cli.dispatch", "dispatch_command"),
+        ("common_lore_index.cli.dispatch", "dispatch_command"),
         ("repomap_test_support.test_cov5k_r2_fix2_administrative", "execute_backup"),
         ("scale15_actual_path_readback", "read_scale15_terminal_state"),
         ("scale15_actual_path_readback", "read_terminal_backend_summary"),
@@ -164,7 +164,7 @@ def test_undeclared_module_and_symbol_refuses_without_import(
         ("builtins", "eval"),
         ("subprocess", "run"),
         ("unregistered_test_module", "some_func"),
-        ("repomap_kg.cli.dispatch", "unregistered_symbol"),
+        ("common_lore_index.cli.dispatch", "unregistered_symbol"),
         ("run_tests", "unregistered_entrypoint"),
         ("tools.run_tests", "main"),
         ("", ""),
@@ -295,7 +295,7 @@ def test_preserves_independent_re_resolution_and_identities() -> None:
 _ACCEPTED_PREP_DIGEST = "124e1c7d05016c601739f946a6a4fd69646c794b0168e80444a612bb4189ef30"
 _PRIOR_PREP_DIGEST = "c3eb4a85bc29f9e1eb2275c0ac16d21f3539eff0ef6db99ee30ddf8f117c2c53"
 _PREP_PATH = "src/test/support/python/repomap_test_support/test_cov5k_r2_fix2_preparation.py"
-_ACCEPTED_RESOURCE_DIGEST = "c008ea952676e3b3d726bb6084e5fa39a92de41ddcbde299ac751785a23c6f54"
+_ACCEPTED_RESOURCE_DIGEST = "958fb547b2b7b78b45872dffcd2175823da66d842bfccf0bf057736f0fc99a84"
 _PRIOR_RESOURCE_DIGEST = "8f81a75e0fb8164390de910e49ccc024fcd68eceac987a4a6918603ea00c8a25"
 _RESOURCE_PATH = "src/test/support/python/repomap_test_support/resource_test_images.py"
 _RESOURCE_SYM = "TestImageManager.build_ephemeral_image"
@@ -336,7 +336,10 @@ def test_python_identity_rejects_substituted_foreign_source_callable(
             _python_identity(path, sym)
 
 
-def test_current_preparation_owner_binding_passes_and_prior_digest_fails() -> None:
+@pytest.mark.parametrize("prior_resource_digest", [
+    _PRIOR_RESOURCE_DIGEST, "c008ea952676e3b3d726bb6084e5fa39a92de41ddcbde299ac751785a23c6f54",
+])
+def test_current_preparation_owner_binding_passes_and_prior_digest_fails(prior_resource_digest: str) -> None:
     base_entry = next(
         e for e in build_closed_catalog()
         if e.executor_symbol == "execute_preparation_condition"
@@ -348,7 +351,7 @@ def test_current_preparation_owner_binding_passes_and_prior_digest_fails() -> No
         ),
         (
             "test.resource_images", _RESOURCE_PATH, _RESOURCE_SYM,
-            _RESOURCE_SYM, _ACCEPTED_RESOURCE_DIGEST, _PRIOR_RESOURCE_DIGEST,
+            _RESOURCE_SYM, _ACCEPTED_RESOURCE_DIGEST, prior_resource_digest,
         ),
     )
     for owner_id, path, owner_sym, exec_sym, accepted_dig, prior_dig in cases:

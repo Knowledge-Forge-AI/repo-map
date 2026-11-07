@@ -3,7 +3,7 @@ from __future__ import annotations
 
 
 def test_ruby_summary_from_storage_payload_js_summary_from_storage_payload_js_framework_summary_from_storage_payload_python_summary_from_storage_payload_language_records_contracts() -> None:
-    import repomap_kg.storage.summary_rows_languages as summary_rows_languages
+    import common_lore_index.storage.summary_rows_languages as summary_rows_languages
     ruby_summary = summary_rows_languages.ruby_summary_from_storage_payload(
         {
             "root_path": "/tmp/repo's root",

@@ -8,8 +8,8 @@ from contextlib import closing
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.storage.navigation_search import NavigationSearchQuery
-from repomap_kg.storage.sqlite_local.navigation_queries import navigation_candidates
+from common_lore_index.storage.navigation_search import NavigationSearchQuery
+from common_lore_index.storage.sqlite_local.navigation_queries import navigation_candidates
 
 from repomap_test_support.navigation_search_fixtures import BETA_DOC, BINDING, GRAPH, navigation_home
 from repomap_test_support.sqlite_local_harness import LocalHarness, initialize, refusal, structured, tool

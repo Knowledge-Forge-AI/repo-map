@@ -13,8 +13,8 @@ from repomap_test_support.local_db_backup import (
     unit_maintenance_window_patch,
 )
 
-from repomap_kg.runtime.backup import verify_drop_backup
-from repomap_kg.runtime.local import LocalRuntimeIdentity
+from common_lore_index.runtime.backup import verify_drop_backup
+from common_lore_index.runtime.local import LocalRuntimeIdentity
 
 
 class CliLocalDbLifecycleSmokeChainIntegrationTests(CliIntegrationTestCase):
@@ -137,15 +137,15 @@ class CliLocalDbLifecycleSmokeChainIntegrationTests(CliIntegrationTestCase):
             with (
                 unit_maintenance_window_patch(),
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     side_effect=maintenance_window,
                 ),
                 patch(
-                    "repomap_kg.runtime.backup.verify_drop_backup",
+                    "common_lore_index.runtime.backup.verify_drop_backup",
                     side_effect=verify_under_maintenance,
                 ),
                 patch(
-                    "repomap_kg.runtime.backup.subprocess.run",
+                    "common_lore_index.runtime.backup.subprocess.run",
                     side_effect=fake_runner,
                 ),
             ):

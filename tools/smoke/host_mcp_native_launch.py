@@ -1,4 +1,4 @@
-"""Direct launch of the checkout ``repomap-kg`` console script for host MCP proofs.
+"""Direct launch of the checkout ``cloe`` console script for host MCP proofs.
 
 The acceptance process is the console script itself, started with
 ``subprocess.Popen`` from an unrelated working directory with an environment
@@ -26,12 +26,12 @@ SHIM_EXIT = 97
 NATIVE_FORMS = ("absolute-shebang", "sh-exec-trampoline")
 MAX_REFUSAL_CHARS = 300
 _TRAMPOLINE = re.compile(r"""^'''exec' (?:"([^"]+)"|'([^']+)'|(\S+)) "\$0" "\$@"\s*$""")
-_WRAPPER_MARKERS = ("#!/bin/sh", "PYTHONPATH=", "from repomap_kg.cli import main")
+_WRAPPER_MARKERS = ("#!/bin/sh", "PYTHONPATH=", "from common_lore_index.cli import main")
 _TOPOLOGY_MARKERS = ("docker", "Postgres container")
 PROBE_SOURCE = (
     "import json, platform, sys\n"
-    "import repomap_kg, psycopg\n"
-    "print(json.dumps({'repomap_kg_file': repomap_kg.__file__, 'psycopg': psycopg.__version__,\n"
+    "import common_lore_index, psycopg\n"
+    "print(json.dumps({'repomap_kg_file': common_lore_index.__file__, 'psycopg': psycopg.__version__,\n"
     "  'python': sys.version.split()[0], 'executable': sys.executable, 'machine': platform.machine(),\n"
     "  'platform': sys.platform}))\n"
 )
@@ -52,7 +52,7 @@ class ConsoleEntrypoint:
         if self.form not in NATIVE_FORMS:
             return f"console form {self.form!r} is not a checkout console script"
         if not self.targets_cli_main:
-            return "console script does not target repomap_kg.cli main"
+            return "console script does not target common_lore_index.entrypoints cloe_main"
         if self.interpreter is None or Path(self.interpreter).parent != checkout / ".venv" / "bin":
             return "console interpreter is not lexically inside <checkout>/.venv/bin"
         return None
@@ -79,7 +79,8 @@ def console_entrypoint(path: Path) -> ConsoleEntrypoint:
     elif lines and lines[0].startswith("#!/") and "python" in lines[0].split()[0]:
         form, interpreter = "absolute-shebang", lines[0][2:].split()[0]
     realpath = os.path.realpath(interpreter) if interpreter else None
-    targets = "from repomap_kg.cli import main" in text and "main()" in text
+    targets = ("from common_lore_index.entrypoints import cloe_main" in text
+               and "sys.exit(cloe_main())" in text)
     return ConsoleEntrypoint(path=path, sha256=hashlib.sha256(data).hexdigest(), form=form,
                              shebang_lines=tuple(lines[:2]), interpreter=interpreter,
                              interpreter_realpath=realpath, targets_cli_main=targets)
@@ -220,7 +221,7 @@ def terminate_group(process: subprocess.Popen[str]) -> bool:
 def run_session(label: str, console: Path, home: Path, layout: ChildLayout, env: Mapping[str, str],
                 requests: Sequence[dict[str, Any]], *, deadline: float = 120,
                 tracker: ChildTracker | None = None) -> SessionRecord:
-    """One real ``repomap-kg mcp serve`` process: write all requests, close stdin, read to EOF."""
+    """One real ``cloe mcp serve`` process: write all requests, close stdin, read to EOF."""
     argv = (str(console), "mcp", "serve", "--repo-map-home", str(home))
     record = SessionRecord(label=label, argv=argv, cwd=str(layout.cwd), env=dict(env), requests=list(requests))
     tracker = tracker or ChildTracker()

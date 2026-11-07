@@ -75,9 +75,9 @@ class CatalogEntry:
 
 
 _OWNER_BINDINGS = {
-    "src/main/python/repomap_kg/cli/dispatch.py:dispatch_command": OwnerBinding(
+    "src/main/python/common_lore_index/cli/dispatch.py:dispatch_command": OwnerBinding(
         "repomap.cli.dispatch",
-        "src/main/python/repomap_kg/cli/dispatch.py",
+        "src/main/python/common_lore_index/cli/dispatch.py",
         "dispatch_command",
         "subprocess CLI enters dispatch_command before the administrative owner",
     ),
@@ -199,7 +199,7 @@ _OWNER_BINDINGS = {
 
 
 _K_OWNER_OVERRIDE = {
-    **{f"K0{index}": "src/main/python/repomap_kg/cli/dispatch.py:dispatch_command" for index in range(1, 6)},
+    **{f"K0{index}": "src/main/python/common_lore_index/cli/dispatch.py:dispatch_command" for index in range(1, 6)},
     "K06": "tool:psql",
 }
 

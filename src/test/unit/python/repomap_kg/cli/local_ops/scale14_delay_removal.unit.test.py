@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import staging_event_instrumentation as instrumentation_module
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import staging_event_instrumentation as instrumentation_module
 
 
 @pytest.mark.parametrize(

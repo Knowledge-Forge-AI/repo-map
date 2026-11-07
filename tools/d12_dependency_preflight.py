@@ -37,7 +37,7 @@ import d12_libpq_runtime_probe as runtime
 import d12_native_python_observer as observer
 import d12_python_closure as closure
 import native_apt_prerequisites as apt
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     DYNAMIC_PACKAGE_MANIFEST, GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, PSYCOPG_LIBPQ_VERSION,
     PYTHON_RELEASE_IMAGE, DebPackage, PlatformPackages, validate_package_manifest,
 )

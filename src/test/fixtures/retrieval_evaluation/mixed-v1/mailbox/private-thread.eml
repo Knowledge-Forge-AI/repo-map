@@ -1,0 +1,12 @@
+From: security-audit@example.invalid
+To: oncall-team@example.invalid
+Subject: [AUDIT-2026-209] Rotation ledger follow-up
+Message-ID: <audit-2026-209@example.invalid>
+In-Reply-To: <incident-2026-104@example.invalid>
+Date: Thu, 22 Oct 2026 08:15:00 +0000
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+
+Private thread body — metadata-only retention applies.
+Synthetic canary token: CANARY_PRIVATE_THREAD_PAYLOAD_44102
+Do not expose raw email body text in retrieval outputs or reports.

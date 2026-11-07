@@ -13,7 +13,7 @@ from repomap_test_support.local_db_backup import (
     unit_maintenance_window_patch,
 )
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
+from common_lore_index.runtime.local import LocalRuntimeIdentity
 
 
 class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
@@ -56,7 +56,7 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
                 raise AssertionError(command)
 
             with patch(
-                "repomap_kg.runtime.backup.subprocess.run",
+                "common_lore_index.runtime.backup.subprocess.run",
                 side_effect=fake_runner,
             ):
                 dry_exit, dry_stdout, dry_stderr = self.run_repo_map_in_process(
@@ -128,11 +128,11 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
             with (
                 unit_maintenance_window_patch(),
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
                 ),
                 patch(
-                    "repomap_kg.runtime.backup.subprocess.run",
+                    "common_lore_index.runtime.backup.subprocess.run",
                     side_effect=fake_runner,
                 ),
             ):
@@ -220,11 +220,11 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
 
             with (
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
                 ),
                 patch(
-                    "repomap_kg.runtime.backup.subprocess.run",
+                    "common_lore_index.runtime.backup.subprocess.run",
                     side_effect=missing_runner,
                 ),
             ):
@@ -263,7 +263,7 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=b"1\n", stderr=b"")
                 raise AssertionError(command)
 
-            with patch("repomap_kg.runtime.backup.subprocess.run", side_effect=table_runner):
+            with patch("common_lore_index.runtime.backup.subprocess.run", side_effect=table_runner):
                 table_exit, table_stdout, table_stderr = self.run_repo_map_in_process(
                     "local",
                     "db",
@@ -311,11 +311,11 @@ class CliLocalDbDropGuardIntegrationTests(CliIntegrationTestCase):
             with (
                 unit_maintenance_window_patch(),
                 patch(
-                    "repomap_kg.cli.maintenance_window_for_database_drop",
+                    "common_lore_index.cli.maintenance_window_for_database_drop",
                     return_value=nullcontext(),
                 ),
                 patch(
-                    "repomap_kg.runtime.backup.subprocess.run",
+                    "common_lore_index.runtime.backup.subprocess.run",
                     side_effect=failing_backup_runner,
                 ),
             ):

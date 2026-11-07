@@ -4,17 +4,17 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.staged_publication import execute_final_transaction
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.staged_publication import execute_final_transaction
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 def _handoff(mode: str) -> PublicationHandoff:
@@ -49,7 +49,7 @@ def test_final_transaction_uses_one_nonblocking_graph_lock(mode: str) -> None:
     connection = Mock()
     connection.execute.return_value.fetchone.return_value = (True,)
 
-    with patch("repomap_kg.storage.staged_publication._execute") as execute:
+    with patch("common_lore_index.storage.staged_publication._execute") as execute:
         execute_final_transaction(connection, _handoff(mode))
 
     connection.execute.assert_called_once_with(
@@ -65,7 +65,7 @@ def test_final_transaction_rejects_contention_before_mutation(mode: str) -> None
     connection.execute.return_value.fetchone.return_value = (False,)
 
     with (
-        patch("repomap_kg.storage.staged_publication._execute") as execute,
+        patch("common_lore_index.storage.staged_publication._execute") as execute,
         pytest.raises(StorageSchemaError, match="graph publication already active"),
     ):
         execute_final_transaction(connection, _handoff(mode))

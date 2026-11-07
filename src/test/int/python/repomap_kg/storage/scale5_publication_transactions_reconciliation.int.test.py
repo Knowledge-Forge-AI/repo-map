@@ -3,32 +3,32 @@ from dataclasses import replace
 import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.authority import AttemptNumber, JobId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.authority import AttemptNumber, JobId
+from common_lore_index.storage.publication import (
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import (
+from common_lore_index.storage.publication_fencing import (
     PublicationContractError,
     PublicationHandoff,
     PublicationReconciliationOutcome,
     build_publication_reconciliation_statements,
     classify_publication_marker,
 )
-from repomap_kg.storage.publication_readback import (
+from common_lore_index.storage.publication_readback import (
     read_run_publication,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_publication import (
+from common_lore_index.storage.staged_publication import (
     execute_final_transaction,
     reconcile_commit_unknown,
 )
-from repomap_kg.storage.staging_merge import (
+from common_lore_index.storage.staging_merge import (
     MergeContext,
 )
 from repomap_test_support.postgres_harness import (

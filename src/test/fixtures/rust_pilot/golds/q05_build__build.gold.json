@@ -1,0 +1,56 @@
+{
+ "build_script_name": true,
+ "completeness": "complete",
+ "fixture": "q05_build/build.rs",
+ "input_bytes": 541,
+ "input_sha256": "243120b5ef581182b9cdc8103fb3bbc4f897fbe58039a0db6fe2b1a241764724",
+ "item_list": "complete",
+ "items": [
+  {
+   "end_byte": 213,
+   "end_line": 8,
+   "item_kind": "fn",
+   "name": "out_dir",
+   "namespace": "rust.function",
+   "pointer": "/fn:out_dir",
+   "start_byte": 110,
+   "start_line": 6,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 329,
+   "end_line": 14,
+   "item_kind": "fn",
+   "name": "emit_rerun",
+   "namespace": "rust.function",
+   "pointer": "/fn:emit_rerun",
+   "start_byte": 215,
+   "start_line": 10,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 540,
+   "end_line": 20,
+   "item_kind": "fn",
+   "name": "main",
+   "namespace": "rust.function",
+   "pointer": "/fn:main",
+   "start_byte": 331,
+   "start_line": 16,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 20,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q05"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": [
+  {
+   "construct": "use_declaration",
+   "count": 2,
+   "scope_pointer": "/"
+  }
+ ]
+}

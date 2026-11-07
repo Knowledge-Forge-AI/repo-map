@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage._psql_stream import run_psql_stream
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.psql import run_psql
+from common_lore_index.storage._psql_stream import run_psql_stream
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.psql import run_psql
 
 
 PRIVATE_EXECUTABLE = "/private/source-derived/bin/psql"
@@ -19,7 +19,7 @@ def test_run_psql_preserves_optional_inputs_and_result_identity(
     command = ("fixture-psql", "-qAt")
     completed = subprocess.CompletedProcess(command, 0, "1\n", "")
     with patch(
-        "repomap_kg.storage.psql.subprocess.run", return_value=completed
+        "common_lore_index.storage.psql.subprocess.run", return_value=completed
     ) as run:
         result = run_psql(command, input_text=input_text, env=environment)
 
@@ -39,7 +39,7 @@ def test_run_psql_preserves_optional_inputs_and_result_identity(
 
 def test_run_psql_failure_keeps_original_process_cause() -> None:
     failure = subprocess.CalledProcessError(7, ["fixture-psql"], stderr="refused\n")
-    with patch("repomap_kg.storage.psql.subprocess.run", side_effect=failure):
+    with patch("common_lore_index.storage.psql.subprocess.run", side_effect=failure):
         with pytest.raises(StorageSchemaError, match="^psql failed: refused$") as raised:
             run_psql(["fixture-psql"], input_text="BEGIN;", env={})
 
@@ -48,7 +48,7 @@ def test_run_psql_failure_keeps_original_process_cause() -> None:
 
 def test_run_psql_sanitizes_executable_launch_failure() -> None:
     with patch(
-        "repomap_kg.storage.psql.subprocess.run",
+        "common_lore_index.storage.psql.subprocess.run",
         side_effect=FileNotFoundError(PRIVATE_EXECUTABLE),
     ):
         with pytest.raises(StorageSchemaError) as raised:
@@ -60,7 +60,7 @@ def test_run_psql_sanitizes_executable_launch_failure() -> None:
 
 def test_run_psql_translates_interruption_to_bounded_storage_error() -> None:
     with patch(
-        "repomap_kg.storage.psql.subprocess.run",
+        "common_lore_index.storage.psql.subprocess.run",
         side_effect=KeyboardInterrupt,
     ):
         try:
@@ -79,7 +79,7 @@ def test_run_psql_translates_interruption_to_bounded_storage_error() -> None:
 
 def test_run_psql_stream_sanitizes_executable_launch_failure() -> None:
     with patch(
-        "repomap_kg.storage._psql_stream.subprocess.Popen",
+        "common_lore_index.storage._psql_stream.subprocess.Popen",
         side_effect=FileNotFoundError(PRIVATE_EXECUTABLE),
     ):
         with pytest.raises(StorageSchemaError) as raised:

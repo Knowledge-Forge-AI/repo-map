@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from repomap_kg.storage.authority import PublicationGenerations
-from repomap_kg.storage.publication import RunPublicationReceipt
-from repomap_kg.storage.publication_readback import RunPublicationRecord
-from repomap_kg.storage.run_authority import RunAuthoritySnapshot
+from common_lore_index.storage.authority import PublicationGenerations
+from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.publication_readback import RunPublicationRecord
+from common_lore_index.storage.run_authority import RunAuthoritySnapshot
 
 
 @dataclass(frozen=True)

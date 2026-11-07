@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementAvailability,
     StagingMeasurementEvent,
 )

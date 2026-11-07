@@ -12,8 +12,8 @@ from dataclasses import asdict, dataclass
 import json
 from typing import Any, Callable, Mapping, Sequence
 
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.storage.staging_family_contracts import (
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.storage.staging_family_contracts import (
     DuplicatePolicy,
     STAGING_FAMILY_DESCRIPTORS,
     StageFamily,

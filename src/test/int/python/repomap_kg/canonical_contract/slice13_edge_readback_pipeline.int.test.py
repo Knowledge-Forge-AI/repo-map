@@ -12,8 +12,8 @@ from __future__ import annotations
 import subprocess
 import unittest
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.canonical import query_canonical_edge_explanation
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.canonical import query_canonical_edge_explanation
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

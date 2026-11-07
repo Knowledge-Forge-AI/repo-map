@@ -11,16 +11,16 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.server import _ops_summaries, mcp, ops
-from repomap_kg.server.mcp_core import RepoMapMcpError
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.jsonable_rows import canonical_neighborhood_to_jsonable
-from repomap_kg.storage.sqlite_local import neighborhood_queries
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.queries import canonical_neighborhood
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError, PUBLICATION_ABSENT
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.server import _ops_summaries, mcp, ops
+from common_lore_index.server.mcp_core import RepoMapMcpError
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.jsonable_rows import canonical_neighborhood_to_jsonable
+from common_lore_index.storage.sqlite_local import neighborhood_queries
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.queries import canonical_neighborhood
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError, PUBLICATION_ABSENT
 from repomap_test_support.navigation_search_fixtures import navigation_bundle
 from repomap_test_support.sqlite_local_fixtures import graph_toml, local_binding, publication_for, write_sqlite_home
 from repomap_test_support.host_read_store_config import setup_owned_config
@@ -109,7 +109,7 @@ def test_probe_and_truncated_nodes_never_authorize_endpoints(bounded_home):
 @pytest.mark.parametrize("option", ["node_limit", "edge_limit"])
 @pytest.mark.parametrize("value", [None, True, False, 0, -1, 101, 1.0, 1.5, "2", [], {}])
 def test_invalid_limits_refuse_public_and_python_calls_before_store(bounded_home, option, value):
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("opened")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("opened")):
         with pytest.raises(RepoMapMcpError, match=option + " must be an integer between 1 and 100"):
             public_call(**{option: value})
         with pytest.raises(RepoMapMcpError, match=option + " must be an integer between 1 and 100"):
@@ -119,7 +119,7 @@ def test_invalid_limits_refuse_public_and_python_calls_before_store(bounded_home
 @pytest.mark.parametrize("graph,message", [("hidden", "not MCP-visible"), ("disabled", "not enabled"),
                                           ("missing", "unknown graph_id")])
 def test_bounded_selection_refusals_precede_store(bounded_home, graph, message):
-    with patch("repomap_kg.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("opened")):
+    with patch("common_lore_index.server.sqlite_read_binding.read_transaction", side_effect=AssertionError("opened")):
         with pytest.raises(RepoMapMcpError, match=message):
             mcp.handle_tool_call("repomap_neighborhood", dict(graph_id=graph, node=CENTER, node_limit=1))
 
@@ -132,7 +132,7 @@ def test_unsupported_postgres_refuses_bounded_but_default_read_stays_exact(tmp_p
     monkeypatch.delenv("REPOMAP_OPS_CONFIG", raising=False)
     config = ops.load_mcp_ops_config()
     graph = config.graphs[0].id
-    with patch("repomap_kg.server.investigation_read_store.read_configured_graph",
+    with patch("common_lore_index.server.investigation_read_store.read_configured_graph",
                side_effect=AssertionError("PG read")) as read:
         with pytest.raises(RepoMapMcpError, match="supported only by SQLite Local"):
             mcp.handle_tool_call("repomap_neighborhood", dict(graph_id=graph, node=CENTER, edge_limit=1))
@@ -167,7 +167,7 @@ def test_bounded_mixed_kinds_and_private_endpoints_stay_sanitized(bounded_home, 
                     edge_kind="imports", metadata={"source_key": CENTER})],
         bounds=dict(nodes=dict(requested_limit=1, returned_count=1, has_more=True, completeness="truncated")))
     # Synthetic store mutation isolates sanitation; it is not claimed as an extracted relation.
-    monkeypatch.setattr("repomap_kg.server.sqlite_read_binding.configured_neighborhood", lambda *a, **k: copy.deepcopy(raw))
+    monkeypatch.setattr("common_lore_index.server.sqlite_read_binding.configured_neighborhood", lambda *a, **k: copy.deepcopy(raw))
     result = public_call(node_limit=1)["structuredContent"]["result"]
     edge = result["edges"][0]
     assert edge["target_key"] == "[REDACTED]"

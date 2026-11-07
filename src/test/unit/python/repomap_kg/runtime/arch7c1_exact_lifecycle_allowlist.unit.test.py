@@ -6,26 +6,26 @@ from types import SimpleNamespace
 from typing import cast
 from unittest.mock import patch
 
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.coordinator.local_lifecycle import (
     CoordinatorControlError,
     LocalControlAuthority,
     maintenance_window_for_graph_upgrade,
 )
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     drop_database,
     dump_database,
     init_database_from_dump,
     init_database_from_source,
 )
-from repomap_kg.runtime.backup_commands import (
+from common_lore_index.runtime.backup_commands import (
     planned_create_database_command,
     planned_drop_database_command,
 )
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.maintenance import MaintenanceUnavailableError
-from repomap_kg.runtime.plan import LocalRuntimePlan, build_local_runtime_plan
-from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.maintenance import MaintenanceUnavailableError
+from common_lore_index.runtime.plan import LocalRuntimePlan, build_local_runtime_plan
+from common_lore_index.runtime.schema_upgrade import upgrade_graph_schema
 
 
 class Arch7C1ExactLifecycleAllowlistUnitTests(unittest.TestCase):
@@ -111,7 +111,7 @@ class Arch7C1ExactLifecycleAllowlistUnitTests(unittest.TestCase):
                 yield
 
         with patch(
-            "repomap_kg.coordinator.local_lifecycle.LocalControlAuthority",
+            "common_lore_index.coordinator.local_lifecycle.LocalControlAuthority",
             return_value=FakeAuthority(),
         ):
             with self.assertRaises(MaintenanceUnavailableError):

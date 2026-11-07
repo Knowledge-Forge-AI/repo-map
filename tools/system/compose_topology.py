@@ -8,9 +8,9 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.runtime.compose import render_compose_yaml
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import LocalRuntimePlan
+from common_lore_index.runtime.compose import render_compose_yaml
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import LocalRuntimePlan
 from tools.system.config import SystemTestConfig, SystemTestError
 
 APPLICATION_SERVICES = frozenset(
@@ -93,7 +93,7 @@ mode = "read_only"
     base_compose_path.write_text(base_compose_content, encoding="utf-8")
 
     # Generate system override mapping all application services to candidate image tag
-    from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE
+    from common_lore_index.runtime.release import POSTGRES_RELEASE_IMAGE
     override_yaml_lines = [
         "services:",
         "  postgres:",

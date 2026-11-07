@@ -9,15 +9,15 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.cli import main
-from repomap_kg.coordinator.local_lifecycle import (
+from common_lore_index.cli import main
+from common_lore_index.coordinator.local_lifecycle import (
     maintenance_window_for_coordinated_backup,
 )
-from repomap_kg.runtime.backup import dump_all_databases
-from repomap_kg.runtime.backup_commands import backup_root
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.plan import LocalRuntimeIdentity, build_local_runtime_plan
+from common_lore_index.runtime.backup import dump_all_databases
+from common_lore_index.runtime.backup_commands import backup_root
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.plan import LocalRuntimeIdentity, build_local_runtime_plan
 from repomap_test_support.local_db_backup import (
     maybe_provenance_runner_result,
     unit_maintenance_window_patch,
@@ -118,7 +118,7 @@ def test_dump_all_captures_exact_owned_set_with_stable_manifest(tmp_path: Path) 
 def test_coordinated_backup_window_holds_every_graph_in_authority_order() -> None:
     events: list[tuple[str, tuple[str, ...]]] = []
     with patch(
-        "repomap_kg.coordinator.local_lifecycle.LocalControlAuthority",
+        "common_lore_index.coordinator.local_lifecycle.LocalControlAuthority",
         return_value=_Authority(events),
     ):
         with maintenance_window_for_coordinated_backup("/tmp/repo-map-home"):
@@ -151,10 +151,10 @@ def test_cli_dump_all_holds_window_through_atomic_operation() -> None:
 
     with (
         patch(
-            "repomap_kg.cli.maintenance_window_for_coordinated_backup",
+            "common_lore_index.cli.maintenance_window_for_coordinated_backup",
             side_effect=maintenance_window,
         ),
-        patch("repomap_kg.cli.dump_all_databases", side_effect=dump_all),
+        patch("common_lore_index.cli.dump_all_databases", side_effect=dump_all),
         redirect_stdout(io.StringIO()),
     ):
         exit_code = main(
@@ -194,10 +194,10 @@ def test_cli_dump_all_failure_releases_window() -> None:
 
     with (
         patch(
-            "repomap_kg.cli.maintenance_window_for_coordinated_backup",
+            "common_lore_index.cli.maintenance_window_for_coordinated_backup",
             side_effect=maintenance_window,
         ),
-        patch("repomap_kg.cli.dump_all_databases", side_effect=failed_dump_all),
+        patch("common_lore_index.cli.dump_all_databases", side_effect=failed_dump_all),
         redirect_stdout(io.StringIO()),
     ):
         exit_code = main(
@@ -224,10 +224,10 @@ def test_cli_dump_all_dry_run_does_not_open_window() -> None:
 
     with (
         patch(
-            "repomap_kg.cli.maintenance_window_for_coordinated_backup",
+            "common_lore_index.cli.maintenance_window_for_coordinated_backup",
             side_effect=AssertionError("dry-run acquired maintenance"),
         ),
-        patch("repomap_kg.cli.dump_all_databases", side_effect=dry_run),
+        patch("common_lore_index.cli.dump_all_databases", side_effect=dry_run),
         redirect_stdout(io.StringIO()),
     ):
         exit_code = main(

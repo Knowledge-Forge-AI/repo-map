@@ -10,21 +10,21 @@ from tempfile import TemporaryDirectory
 from typing import Callable, Mapping
 
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.contracts import normalize_request
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.contracts import normalize_request
+from common_lore_index.coordinator.storage import ControlStore
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
-from repomap_kg.coordinator.endpoint import (
+from common_lore_index.coordinator.endpoint import (
     EndpointDescriptorError,
     LoopbackEndpointDescriptor,
     load_endpoint_descriptor,
     write_endpoint_descriptor,
 )
-from repomap_kg.coordinator.job_control import (
+from common_lore_index.coordinator.job_control import (
     cancel_coordinator_job,
     wait_for_coordinator_job,
 )
-from repomap_kg.coordinator.transport import (
+from common_lore_index.coordinator.transport import (
     LocalRequestDispatcher,
     LoopbackTcpService,
     UnixSocketService,

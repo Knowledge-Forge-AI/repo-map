@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.observations import RawObservation
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_ingestion import _copy_families
-from repomap_kg.storage.staged_rows import build_staged_rows
+    from common_lore_index.observations import RawObservation
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_ingestion import _copy_families
+from common_lore_index.storage.staged_rows import build_staged_rows
 
 
 @dataclass(frozen=True)
@@ -87,7 +87,7 @@ def _measure(size):
         with (
             patch.object(RowSpool, "__iter__", counted_iter),
             patch(
-                "repomap_kg.storage._staged_ingestion_stages.copy_stage_rows",
+                "common_lore_index.storage._staged_ingestion_stages.copy_stage_rows",
                 copy_rows,
             ),
         ):
@@ -183,7 +183,7 @@ def test_arch6f_copy_failure_leaves_unconsumed_spools_for_final_cleanup():
     try:
         with (
             patch(
-                "repomap_kg.storage._staged_ingestion_stages.copy_stage_rows",
+                "common_lore_index.storage._staged_ingestion_stages.copy_stage_rows",
                 fail_third_copy,
             ),
             pytest.raises(ValueError, match="synthetic copy failure"),

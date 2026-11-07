@@ -9,7 +9,7 @@ from repomap_test_support.awk import (
     observations_by_kind,
 )
 
-from repomap_kg.extractors.shell.awk import extract_awk_file_observations
+from common_lore_index.extractors.shell.awk import extract_awk_file_observations
 
 
 class AwkCallObservationUnitTests(unittest.TestCase):

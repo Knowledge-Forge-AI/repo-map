@@ -19,7 +19,7 @@ import pytest
 
 from ci.python_retention_operations import dynamic_operations
 import d12_python_closure as closure
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 
 ENTRY, LIBC, REAL = payload.PYTHON_PAYLOAD_EXCLUSIONS["arm64"], "/lib/aarch64-linux-gnu/libc.so.6", "/usr/lib/libc.so.6"
 NAMES, OK = list(ENTRY.baseline_imports), "\tlibc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x2)\n"
@@ -224,7 +224,7 @@ def test_extracted_module_never_imports_the_preflight_and_product_never_imports_
     imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.Import) for a in n.names}
     imported |= {str(n.module) for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)}
     assert {name for name in imported if name.split(".")[0] not in sys.stdlib_module_names} == {
-        "native_apt_prerequisites", "repomap_kg.runtime"}, imported
+        "native_apt_prerequisites", "common_lore_index.runtime"}, imported
     assert dynamic_operations(tree) == dynamic_operations(product) == [] and "sys.path" not in ast.unparse(tree)
     assert not [n for n in ast.walk(product) if isinstance(n, (ast.Import, ast.ImportFrom)) and any(
         str(getattr(n, "module", None) or a.name).split(".")[0] not in sys.stdlib_module_names for a in n.names)]

@@ -22,7 +22,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.graph.multi_source_records import (
+from common_lore_index.graph.multi_source_records import (
     GraphSourceBinding,
     MultiSourceIdentityError,
     SnapshotManifestEntry,
@@ -30,14 +30,14 @@ from repomap_kg.graph.multi_source_records import (
     SourceKind,
     SourceSnapshot,
 )
-from repomap_kg.storage.canonical import (
+from common_lore_index.storage.canonical import (
     query_canonical_edge_explanation,
     query_canonical_neighborhood,
 )
-from repomap_kg.storage.canonical_filters import canonical_edge_filters_from_args
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.read_pages import validate_public_read_window
-from repomap_kg.storage.source_readback import (
+from common_lore_index.storage.canonical_filters import canonical_edge_filters_from_args
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.read_pages import validate_public_read_window
+from common_lore_index.storage.source_readback import (
     query_ingested_source_records,
     query_source_run_records,
 )

@@ -1,7 +1,7 @@
 import pytest
 
-from repomap_kg.coordinator.contracts import JobState
-from repomap_kg.coordinator.job_control import (
+from common_lore_index.coordinator.contracts import JobState
+from common_lore_index.coordinator.job_control import (
     cancel_coordinator_job,
     coordinator_health,
     coordinator_job_status,
@@ -11,8 +11,8 @@ from repomap_kg.coordinator.job_control import (
     wait_for_coordinator_job,
     list_coordinator_jobs,
 )
-from repomap_kg.coordinator.job_listing import JobListCursor, encode_job_cursor
-from repomap_kg.coordinator.local_mode import CoordinatorModeError
+from common_lore_index.coordinator.job_listing import JobListCursor, encode_job_cursor
+from common_lore_index.coordinator.local_mode import CoordinatorModeError
 from repomap_test_support.coordinator_control_fixtures import (
     CustomPageClient,
     FakeCoordinatorClient as FakeClient,

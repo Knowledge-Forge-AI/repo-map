@@ -7,16 +7,16 @@ import pytest
 
 from repomap_test_support.executable_authority import controlled_psql_copy
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import refresh_graph
-from repomap_kg.runtime.postgres_route import effective_postgres_route
-from repomap_kg.graph.multi_source_pipeline import scan_multi_source_generations
-from repomap_kg.ops.generations import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import refresh_graph
+from common_lore_index.runtime.postgres_route import effective_postgres_route
+from common_lore_index.graph.multi_source_pipeline import scan_multi_source_generations
+from common_lore_index.ops.generations import (
     canonicalizer_generation,
     configured_graph,
     extractor_generation,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     read_run_publication,
@@ -26,17 +26,17 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.coordinator.protocol import ProtocolError, run_refresh_worker
-from repomap_kg.coordinator import normalize_request
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.protocol import ProtocolError, run_refresh_worker
+from common_lore_index.coordinator import normalize_request
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability,
     ResolvedRefreshAuthority,
     build_refresh_worker_runner,
     create_refresh_capability,
 )
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.storage import ControlStore
 
 
 def search_path():

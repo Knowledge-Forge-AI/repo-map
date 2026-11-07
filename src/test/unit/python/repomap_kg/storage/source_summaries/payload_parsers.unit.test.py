@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     api_summary_from_storage_payload,
     js_summary_from_storage_payload,
     ruby_summary_from_storage_payload,

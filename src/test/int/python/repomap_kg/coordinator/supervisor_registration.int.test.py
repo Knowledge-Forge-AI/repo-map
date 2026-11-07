@@ -6,15 +6,15 @@ import sys
 
 import pytest
 
-from repomap_kg.coordinator import _publication_phase as phase
-from repomap_kg.coordinator import _supervisor_fencing as supervisor
-from repomap_kg.coordinator._supervisor_registration import in_process_currency_context, persist_supervisor_registration
-from repomap_kg.coordinator._restart_fencing import StaleDurableAuthorityError
-from repomap_kg.coordinator.process_supervision import launch_managed_process
-from repomap_kg.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.runtime.postgres_route import effective_postgres_route
+from common_lore_index.coordinator import _publication_phase as phase
+from common_lore_index.coordinator import _supervisor_fencing as supervisor
+from common_lore_index.coordinator._supervisor_registration import in_process_currency_context, persist_supervisor_registration
+from common_lore_index.coordinator._restart_fencing import StaleDurableAuthorityError
+from common_lore_index.coordinator.process_supervision import launch_managed_process
+from common_lore_index.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.runtime.postgres_route import effective_postgres_route
 from repomap_test_support.startup_recovery_scenarios import _assert_retry_waiting_and_advance, _make_refresh_fixture, _refresh_harness, _req_norm, _search_path
 
 
@@ -46,7 +46,7 @@ def test_real_launch_registration_is_durable_consumed_and_rotated():
             graph_lease_fencing_epoch=claim.graph_lease_fencing_epoch,
         )
         sealed = create_refresh_capability(cap_dir, capability)
-        argv = (sys.executable, "-m", "repomap_kg.coordinator.refresh_worker", "--capability",
+        argv = (sys.executable, "-m", "common_lore_index.coordinator.refresh_worker", "--capability",
                 str(sealed), "--job-id", claim.job_id, "--attempt", str(claim.attempt))
         ticket = supervisor.register_worker_launch(capability, argv)
         store.register_supervisor_launch(ticket, capability)

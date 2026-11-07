@@ -3,32 +3,32 @@ from __future__ import annotations
 from pathlib import Path
 from dataclasses import replace
 import pytest
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.structural_digest import digest_prepared_stage_rows
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.structural_digest import digest_prepared_stage_rows
 
 import psycopg
 from psycopg.conninfo import make_conninfo
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.storage import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
-from repomap_kg.storage.authority import (
+from common_lore_index.storage.authority import (
     AttemptNumber,
     OperationId,
 )
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.backend_telemetry import (
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.backend_telemetry import (
     BackendTelemetry,
     ConnectionTelemetryEvent,
     TelemetryEventKind,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )

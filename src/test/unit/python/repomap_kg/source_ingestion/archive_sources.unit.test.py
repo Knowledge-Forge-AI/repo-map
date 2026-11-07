@@ -6,7 +6,7 @@ from repomap_test_support.source_ingestion import (
     SourceIngestionUnitTestCase,
 )
 
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     archive_observations_from_manifest,
     build_archive_manifest,

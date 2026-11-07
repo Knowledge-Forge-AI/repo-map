@@ -7,8 +7,8 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.ops.readback import MISSING_DATABASE_MESSAGE
-from repomap_kg.ops.refresh import MISSING_DATABASE_DIAGNOSTIC_CODE
+from common_lore_index.ops.readback import MISSING_DATABASE_MESSAGE
+from common_lore_index.ops.refresh import MISSING_DATABASE_DIAGNOSTIC_CODE
 
 
 _ALLOWLISTED_RESULTS = frozenset({"success", "failure"})

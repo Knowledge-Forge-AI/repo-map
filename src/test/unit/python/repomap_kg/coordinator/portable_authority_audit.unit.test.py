@@ -10,9 +10,9 @@ import unittest
 from typing import Any, cast
 from unittest.mock import patch
 
-from repomap_kg.coordinator import _portable_authority as pa
-from repomap_kg.coordinator.protocol import ProtocolSession
-from repomap_kg.coordinator.refresh_adapter import refresh_terminal
+from common_lore_index.coordinator import _portable_authority as pa
+from common_lore_index.coordinator.protocol import ProtocolSession
+from common_lore_index.coordinator.refresh_adapter import refresh_terminal
 
 
 class PortableAuthorityAuditUnitTests(unittest.TestCase):
@@ -35,11 +35,11 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
     def test_import_denied_prefixes_raise_permission_error(self):
         for denied in (
             "psycopg", "psycopg2", "sqlite3",
-            "repomap_kg.coordinator._control_test",
-            "repomap_kg.storage.staged_ingestion",
-            "repomap_kg.storage.staging_copy",
-            "repomap_kg.coordinator.local_lifecycle",
-            "repomap_kg.registry",
+            "common_lore_index.coordinator._control_test",
+            "common_lore_index.storage.staged_ingestion",
+            "common_lore_index.storage.staging_copy",
+            "common_lore_index.coordinator.local_lifecycle",
+            "common_lore_index.registry",
         ):
             with self.subTest(denied=denied):
                 with self.assertRaisesRegex(PermissionError, "import authority denied"):
@@ -316,7 +316,7 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
             sys.path.insert(0, str(tools_dir))
 
         from runner_coverage_execution import prepare_child_coverage_environment
-        from repomap_kg.extractors.languages.go_helper import (
+        from common_lore_index.extractors.languages.go_helper import (
             HELPER_NAME,
             platform_tag,
             resolve_go_helper_command,
@@ -335,8 +335,8 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
         script = (
             "import os, sys, subprocess\n"
             "from pathlib import Path\n"
-            "from repomap_kg.coordinator._portable_authority import install_portable_authority_guard\n"
-            "from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command\n"
+            "from common_lore_index.coordinator._portable_authority import install_portable_authority_guard\n"
+            "from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command\n"
             f"pkg = Path({str(pkg_root)!r})\n"
             f"install_portable_authority_guard(store_root=Path({str(self.write_root)!r}), "
             f"workspace_root=Path({str(self.read_root)!r}), code_roots=[pkg])\n"
@@ -360,7 +360,7 @@ class PortableAuthorityAuditUnitTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=f"Subprocess failed:\n{result.stderr}")
 
     def test_go_helper_environment_override_precedence(self):
-        from repomap_kg.extractors.languages.go_helper import (
+        from common_lore_index.extractors.languages.go_helper import (
             HELPER_NAME,
             platform_tag,
             resolve_go_helper_command,

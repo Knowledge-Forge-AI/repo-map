@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.coordinator import _control_coalescing as subject
-from repomap_kg.coordinator.contracts import JobRequest
-from repomap_kg.coordinator.limits import CoordinatorLimits
-from repomap_kg.storage.authority import RequestId
+from common_lore_index.coordinator import _control_coalescing as subject
+from common_lore_index.coordinator.contracts import JobRequest
+from common_lore_index.coordinator.limits import CoordinatorLimits
+from common_lore_index.storage.authority import RequestId
 from repomap_test_support.control_db_fakes import ScriptedCursor, connect_with
 
 

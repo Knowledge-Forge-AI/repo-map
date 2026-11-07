@@ -5,8 +5,8 @@ from datetime import timedelta
 
 import pytest
 
-from repomap_kg.coordinator import _control_state as state
-from repomap_kg.coordinator._control_types import JobClaim
+from common_lore_index.coordinator import _control_state as state
+from common_lore_index.coordinator._control_types import JobClaim
 
 
 class Cursor:

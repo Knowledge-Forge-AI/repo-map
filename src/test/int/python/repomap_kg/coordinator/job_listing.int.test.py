@@ -5,15 +5,15 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from repomap_kg.coordinator import JobRequest, normalize_request
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.job_listing import (
+from common_lore_index.coordinator import JobRequest, normalize_request
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.job_listing import (
     JobListCursor,
     decode_job_cursor,
     encode_job_cursor,
 )
-from repomap_kg.coordinator.storage import ControlStore
+from common_lore_index.coordinator.storage import ControlStore
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

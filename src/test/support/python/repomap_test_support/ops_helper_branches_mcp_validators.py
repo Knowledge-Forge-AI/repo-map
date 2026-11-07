@@ -3,7 +3,7 @@
 from collections.abc import Callable
 import unittest
 
-from repomap_kg.server import mcp_core
+from common_lore_index.server import mcp_core
 
 
 def check_mcp_validators(self: unittest.TestCase) -> None:

@@ -8,10 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import connection, publisher
-from repomap_kg.storage.sqlite_local.connection import read_transaction
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError, accepted_identity
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.sqlite_local import connection, publisher
+from common_lore_index.storage.sqlite_local.connection import read_transaction
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError, accepted_identity
+from common_lore_index.storage.staging_family_rows import StageFamily
 from repomap_test_support.sqlite_local_fixtures import (
     generation_bundle,
     local_binding,

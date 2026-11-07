@@ -8,10 +8,10 @@ from typing import Any
 
 from ci.d12_system_grant import EXPECTED_PHASE_ID
 import d12_dependency_preflight as inner
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     POSTGRES_RELEASE_IMAGE, PYTHON_RELEASE_IMAGE,
 )
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION
 from repomap_test_support import d12_core_image as d12, d12_dynamic_linkage as linkage
 from repomap_test_support.d12_complete_inventory import complete_inventory
 from repomap_test_support.d12_image_probes import (

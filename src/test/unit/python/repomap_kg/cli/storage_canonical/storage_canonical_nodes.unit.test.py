@@ -4,8 +4,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import CanonicalNodeRecord, StorageSchemaError
+from common_lore_index.cli import main
+from common_lore_index.storage import CanonicalNodeRecord, StorageSchemaError
 
 
 class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
@@ -26,7 +26,7 @@ class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_node_records",
+            "common_lore_index.cli.query_canonical_node_records",
             return_value=records,
         ) as query:
             with redirect_stdout(stdout):
@@ -75,7 +75,7 @@ class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_node_records",
+            "common_lore_index.cli.query_canonical_node_records",
             return_value=records,
         ):
             with redirect_stdout(stdout):
@@ -98,7 +98,7 @@ class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
     def test_storage_canonical_nodes_validates_canonical_key(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_node_records") as query:
+        with patch("common_lore_index.cli.query_canonical_node_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -119,7 +119,7 @@ class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
     def test_storage_canonical_nodes_rejects_unsupported_graph_key_version(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_node_records") as query:
+        with patch("common_lore_index.cli.query_canonical_node_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -140,7 +140,7 @@ class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
     def test_storage_canonical_nodes_rejects_path_prefix_for_non_file_kind(self):
         stderr = io.StringIO()
 
-        with patch("repomap_kg.cli.query_canonical_node_records") as query:
+        with patch("common_lore_index.cli.query_canonical_node_records") as query:
             with redirect_stderr(stderr):
                 exit_code = main(
                     [
@@ -164,7 +164,7 @@ class CliStorageCanonicalNodesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_node_records",
+            "common_lore_index.cli.query_canonical_node_records",
             side_effect=StorageSchemaError("psql did not return canonical nodes"),
         ):
             with redirect_stderr(stderr):

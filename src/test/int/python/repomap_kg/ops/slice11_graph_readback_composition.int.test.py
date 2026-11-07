@@ -23,16 +23,16 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.graph.multi_source_records import (
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.graph.multi_source_records import (
     SourceKind,
     graph_source_binding_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.server.mcp import repomap_search_nodes, repomap_search_observations
-from repomap_kg.server.ops import like_escape
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.server.mcp import repomap_search_nodes, repomap_search_observations
+from common_lore_index.server.ops import like_escape
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,

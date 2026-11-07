@@ -7,11 +7,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.refresh import (
+from common_lore_index.cli import main
+from common_lore_index.ops.refresh import (
     OpsGraphSummary,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 
 
 class CliLocalOpsBaselinesDriftUnitTests(unittest.TestCase):
@@ -56,7 +56,7 @@ mode = "read_only"
             stdout = io.StringIO()
 
             with (
-                patch("repomap_kg.cli.query_graph_summary") as graph_summary,
+                patch("common_lore_index.cli.query_graph_summary") as graph_summary,
                 patch("pathlib.Path.exists", side_effect=AssertionError("root read")),
             ):
                 graph_summary.return_value = OpsGraphSummary(
@@ -147,8 +147,8 @@ mode = "read_only"
             stdout = io.StringIO()
 
             with (
-                patch("repomap_kg.cli.save_graph_baselines") as save_graph_baselines,
-                patch("repomap_kg.cli.baseline_save_to_jsonable") as to_jsonable,
+                patch("common_lore_index.cli.save_graph_baselines") as save_graph_baselines,
+                patch("common_lore_index.cli.baseline_save_to_jsonable") as to_jsonable,
             ):
                 save_graph_baselines.return_value = SimpleNamespace(result="success")
                 to_jsonable.return_value = {
@@ -237,8 +237,8 @@ mode = "read_only"
             stdout = io.StringIO()
 
             with (
-                patch("repomap_kg.cli.prune_graph_baselines") as prune_graph_baselines,
-                patch("repomap_kg.cli.baseline_prune_to_jsonable") as to_jsonable,
+                patch("common_lore_index.cli.prune_graph_baselines") as prune_graph_baselines,
+                patch("common_lore_index.cli.baseline_prune_to_jsonable") as to_jsonable,
             ):
                 prune_graph_baselines.return_value = SimpleNamespace(result="success")
                 to_jsonable.return_value = {

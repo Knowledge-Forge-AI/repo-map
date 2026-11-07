@@ -5,17 +5,18 @@ from collections.abc import Mapping, Sequence
 import re
 from typing import Any
 
-from repomap_kg.runtime.release import POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION
+from common_lore_index.runtime.release import POSTGRES_RELEASE_VERSION, PSYCOPG_RELEASE_VERSION, PYTHON_RELEASE_VERSION
 from repomap_test_support import d12_dynamic_linkage as linkage
 from repomap_test_support.d12_image_probes import CLIENTS, NOTICES, SERVER
 from tools.system.config import SystemTestError
-from repomap_kg.runtime.release import DebPackage, POSTGRES_RELEASE_IMAGE, PlatformPackages
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release import DebPackage, POSTGRES_RELEASE_IMAGE, PlatformPackages
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 
 APPROVED_DIAGNOSTIC_STOPS = (
     "vulnerability classification of every other package and distribution is not performed (unknown)",
     "incumbent 16.14 application inventory is unavailable without an extra build or pull",
 )
+ACCEPTED_INDEX_ACCESS_METHODS: tuple[str, str] = ("btree", "gin")
 
 class D12CandidateAssessmentError(SystemTestError, ValueError):
     """Raised when D12 post-build candidate observation or assessment fails."""
@@ -30,12 +31,20 @@ def _verify_round_trip(round_trip: Mapping[str, Any]) -> None:
         raise D12CandidateAssessmentError(f"round-trip missing source/restored observations: {round_trip!r}")
     before, after = round_trip.get("archive_sha256_before"), round_trip.get("archive_sha256_after")
     _require(bool(before) and before == after, f"round-trip archive SHA-256 mismatch: {round_trip!r}")
-    _require(src.get("fixture_md5") == rst.get("fixture_md5") and rst.get("fixture_rows") == 2000, "2000-row mismatch")
+    _require(
+        bool(src.get("fixture_md5")) and src.get("fixture_md5") == rst.get("fixture_md5")
+        and src.get("fixture_rows") == 2000 and rst.get("fixture_rows") == 2000,
+        "2000-row mismatch",
+    )
     _require((src.get("graph_schema"), rst.get("graph_schema")) == ("CURRENT", "CURRENT"), "graph_schema != CURRENT")
     _require((src.get("extensions"), rst.get("extensions")) == (["plpgsql"], ["plpgsql"]), "extensions != ['plpgsql']")
     _require((src.get("replication_slots"), rst.get("replication_slots")) == (0, 0), "replication_slots != 0")
-    ams = (set(src.get("index_access_methods") or ()), set(rst.get("index_access_methods") or ()))
-    _require(ams == ({"btree"}, {"btree"}), f"round-trip index_access_methods must be {{'btree'}}: {round_trip!r}")
+    expected_ams = list(ACCEPTED_INDEX_ACCESS_METHODS)
+    ams = (src.get("index_access_methods"), rst.get("index_access_methods"))
+    _require(
+        ams == (expected_ams, expected_ams),
+        f"round-trip index_access_methods must be {expected_ams!r}: {round_trip!r}",
+    )
 
 def _verify_candidate_assessment(
     *, packaging: Mapping[str, Any], linkage_report: dict[str, Any], candidate: Mapping[str, Any],

@@ -33,8 +33,8 @@ def test_canon_facade2_inventory_reports_current_static_ledger() -> None:
     assert "_nix_multi_source" not in inventory.all_names
     assert "_nix_multi_source" not in inventory.public_names
 
-    import repomap_kg.canonicalization as canonicalization
-    import repomap_kg.canonicalization.main as main
+    import common_lore_index.canonicalization as canonicalization
+    import common_lore_index.canonicalization.main as main
     assert (
         canonicalization.canonicalize_observations
         is main.canonicalize_observations
@@ -42,8 +42,8 @@ def test_canon_facade2_inventory_reports_current_static_ledger() -> None:
     assert not hasattr(canonicalization, "nix_multi_source")
     assert all(hasattr(canonicalization, name) for name in inventory.ledger_names)
 
-    import repomap_kg.canonicalization.nix_family as nix_family
-    import repomap_kg.canonicalization._nix_multi_source as private_helper
+    import common_lore_index.canonicalization.nix_family as nix_family
+    import common_lore_index.canonicalization._nix_multi_source as private_helper
     assert (
         nix_family.multi_source_opaque_target_key
         is private_helper.multi_source_opaque_target_key
@@ -118,3 +118,30 @@ def test_canon_facade3_inventory_tool_has_no_update_mode() -> None:
 
     assert stdout.getvalue() == ""
     assert "unrecognized arguments: --update" in stderr.getvalue()
+
+def test_late_internal_children_preserve_the_exact_legacy_facade(monkeypatch) -> None:
+    from types import ModuleType
+    import common_lore_index.canonicalization as canonicalization
+
+    baseline = canonicalization.__all__
+    assert len(baseline) == 172
+    assert canonicalization._NON_FACADE_MODULES == {"claim_guard", "rust_pilot_family"}
+    from common_lore_index.canonicalization import claim_guard, rust_pilot_family
+
+    children = (
+        ("claim_guard", claim_guard),
+        ("rust_pilot_family", rust_pilot_family),
+    )
+    for child, module in children:
+        assert getattr(canonicalization, child) is module
+        assert child not in canonicalization.__all__
+    assert canonicalization.__all__ == baseline
+    assert inventory_tool.collect_inventory().check_passed
+
+    unknown = ModuleType(canonicalization.__name__ + ".unclassified_extension")
+    with monkeypatch.context() as patch:
+        patch.setattr(canonicalization, "unclassified_extension", unknown, raising=False)
+        inventory = inventory_tool.collect_inventory()
+        assert not inventory.check_passed
+        assert inventory.missing_all_names == ("unclassified_extension",)
+    assert inventory_tool.collect_inventory().check_passed

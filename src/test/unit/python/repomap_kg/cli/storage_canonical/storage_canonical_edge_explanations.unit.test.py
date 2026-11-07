@@ -4,8 +4,8 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import (
+from common_lore_index.cli import main
+from common_lore_index.storage import (
     CanonicalEdgeEvidenceRecord,
     CanonicalEdgeExplanationRecord,
     CanonicalEdgeRecord,
@@ -57,7 +57,7 @@ class CliStorageCanonicalEdgeExplanationUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_edge_explanation",
+            "common_lore_index.cli.query_canonical_edge_explanation",
             return_value=record,
         ) as query:
             with redirect_stdout(stdout):
@@ -148,7 +148,7 @@ class CliStorageCanonicalEdgeExplanationUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_edge_explanation",
+            "common_lore_index.cli.query_canonical_edge_explanation",
             return_value=record,
         ):
             with redirect_stdout(stdout):
@@ -183,7 +183,7 @@ class CliStorageCanonicalEdgeExplanationUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_canonical_edge_explanation",
+            "common_lore_index.cli.query_canonical_edge_explanation",
             return_value=CanonicalEdgeExplanationRecord(edge=None, evidence=()),
         ):
             with redirect_stdout(stdout):

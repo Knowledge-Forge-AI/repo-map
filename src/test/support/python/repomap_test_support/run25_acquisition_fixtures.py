@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping
 
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.ops.ingestion.github_api import (
     GitHubApiSourceConfig,
     GitHubRequestPlan,
     GitHubTransportResponse,

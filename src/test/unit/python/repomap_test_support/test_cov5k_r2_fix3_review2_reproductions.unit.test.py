@@ -5,7 +5,7 @@ import subprocess
 import pytest
 
 from repomap_test_support.test_cov5k_r2_fix2_catalog import CatalogEntry, build_closed_catalog
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 from scale15_terminal_contracts import ExpectedRefreshAuthority
 from repomap_test_support.test_cov5k_r2_fix2_evidence import ExecutorEvidenceError
 from repomap_test_support.test_cov5k_r2_groupa_contract import group_a_public_context

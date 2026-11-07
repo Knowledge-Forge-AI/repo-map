@@ -3,11 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.ops.config_loading import load_ops_config_home
-from repomap_kg.ops.config_records import OpsConfigError
-from repomap_kg.ops.generations import config_generation
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.postgres_route import execution_postgres, select_postgres_route
+from common_lore_index.ops.config_loading import load_ops_config_home
+from common_lore_index.ops.config_records import OpsConfigError
+from common_lore_index.ops.generations import config_generation
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.postgres_route import execution_postgres, select_postgres_route
 
 
 def configured(tmp_path):
@@ -43,7 +43,7 @@ def test_marker_alone_preserves_endpoint_and_generation_inputs(tmp_path, monkeyp
     generation = config_generation(config, graph, tmp_path)
     marker = tmp_path / "release-marker"
     monkeypatch.delenv("REPOMAP_CONTAINER_INTERNAL", raising=False)
-    with patch("repomap_kg.runtime.postgres_route.CONTAINER_INTERNAL_MARKER", marker):
+    with patch("common_lore_index.runtime.postgres_route.CONTAINER_INTERNAL_MARKER", marker):
         assert execution_postgres(config).host == "127.0.0.1"
         marker.touch()
         assert execution_postgres(config).host == "postgres"
@@ -79,18 +79,18 @@ def test_direct_exposure_requires_ipv4_literal(tmp_path, bind):
 
 
 def test_host_ops_share_execution_route(tmp_path):
-    from repomap_kg.ops.config_status import graph_psql_args
-    from repomap_kg.ops.readback import execute_ops_json_readback
-    from repomap_kg.ops._refresh_psql import _run_ops_psql, run_storage_readback_with_ops_psql
+    from common_lore_index.ops.config_status import graph_psql_args
+    from common_lore_index.ops.readback import execute_ops_json_readback
+    from common_lore_index.ops._refresh_psql import _run_ops_psql, run_storage_readback_with_ops_psql
     from unittest.mock import Mock
 
     config = configured(tmp_path)
     assert graph_psql_args(config, config.graphs[0])[:4] == ["-h", "127.0.0.1", "-p", "55891"]
-    with patch("repomap_kg.ops.readback.execute_json_readback_with_driver", return_value={}) as query:
+    with patch("common_lore_index.ops.readback.execute_json_readback_with_driver", return_value={}) as query:
         execute_ops_json_readback(config, database="fixture", sql="SELECT 1", label="fixture",
                                   expected_shape="object", mode="host_only", psql_command="psql")
         assert query.call_args.kwargs["psql_args"][:4] == ["-h", "127.0.0.1", "-p", "55891"]
-    with patch("repomap_kg.ops._refresh_psql._dispatch_run_psql") as dispatch:
+    with patch("common_lore_index.ops._refresh_psql._dispatch_run_psql") as dispatch:
         _run_ops_psql(config, "fixture", psql_command="psql", input_text="SELECT 1")
         assert dispatch.return_value.call_args.args[0][1:5] == ["-h", "127.0.0.1", "-p", "55891"]
     readback = Mock(return_value={})
@@ -100,8 +100,8 @@ def test_host_ops_share_execution_route(tmp_path):
 
 
 def test_native_mode_omits_only_coordinator_and_its_state(tmp_path):
-    from repomap_kg.runtime.plan import build_local_runtime_plan
-    from repomap_kg.runtime.compose import render_compose_yaml
+    from common_lore_index.runtime.plan import build_local_runtime_plan
+    from common_lore_index.runtime.compose import render_compose_yaml
 
     setup_local_runtime(tmp_path)
     config = tmp_path / "repomap.rpl.toml"
@@ -122,8 +122,8 @@ def test_native_mode_omits_only_coordinator_and_its_state(tmp_path):
 
 
 def test_default_container_mode_keeps_postgres_internal_only(tmp_path):
-    from repomap_kg.runtime.compose import render_compose_yaml
-    from repomap_kg.runtime.plan import build_local_runtime_plan
+    from common_lore_index.runtime.compose import render_compose_yaml
+    from common_lore_index.runtime.plan import build_local_runtime_plan
 
     setup_local_runtime(tmp_path)
     compose = render_compose_yaml(build_local_runtime_plan(tmp_path))

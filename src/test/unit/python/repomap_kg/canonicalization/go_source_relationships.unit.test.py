@@ -3,15 +3,15 @@ import unittest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.canonicalization.main import canonicalize_observations
-    from repomap_kg.observations.raw import RawObservation
+    from common_lore_index.canonicalization.main import canonicalize_observations
+    from common_lore_index.observations.raw import RawObservation
 else:
-    from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.graph.go_source_keys import (
+    from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.graph.go_source_keys import (
     go_source_module_key,
     go_source_package_key,
 )
-from repomap_kg.graph.keys import file_key, go_module_key
+from common_lore_index.graph.keys import file_key, go_module_key
 from repomap_test_support.go_canonicalization import (
     accounting,
     observation,

@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.canonical_staging_merge import (
+from common_lore_index.storage.canonical_staging_merge import (
     build_canonical_merge_statements,
 )
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.staged_ingestion import (
     _refresh_canonical_edge_evidence_statistics,
     _refresh_canonical_node_evidence_statistics,
 )
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.staging_merge import MergeContext, MergeContractError
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.staging_merge import MergeContext, MergeContractError
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 def context() -> MergeContext:

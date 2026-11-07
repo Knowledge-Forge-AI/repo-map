@@ -17,8 +17,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import durability
-from repomap_kg.storage.sqlite_local.durability import (
+from common_lore_index.storage.sqlite_local import durability
+from common_lore_index.storage.sqlite_local.durability import (
     DURABILITY_FAILED,
     DURABILITY_UNAVAILABLE,
     fsync_descriptor,
@@ -26,7 +26,7 @@ from repomap_kg.storage.sqlite_local.durability import (
     fsync_directory_chain,
     fsync_file,
 )
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 
 
 def _refusal(call: Any, *args: Any) -> str:

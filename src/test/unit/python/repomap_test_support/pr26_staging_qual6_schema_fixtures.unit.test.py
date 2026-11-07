@@ -7,7 +7,7 @@ from pathlib import Path
 
 from repomap_test_support.mcp_domain_rows import DOMAIN_ROWS_SQL
 from repomap_test_support.publication_fixtures import PublicationFixture
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 

@@ -6,11 +6,11 @@ import pytest
 
 pytestmark = pytest.mark.requires_build_profile
 
-from repomap_kg.storage.run_authority import read_run_authority
-from repomap_kg.storage.staging_operation_contracts import (
+from common_lore_index.storage.run_authority import read_run_authority
+from common_lore_index.storage.staging_operation_contracts import (
     STAGING_OPERATION_DESCRIPTORS,
 )
-from repomap_kg.storage.staging_phase_events import STAGING_PHASE_CODES
+from common_lore_index.storage.staging_phase_events import STAGING_PHASE_CODES
 from repomap_test_support.postgres_harness import require_postgres_binaries
 from repomap_test_support.scale15_runtime_campaign import (
     expected_authority,

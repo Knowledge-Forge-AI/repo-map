@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 def raw_observation(

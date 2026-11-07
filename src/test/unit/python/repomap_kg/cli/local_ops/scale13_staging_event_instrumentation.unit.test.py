@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Callable
 
-from repomap_kg.cli.staging_event_instrumentation import (
+from common_lore_index.cli.staging_event_instrumentation import (
     staging_event_instrumentation,
 )
-from repomap_kg.storage.authority import AttemptNumber, JobId
-from repomap_kg.storage.publication import RunPublicationAttempt
-from repomap_kg.storage.staging_event_transport import StagingEventChannel
+from common_lore_index.storage.authority import AttemptNumber, JobId
+from common_lore_index.storage.publication import RunPublicationAttempt
+from common_lore_index.storage.staging_event_transport import StagingEventChannel
 
 
 class _FakeChannel(StagingEventChannel):

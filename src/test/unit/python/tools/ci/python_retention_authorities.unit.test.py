@@ -17,9 +17,9 @@ from ci.python_retention_authorities import (
 def authority(root: Path, *, retained: bool = False) -> tuple[list[dict], list[dict]]:
     folder = root / "tools/ci"
     folder.mkdir(parents=True)
-    path = "src/main/python/repomap_kg/owner.py"
+    path = "src/main/python/common_lore_index/owner.py"
     rule = {
-        "module_prefix": "repomap_kg.owner", "match": "exact",
+        "module_prefix": "common_lore_index.owner", "match": "exact",
         "ownership_class": "python_retained" if retained else "planned_go",
         "architecture_box": "go_control_and_api",
         "enforcement_tier": "T1-future" if retained else "T3",
@@ -39,7 +39,7 @@ def authority(root: Path, *, retained: bool = False) -> tuple[list[dict], list[d
     files = [{"path": path, "root": "product", "confidence": 0.9,
               "maintained_executable": True, "governing_profile": "retained_python_ratchets",
               "status": "retained_ratchet" if retained else "deferred_decomposition"}]
-    selected = [{"module": "repomap_kg.owner", "path": path,
+    selected = [{"module": "common_lore_index.owner", "path": path,
                  "ownership_class": rule["ownership_class"], "tier": rule["enforcement_tier"]}]
     return files, selected if retained else []
 
@@ -205,3 +205,69 @@ def test_author_correction_proof_decision_and_checker_are_bound(tmp_path: Path, 
         output.write("\n")
     with pytest.raises(RetentionAuthorityError, match="changed"):
         verify_bindings(tmp_path, bindings, inv, ratchet)
+
+
+def test_namespace_successor_keeps_pending_forecast_exact(tmp_path: Path, monkeypatch) -> None:
+    from ci import python_retention_authorities as owner
+    files, selected = authority(tmp_path)
+    current_path = files[0]["path"]
+    old_path = current_path.replace("/common_lore_index/", "/repomap_kg/")
+    path = tmp_path / "tools/ci/python_retention_transitions.json"
+    ledger = json.loads(path.read_text())
+    record = ledger["records"][0]
+    record["path"] = old_path
+    record["superseded_rule"]["module_prefix"] = "repomap_kg.owner"
+    path.write_text(json.dumps(ledger))
+    monkeypatch.setattr(owner, "_namespace_predecessors", lambda _root: {current_path: old_path})
+    validate_consistency(tmp_path, files, selected)
+    record["superseded_rule"]["justification"] = "Erased predecessor rationale"
+    path.write_text(json.dumps(ledger))
+    with pytest.raises(RetentionAuthorityError, match="compatible maintenance transition"):
+        validate_consistency(tmp_path, files, selected)
+
+
+def test_namespace_mapping_does_not_invent_unlisted_successors(tmp_path: Path, monkeypatch) -> None:
+    from ci import python_retention_authorities as owner
+    files, selected = authority(tmp_path)
+    path = tmp_path / "tools/ci/python_retention_transitions.json"
+    ledger = json.loads(path.read_text())
+    ledger["records"][0]["path"] = files[0]["path"].replace("/common_lore_index/", "/repomap_kg/")
+    path.write_text(json.dumps(ledger))
+    monkeypatch.setattr(owner, "_namespace_predecessors", lambda _root: {})
+    with pytest.raises(RetentionAuthorityError, match="compatible maintenance transition"):
+        validate_consistency(tmp_path, files, selected)
+
+
+def test_namespace_history_cannot_hide_a_new_retained_admission(tmp_path: Path, monkeypatch) -> None:
+    from ci import python_retention_authorities as owner
+    files, _selected = authority(tmp_path)
+    path = tmp_path / "tools/ci/python_type_ownership.json"
+    current = json.loads(path.read_text())
+    prior = json.loads(path.read_text())
+    prior["entries"][0]["module_prefix"] = "repomap_kg.owner"
+    path.write_text(json.dumps(prior))
+    def git(*args: str) -> str:
+        return subprocess.check_output(["git", "-C", str(tmp_path), *args], text=True).strip()
+    git("init", "-q")
+    git("add", "tools/ci/python_type_ownership.json")
+    git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "Prior namespace forecast")
+    revision = git("rev-parse", "HEAD")
+    rule = current["entries"][0]
+    rule.update(ownership_class="python_retained", enforcement_tier="T1-future", disposition="retained_python_ratcheted")
+    path.write_text(json.dumps(current))
+    files[0]["status"] = "retained_ratchet"
+    old_path = files[0]["path"].replace("/common_lore_index/", "/repomap_kg/")
+    monkeypatch.setattr(owner, "_namespace_predecessors", lambda _root: {files[0]["path"]: old_path})
+    with pytest.raises(RetentionAuthorityError, match="specific superseded rationale"):
+        validate_ownership_transitions(tmp_path, files, [revision])
+    ledger_path = tmp_path / "tools/ci/python_retention_transitions.json"
+    ledger = json.loads(ledger_path.read_text())
+    old_current = dict(rule, module_prefix="repomap_kg.owner")
+    ledger["records"].append({"path": old_path, "disposition": "retained_python",
+        "superseded_rule": prior["entries"][0], "current_rule": old_current})
+    ledger_path.write_text(json.dumps(ledger))
+    validate_ownership_transitions(tmp_path, files, [revision])
+    old_current["justification"] = "Wrong preserved rationale"
+    ledger_path.write_text(json.dumps(ledger))
+    with pytest.raises(RetentionAuthorityError, match="specific superseded rationale"):
+        validate_ownership_transitions(tmp_path, files, [revision])

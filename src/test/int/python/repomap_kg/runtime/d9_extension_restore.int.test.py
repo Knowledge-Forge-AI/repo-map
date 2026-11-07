@@ -14,19 +14,19 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.coordinator._lifecycle_upgrade import upgrade_coordinator_control
-from repomap_kg.coordinator.local_lifecycle import LocalControlAuthority, initialize_coordinator_control
-from repomap_kg.runtime._extension_restore_qualification import qualify_server_provenance
-from repomap_kg.runtime.backup import drop_database, dump_all_databases, dump_database, init_database_from_dump, inspect_backup
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.backup_restore_sets import restore_coordinated_backup
-from repomap_kg.runtime.release import POSTGRES_RELEASE_IMAGE
-from repomap_kg.runtime.release_cluster import initialize_release_cluster
-from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
-from repomap_kg.storage import (
+from common_lore_index.coordinator._lifecycle_upgrade import upgrade_coordinator_control
+from common_lore_index.coordinator.local_lifecycle import LocalControlAuthority, initialize_coordinator_control
+from common_lore_index.runtime._extension_restore_qualification import qualify_server_provenance
+from common_lore_index.runtime.backup import drop_database, dump_all_databases, dump_database, init_database_from_dump, inspect_backup
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.backup_restore_sets import restore_coordinated_backup
+from common_lore_index.runtime.release import POSTGRES_RELEASE_IMAGE
+from common_lore_index.runtime.release_cluster import initialize_release_cluster
+from common_lore_index.runtime.schema_upgrade import upgrade_graph_schema
+from common_lore_index.storage import (
     GraphSchemaStatus, apply_migrations, default_rdbms_root, discover_migrations, graph_schema_readiness, run_psql,
 )
-from repomap_kg.storage.main import _migration_script
+from common_lore_index.storage.main import _migration_script
 from repomap_test_support.d9_extension_policies import (
     control_extension_policy, hide_extension_script_in_container, installed_synthetic_extensions,
     probe_live_container_qualification, synthetic_multilevel_extension_policy, tamper_extension_script_in_container,
@@ -208,8 +208,8 @@ def test_d9b_backup_first_upgrade_and_drop_consumers_with_policy(monkeypatch: py
                 assert upg_res.result == "success"
                 assert graph_schema_readiness(default_rdbms_root(), g_handle.psql_args, psql_command=g_handle.psql_command).status is GraphSchemaStatus.CURRENT
 
-                import repomap_kg.runtime._backup_support as bs_mod
-                import repomap_kg.runtime.release_cluster as rc_mod
+                import common_lore_index.runtime._backup_support as bs_mod
+                import common_lore_index.runtime.release_cluster as rc_mod
                 admin_root = root / "admin-d9b"
                 admin_root.mkdir(mode=0o700)
                 monkeypatch.setenv("REPOMAP_ADMIN_ROOT", str(admin_root))
@@ -376,7 +376,7 @@ def test_d12_trixie_backup_restore_and_collation_refusals(monkeypatch: pytest.Mo
                 with closing(_connect(postgres, graph_db, autocommit=True)) as conn:
                     conn.execute(SYNTHETIC_GRAPH_SQL)
                 provider, _collate, _ctype, icu_locale, icu_version, actual = _creation_facts(postgres, graph_db)
-                assert provider == "i" and icu_locale and icu_version == actual, (icu_locale, icu_version, actual)
+                assert provider == "i" and icu_locale and icu_version and icu_version == actual, (icu_locale, icu_version, actual)
                 icu_dump = dump_database(
                     home, database=graph_db, timestamp="20261023T011000Z",
                     command_runner=runner, extension_restore_policy=policy)

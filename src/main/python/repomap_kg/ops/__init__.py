@@ -1,1 +1,1 @@
-"""Local operations package namespace."""
+"""Transitional legacy namespace for the documented configuration migration API."""

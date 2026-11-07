@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from repomap_kg.server.mcp import (
+from common_lore_index.server.mcp import (
     RepoMapMcpError,
     repomap_neighborhood,
     repomap_project_summary,
@@ -12,14 +12,14 @@ from repomap_kg.server.mcp import (
     repomap_search_nodes,
     repomap_search_observations,
 )
-from repomap_kg.server.mcp_search_sql import build_mcp_search_sql
-from repomap_kg.storage import StorageSchemaError
-from repomap_kg.storage.graph_readback_sql import (
+from common_lore_index.server.mcp_search_sql import build_mcp_search_sql
+from common_lore_index.storage import StorageSchemaError
+from common_lore_index.storage.graph_readback_sql import (
     build_canonical_node_search_sql,
     build_file_source_search_sql,
     build_repository_filter_sql,
 )
-from repomap_kg.storage.sql_canonical import (
+from common_lore_index.storage.sql_canonical import (
     build_canonical_neighborhood_query_sql,
     build_canonical_storage_summary_query_sql,
 )
@@ -80,8 +80,8 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         self.assertIn("files.path", file_sql)
 
     def test_mcp_search_observations_sql_incorporates_identity_filter(self) -> None:
-        from repomap_kg.storage import sql_literal
-        from repomap_kg.server._ops_search import like_escape, McpOpsError
+        from common_lore_index.storage import sql_literal
+        from common_lore_index.server._ops_search import like_escape, McpOpsError
 
         obs_sql = build_mcp_search_sql(
             root_path="/app/fixture",
@@ -120,7 +120,7 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         config_path = self.write_ops_config(self.visible_ops_config())
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
-            patch("repomap_kg.server.ops.query_mcp_search") as mock_query,
+            patch("common_lore_index.server.ops.query_mcp_search") as mock_query,
         ):
             mock_query.return_value = {"results": [], "total": 0, "has_more": False}
 
@@ -154,11 +154,11 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
             patch(
-                "repomap_kg.server.ops.query_canonical_storage_summary",
+                "common_lore_index.server.ops.query_canonical_storage_summary",
                 return_value=fake_summary,
             ) as mock_summary,
             patch(
-                "repomap_kg.server.ops.query_canonical_neighborhood",
+                "common_lore_index.server.ops.query_canonical_neighborhood",
                 return_value=fake_neighborhood,
             ) as mock_neighborhood,
         ):
@@ -173,7 +173,7 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
             patch(
-                "repomap_kg.server.ops.McpOpsGraphContext.repository_identity",
+                "common_lore_index.server.ops.McpOpsGraphContext.repository_identity",
                 new_callable=lambda: "invalid:identity:shape",
             ),
         ):
@@ -218,14 +218,14 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         self.assertEqual(rows, [])
 
     def test_language_summaries_forward_repository_identity(self) -> None:
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_js_framework_summary,
             repomap_nix_summary,
             repomap_openapi_summary,
             repomap_python_summary,
             repomap_terraform_summary,
         )
-        from repomap_kg.storage import (
+        from common_lore_index.storage import (
             JSFrameworkSummaryRecord,
             NixSummaryRecord,
             OpenAPISummaryRecord,
@@ -248,16 +248,16 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
             with (
                 self.subTest(owner=owner),
                 patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
-                patch("repomap_kg.ops.refresh.run_storage_readback_with_ops_psql",
+                patch("common_lore_index.ops.refresh.run_storage_readback_with_ops_psql",
                       side_effect=AssertionError("retained ops-psql wrapper used")),
-                patch(f"repomap_kg.server.ops.{owner}", return_value=record) as mock_owner,
+                patch(f"common_lore_index.server.ops.{owner}", return_value=record) as mock_owner,
             ):
                 tool(graph_id="repo-map")
             self.assertEqual(mock_owner.call_count, 1)
             self.assertEqual(mock_owner.call_args.kwargs["repository_identity"], "repo1:repo-map")
 
     def test_language_summaries_reject_invalid_identity_with_mcp_error(self) -> None:
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_js_framework_summary,
             repomap_nix_summary,
             repomap_openapi_summary,
@@ -276,7 +276,7 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         with (
             patch.dict("os.environ", {"REPOMAP_OPS_CONFIG": str(config_path)}, clear=True),
             patch(
-                "repomap_kg.server.ops.McpOpsGraphContext.repository_identity",
+                "common_lore_index.server.ops.McpOpsGraphContext.repository_identity",
                 new_callable=lambda: "invalid:identity:shape",
             ),
         ):
@@ -285,7 +285,7 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
                     caller(graph_id="repo-map")
 
     def test_language_summaries_sql_incorporate_identity_filter(self) -> None:
-        from repomap_kg.storage import (
+        from common_lore_index.storage import (
             build_js_framework_summary_query_sql,
             build_nix_summary_query_sql,
             build_openapi_summary_query_sql,
@@ -344,7 +344,7 @@ class McpSearchIdentityReadbackUnitTests(McpServerTestSupport):
         self.assertEqual(obs_count, 0)
 
     def test_summary_root_value_redaction_consistency(self) -> None:
-        from repomap_kg.server.ops import summary_root_value
+        from common_lore_index.server.ops import summary_root_value
 
         public_graph = MagicMock(privacy="public")
         private_graph = MagicMock(privacy="private-ops")

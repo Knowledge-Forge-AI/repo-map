@@ -12,7 +12,7 @@ TOOLS_ROOT = Path(__file__).resolve().parents[5] / "tools"
 if str(TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLS_ROOT))
 
-from repomap_kg.cli.main import main
+from common_lore_index.cli.main import main
 from runner_coverage_bootstrap import (
     BootstrapCapabilityRecord,
     resolve_bootstrap_capability,

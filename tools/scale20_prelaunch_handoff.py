@@ -8,7 +8,7 @@ import json
 from types import MappingProxyType
 from typing import Any
 
-from repomap_kg.storage.authority import PublicationGenerations
+from common_lore_index.storage.authority import PublicationGenerations
 from scale15_terminal_contracts import (
     ExpectedRefreshAuthority,
     FINAL_FAMILY_CODES,

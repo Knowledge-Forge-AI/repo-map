@@ -9,11 +9,11 @@ import pytest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from repomap_kg.cli.parser import build_parser
+    from common_lore_index.cli.parser import build_parser
 else:
-    from repomap_kg.cli import build_parser
-from repomap_kg.cli import main
-from repomap_kg.service_package.operations import (
+    from common_lore_index.cli import build_parser
+from common_lore_index.cli import main
+from common_lore_index.service_package.operations import (
     ServiceActionResult,
     ServicePackageError,
 )
@@ -80,7 +80,7 @@ def test_service_action_emits_public_safe_json():
         changed=True,
     )
     with patch(
-        "repomap_kg.cli.run_coordinator_service_action",
+        "common_lore_index.cli.run_coordinator_service_action",
         return_value=result,
     ) as run:
         with redirect_stdout(stdout):
@@ -105,7 +105,7 @@ def test_render_is_an_explicit_non_mutating_raw_definition_surface():
     stdout = io.StringIO()
     definition = "[Service]\nExecStart=synthetic\n"
     with patch(
-        "repomap_kg.cli.run_coordinator_service_action",
+        "common_lore_index.cli.run_coordinator_service_action",
         return_value=definition,
     ) as run:
         with redirect_stdout(stdout):
@@ -127,7 +127,7 @@ def test_render_is_an_explicit_non_mutating_raw_definition_surface():
 def test_service_errors_are_bounded_and_path_sanitized():
     stderr = io.StringIO()
     with patch(
-        "repomap_kg.cli.run_coordinator_service_action",
+        "common_lore_index.cli.run_coordinator_service_action",
         side_effect=ServicePackageError(
             "service_definition_unsafe /Users/example/private-definition"
         ),
@@ -180,7 +180,7 @@ def test_packaged_foreground_scrubs_ambient_authority_before_start():
         },
         clear=True,
     ):
-        with patch("repomap_kg.cli.serve_configured_coordinator", side_effect=serve):
+        with patch("common_lore_index.cli.serve_configured_coordinator", side_effect=serve):
             with redirect_stdout(io.StringIO()):
                 exit_code = main(
                     [
@@ -224,7 +224,7 @@ def test_container_foreground_accepts_fixed_psql_and_bounded_startup_wait():
         )
 
     with patch.dict(os.environ, {"REPOMAP_HOME": "/repo-map-home"}, clear=True):
-        with patch("repomap_kg.cli.serve_configured_coordinator", side_effect=serve):
+        with patch("common_lore_index.cli.serve_configured_coordinator", side_effect=serve):
             with redirect_stdout(io.StringIO()):
                 exit_code = main(
                     [
@@ -252,9 +252,9 @@ def test_coordinator_health_renders_non_json_not_ready_status():
     payload = {"result": "not_ready", "status": "unavailable"}
     stdout = io.StringIO()
     with (
-        patch("repomap_kg.cli.coordinator_health", return_value=payload) as health,
+        patch("common_lore_index.cli.coordinator_health", return_value=payload) as health,
         patch(
-            "repomap_kg.cli.format_coordinator_health_table",
+            "common_lore_index.cli.format_coordinator_health_table",
             return_value="coordinator unavailable",
         ),
         redirect_stdout(stdout),
@@ -309,7 +309,7 @@ def test_foreground_without_packaged_psql_renders_recovery_table():
         )
 
     with (
-        patch("repomap_kg.cli.serve_configured_coordinator", side_effect=serve),
+        patch("common_lore_index.cli.serve_configured_coordinator", side_effect=serve),
         redirect_stdout(stdout),
     ):
         exit_code = main(
@@ -335,10 +335,10 @@ def test_foreground_without_packaged_psql_renders_recovery_table():
 def test_coordinator_connection_failure_does_not_invoke_service_packaging():
     with (
         patch(
-            "repomap_kg.cli.run_coordinator_refresh",
+            "common_lore_index.cli.run_coordinator_refresh",
             side_effect=RuntimeError("coordinator_unavailable"),
         ),
-        patch("repomap_kg.cli.run_coordinator_service_action") as service_action,
+        patch("common_lore_index.cli.run_coordinator_service_action") as service_action,
         redirect_stderr(io.StringIO()),
     ):
         with pytest.raises(RuntimeError, match="coordinator_unavailable"):
@@ -360,7 +360,7 @@ def test_coordinator_connection_failure_does_not_invoke_service_packaging():
 
 
 def test_stale_packaged_mode_refusal_exits_without_restart_failure(capsys):
-    from repomap_kg.coordinator.local_mode import CoordinatorModeError
-    with patch("repomap_kg.cli.apply_service_environment"), patch("repomap_kg.cli.serve_configured_coordinator", side_effect=CoordinatorModeError("coordinator_service_requires_native_mode")):
+    from common_lore_index.coordinator.local_mode import CoordinatorModeError
+    with patch("common_lore_index.cli.apply_service_environment"), patch("common_lore_index.cli.serve_configured_coordinator", side_effect=CoordinatorModeError("coordinator_service_requires_native_mode")):
         assert main(["ops", "coordinator-serve", "--repo-map-home", "/placeholder/home", "--service-package-environment", "--service-package-psql", "/placeholder/psql"]) == 0
     assert "coordinator_service_requires_native_mode" in capsys.readouterr().err

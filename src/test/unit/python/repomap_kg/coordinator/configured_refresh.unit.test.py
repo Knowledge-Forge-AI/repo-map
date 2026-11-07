@@ -8,15 +8,15 @@ from unittest.mock import patch
 import pytest
 
 from repomap_test_support.executable_authority import approved_psql
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver, _executable_search_path,
     _postgres_password, build_configured_refresh_coordinator,
 )
-from repomap_kg.coordinator._refresh_contracts import RefreshSourceError
-from repomap_kg.coordinator.refresh_adapter import build_refresh_worker_runner
-from repomap_kg.coordinator.startup_recovery import PublicationRouteChangedError
-from repomap_kg.graph.multi_source_pipeline import MultiSourceCaptureError
+from common_lore_index.coordinator._refresh_contracts import RefreshSourceError
+from common_lore_index.coordinator.refresh_adapter import build_refresh_worker_runner
+from common_lore_index.coordinator.startup_recovery import PublicationRouteChangedError
+from common_lore_index.graph.multi_source_pipeline import MultiSourceCaptureError
 
 
 def request():
@@ -120,7 +120,7 @@ def test_configured_publication_readback_uses_private_child_environment(
         config_generation=accepted.config_generation,
     )
     with patch(
-        "repomap_kg.coordinator.configured_refresh.read_run_publication",
+        "common_lore_index.coordinator.configured_refresh.read_run_publication",
         return_value=record,
     ) as read:
         assert resolver.read_publication(claim) == {"latest_run_identity": "run-1"}
@@ -146,7 +146,7 @@ def test_configured_publication_readback_rejects_changed_route_before_psql(
     )
 
     with patch(
-        "repomap_kg.coordinator.configured_refresh.read_run_publication"
+        "common_lore_index.coordinator.configured_refresh.read_run_publication"
     ) as read:
         with pytest.raises(
             PublicationRouteChangedError,
@@ -178,7 +178,7 @@ def test_configured_resolver_exposes_polling_targets_and_latest_publication(
     snapshot = resolver.polling_snapshot("configured-refresh")
     assert snapshot.source.category == "ready"
     with patch(
-        "repomap_kg.coordinator.configured_refresh."
+        "common_lore_index.coordinator.configured_refresh."
         "read_latest_receipt_bearing_publication",
         return_value=None,
     ) as read:
@@ -280,7 +280,7 @@ def test_configured_resolver_refuses_missing_root_or_unsupported(tmp_path, monke
         explicit_source_bindings=(),
     )
     with patch(
-        "repomap_kg.coordinator.configured_refresh.configured_graph",
+        "common_lore_index.coordinator.configured_refresh.configured_graph",
         return_value=fake_unsupported,
     ):
         with pytest.raises(ValueError, match="archive_source_unsupported"):
@@ -303,10 +303,10 @@ def test_configured_resolver_multi_source_and_error_attribution(tmp_path, monkey
         refresh_unsupported_classification=None,
         explicit_source_bindings=(SimpleNamespace(source_kind="git"),), exclude_paths=(),
     )
-    with patch("repomap_kg.coordinator.configured_refresh.configured_graph", return_value=fake_multi):
+    with patch("common_lore_index.coordinator.configured_refresh.configured_graph", return_value=fake_multi):
         with pytest.raises(ValueError, match="multi-source graph polling refresh is unsupported"):
             resolver.polling_snapshot("configured-refresh")
-        scan_target = "repomap_kg.coordinator.configured_refresh.scan_multi_source_generations"
+        scan_target = "common_lore_index.coordinator.configured_refresh.scan_multi_source_generations"
         with patch(scan_target, side_effect=MultiSourceCaptureError("down", category="source_unavailable")):
             with pytest.raises(RefreshSourceError, match="source is unavailable"):
                 resolver.resolve_authority("configured-refresh")
@@ -321,7 +321,7 @@ def test_configured_resolver_multi_source_and_error_attribution(tmp_path, monkey
         resolver, "_snapshot",
         return_value=SimpleNamespace(psql_args=("arg",), password="test-pass", config_generation="cg1:expected"),
     ):
-        with patch("repomap_kg.coordinator.configured_refresh.read_run_publication", return_value=None) as read_publication:
+        with patch("common_lore_index.coordinator.configured_refresh.read_run_publication", return_value=None) as read_publication:
             claim = SimpleNamespace(
                 graph_id="configured-refresh", job_id="job-1", attempt=1, config_generation="cg1:expected",
             )

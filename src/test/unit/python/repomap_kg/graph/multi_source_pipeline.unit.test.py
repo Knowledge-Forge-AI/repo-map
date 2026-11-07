@@ -5,27 +5,27 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.extractors.config.nix_resolver import NixResolution, ResolutionOutcome
-from repomap_kg.graph.discovery_records import FileInfo
-from repomap_kg.graph.multi_source import (
+from common_lore_index.extractors.config.nix_resolver import NixResolution, ResolutionOutcome
+from common_lore_index.graph.discovery_records import FileInfo
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_capture import _capture_inventory
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.graph.multi_source_capture import _capture_inventory
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
     capture_multi_source_candidate,
     capture_sealed_multi_source_candidate,
     scan_multi_source_generations,
 )
-from repomap_kg.graph.multi_source_routing import (
+from common_lore_index.graph.multi_source_routing import (
     SealedSourceBinding,
     _resolved_observation,
     _validate_provenance,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def _binding(
@@ -173,7 +173,7 @@ def test_unsupported_source_kind_fails_before_partial_candidate(tmp_path):
 def test_changed_during_capture_fails_without_candidate(tmp_path):
     entry = tmp_path / "entry"
     _write_constellation(entry, "entry")
-    from repomap_kg.graph import multi_source_pipeline as pipeline
+    from common_lore_index.graph import multi_source_pipeline as pipeline
 
     real_extract = pipeline.extract_observations_from_repository_files
 
@@ -202,7 +202,7 @@ def test_later_binding_extraction_rechecks_the_complete_inventory(tmp_path):
     later = tmp_path / "later"
     _write_constellation(first, "first")
     _write_constellation(later, "later")
-    from repomap_kg.graph import multi_source_pipeline as pipeline
+    from common_lore_index.graph import multi_source_pipeline as pipeline
 
     real_extract = pipeline.extract_observations_from_repository_files
 
@@ -233,7 +233,7 @@ def test_later_binding_extraction_rechecks_the_complete_inventory(tmp_path):
 def test_resolver_failure_produces_no_partial_candidate(tmp_path):
     entry = tmp_path / "entry"
     _write_constellation(entry, "entry")
-    from repomap_kg.graph import multi_source_pipeline as pipeline
+    from common_lore_index.graph import multi_source_pipeline as pipeline
 
     with (
         patch.object(
@@ -301,7 +301,7 @@ def test_public_safe_four_binding_fixture_covers_resolution_outcomes(tmp_path):
         for observation in bundle.observations
     }
     assert observed_vector == set(bundle.candidate.snapshot_vector)
-    from repomap_kg.canonicalization.main import canonicalize_observations
+    from common_lore_index.canonicalization.main import canonicalize_observations
     canon_result = canonicalize_observations(bundle.observations)
     assert not any(
         diag.category == "unsupported_raw_observation_kind"

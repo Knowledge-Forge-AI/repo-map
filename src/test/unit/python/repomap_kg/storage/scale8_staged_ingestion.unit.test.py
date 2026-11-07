@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.staging import STAGING_FAMILIES
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     build_staged_rows,
     stage_id_for_authority,

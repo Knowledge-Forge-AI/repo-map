@@ -4,7 +4,7 @@ from typing import Any, Mapping, cast
 
 import pytest
 
-from repomap_kg.coordinator.endpoint import (
+from common_lore_index.coordinator.endpoint import (
     EndpointDescriptorError,
     LoopbackEndpointDescriptor,
     load_endpoint_descriptor,

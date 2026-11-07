@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 import pytest
 
-import repomap_kg.storage.summaries as summaries
-from repomap_kg.storage import (
+import common_lore_index.storage.summaries as summaries
+from common_lore_index.storage import (
     BulkSummaryRecord,
     StorageSchemaError,
     build_bulk_summary_query_sql,
@@ -78,12 +78,12 @@ def test_psycopg87_query_bulk_summary_uses_adapter_in_exact_order(tmp_path: Path
         return real_converter(payload)
 
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", side_effect=execute) as adapter,
-        patch("repomap_kg.storage.summaries.bulk_manifest_summary_payload", side_effect=aggregate),
-        patch("repomap_kg.storage.summaries.payload_int", side_effect=convert_int),
-        patch("repomap_kg.storage.summaries.payload_optional_text", side_effect=convert_identity),
-        patch("repomap_kg.storage.summaries.bulk_summary_from_storage_payload", side_effect=convert_final),
-        patch("repomap_kg.storage.summaries.run_psql", side_effect=AssertionError("Bulk must use adapter")),
+        patch("common_lore_index.storage.summaries.execute_json_readback", side_effect=execute) as adapter,
+        patch("common_lore_index.storage.summaries.bulk_manifest_summary_payload", side_effect=aggregate),
+        patch("common_lore_index.storage.summaries.payload_int", side_effect=convert_int),
+        patch("common_lore_index.storage.summaries.payload_optional_text", side_effect=convert_identity),
+        patch("common_lore_index.storage.summaries.bulk_summary_from_storage_payload", side_effect=convert_final),
+        patch("common_lore_index.storage.summaries.run_psql", side_effect=AssertionError("Bulk must use adapter")),
     ):
         record = query_bulk_summary(
             ["-h", "/tmp/postgres", "-d", "postgres"],
@@ -118,12 +118,12 @@ def test_psycopg87_adapter_failure_prevents_manifest_access(tmp_path: Path) -> N
     expected = StorageSchemaError("psycopg did not return bulk summary as a JSON object")
 
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", side_effect=expected) as adapter,
+        patch("common_lore_index.storage.summaries.execute_json_readback", side_effect=expected) as adapter,
         patch(
-            "repomap_kg.storage.summaries.bulk_manifest_summary_payload",
+            "common_lore_index.storage.summaries.bulk_manifest_summary_payload",
             side_effect=AssertionError("manifest access must not occur"),
         ),
-        patch("repomap_kg.storage.summaries.run_psql", side_effect=AssertionError("no fallback")),
+        patch("common_lore_index.storage.summaries.run_psql", side_effect=AssertionError("no fallback")),
     ):
         with pytest.raises(StorageSchemaError) as raised:
             query_bulk_summary(["-d", "postgres"], root_path=str(tmp_path))
@@ -192,8 +192,8 @@ def test_psycopg87_database_field_failures_follow_manifest_aggregation(
         return bulk_manifest_summary_payload(root)
 
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload),
-        patch("repomap_kg.storage.summaries.bulk_manifest_summary_payload", side_effect=aggregate),
+        patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload),
+        patch("common_lore_index.storage.summaries.bulk_manifest_summary_payload", side_effect=aggregate),
     ):
         with pytest.raises(StorageSchemaError, match=field):
             query_bulk_summary(["-d", "postgres"], root_path=str(tmp_path))
@@ -315,8 +315,8 @@ def test_psycopg87_bulk_and_api_use_the_readback_facade() -> None:
 
 def _query_payload(root: Path, storage_payload: dict[str, object]) -> BulkSummaryRecord:
     with (
-        patch("repomap_kg.storage.summaries.execute_json_readback", return_value=storage_payload),
-        patch("repomap_kg.storage.summaries.run_psql", side_effect=AssertionError("no direct psql")),
+        patch("common_lore_index.storage.summaries.execute_json_readback", return_value=storage_payload),
+        patch("common_lore_index.storage.summaries.run_psql", side_effect=AssertionError("no direct psql")),
     ):
         return query_bulk_summary(["-d", "postgres"], root_path=str(root))
 

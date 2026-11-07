@@ -1,0 +1,63 @@
+{
+  "schema_version": "cloe-w5-semantic-generator-artifact-pins-v1",
+  "policy_version": "cloe-w5-semantic-generator-artifact-policy-v1",
+  "policy_versions": {
+    "artifact_profile": "cloe-w5-semantic-generator-artifact-policy-v1",
+    "dependency_metadata": "cloe-w5-generator-dependency-metadata-v1",
+    "model_execution": "cloe-w5-semantic-generator-cpu-v1"
+  },
+  "acquisition_phase": "REPOMAP-CLOE-SEMANTIC1",
+  "metadata_sha256": "e7eb157508552e47eff1d1feb231913b3d243e89026dea9d9e1ad6f10f46f72f",
+  "model_metadata_sha256": "83342a593581d23c4ba11c33d8204a4d626aaae6de8ca6b3e31f7244e7dee67a",
+  "artifact_bytes_verified": 182037753,
+  "model": {
+    "model_id": "BAAI/bge-small-en-v1.5",
+    "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+    "dimensions": 384,
+    "max_sequence_length": 512,
+    "device": "cpu",
+    "execution_mode": "ORT_SEQUENTIAL",
+    "intra_op_num_threads": 1,
+    "inter_op_num_threads": 1,
+    "files": [
+      {"path": "model/1_Pooling/config.json", "sha256": "d1caf60c96f5fba2157c0c26b76d80818fad6cf0b8eb5e73ec372ff9818eba5c", "size": 190},
+      {"path": "model/README.md", "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837", "size": 94783},
+      {"path": "model/config.json", "sha256": "094f8e891b932f2000c92cfc663bac4c62069f5d8af5b5278c4306aef3084750", "size": 743},
+      {"path": "model/modules.json", "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf", "size": 349},
+      {"path": "model/onnx/model.onnx", "sha256": "828e1496d7fabb79cfa4dcd84fa38625c0d3d21da474a00f08db0f559940cf35", "size": 133093490},
+      {"path": "model/sentence_bert_config.json", "sha256": "84e39fda68ccbff05bfa723ae9c0e70e23e2ec373b76e0f8c6e71af72a693cbf", "size": 52},
+      {"path": "model/special_tokens_map.json", "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3", "size": 125},
+      {"path": "model/tokenizer.json", "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66", "size": 711396},
+      {"path": "model/tokenizer_config.json", "sha256": "9261e7d79b44c8195c1cada2b453e55b00aeb81e907a6664974b4d7776172ab3", "size": 366},
+      {"path": "model/vocab.txt", "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3", "size": 231508}
+    ]
+  },
+  "packages": [
+    {"name": "anyio", "version": "4.16.0", "filename": "anyio-4.16.0-py3-none-any.whl", "sha256": "c66ae634e0b8228396b801741beb3294326d4b6102f7bba4041c0dfb58c29026", "size": 134521},
+    {"name": "click", "version": "8.5.0", "filename": "click-8.5.0-py3-none-any.whl", "sha256": "255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360", "size": 125251},
+    {"name": "filelock", "version": "4.2.6", "filename": "filelock-4.2.6-py3-none-any.whl", "sha256": "fd7d4fca497bf3e3d0945a13261f8e684f2aef12ce7cf76aef26e13bf7388b88", "size": 164378},
+    {"name": "flatbuffers", "version": "25.12.19", "filename": "flatbuffers-25.12.19-py2.py3-none-any.whl", "sha256": "7634f50c427838bb021c2d66a3d1168e9d199b0607e6329399f04846d42e20b4", "size": 26661},
+    {"name": "fsspec", "version": "2026.9.0", "filename": "fsspec-2026.9.0-py3-none-any.whl", "sha256": "8dd6e646e99ea382bd85f97a45e6b526a442d79423a7dc673f1e2756d05fcb5f", "size": 221738},
+    {"name": "h11", "version": "0.16.0", "filename": "h11-0.16.0-py3-none-any.whl", "sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86", "size": 37515},
+    {"name": "hf-xet", "version": "1.8.0", "filename": "hf_xet-1.8.0-cp38-abi3-manylinux_2_28_aarch64.whl", "sha256": "8800e3444770f2c630b361bc6d5c6ebb770b7830646cf632fbb79d0e5bbc9e7f", "size": 4069340},
+    {"name": "httpcore2", "version": "2.16.0", "filename": "httpcore2-2.16.0-py3-none-any.whl", "sha256": "5c4358319f2602d984ad93182c9fee5160f22e9da7babdda870a5e7c4e2dc34f", "size": 85070},
+    {"name": "httpx2", "version": "2.16.0", "filename": "httpx2-2.16.0-py3-none-any.whl", "sha256": "fd2c5d7909e8d86fe92d53020c310ca0e4e431b838c207c5754b9bbf0308d49a", "size": 97880},
+    {"name": "huggingface-hub", "version": "2.4.0", "filename": "huggingface_hub-2.4.0-py3-none-any.whl", "sha256": "42ecfd93ede47bdd333daebbf66a32d7bfe2e18752754fe4d2d4f98a0179d801", "size": 857021},
+    {"name": "idna", "version": "3.20", "filename": "idna-3.20-py3-none-any.whl", "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c", "size": 69583},
+    {"name": "numpy", "version": "2.5.4", "filename": "numpy-2.5.4-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", "sha256": "1c2e71b04c6cad90026e544501bbe0ab9290fa8a4d845e7e8c0d124fb429c988", "size": 15689178},
+    {"name": "onnxruntime", "version": "1.31.1", "filename": "onnxruntime-1.31.1-cp313-cp313-manylinux_2_28_aarch64.whl", "sha256": "dcaedc50333876f3829ab966b242147f0e548229e29c36fe44622ecf748c25ee", "size": 21420628},
+    {"name": "packaging", "version": "26.3", "filename": "packaging-26.3-py3-none-any.whl", "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c", "size": 129956},
+    {"name": "protobuf", "version": "7.36.2", "filename": "protobuf-7.36.2-cp310-abi3-manylinux2014_aarch64.whl", "sha256": "e11e1f0180583a2af89db6a2ecd9e8dc40aa6d2988ca175bfd0e6d12ea72d74e", "size": 344219},
+    {"name": "pyyaml", "version": "6.0.3", "filename": "pyyaml-6.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", "sha256": "ee2922902c45ae8ccada2c5b501ab86c36525b883eff4255313a253a3160861c", "size": 767081},
+    {"name": "tokenizers", "version": "0.23.3", "filename": "tokenizers-0.23.3-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", "sha256": "ec82e80e65a862275b97c3d90b7a523df8d9519ee48aeb4e9625b2cc909274e0", "size": 3519944},
+    {"name": "tqdm", "version": "4.70.1", "filename": "tqdm-4.70.1-py3-none-any.whl", "sha256": "c293e525e6fef9c20e8728fd4612df02a0aa31bb5fe91ecd93e123b1b7bffa73", "size": 80199},
+    {"name": "truststore", "version": "0.10.5", "filename": "truststore-0.10.5-py3-none-any.whl", "sha256": "9aaaedaefaf06d8b206278cf8b5012bc897f485a874503501e12d776df78951c", "size": 19017},
+    {"name": "typing-extensions", "version": "4.16.0", "filename": "typing_extensions-4.16.0-py3-none-any.whl", "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8", "size": 45571}
+  ],
+  "source_archives": [],
+  "license_security_gate": {
+    "status": "external_trusted_phase_required",
+    "license_review": "not_accepted_by_artifact_verification",
+    "security_review": "not_accepted_by_artifact_verification"
+  }
+}

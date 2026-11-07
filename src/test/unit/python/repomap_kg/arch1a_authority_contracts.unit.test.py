@@ -10,8 +10,8 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.run_authority import (
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.run_authority import (
     RunStatus,
     build_run_authority_query_sql,
     parse_run_authority,
@@ -20,9 +20,9 @@ from repomap_kg.storage.run_authority import (
 
 
 def test_arch1a_authority_contract_is_typed_and_closed() -> None:
-    spec = importlib.util.find_spec("repomap_kg.storage.authority")
+    spec = importlib.util.find_spec("common_lore_index.storage.authority")
     assert spec is not None, "ARCH1A requires a neutral authority contract"
-    import repomap_kg.storage.authority as authority
+    import common_lore_index.storage.authority as authority
     assert authority.RequestId("request-1") == "request-1"
     assert authority.OperationId("operation-1") == "operation-1"
     assert authority.JobId("job-1") == "job-1"
@@ -41,10 +41,10 @@ def test_arch1a_authority_contract_is_typed_and_closed() -> None:
 
 
 def test_arch1a_generation_tuple_is_the_storage_compatibility_type() -> None:
-    spec = importlib.util.find_spec("repomap_kg.storage.authority")
+    spec = importlib.util.find_spec("common_lore_index.storage.authority")
     assert spec is not None, "ARCH1A requires a neutral generation tuple"
-    import repomap_kg.storage.authority as authority
-    import repomap_kg.storage.publication as publication
+    import common_lore_index.storage.authority as authority
+    import common_lore_index.storage.publication as publication
     generations = authority.PublicationGenerations(
         "sg1:source",
         "cg1:config",
@@ -63,11 +63,11 @@ def test_arch1a_generation_tuple_is_the_storage_compatibility_type() -> None:
 
 
 def test_arch1a_direct_and_coordinator_generation_tuples_are_equal() -> None:
-    spec = importlib.util.find_spec("repomap_kg.storage.authority")
+    spec = importlib.util.find_spec("common_lore_index.storage.authority")
     assert spec is not None, "ARCH1A requires a neutral generation tuple"
-    import repomap_kg.storage.authority as authority
-    import repomap_kg.coordinator.refresh_adapter as refresh_adapter
-    import repomap_kg.storage.staged_ingestion as staged_ingestion
+    import common_lore_index.storage.authority as authority
+    import common_lore_index.coordinator.refresh_adapter as refresh_adapter
+    import common_lore_index.storage.staged_ingestion as staged_ingestion
     generations = authority.PublicationGenerations(
         "sg1:source",
         "cg1:config",
@@ -148,7 +148,7 @@ def test_arch1a_authority_readback_uses_dedicated_typed_query() -> None:
         )
     )
     with patch(
-        "repomap_kg.storage.run_authority.run_psql",
+        "common_lore_index.storage.run_authority.run_psql",
         return_value=completed,
     ) as run:
         snapshot = read_run_authority(

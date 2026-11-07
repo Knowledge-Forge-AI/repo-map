@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.service_package import api
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.operations import (
+from common_lore_index.service_package import api
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.operations import (
     ServiceActionResult,
     ServicePackageError,
 )

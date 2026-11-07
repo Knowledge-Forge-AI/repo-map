@@ -6,9 +6,9 @@ from unittest.mock import patch
 
 import pytest
 
-import repomap_kg.storage.readback_driver as readback_driver
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+import common_lore_index.storage.readback_driver as readback_driver
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
     execute_json_readback,
@@ -216,7 +216,7 @@ def test_psycopg26_pg_connector_psql_attempts_no_psycopg_import(monkeypatch) -> 
         return real_import(name, *args, **kwargs)
 
     with patch("builtins.__import__", side_effect=guarded_import):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             run_psql.return_value = _completed('{"ok": true}\n')
 
             payload = execute_json_readback(
@@ -284,7 +284,7 @@ def test_psycopg17_psql_connector_preserves_psql_process_path() -> None:
     connector = readback_driver.PsqlJsonReadbackConnector()
     sql = "SELECT json_build_object('ok', true);"
 
-    with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+    with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
         run_psql.return_value = _completed('{"ok": true}\n')
 
         payload = connector.execute_json(
@@ -313,10 +313,10 @@ def test_psycopg17_psycopg_connector_preserves_psycopg_path() -> None:
     fake_psycopg = _FakePsycopg(row=({"ok": True},))
 
     with patch(
-        "repomap_kg.storage.readback_driver._import_psycopg",
+        "common_lore_index.storage.readback_driver._import_psycopg",
         return_value=fake_psycopg,
     ):
-        with patch("repomap_kg.storage.readback_driver.run_psql") as run_psql:
+        with patch("common_lore_index.storage.readback_driver.run_psql") as run_psql:
             payload = connector.execute_json(
                 "SELECT json_build_object('ok', true);",
                 psql_args=(

@@ -9,9 +9,9 @@ from contextlib import closing
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.storage.node_locations import NodeLocationsQuery
-from repomap_kg.storage.sqlite_local.connection import read_transaction
-from repomap_kg.storage.sqlite_local.node_location_queries import node_locations
+from common_lore_index.storage.node_locations import NodeLocationsQuery
+from common_lore_index.storage.sqlite_local.connection import read_transaction
+from common_lore_index.storage.sqlite_local.node_location_queries import node_locations
 from repomap_test_support.node_location_fixtures import (
     DOC,
     GRAPH,

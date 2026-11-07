@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import release
+from common_lore_index.runtime import release
 from repomap_test_support.d12_image_probes import NOTICES
 from tools.system import d12_glibc_risk as risk
 from tools.system.d12_glibc_risk import GlibcRiskError

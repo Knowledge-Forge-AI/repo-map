@@ -10,27 +10,27 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime._backup_observation import _normalize_database_catalog
-from repomap_kg.runtime._backup_provenance import parse_toc_entries
-from repomap_kg.runtime._backup_support import (
+from common_lore_index.runtime._backup_observation import _normalize_database_catalog
+from common_lore_index.runtime._backup_provenance import parse_toc_entries
+from common_lore_index.runtime._backup_support import (
     derive_manifest_support, evaluate_backup_restore_support,
     require_backup_restore_supported, sanitize_public_manifest,
 )
-from repomap_kg.runtime._backup_provenance import catalog_observation_sql
-from repomap_kg.runtime._extension_restore_policy import (
+from common_lore_index.runtime._backup_provenance import catalog_observation_sql
+from common_lore_index.runtime._extension_restore_policy import (
     CORE_ONLY_EXTENSION_RESTORE_POLICY, ExtensionReplayBounds, TrustedArtifactQualification, TrustedExtensionRestorePolicy,
     TrustedExtensionRule, TrustedOptionalCapabilityContract, project_policy_for_observation,
 )
-from repomap_kg.runtime._extension_restore_qualification import engine_image_content_id, registry_manifest_digest
-from repomap_kg.runtime._extension_restore_grants import _privilege_sql, canonical_grant_projection, canonical_grant_statements
-from repomap_kg.runtime._extension_restore_template import (
+from common_lore_index.runtime._extension_restore_qualification import engine_image_content_id, registry_manifest_digest
+from common_lore_index.runtime._extension_restore_grants import _privilege_sql, canonical_grant_projection, canonical_grant_statements
+from common_lore_index.runtime._extension_restore_template import (
     BASELINE_CATALOGS, BASELINE_INDIRECT_CATALOGS, build_create_database_sql, parse_template_baseline, template_baseline_sql,
 )
-from repomap_kg.storage.semantic_candidate_import import candidate_schema_sql
-from repomap_kg.runtime._extension_restore_toc import build_derived_toc_plan
-from repomap_kg.runtime.backup_commands import planned_pg_restore_command
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.release_cluster import initialize_release_cluster
+from common_lore_index.storage.semantic_candidate_import import candidate_schema_sql
+from common_lore_index.runtime._extension_restore_toc import build_derived_toc_plan
+from common_lore_index.runtime.backup_commands import planned_pg_restore_command
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.release_cluster import initialize_release_cluster
 from repomap_test_support.d9_extension_policies import (
     DEFAULT_ARTIFACT_QUALIFICATION, DEFAULT_REPLAY_BOUNDS, DEFAULT_TEST_ENGINE_IMAGE_ID, UNIT_TEMPLATE_BASELINE,
     UNIT_VECTOR_CONTROL_SHA256, UNIT_VECTOR_SCRIPT_SHA256,
@@ -369,7 +369,7 @@ def test_create_database_sql_pg_restore_flags_and_release_cluster_policy_forward
     assert expect["candidate_fixture_enrichment:insert:rebuilds.enrichment_principal"] is False
     assert expect["candidate_fixture_enrichment:update:rebuilds"] is False and expect["candidate_fixture_reader:select:embeddings"] is True
 
-    from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
+    from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
     setup_local_runtime(tmp_path)
     rt_plan = build_local_runtime_plan(tmp_path)
     ext_cmd = planned_pg_restore_command(rt_plan, "repomap", exit_on_error=True, use_list_path="/tmp/private/derived.toc")

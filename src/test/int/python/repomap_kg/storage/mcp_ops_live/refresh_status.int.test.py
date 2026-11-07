@@ -9,14 +9,14 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.refresh import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.refresh import (
     graph_summary_to_jsonable,
     query_graph_summary,
     query_refresh_status,
     refresh_status_to_jsonable,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
 )
@@ -38,7 +38,7 @@ class StorageMcpRefreshStatusIntegrationTests(unittest.TestCase):
         expected_latest_raw = sum(
             1 for line in raw_jsonl.read_text(encoding="utf-8").splitlines() if line
         )
-        from repomap_kg.server.mcp import repomap_graph_status, repomap_refresh_status
+        from common_lore_index.server.mcp import repomap_graph_status, repomap_refresh_status
 
         with temporary_postgres() as postgres:
             apply_migrations(

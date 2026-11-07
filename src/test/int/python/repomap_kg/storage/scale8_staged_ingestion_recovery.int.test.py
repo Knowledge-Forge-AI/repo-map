@@ -8,14 +8,14 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 import pytest
 
-from repomap_kg.storage import staged_ingestion, staged_publication
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.staging_observability import StagingMeasurements
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import StorageSchemaError, apply_migrations, default_rdbms_root
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.readback_driver import _psycopg_connection_params_from_psql_args
-from repomap_kg.storage.staged_ingestion import IngestionAuthority, run_staged_full_refresh
+from common_lore_index.storage import staged_ingestion, staged_publication
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.staging_observability import StagingMeasurements
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import StorageSchemaError, apply_migrations, default_rdbms_root
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
+from common_lore_index.storage.staged_ingestion import IngestionAuthority, run_staged_full_refresh
 from repomap_test_support.postgres_harness import (
     PostgresContainerDatabase, require_postgres_binaries, temporary_postgres,
 )

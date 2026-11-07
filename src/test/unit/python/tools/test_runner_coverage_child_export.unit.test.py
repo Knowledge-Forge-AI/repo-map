@@ -1,4 +1,5 @@
-"""Unit tests for child coverage runner export, reconciliation, and threshold regressions."""  # REPOMAP-PUBLIC-V002-FIX10-R1 dynamic boundary re-attestation
+"""CLOE cutover re-attests the unchanged closed measurement fixture against current dependencies.
+Unit tests for child coverage runner export, reconciliation, and threshold regressions."""  # REPOMAP-PUBLIC-V002-FIX10-R1 dynamic boundary re-attestation
 
 from __future__ import annotations
 

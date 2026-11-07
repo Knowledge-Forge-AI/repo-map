@@ -21,33 +21,33 @@ import tempfile
 import threading
 import unittest
 
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import (
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import (
     ArtifactIntegrityError,
     FileSystemArtifactStore,
 )
-from repomap_kg.artifacts._store_filesystem import _filesystem_version
-from repomap_kg.artifacts.validator import (
+from common_lore_index.artifacts._store_filesystem import _filesystem_version
+from common_lore_index.artifacts.validator import (
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.coordinator._portable_capability import (
+from common_lore_index.coordinator._portable_capability import (
     PortableExecutionCapability,
     create_portable_capability,
 )
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator._portable_semantic_adapter import (
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator._portable_semantic_adapter import (
     PortableExecutionError,
     create_failure_receipt,
     execute_portable_extraction,
 )
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     graph_source_binding_id,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config_records import OpsGraphConfig
 from repomap_test_support.portable_publication_fixtures import (
     make_test_binding,
 )

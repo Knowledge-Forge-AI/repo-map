@@ -1,7 +1,7 @@
 import hashlib
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 def _file(alias: str) -> RawObservation:

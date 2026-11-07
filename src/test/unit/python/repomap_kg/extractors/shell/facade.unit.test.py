@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.shell.base import (
+from common_lore_index.extractors.shell.base import (
     extract_shell_command_observations,
     extract_shell_observations,
 )

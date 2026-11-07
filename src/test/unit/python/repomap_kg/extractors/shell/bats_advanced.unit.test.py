@@ -5,10 +5,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.extractors.shell.bats import extract_bats_file_observations
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.ops.ingestion.bulk import classify_bulk_route
-from repomap_kg.ops.ingestion.source import _archive_extractor_route
+from common_lore_index.extractors.shell.bats import extract_bats_file_observations
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.ops.ingestion.bulk import classify_bulk_route
+from common_lore_index.ops.ingestion.source import _archive_extractor_route
 
 from repomap_test_support.bats import (
     BATS_FIXTURE_ROOT as FIXTURE_ROOT,

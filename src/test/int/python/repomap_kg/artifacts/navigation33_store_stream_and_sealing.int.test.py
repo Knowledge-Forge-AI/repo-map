@@ -9,37 +9,37 @@ from typing import Any, cast
 
 import pytest
 
-from repomap_kg.artifacts._canonical import (
+from common_lore_index.artifacts._canonical import (
     CanonicalEncodingError,
     canonical_json,
     decode_canonical_json,
 )
-from repomap_kg.artifacts._manifest_records import (
+from common_lore_index.artifacts._manifest_records import (
     ArtifactLimits,
     ManifestArtifact,
     ManifestBinding,
     _binding_from_mapping,
     _entry_from_mapping,
 )
-from repomap_kg.artifacts._store_common import (
+from common_lore_index.artifacts._store_common import (
     _chunks,
     _materialize,
     _max_bytes,
     _validate_requested_digest,
 )
-from repomap_kg.artifacts._store_filesystem import _private_details
-from repomap_kg.artifacts.conformance import (
+from common_lore_index.artifacts._store_filesystem import _private_details
+from common_lore_index.artifacts.conformance import (
     ArtifactExtractionConformanceAdapter,
     ConformanceRequest,
 )
-from repomap_kg.artifacts.manifest import PortableSnapshotManifest
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.artifacts.store import (
+from common_lore_index.artifacts.manifest import PortableSnapshotManifest
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.artifacts.store import (
     ArtifactIntegrityError,
     FileSystemArtifactStore,
     InMemoryArtifactStore,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def test_verifying_artifact_stream_and_filesystem_store_contracts(tmp_path: Path) -> None:

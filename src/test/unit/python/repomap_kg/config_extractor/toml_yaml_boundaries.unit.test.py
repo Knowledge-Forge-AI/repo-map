@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from repomap_kg.extractors.config.generic import (
+from common_lore_index.extractors.config.generic import (
     extract_config_file_observations,
 )
 from repomap_test_support.config_extractor import observations_format

@@ -5,15 +5,15 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import LocalRuntimePlan, setup_local_runtime
-from repomap_kg.runtime.repository_identity_migration import RepositoryIdentityState
-from repomap_kg.runtime.schema_decommission import (
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import LocalRuntimePlan, setup_local_runtime
+from common_lore_index.runtime.repository_identity_migration import RepositoryIdentityState
+from common_lore_index.runtime.schema_decommission import (
     migration_ordinal,
     reconcile_repository_identity_before_removal,
 )
-from repomap_kg.runtime.schema_upgrade import upgrade_graph_schema
-from repomap_kg.storage import discover_migrations, graph_schema_forward_sql
+from common_lore_index.runtime.schema_upgrade import upgrade_graph_schema
+from common_lore_index.storage import discover_migrations, graph_schema_forward_sql
 
 
 def _runner(*_args: object, **_kwargs: object) -> CompletedProcess[object]:
@@ -49,12 +49,12 @@ def test_migration_ordinal_matches_exact_path_or_returns_none() -> None:
 def test_identity_reconciliation_skips_stable_or_empty_database(state) -> None:
     with (
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "query_repository_identity_state",
             return_value=state,
         ),
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "apply_repository_identity_reconciliation"
         ) as apply_reconciliation,
     ):
@@ -78,7 +78,7 @@ def test_identity_reconciliation_skips_stable_or_empty_database(state) -> None:
 def test_identity_reconciliation_refuses_diverged_database(state) -> None:
     with (
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "query_repository_identity_state",
             return_value=state,
         ),
@@ -98,7 +98,7 @@ def test_identity_reconciliation_refuses_diverged_database(state) -> None:
 def test_identity_reconciliation_applies_and_verifies_stable_result() -> None:
     with (
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "query_repository_identity_state",
             side_effect=(
                 RepositoryIdentityState(1, 0, 0, 1),
@@ -106,7 +106,7 @@ def test_identity_reconciliation_applies_and_verifies_stable_result() -> None:
             ),
         ),
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "apply_repository_identity_reconciliation"
         ) as apply_reconciliation,
     ):
@@ -123,7 +123,7 @@ def test_identity_reconciliation_applies_and_verifies_stable_result() -> None:
 def test_identity_reconciliation_refuses_unstable_result() -> None:
     with (
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "query_repository_identity_state",
             side_effect=(
                 RepositoryIdentityState(1, 0, 0, 1),
@@ -131,7 +131,7 @@ def test_identity_reconciliation_refuses_unstable_result() -> None:
             ),
         ),
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "apply_repository_identity_reconciliation"
         ),
         pytest.raises(
@@ -254,47 +254,47 @@ def test_upgrade_reconciles_identity_before_destructive_suffix(
 
     with (
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_owned_postgres_container"
+            "common_lore_index.runtime.schema_upgrade.inspect_owned_postgres_container"
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.database_exists",
+            "common_lore_index.runtime.schema_upgrade.database_exists",
             return_value=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.schema_ledger_exists",
+            "common_lore_index.runtime.schema_upgrade.schema_ledger_exists",
             return_value=True,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.query_schema_ledger",
+            "common_lore_index.runtime.schema_upgrade.query_schema_ledger",
             side_effect=[applied, identity_prefix, expected],
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade._repository_identity_target",
+            "common_lore_index.runtime.schema_upgrade._repository_identity_target",
             return_value=("repo1:public", "public", "/public/source"),
         ),
         patch(
-            "repomap_kg.runtime.schema_decommission.query_repository_identity_state",
+            "common_lore_index.runtime.schema_decommission.query_repository_identity_state",
             side_effect=[reconcilable, stable],
         ),
         patch(
-            "repomap_kg.runtime.schema_decommission."
+            "common_lore_index.runtime.schema_decommission."
             "apply_repository_identity_reconciliation",
             side_effect=lambda *args, **kwargs: events.append("reconcile"),
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.dump_database",
+            "common_lore_index.runtime.schema_upgrade.dump_database",
             side_effect=dump_db,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.inspect_backup",
+            "common_lore_index.runtime.schema_upgrade.inspect_backup",
             return_value=inspection,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.apply_forward_schema",
+            "common_lore_index.runtime.schema_upgrade.apply_forward_schema",
             side_effect=apply_forward,
         ),
         patch(
-            "repomap_kg.runtime.schema_upgrade.reconcile_graph_database_roles",
+            "common_lore_index.runtime.schema_upgrade.reconcile_graph_database_roles",
             side_effect=lambda *args, **kwargs: events.append("roles"),
         ),
     ):

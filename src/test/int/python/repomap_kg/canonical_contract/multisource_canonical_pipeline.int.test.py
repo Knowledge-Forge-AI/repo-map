@@ -21,9 +21,9 @@ import shutil
 import tempfile
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.config.nix_resolver import ResolutionOutcome
-from repomap_kg.graph.keys import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.config.nix_resolver import ResolutionOutcome
+from common_lore_index.graph.keys import (
     js_class_key,
     js_component_key,
     js_function_key,
@@ -34,17 +34,17 @@ from repomap_kg.graph.keys import (
     nix_app_key,
     nix_package_key,
 )
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
     capture_multi_source_candidate,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 from repomap_test_support.test_scratch import select_scratch_root
 
 

@@ -12,19 +12,19 @@ import unittest
 
 import pytest
 
-from repomap_kg.artifacts.manifest import PortableSnapshotManifest
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._control_maintenance import CleanupReport
-from repomap_kg.coordinator._control_types import JobClaim, JobStatus
-from repomap_kg.coordinator._portable_capability import create_portable_capability
-from repomap_kg.coordinator._portable_materialization import MaterializedWorkspace, _directory_identity, _remove_attempt_root
-from repomap_kg.coordinator._portable_worker_launch import _run_portable_worker_command
-from repomap_kg.coordinator._protocol_validation import ProtocolError
-from repomap_kg.coordinator._refresh_capability import RefreshCapability, create_refresh_capability, load_refresh_capability, remove_refresh_capability
-from repomap_kg.coordinator._refresh_capability_io import validate_config_file, validate_private_directory, validate_psql, validate_psql_lexical, validate_search_path
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.limits import CoordinatorLimits
-from repomap_kg.coordinator.refresh_adapter import refresh_terminal, run_refresh_worker
+from common_lore_index.artifacts.manifest import PortableSnapshotManifest
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._control_maintenance import CleanupReport
+from common_lore_index.coordinator._control_types import JobClaim, JobStatus
+from common_lore_index.coordinator._portable_capability import create_portable_capability
+from common_lore_index.coordinator._portable_materialization import MaterializedWorkspace, _directory_identity, _remove_attempt_root
+from common_lore_index.coordinator._portable_worker_launch import _run_portable_worker_command
+from common_lore_index.coordinator._protocol_validation import ProtocolError
+from common_lore_index.coordinator._refresh_capability import RefreshCapability, create_refresh_capability, load_refresh_capability, remove_refresh_capability
+from common_lore_index.coordinator._refresh_capability_io import validate_config_file, validate_private_directory, validate_psql, validate_psql_lexical, validate_search_path
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.limits import CoordinatorLimits
+from common_lore_index.coordinator.refresh_adapter import refresh_terminal, run_refresh_worker
 from repomap_test_support.run25_portable_workflows import create_run25_test_capability
 
 
@@ -331,13 +331,13 @@ def test_portable_and_refresh_worker_startup_refusals_and_materialization(tmp_pa
     with pytest.raises(ProtocolError, match="identity_mismatch"):
         _run_portable_worker_command(
             cap_mismatch, {"job_id": "wrong-job-id", "attempt": 1}, limits,
-            module="repomap_kg.coordinator.portable_worker",
+            module="common_lore_index.coordinator.portable_worker",
         )
     assert not cap_mismatch.exists()
     cap_path = create_portable_capability(tmp_path, cap)
     res_bad_graph = _run_portable_worker_command(
         cap_path, {"job_id": cap.job_id, "attempt": 1}, limits,
-        module="repomap_kg.coordinator.portable_worker", job_graph_id="different-graph",
+        module="common_lore_index.coordinator.portable_worker", job_graph_id="different-graph",
     )
     assert res_bad_graph.terminal["error_category"] == "identity_mismatch" and res_bad_graph.waited and res_bad_graph.process_group_cleaned and res_bad_graph.cleanup_error is None
     manifest = PortableSnapshotManifest.from_bytes(store.read(cap.manifest_reference))

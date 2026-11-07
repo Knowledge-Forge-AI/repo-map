@@ -7,7 +7,7 @@ from typing import Any, Literal
 
 import psycopg
 
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 

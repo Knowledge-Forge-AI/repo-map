@@ -21,13 +21,13 @@ from pathlib import Path
 import shutil
 from typing import Any
 
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.ops.ingestion.source import FeedFetchResponse, ingest_feed_source
-from repomap_kg.runtime.database_roles import RoleSecrets
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.ops.ingestion.source import FeedFetchResponse, ingest_feed_source
+from common_lore_index.runtime.database_roles import RoleSecrets
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.host_mcp_publication import (
     counts,
     home_digest,

@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.documents.email import (
+from common_lore_index.extractors.documents.email import (
     MAX_EML_BYTES,
     extract_eml_file_observations,
 )

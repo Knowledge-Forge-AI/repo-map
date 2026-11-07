@@ -305,8 +305,8 @@ def test_cross_root_cycle_refused(tmp_path: Path) -> None:
 
 def test_external_dependency_product_seed_governed(tmp_path: Path) -> None:
     c_paths = _make_tree(tmp_path, {
-        "src/main/python/repomap_kg/prod.py": "prod_val = 1\n",
-        "tools/a.py": "from b import y\nfrom repomap_kg.prod import prod_val\nx = 1\n",
+        "src/main/python/common_lore_index/prod.py": "prod_val = 1\n",
+        "tools/a.py": "from b import y\nfrom common_lore_index.prod import prod_val\nx = 1\n",
         "tools/b.py": "from a import x\ny = 2\n",
     })
     cohorts = [
@@ -321,11 +321,11 @@ def test_external_dependency_product_seed_governed(tmp_path: Path) -> None:
     res_no_seed = evaluate_cohorts(cohorts, checks, tmp_path, c_paths, [])
     assert res_no_seed["cohort_results"]["c_a"]["status"] == "failed"
     gid = canonical_scc_id(["c_a", "c_b"])
-    assert "src/main/python/repomap_kg/prod.py" in res_no_seed["atomic_groups"][gid]["ungoverned_dependencies"]
+    assert "src/main/python/common_lore_index/prod.py" in res_no_seed["atomic_groups"][gid]["ungoverned_dependencies"]
 
     # With product seed: passes
     res_seeded = evaluate_cohorts(
-        cohorts, checks, tmp_path, c_paths, ["src/main/python/repomap_kg/prod.py"]
+        cohorts, checks, tmp_path, c_paths, ["src/main/python/common_lore_index/prod.py"]
     )
     assert res_seeded["cohort_results"]["c_a"]["status"] == "passed"
     assert res_seeded["cohort_results"]["c_b"]["status"] == "passed"

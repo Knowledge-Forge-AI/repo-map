@@ -1,13 +1,13 @@
 import unittest
 
-from repomap_kg.graph.readback.entrypoints import (
+from common_lore_index.graph.readback.entrypoints import (
     entrypoint_records_from_file_records,
     entrypoint_records_from_observations,
     entrypoints_to_jsonable,
     format_entrypoint_table,
 )
-from repomap_kg.graph.readback.files import FileRecord
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.graph.readback.files import FileRecord
+from common_lore_index.observations.raw import RawObservation
 
 
 class EntrypointsUnitTests(unittest.TestCase):

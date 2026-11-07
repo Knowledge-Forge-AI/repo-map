@@ -7,7 +7,7 @@ import subprocess
 
 import docker
 
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     POSTGRES_RELEASE_IMAGE,
     PSYCOPG_RELEASE_VERSION,
     PYTHON_RELEASE_IMAGE,

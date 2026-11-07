@@ -1,0 +1,1634 @@
+{
+  "budget": {
+    "amd_wheel_transfers": 2,
+    "arm_wheel_transfers": 0,
+    "commands": 1,
+    "redirects": false,
+    "retries": false
+  },
+  "candidate_binding": "sealed_d12.pr_binding",
+  "closure": {
+    "component_lock": {
+      "path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+      "sha256": "5fe8660f90dcf163932446c7b057a390096cd3f9fd972f1077e215367108849a"
+    },
+    "guest_digests": {
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/containment_probes.py": "a4a9c7028e231cf190a939d2a9bbb9dd91673415f3231b53e6239dac1d5eaed6",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/install_readback.py": "4d14daee2e83a866605af10908712d6294c05cebdfd6aaa524e091f5f6e4eb93",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py": "84c672753dd6b2eabe5685eab864f572c8ececd0ef0201aa1eafb0f26b635463",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py": "e973a0d7b17179f0e3ef8c9351061fc7a9a5f3ac2e7adc5ef9b2b3a6c7562e59",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/setup_writer.py": "cf302a75d209cdd105ab0adfc41d2db1c4873bd87cd1a0908519b5ce8e6fcbed"
+    },
+    "helper_closure_sha256": "b37eafd9f3dae638633a580dd9cf13c2c21e6f64f236bffb924fdf691cc4e19b",
+    "profile_digests": {
+      "amd64": "506b1b9afe56d57ad21fe03a86568f8c2d094c8848fc2cc179f5e8f05848ee39",
+      "arm64": "6264ed1d8cf867290410904c80a962431fd1548d3cc7616ffca924946f368a6b"
+    },
+    "python_digests": [
+      {
+        "path": "src/main/python/common_lore_index/__init__.py",
+        "sha256": "92e28ff0ce66fe80bd366a57157dc2798aaab98d44338bb2ef69df58ea915ecc"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/__init__.py",
+        "sha256": "bc4db8dac0c789f1c32fa87619ff5b70aad10eb330313c710b213c35e1e365f4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_document_dispatch.py",
+        "sha256": "d311a7d8c96b5626f8e257a009083bf5ebc2bec850807db66072c493997f166e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_go_context.py",
+        "sha256": "d1f3f16b734df17852bcc946ba42c5442a0ab62d3af301b5a158992114d8cc4c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_go_context_finalize.py",
+        "sha256": "3dea6a23b1b63b1ee9c05b201e786b2dc4d691e61e43fe26bef9ae922204c6cf"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_go_context_model.py",
+        "sha256": "3a5942eed98236c7250bd0bd12339e57fee6d5c21fe24fe427e62660fc59c619"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_go_context_relationships.py",
+        "sha256": "e7f503a2e6995f7ff9b06f33e445fd78946bc82145ad28a0a09c1d72136bc4a3"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_go_context_sources.py",
+        "sha256": "9a71ecee0bd9c6416ec7f2cf2b2056c8606d1c33f8c2957fc8f41ad607cc03ab"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_go_family.py",
+        "sha256": "50bef177f6a13a64d2353da8165e7df8b8dca499a8d098ac4bbcd6838336ce50"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_nix_multi_source.py",
+        "sha256": "8d450d12b07cba6cb11bfe3109d1e41fd6bea1ef194feb095665f992a8f33c74"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_shell_edge_helpers.py",
+        "sha256": "48d5dee76d4d117fc59122dfc15c58d86cf860a763afbffcf98e7dadea952734"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_shell_env_family.py",
+        "sha256": "aac5a23ddb22ff3756351dd9e1156c9951bc0c8e362717d0728b3bb8a8259749"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_shell_observation_helpers.py",
+        "sha256": "b70e315f4ea6d09d774f9277d38c7362dbb1512a74d4f26b4449879a79ff59f6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_shell_powershell_metadata.py",
+        "sha256": "e56b7e855edc504e87dbc762cce05eaf6fc41ddd5e3e5173509cf4a2c98d429e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/_shell_zsh_intents.py",
+        "sha256": "8fb099e3d1d434c94a5aed99af59553e46ec0c34a12dc1e07f703b3c632852fb"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/claim_guard.py",
+        "sha256": "e24d3c089a6f47b7de95b526c5ad232371ca5bb10e23319502e7ed8441cbdb97"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/config_family.py",
+        "sha256": "00f16333256aaf1596135bed8d41fc48e0c6ec01f2b0a27b6d8805b296036c7e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/core.py",
+        "sha256": "ff2fbd8e36347379843fc5a904b5e10daddf729fa4429ed53305ac4a0b0bf3bd"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/diagnostic_helpers.py",
+        "sha256": "2530cfc7180a3aed5b48127a095bd33bce424f2ab91425dda5b6e111f0dffdcf"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/diagnostics.py",
+        "sha256": "0f628feb58b0d5f9b6a9c3919a40aa1a59d763ae1ad38f93e1a592d1be4fdfa8"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/dispatch.py",
+        "sha256": "37979df4b2f4f41af1da245ddc629e40da633819471837b654c5d565fa396e1e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/dispatch_helpers.py",
+        "sha256": "129346c7dfc04e8a38b64f8a6a0c18093b977e4ca08f1f47d1b69f3c0fe3e7c4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/document_css_family.py",
+        "sha256": "ac3c860c91d950c3923b83d28465250f8ea2772b4cbb7787c6f69cbb7848b984"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/document_family.py",
+        "sha256": "bdc49d3fce9bbdfb0d3de34d36a432b6bc2036233dba9f45171cc4c9ef9f06fd"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/document_html_family.py",
+        "sha256": "a3185509a73293c8bdb5fedc7ad0c00396cda46a99d342d30617941c5dd7c894"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/document_markdown_family.py",
+        "sha256": "defd43cdee00659230661ecea24145060ade25982c707ad409006d03db6f942e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/document_warc_family.py",
+        "sha256": "cef3042248be9987b0345586a6a6d7ec21d0aaef2fd91328791c740cd67ab4f9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/document_xml_family.py",
+        "sha256": "cc70532fd7cc339a0df8c0d89e4c028ee0a4679dd3eb173e44dd55fc19445c7e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/edge_helpers.py",
+        "sha256": "90dce1b5b10b08661ca27080d72fd0b0505ef71a27fd3df6a8514bbf2184ad7a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/email_family.py",
+        "sha256": "2eb1eb1840ca21b1509426b7d365fac0958808d9b83e63e22700b3e1cde05c9b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/evidence_helpers.py",
+        "sha256": "bbbc6765da527b78ebd56213f288044c17bbf8687b7b8a6cc512621f1388c806"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/feed_family.py",
+        "sha256": "b6cbbca442f419b5915c1c177dfda649b2392746874dc4af5a29d217ed25c2c2"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/file_family.py",
+        "sha256": "878ad117d5a47e98731b3971da261e5c9945d1513966b93f10f1afc14b04e6d8"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/file_helpers.py",
+        "sha256": "924d932553c065fdb4cf8571141fdd4d1a01c36863d69bb01e2f898ad7ddf589"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/language_family.py",
+        "sha256": "2cef1631c526ccf35646140be14d6c2a8ba1a6d29e9e9b3b76cedf25d158e746"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/language_javascript_family.py",
+        "sha256": "524c4d8a8a5cc9b472f9dabbbf39f17f100fba671cb82f00c409253ac48c9826"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/main.py",
+        "sha256": "a10f191fa7bbd7468a98f5e3924db83ec82f6c1bab050093f59538eec56674af"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/metadata_helpers.py",
+        "sha256": "3f6ab37ea38ba75be97726691ca26e539a7f0a1b26ed37697140dc84a3141617"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/nix_family.py",
+        "sha256": "a55c54dafea2bb2759d28e861169c8ffb626f80487ac84314baf23e25d70b735"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/node_edge_helpers.py",
+        "sha256": "8a882cc064a75a77ee8e23b28031aa105066da43af5fd11fc9f9d383a5dd1c5e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/records.py",
+        "sha256": "e3f18790f6c2709583a735a18cac061677f592d121e74e43a2838f2d17ff6783"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/rust_pilot_family.py",
+        "sha256": "54e53fa7aeb430611a8f4d60d793a833f545781d4f1a2d0eee0ab572cbb5e8c0"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_awk_family.py",
+        "sha256": "68d3a6b7bb2b53298142e3418a2a5630d4291e616272d3ec4beb0c25863ab543"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_bash_family.py",
+        "sha256": "ad177a8ead655818026b00caef6df4f6f92578827b66d4064dd2461936d82a60"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_bats_family.py",
+        "sha256": "2e583a3562cb29abc46b8cb57052c7d77486a125be86226b0834ebfe6b8454e1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_family.py",
+        "sha256": "5e081faad23222e060432aa684e7066faf2b4fe91b1ccaac1dc58c6d07b52ea9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_legacy_family.py",
+        "sha256": "f8f2e90e38882ae4e8fa0ae768e9c4ec7e4aa156bfa13b652f00260711ec2853"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_powershell_family.py",
+        "sha256": "60aaed985860af75c10456d023acd3a40c24554ac72966ffa7a12f814cea7371"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_shared_helpers.py",
+        "sha256": "9fabf62821cbe731d09f5ecbeec4cfc7c734cc9338c65e203feda358192b9929"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_zsh_family.py",
+        "sha256": "76e717e4f2f0cb4cc269c973dc4794b6f7331da87d25346963891b0e6b4f18d8"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_zsh_metadata.py",
+        "sha256": "e663a21f1a32fe4b0a1cc361a69337bae0d4b02b5248c6be37a155320c97722d"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_zsh_support.py",
+        "sha256": "f244e7ffe60719bee0c24bdadabce45210b7e5c344b275e90cf3baf4d1958413"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_zunit_family.py",
+        "sha256": "9eb8abb527d7ad02a8d4e54162e924079b0e72c00e703f069d1435ee074a613e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/shell_zunit_metadata.py",
+        "sha256": "a2274f972d812d4ed113e8b6ef4a98186c5302631253ed8802a9e245fd79def1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/canonicalization/value_helpers.py",
+        "sha256": "36327f595cde314eb311a97ca27528965cc193d0765eeb3d85318007fd68b344"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/__init__.py",
+        "sha256": "e0ed59fae009680899a7b6a22cd741577020fd958de8d3ca14e610495baa7f5c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/__init__.py",
+        "sha256": "27f92f453ae3d3ac0429d1a721a5f052b366beaf6e5e325295e7a951d3e7aa72"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/_openapi_components.py",
+        "sha256": "dbba1c86778e4347a411f79fcb7f93fff4426056d05df1c4147529817ff4fcdc"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/format_contracts.py",
+        "sha256": "37ead4f3870ecb45373b55afe60f41873f1eb4103a67cf06d433cfdd2f62a7d6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic.py",
+        "sha256": "865c2ff2b562ae8c82a9d3a61b18b98fae6211eebb3ce27dfee08480385ec2d9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_contracts.py",
+        "sha256": "9b6ad1a957c6fd657697f8977e59b3e0e3a722c928bfdc6af722cfcf7ff4e502"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_observations.py",
+        "sha256": "6f99777364c9fda5e3b3eb36ce876dc15da9ecbceba045ffbe224de1ce774250"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_profile_helpers.py",
+        "sha256": "7cd2b3ebd79cf5f6cfd8dfe2ea65fe7eda63c9db2676d38131079806b0b234e4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_reference_contracts.py",
+        "sha256": "768319ade735394f5b5dcfb469731e52d2379c43196672c3eb2dc19f5d630705"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_structure.py",
+        "sha256": "87e4e502f85b07699668c7c8e0ce5ea52b21d034abf700addf551d4e655ea51e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_tfjson_profiles.py",
+        "sha256": "63cab87c1d79c6f669d016063bdb222905b2b2c4bed28508e71dcff77837c6e0"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/generic_values.py",
+        "sha256": "6f642537255750f16a6715faa6682d193c02f81626776a43bfb4ad2a0dfdc6ac"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/infrastructure.py",
+        "sha256": "b8a02ede12ac1ba1c3166fe63ed627b1a2f1ad9d2962ceea149109d9cbe2808a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/javascript.py",
+        "sha256": "2a53cbb4cb625c9afdc5f87d8036acd567eb9b4620f219894ebac73a8a2cd56c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/jsonc.py",
+        "sha256": "e8b299350ec1f5688f49c38bfe0c9694f39ebc4d153f095fa4d0508ab6defefd"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/nix.py",
+        "sha256": "5029fb36c690115271963c7836d3f5df0cd8456d0aad203924f8ee504e69b10f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/nix_common.py",
+        "sha256": "f36e71b8ef955625c6e59e172f31acb9ad9d3d23c923314c61024dd8c5722d81"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/nix_inputs.py",
+        "sha256": "a88509ef99e602058985282eb7ecce41b261f4d553b965b14a2769711015f28a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/nix_paths.py",
+        "sha256": "84ded742c337de0510d6a19f023a70908633329695732cddf3298c9177ec0805"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/nix_portable_refs.py",
+        "sha256": "ea769cde296e06b3cdf8c12917e0a4a2b96d19e0693b10e549141509475e7a31"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/openapi.py",
+        "sha256": "9139f45caa9868e247a236c055cc43a8a91bf619f1329791be1f8fd9a8a8fdad"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/openapi_helpers.py",
+        "sha256": "20368552ef36212730fca18c7cb36679e63ce45430a76a09f71df60eb3550802"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/paths.py",
+        "sha256": "3f25d7dcdb0fa3b5d32d816906595fef336933515ac43fa856cbfd282e480ff5"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/python.py",
+        "sha256": "4fd023bf07aa2650a1a0f0d69db396e87223c564a822f84d418ad35fad68a090"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/python_support.py",
+        "sha256": "b61bedc7cbf69439ed9cc688a6ed37ef06b215a9ec8b47edae4fef95ac314d5d"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/terraform.py",
+        "sha256": "9cfddef47f054ca6142c83a18e8bb992e4e0b135915af9c05a48afd09ee9259e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/terraform_hcl_helpers.py",
+        "sha256": "202f270b1bdeefe89201878292d5e2c850ee93c786f5a92d836e0cfe6265c2ad"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/terraform_hcl_observations.py",
+        "sha256": "1d98533f33d3ae0f1dbbb0b75f5594646cacab67b2a15135b3a1e8cb6ff66dbf"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/terraform_hcl_profiles.py",
+        "sha256": "3259d4ddbdf7ce50a8fe0cc0ade88dbcbd7d375bbf1b10697537dc72a15ece3b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/terraform_hcl_scan.py",
+        "sha256": "906225c17771bfa3a85775735f3d44c43d472e8ca7b55513a8ec3407c56e9ef1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/terraform_json.py",
+        "sha256": "d1b24cfb2e4f5f6d9d659bd526b3ffb96abad51a6130d1c605ff10c96aeddff9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/toml_lines.py",
+        "sha256": "2c1d950ed0c41b50043ca78d3a00ebf75d1dce615d8229616d48fba9126afec6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/xml.py",
+        "sha256": "fc3d0ac4588ba9138f2c901a222aafd9e418be2346e86c37dad408e86e8cb6a3"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/xml_references.py",
+        "sha256": "63b046885275d1067c82680bede897a94beb9d296a7315c0e8df5571023a8e0b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/yaml.py",
+        "sha256": "8f9d733bc15e3369da1137f6a6063ce5f26ba0fb047331e3e8f0a489921cd3aa"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/yaml_lexical.py",
+        "sha256": "b39c852d27b55b8031f443f353bbba1d9c24424348415c364bb534fe6e9511b4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/yaml_profiles.py",
+        "sha256": "c024e0e6a02fdbe5253ac3c72efe789644d2f9e43463c324d36283fdcdbfdd8f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/config/yaml_reference_contracts.py",
+        "sha256": "30659d2ff5cc3615a8e575477b44ac5350f95feb21b1a8532b8b30db5ff03713"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/contracts/__init__.py",
+        "sha256": "04a548cf8b692e9f16aa2d82771e4745224408077361bec9702fb206ea87d6af"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/contracts/bounded_io.py",
+        "sha256": "37457e182930bc1fe7d55ee4043b7251ca48b6977cec44197302acbafb330018"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/contracts/receipt_codec.py",
+        "sha256": "071f46f96a6c1ebc27e6aebcc667f2858d2a015fba01f2ed40f21297bab83955"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/contracts/receipt_schema.py",
+        "sha256": "642060951f76e65da7a1a02640d9c4a464f11df4620416a76b5fa9dfa6a22caa"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/contracts/vocabulary.py",
+        "sha256": "c78a5e13a6a3cb32b7b94b71b917abdcd73f261d30faf0b5458574903db1d66b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/contracts/witness.py",
+        "sha256": "51030285e7a8e2b4d960ce44883d392879db11024491a8e6997fc164a7e0fe51"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/__init__.py",
+        "sha256": "2c0be9787612a62f63fd51f2e1b5616cc3ff46e74f8163fbd5e62638db6bf00e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/css.py",
+        "sha256": "5488886c39fb13f4fc854284f25e42d0c1f9828383df50fe48277f8877017423"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/css_html_matching.py",
+        "sha256": "52d665c0b99a3578a6de24b474cf27c62b385edcf945eb5b040fb4205b71ed9d"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/css_support.py",
+        "sha256": "e003b7c696154e488671c7ed732388442becffc4be89701a8c0e913d871e5407"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/email.py",
+        "sha256": "410e660fb624c693aa8f0fbd1fc29ef91847c742225ba1717fd34cfdf3b910fe"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/email_common.py",
+        "sha256": "3c9a8897944ef0e3130b472d1fbea2e284d6c2f42bd3ee41582f3fc960f3e8d5"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/email_parts.py",
+        "sha256": "896e9fe30290600ee72f6ef8df91977eab2a72ef4fdda1fe0d7aa578e94b22f3"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/feed.py",
+        "sha256": "45d7fc70d5dbb31fe8495ef9bb0733cdf4ec2e1c3f2f96f552afbc0f56e48489"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/feed_data.py",
+        "sha256": "09cd9db6c4378a9c8dfd05ff0e9cda2c0966b86ed3b1d46758c7758e99a34055"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/feed_support.py",
+        "sha256": "7c7c68b9afaaa9620680bc1517b2e0935e5ca58f7c37d585d91ce03bb89409f2"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/html.py",
+        "sha256": "976290862bad9d47dc22491bc3c8d3109c5498bbf06a04afc4f6b1fb0044bfb4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/markdown.py",
+        "sha256": "30acdfaa6fd377c4603fa666e80a995000171dabd9984c95a40f75c2242e6593"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/markdown_structure.py",
+        "sha256": "ea18d341dab5efd42f315002a91ab69b3ee19cf400e4af8b623d2102f283b975"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/office.py",
+        "sha256": "11aba65fbd20656fca6e65bad5420d2c6ecdac9c64b12f2005e866c60bc3409e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/office_common.py",
+        "sha256": "e126906e16f4f705fe8ee20e3273af7af527298821d2dc4e6e95e20ff0a7fa37"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/office_odf.py",
+        "sha256": "a6b8db38fee89ae11a38e46923c37ca2779246bfe5729edfa2918af9fb1eb5d6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/office_plain.py",
+        "sha256": "4a952da6dd4e97e03650d15b68dfd8e5a22f075a3296c26ffa59c0093e56f061"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/documents/office_references.py",
+        "sha256": "0c48a35284b2eed078335ee22f08a732788e69c2b7aa4841f03ea6f08045c29f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/__init__.py",
+        "sha256": "843b25783f718681c8855283f50cff5bbdcc23102f00145534d0e61ffa2921ef"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_helper.py",
+        "sha256": "c0459ed096c04e2d4b335e5517347601085262e333bfe0e947f3552f81ba5bdc"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_metadata.py",
+        "sha256": "c773d6a8838c1d14b525ab2157f490a03a0da983ae6bf72cefc2a9ddd7685748"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_metadata_scanner.py",
+        "sha256": "5885b897d7017cf3aa27fdef868eb4fb0f4cb91922a285b62c54a93788e2bc3e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_metadata_support.py",
+        "sha256": "484c4cf8f9b5eaf767bf819693f051969631570c942a33cdd409e3d8e3983269"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_process.py",
+        "sha256": "09e4162255dbc836252d9fe97c394ebb561dba6356b0afd3dffac55b1374aa38"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_protocol.py",
+        "sha256": "a61137898faeea2913ec46abffe751647296afa6836342f748e3a3309aad102e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/go_repository_context.py",
+        "sha256": "534972176489fccd09483a93ad91adca2c843b607929f80bb2bf1a3d11fec6f4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/golang.py",
+        "sha256": "87dd1cec2e72a35e06eb95fea9536b18426c30710611ad69bad5b4916d7590bc"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript.py",
+        "sha256": "28c36d4caa00b0aa0f0350eef96a5f12ce8346e17203b3f7018ee36a0965e08b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_detection.py",
+        "sha256": "c9efbe70d9c5376a34ad891fc836cc03288556c0dbe601059ea48369700842e6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_jest.py",
+        "sha256": "d08dc9a0e33de4f1b26d008766e1665f2b4930f0cb40b4bafada83caeb41b8bb"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_jquery.py",
+        "sha256": "43b1ea8b916ed880e5ea1e5bf2f5ce2fb4b3573a6d7520908ddbd04b95301231"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_line_references.py",
+        "sha256": "94c0610422dbd6d8e7bba1c68787591ed5f0bcc61f373f197f6f53e6ac56bacf"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_observations.py",
+        "sha256": "3bd2f66e083c977c8840d95c13753d84e4a00730d461404ae036ad36580250c9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_reference_observations.py",
+        "sha256": "8bab6c93bbdebc7ab452750b4e6f36a001e8af452ec61d69a1a0f85ec007af36"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_references.py",
+        "sha256": "5ebb0fce641dbf0d8297e8bd48fbef63d9cf8c496df61d72124f2a389cd6a446"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_routes.py",
+        "sha256": "9ea35dcdb6a1745880b045674af5b5f2ee2edaacc0a81ec79dbfe770f9c9237d"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_scanner.py",
+        "sha256": "cb5cb7799e4f935843e3efc2022e09fe0410c1a91faa953e660be97ee7648a96"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/javascript_symbols.py",
+        "sha256": "b694f44da0b9d9cf9d11c79a1500a47ee99f926a29cfdef4ad915db0befb1a37"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python.py",
+        "sha256": "1e69b812c40f00f808e6df510da4c0bd062d09da9b7c1cd6cf4cb3823117a063"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_common.py",
+        "sha256": "ea1981b1d8a88bae382581be76dd2509082c85923ab3d70c0ad02ddfa3d2af65"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_imports.py",
+        "sha256": "c202e766cedf3ba8185f5f99de4fbb0a25b41dbeaa70e2e05eb14c29aa9273b7"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_modules.py",
+        "sha256": "2546bec20a9be904c563842451a572e9c0c7d3bbb1eca29949e89d99da4b1c90"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_symbols.py",
+        "sha256": "060d7cf6e5a5fdb32905f3e3400162cb7ec5465842f6bb4a78dc37dd9ed7f5ab"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_tests.py",
+        "sha256": "fc78cca07267cfe1384db17d9f94919aac3edff8569cde4720ff62212ddac10f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_web.py",
+        "sha256": "427592c5b8ebbf5eb9b5f9baca3910e37617f6f9549f2fca7e9d7c1381e0ded1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_web_django.py",
+        "sha256": "bc17c99a6a167cc6f7a7c02608318f92fd2abadce61546c221dfed6266f260fd"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_web_helpers.py",
+        "sha256": "863e276a8793c0f1a50cf1afbd765d7327a4d0289349b6fa533297785db5434b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_web_observations.py",
+        "sha256": "317dfe2da597aa05a66a0b042c6027a45bce87829abc399a143f047708f74a42"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/python_web_route_frameworks.py",
+        "sha256": "f6c06893f94d2e07c8d79db20a59ab49af26f066e6c9454ce1eea30d28be89f8"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/ruby.py",
+        "sha256": "c2ef6ac82988f8fb1de2507d7ec60024f298a20f1b1a6494534c225c293ea552"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/ruby_helpers.py",
+        "sha256": "8fa469ae654971294babb4ab639906c55e0d04dbc01ebf404a9c931f041a233f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/languages/ruby_profiles.py",
+        "sha256": "efb74bfca68a84f32f3b07f739757bd843a63508368d4976e6ad656d51e38304"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/__init__.py",
+        "sha256": "f5af6c973e69392986c54711bf9c801e67efc1efe137c7274f9159fdb835ded5"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/archive_verifier.py",
+        "sha256": "9e85c9b23c1cbce4e9ccb85042399668ecc4455f39f1d6d9644b28783d375074"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/bounded_exec.py",
+        "sha256": "55535cfabe654a8e114ada69b540aef3cd9c3b62abb127564b90fd9b26dc5c89"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+        "sha256": "5fe8660f90dcf163932446c7b057a390096cd3f9fd972f1077e215367108849a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/construction.py",
+        "sha256": "7f3e87dd7d02b832408786f77a2eed532d183f66eb02b597d5ac4fa15118a4d2"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/containment.py",
+        "sha256": "1385d57c0b4631b1779d5779ce50af277cd29cfecdc0594dbb63ff6e65e568ac"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller.py",
+        "sha256": "ac5892eaed76dae0590c55d7e1d07c17a55608a1703b1360cdd6275c1c42fb0b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller_audit.py",
+        "sha256": "91f613b78563a5d278abe5bf9033107e3236b03b715d51abd174cd09066ec159"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/docker_boundary.py",
+        "sha256": "547e6d8da40a73a9d05a5823029ca53721d433e80da1ab1c5fb57fb2074b89f6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/__init__.py",
+        "sha256": "a2c3d9ee2ae646df63848c228947fe6a8386cbfbec0bf06cb580e16e649c9d5b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/containment_probes.py",
+        "sha256": "a4a9c7028e231cf190a939d2a9bbb9dd91673415f3231b53e6239dac1d5eaed6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/install_readback.py",
+        "sha256": "4d14daee2e83a866605af10908712d6294c05cebdfd6aaa524e091f5f6e4eb93"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+        "sha256": "84c672753dd6b2eabe5685eab864f572c8ececd0ef0201aa1eafb0f26b635463"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+        "sha256": "e973a0d7b17179f0e3ef8c9351061fc7a9a5f3ac2e7adc5ef9b2b3a6c7562e59"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/setup_writer.py",
+        "sha256": "cf302a75d209cdd105ab0adfc41d2db1c4873bd87cd1a0908519b5ce8e6fcbed"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest_sources.py",
+        "sha256": "b32de0aef2685be3a4966a3be25f93d028e6010323df13b5e91c7564058fcd1c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/helper_protocol.py",
+        "sha256": "1bc1ecb05d74b8052c5ae2cbf8cb065921a1c44e9fc7895ccc8dfdb34a9cc510"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/observations.py",
+        "sha256": "2f8768861f93d2a9e9f1bd343c4a42f79375b4d1bc1838b7fdd2aa1651fc141a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/prepared_profile.py",
+        "sha256": "2ab2a0764470a6f652cd4c5c40ee5de7955c7bbd725750f39403ffab8c6af03f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/probe_material.py",
+        "sha256": "af6e6c3f9e56b2474fd86ff23225d9ff0647561990d65656926cc3945cb78fa9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/readback.py",
+        "sha256": "0f57b479f9b6f0c080b4abdce999e87cecac4d2ab71c26e7be1b5d2ea5e518fb"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/receipts.py",
+        "sha256": "9fc27e186bb5101302a0b79101381e55a7c156e5211d4ff6afd0f5e1a58b429a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/selection.py",
+        "sha256": "420596bea8c055fe344542a85f6de44ac41772f184807fe0ff68a7f2a613a68f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/rust_pilot/witness_state.py",
+        "sha256": "0193c0e9541281860bd45f7b68772ae0c3dc091d6628772c01d37b73c14ab073"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shared/__init__.py",
+        "sha256": "c135408e2ccb50270c0d1cafdb9fe3624ff852501c331e583f785c740032d2b0"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shared/observations.py",
+        "sha256": "a321552cf53c2521d045b67daf69ea37e6805f5eea6618454c0cb11310160a15"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shared/redaction.py",
+        "sha256": "3376be9bd4552cab4ef0ac313761e820587b034636b4fea16869f4e2581957d6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shared/scanner.py",
+        "sha256": "ff23812a83d86c7b2d282c15b79679acdbc1ecec9aa51033979bcba49373b9fe"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/__init__.py",
+        "sha256": "fad4c3629581d39a6dcbcb5c78568f56c5d7cb4f117be4c7764102fd771d7c7a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/_bash_side_effect_observations.py",
+        "sha256": "83ef282aa1ff5ec4089c4f716d9018ae64955c25ed02476b1eb28809d5de663b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/awk.py",
+        "sha256": "33c898628ea6187cf6eeacefbac97fef5188dc319e080433fa8245e6e2c10211"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/awk_calls.py",
+        "sha256": "841d8cd6e708cf742ed6d0fbfc40d1119132c4da76acee3be419f3e0f78d36da"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/awk_runtime.py",
+        "sha256": "8d77bcc23d451734397972cec6ea0f2e0b568f0c1ae8ebd07c199b88402ae9c9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/base.py",
+        "sha256": "d59cc4271c33b75071d9bc66be1d7db5fc6c8e9856b45e0d92f1e393bd3fb9a5"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash.py",
+        "sha256": "c08184734633e63f17554c0b758769ed442269378df97f83a336aadb03faadba"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_arguments.py",
+        "sha256": "e63e885bf5f5767aede249db8b58a59b3dd4c7856f051f9667fa6993ba64b056"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_command_lines.py",
+        "sha256": "930cc9b38c8ef72f9b95631f2c24efa5b8b5f517cddb3020a01967fe630aa18e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_commands.py",
+        "sha256": "1c4415b50f3b71e8d2e38fe98bd3f6e1eafc1e99db52dff20568a0ccbbb6cb6b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_common.py",
+        "sha256": "3141ac217553941345945bff5e1f6a199b3f08d240b065e8576d9f90c7d3d6d7"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_constructs.py",
+        "sha256": "673cd6bbaeb3d2a8d467baf3905d25d557c6cb21401863f59c318dabbec365e0"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_environment.py",
+        "sha256": "d323bb1d9b297d10fc191ff72b7a2a2f57388704512afdb471371c76ebbe356e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_identity.py",
+        "sha256": "061ebac411b0b3a476789f5b1b17c4f6ad4eca633eecc5a422f8a59929d42c19"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_redirects.py",
+        "sha256": "efdb04c297badb019d70f850305c048e333893c68066a071f29276c14fdd0d3a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_side_effect_rules.py",
+        "sha256": "d6fabe4dfcaa9f3b115bd23f4964f16ec2dff7604d2bbe53274b0e7a7c38402d"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bash_side_effects.py",
+        "sha256": "4ce4832b1e2a6901cd70e6618ccaac1f23dcdb0fb83887c6fc144382e54ee6a1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bats.py",
+        "sha256": "cba4cc2d1dedd081b967ae373e7b3f1ce8161f1ff5b49457c9b92985de72458a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bats_helpers.py",
+        "sha256": "d9cc605776f79b6c75eea7a1c13a541bc3c16120edd5462a47dfe0a9d1dc3e97"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/bats_observations.py",
+        "sha256": "fc33f03f1522cddf33f6355b725fd4d31ec43df925add598c915c640d947c21a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell.py",
+        "sha256": "a3528307fc7d9679b5b2eb8b4b865d3dd368daec348859b86efb8559b2373cba"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_aliases.py",
+        "sha256": "ca92112863f9f0913e9c55c8d133482fffe12550fe10ebabb0a708bd98efb66a"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_common.py",
+        "sha256": "5cc85c0d27a9efc71ab032167626768234e75659d4033c3c9628e8f1bbba3ad3"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_manifest.py",
+        "sha256": "25463bef79c5e95aded48f260fadd0480adbdc88bffbd7aab60916634cc750fc"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_manifest_parser.py",
+        "sha256": "0e6d09e60de26efcc74a3b93c614837a9f51d47cbfd396c1ed4c765975804a39"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_side_effects.py",
+        "sha256": "5f69580b05838381d6889f514bedd423d42207e72713c4405722ca33b0659ff4"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_splats.py",
+        "sha256": "8b0a7d8f01c2f60a383947ec9816c7a4ce8d9c910b02e6154417421d0815ccc9"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_structure.py",
+        "sha256": "09dbcea57f7c5144ca30f4be9810143e49e825cd11f1aafc63be60cedc09ab19"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_tokens.py",
+        "sha256": "d8a280c3e02fca46cf61fc5bcdcbe6c0aa67186c28ec8b82ae471c28ac6fca69"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/powershell_vocabulary.py",
+        "sha256": "8d21dc56abb7d8a5a4f357208d80202b14180316ee8cf4b481477a688caa5c12"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh.py",
+        "sha256": "0843b71eef7b71ad3e9716f03f540dcf0ae5a8d68b2f1030b35f9c3b95cbd2eb"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_advanced.py",
+        "sha256": "4a737e500030a2bcebd498b8cc14b169c2e72852b8a4481aa94d4ec8074fbe83"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_command_observations.py",
+        "sha256": "c044a32b4256514c8575c30716a8ce727151b966edf3b782103241baab986983"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_command_scanning.py",
+        "sha256": "ec1467955d1b2b33274554bf949be899bae4e8861d166a357012c3664a5d25f7"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_commands.py",
+        "sha256": "31f57ef27ae6aadc19b4ca4ddd9a5eb7e7069970462a91e681b3ac2b67387ae3"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_common.py",
+        "sha256": "2c514315a766a02792c1a836b4d7333504ec5ae74d9724f0f9b18f4b8b089ee8"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_configuration.py",
+        "sha256": "486e3c8b11eab97d1890d99bea7795b642c9bf45f57d003b59d1871a03bfa181"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_identity.py",
+        "sha256": "2d927331526a10e28c2ed459d9207c2e0c87c6867021b02c5e65e798fd0e5256"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zsh_side_effects.py",
+        "sha256": "f499e1d94331969677b27e5963dc36ceb546eb66948e1941716cd441f5f67ff8"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zunit.py",
+        "sha256": "b11bff0eda6c3eac0ac7325aa786d057e06de4d11a895c0c75c54278fd762b29"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zunit_helpers.py",
+        "sha256": "2fc4f27575705a750808ca829bf56f6949781341af8a281914bd0357221939e6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/extractors/shell/zunit_observations.py",
+        "sha256": "9cf6f7952dfb2f759f33bb962751a8bc29e4686025bd9c4ce75be7f26b75566f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/__init__.py",
+        "sha256": "2de8fb82c2aabc47d49c69bbb6337f9dcf72017b894824c0f324ceaa59c358e1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/_key_namespaces.py",
+        "sha256": "734b7c771233632466a073a4ed3fdd43eaccf9dfd9ab0afe83e11c16dc8c760c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/discovery.py",
+        "sha256": "945d35b8dfd5221b3533943f768f250c7bf28e6068c6c74d5eb2b9918b68a08b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/discovery_extractors.py",
+        "sha256": "dc84e789e82dbba37adb245120dcf001e71d158f8467c8ecefdc72ff8b2ea4d1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/discovery_file_metadata.py",
+        "sha256": "c5c782c2005dd5fb44b5c596868d5d4aae6321adf41c78c0025c321fb3adeac6"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/discovery_records.py",
+        "sha256": "433022581078d70cfda0ab99038f9dd9d02816a16e9c0fd52c58a24ea7f19792"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/go_source_keys.py",
+        "sha256": "2e19b2242ca3b25964433e7194add0d421ccbe462170f04674fc6e8a6614fed1"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/keys.py",
+        "sha256": "342f88644637f4eed0d0de2ae89a5f932370555b9d8535acfd2e57af0660eebc"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/profiles.py",
+        "sha256": "4edede86642dbfe2c5aa7dddbc948cfda2f7f232e3eba21e87e91e55e4b93b5f"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/rust_keys.py",
+        "sha256": "12bdc54920def05685f45b2e546c90312f9feb9e26e1aae3638d1973811e75ea"
+      },
+      {
+        "path": "src/main/python/common_lore_index/observations/__init__.py",
+        "sha256": "9ec1a3c7dae69967b9947860588293dfd616932dda47cac07e7ebcee6d153f8c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/observations/raw.py",
+        "sha256": "420dda9279d75ecebaa7ec2dcac6c23e12066fe6e48334db6d9062dd73097d01"
+      },
+      {
+        "path": "src/main/python/common_lore_index/runtime/__init__.py",
+        "sha256": "7442a2f28c3d1f59e421b5041c0e64d334b7ebffd292d7d0d337a0bfdf8155e7"
+      },
+      {
+        "path": "src/main/python/common_lore_index/runtime/python_payload.py",
+        "sha256": "33749522e549071f4f3d5d6255214b50eea17bd7381c8cfd684e928692d36a6b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/runtime/release.py",
+        "sha256": "0a80e49c57cc53f35e883180950bc3202348597ec6276477a8f0f3a5c7199f5e"
+      },
+      {
+        "path": "src/main/python/common_lore_index/runtime/release_dockerfile.py",
+        "sha256": "4e2bc94d4fa8d3243ba15761c91df71b0e5e3906388ff7e3c0d930bac5f42b3b"
+      },
+      {
+        "path": "src/main/python/common_lore_index/runtime/release_manifest.py",
+        "sha256": "2f2c2d7986861669b7edd52a0a1004d5cca477f359bd3d434c3eee99691f6aa4"
+      },
+      {
+        "path": "src/test/support/python/repomap_test_support/__init__.py",
+        "sha256": "e60c8680307d81d9ca2e11d6048b6d3a68adcd42a0adc9a92dafe13ba581a039"
+      },
+      {
+        "path": "src/test/support/python/repomap_test_support/d12_core_image.py",
+        "sha256": "7dd7bbcfff6608313b3234ed52c999b35af69e9be25b3be6b5c3457151dc4b5a"
+      },
+      {
+        "path": "src/test/support/python/repomap_test_support/d12_image_probes.py",
+        "sha256": "12936e11d87b2c87e3906c2ef339765bd66bf420eae3fcb9e740a567bc07f965"
+      },
+      {
+        "path": "src/test/support/python/repomap_test_support/d12_recipe.py",
+        "sha256": "fcc7cca1448d54fea7319b44f2e5d982b313db8283d6f322aedf323615c64dd2"
+      },
+      {
+        "path": "tools/ci/d12_hosted_evidence.py",
+        "sha256": "2ce8055f1814b95ebef6e4abffcf41876438a82db88d344443fa032912518aa4"
+      },
+      {
+        "path": "tools/ci/d12_hosted_reports.py",
+        "sha256": "50e146ec7fc7ce4ab472cc2f1c6af9a5132c047c505f6148f2fe8e421731c5fe"
+      },
+      {
+        "path": "tools/ci/d12_hosted_state.py",
+        "sha256": "ce39b766909d0cfe525d6c6eb1d339be9fc7bd99532a1f0bf1e81e08f15a2590"
+      },
+      {
+        "path": "tools/ci/d12_system_grant.py",
+        "sha256": "586d3808d00bad1ca8407108bc80990a4e3b8c1aa81095d0774ac97fb9a564b4"
+      },
+      {
+        "path": "tools/ci/d12_system_grant_io.py",
+        "sha256": "c6f28f6272a695a6251e8f1f2ef04c9ae26516281e2d6515df379fe1c14e928a"
+      },
+      {
+        "path": "tools/ci/d12_system_proof_host.py",
+        "sha256": "c68552f9978589181b13825d85e26088c5e6910b5a8101346a5d1f1e9f9ddc49"
+      },
+      {
+        "path": "tools/ci/qualification_rust_accounting.py",
+        "sha256": "9b74bd3eeec9e6bdf5e659e0812d88552c9168f36dbb982773ce731a860b8ba3"
+      },
+      {
+        "path": "tools/ci/qualification_rust_acquisition.py",
+        "sha256": "3ea51a5c3ac0bceabd51f10cac417d2fc8a46f79df839e40b55b7bd8bff895ef"
+      },
+      {
+        "path": "tools/ci/qualification_rust_cleanup.py",
+        "sha256": "6d0955a8cddb04b599aea69763324755c4f54a55c047a06974a70e1b798ecb9c"
+      },
+      {
+        "path": "tools/ci/qualification_rust_closure.py",
+        "sha256": "0b019744a82d77030ca8808cb8c08054f8291a7f97b5534ff7244adf0f07d07c"
+      },
+      {
+        "path": "tools/ci/qualification_rust_import_guard.py",
+        "sha256": "f51eab1715d33fd8cea966202ce874f321d84c6a6acdf80d9f2fed571cccee35"
+      },
+      {
+        "path": "tools/ci/qualification_rust_manifest.py",
+        "sha256": "6f7922bea7e215a51eb40458f157ed7804738751be25f4b90ad349db8e7083d1"
+      },
+      {
+        "path": "tools/ci/qualification_rust_runtime.py",
+        "sha256": "d6adcd040359308d36c1639393eed84bcc7e4a232d0a5606c678be3ed990070d"
+      },
+      {
+        "path": "tools/ci/qualification_rust_scenarios.py",
+        "sha256": "23eb5283c1fce9560716b3378e4ce955c06116a3ae7972f47b223f1e93ad1d19"
+      },
+      {
+        "path": "tools/ci/qualification_rust_shape.py",
+        "sha256": "5e533ceda0dd106b76cce53d6748a2385025e943f285d953932bcd3d3466c5cb"
+      },
+      {
+        "path": "tools/ci/rust_pilot_qualification.py",
+        "sha256": "f12f96109a6a321b4ffd0743758e7155d405d01ab57ba053074368b6c0b11cc2"
+      },
+      {
+        "path": "tools/d12_libpq_runtime_probe.py",
+        "sha256": "abd9c87ff9d059294839e2fbb8ae6f55dac4f4ba51f73c4624040f32fb22c540"
+      },
+      {
+        "path": "tools/d12_python_closure.py",
+        "sha256": "240b995b03aaf73cd33cd0903f613693ef05d791a3bcc7bdd391d311e3079bb8"
+      },
+      {
+        "path": "tools/native_apt_prerequisites.py",
+        "sha256": "df616a151d062b4ade001bbd029007b2f414aa22422de63c520895663b850c5f"
+      },
+      {
+        "path": "tools/test_sandbox_contract.py",
+        "sha256": "c3fa0fb20b11bd49545b2f49bb81fd33868f7819d7d54e13e66a2b6385d4e313"
+      },
+      {
+        "path": "tools/test_sandbox_images.py",
+        "sha256": "2f4652fb7e5fc71a9c7c4f81870f654f8070f0a065ef812d2bf472301351bf6d"
+      },
+      {
+        "path": "tools/test_sandbox_report.py",
+        "sha256": "e66ea9fc57aafc2bce6070a9391aa04da7bcae5d3df526eb343ebfd2db6764da"
+      }
+    ],
+    "python_paths": [
+      "src/main/python/common_lore_index/__init__.py",
+      "src/main/python/common_lore_index/canonicalization/__init__.py",
+      "src/main/python/common_lore_index/canonicalization/_document_dispatch.py",
+      "src/main/python/common_lore_index/canonicalization/_go_context.py",
+      "src/main/python/common_lore_index/canonicalization/_go_context_finalize.py",
+      "src/main/python/common_lore_index/canonicalization/_go_context_model.py",
+      "src/main/python/common_lore_index/canonicalization/_go_context_relationships.py",
+      "src/main/python/common_lore_index/canonicalization/_go_context_sources.py",
+      "src/main/python/common_lore_index/canonicalization/_go_family.py",
+      "src/main/python/common_lore_index/canonicalization/_nix_multi_source.py",
+      "src/main/python/common_lore_index/canonicalization/_shell_edge_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/_shell_env_family.py",
+      "src/main/python/common_lore_index/canonicalization/_shell_observation_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/_shell_powershell_metadata.py",
+      "src/main/python/common_lore_index/canonicalization/_shell_zsh_intents.py",
+      "src/main/python/common_lore_index/canonicalization/claim_guard.py",
+      "src/main/python/common_lore_index/canonicalization/config_family.py",
+      "src/main/python/common_lore_index/canonicalization/core.py",
+      "src/main/python/common_lore_index/canonicalization/diagnostic_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/diagnostics.py",
+      "src/main/python/common_lore_index/canonicalization/dispatch.py",
+      "src/main/python/common_lore_index/canonicalization/dispatch_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/document_css_family.py",
+      "src/main/python/common_lore_index/canonicalization/document_family.py",
+      "src/main/python/common_lore_index/canonicalization/document_html_family.py",
+      "src/main/python/common_lore_index/canonicalization/document_markdown_family.py",
+      "src/main/python/common_lore_index/canonicalization/document_warc_family.py",
+      "src/main/python/common_lore_index/canonicalization/document_xml_family.py",
+      "src/main/python/common_lore_index/canonicalization/edge_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/email_family.py",
+      "src/main/python/common_lore_index/canonicalization/evidence_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/feed_family.py",
+      "src/main/python/common_lore_index/canonicalization/file_family.py",
+      "src/main/python/common_lore_index/canonicalization/file_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/language_family.py",
+      "src/main/python/common_lore_index/canonicalization/language_javascript_family.py",
+      "src/main/python/common_lore_index/canonicalization/main.py",
+      "src/main/python/common_lore_index/canonicalization/metadata_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/nix_family.py",
+      "src/main/python/common_lore_index/canonicalization/node_edge_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/records.py",
+      "src/main/python/common_lore_index/canonicalization/rust_pilot_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_awk_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_bash_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_bats_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_legacy_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_powershell_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_shared_helpers.py",
+      "src/main/python/common_lore_index/canonicalization/shell_zsh_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_zsh_metadata.py",
+      "src/main/python/common_lore_index/canonicalization/shell_zsh_support.py",
+      "src/main/python/common_lore_index/canonicalization/shell_zunit_family.py",
+      "src/main/python/common_lore_index/canonicalization/shell_zunit_metadata.py",
+      "src/main/python/common_lore_index/canonicalization/value_helpers.py",
+      "src/main/python/common_lore_index/extractors/__init__.py",
+      "src/main/python/common_lore_index/extractors/config/__init__.py",
+      "src/main/python/common_lore_index/extractors/config/_openapi_components.py",
+      "src/main/python/common_lore_index/extractors/config/format_contracts.py",
+      "src/main/python/common_lore_index/extractors/config/generic.py",
+      "src/main/python/common_lore_index/extractors/config/generic_contracts.py",
+      "src/main/python/common_lore_index/extractors/config/generic_observations.py",
+      "src/main/python/common_lore_index/extractors/config/generic_profile_helpers.py",
+      "src/main/python/common_lore_index/extractors/config/generic_reference_contracts.py",
+      "src/main/python/common_lore_index/extractors/config/generic_structure.py",
+      "src/main/python/common_lore_index/extractors/config/generic_tfjson_profiles.py",
+      "src/main/python/common_lore_index/extractors/config/generic_values.py",
+      "src/main/python/common_lore_index/extractors/config/infrastructure.py",
+      "src/main/python/common_lore_index/extractors/config/javascript.py",
+      "src/main/python/common_lore_index/extractors/config/jsonc.py",
+      "src/main/python/common_lore_index/extractors/config/nix.py",
+      "src/main/python/common_lore_index/extractors/config/nix_common.py",
+      "src/main/python/common_lore_index/extractors/config/nix_inputs.py",
+      "src/main/python/common_lore_index/extractors/config/nix_paths.py",
+      "src/main/python/common_lore_index/extractors/config/nix_portable_refs.py",
+      "src/main/python/common_lore_index/extractors/config/openapi.py",
+      "src/main/python/common_lore_index/extractors/config/openapi_helpers.py",
+      "src/main/python/common_lore_index/extractors/config/paths.py",
+      "src/main/python/common_lore_index/extractors/config/python.py",
+      "src/main/python/common_lore_index/extractors/config/python_support.py",
+      "src/main/python/common_lore_index/extractors/config/terraform.py",
+      "src/main/python/common_lore_index/extractors/config/terraform_hcl_helpers.py",
+      "src/main/python/common_lore_index/extractors/config/terraform_hcl_observations.py",
+      "src/main/python/common_lore_index/extractors/config/terraform_hcl_profiles.py",
+      "src/main/python/common_lore_index/extractors/config/terraform_hcl_scan.py",
+      "src/main/python/common_lore_index/extractors/config/terraform_json.py",
+      "src/main/python/common_lore_index/extractors/config/toml_lines.py",
+      "src/main/python/common_lore_index/extractors/config/xml.py",
+      "src/main/python/common_lore_index/extractors/config/xml_references.py",
+      "src/main/python/common_lore_index/extractors/config/yaml.py",
+      "src/main/python/common_lore_index/extractors/config/yaml_lexical.py",
+      "src/main/python/common_lore_index/extractors/config/yaml_profiles.py",
+      "src/main/python/common_lore_index/extractors/config/yaml_reference_contracts.py",
+      "src/main/python/common_lore_index/extractors/contracts/__init__.py",
+      "src/main/python/common_lore_index/extractors/contracts/bounded_io.py",
+      "src/main/python/common_lore_index/extractors/contracts/receipt_codec.py",
+      "src/main/python/common_lore_index/extractors/contracts/receipt_schema.py",
+      "src/main/python/common_lore_index/extractors/contracts/vocabulary.py",
+      "src/main/python/common_lore_index/extractors/contracts/witness.py",
+      "src/main/python/common_lore_index/extractors/documents/__init__.py",
+      "src/main/python/common_lore_index/extractors/documents/css.py",
+      "src/main/python/common_lore_index/extractors/documents/css_html_matching.py",
+      "src/main/python/common_lore_index/extractors/documents/css_support.py",
+      "src/main/python/common_lore_index/extractors/documents/email.py",
+      "src/main/python/common_lore_index/extractors/documents/email_common.py",
+      "src/main/python/common_lore_index/extractors/documents/email_parts.py",
+      "src/main/python/common_lore_index/extractors/documents/feed.py",
+      "src/main/python/common_lore_index/extractors/documents/feed_data.py",
+      "src/main/python/common_lore_index/extractors/documents/feed_support.py",
+      "src/main/python/common_lore_index/extractors/documents/html.py",
+      "src/main/python/common_lore_index/extractors/documents/markdown.py",
+      "src/main/python/common_lore_index/extractors/documents/markdown_structure.py",
+      "src/main/python/common_lore_index/extractors/documents/office.py",
+      "src/main/python/common_lore_index/extractors/documents/office_common.py",
+      "src/main/python/common_lore_index/extractors/documents/office_odf.py",
+      "src/main/python/common_lore_index/extractors/documents/office_plain.py",
+      "src/main/python/common_lore_index/extractors/documents/office_references.py",
+      "src/main/python/common_lore_index/extractors/languages/__init__.py",
+      "src/main/python/common_lore_index/extractors/languages/go_helper.py",
+      "src/main/python/common_lore_index/extractors/languages/go_metadata.py",
+      "src/main/python/common_lore_index/extractors/languages/go_metadata_scanner.py",
+      "src/main/python/common_lore_index/extractors/languages/go_metadata_support.py",
+      "src/main/python/common_lore_index/extractors/languages/go_process.py",
+      "src/main/python/common_lore_index/extractors/languages/go_protocol.py",
+      "src/main/python/common_lore_index/extractors/languages/go_repository_context.py",
+      "src/main/python/common_lore_index/extractors/languages/golang.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_detection.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_jest.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_jquery.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_line_references.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_observations.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_reference_observations.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_references.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_routes.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_scanner.py",
+      "src/main/python/common_lore_index/extractors/languages/javascript_symbols.py",
+      "src/main/python/common_lore_index/extractors/languages/python.py",
+      "src/main/python/common_lore_index/extractors/languages/python_common.py",
+      "src/main/python/common_lore_index/extractors/languages/python_imports.py",
+      "src/main/python/common_lore_index/extractors/languages/python_modules.py",
+      "src/main/python/common_lore_index/extractors/languages/python_symbols.py",
+      "src/main/python/common_lore_index/extractors/languages/python_tests.py",
+      "src/main/python/common_lore_index/extractors/languages/python_web.py",
+      "src/main/python/common_lore_index/extractors/languages/python_web_django.py",
+      "src/main/python/common_lore_index/extractors/languages/python_web_helpers.py",
+      "src/main/python/common_lore_index/extractors/languages/python_web_observations.py",
+      "src/main/python/common_lore_index/extractors/languages/python_web_route_frameworks.py",
+      "src/main/python/common_lore_index/extractors/languages/ruby.py",
+      "src/main/python/common_lore_index/extractors/languages/ruby_helpers.py",
+      "src/main/python/common_lore_index/extractors/languages/ruby_profiles.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/__init__.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/archive_verifier.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/bounded_exec.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/construction.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/containment.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/controller.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/controller_audit.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/docker_boundary.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/__init__.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/containment_probes.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/install_readback.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest/setup_writer.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/guest_sources.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/helper_protocol.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/observations.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/prepared_profile.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/probe_material.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/readback.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/receipts.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/selection.py",
+      "src/main/python/common_lore_index/extractors/rust_pilot/witness_state.py",
+      "src/main/python/common_lore_index/extractors/shared/__init__.py",
+      "src/main/python/common_lore_index/extractors/shared/observations.py",
+      "src/main/python/common_lore_index/extractors/shared/redaction.py",
+      "src/main/python/common_lore_index/extractors/shared/scanner.py",
+      "src/main/python/common_lore_index/extractors/shell/__init__.py",
+      "src/main/python/common_lore_index/extractors/shell/_bash_side_effect_observations.py",
+      "src/main/python/common_lore_index/extractors/shell/awk.py",
+      "src/main/python/common_lore_index/extractors/shell/awk_calls.py",
+      "src/main/python/common_lore_index/extractors/shell/awk_runtime.py",
+      "src/main/python/common_lore_index/extractors/shell/base.py",
+      "src/main/python/common_lore_index/extractors/shell/bash.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_arguments.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_command_lines.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_commands.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_common.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_constructs.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_environment.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_identity.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_redirects.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_side_effect_rules.py",
+      "src/main/python/common_lore_index/extractors/shell/bash_side_effects.py",
+      "src/main/python/common_lore_index/extractors/shell/bats.py",
+      "src/main/python/common_lore_index/extractors/shell/bats_helpers.py",
+      "src/main/python/common_lore_index/extractors/shell/bats_observations.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_aliases.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_common.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_manifest.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_manifest_parser.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_side_effects.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_splats.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_structure.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_tokens.py",
+      "src/main/python/common_lore_index/extractors/shell/powershell_vocabulary.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_advanced.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_command_observations.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_command_scanning.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_commands.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_common.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_configuration.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_identity.py",
+      "src/main/python/common_lore_index/extractors/shell/zsh_side_effects.py",
+      "src/main/python/common_lore_index/extractors/shell/zunit.py",
+      "src/main/python/common_lore_index/extractors/shell/zunit_helpers.py",
+      "src/main/python/common_lore_index/extractors/shell/zunit_observations.py",
+      "src/main/python/common_lore_index/graph/__init__.py",
+      "src/main/python/common_lore_index/graph/_key_namespaces.py",
+      "src/main/python/common_lore_index/graph/discovery.py",
+      "src/main/python/common_lore_index/graph/discovery_extractors.py",
+      "src/main/python/common_lore_index/graph/discovery_file_metadata.py",
+      "src/main/python/common_lore_index/graph/discovery_records.py",
+      "src/main/python/common_lore_index/graph/go_source_keys.py",
+      "src/main/python/common_lore_index/graph/keys.py",
+      "src/main/python/common_lore_index/graph/profiles.py",
+      "src/main/python/common_lore_index/graph/rust_keys.py",
+      "src/main/python/common_lore_index/observations/__init__.py",
+      "src/main/python/common_lore_index/observations/raw.py",
+      "src/main/python/common_lore_index/runtime/__init__.py",
+      "src/main/python/common_lore_index/runtime/python_payload.py",
+      "src/main/python/common_lore_index/runtime/release.py",
+      "src/main/python/common_lore_index/runtime/release_dockerfile.py",
+      "src/main/python/common_lore_index/runtime/release_manifest.py",
+      "src/test/support/python/repomap_test_support/__init__.py",
+      "src/test/support/python/repomap_test_support/d12_core_image.py",
+      "src/test/support/python/repomap_test_support/d12_image_probes.py",
+      "src/test/support/python/repomap_test_support/d12_recipe.py",
+      "tools/ci/d12_hosted_evidence.py",
+      "tools/ci/d12_hosted_reports.py",
+      "tools/ci/d12_hosted_state.py",
+      "tools/ci/d12_system_grant.py",
+      "tools/ci/d12_system_grant_io.py",
+      "tools/ci/d12_system_proof_host.py",
+      "tools/ci/qualification_rust_accounting.py",
+      "tools/ci/qualification_rust_acquisition.py",
+      "tools/ci/qualification_rust_cleanup.py",
+      "tools/ci/qualification_rust_closure.py",
+      "tools/ci/qualification_rust_import_guard.py",
+      "tools/ci/qualification_rust_manifest.py",
+      "tools/ci/qualification_rust_runtime.py",
+      "tools/ci/qualification_rust_scenarios.py",
+      "tools/ci/qualification_rust_shape.py",
+      "tools/ci/rust_pilot_qualification.py",
+      "tools/d12_libpq_runtime_probe.py",
+      "tools/d12_python_closure.py",
+      "tools/native_apt_prerequisites.py",
+      "tools/test_sandbox_contract.py",
+      "tools/test_sandbox_images.py",
+      "tools/test_sandbox_report.py"
+    ]
+  },
+  "fixture": {
+    "expected_item_claims": 420,
+    "files": {
+      "golds/q01_all_items.gold.json": {
+        "bytes": 7426,
+        "sha256": "82b598cd3c0064ad8607b5b647d2330472b1e4b3a687e7ec765adb22f0a5c827"
+      },
+      "golds/q02_long_positions.gold.json": {
+        "bytes": 13149,
+        "sha256": "c0b0f97f47a79f6e73984c0f95db717869e4f849bff036da4cc92d441e2cbb92"
+      },
+      "golds/q03_crlf_bom.gold.json": {
+        "bytes": 1699,
+        "sha256": "a5b0a48c82fd678b48fc50ed590eb62af2bbedcd158e3766e2d20a02f210139c"
+      },
+      "golds/q03_unicode_raw.gold.json": {
+        "bytes": 3547,
+        "sha256": "26d50c573afa5e5257fdc08c9af064ab7fccdb62268d09040fa70dae85c5e960"
+      },
+      "golds/q04_malformed_scopes.gold.json": {
+        "bytes": 3079,
+        "sha256": "20fca80b2c4b6d6aaabf96a5b99852f2a2f48558261bbd5f8cbd62c3607621f6"
+      },
+      "golds/q04_missing_brace.gold.json": {
+        "bytes": 1510,
+        "sha256": "ee01719de993be1d5e8f058b0ed6851b1fc9a2099a3f291a675bff51daca056f"
+      },
+      "golds/q05_build__build.gold.json": {
+        "bytes": 1116,
+        "sha256": "72f848a0523731881d35d7682a5a9bf2d50e2f8cad88ac164797efa72017ce2c"
+      },
+      "golds/q05_cfg_macros.gold.json": {
+        "bytes": 3613,
+        "sha256": "7546f7bfde6195467097739087f91c36bb3b348acb99e7757d6833227916ae06"
+      },
+      "golds/q06_invalid_utf8.gold.json": {
+        "bytes": 366,
+        "sha256": "e2824a80b2eb330d1113ca3be901af84e21b8641880de328b1a723c039660e79"
+      },
+      "golds/stress_ambiguity.gold.json": {
+        "bytes": 4872,
+        "sha256": "99427ec55c7561ef4794222bba83f338e8482796c965e33d4654362a87c7d115"
+      },
+      "golds/stress_attributes.gold.json": {
+        "bytes": 907,
+        "sha256": "bf4c35d2a550c6558edcd4d34f7172e2a2fc9c5e3f4cf078a28731f4efd1dfeb"
+      },
+      "golds/stress_depth.gold.json": {
+        "bytes": 350023,
+        "sha256": "9acc60e7eb6a49fd70bab9fc49c42aff5da672ac1b4673131fb2dc79d6bb5ac7"
+      },
+      "golds/unsupported_forms.gold.json": {
+        "bytes": 2899,
+        "sha256": "74c58870758945586100a3159dc6ea600d2734e7b3c5a046b3310ded32376f97"
+      },
+      "q01_all_items.rs": {
+        "bytes": 2267,
+        "gold": "golds/q01_all_items.gold.json",
+        "scenario": "Q01",
+        "sha256": "580046a84ffca8029055f51a65799a3bcd95fdfd1f04300520bc6ed0c26ed62a"
+      },
+      "q02_long_positions.rs": {
+        "bytes": 10113,
+        "gold": "golds/q02_long_positions.gold.json",
+        "scenario": "Q02",
+        "sha256": "aa45c89fefcedeff9b78d155591017e70f4f0ca09ed8a3070b0db6415f46cccd"
+      },
+      "q03_crlf_bom.rs": {
+        "bytes": 376,
+        "gold": "golds/q03_crlf_bom.gold.json",
+        "scenario": "Q03",
+        "sha256": "d9e3d5b1c529f5152909496f1bea8f7ca143e32f4791a40d2903c92f59087b90"
+      },
+      "q03_unicode_raw.rs": {
+        "bytes": 830,
+        "gold": "golds/q03_unicode_raw.gold.json",
+        "scenario": "Q03",
+        "sha256": "a1585daa8e0aa1d02ae63d569dfae6a6f01722f0b1e8c6c153a9f4cf017f4311"
+      },
+      "q04_malformed_scopes.rs": {
+        "bytes": 675,
+        "gold": "golds/q04_malformed_scopes.gold.json",
+        "scenario": "Q04",
+        "sha256": "54914f1f49d0b79e24425498b854ab4c14aed0e0ac73aaaca0f0e43192f3909a"
+      },
+      "q04_missing_brace.rs": {
+        "bytes": 253,
+        "gold": "golds/q04_missing_brace.gold.json",
+        "scenario": "Q04",
+        "sha256": "2325dffcaa7ed9ebc3d829ac1ade8375caf277a2af1cfeba6ac2e43ba55d1cbf"
+      },
+      "q05_build/build.rs": {
+        "bytes": 541,
+        "gold": "golds/q05_build__build.gold.json",
+        "scenario": "Q05",
+        "sha256": "243120b5ef581182b9cdc8103fb3bbc4f897fbe58039a0db6fe2b1a241764724"
+      },
+      "q05_cfg_macros.rs": {
+        "bytes": 1128,
+        "gold": "golds/q05_cfg_macros.gold.json",
+        "scenario": "Q05",
+        "sha256": "e9cb157e02af54251342d04c694f00ffa9b0c5bebb86ae6eacc0dfff737d2d44"
+      },
+      "q06_invalid_utf8.rs": {
+        "bytes": 146,
+        "gold": "golds/q06_invalid_utf8.gold.json",
+        "scenario": "Q06",
+        "sha256": "e36938b797b9ba0d000d03afca95f501641befcf6c00f2362d98b9253d11205b"
+      },
+      "stress_ambiguity.rs": {
+        "bytes": 1178,
+        "gold": "golds/stress_ambiguity.gold.json",
+        "scenario": "Q05",
+        "sha256": "7b9d0b37cd99efd0c9f2375198b15fc30d84670e6d8414d43b0617e82a744a96"
+      },
+      "stress_attributes.rs": {
+        "bytes": 921,
+        "gold": "golds/stress_attributes.gold.json",
+        "scenario": "Q04",
+        "sha256": "164501b1eb5a477583e65506460d29630b8588850257eb8e4f33a80cebdde408"
+      },
+      "stress_depth.rs": {
+        "bytes": 4472,
+        "gold": "golds/stress_depth.gold.json",
+        "scenario": "Q04",
+        "sha256": "922a307bf255c5e626837b339a66ecd6fa48d98f84724bbff11bf5553ab4bbf9"
+      },
+      "unsupported_forms.rs": {
+        "bytes": 761,
+        "gold": "golds/unsupported_forms.gold.json",
+        "scenario": "Q05",
+        "sha256": "c83b8ab69be21d705669231586adfa4558dee1c2d0df591f01856ba2b9fd48ce"
+      }
+    },
+    "root": "src/test/fixtures/rust_pilot"
+  },
+  "incumbent": {
+    "discovery_ms_key": "discovery_ms",
+    "files_key": "file_nodes",
+    "fixture_digests": {
+      "q01_all_items.rs": "580046a84ffca8029055f51a65799a3bcd95fdfd1f04300520bc6ed0c26ed62a",
+      "q02_long_positions.rs": "aa45c89fefcedeff9b78d155591017e70f4f0ca09ed8a3070b0db6415f46cccd",
+      "q03_crlf_bom.rs": "d9e3d5b1c529f5152909496f1bea8f7ca143e32f4791a40d2903c92f59087b90",
+      "q03_unicode_raw.rs": "a1585daa8e0aa1d02ae63d569dfae6a6f01722f0b1e8c6c153a9f4cf017f4311",
+      "q04_malformed_scopes.rs": "54914f1f49d0b79e24425498b854ab4c14aed0e0ac73aaaca0f0e43192f3909a",
+      "q04_missing_brace.rs": "2325dffcaa7ed9ebc3d829ac1ade8375caf277a2af1cfeba6ac2e43ba55d1cbf",
+      "q05_build/build.rs": "243120b5ef581182b9cdc8103fb3bbc4f897fbe58039a0db6fe2b1a241764724",
+      "q05_cfg_macros.rs": "e9cb157e02af54251342d04c694f00ffa9b0c5bebb86ae6eacc0dfff737d2d44",
+      "q06_invalid_utf8.rs": "e36938b797b9ba0d000d03afca95f501641befcf6c00f2362d98b9253d11205b",
+      "stress_ambiguity.rs": "7b9d0b37cd99efd0c9f2375198b15fc30d84670e6d8414d43b0617e82a744a96",
+      "stress_attributes.rs": "164501b1eb5a477583e65506460d29630b8588850257eb8e4f33a80cebdde408",
+      "stress_depth.rs": "922a307bf255c5e626837b339a66ecd6fa48d98f84724bbff11bf5553ab4bbf9",
+      "unsupported_forms.rs": "c83b8ab69be21d705669231586adfa4558dee1c2d0df591f01856ba2b9fd48ce"
+    },
+    "graph_quality_key": "graph_quality",
+    "input_digests_key": "input_digests",
+    "items_key": "item_nodes",
+    "navigation_key": "navigation",
+    "report_path": "tools/ci/rust_pilot_incumbent.json",
+    "schema": "cloe-rust-pilot-actual-file-only-v1",
+    "semantics": "actual-file-only",
+    "sha256": "16383ddc273b01deb34935a02955440e740bbf443e422f37209e19b6af234df8"
+  },
+  "navigation": {
+    "incumbent_key": "navigation",
+    "tasks": [
+      {
+        "fixture": "q01_all_items.rs",
+        "incumbent_key": "locate_function",
+        "name": "fetch_scale",
+        "namespace": "rust.function"
+      },
+      {
+        "fixture": "q01_all_items.rs",
+        "incumbent_key": "locate_trait",
+        "name": "Measure",
+        "namespace": "rust.trait"
+      },
+      {
+        "fixture": "q01_all_items.rs",
+        "incumbent_key": "locate_impl",
+        "name": "impl:1",
+        "namespace": "rust.impl"
+      },
+      {
+        "fixture": "q01_all_items.rs",
+        "incumbent_key": "locate_macro",
+        "name": "square",
+        "namespace": "rust.macro"
+      },
+      {
+        "fixture": "q01_all_items.rs",
+        "incumbent_key": "locate_module",
+        "name": "geometry",
+        "namespace": "rust.module"
+      }
+    ]
+  },
+  "replacement": "none",
+  "scenarios": {
+    "amd64": [
+      "Q01",
+      "Q02",
+      "Q03",
+      "Q04",
+      "Q05",
+      "Q06",
+      "Q07",
+      "Q09",
+      "Q10",
+      "Q12"
+    ],
+    "arm64": [
+      "Q01",
+      "Q02",
+      "Q03",
+      "Q04",
+      "Q05",
+      "Q06",
+      "Q07",
+      "Q09",
+      "Q10",
+      "Q11",
+      "Q12"
+    ],
+    "t1": [
+      "Q08",
+      "Q13",
+      "Q14"
+    ]
+  },
+  "schema": "cloe-rust-pilot-qualification-manifest-v1",
+  "sdk": {
+    "architecture": "amd64",
+    "image_id_binding": "sealed_d12.sdk_materialization.sdk_image_id",
+    "profile_sha256": "506b1b9afe56d57ad21fe03a86568f8c2d094c8848fc2cc179f5e8f05848ee39",
+    "recipe_files": {
+      "tools/native_apt_prerequisites.py": "df616a151d062b4ade001bbd029007b2f414aa22422de63c520895663b850c5f",
+      "tools/test_sandbox/Dockerfile": "f8a8be96ac78ff32b8f2b4f6372f3d9203750a56f75ff49e0af722f5f75e3786"
+    },
+    "recipe_sha256": "24ddf31d8890922c012559d5cab4b1dffe4b41e5b19e9b3438555aabe22d2862"
+  },
+  "source_checkpoint": {
+    "sha": "5ad00d162ad8a04430874275246a53227578c533",
+    "tree": "5a6f7a1402d0aa77c86c214bc9419eb6f8c1e8c6"
+  },
+  "stopping": "one-command-over-whole-manifest",
+  "wheels": [
+    {
+      "architecture": "arm64",
+      "bytes": 639334,
+      "name": "tree_sitter-0.26.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "8ff2e0750b7daa722302838356d7b65e303829b7eb73c915df127ddba115e1d1",
+      "state": "held",
+      "url": "https://files.pythonhosted.org/packages/9b/ee/87e74671ed63a837e7a1f17ab94aa3913871e033b27523d8e7b83d6f7ad0/tree_sitter-0.26.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl"
+    },
+    {
+      "architecture": "amd64",
+      "bytes": 668102,
+      "name": "tree_sitter-0.26.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "sha256": "7075ef857ef86f327dbb72d1e2574dda78db5754b3a1fca6506acd7fe5d561a7",
+      "state": "pending",
+      "url": "https://files.pythonhosted.org/packages/66/e7/f7e04cd9dff6b6ac0adf23922796fbc76accd4cf4bcda50542748d485679/tree_sitter-0.26.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+    },
+    {
+      "architecture": "arm64",
+      "bytes": 170310,
+      "name": "tree_sitter_rust-0.24.2-cp39-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "9d76d1208c3638b871236090759dfc13d478921320653a6c9da5336e7c58f65a",
+      "state": "held",
+      "url": "https://files.pythonhosted.org/packages/b5/f6/a5a146df5c0a5daea3ffcd5d7245775fe7f084357770d5a313dd6245ae78/tree_sitter_rust-0.24.2-cp39-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl"
+    },
+    {
+      "architecture": "amd64",
+      "bytes": 164706,
+      "name": "tree_sitter_rust-0.24.2-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl",
+      "sha256": "e033c5a93b57c88e0a835880de39fc802909ff69f57aaff6000211c196ea5190",
+      "state": "pending",
+      "url": "https://files.pythonhosted.org/packages/ca/45/a051bbd3045a61182dde25b93ae9a33d2677c935b16952283e12eaf46051/tree_sitter_rust-0.24.2-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+    }
+  ],
+  "window": "RUST-PILOT-QW2"
+}

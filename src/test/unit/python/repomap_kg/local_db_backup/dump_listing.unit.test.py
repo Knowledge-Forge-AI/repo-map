@@ -9,14 +9,14 @@ from repomap_test_support.local_db_backup import (
     maybe_provenance_runner_result,
 )
 
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     LocalDbBackupError,
     dump_all_databases,
     dump_database,
     list_backups,
     read_backup_info,
 )
-from repomap_kg.runtime.local import LocalRuntimeIdentity, setup_local_runtime
+from common_lore_index.runtime.local import LocalRuntimeIdentity, setup_local_runtime
 
 
 class LocalDbBackupDumpListingUnitTests(LocalDbBackupUnitTestCase):

@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.graph.discovery_records import FileInfo
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.discovery_records import FileInfo
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_capture import (
+from common_lore_index.graph.multi_source_capture import (
     MultiSourceCaptureError,
     _capture_files,
     _capture_inventory,
@@ -22,8 +22,8 @@ from repomap_kg.graph.multi_source_capture import (
     _SourceInvalid,
     _SourceUnavailable,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def _binding(root: Path, alias: str) -> OpsGraphSourceBindingConfig:
@@ -82,7 +82,7 @@ def test_read_stable_file_adverse_retry_and_recovers(tmp_path):
         calls += 1
         return (sig[0], sig[1] + 1, *sig[2:]) if calls == 2 else sig
 
-    with patch("repomap_kg.graph.multi_source_capture._file_signature", side_effect=mutate_opened):
+    with patch("common_lore_index.graph.multi_source_capture._file_signature", side_effect=mutate_opened):
         digest, size, exe = _read_stable_file(target, stage_path=stage1)
         assert size == len("stable content") and not exe
         assert stage1.read_text(encoding="utf-8") == "stable content"
@@ -96,7 +96,7 @@ def test_read_stable_file_adverse_retry_and_recovers(tmp_path):
         calls += 1
         return (sig[0], sig[1] + 1, *sig[2:]) if calls == 3 else sig
 
-    with patch("repomap_kg.graph.multi_source_capture._file_signature", side_effect=mutate_after):
+    with patch("common_lore_index.graph.multi_source_capture._file_signature", side_effect=mutate_after):
         digest, size, exe = _read_stable_file(target, stage_path=stage2)
         assert stage2.exists()
 
@@ -107,7 +107,7 @@ def test_read_stable_file_exhaustion_raises_source_changed(tmp_path):
     target = tmp_path / "file.txt"
     target.write_text("content", encoding="utf-8")
     with (
-        patch("repomap_kg.graph.multi_source_capture._file_signature", side_effect=lambda d: (next(counter), 0, 0, 0, 0, 0)),
+        patch("common_lore_index.graph.multi_source_capture._file_signature", side_effect=lambda d: (next(counter), 0, 0, 0, 0, 0)),
         pytest.raises(_SourceChanged),
     ):
         _read_stable_file(target)

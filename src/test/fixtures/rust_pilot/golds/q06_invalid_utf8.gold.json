@@ -1,0 +1,16 @@
+{
+ "build_script_name": false,
+ "completeness": "none",
+ "fixture": "q06_invalid_utf8.rs",
+ "input_bytes": 146,
+ "input_sha256": "e36938b797b9ba0d000d03afca95f501641befcf6c00f2362d98b9253d11205b",
+ "item_list": null,
+ "items": [],
+ "line_count": 7,
+ "outcome": "input_not_utf8",
+ "scenarios": [
+  "Q06"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": []
+}

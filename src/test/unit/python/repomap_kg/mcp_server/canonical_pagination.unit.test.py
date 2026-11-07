@@ -5,7 +5,7 @@ from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
     def test_canonical_list_schemas_define_bounded_pagination(self):
-        from repomap_kg.server.mcp import tool_input_schema
+        from common_lore_index.server.mcp import tool_input_schema
 
         for name in ("repomap_canonical_nodes", "repomap_canonical_edges"):
             with self.subTest(tool=name):
@@ -33,7 +33,7 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
                 )
 
     def test_embedded_read_schemas_define_independent_bounded_windows(self):
-        from repomap_kg.server.mcp import tool_input_schema
+        from common_lore_index.server.mcp import tool_input_schema
 
         explanation = tool_input_schema("repomap_explain_canonical_edge")[
             "properties"
@@ -51,13 +51,13 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         self.assertEqual(neighborhood["result_schema_version"]["enum"], [0, 1])
 
     def test_canonical_lists_forward_default_and_explicit_pagination(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_canonical_edges,
             repomap_canonical_nodes,
         )
 
         with patch(
-            "repomap_kg.server.mcp.query_canonical_node_records",
+            "common_lore_index.server.mcp.query_canonical_node_records",
             return_value=(),
         ) as node_query:
             payload = repomap_canonical_nodes(
@@ -73,7 +73,7 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         self.assertEqual(node_query.call_args.kwargs["offset"], 0)
 
         with patch(
-            "repomap_kg.server.mcp.query_canonical_edge_records",
+            "common_lore_index.server.mcp.query_canonical_edge_records",
             return_value=(),
         ) as edge_query:
             payload = repomap_canonical_edges(
@@ -90,10 +90,10 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         self.assertEqual(edge_query.call_args.kwargs["offset"], 3)
 
     def test_canonical_lists_retain_bounded_schema_zero_alias(self):
-        from repomap_kg.server.mcp import repomap_canonical_nodes
+        from common_lore_index.server.mcp import repomap_canonical_nodes
 
         with patch(
-            "repomap_kg.server.mcp.query_canonical_node_records",
+            "common_lore_index.server.mcp.query_canonical_node_records",
             return_value=(),
         ) as query:
             payload = repomap_canonical_nodes(
@@ -106,7 +106,7 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         self.assertEqual(query.call_args.kwargs["limit"], 51)
 
     def test_canonical_lists_reject_invalid_pagination_before_query(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             RepoMapMcpError,
             repomap_canonical_edges,
             repomap_canonical_nodes,
@@ -151,8 +151,8 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
             ),
         )
         with (
-            patch("repomap_kg.server.mcp.query_canonical_node_records") as nodes,
-            patch("repomap_kg.server.mcp.query_canonical_edge_records") as edges,
+            patch("common_lore_index.server.mcp.query_canonical_node_records") as nodes,
+            patch("common_lore_index.server.mcp.query_canonical_edge_records") as edges,
         ):
             for invoke, message, tool_name in cases:
                 with self.subTest(tool=tool_name, message=message):
@@ -163,7 +163,7 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         edges.assert_not_called()
 
     def test_embedded_reads_reject_invalid_windows_before_query(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             RepoMapMcpError,
             repomap_canonical_neighborhood,
             repomap_explain_canonical_edge,
@@ -204,8 +204,8 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
             ),
         )
         with (
-            patch("repomap_kg.server.mcp.query_canonical_edge_explanation") as explain,
-            patch("repomap_kg.server.mcp.query_canonical_neighborhood") as neighborhood,
+            patch("common_lore_index.server.mcp.query_canonical_edge_explanation") as explain,
+            patch("common_lore_index.server.mcp.query_canonical_neighborhood") as neighborhood,
         ):
             for invoke, message, tool_name in cases:
                 with self.subTest(tool=tool_name, message=message):
@@ -216,22 +216,22 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         neighborhood.assert_not_called()
 
     def test_embedded_reads_retain_bounded_schema_zero_aliases(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_canonical_neighborhood,
             repomap_explain_canonical_edge,
         )
-        from repomap_kg.storage import (
+        from common_lore_index.storage import (
             CanonicalEdgeExplanationRecord,
             CanonicalNeighborhoodRecord,
         )
 
         with (
             patch(
-                "repomap_kg.server.mcp.query_canonical_edge_explanation",
+                "common_lore_index.server.mcp.query_canonical_edge_explanation",
                 return_value=CanonicalEdgeExplanationRecord(edge=None, evidence=()),
             ) as explain,
             patch(
-                "repomap_kg.server.mcp.query_canonical_neighborhood",
+                "common_lore_index.server.mcp.query_canonical_neighborhood",
                 return_value=CanonicalNeighborhoodRecord(
                     center=None,
                     nodes=(),
@@ -273,7 +273,7 @@ class McpServerCanonicalPaginationUnitTests(McpServerTestSupport):
         self.assertEqual(neighborhood.call_args.kwargs["edge_offset"], 4)
 
     def test_jsonrpc_canonical_pagination_error_is_structured(self):
-        from repomap_kg.server.mcp import handle_jsonrpc_message
+        from common_lore_index.server.mcp import handle_jsonrpc_message
 
         response = handle_jsonrpc_message(
             {

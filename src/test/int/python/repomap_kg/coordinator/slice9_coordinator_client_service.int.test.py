@@ -11,22 +11,22 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.coordinator.client import (
+from common_lore_index.coordinator.client import (
     CoordinatorClientError,
     LocalCoordinatorClient,
     _decode_response,
 )
-from repomap_kg.coordinator.job_control import (
+from common_lore_index.coordinator.job_control import (
     CoordinatorModeError,
     format_coordinator_health_table,
     list_coordinator_jobs,
     wait_for_coordinator_job,
 )
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator.local_mode import (
     _resolve_psql_executable,
     coordinator_runtime_paths,
 )
-from repomap_kg.coordinator.transport import (
+from common_lore_index.coordinator.transport import (
     LocalRequestDispatcher,
     TransportError,
     _handle_stream,
@@ -55,7 +55,7 @@ class Slice9CoordinatorClientServiceIntegrationTests(unittest.TestCase):
             # Exact 64 KiB frame boundary with deterministic timestamp:
             # base envelope with admission deadline is 141 bytes, pad = 65395.
             # 65,536 bytes passes frame check and attempts socket connect (raises unavailable).
-            with patch("repomap_kg.coordinator.client.time.time", return_value=1700000000.0):
+            with patch("common_lore_index.coordinator.client.time.time", return_value=1700000000.0):
                 exact_boundary_payload = {"k": "x" * 65395}
                 with self.assertRaises(CoordinatorClientError) as cm_exact:
                     client.submit(exact_boundary_payload)

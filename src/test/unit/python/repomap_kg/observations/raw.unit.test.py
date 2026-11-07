@@ -5,7 +5,7 @@ from typing import Any, cast
 import unittest
 from pathlib import Path
 
-from repomap_kg.observations.raw import (
+from common_lore_index.observations.raw import (
     ObservationValidationError,
     RawObservation,
     read_observations_jsonl,

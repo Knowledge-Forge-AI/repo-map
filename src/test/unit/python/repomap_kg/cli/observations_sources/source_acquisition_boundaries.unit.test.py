@@ -3,7 +3,7 @@ import unittest
 from contextlib import redirect_stderr
 from unittest.mock import patch
 
-from repomap_kg.cli import main
+from common_lore_index.cli import main
 
 
 class CliSourceAcquisitionCommandBoundariesUnitTests(unittest.TestCase):
@@ -48,11 +48,11 @@ class CliSourceAcquisitionCommandBoundariesUnitTests(unittest.TestCase):
         self.assertIn("unrecognized arguments: --url", stderr.getvalue())
 
     def test_bulk_plan_reports_policy_errors(self):
-        from repomap_kg.ops.ingestion.bulk import BulkPolicyError
+        from common_lore_index.ops.ingestion.bulk import BulkPolicyError
 
         stderr = io.StringIO()
         with patch(
-            "repomap_kg.cli.build_bulk_plan_from_config",
+            "common_lore_index.cli.build_bulk_plan_from_config",
             side_effect=BulkPolicyError("source policy status blocked"),
         ):
             with redirect_stderr(stderr):
@@ -90,11 +90,11 @@ class CliSourceAcquisitionCommandBoundariesUnitTests(unittest.TestCase):
         self.assertIn("unrecognized arguments: --url", stderr.getvalue())
 
     def test_api_plan_reports_policy_errors(self):
-        from repomap_kg.ops.ingestion.api import ApiPolicyError
+        from common_lore_index.ops.ingestion.api import ApiPolicyError
 
         stderr = io.StringIO()
         with patch(
-            "repomap_kg.cli.build_api_plan_from_config",
+            "common_lore_index.cli.build_api_plan_from_config",
             side_effect=ApiPolicyError("source policy status blocked"),
         ):
             with redirect_stderr(stderr):
@@ -132,11 +132,11 @@ class CliSourceAcquisitionCommandBoundariesUnitTests(unittest.TestCase):
         self.assertIn("unrecognized arguments: --url", stderr.getvalue())
 
     def test_github_plan_reports_policy_errors(self):
-        from repomap_kg.ops.ingestion.github_api import GitHubApiPolicyError
+        from common_lore_index.ops.ingestion.github_api import GitHubApiPolicyError
 
         stderr = io.StringIO()
         with patch(
-            "repomap_kg.cli.build_github_api_plan_from_config",
+            "common_lore_index.cli.build_github_api_plan_from_config",
             side_effect=GitHubApiPolicyError("source policy status blocked"),
         ):
             with redirect_stderr(stderr):

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import psycopg
 
-from repomap_kg.observations import RawObservation
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.observations import RawObservation
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
 )

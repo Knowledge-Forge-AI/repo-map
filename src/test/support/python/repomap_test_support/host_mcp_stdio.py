@@ -2,7 +2,8 @@
 
 The child is the ``repomap-kg`` console script installed next to the runner
 interpreter (a checkout venv), or else the runner-provisioned ``repomap-kg`` on
-the runner ``PATH`` (the test sandbox wrapper). It starts with a from-scratch
+the runner ``PATH`` (a canonical-main test shim, not the installed legacy
+entrypoint or native acceptance). It starts with a from-scratch
 environment: no inherited ``PYTHONPATH``, ``VIRTUAL_ENV``, or database
 password, and a ``PATH`` whose first entry holds recording shims for container
 and service managers.
@@ -33,7 +34,7 @@ SHIM_COMMANDS = ("docker", "podman", "nerdctl", "docker-compose", "launchctl", "
 SESSION_DEADLINE_SECONDS = 60
 FORBIDDEN_ENV_MARKERS = ("PASSWORD", "PGPASS", "SECRET", "TOKEN", "VIRTUAL_ENV", "PYTHONPATH")
 _SHIM_EXIT = 97
-_WRAPPER_MARKERS = ("#!/bin/sh", "PYTHONPATH=", "from repomap_kg.cli import main")
+_WRAPPER_MARKERS = ("#!/bin/sh", "PYTHONPATH=", "from common_lore_index.cli import main")
 
 
 def forbidden_env_keys(keys: Sequence[str]) -> tuple[str, ...]:

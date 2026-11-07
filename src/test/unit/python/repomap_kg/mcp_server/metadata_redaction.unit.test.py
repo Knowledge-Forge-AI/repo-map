@@ -2,13 +2,13 @@ import json
 from dataclasses import replace
 from unittest.mock import patch
 
-from repomap_kg.storage import CanonicalStorageSummaryRecord
+from common_lore_index.storage import CanonicalStorageSummaryRecord
 from repomap_test_support.mcp_server import McpServerTestSupport
 
 
 class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
     def test_all_hidden_home_listing_omits_config_locations(self):
-        from repomap_kg.server.mcp import repomap_list_graphs
+        from common_lore_index.server.mcp import repomap_list_graphs
 
         config_path = self.write_ops_config(
             self.visible_ops_config().replace(
@@ -32,7 +32,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         self.assertNotIn(str(config_path.parent), json.dumps(payload, sort_keys=True))
 
     def test_graph_metadata_uses_path_free_root_and_database_markers(self):
-        from repomap_kg.server.mcp import repomap_list_graphs
+        from common_lore_index.server.mcp import repomap_list_graphs
 
         config_path = self.write_visible_ops_config()
         with self.patch_ops_config(config_path):
@@ -59,7 +59,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
             self.assertNotIn(internal_value, serialized)
 
     def test_legacy_projects_mask_connection_metadata(self):
-        from repomap_kg.server.mcp import repomap_projects
+        from common_lore_index.server.mcp import repomap_projects
 
         config_path = self.write_mcp_config(
             {
@@ -83,7 +83,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
                 clear=True,
             ),
             patch(
-                "repomap_kg.server.mcp.load_mcp_ops_config",
+                "common_lore_index.server.mcp.load_mcp_ops_config",
                 side_effect=OSError("no operations config"),
             ),
         ):
@@ -106,7 +106,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
             self.assertNotIn(internal_value, serialized)
 
     def test_legacy_status_masks_root_but_preserves_query_routing(self):
-        from repomap_kg.server.mcp import repomap_status
+        from common_lore_index.server.mcp import repomap_status
 
         config_path = self.write_mcp_config(
             {
@@ -136,7 +136,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
             clear=True,
         ):
             with patch(
-                "repomap_kg.server.mcp.query_canonical_storage_summary",
+                "common_lore_index.server.mcp.query_canonical_storage_summary",
                 return_value=summary,
             ) as query:
                 payload = repomap_status(project="repo-map")
@@ -146,7 +146,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(query.call_args.args[0], ["-d", "internal_repo_map"])
 
     def test_legacy_status_labels_legacy_storage_counts(self):
-        from repomap_kg.server.mcp import repomap_status
+        from common_lore_index.server.mcp import repomap_status
 
         config_path = self.write_mcp_config(
             {
@@ -176,7 +176,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
             clear=True,
         ):
             with patch(
-                "repomap_kg.server.mcp.query_canonical_storage_summary",
+                "common_lore_index.server.mcp.query_canonical_storage_summary",
                 return_value=summary,
             ):
                 payload = repomap_status(project="repo-map")
@@ -198,13 +198,13 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         self.assertNotIn("evidence", payload["counts"])
 
     def test_storage_errors_omit_operational_topology_from_mcp(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             RepoMapMcpError,
             handle_jsonrpc_message,
             handle_tool_call,
             ops_payload,
         )
-        from repomap_kg.storage import StorageSchemaError
+        from common_lore_index.storage import StorageSchemaError
 
         safe_reason = "unsupported storage readback driver; expected psql or psycopg"
         private_host = "internal-db-host"
@@ -217,7 +217,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         )
 
         with patch(
-            "repomap_kg.server.mcp.repomap_status",
+            "common_lore_index.server.mcp.repomap_status",
             side_effect=storage_error,
         ):
             with self.assertRaises(RepoMapMcpError) as raised:
@@ -233,7 +233,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(str(ops_raised.exception), safe_reason)
 
         with patch(
-            "repomap_kg.server.mcp.repomap_status",
+            "common_lore_index.server.mcp.repomap_status",
             side_effect=storage_error,
         ):
             response = handle_jsonrpc_message(
@@ -261,7 +261,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         self.assertNotIn("Traceback", serialized)
 
     def test_graph_status_and_summary_mask_output_but_preserve_query_routing(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_project_summary,
             repomap_refresh_status,
             repomap_status,
@@ -291,15 +291,15 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
             with (
                 patch(
-                    "repomap_kg.server.mcp.query_canonical_storage_summary",
+                    "common_lore_index.server.mcp.query_canonical_storage_summary",
                     return_value=summary,
                 ) as legacy_query,
                 patch(
-                    "repomap_kg.server.ops.query_canonical_storage_summary",
+                    "common_lore_index.server.ops.query_canonical_storage_summary",
                     return_value=summary,
                 ) as summary_query,
                 patch(
-                    "repomap_kg.server.ops.query_refresh_status",
+                    "common_lore_index.server.ops.query_refresh_status",
                     return_value={"repo-map": refresh_status},
                 ),
             ):
@@ -330,7 +330,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
         self.assertEqual(summary_query.call_args.kwargs["root_path"], "/tmp/fixture")
 
     def test_public_search_masks_configured_paths_but_preserves_query_routing(self):
-        from repomap_kg.server.mcp import repomap_search_nodes
+        from common_lore_index.server.mcp import repomap_search_nodes
 
         config_path = self.write_visible_ops_config()
         result = {
@@ -348,7 +348,7 @@ class McpServerMetadataRedactionUnitTests(McpServerTestSupport):
 
         with self.patch_ops_config(config_path):
             with patch(
-                "repomap_kg.server.ops.query_mcp_search",
+                "common_lore_index.server.ops.query_mcp_search",
                 return_value=result,
             ) as query:
                 payload = repomap_search_nodes(graph_id="repo-map", query="pkg")

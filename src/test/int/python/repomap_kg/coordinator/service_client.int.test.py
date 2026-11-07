@@ -4,22 +4,22 @@ import time
 
 import psycopg
 
-from repomap_kg.coordinator._control_types import (
+from common_lore_index.coordinator._control_types import (
     JobListPage,
     JobStatus,
     SubmissionResult,
 )
-from repomap_kg.coordinator.contracts import JobRequest
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator.contracts import JobRequest
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
 from repomap_test_support.test_scratch import short_test_directory
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver,
     build_configured_refresh_coordinator,
 )
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.storage import ControlStore
-from repomap_kg.storage import apply_migrations, default_rdbms_root
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.storage import ControlStore
+from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,

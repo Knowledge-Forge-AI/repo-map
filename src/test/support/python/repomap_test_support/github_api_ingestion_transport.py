@@ -5,7 +5,7 @@ import urllib.error
 from email.message import Message
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.ops.ingestion.github_api import (
     GitHubApiPolicyError,
     GitHubTransportResponse,
     PublicGitHubRestTransport,

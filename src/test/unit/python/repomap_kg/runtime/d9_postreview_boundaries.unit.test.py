@@ -13,26 +13,26 @@ from unittest.mock import MagicMock, patch
 import psycopg
 import pytest
 
-from repomap_kg.runtime._backup_observation import (
+from common_lore_index.runtime._backup_observation import (
     observe_client_identities,
     observe_database_provenance,
     parse_and_validate_catalog_observation,
 )
-from repomap_kg.runtime._backup_operations import acquire_or_reuse_backup_maintenance_window
-from repomap_kg.runtime._backup_provenance import CATALOG_OBSERVATION_SQL
-from repomap_kg.runtime._backup_support import (
+from common_lore_index.runtime._backup_operations import acquire_or_reuse_backup_maintenance_window
+from common_lore_index.runtime._backup_provenance import CATALOG_OBSERVATION_SQL
+from common_lore_index.runtime._backup_support import (
     evaluate_backup_restore_support,
     evaluate_release_cluster_upgrade_artifact,
     load_and_verify_release_cluster_upgrade_artifact,
 )
-from repomap_kg.runtime.backup_inspection import (
+from common_lore_index.runtime.backup_inspection import (
     _run_pg_restore_list_bytes,
     verify_archive_toc_for_restore,
 )
-from repomap_kg.runtime.backup_manifests import summarize_pg_restore_toc
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
-from repomap_kg.runtime.maintenance import (
+from common_lore_index.runtime.backup_manifests import summarize_pg_restore_toc
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.maintenance import (
     active_maintenance_custody,
     bind_maintenance_custody,
     held_maintenance_custody_for,
@@ -69,7 +69,7 @@ def test_unscoped_same_database_custody_cannot_skip_acquisition(tmp_path: Path) 
     with bind_maintenance_custody(
         mode="direct-advisory-lock-window", databases=("repomap_control", "repomap")
     ), patch(
-        "repomap_kg.runtime._backup_operations.psycopg.connect",
+        "common_lore_index.runtime._backup_operations.psycopg.connect",
         side_effect=psycopg.OperationalError("unit-private-driver-marker"),
     ) as connect:
         with pytest.raises(LocalDbBackupError) as caught:
@@ -86,8 +86,8 @@ def test_operation_error_is_not_reclassified_as_acquisition_failure(tmp_path: Pa
     connection.__enter__.return_value = connection
     connection.execute.return_value.fetchall.return_value = [("repomap_control",), ("repomap",)]
     primary = psycopg.OperationalError("unit-operation-marker")
-    with patch("repomap_kg.runtime._backup_operations.psycopg.connect", return_value=connection), patch(
-        "repomap_kg.runtime._backup_operations.maintenance_window", side_effect=lambda _connect: nullcontext()
+    with patch("common_lore_index.runtime._backup_operations.psycopg.connect", return_value=connection), patch(
+        "common_lore_index.runtime._backup_operations.maintenance_window", side_effect=lambda _connect: nullcontext()
     ):
         with pytest.raises(psycopg.OperationalError) as caught:
             with acquire_or_reuse_backup_maintenance_window(plan, ("repomap",), command_runner=subprocess.run):
@@ -158,14 +158,14 @@ def test_different_runtime_home_custody_cannot_satisfy_other_home_window(tmp_pat
     connection = MagicMock()
     connection.__enter__.return_value = connection
     connection.execute.return_value.fetchall.return_value = [("repomap_control",), ("repomap",)]
-    with patch("repomap_kg.runtime._backup_operations.psycopg.connect", return_value=connection), patch(
-        "repomap_kg.runtime._backup_operations.maintenance_window", side_effect=lambda _connect: nullcontext()
+    with patch("common_lore_index.runtime._backup_operations.psycopg.connect", return_value=connection), patch(
+        "common_lore_index.runtime._backup_operations.maintenance_window", side_effect=lambda _connect: nullcontext()
     ):
         with acquire_or_reuse_backup_maintenance_window(plan_a, ("repomap",), command_runner=subprocess.run) as ns_a:
             assert active_maintenance_custody() is not None
             assert held_maintenance_custody_for("repomap_control", "repomap", authority_namespace=ns_a) is not None
             with patch(
-                "repomap_kg.runtime._backup_operations.psycopg.connect",
+                "common_lore_index.runtime._backup_operations.psycopg.connect",
                 side_effect=psycopg.OperationalError("plan-b-private-driver-error"),
             ) as connect_b:
                 with pytest.raises(LocalDbBackupError) as caught:
@@ -178,9 +178,9 @@ def test_different_runtime_home_custody_cannot_satisfy_other_home_window(tmp_pat
             assert "plan-b-private-driver-error" not in str(caught.value)
             assert isinstance(caught.value.__cause__, psycopg.OperationalError)
             with patch(
-                "repomap_kg.runtime._backup_operations.execution_postgres", return_value=MagicMock(host="127.0.0.1", port=55433)
+                "common_lore_index.runtime._backup_operations.execution_postgres", return_value=MagicMock(host="127.0.0.1", port=55433)
             ), patch(
-                "repomap_kg.runtime._backup_operations.psycopg.connect", side_effect=psycopg.OperationalError("port-mismatch")
+                "common_lore_index.runtime._backup_operations.psycopg.connect", side_effect=psycopg.OperationalError("port-mismatch")
             ) as connect_ep:
                 with pytest.raises(LocalDbBackupError) as ep_caught:
                     with acquire_or_reuse_backup_maintenance_window(plan_a, ("repomap",), command_runner=subprocess.run):
@@ -192,7 +192,7 @@ def test_different_runtime_home_custody_cannot_satisfy_other_home_window(tmp_pat
     ns_only_graph = runtime_maintenance_namespace(plan_a.repo_map_home, host="127.0.0.1", port=5432)
     with bind_maintenance_custody(
         mode="direct-advisory-lock-window", control_database=None, databases=("repomap",), authority_namespace=ns_only_graph
-    ), patch("repomap_kg.runtime._backup_operations.psycopg.connect", side_effect=psycopg.OperationalError("missing-ctrl")) as connect_ctrl:
+    ), patch("common_lore_index.runtime._backup_operations.psycopg.connect", side_effect=psycopg.OperationalError("missing-ctrl")) as connect_ctrl:
         with pytest.raises(LocalDbBackupError):
             with acquire_or_reuse_backup_maintenance_window(plan_a, ("repomap",), command_runner=subprocess.run):
                 pytest.fail("outer custody missing control_db must not be reused")
@@ -237,14 +237,14 @@ def test_release_verify_on_disk_rejects_mapping_symlinks_and_untrusted_client(tm
             command, 0, stdout=b"1; 3079 16385 EXTENSION - vector \n", stderr=b""
         )
 
-    with patch("repomap_kg.runtime._backup_support.subprocess.run", side_effect=toc_runner):
+    with patch("common_lore_index.runtime._backup_support.subprocess.run", side_effect=toc_runner):
         with pytest.raises(LocalDbBackupError) as ext_err:
             load_and_verify_release_cluster_upgrade_artifact(
                 ext_dir, database="repomap", verify_dump_on_disk=True
             )
     assert ext_err.value.diagnostics[0].code == "backup-extension-restore-unsupported"
     assert seen_cmds and seen_cmds[0][0] == "/usr/bin/pg_restore"
-    with patch("repomap_kg.runtime._backup_support.subprocess.run", return_value=subprocess.CompletedProcess(("pg_restore",), 0, stdout=b"; comment only\n", stderr=b"")):
+    with patch("common_lore_index.runtime._backup_support.subprocess.run", return_value=subprocess.CompletedProcess(("pg_restore",), 0, stdout=b"; comment only\n", stderr=b"")):
         with pytest.raises(LocalDbBackupError) as empty_toc_err:
             load_and_verify_release_cluster_upgrade_artifact(ext_dir, database="repomap", verify_dump_on_disk=True)
     assert empty_toc_err.value.diagnostics[0].code == "backup-toc-inconsistent"
@@ -330,7 +330,7 @@ def test_legacy_toc_extension_with_plpgsql_prefix_or_quote_refused(tmp_path: Pat
     assert summary.extensions == ("plpgsql x",)
     v1_manifest = {"backup_format_version": 1, "restore_supported": True, "database": "repomap"}
     with patch(
-        "repomap_kg.runtime.backup_inspection._run_pg_restore_list_bytes",
+        "common_lore_index.runtime.backup_inspection._run_pg_restore_list_bytes",
         return_value=b"1; 3079 16385 EXTENSION - plpgsql x \n",
     ):
         with pytest.raises(LocalDbBackupError) as prefix_err:
@@ -344,7 +344,7 @@ def test_legacy_toc_extension_with_plpgsql_prefix_or_quote_refused(tmp_path: Pat
     assert prefix_err.value.diagnostics[0].code == "backup-extension-restore-unsupported"
 
     with patch(
-        "repomap_kg.runtime.backup_inspection._run_pg_restore_list_bytes",
+        "common_lore_index.runtime.backup_inspection._run_pg_restore_list_bytes",
         return_value=b'1; 3079 16385 EXTENSION - "plpgsql\n',
     ):
         # PG16 emits raw extension tags; a quote is part of the name, not SQL.

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 
-from repomap_kg.ops import refresh as ops_refresh
+from common_lore_index.ops import refresh as ops_refresh
 
 
 class OpsBaselineHelperBranchContract(unittest.TestCase):

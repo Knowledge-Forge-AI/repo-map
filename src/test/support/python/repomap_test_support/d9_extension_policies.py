@@ -10,18 +10,18 @@ import subprocess
 import sys
 from typing import Any
 
-from repomap_kg.runtime._extension_restore_policy import (
+from common_lore_index.runtime._extension_restore_policy import (
     ExtensionReplayBounds,
     TrustedArtifactQualification,
     TrustedExtensionRestorePolicy,
     TrustedExtensionRule,
     TrustedOptionalCapabilityContract,
 )
-from repomap_kg.runtime._extension_restore_qualification import (
+from common_lore_index.runtime._extension_restore_qualification import (
     engine_image_content_id,
     parse_client_version,
 )
-from repomap_kg.runtime._extension_restore_target import (
+from common_lore_index.runtime._extension_restore_target import (
     _EXT_ARTIFACT_PROBE_SH,
 )
 

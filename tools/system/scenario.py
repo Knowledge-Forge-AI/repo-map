@@ -11,8 +11,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Callable
 
-from repomap_kg.ops.resolved_config import control_database_for
-from repomap_kg.runtime.plan import LocalRuntimePlan
+from common_lore_index.ops.resolved_config import control_database_for
+from common_lore_index.runtime.plan import LocalRuntimePlan
 from tools.system.scenario_restart_fence import control_evidence_sql
 from tools.system.config import (
     SYSTEM_CLEANUP_RESERVE_SECONDS,
@@ -121,7 +121,7 @@ def _control_job_evidence(
     timer: MonotonicTimer,
     job_id: str,
 ) -> dict[str, Any]:
-    from repomap_kg.coordinator._refresh_execution import SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
+    from common_lore_index.coordinator._refresh_execution import SYSTEM_TEST_CONTROL_READBACK_TIMEOUT_SECONDS
     sql = control_evidence_sql()
     return _postgres_json(
         compose_dir, plan, timer, sql,
@@ -202,7 +202,7 @@ def step_1_packaged_cluster_readiness(
         )
 
     health = compose(
-        ["exec", "-T", "coordinator", "python", "-m", "repomap_kg", "ops",
+        ["exec", "-T", "coordinator", "python", "-m", "common_lore_index", "ops",
          "coordinator-health", "--repo-map-home", "/repo-map-home", "--json"],
         timeout=30.0,
     )

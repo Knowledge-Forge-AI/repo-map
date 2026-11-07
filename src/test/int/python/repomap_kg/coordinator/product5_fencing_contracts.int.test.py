@@ -12,29 +12,29 @@ from typing import Any
 import psycopg
 import pytest
 from psycopg.rows import dict_row
-from repomap_kg.coordinator import _publication_phase
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._restart_fencing import (
+from common_lore_index.coordinator import _publication_phase
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._restart_fencing import (
     StaleDurableAuthorityError,
 )
-from repomap_kg.coordinator._supervisor_fencing import (
+from common_lore_index.coordinator._supervisor_fencing import (
     register_worker_launch,
     release_unlaunched_registration,
 )
-from repomap_kg.coordinator._supervisor_registration import (
+from common_lore_index.coordinator._supervisor_registration import (
     FencingContentionError,
     in_process_currency_context,
     lock_and_validate_current_durable,
     persist_supervisor_registration,
     validate_supervisor_registration,
 )
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability,
     create_refresh_capability,
 )
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.runtime.postgres_route import effective_postgres_route
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.runtime.postgres_route import effective_postgres_route
 from repomap_test_support.startup_recovery_scenarios import (
     _harness,
     _make_refresh_fixture,
@@ -75,7 +75,7 @@ def test_supervisor_launch_command_and_identity_validation() -> None:
         )
         sealed = create_refresh_capability(cap_dir, capability)
         valid_argv = (
-            sys.executable, "-m", "repomap_kg.coordinator.refresh_worker",
+            sys.executable, "-m", "common_lore_index.coordinator.refresh_worker",
             "--capability", str(sealed), "--job-id", claim.job_id, "--attempt", str(claim.attempt),
         )
 
@@ -86,7 +86,7 @@ def test_supervisor_launch_command_and_identity_validation() -> None:
 
         # 2. Identity mismatch in argv
         mismatch_argv = (
-            sys.executable, "-m", "repomap_kg.coordinator.refresh_worker",
+            sys.executable, "-m", "common_lore_index.coordinator.refresh_worker",
             "--capability", str(sealed), "--job-id", "wrong-job", "--attempt", str(claim.attempt),
         )
         with pytest.raises(PermissionError, match="identity mismatch"):

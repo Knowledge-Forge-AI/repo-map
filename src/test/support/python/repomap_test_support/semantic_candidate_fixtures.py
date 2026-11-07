@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from repomap_kg.storage.authority import AttemptNumber, GraphRunId, JobId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import AttemptNumber, GraphRunId, JobId
+from common_lore_index.storage.publication import (
     PortablePublicationBinding, RunPublicationAttempt, RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_readback import RunPublicationRecord
-from repomap_kg.storage.semantic_candidates import CandidatePublication, CandidateQuery, EmbeddingProfile
+from common_lore_index.storage.publication_readback import RunPublicationRecord
+from common_lore_index.storage.semantic_candidates import CandidatePublication, CandidateQuery, EmbeddingProfile
 
 BINDING = "bind1:" + "3" * 64
 SNAPSHOT = "snap1:" + "4" * 64

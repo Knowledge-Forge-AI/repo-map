@@ -6,11 +6,11 @@ from collections.abc import Callable
 from datetime import timedelta
 import pytest
 
-from repomap_kg.coordinator._control_maintenance import CleanupReport
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._restart_fencing import FencingContentionError
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport
+from common_lore_index.coordinator._control_maintenance import CleanupReport
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._restart_fencing import FencingContentionError
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport
 from repomap_test_support.coordinator_core_fakes import FakeStore, terminal
 
 

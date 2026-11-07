@@ -6,7 +6,7 @@ import zipfile
 from io import BytesIO
 from pathlib import Path
 
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 FIXTURE_ROOT = Path(__file__).parents[3] / "fixtures" / "canonicalization"

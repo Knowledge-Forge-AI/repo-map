@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-import repomap_kg.ops.refresh as refresh
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.storage import StorageSchemaError
+import common_lore_index.ops.refresh as refresh
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.storage import StorageSchemaError
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 
 

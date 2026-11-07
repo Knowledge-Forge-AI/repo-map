@@ -27,13 +27,13 @@ from typing import Any
 import psutil
 import pytest
 
-from repomap_kg.runtime import _extension_restore_exec as exec_mod
-from repomap_kg.runtime._backup_provenance import provenance_error
-from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
-from repomap_kg.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH, parse_process_settlement
-from repomap_kg.runtime._extension_restore_native import run_bounded_ext_command
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime import _extension_restore_exec as exec_mod
+from common_lore_index.runtime._backup_provenance import provenance_error
+from common_lore_index.runtime._extension_restore_exec import bound_exec_custody
+from common_lore_index.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH, parse_process_settlement
+from common_lore_index.runtime._extension_restore_native import run_bounded_ext_command
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
 
 TOKEN = "e" * 32
 CONTAINER_ID = "c" * 64

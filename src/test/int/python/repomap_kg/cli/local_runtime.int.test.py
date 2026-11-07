@@ -8,8 +8,8 @@ from repomap_test_support.cli_integration import (
     OPS_CONFIG_TEMPLATE,
 )
 
-from repomap_kg.runtime.local import LocalRuntimeIdentity
-from repomap_kg.runtime.plan import LocalContainerStatus
+from common_lore_index.runtime.local import LocalRuntimeIdentity
+from common_lore_index.runtime.plan import LocalContainerStatus
 
 
 class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
@@ -144,9 +144,9 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             self.write_runtime_server_port(home, self.local_runtime_test_port(2))
 
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run") as run_mock,
-                patch("repomap_kg.runtime.local.inspect_container", return_value=LocalContainerStatus("postgres", "postgres", postgres_host_binding_valid=True)),
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run") as run_mock,
+                patch("common_lore_index.runtime.local.inspect_container", return_value=LocalContainerStatus("postgres", "postgres", postgres_host_binding_valid=True)),
             ):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "up", "--repo-map-home", str(home), "--json",
@@ -175,8 +175,8 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             self.assertEqual(setup_exit, 0, setup_stderr)
 
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run") as run_mock,
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run") as run_mock,
             ):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "down", "--repo-map-home", str(home), "--json",
@@ -215,7 +215,7 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
         self.assertNotIn("password", payload["dbeaver"])
 
     def test_local_status_check_containers_reports_owned_server_health_in_process(self):
-        from repomap_kg.runtime.local import query_local_runtime_status
+        from common_lore_index.runtime.local import query_local_runtime_status
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home = Path(tmpdir) / "repo-map-home"
@@ -243,9 +243,9 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
                 raise AssertionError(command)
 
             with (
-                patch("repomap_kg.runtime.local.shutil.which", return_value="/usr/bin/docker"),
-                patch("repomap_kg.runtime.local.subprocess.run", side_effect=fake_run),
-                patch("repomap_kg.runtime.local.urllib.request.urlopen", return_value=FakeResponse()),
+                patch("common_lore_index.runtime.local.shutil.which", return_value="/usr/bin/docker"),
+                patch("common_lore_index.runtime.local.subprocess.run", side_effect=fake_run),
+                patch("common_lore_index.runtime.local.urllib.request.urlopen", return_value=FakeResponse()),
             ):
                 status = query_local_runtime_status(home, check_containers=True)
 
@@ -276,7 +276,7 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             )
 
             with patch(
-                "repomap_kg.runtime.local.is_local_port_open",
+                "common_lore_index.runtime.local.is_local_port_open",
                 return_value=False,
             ):
                 up_exit, up_stdout, up_stderr = self.run_repo_map_in_process(
@@ -303,7 +303,7 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             )
             self.assertEqual(setup_exit, 0, setup_stderr)
 
-            with patch("repomap_kg.runtime.local.shutil.which", return_value=None):
+            with patch("common_lore_index.runtime.local.shutil.which", return_value=None):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "status", "--repo-map-home", str(home), "--check-containers", "--json",
                 )
@@ -366,7 +366,7 @@ class CliLocalRuntimeIntegrationTests(CliIntegrationTestCase):
             )
             self.assertEqual(setup_exit, 0, setup_stderr)
 
-            with patch("repomap_kg.runtime.local.is_local_port_open", return_value=True):
+            with patch("common_lore_index.runtime.local.is_local_port_open", return_value=True):
                 exit_code, stdout, stderr = self.run_repo_map_in_process(
                     "local", "up", "--repo-map-home", str(home), "--dry-run", "--json",
                 )

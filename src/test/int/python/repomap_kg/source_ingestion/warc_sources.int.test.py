@@ -10,7 +10,7 @@ from repomap_test_support.source_ingestion_integration import (
     warc_source_fixture,
     write_warc_source_config,
 )
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     build_warc_manifest,
     import_warc_source,

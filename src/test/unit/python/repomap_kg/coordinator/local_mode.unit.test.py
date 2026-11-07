@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator.local_mode import (
     CoordinatorModeError,
     _resolve_psql_executable,
     coordinator_runtime_paths,
@@ -57,7 +57,7 @@ def test_windows_psql_resolution_requires_the_exact_exe_name(tmp_path, monkeypat
     psql.chmod(0o755)
     validated: list[Path] = []
     monkeypatch.setattr(
-        "repomap_kg.coordinator.local_mode.validate_psql", validated.append
+        "common_lore_index.coordinator.local_mode.validate_psql", validated.append
     )
 
     assert _resolve_psql_executable(psql, platform_name="nt") == psql
@@ -119,7 +119,7 @@ def test_coordinator_refresh_uses_derived_endpoint_and_stable_request_identity(t
 
 
 def test_windows_runtime_paths_use_one_private_endpoint_descriptor():
-    from repomap_kg.coordinator.local_mode import _coordinator_endpoint_names
+    from common_lore_index.coordinator.local_mode import _coordinator_endpoint_names
 
     assert _coordinator_endpoint_names("nt") == (
         "coordinator.endpoint.json",
@@ -128,12 +128,12 @@ def test_windows_runtime_paths_use_one_private_endpoint_descriptor():
 
 
 def test_lower_owners_keep_local_mode_and_report_identities():
-    from repomap_kg.coordinator import _runtime_paths, local_mode
-    from repomap_kg.ops import report_records, reports
+    from common_lore_index.coordinator import _runtime_paths, local_mode
+    from common_lore_index.ops import report_records, reports
 
     for name in ("CoordinatorModeError", "coordinator_runtime_paths", "_coordinator_endpoint_names"):
         assert getattr(local_mode, name) is getattr(_runtime_paths, name)
-    assert CoordinatorModeError.__module__ == "repomap_kg.coordinator.local_mode"
+    assert CoordinatorModeError.__module__ == "common_lore_index.coordinator.local_mode"
     assert reports._redact_text is report_records._redact_text
 
 
@@ -278,10 +278,10 @@ def test_foreground_serve_retries_bounded_startup_ownership_recovery(tmp_path):
     stopped.set()
     with (
         patch(
-            "repomap_kg.coordinator.local_mode.time.monotonic",
+            "common_lore_index.coordinator.local_mode.time.monotonic",
             side_effect=(0.0, 0.0, 1.0),
         ),
-        patch("repomap_kg.coordinator.local_mode.time.sleep") as sleep,
+        patch("common_lore_index.coordinator.local_mode.time.sleep") as sleep,
     ):
         serve_configured_coordinator(
             tmp_path,

@@ -40,7 +40,7 @@ def test_cli_wrapper_preserves_bootstrap_and_arguments(tmp_path, inherited):
     roots = "/workspace/tools:/workspace/src/main/python:/workspace/src/test/support/python"
     assert result.stdout.splitlines() == [
         (inherited + ":" if inherited else "") + roots,
-        "-c", "from repomap_kg.cli import main; raise SystemExit(main())",
+        "-c", "from common_lore_index.cli import main; raise SystemExit(main())",
         "argument with spaces", "$(false);*", "",
     ]
 
@@ -261,7 +261,7 @@ def test_workspace_mountpoint_preparation_orders_overlay_before_bind_targets():
         "mkdir",
         "-p",
         "/workspace/build",
-        "/workspace/src/main/python/repomap_kg.egg-info",
+        "/workspace/src/main/python/common_lore_index.egg-info",
     ]
     bind_build = [
         "mount",
@@ -273,7 +273,7 @@ def test_workspace_mountpoint_preparation_orders_overlay_before_bind_targets():
         "mount",
         "--bind",
         "/sandbox-scratch/project-egg-info",
-        "/workspace/src/main/python/repomap_kg.egg-info",
+        "/workspace/src/main/python/common_lore_index.egg-info",
     ]
     git_safe_config = [
         "git",
@@ -287,7 +287,7 @@ def test_workspace_mountpoint_preparation_orders_overlay_before_bind_targets():
 
     assert inner_commands[0] == pre_overlay_mkdir
     assert "/workspace/build" not in pre_overlay_mkdir
-    assert "/workspace/src/main/python/repomap_kg.egg-info" not in pre_overlay_mkdir
+    assert "/workspace/src/main/python/common_lore_index.egg-info" not in pre_overlay_mkdir
     assert str(module.INNER_TEST_SCRATCH_ROOT) in pre_overlay_mkdir
 
     assert inner_commands[1] == chmod_scratch

@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.coordinator import _control_ownership as subject
-from repomap_kg.coordinator._control_types import SingletonActiveError
+from common_lore_index.coordinator import _control_ownership as subject
+from common_lore_index.coordinator._control_types import SingletonActiveError
 from repomap_test_support.control_db_fakes import ScriptedCursor, connect_with
 
 

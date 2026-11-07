@@ -9,12 +9,12 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.artifacts.references import ArtifactLocator, ArtifactReference
-from repomap_kg.coordinator import portable_worker as pw
-from repomap_kg.coordinator._portable_capability import PortableExecutionCapability
-from repomap_kg.coordinator._portable_semantic_adapter import FailureReceiptWrite
-from repomap_kg.coordinator._protocol_core import ProtocolError
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.coordinator import portable_worker as pw
+from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
+from common_lore_index.coordinator._portable_semantic_adapter import FailureReceiptWrite
+from common_lore_index.coordinator._protocol_core import ProtocolError
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def _make_manifest_ref() -> ArtifactReference:
@@ -253,10 +253,10 @@ class PortableWorkerBoundariesUnitTests(unittest.TestCase):
         self.assertEqual(pw._execution_error_category(RuntimeError("semantic")), "semantic_workload")
 
     def test_classify_worker_cause_and_emit_stderr(self):
-        from repomap_kg.coordinator._portable_semantic_adapter import PortableExecutionError
-        from repomap_kg.extractors.languages.go_helper import GoHelperUnavailableError
-        from repomap_kg.extractors.languages.go_protocol import GoProtocolError
-        from repomap_kg.graph.multi_source_capture import MultiSourceCaptureError
+        from common_lore_index.coordinator._portable_semantic_adapter import PortableExecutionError
+        from common_lore_index.extractors.languages.go_helper import GoHelperUnavailableError
+        from common_lore_index.extractors.languages.go_protocol import GoProtocolError
+        from common_lore_index.graph.multi_source_capture import MultiSourceCaptureError
 
         err1 = PortableExecutionError("source_capture")
         err1.__cause__ = MultiSourceCaptureError("helper missing")

@@ -1,11 +1,11 @@
 import unittest
-from repomap_kg.extractors.languages.javascript import extract_javascript_file_observations
-from repomap_kg.extractors.languages.javascript_detection import (
+from common_lore_index.extractors.languages.javascript import extract_javascript_file_observations
+from common_lore_index.extractors.languages.javascript_detection import (
     _has_express_marker,
     _has_jquery_marker,
     _detect_format,
 )
-from repomap_kg.extractors.languages.javascript_references import (
+from common_lore_index.extractors.languages.javascript_references import (
     _is_dynamic_literal,
     _is_secret_prone,
     _literal_type,

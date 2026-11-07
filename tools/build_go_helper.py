@@ -14,12 +14,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = REPO_ROOT / "src" / "main" / "python"
 GO_MODULE_ROOT = REPO_ROOT / "src" / "main" / "go"
-PACKAGE_ROOT = SOURCE_ROOT / "repomap_kg"
+PACKAGE_ROOT = SOURCE_ROOT / "common_lore_index"
 
 if str(SOURCE_ROOT) not in sys.path:
     sys.path.insert(0, str(SOURCE_ROOT))
 
-from repomap_kg.extractors.languages.go_helper import (  # noqa: E402
+from common_lore_index.extractors.languages.go_helper import (  # noqa: E402
     HELPER_NAME,
     platform_tag,
 )

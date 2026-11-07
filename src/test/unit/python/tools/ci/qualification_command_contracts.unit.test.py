@@ -10,7 +10,6 @@ from ci.qualification_command_contracts import (
     _validate_staging_runner_tokens,
 )
 from ci.qualification_native_contracts import (
-    D12_NATIVE_AMD64_NODE_ID,
     project_public_qualification_workflow,
 )
 from ci.workflow_model import Workflow, parse_yaml
@@ -348,12 +347,13 @@ def test_projected_public_workflow_satisfies_native_and_system_command_contracts
     assert _validate_main_system_gate_ordering(wf) == []
 
 
-def test_d12_native_amd64_downstream_dependency_requires_source_and_export_policy_only() -> None:
+@pytest.mark.parametrize("needs", [None, ["unit-tests"], ["source-and-export-policy", "main-system-gate"]])
+def test_d12_native_amd64_downstream_dependency_requires_source_and_export_policy_only(needs: object) -> None:
     wf = _projected_public_workflow()
     mutated_jobs = dict(wf.jobs)
     mutated_jobs["d12-native-amd64"] = {
         **dict(mutated_jobs["d12-native-amd64"]),
-        "needs": ["source-and-export-policy", "unit-tests"],
+        "needs": needs,
     }
     bad_wf = Workflow(wf.path, {**wf.document, "jobs": mutated_jobs})
     assert any(
@@ -365,28 +365,11 @@ def test_d12_native_amd64_downstream_dependency_requires_source_and_export_polic
 def test_d12_native_amd64_runner_rejects_cross_job_leakage() -> None:
     validate_native_runner = getattr(cmd_contracts, "_validate_d12_native_amd64_runner", None)
     assert callable(validate_native_runner)
-    wf = Workflow(
-        Path("repomap-release-qualification.yml"),
-        {
-            "jobs": {
-                "d12-native-amd64": {
-                    "steps": [{"run": "python3 tools/run_tests.py --sandbox --suite int"}]
-                },
-                "other-job": {
-                    "steps": [
-                        {
-                            "run": (
-                                "echo --d12-core-image-profile linux/amd64 "
-                                "--d12-core-image-preflight "
-                                f"-- {D12_NATIVE_AMD64_NODE_ID}"
-                            )
-                        }
-                    ]
-                },
-            }
-        },
-    )
-    assert validate_native_runner(wf) != []
+    wf = _projected_public_workflow()
+    native = next(script for script in wf.job_run_commands("d12-native-amd64") if "tools/run_tests.py" in script)
+    jobs = {**wf.jobs, "other-job": {"steps": [{"run": native}]}}
+    leaked = Workflow(wf.path, {**wf.document, "jobs": jobs})
+    assert any("cross-job leakage" in err for err in validate_native_runner(leaked))
 
 
 def test_d12_native_amd64_runner_catches_shell_parse_errors_and_loop_constructs() -> None:
@@ -397,3 +380,13 @@ def test_d12_native_amd64_runner_catches_shell_parse_errors_and_loop_constructs(
         {"jobs": {"d12-native-amd64": {"steps": [{"run": 'python3 tools/run_tests.py "unclosed'}]}}},
     )
     assert any("parse" in err for err in validate_native_runner(unclosed_wf))
+    wf = _projected_public_workflow()
+    native = next(script for script in wf.job_run_commands("d12-native-amd64") if "tools/run_tests.py" in script)
+    quoted = Workflow(wf.path, {"jobs": {"d12-native-amd64": {
+        "steps": [{"run": f'echo "waiting for lane while until" && echo for while until && {native}'}],
+    }}})
+    assert validate_native_runner(quoted) == []
+    loop = Workflow(wf.path, {"jobs": {"d12-native-amd64": {
+        "steps": [{"run": f"for n in 1 2; do {native}; done"}],
+    }}})
+    assert any("retry" in err or "loop" in err for err in validate_native_runner(loop))

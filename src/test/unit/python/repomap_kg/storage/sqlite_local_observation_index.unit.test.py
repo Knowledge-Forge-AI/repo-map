@@ -22,8 +22,8 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.storage.sqlite_local import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.storage.sqlite_local import (
     api_summary_queries,
     investigation_queries,
     migrations,
@@ -31,15 +31,15 @@ from repomap_kg.storage.sqlite_local import (
     source_queries,
     summary_queries,
 )
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.storage.sqlite_local.connection import (
     initialize_graph_database,
     publisher_lock,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.investigation_queries import observation_search_sql
-from repomap_kg.storage.sqlite_local.migrations import SchemaState, classify
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.upgrade import upgrade_graph_database
+from common_lore_index.storage.sqlite_local.investigation_queries import observation_search_sql
+from common_lore_index.storage.sqlite_local.migrations import SchemaState, classify
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.upgrade import upgrade_graph_database
 from repomap_test_support.sqlite_local_fixtures import generation_bundle, local_binding, publication_for
 from repomap_test_support.sqlite_local_read_corpus import read_corpus_bundle
 

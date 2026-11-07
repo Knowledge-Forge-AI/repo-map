@@ -1,7 +1,7 @@
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 class CanonicalizationHtmlBoundaryUnitTests(unittest.TestCase):
@@ -239,8 +239,8 @@ class CanonicalizationHtmlBoundaryUnitTests(unittest.TestCase):
                 self.assertEqual(invalid_res["summary"]["errors"], 1)
                 self.assertIn(expected_message, invalid_res["diagnostics"][0]["message"])
 
-        from repomap_kg.canonicalization.document_css_family import _css_definition_parts
-        from repomap_kg.graph.keys import GraphKeyError
+        from common_lore_index.canonicalization.document_css_family import _css_definition_parts
+        from common_lore_index.graph.keys import GraphKeyError
         with self.assertRaises(GraphKeyError):
             _css_definition_parts(
                 RawObservation(

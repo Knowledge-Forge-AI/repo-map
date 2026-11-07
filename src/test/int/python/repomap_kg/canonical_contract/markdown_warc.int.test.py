@@ -1,32 +1,32 @@
 import unittest
 
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.canonicalization._shell_powershell_metadata import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.canonicalization._shell_powershell_metadata import (
     _powershell_command_name,
     _powershell_container_key,
     _powershell_file_node_metadata,
 )
-from repomap_kg.canonicalization.document_css_family import (
+from common_lore_index.canonicalization.document_css_family import (
     _css_reference_source_key,
     _css_selector_source_key,
 )
-from repomap_kg.canonicalization.language_javascript_family import (
+from common_lore_index.canonicalization.language_javascript_family import (
     _js_definition_source_key,
     _js_definition_target_key,
 )
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     GraphKeyError,
     external_url_key,
     warc_document_key,
     warc_record_key,
 )
-from repomap_kg.extractors.documents.markdown import (
+from common_lore_index.extractors.documents.markdown import (
     extract_markdown_file_observations,
     parse_frontmatter,
     resolve_markdown_link_target,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 class CanonicalMarkdownWarcIntegrationTests(unittest.TestCase):

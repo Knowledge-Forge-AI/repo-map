@@ -41,6 +41,7 @@ from ci.retained_python_records import (
 )
 
 from ci.retained_python_projection_proofs import load_projection_proofs
+from ci.retained_python_namespace_evidence import NamespaceProofLedger
 from ci.retained_python_selection import selection_digest as selection_digest
 from ci.retained_python_git import (
     git_required as _git_required,
@@ -69,6 +70,7 @@ class LineageAudit:
     committed_transitions: int
     scope_transitions: int
     candidate_transition: bool
+    namespace_transitions: int = 0
 
 
 def document_sha256(document: Mapping[str, object]) -> str:
@@ -271,6 +273,7 @@ def audit_candidate_lineage(
 
     proofs = load_projection_proofs(repo_root, head=head, genesis=genesis,
                                     baseline=baseline, scopes=scopes, audit=audit_transition)
+    namespaces = NamespaceProofLedger(repo_root, head)
     used: set[tuple[str, str, str, str]] = set()
     committed_transitions = 0
     for commit in commits:
@@ -303,7 +306,9 @@ def audit_candidate_lineage(
                 continue
             registry = _registry(_blob(repo_root, commit, scopes))
             committed_authority = lambda path: _commit_authority(repo_root, commit, path)
-            used.update(proofs.authorize(commit, parent, prior, current, registry, committed_authority))
+            if not namespaces.authorize(parent, commit, prior, current, registry,
+                                        projection_edges=set(proofs.proofs)):
+                used.update(proofs.authorize(commit, parent, prior, current, registry, committed_authority))
             committed_transitions += 1
 
     for commit in _change_commits(repo_root, scopes):
@@ -330,12 +335,14 @@ def audit_candidate_lineage(
             if (repo_root / path).is_file()
             else None
         )
-        record = proofs.direct(
-            head_document, candidate, candidate_registry, candidate_authority
-        )
+        record = None
+        if not namespaces.authorize(head, None, head_document, candidate, candidate_registry,
+                                    projection_edges=set(proofs.proofs)):
+            record = proofs.direct(head_document, candidate, candidate_registry, candidate_authority)
         if record is not None:
             used.add(record)
     proofs.finish()
+    namespaces.finish()
     genesis_registry = _registry(_blob(repo_root, genesis, scopes))
     genesis_keys = {_record_key(record) for record in validate_scope_registry(genesis_registry)}
     candidate_keys = {_record_key(record) for record in validate_scope_registry(candidate_registry)}
@@ -346,4 +353,5 @@ def audit_candidate_lineage(
         committed_transitions,
         len(used),
         candidate_transition,
+        len(namespaces.used),
     )

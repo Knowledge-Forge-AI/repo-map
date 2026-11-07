@@ -14,9 +14,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.canonicalization.records import CanonicalGraph, CanonicalizationResult
-from repomap_kg.graph.discovery_extractors import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.canonicalization.records import CanonicalGraph, CanonicalizationResult
+from common_lore_index.graph.discovery_extractors import (
     extract_awk_file_observations_from_file,
     extract_bash_file_observations_from_file,
     extract_bats_file_observations_from_file,
@@ -25,7 +25,7 @@ from repomap_kg.graph.discovery_extractors import (
     extract_zsh_file_observations_from_file,
     extract_zunit_file_observations_from_file,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 from repomap_test_support.test_scratch import select_scratch_root

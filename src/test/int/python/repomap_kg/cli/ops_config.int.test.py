@@ -225,6 +225,7 @@ class CliOpsConfigIntegrationTests(CliIntegrationTestCase):
         self.assertIn("REPOMAP_HOME does not exist", m_err)
         self.assertIn("REPOMAP_HOME must be a directory", f_err)
         self.assertIn("contains no *.rp.toml or *.rpl.toml files", e_err)
+        self.assertIn("CLOE (*.cloe.toml) files", e_err)
 
     def test_ops_config_check_reports_config_home_schema_and_runtime_errors(self):
         bad_runtime = OPS_CONFIG_TEMPLATE + '\n[runtime]\ncontainer_runtime = "launchd"\npostgres_host_port = 80\nserver_host_port = 70000\nbind_host = "0.0.0.0"\n'

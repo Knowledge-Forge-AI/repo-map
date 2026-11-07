@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ExtractionReceipt,
     MemoryArtifactStore,
     PublicationBundle,
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 
 VECTOR = (("bind1:" + "1" * 64, 1, "snap1:" + "2" * 64),)
@@ -79,7 +80,7 @@ def bundle(
 
 
 def receipt(bundle_ref: object, value: PublicationBundle, *, outcome: str = "completed") -> ExtractionReceipt:
-    from repomap_kg.artifacts.references import ArtifactReference
+    from common_lore_index.artifacts.references import ArtifactReference
 
     return ExtractionReceipt.create(
         request_id="request-1", job_id="job-1", attempt=1, graph_id="graph-a",
@@ -358,4 +359,41 @@ def test_validator_legacy_bundle_unexpected_stage_id() -> None:
         PublisherBundleValidator().validate_bundle(
             store=store, bundle_reference=bundle_ref, receipt_reference=receipt_ref,
             expectation=exp,
+        )
+
+def _rust_claim_families(kind: str) -> dict[StageFamily, tuple[dict[str, object], ...]]:
+    rows = dict(FAMILIES)
+    raw = dict(FAMILIES["raw_observations"][0])
+    raw["kind"] = kind
+    rows["raw_observations"] = (raw,)
+    return rows
+
+
+@pytest.mark.parametrize("kind", ("rust.parse", "rust.item", "rust.unsupported"))
+def test_materialized_bundle_refuses_each_rust_raw_kind(kind: str) -> None:
+    value = bundle(families=_rust_claim_families(kind))
+    store = MemoryArtifactStore()
+    bundle_ref = put_bundle(store, value)
+    receipt_ref = put_receipt(store, receipt(bundle_ref, value))
+
+    with pytest.raises(ValueError, match="live parent witness"):
+        PublisherBundleValidator().validate_bundle(
+            store=store, bundle_reference=bundle_ref, receipt_reference=receipt_ref,
+            expectation=expectation(value),
+        )
+
+
+def test_streaming_bundle_refuses_rust_raw_kind_before_spool_publication(
+    tmp_path: Path,
+) -> None:
+    value = bundle(families=_rust_claim_families("rust.parse"))
+    store = MemoryArtifactStore()
+    bundle_ref = put_bundle(store, value)
+    receipt_ref = put_receipt(store, receipt(bundle_ref, value))
+
+    with pytest.raises(ValueError, match="live parent witness"):
+        PublisherBundleValidator().validate_bundle_stream(
+            store=store, bundle_reference=bundle_ref, receipt_reference=receipt_ref,
+            expectation=expectation(value), stage_id="stage-rust-refused",
+            spool_dir=tmp_path,
         )

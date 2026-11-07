@@ -4,12 +4,12 @@ from datetime import datetime, timezone
 
 import pytest
 
-from repomap_kg.storage.backend_observer import (
+from common_lore_index.storage.backend_observer import (
     MAX_OBSERVER_CONNECTIONS,
     BackendObservationError,
     BackendOwnershipObserver,
 )
-from repomap_kg.storage.backend_ownership import BackendIdentity
+from common_lore_index.storage.backend_ownership import BackendIdentity
 
 
 def _identity(pid: int, second: int) -> BackendIdentity:

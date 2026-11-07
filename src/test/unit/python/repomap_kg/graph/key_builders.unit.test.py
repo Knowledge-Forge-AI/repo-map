@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.graph.keys import (
+from common_lore_index.graph.keys import (
     config_document_key,
     config_path_key,
     css_custom_property_key,
@@ -72,20 +72,20 @@ class GraphKeyBuildersUnitTests(unittest.TestCase):
             "host.category:package-management",
         )
         self.assertEqual(
-            python_module_key("repomap_kg.cli"),
-            "python.module:repomap_kg.cli",
+            python_module_key("common_lore_index.cli"),
+            "python.module:common_lore_index.cli",
         )
         self.assertEqual(
-            python_class_key("repomap_kg.cli", "CliError"),
-            "python.class:repomap_kg.cli:CliError",
+            python_class_key("common_lore_index.cli", "CliError"),
+            "python.class:common_lore_index.cli:CliError",
         )
         self.assertEqual(
-            python_function_key("repomap_kg.cli", "main:debug"),
-            "python.function:repomap_kg.cli:main%3Adebug",
+            python_function_key("common_lore_index.cli", "main:debug"),
+            "python.function:common_lore_index.cli:main%3Adebug",
         )
         self.assertEqual(
-            python_method_key("repomap_kg.storage", "Record", "to_dict"),
-            "python.method:repomap_kg.storage:Record:to_dict",
+            python_method_key("common_lore_index.storage", "Record", "to_dict"),
+            "python.method:common_lore_index.storage:Record:to_dict",
         )
         self.assertEqual(
             nix_app_key("repo-map", "aarch64-darwin", "tool#debug"),

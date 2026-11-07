@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from repomap_kg.extractors.documents.css import extract_css_file_observations
-from repomap_kg.graph.keys import (
+from common_lore_index.extractors.documents.css import extract_css_file_observations
+from common_lore_index.graph.keys import (
     css_custom_property_key,
     css_rule_key,
     css_selector_key,

@@ -15,11 +15,11 @@ from ci.d12_system_grant import (
     DEFAULT_CANDIDATE_RELPATH, DEFAULT_GRANT_RELPATH, build_system_admission_proof,
     load_and_validate_system_build_grant, write_system_admission_proof,
 )
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     GO_RELEASE_IMAGE, POSTGRES_RELEASE_IMAGE, POSTGRES_RELEASE_VERSION,
     PYTHON_RELEASE_IMAGE,
 )
-from repomap_kg.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
+from common_lore_index.runtime.release_manifest import D12_CANDIDATE_LIBPQ_VERSION, D12_CANDIDATE_PACKAGE_MANIFEST
 from repomap_test_support import resource_run as resource_run_mod
 from repomap_test_support.d12_image_probes import CLIENTS, SERVER
 from tools.system import d12_system_evidence as evidence_mod, d12_system_session as session_mod
@@ -34,7 +34,7 @@ from tools.system.d12_system_session import D12SystemSession
 from tools.system.report import SystemStepResult
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
-BASE_SHA = "24d15650a2d4563d188acb8bbf34a0dabf8f3d65"
+BASE_SHA = "5ad00d162ad8a04430874275246a53227578c533"
 LIBC, SRV_IMAGE = "/usr/lib/x86_64-linux-gnu/libc.so.6", "sha256:" + "5" * 64
 
 
@@ -117,7 +117,7 @@ def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemS
     grant, grant_sha = load_and_validate_system_build_grant(
         grant_path, expected_candidate=expected_cand, frozen_identity=d12_ctx
     )
-    (ev := tmp_path / "event.json").write_text(json.dumps({"number": 13, "draft": True}), encoding="utf-8")
+    (ev := tmp_path / "event.json").write_text(json.dumps({"number": 23, "draft": True}), encoding="utf-8")
     proof = build_system_admission_proof(
         grant=grant, grant_sha256=grant_sha, expected_candidate_sha256=cand_sha,
         raw_event_sha256=hashlib.sha256(ev.read_bytes()).hexdigest(),
@@ -129,7 +129,7 @@ def _setup_session(tmp_path: Path, *, reserve_intent: bool = True) -> D12SystemS
     write_system_admission_proof(proof_file, proof)
     config = SystemTestConfig.create(
         timeout_seconds=1500, report_dir=tmp_path / "report", candidate_tree_sha="b" * 40,
-        run_id=_active_run_id(), gate_kind="main-system", approval_id="pr-13", pr_number="13",
+        run_id=_active_run_id(), gate_kind="main-system", approval_id="pr-23", pr_number="23",
         repository="Knowledge-Forge-AI/repo-map", approved_base_branch="main", approved_base_sha=BASE_SHA,
         approved_head_branch="staging", approved_head_sha="d" * 40, candidate_commit_sha="a" * 40,
         candidate_base_parent=BASE_SHA, candidate_head_parent="d" * 40, execution_mode="hosted_qualification",
@@ -255,69 +255,48 @@ def test_post_build_probes_roundtrip_and_sidecar_keep_acceptance_false(tmp_path:
 
         with pytest.raises(SystemTestError, match="must accept 'create_fn'"):
             run_post_build_candidate_probes(
-                session, image_id="sha256:" + "1" * 64, image_labels=labels,
-                owner=owner, client=MagicMock(),
+                session, image_id="sha256:" + "1" * 64, image_labels=labels, owner=owner, client=MagicMock(),
                 start_server_fn=lambda _o, _c, _e, _p: ("srv-cid-bad", srv_container),
-                inventory_fn=lambda *_a, **_kw: _valid_inventory(),
-                observe_fn=fake_observe,
-            )
-
+                inventory_fn=lambda *_a, **_kw: _valid_inventory(), observe_fn=fake_observe)
         with pytest.raises(SystemTestError, match="must accept 'deadline'"):
             run_post_build_candidate_probes(
                 session, image_id="sha256:" + "1" * 64, image_labels=labels,
                 deadline=SystemDeadline(1500, 120), owner=owner, client=MagicMock(),
                 start_server_fn=lambda _o, _c, _e, _p, *, create_fn=None: ("srv-cid-bad", srv_container),
-                inventory_fn=lambda *_a, **_kw: _valid_inventory(),
-                observe_fn=fake_observe,
-            )
-
+                inventory_fn=lambda *_a, **_kw: _valid_inventory(), observe_fn=fake_observe)
         ticks = iter((0.0,))
         exhausted = SystemDeadline(1500, 120, clock=lambda: next(ticks, 2000.0))
         with pytest.raises(SystemTimeoutError, match="system test budget exhausted before d12 post-build probes"):
             run_post_build_candidate_probes(
                 session, image_id="sha256:" + "1" * 64, image_labels=labels,
-                deadline=exhausted, owner=owner, client=MagicMock(),
-            )
+                deadline=exhausted, owner=owner, client=MagicMock())
         with pytest.raises(SystemTimeoutError, match="system test budget exhausted before d12 disposable round-trip"):
-            run_disposable_roundtrip_probe(
-                session, image_id="sha256:" + "1" * 64, deadline=exhausted,
-            )
-
+            run_disposable_roundtrip_probe(session, image_id="sha256:" + "1" * 64, deadline=exhausted)
         bad_srv = SimpleNamespace(attrs={"Image": "sha256:" + "9" * 64}, exec_run=srv_container.exec_run)
         with pytest.raises(SystemTestError, match="server container image digest mismatch"):
             run_post_build_candidate_probes(
-                session, image_id="sha256:" + "1" * 64, image_labels=labels,
-                owner=owner, client=MagicMock(),
+                session, image_id="sha256:" + "1" * 64, image_labels=labels, owner=owner, client=MagicMock(),
                 start_server_fn=lambda *_a, **_kw: ("srv-cid-bad", bad_srv),
-                inventory_fn=lambda *_a, **_kw: _valid_inventory(),
-                observe_fn=fake_observe,
-            )
+                inventory_fn=lambda *_a, **_kw: _valid_inventory(), observe_fn=fake_observe)
         owner.cleanup.assert_called_once_with("srv-cid-bad")
         owner.cleanup.reset_mock()
         owner.verify_baseline.reset_mock()
-
         assert session.preflight_report is not None
         saved_bases = session.preflight_report.pop("bases", None)
         try:
             with pytest.raises(SystemTestError, match="observed PostgreSQL base image ID"):
                 run_post_build_candidate_probes(
-                    session, image_id="sha256:" + "1" * 64, image_labels=labels,
-                    owner=owner, client=MagicMock(),
+                    session, image_id="sha256:" + "1" * 64, image_labels=labels, owner=owner, client=MagicMock(),
                     start_server_fn=lambda *_a, **_kw: ("srv-cid-1", srv_container),
-                    inventory_fn=lambda *_a, **_kw: _valid_inventory(),
-                    observe_fn=fake_observe,
-                )
+                    inventory_fn=lambda *_a, **_kw: _valid_inventory(), observe_fn=fake_observe)
         finally:
             if saved_bases is not None:
                 session.preflight_report["bases"] = saved_bases
-
         probes = run_post_build_candidate_probes(
-            session, image_id="sha256:" + "1" * 64, image_labels=labels,
-            owner=owner, client=MagicMock(),
+            session, image_id="sha256:" + "1" * 64, image_labels=labels, owner=owner, client=MagicMock(),
             start_server_fn=lambda *_a, **_kw: ("srv-cid-1", srv_container),
             inventory_fn=(inv_fn := MagicMock(side_effect=lambda *_a, **_kw: _valid_inventory())),
-            observe_fn=fake_observe,
-        )
+            observe_fn=fake_observe)
         assert probes["packaging"]["libpq"] == D12_CANDIDATE_LIBPQ_VERSION
         assert seen[-1] == inv_fn.call_args.args[2] == "sha256:" + "1" * 64  # server bytes and identity: base ID
         owner.cleanup.assert_called_once_with("srv-cid-1")
@@ -347,3 +326,74 @@ def test_post_build_probes_roundtrip_and_sidecar_keep_acceptance_false(tmp_path:
             validate_d12_system_candidate_evidence({**payload, "p3_accepted": True})
     finally:
         session.close_lock()
+
+
+def test_round_trip_accepts_ci102_btree_and_gin_and_matches_static_sql_oracle() -> None:
+    from tools.system.d12_candidate_assessment import ACCEPTED_INDEX_ACCESS_METHODS, _verify_round_trip
+    import re
+
+    ci102_obs = {
+        "extensions": ["plpgsql"],
+        "fixture_md5": "7cda92ea49f9d1ddbeabe59fcce0a9c3",
+        "fixture_rows": 2000,
+        "graph_schema": "CURRENT",
+        "index_access_methods": ["btree", "gin"],
+        "replication_slots": 0,
+        "server_version": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "server_version_num": "160015",
+    }
+    ci102_rt: dict[str, Any] = {
+        "archive_sha256_before": "0cb1d02ac1903cb60ddbe17a054dcdb1ab5796e8e640e74b3d9f3ac8e633ff76",
+        "archive_sha256_after": "0cb1d02ac1903cb60ddbe17a054dcdb1ab5796e8e640e74b3d9f3ac8e633ff76",
+        "archive_toc_entries": 200,
+        "source": dict(ci102_obs),
+        "restored": dict(ci102_obs),
+    }
+    _verify_round_trip(ci102_rt)
+
+    for bad_ams in (
+        (["btree"], ["btree"]),
+        (["btree", "gin", "gist"], ["btree", "gin", "gist"]),
+        (["btree", "gin", "hash"], ["btree", "gin", "hash"]),
+        (["btree", "btree", "gin"], ["btree", "btree", "gin"]),
+        (["gin", "btree"], ["gin", "btree"]),
+        (["btree", "gin"], ["btree"]),
+    ):
+        mut = copy.deepcopy(ci102_rt)
+        mut["source"]["index_access_methods"], mut["restored"]["index_access_methods"] = bad_ams
+        with pytest.raises(D12CandidateAssessmentError, match="index_access_methods"):
+            _verify_round_trip(mut)
+
+    for field, val, msg in (
+        ("extensions", ["plpgsql", "vector"], "extensions"),
+        ("replication_slots", 1, "replication_slots"),
+        ("fixture_md5", "deadbeef", "2000-row mismatch"),
+        ("fixture_rows", 1999, "2000-row mismatch"),
+        ("graph_schema", "STALE", "graph_schema"),
+    ):
+        mut = copy.deepcopy(ci102_rt)
+        mut["source"][field] = val
+        with pytest.raises(D12CandidateAssessmentError, match=msg):
+            _verify_round_trip(mut)
+
+    with pytest.raises(D12CandidateAssessmentError, match="archive SHA-256 mismatch"):
+        _verify_round_trip({**ci102_rt, "archive_sha256_before": ""})
+    with pytest.raises(D12CandidateAssessmentError, match="archive SHA-256 mismatch"):
+        _verify_round_trip({**ci102_rt, "archive_sha256_after": "f" * 64})
+    with pytest.raises(D12CandidateAssessmentError, match="missing source/restored"):
+        _verify_round_trip({"source": None, "restored": None})
+
+    from common_lore_index.storage import default_rdbms_root
+
+    rdbms_root = default_rdbms_root()
+    sql_files = sorted(rdbms_root.rglob("*.sql"))
+    assert sql_files
+    methods: set[str] = set()
+    for sql_file in sql_files:
+        text = sql_file.read_text(encoding="utf-8")
+        if re.search(r"\b(PRIMARY\s+KEY|UNIQUE)\b", text, re.I):
+            methods.add("btree")
+        for m in re.finditer(r"\bCREATE\s+(?:UNIQUE\s+)?INDEX\b[^;]*", text, re.I | re.S):
+            u = re.search(r"\bUSING\s+([a-zA-Z0-9_]+)\b", m.group(0), re.I)
+            methods.add(u.group(1).lower() if u else "btree")
+    assert tuple(sorted(methods)) == ACCEPTED_INDEX_ACCESS_METHODS

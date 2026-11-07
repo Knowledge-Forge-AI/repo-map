@@ -19,11 +19,11 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg import cli
-from repomap_kg.cli import _ops_sqlite_dispatch
-from repomap_kg.ops import local_refresh, local_refresh_enabled, portable_refresh
-from repomap_kg.ops.local_refresh import LocalRefreshError, LocalRefreshResult
-from repomap_kg.storage.sqlite_local import connection
+from common_lore_index import cli
+from common_lore_index.cli import _ops_sqlite_dispatch
+from common_lore_index.ops import local_refresh, local_refresh_enabled, portable_refresh
+from common_lore_index.ops.local_refresh import LocalRefreshError, LocalRefreshResult
+from common_lore_index.storage.sqlite_local import connection
 from repomap_test_support.cli_in_process import run_repo_map_in_process
 from repomap_test_support.host_read_store_config import fail_if_reached, setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import (

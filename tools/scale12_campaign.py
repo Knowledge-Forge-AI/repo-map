@@ -24,8 +24,8 @@ for import_root in (
     if import_root_text not in sys.path:
         sys.path.insert(0, import_root_text)
 
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.staging_operation_contracts import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.staging_operation_contracts import (
     STAGING_OPERATION_DESCRIPTORS,
 )
 from repomap_test_support.postgres_harness import (

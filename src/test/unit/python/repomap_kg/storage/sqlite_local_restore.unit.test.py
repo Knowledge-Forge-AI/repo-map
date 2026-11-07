@@ -24,18 +24,18 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.sqlite_local import migrations, restore
-from repomap_kg.storage.sqlite_local.backup import write_backup
-from repomap_kg.storage.sqlite_local.backup_manifest import BackupManifest, parse_manifest
-from repomap_kg.storage.sqlite_local.connection import (
+from common_lore_index.storage.sqlite_local import migrations, restore
+from common_lore_index.storage.sqlite_local.backup import write_backup
+from common_lore_index.storage.sqlite_local.backup_manifest import BackupManifest, parse_manifest
+from common_lore_index.storage.sqlite_local.connection import (
     initialize_graph_database,
     publisher_lock,
     read_transaction,
 )
-from repomap_kg.storage.sqlite_local.durability import DURABILITY_FAILED
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.restore import install_backup, verify_backup
-from repomap_kg.storage.sqlite_local.schema import (
+from common_lore_index.storage.sqlite_local.durability import DURABILITY_FAILED
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.restore import install_backup, verify_backup
+from common_lore_index.storage.sqlite_local.schema import (
     LocalGraphBinding,
     LocalStoreError,
     accepted_identity,

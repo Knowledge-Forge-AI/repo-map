@@ -1,10 +1,10 @@
 import unittest
 
-from repomap_kg.canonicalization.main import (
+from common_lore_index.canonicalization.main import (
     canonicalize_observations,
 )
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.observations.raw import RawObservation
 
 
 class CanonicalizationConfigFamilyBoundariesUnitTests(unittest.TestCase):

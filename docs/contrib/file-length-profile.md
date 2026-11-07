@@ -101,7 +101,7 @@ repository-wide tracked file-length exit status is `0`.
 
 `tools/ci/retained_python_ratchets.py` adds a separate architecture-derived
 growth ceiling for production Python expected to remain Python. It selects
-every tracked module under `src/main/python/repomap_kg` whose longest-prefix
+every tracked module under `src/main/python/common_lore_index` whose longest-prefix
 ownership resolution is `cross_language_contract` or `python_retained`; this
 is the T0, T1-seed, and T1-future set. T2 transitional Python and T3 planned-Go
 or planned-Go/Rust implementation are excluded.

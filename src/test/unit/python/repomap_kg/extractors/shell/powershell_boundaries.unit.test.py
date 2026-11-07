@@ -1,6 +1,6 @@
 import unittest
-from repomap_kg.extractors.shell.powershell import extract_powershell_file_observations
-from repomap_kg.extractors.shell.powershell_manifest_parser import _parse_manifest_document
+from common_lore_index.extractors.shell.powershell import extract_powershell_file_observations
+from common_lore_index.extractors.shell.powershell_manifest_parser import _parse_manifest_document
 
 class ShellPowerShellBoundariesUnitTests(unittest.TestCase):
     def test_powershell_manifest_and_script_extraction(self):

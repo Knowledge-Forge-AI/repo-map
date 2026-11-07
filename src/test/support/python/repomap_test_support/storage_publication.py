@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.storage import LoadSummary
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.storage import LoadSummary
 
 
 def load_file_observations(

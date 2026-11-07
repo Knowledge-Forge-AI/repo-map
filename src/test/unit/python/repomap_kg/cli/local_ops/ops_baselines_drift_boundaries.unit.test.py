@@ -6,12 +6,12 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.refresh import (
+from common_lore_index.cli import main
+from common_lore_index.ops.refresh import (
     OpsGraphSummary,
     OpsRefreshPreflightResult,
 )
-from repomap_kg.storage.authority import RefreshResult
+from common_lore_index.storage.authority import RefreshResult
 
 
 class CliLocalOpsBaselinesDriftBoundariesUnitTests(unittest.TestCase):
@@ -119,8 +119,8 @@ mode = "read_only"
             )
             stdout = io.StringIO()
 
-            with patch("repomap_kg.ops.refresh.query_graph_summary") as graph_summary:
-                with patch("repomap_kg.ops.refresh.preflight_graph") as preflight:
+            with patch("common_lore_index.ops.refresh.query_graph_summary") as graph_summary:
+                with patch("common_lore_index.ops.refresh.preflight_graph") as preflight:
                     preflight.return_value = OpsRefreshPreflightResult(
                         graph_id="flakes",
                         repository_name="flakes",

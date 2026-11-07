@@ -16,9 +16,9 @@ for import_root in (SOURCE_ROOT,):
         sys.path.insert(0, import_root_text)
 
 from psycopg.types.json import Jsonb  # noqa: E402
-from repomap_kg.observations.raw import RawObservation  # noqa: E402
-from repomap_kg.storage.staged_rows import build_staged_rows  # noqa: E402
-from repomap_kg.storage.staging import STAGING_FAMILIES  # noqa: E402
+from common_lore_index.observations.raw import RawObservation  # noqa: E402
+from common_lore_index.storage.staged_rows import build_staged_rows  # noqa: E402
+from common_lore_index.storage.staging import STAGING_FAMILIES  # noqa: E402
 
 
 FAMILIES = STAGING_FAMILIES

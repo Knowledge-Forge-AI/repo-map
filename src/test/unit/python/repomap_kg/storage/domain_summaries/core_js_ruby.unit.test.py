@@ -3,7 +3,7 @@ import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_js_summary,
     query_js_framework_summary,
@@ -11,7 +11,7 @@ from repomap_kg.storage import (
     js_framework_summary_from_storage_payload,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
 
 class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
     def test_query_canonical_storage_summary_returns_counts(self):
@@ -30,7 +30,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
         )
 
         with patch.dict(os.environ, {READBACK_DRIVER_ENV: "psql"}):
-            with patch("repomap_kg.storage.subprocess.run", return_value=completed) as run:
+            with patch("common_lore_index.storage.subprocess.run", return_value=completed) as run:
                 summary = query_canonical_storage_summary(
                     ["-d", "postgres"],
                     root_path="/tmp/fixture",
@@ -52,7 +52,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
     def test_query_canonical_storage_summary_rejects_malformed_json(self):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
-        with patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch("common_lore_index.storage.subprocess.run", return_value=completed):
             with self.assertRaisesRegex(
                 StorageSchemaError,
                 "canonical storage summary",
@@ -96,7 +96,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
         )
 
         with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch(
-            "repomap_kg.storage.subprocess.run", return_value=completed
+            "common_lore_index.storage.subprocess.run", return_value=completed
         ) as run:
             summary = query_ruby_summary(
                 ["-d", "postgres"],
@@ -120,7 +120,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
         with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch(
-            "repomap_kg.storage.subprocess.run", return_value=completed
+            "common_lore_index.storage.subprocess.run", return_value=completed
         ):
             with self.assertRaisesRegex(StorageSchemaError, "ruby summary"):
                 query_ruby_summary(["-d", "postgres"], root_path="/tmp/fixture")
@@ -162,7 +162,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
             )
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed) as run:
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed) as run:
             summary = query_js_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -184,7 +184,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
     def test_query_js_summary_rejects_malformed_json(self):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             with self.assertRaisesRegex(StorageSchemaError, "js summary"):
                 query_js_summary(["-d", "postgres"], root_path="/tmp/fixture")
     def test_query_js_framework_summary_returns_safe_counts(self):
@@ -216,7 +216,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
             )
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed) as run:
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed) as run:
             summary = query_js_framework_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -243,7 +243,7 @@ class StorageDomainCoreJsRubySummaryUnitTests(unittest.TestCase):
     def test_query_js_framework_summary_rejects_malformed_json(self):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             with self.assertRaisesRegex(StorageSchemaError, "js framework summary"):
                 query_js_framework_summary(["-d", "postgres"], root_path="/tmp/fixture")
     def test_js_framework_summary_empty_payload_keeps_safety_markers(self):

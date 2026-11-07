@@ -9,10 +9,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.coordinator import _publication_phase as phase, refresh_adapter, refresh_worker
-from repomap_kg.coordinator._protocol_execution import SyntheticWorkerResult
-from repomap_kg.coordinator.protocol import ProtocolError, encode_jsonl
-from repomap_kg.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
+from common_lore_index.coordinator import _publication_phase as phase, refresh_adapter, refresh_worker
+from common_lore_index.coordinator._protocol_execution import SyntheticWorkerResult
+from common_lore_index.coordinator.protocol import ProtocolError, encode_jsonl
+from common_lore_index.coordinator.refresh_adapter import RefreshCapability, create_refresh_capability
 from repomap_test_support.executable_authority import approved_psql, search_path_for
 
 

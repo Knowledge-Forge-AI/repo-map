@@ -1,17 +1,17 @@
-from repomap_kg.storage._psql_stream import _PsqlStreamFailure
+from common_lore_index.storage._psql_stream import _PsqlStreamFailure
 import io
 import subprocess
 import sys
 import unittest
 from unittest.mock import MagicMock, patch
 
-from repomap_kg.storage._psql_stream import (
+from common_lore_index.storage._psql_stream import (
     _BoundedTextCapture,
     _terminate_process,
     _write_chunks,
     run_psql_stream,
 )
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.storage.errors import StorageSchemaError
 
 
 class PsqlStreamUnitTests(unittest.TestCase):
@@ -32,7 +32,7 @@ class PsqlStreamUnitTests(unittest.TestCase):
         self.assertEqual(capture.text(), "cé")
 
     def test_invalid_capture_limit_refuses_before_launch(self):
-        with patch("repomap_kg.storage._psql_stream.subprocess.Popen") as launch:
+        with patch("common_lore_index.storage._psql_stream.subprocess.Popen") as launch:
             with self.assertRaisesRegex(ValueError, "capture limit must be positive"):
                 run_psql_stream(["fixture-psql"], (), capture_limit=0)
         launch.assert_not_called()
@@ -53,7 +53,7 @@ class PsqlStreamUnitTests(unittest.TestCase):
         process.wait.return_value = -15
         chunks = _OneShotIterable(("BEGIN;",))
         with patch(
-            "repomap_kg.storage._psql_stream.subprocess.Popen", return_value=process
+            "common_lore_index.storage._psql_stream.subprocess.Popen", return_value=process
         ):
             with self.assertRaisesRegex(StorageSchemaError, "pipes are unavailable"):
                 run_psql_stream(["fixture-psql"], chunks)

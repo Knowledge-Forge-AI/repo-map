@@ -13,10 +13,10 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime import release_manifest as historical
-from repomap_kg.runtime.commands import PYTHON_PAYLOAD_SOURCE, render_server_dockerfile
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime import release_manifest as historical
+from common_lore_index.runtime.commands import PYTHON_PAYLOAD_SOURCE, render_server_dockerfile
+from common_lore_index.runtime.release import (
     PYTHON_RELEASE_IMAGE,
     RELEASE_FINAL_PACKAGE_CHECK_PY,
     RELEASE_FINAL_PROBE_PY,

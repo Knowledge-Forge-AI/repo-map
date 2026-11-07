@@ -2,9 +2,9 @@ import json
 import unittest
 
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.config.generic import extract_config_file_observations
-from repomap_kg.observations import RawObservation
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.config.generic import extract_config_file_observations
+from common_lore_index.observations import RawObservation
 
 
 class CanonicalXmlConfigIntegrationTests(unittest.TestCase):

@@ -1,0 +1,7 @@
+Mixed-v1 Standalone Operations Notes
+====================================
+
+Token rotation ledger checkpoint procedure:
+- Call verify_candidate_token with expected_prefix="cand1:" before rotating keys.
+- Record the rotation ledger checkpoint in the audit log.
+- Do not accept legacy v0 tokens once generation 2 is active.

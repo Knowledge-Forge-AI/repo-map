@@ -1,5 +1,5 @@
 import unittest
-from repomap_kg.extractors.shell.zsh import extract_zsh_file_observations
+from common_lore_index.extractors.shell.zsh import extract_zsh_file_observations
 
 class ShellZshBoundariesUnitTests(unittest.TestCase):
     def test_zsh_advanced_patterns_and_completions(self):

@@ -8,8 +8,8 @@ import sys
 
 import pytest
 
-from repomap_kg.coordinator._portable_authority import _validate_audit_event
-from repomap_kg.coordinator._worker_environment import build_portable_worker_environment
+from common_lore_index.coordinator._portable_authority import _validate_audit_event
+from common_lore_index.coordinator._worker_environment import build_portable_worker_environment
 
 
 def test_coverage_instrumentation_introduces_sqlite3_positive_control(tmp_path: Path) -> None:
@@ -69,11 +69,11 @@ def test_portable_worker_import_graph_does_not_reach_database_modules() -> None:
         "psycopg",
         "psycopg2",
         "sqlite3",
-        "repomap_kg.coordinator._control_client",
-        "repomap_kg.coordinator._control_schema",
-        "repomap_kg.storage.staged_ingestion",
-        "repomap_kg.storage.staging_copy",
-        "repomap_kg.storage.staging_resource_observability",
+        "common_lore_index.coordinator._control_client",
+        "common_lore_index.coordinator._control_schema",
+        "common_lore_index.storage.staged_ingestion",
+        "common_lore_index.storage.staging_copy",
+        "common_lore_index.storage.staging_resource_observability",
     }
     clean_env = os.environ.copy()
     cov_config = clean_env.pop("COVERAGE_PROCESS_START", None)
@@ -101,9 +101,9 @@ def test_portable_worker_import_graph_does_not_reach_database_modules() -> None:
             sys.executable,
             "-c",
             "import json,sys; "
-            "import repomap_kg.coordinator.portable_worker; "
-            "import repomap_kg.coordinator._portable_semantic_adapter; "
-            "import repomap_kg.coordinator._portable_materialization; "
+            "import common_lore_index.coordinator.portable_worker; "
+            "import common_lore_index.coordinator._portable_semantic_adapter; "
+            "import common_lore_index.coordinator._portable_materialization; "
             "print(json.dumps(sorted(sys.modules)))",
         ],
         env=clean_env,
@@ -119,9 +119,9 @@ def test_portable_worker_import_graph_does_not_reach_database_modules() -> None:
     ("event", "args"),
     (
         ("import", ("psycopg",)),
-        ("import", ("repomap_kg.storage.staged_publication",)),
-        ("import", ("repomap_kg.coordinator.local_lifecycle",)),
-        ("import", ("repomap_kg.registry",)),
+        ("import", ("common_lore_index.storage.staged_publication",)),
+        ("import", ("common_lore_index.coordinator.local_lifecycle",)),
+        ("import", ("common_lore_index.registry",)),
         ("socket.__new__", (object(),)),
         ("socket.connect", (object(), ("127.0.0.1", 5432))),
         ("subprocess.Popen", ("git",)),

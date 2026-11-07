@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from repomap_kg.server import mcp
+from common_lore_index.server import mcp
 from repomap_test_support.navigation_search_fixtures import navigation_bundle
 from repomap_test_support.related_context_fixtures import (
     BINDING, EXPECTED_IMPORTS, EXPECTED_LINKS, GRAPH, GUIDE, IMPORTED, MODULE,
@@ -200,7 +200,7 @@ def test_pure_projection_export_and_helper_absence_have_no_io():
         assert inspect(graph_id=GRAPH, canonical_key="center")["graph_calls"] == 0
     assert reply == original and "$(touch NEVER)" in API["export"](captured)
     # Also check the standalone import with no already imported runtime to mask it.
-    with patch.dict(sys.modules, {name: None for name in sys.modules if name.startswith("repomap_kg")}):
+    with patch.dict(sys.modules, {name: None for name in sys.modules if name.startswith("common_lore_index")}):
         with pytest.MonkeyPatch.context() as isolated:
             isolated.delitem(sys.modules, "related_source_context", raising=False)
             import related_source_context as standalone

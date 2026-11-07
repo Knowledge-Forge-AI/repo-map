@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.graph.discovery import classify_path, discover_repository
-from repomap_kg.graph.profiles import ProfileValidationError, ProjectProfile, load_profile
+from common_lore_index.graph.discovery import classify_path, discover_repository
+from common_lore_index.graph.profiles import ProfileValidationError, ProjectProfile, load_profile
 
 
 class ProfileUnitTests(unittest.TestCase):

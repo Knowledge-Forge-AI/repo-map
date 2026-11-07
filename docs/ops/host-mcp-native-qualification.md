@@ -2,7 +2,7 @@
 
 This runbook is also the `README.md` of the operator kit. It prepares and
 runs the Product step 3 proof: the pinned macOS checkout's own
-`.venv/bin/repomap-kg mcp serve --repo-map-home <fresh-home>` serving real
+`.venv/bin/cloe mcp serve --repo-map-home <fresh-home>` serving real
 stdio JSON-RPC reads from a disposable PostgreSQL fixture.
 
 A completed run means **evidence is ready for manager review**. It is not
@@ -21,7 +21,7 @@ of the same runner, is never native acceptance.
      `<checkout>/.venv/bin`;
    - an import probe that runs that interpreter with the child environment
      from an unrelated folder;
-   - parent imports (`repomap_kg` from the checkout; `psycopg`; `pytest`;
+   - parent imports (`common_lore_index` from the checkout; `psycopg`; `pytest`;
      every runner module from the kit);
    - Docker server access and the locally present
      `postgres:16-alpine@sha256:e013…` test image;
@@ -183,7 +183,7 @@ forwarded to the MCP child.
 **From the reviewed candidate (inside the ZIP):**
 - `run.sh` and this `README.md`;
 - `KIT-MANIFEST.json`, with per-file SHA-256 and mode, and the product
-  manifest of git-listed `src/main/python/repomap_kg`, `src/main/resources`
+  manifest of git-listed `src/main/python/common_lore_index`, `src/main/resources`
   and `pyproject.toml` bytes;
 - the runner and its AST-computed import closure under `tools/` and
   `src/test/support/python/`;
@@ -192,8 +192,8 @@ forwarded to the MCP child.
 
 **Still from the pinned checkout:**
 - `.venv/bin/python`;
-- the `.venv/bin/repomap-kg` console script, which is the acceptance process;
-- the editable `repomap_kg` package with its migrations;
+- the `.venv/bin/cloe` console script, which is the acceptance process;
+- the editable `common_lore_index` package with its migrations;
 - the installed `psycopg` and `pytest`.
 
 Since LOCAL11 the base package no longer installs Psycopg. Install the checkout
@@ -201,7 +201,10 @@ with `.[postgres,test]` (or the full development extras) before running this
 kit; without the driver the Psycopg route is unavailable.
 
 An installed wheel or store package is a separate qualification. A working
-checkout console does not establish it.
+checkout console does not establish it. For a pre-cutover editable environment,
+recreate the checkout `.venv` or uninstall `repomap-kg` before installing the renamed
+project; do not overlay the two distributions. Retain a successful
+`cloe identity --installation-check --json` result before the next native run.
 
 ## Operator command
 

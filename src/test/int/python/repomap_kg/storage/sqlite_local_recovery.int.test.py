@@ -32,11 +32,11 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.ops import local_refresh
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
-from repomap_kg.storage.sqlite_local import investigation_queries, publisher
-from repomap_kg.storage.sqlite_local.connection import read_transaction, sidecar_paths
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.ops import local_refresh
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home, local_graph_binding
+from common_lore_index.storage.sqlite_local import investigation_queries, publisher
+from common_lore_index.storage.sqlite_local.connection import read_transaction, sidecar_paths
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_shell_source, write_sqlite_home
 from repomap_test_support.sqlite_local_harness import (
     CHILD_DEADLINE_SECONDS,

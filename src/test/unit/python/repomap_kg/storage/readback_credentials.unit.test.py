@@ -6,9 +6,9 @@ import traceback
 
 import pytest
 
-from repomap_kg.ops.readback import _psycopg_error_details
-from repomap_kg.storage import readback_driver as driver
-from repomap_kg.storage.errors import StorageSchemaError
+from common_lore_index.ops.readback import _psycopg_error_details
+from common_lore_index.storage import readback_driver as driver
+from common_lore_index.storage.errors import StorageSchemaError
 
 
 PASSWORD = "public-fixture-password"

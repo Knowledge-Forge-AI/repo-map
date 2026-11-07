@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import psycopg
 
-from repomap_kg.coordinator.limits import DEFAULT_LIMITS
-from repomap_kg.coordinator.storage import (
+from common_lore_index.coordinator.limits import DEFAULT_LIMITS
+from common_lore_index.coordinator.storage import (
     ControlStoreError,
     SingletonActiveError,
 )

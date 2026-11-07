@@ -6,7 +6,7 @@ from threading import Event, Thread
 from types import SimpleNamespace
 import pytest
 import repomap_test_support.scale15_runtime_campaign as runtime_campaign
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventFrame,
 )

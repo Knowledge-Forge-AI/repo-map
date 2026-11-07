@@ -20,26 +20,26 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import ArtifactReference
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.coordinator._portable_capability import create_portable_capability
-from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
-from repomap_kg.coordinator._protocol_core import ProtocolError
-from repomap_kg.coordinator._protocol_validation import (
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import ArtifactReference
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.coordinator._portable_capability import create_portable_capability
+from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
+from common_lore_index.coordinator._protocol_core import ProtocolError
+from common_lore_index.coordinator._protocol_validation import (
     decode_jsonl,
     encode_jsonl,
     retain_stderr,
 )
-from repomap_kg.coordinator.contracts import (
+from common_lore_index.coordinator.contracts import (
     is_public_safe_text,
     normalize_request,
     project_public_error,
     project_public_status,
     validate_generation,
 )
-from repomap_kg.coordinator.protocol import WorkerLaunchSpec
-from repomap_kg.coordinator.semantics import (
+from common_lore_index.coordinator.protocol import WorkerLaunchSpec
+from common_lore_index.coordinator.semantics import (
     AutomaticIntent,
     ProgressSnapshot,
     RetryPolicy,
@@ -81,11 +81,11 @@ def test_workflow_authority_guard_denial_and_supervision_reaping(
 import json, sys, types
 from pathlib import Path
 repo_root = Path(sys.argv[3])
-pkg_root = repo_root / "src" / "main" / "python" / "repomap_kg"
-for name, path in (("repomap_kg", pkg_root), ("repomap_kg.coordinator", pkg_root / "coordinator")):
+pkg_root = repo_root / "src" / "main" / "python" / "common_lore_index"
+for name, path in (("common_lore_index", pkg_root), ("common_lore_index.coordinator", pkg_root / "coordinator")):
     if name not in sys.modules:
         mod = types.ModuleType(name); mod.__path__ = [str(path)]; sys.modules[name] = mod
-from repomap_kg.coordinator._portable_authority import install_portable_authority_guard
+from common_lore_index.coordinator._portable_authority import install_portable_authority_guard
 install_portable_authority_guard(store_root=Path(sys.argv[1]), workspace_root=Path(sys.argv[2]), code_roots=[repo_root])
 print(json.dumps(dict(schema_version=1, message_type="worker_hello", protocol_versions=[1], capabilities=["refresh_graph"], worker_generation="wg1:fixture", process_nonce="nonce")), flush=True)
 start = json.loads(sys.stdin.readline())

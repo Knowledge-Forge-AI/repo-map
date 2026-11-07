@@ -9,9 +9,9 @@ from typing import Any, Sequence, cast
 import unittest
 from unittest.mock import MagicMock
 
-from repomap_kg.coordinator._protocol_execution import _run_protocol_worker
-from repomap_kg.coordinator._protocol_session import ProtocolSession
-from repomap_kg.coordinator._protocol_validation import (
+from common_lore_index.coordinator._protocol_execution import _run_protocol_worker
+from common_lore_index.coordinator._protocol_session import ProtocolSession
+from common_lore_index.coordinator._protocol_validation import (
     MAX_JSONL_LINE_BYTES,
     MAX_RETAINED_DIAGNOSTIC_BYTES,
     ProtocolError,
@@ -21,7 +21,7 @@ from repomap_kg.coordinator._protocol_validation import (
     encode_jsonl,
     retain_stderr,
 )
-from repomap_kg.coordinator._service_endpoints import (
+from common_lore_index.coordinator._service_endpoints import (
     _endpoint_names,
     _remove_stale_endpoint,
     _validate_runtime_directory,

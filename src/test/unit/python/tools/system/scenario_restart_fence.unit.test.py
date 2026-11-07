@@ -201,15 +201,15 @@ def test_restart_fence_orchestration_actualpath_invoked_and_counts_unchanged(tmp
     assert before_call.kwargs["stdin_input"] == readback_call.kwargs["stdin_input"]
     assert probe_call.args[1] == ["exec", "-T", "coordinator", "python", "-"]
     assert (
-        "from repomap_kg.storage.staged_publication import execute_final_transaction"
+        "from common_lore_index.storage.staged_publication import execute_final_transaction"
         in script
     )
     assert (
-        "from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver"
+        "from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver"
         in script
     )
     assert (
-        "from repomap_kg.storage.publication import publication_receipt_from_mapping"
+        "from common_lore_index.storage.publication import publication_receipt_from_mapping"
         in script
     )
     assert "execute_final_transaction(connection, handoff)" in script

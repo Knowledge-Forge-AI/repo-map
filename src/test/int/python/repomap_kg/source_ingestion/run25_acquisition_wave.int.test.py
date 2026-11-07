@@ -7,22 +7,22 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.ops.ingestion.api import (
+from common_lore_index.ops.ingestion.api import (
     ApiPolicyError,
     load_api_source_config,
 )
-from repomap_kg.ops.ingestion.bulk import (
+from common_lore_index.ops.ingestion.bulk import (
     BulkPolicyError,
     bulk_observations_from_plan,
     build_bulk_plan,
     load_bulk_source_config,
 )
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.ops.ingestion.github_api import (
     GitHubApiPolicyError,
     acquire_github_api_source,
     load_github_api_source_config,
 )
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     archive_observations_from_manifest,
     build_archive_manifest,

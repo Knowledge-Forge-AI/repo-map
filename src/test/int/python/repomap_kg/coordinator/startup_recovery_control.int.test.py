@@ -6,8 +6,8 @@ import psycopg
 from typing import Any, Mapping, cast
 import pytest
 
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator.startup_recovery import StartupRecoveryReport, PublicationRouteChangedError, recover_startup
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator.startup_recovery import StartupRecoveryReport, PublicationRouteChangedError, recover_startup
 
 
 from repomap_test_support.startup_recovery_scenarios import (
@@ -95,8 +95,8 @@ def _expired_refresh_claim(store, connect, request):
 
 
 def test_quarantine_legacy_zero_epoch_and_replacement_scheduling() -> None:
-    from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-    from repomap_kg.coordinator.core import SyntheticCoordinator
+    from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+    from common_lore_index.coordinator.core import SyntheticCoordinator
     from repomap_test_support.startup_recovery_scenarios import (
         _refresh_harness, _make_refresh_fixture, _req_norm, _run_real_refresh_attempt,
     )
@@ -144,9 +144,9 @@ def test_quarantine_legacy_zero_epoch_and_replacement_scheduling() -> None:
 
 def test_publication_authority_rowlock_bounded_and_singleton_renewed() -> None:
     import time
-    from repomap_kg.coordinator import _publication_phase
-    from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-    from repomap_kg.coordinator.core import SyntheticCoordinator
+    from common_lore_index.coordinator import _publication_phase
+    from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+    from common_lore_index.coordinator.core import SyntheticCoordinator
     from repomap_test_support.startup_recovery_scenarios import _refresh_harness, _make_refresh_fixture, _req_norm
     with _refresh_harness() as (store, cap_dir, connect, postgres, graph_db):
         config, sg, cg, eg, kg = _make_refresh_fixture(postgres, cap_dir, graph_db)

@@ -23,7 +23,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.server.mcp_schemas import tool_definitions
+from common_lore_index.server.mcp_schemas import tool_definitions
 from repomap_test_support.cli_in_process import FIXTURE_ROOT
 from repomap_test_support.host_read_store_config import setup_owned_config
 from repomap_test_support.sqlite_local_fixtures import (

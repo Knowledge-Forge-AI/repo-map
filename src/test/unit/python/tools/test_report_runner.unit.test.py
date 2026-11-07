@@ -249,10 +249,14 @@ class ReportGeneratorUnitTests(ReportTestCase):
         self.assertTrue(report_path.exists())
         report = json.loads(report_path.read_text(encoding="utf-8"))
         self.assertEqual(report["errors"], [
-            "accounting: PopulationDiscoveryError",
-            "report validation: partition missing "
-            "['abrupt', 'collected', 'deferred', 'measured', 'optional', 'required', 'sha256']",
+            "discovery collection: PopulationDiscoveryError",
+            "report validation: StagingReportValidationError",
         ])
+        from runner_failure_evidence import FAILURE_SCHEMA, read_diagnostic
+        failure = read_diagnostic(report_path.parent / f"runner_failure_report.{report['invocation_id']}.json", FAILURE_SCHEMA)
+        self.assertEqual(failure["invocation_id"], report["invocation_id"])
+        self.assertEqual(failure["primary"]["stage"], "discovery_collection")
+        self.assertEqual(failure["primary"]["type"], "PopulationDiscoveryError")
         # Failed discovery preserves diagnostics, never a fabricated partition.
         from staging_report_contract import StagingReportValidationError, validate_report
         with self.assertRaisesRegex(StagingReportValidationError, "partition missing"):

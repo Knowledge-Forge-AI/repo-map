@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.languages.javascript import extract_javascript_file_observations
-from repomap_kg.extractors.languages.python import PythonModuleIndex, extract_python_file_observations
-from repomap_kg.extractors.languages.ruby import extract_ruby_file_observations
-import repomap_kg.graph.keys as k
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.canonical_rows import prepare_canonical_load
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.languages.javascript import extract_javascript_file_observations
+from common_lore_index.extractors.languages.python import PythonModuleIndex, extract_python_file_observations
+from common_lore_index.extractors.languages.ruby import extract_ruby_file_observations
+import common_lore_index.graph.keys as k
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.canonical_rows import prepare_canonical_load
 
 
 class Slice7LanguagePipelineIntegrationTests(unittest.TestCase):

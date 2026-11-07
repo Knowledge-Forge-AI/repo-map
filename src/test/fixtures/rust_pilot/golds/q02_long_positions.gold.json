@@ -1,0 +1,609 @@
+{
+ "build_script_name": false,
+ "completeness": "complete",
+ "fixture": "q02_long_positions.rs",
+ "input_bytes": 10113,
+ "input_sha256": "aa45c89fefcedeff9b78d155591017e70f4f0ca09ed8a3070b0db6415f46cccd",
+ "item_list": "complete",
+ "items": [
+  {
+   "end_byte": 306,
+   "end_line": 9,
+   "item_kind": "type",
+   "name": "SequenceNumber",
+   "namespace": "rust.type",
+   "pointer": "/type:SequenceNumber",
+   "start_byte": 276,
+   "start_line": 9,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 405,
+   "end_line": 12,
+   "item_kind": "struct",
+   "name": "StreamId",
+   "namespace": "rust.type",
+   "pointer": "/struct:StreamId",
+   "start_byte": 376,
+   "start_line": 12,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 572,
+   "end_line": 20,
+   "item_kind": "enum",
+   "name": "Payload",
+   "namespace": "rust.type",
+   "pointer": "/enum:Payload",
+   "start_byte": 442,
+   "start_line": 15,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 715,
+   "end_line": 27,
+   "item_kind": "struct",
+   "name": "Event",
+   "namespace": "rust.type",
+   "pointer": "/struct:Event",
+   "start_byte": 609,
+   "start_line": 23,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 883,
+   "end_line": 34,
+   "item_kind": "enum",
+   "name": "JournalError",
+   "namespace": "rust.type",
+   "pointer": "/enum:JournalError",
+   "start_byte": 749,
+   "start_line": 30,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1327,
+   "end_line": 46,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:1",
+   "start_byte": 885,
+   "start_line": 36,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1325,
+   "end_line": 45,
+   "item_kind": "fn",
+   "name": "fmt",
+   "namespace": "rust.function",
+   "pointer": "/impl:1/fn:fmt",
+   "start_byte": 926,
+   "start_line": 37,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1371,
+   "end_line": 48,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:2",
+   "start_byte": 1329,
+   "start_line": 48,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1458,
+   "end_line": 53,
+   "item_kind": "struct",
+   "name": "Journal",
+   "namespace": "rust.type",
+   "pointer": "/struct:Journal",
+   "start_byte": 1373,
+   "start_line": 50,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1541,
+   "end_line": 59,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:3",
+   "start_byte": 1460,
+   "start_line": 55,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1539,
+   "end_line": 58,
+   "item_kind": "fn",
+   "name": "default",
+   "namespace": "rust.function",
+   "pointer": "/impl:3/fn:default",
+   "start_byte": 1491,
+   "start_line": 56,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2840,
+   "end_line": 111,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/impl:4",
+   "start_byte": 1543,
+   "start_line": 61,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1680,
+   "end_line": 67,
+   "item_kind": "fn",
+   "name": "new",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:new",
+   "start_byte": 1562,
+   "start_line": 62,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 1895,
+   "end_line": 75,
+   "item_kind": "fn",
+   "name": "open_stream",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:open_stream",
+   "start_byte": 1686,
+   "start_line": 69,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2500,
+   "end_line": 94,
+   "item_kind": "fn",
+   "name": "append",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:append",
+   "start_byte": 1901,
+   "start_line": 77,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2632,
+   "end_line": 98,
+   "item_kind": "fn",
+   "name": "events",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:events",
+   "start_byte": 2506,
+   "start_line": 96,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2697,
+   "end_line": 102,
+   "item_kind": "fn",
+   "name": "close",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:close",
+   "start_byte": 2638,
+   "start_line": 100,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2762,
+   "end_line": 106,
+   "item_kind": "fn",
+   "name": "is_closed",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:is_closed",
+   "start_byte": 2703,
+   "start_line": 104,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 2838,
+   "end_line": 110,
+   "item_kind": "fn",
+   "name": "stream_count",
+   "namespace": "rust.function",
+   "pointer": "/impl:4/fn:stream_count",
+   "start_byte": 2768,
+   "start_line": 108,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 4646,
+   "end_line": 172,
+   "item_kind": "mod",
+   "name": "projection",
+   "namespace": "rust.module",
+   "pointer": "/mod:projection",
+   "start_byte": 2842,
+   "start_line": 113,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3114,
+   "end_line": 122,
+   "item_kind": "struct",
+   "name": "Snapshot",
+   "namespace": "rust.type",
+   "pointer": "/mod:projection/struct:Snapshot",
+   "start_byte": 2995,
+   "start_line": 118,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3406,
+   "end_line": 135,
+   "item_kind": "trait",
+   "name": "Projector",
+   "namespace": "rust.trait",
+   "pointer": "/mod:projection/trait:Projector",
+   "start_byte": 3120,
+   "start_line": 124,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3185,
+   "end_line": 125,
+   "item_kind": "fn",
+   "name": "apply",
+   "namespace": "rust.function",
+   "pointer": "/mod:projection/trait:Projector/fn:apply",
+   "start_byte": 3150,
+   "start_line": 125,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3400,
+   "end_line": 134,
+   "item_kind": "fn",
+   "name": "apply_all",
+   "namespace": "rust.function",
+   "pointer": "/mod:projection/trait:Projector/fn:apply_all",
+   "start_byte": 3195,
+   "start_line": 127,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3527,
+   "end_line": 140,
+   "item_kind": "struct",
+   "name": "SnapshotProjector",
+   "namespace": "rust.type",
+   "pointer": "/mod:projection/struct:SnapshotProjector",
+   "start_byte": 3442,
+   "start_line": 138,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3926,
+   "end_line": 153,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/mod:projection/impl:1",
+   "start_byte": 3533,
+   "start_line": 142,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3679,
+   "end_line": 145,
+   "item_kind": "fn",
+   "name": "snapshot",
+   "namespace": "rust.function",
+   "pointer": "/mod:projection/impl:1/fn:snapshot",
+   "start_byte": 3566,
+   "start_line": 143,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 3920,
+   "end_line": 152,
+   "item_kind": "fn",
+   "name": "live_streams",
+   "namespace": "rust.function",
+   "pointer": "/mod:projection/impl:1/fn:live_streams",
+   "start_byte": 3689,
+   "start_line": 147,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 4464,
+   "end_line": 165,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/mod:projection/impl:2",
+   "start_byte": 3932,
+   "start_line": 155,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 4458,
+   "end_line": 164,
+   "item_kind": "fn",
+   "name": "apply",
+   "namespace": "rust.function",
+   "pointer": "/mod:projection/impl:2/fn:apply",
+   "start_byte": 3979,
+   "start_line": 156,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 4644,
+   "end_line": 171,
+   "item_kind": "fn",
+   "name": "rebuild",
+   "namespace": "rust.function",
+   "pointer": "/mod:projection/fn:rebuild",
+   "start_byte": 4470,
+   "start_line": 167,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 5713,
+   "end_line": 209,
+   "item_kind": "mod",
+   "name": "retention",
+   "namespace": "rust.module",
+   "pointer": "/mod:retention",
+   "start_byte": 4648,
+   "start_line": 174,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 4862,
+   "end_line": 182,
+   "item_kind": "enum",
+   "name": "Policy",
+   "namespace": "rust.type",
+   "pointer": "/mod:retention/enum:Policy",
+   "start_byte": 4762,
+   "start_line": 178,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 5317,
+   "end_line": 195,
+   "item_kind": "impl",
+   "name": null,
+   "namespace": "rust.impl",
+   "pointer": "/mod:retention/impl:1",
+   "start_byte": 4868,
+   "start_line": 184,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 5311,
+   "end_line": 194,
+   "item_kind": "fn",
+   "name": "retains",
+   "namespace": "rust.function",
+   "pointer": "/mod:retention/impl:1/fn:retains",
+   "start_byte": 4890,
+   "start_line": 185,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 5602,
+   "end_line": 204,
+   "item_kind": "fn",
+   "name": "compact",
+   "namespace": "rust.function",
+   "pointer": "/mod:retention/fn:compact",
+   "start_byte": 5323,
+   "start_line": 197,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 5711,
+   "end_line": 208,
+   "item_kind": "fn",
+   "name": "dropped_count",
+   "namespace": "rust.function",
+   "pointer": "/mod:retention/fn:dropped_count",
+   "start_byte": 5608,
+   "start_line": 206,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 7252,
+   "end_line": 257,
+   "item_kind": "mod",
+   "name": "encoding",
+   "namespace": "rust.module",
+   "pointer": "/mod:encoding",
+   "start_byte": 5715,
+   "start_line": 211,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 6050,
+   "end_line": 223,
+   "item_kind": "fn",
+   "name": "tag_of",
+   "namespace": "rust.function",
+   "pointer": "/mod:encoding/fn:tag_of",
+   "start_byte": 5814,
+   "start_line": 216,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 6323,
+   "end_line": 230,
+   "item_kind": "fn",
+   "name": "encode_header",
+   "namespace": "rust.function",
+   "pointer": "/mod:encoding/fn:encode_header",
+   "start_byte": 6056,
+   "start_line": 225,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 6576,
+   "end_line": 236,
+   "item_kind": "fn",
+   "name": "encode_text",
+   "namespace": "rust.function",
+   "pointer": "/mod:encoding/fn:encode_text",
+   "start_byte": 6329,
+   "start_line": 232,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 7250,
+   "end_line": 256,
+   "item_kind": "fn",
+   "name": "encode",
+   "namespace": "rust.function",
+   "pointer": "/mod:encoding/fn:encode",
+   "start_byte": 6582,
+   "start_line": 238,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 9552,
+   "end_line": 329,
+   "item_kind": "mod",
+   "name": "tests",
+   "namespace": "rust.module",
+   "pointer": "/mod:tests",
+   "start_byte": 7267,
+   "start_line": 260,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 7549,
+   "end_line": 271,
+   "item_kind": "fn",
+   "name": "created",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:created",
+   "start_byte": 7302,
+   "start_line": 263,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 7814,
+   "end_line": 279,
+   "item_kind": "fn",
+   "name": "appends_in_order",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:appends_in_order",
+   "start_byte": 7567,
+   "start_line": 274,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 8100,
+   "end_line": 287,
+   "item_kind": "fn",
+   "name": "rejects_out_of_order",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:rejects_out_of_order",
+   "start_byte": 7832,
+   "start_line": 282,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 8357,
+   "end_line": 295,
+   "item_kind": "fn",
+   "name": "closed_journal_refuses_appends",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:closed_journal_refuses_appends",
+   "start_byte": 8118,
+   "start_line": 290,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 8931,
+   "end_line": 313,
+   "item_kind": "fn",
+   "name": "projection_tracks_renames",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:projection_tracks_renames",
+   "start_byte": 8375,
+   "start_line": 298,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 9336,
+   "end_line": 321,
+   "item_kind": "fn",
+   "name": "retention_keeps_the_newest_events",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:retention_keeps_the_newest_events",
+   "start_byte": 8949,
+   "start_line": 316,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 9550,
+   "end_line": 328,
+   "item_kind": "fn",
+   "name": "encoding_starts_with_the_magic_header",
+   "namespace": "rust.function",
+   "pointer": "/mod:tests/fn:encoding_starts_with_the_magic_header",
+   "start_byte": 9354,
+   "start_line": 324,
+   "usable_scope": true
+  },
+  {
+   "end_byte": 10112,
+   "end_line": 331,
+   "item_kind": "fn",
+   "name": "append_to_default_stream",
+   "namespace": "rust.function",
+   "pointer": "/fn:append_to_default_stream",
+   "start_byte": 9863,
+   "start_line": 331,
+   "usable_scope": true
+  }
+ ],
+ "line_count": 331,
+ "outcome": "succeeded",
+ "scenarios": [
+  "Q02"
+ ],
+ "schema": "cloe-rust-pilot-gold-v1",
+ "unsupported": [
+  {
+   "construct": "use_declaration",
+   "count": 2,
+   "scope_pointer": "/"
+  },
+  {
+   "construct": "const_item",
+   "count": 1,
+   "scope_pointer": "/mod:encoding"
+  },
+  {
+   "construct": "use_declaration",
+   "count": 1,
+   "scope_pointer": "/mod:encoding"
+  },
+  {
+   "construct": "use_declaration",
+   "count": 2,
+   "scope_pointer": "/mod:projection"
+  },
+  {
+   "construct": "use_declaration",
+   "count": 1,
+   "scope_pointer": "/mod:retention"
+  },
+  {
+   "construct": "use_declaration",
+   "count": 1,
+   "scope_pointer": "/mod:tests"
+  }
+ ]
+}

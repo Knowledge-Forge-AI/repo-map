@@ -13,14 +13,14 @@ from repomap_test_support.postgres_harness import (
     temporary_postgres,
 )
 
-from repomap_kg.ops.config import (
+from common_lore_index.ops.config import (
     check_ops_graph_storage_status,
     check_ops_postgres_status,
     load_ops_config,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV, READBACK_DRIVER_ENV, diagnose_psycopg_database_presence,
     execute_json_readback_with_driver,
 )
@@ -50,7 +50,7 @@ def test_psycopg98_postgres_readiness_connector_cli_and_graph_parity() -> None:
             assert len(empty_schema.required_tables or {}) == 9
             assert not any((empty_schema.required_tables or {}).values())
 
-            from repomap_kg.ops import config as ops_config
+            from common_lore_index.ops import config as ops_config
 
             original_readback = ops_config.execute_ops_json_readback
 
@@ -60,7 +60,7 @@ def test_psycopg98_postgres_readiness_connector_cli_and_graph_parity() -> None:
                 return original_readback(*args, **kwargs)
 
             with patch(
-                "repomap_kg.ops.config.execute_ops_json_readback",
+                "common_lore_index.ops.config.execute_ops_json_readback",
                 side_effect=short_circuit_readback,
             ):
                 short_circuit = check_ops_graph_storage_status(

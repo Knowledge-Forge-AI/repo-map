@@ -6,19 +6,19 @@ from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 
-import repomap_kg.coordinator.refresh_worker as refresh_worker
-from repomap_kg.coordinator._core_disposition import CoreDispositionMixin
-from repomap_kg.coordinator.protocol import encode_jsonl
-from repomap_kg.coordinator.refresh_adapter import (
+import common_lore_index.coordinator.refresh_worker as refresh_worker
+from common_lore_index.coordinator._core_disposition import CoreDispositionMixin
+from common_lore_index.coordinator.protocol import encode_jsonl
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshConfigurationError,
     _extract_diagnostic_summary,
 )
-from repomap_kg.coordinator.refresh_worker import (
+from common_lore_index.coordinator.refresh_worker import (
     _exception_terminal,
     _run_with_heartbeats,
     _write_failure_categories,
 )
-from repomap_kg.coordinator.semantics import RetryPolicy
+from common_lore_index.coordinator.semantics import RetryPolicy
 
 
 def test_refresh_operation_emits_heartbeat_and_stops_owned_task():

@@ -19,26 +19,26 @@ def _module_imports(module: object) -> set[str]:
 
 
 def test_arch1i_format_modules_use_neutral_contracts_not_generic_registry() -> None:
-    import repomap_kg.extractors.config.generic_contracts as contracts
-    import repomap_kg.extractors.config.infrastructure as owner_0
-    import repomap_kg.extractors.config.javascript as owner_1
-    import repomap_kg.extractors.config.openapi_helpers as owner_2
-    import repomap_kg.extractors.config.python_support as owner_3
-    import repomap_kg.extractors.config.terraform_hcl_observations as owner_4
-    import repomap_kg.extractors.config.terraform_json as owner_5
-    import repomap_kg.extractors.config.xml as owner_6
-    import repomap_kg.extractors.config.xml_references as owner_7
-    import repomap_kg.extractors.config.yaml as owner_8
-    import repomap_kg.extractors.config.yaml_profiles as owner_9
+    import common_lore_index.extractors.config.generic_contracts as contracts
+    import common_lore_index.extractors.config.infrastructure as owner_0
+    import common_lore_index.extractors.config.javascript as owner_1
+    import common_lore_index.extractors.config.openapi_helpers as owner_2
+    import common_lore_index.extractors.config.python_support as owner_3
+    import common_lore_index.extractors.config.terraform_hcl_observations as owner_4
+    import common_lore_index.extractors.config.terraform_json as owner_5
+    import common_lore_index.extractors.config.xml as owner_6
+    import common_lore_index.extractors.config.xml_references as owner_7
+    import common_lore_index.extractors.config.yaml as owner_8
+    import common_lore_index.extractors.config.yaml_profiles as owner_9
     for module in (owner_0, owner_1, owner_2, owner_3, owner_4, owner_5, owner_6, owner_7, owner_8, owner_9,):
         imports = _module_imports(module)
-        assert "repomap_kg.extractors.config.generic" not in imports
+        assert "common_lore_index.extractors.config.generic" not in imports
         assert callable(contracts._profile_observation)
 
 
 def test_arch1i_generic_facade_preserves_neutral_contract_identities() -> None:
-    import repomap_kg.extractors.config.generic_contracts as contracts
-    import repomap_kg.extractors.config.generic as generic
+    import common_lore_index.extractors.config.generic_contracts as contracts
+    import common_lore_index.extractors.config.generic as generic
     assert contracts.__file__ is not None
     contracts_source = Path(contracts.__file__).read_text(encoding="utf-8")
     assert "sys.modules" not in contracts_source

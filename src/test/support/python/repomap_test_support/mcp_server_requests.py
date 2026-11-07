@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     NixSummaryRecord,
 )
 
@@ -151,7 +151,7 @@ mode = "read_only"
         canonical_nodes: int | None = None,
         canonical_edges: int | None = None,
     ):
-        from repomap_kg.ops.refresh import OpsRefreshGraphStatus
+        from common_lore_index.ops.refresh import OpsRefreshGraphStatus
 
         return OpsRefreshGraphStatus(
             graph_id="repo-map",

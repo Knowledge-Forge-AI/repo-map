@@ -90,13 +90,13 @@ def test_console_forms_are_classified_by_content_including_a_trampoline_with_spa
     venv_bin, spaced_bin = checkout / ".venv" / "bin", spaced / ".venv" / "bin"
     venv_bin.mkdir(parents=True)
     spaced_bin.mkdir(parents=True)
-    body = "import sys\nfrom repomap_kg.cli import main\nif __name__ == '__main__':\n    sys.exit(main())\n"
+    body = "import sys\nfrom common_lore_index.entrypoints import cloe_main\nif __name__ == '__main__':\n    sys.exit(cloe_main())\n"
     shebang = venv_bin / "shebang"
     shebang.write_text(f"#!{venv_bin}/python3\n# -*- coding: utf-8 -*-\n{body}", encoding="utf-8")
     trampoline = spaced_bin / "trampoline"
     trampoline.write_text(f"#!/bin/sh\n'''exec' \"{spaced_bin}/python\" \"$0\" \"$@\"\n' '''\n{body}", encoding="utf-8")
     wrapper = tmp_path / "wrapper"
-    wrapper.write_text("#!/bin/sh\nPYTHONPATH=/w exec python3 -c 'from repomap_kg.cli import main; "
+    wrapper.write_text("#!/bin/sh\nPYTHONPATH=/w exec python3 -c 'from common_lore_index.cli import main; "
                        "raise SystemExit(main())' \"$@\"\n", encoding="utf-8")
     elsewhere = tmp_path / "elsewhere"
     elsewhere.write_text(f"#!/usr/bin/python3\n{body}", encoding="utf-8")
@@ -112,6 +112,15 @@ def test_console_forms_are_classified_by_content_including_a_trampoline_with_spa
     assert "not a checkout console" in str(console_entrypoint(wrapper).native_refusal(checkout))
     assert "inside <checkout>/.venv/bin" in str(console_entrypoint(elsewhere).native_refusal(checkout))
     assert console_entrypoint(unsupported).form == "unsupported"
+
+
+@pytest.mark.parametrize("target", ["legacy_main", "long_main", "main"])
+def test_other_console_targets_cannot_qualify_as_cloe(tmp_path: Path, target: str) -> None:
+    path = tmp_path / ".venv/bin/cloe"
+    path.parent.mkdir(parents=True)
+    path.write_text(f"#!{path.parent}/python\nimport sys\n"
+                    f"from common_lore_index.entrypoints import {target}\nsys.exit({target}())\n")
+    assert "does not target" in str(console_entrypoint(path).native_refusal(tmp_path))
 
 
 def test_child_environment_is_built_from_scratch_and_blocks_injection(
@@ -207,7 +216,7 @@ def test_import_probe_records_success_and_refusal_without_installing(layout: Chi
 
     def runner(argv, **kwargs):
         seen.append((tuple(argv), kwargs["env"], kwargs["cwd"]))
-        stdout = json.dumps({"repomap_kg_file": "/c/src/main/python/repomap_kg/__init__.py", "psycopg": "3.2"})
+        stdout = json.dumps({"repomap_kg_file": "/c/src/main/python/common_lore_index/__init__.py", "psycopg": "3.2"})
         return subprocess.CompletedProcess(argv, 0, stdout + "\n", "")
 
     ok = import_probe("/c/.venv/bin/python", layout, env, runner=runner)

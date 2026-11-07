@@ -17,22 +17,22 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from repomap_kg.artifacts.bundle import PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.store import (
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.store import (
     ArtifactIntegrityError,
     FileSystemArtifactStore,
 )
-from repomap_kg.artifacts.validator import (
+from common_lore_index.artifacts.validator import (
     PublicationExpectation,
     PublisherBundleValidator,
 )
-from repomap_kg.service_package.contract import build_service_package_spec
-from repomap_kg.service_package.launchd import LaunchdUserAdapter
-from repomap_kg.service_package.operations import CoordinatorServiceOperations, ServiceActionResult
-from repomap_kg.service_package.platforms import NativeServiceAdapter
-from repomap_kg.service_package.systemd import SystemdUserAdapter
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.service_package.contract import build_service_package_spec
+from common_lore_index.service_package.launchd import LaunchdUserAdapter
+from common_lore_index.service_package.operations import CoordinatorServiceOperations, ServiceActionResult
+from common_lore_index.service_package.platforms import NativeServiceAdapter
+from common_lore_index.service_package.systemd import SystemdUserAdapter
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 from repomap_test_support.service_publication_families import (
     sample_publication_families,
 )
@@ -290,7 +290,7 @@ class ServicePackagePipelineIntegrationTests(unittest.TestCase):
             store.read(r_ref)
 
     def test_coordinator_service_operations_full_lifecycle_and_adapters(self) -> None:
-        from repomap_kg.runtime.local import setup_local_runtime
+        from common_lore_index.runtime.local import setup_local_runtime
 
         def native_home(home: Path) -> None:
             setup_local_runtime(home)

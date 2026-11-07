@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.graph.readback.host_mutators import (
+from common_lore_index.graph.readback.host_mutators import (
     filter_host_mutator_records,
     format_host_mutator_summary_table,
     format_host_mutator_table,
@@ -9,7 +9,7 @@ from repomap_kg.graph.readback.host_mutators import (
     host_mutators_to_jsonable,
     summarize_host_mutator_records,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 
 
 class HostMutatorUnitTests(unittest.TestCase):

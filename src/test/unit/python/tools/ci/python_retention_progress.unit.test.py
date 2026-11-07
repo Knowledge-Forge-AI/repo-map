@@ -70,7 +70,7 @@ def test_dependency_finding_keeps_every_owner_path_unknown() -> None:
 
 def test_governed_product_debt_retains_raw_evidence_and_cleans_owner() -> None:
     paths = ["tools/owner.py"]
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     finding = {"path": product, "code": "assignment", "dependency": True}
     raw = _check_result(paths, mypy_findings=[finding])
     result = attribute_product_dependencies(raw, [product])
@@ -96,7 +96,7 @@ def test_direct_finding_cannot_be_discarded_by_dependency_marker() -> None:
 
 
 def test_unowned_dependency_still_blocks_after_product_attribution() -> None:
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     raw = _check_result(["tools/owner.py"], mypy_findings=[
         {"path": product, "dependency": True},
         {"path": "tools/unselected.py", "dependency": True},
@@ -107,7 +107,7 @@ def test_unowned_dependency_still_blocks_after_product_attribution() -> None:
 
 
 def test_governed_debt_does_not_mask_missing_attestation_or_tool_failure() -> None:
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     raw = _check_result(["tools/owner.py"], mypy_findings=[{"path": product}])
     raw["analyzed_paths"] = []
     result = attribute_product_dependencies(raw, [product])
@@ -126,7 +126,7 @@ def test_malformed_finding_cannot_receive_ownership_credit() -> None:
 
 @pytest.mark.parametrize("missing_status", ["profile", "mypy"])
 def test_missing_status_cannot_receive_ownership_credit(missing_status: str) -> None:
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     raw = _check_result(["tools/owner.py"], mypy_findings=[{"path": product}])
     target = raw if missing_status == "profile" else raw["checks"]["mypy"]
     del target["status"]
@@ -159,7 +159,7 @@ def test_pass_without_path_attestation_is_unknown() -> None:
 
 
 def test_progress_preserves_effective_credit_and_separates_product_ratchet() -> None:
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     tool = "tools/owner.py"
     result = {
         "eligible": {"product": [product], "tools": [tool]},
@@ -211,7 +211,7 @@ def test_add_profile_progress_does_not_recompute_or_mutate_enforcement() -> None
 def test_cohort_root_closure_requires_exact_eligible_and_complete_evidence() -> None:
     t1 = "tools/t1.py"
     t2 = "tools/t2.py"
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     check_result = _check_result([t1, t2], mypy_findings=[{"path": product, "dependency": True}])
     check_result["status"] = "failed"
     result = {

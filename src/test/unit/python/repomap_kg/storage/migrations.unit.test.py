@@ -5,11 +5,11 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg import storage as storage_facade
-from repomap_kg.storage import rows as storage_rows, sql as storage_sql
-from repomap_kg.storage import canonical as storage_canonical
-from repomap_kg.graph.edge_kinds import CANONICAL_EDGE_KINDS
-from repomap_kg.storage import (
+from common_lore_index import storage as storage_facade
+from common_lore_index.storage import rows as storage_rows, sql as storage_sql
+from common_lore_index.storage import canonical as storage_canonical
+from common_lore_index.graph.edge_kinds import CANONICAL_EDGE_KINDS
+from common_lore_index.storage import (
     StorageSchemaError,
     apply_migrations,
     default_rdbms_root,
@@ -197,7 +197,7 @@ SELECT 1;
                 stderr="relation already exists\n",
             )
 
-            with patch("repomap_kg.storage.subprocess.run", side_effect=error):
+            with patch("common_lore_index.storage.subprocess.run", side_effect=error):
                 with self.assertRaisesRegex(
                     StorageSchemaError,
                     "relation already exists",

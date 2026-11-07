@@ -113,7 +113,7 @@ class ChildCoverageCapability:
     path_identities: dict[str, PathIdentity]
     permitted_python_paths: tuple[Path, ...]
     portable_command: tuple[str, ...] = field(
-        default_factory=lambda: ("-m", "repomap_kg.coordinator.portable_worker")
+        default_factory=lambda: ("-m", "common_lore_index.coordinator.portable_worker")
     )
     registered_tokens: set[str] = field(default_factory=set)
     launched_pids: dict[str, int] = field(default_factory=dict)
@@ -299,7 +299,7 @@ def issue_coverage_capability(
     suite: str | None = None,
     revision: str | None = None,
     permitted_python_paths: Sequence[Path | str] = (),
-    portable_command: tuple[str, ...] = ("-m", "repomap_kg.coordinator.portable_worker"),
+    portable_command: tuple[str, ...] = ("-m", "common_lore_index.coordinator.portable_worker"),
     allow_test_conformance: bool = False,
 ) -> ChildCoverageCapability:
     """Factory creating and validating a structured ChildCoverageCapability."""
@@ -351,7 +351,7 @@ def issue_coverage_capability(
     session._portable_capability = cap
     repo_root = Path(__file__).resolve().parents[1]
     if (allow_test_conformance
-            and portable_command == ("-m", "repomap_kg.coordinator.portable_worker")
+            and portable_command == ("-m", "common_lore_index.coordinator.portable_worker")
             and Path(session.source_root).resolve() == repo_root / "src/main/python"):
         cap.conformance_root = repo_root / "src/test/support/python"
         cap.conformance_commitment = compute_source_commitment(cap.conformance_root)

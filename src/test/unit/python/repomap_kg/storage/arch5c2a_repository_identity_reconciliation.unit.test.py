@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     repository_identity_reconciliation_sql,
     repository_identity_state_sql,

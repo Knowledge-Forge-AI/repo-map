@@ -7,7 +7,7 @@ from repomap_test_support.source_ingestion import (
     warc_record,
 )
 
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     build_warc_manifest,
     import_warc_source,

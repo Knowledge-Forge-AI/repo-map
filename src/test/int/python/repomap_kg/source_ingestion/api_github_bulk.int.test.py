@@ -13,21 +13,21 @@ from repomap_test_support.source_ingestion_integration import (
     bulk_fixture_root,
     github_api_fixture_root,
 )
-from repomap_kg.ops.ingestion.api import (
+from common_lore_index.ops.ingestion.api import (
     ApiPolicyError,
     FixtureApiTransport,
     acquire_api_source,
     build_api_plan_from_config,
     load_api_source_config,
 )
-from repomap_kg.ops.ingestion.bulk import (
+from common_lore_index.ops.ingestion.bulk import (
     BulkPolicyError,
     bulk_observations_from_plan,
     build_bulk_plan,
     import_bulk_source,
     load_bulk_source_config,
 )
-from repomap_kg.ops.ingestion.github_api import (
+from common_lore_index.ops.ingestion.github_api import (
     FixtureGitHubApiTransport,
     GitHubApiPolicyError,
     PublicGitHubRestTransport,

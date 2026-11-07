@@ -10,7 +10,7 @@ import textwrap
 
 import typing_extensions
 
-from repomap_kg.runtime import python_payload, release
+from common_lore_index.runtime import python_payload, release
 from repomap_test_support import d12_core_image as d12
 from repomap_test_support.portable_worker_scenarios import package_worker_code
 from repomap_test_support.resource_docker_current import CurrentRunDockerContainers
@@ -19,11 +19,11 @@ from repomap_test_support.resource_run import active_resource_run
 PROGRAM = textwrap.dedent('''
     import json, os, pathlib, re, sys
     sys.path[:0] = ['/probe/code/src/main/python', '/probe/support']
-    from repomap_kg.artifacts.store import FileSystemArtifactStore
-    from repomap_kg.coordinator._portable_capability import create_portable_capability
-    from repomap_kg.coordinator._portable_worker_launch import run_portable_worker
+    from common_lore_index.artifacts.store import FileSystemArtifactStore
+    from common_lore_index.coordinator._portable_capability import create_portable_capability
+    from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
     from repomap_test_support.portable_worker_scenarios import create_test_sealed_capability, coordinator_test_limits
-    from repomap_kg.extractors.languages import go_helper
+    from common_lore_index.extractors.languages import go_helper
     tag = go_helper.platform_tag()
     binaries = pathlib.Path(go_helper.__file__).resolve().parents[2] / '_bin'
     executable = binaries / tag / go_helper.HELPER_NAME
@@ -51,7 +51,7 @@ PROGRAM = textwrap.dedent('''
 # Test-only observation preserves every real refusal; it grants no additional authority.
 TRACE = textwrap.dedent('''
     import os, sys
-    from repomap_kg.coordinator import _portable_authority as authority
+    from common_lore_index.coordinator import _portable_authority as authority
     original = authority._validate_audit_event
     def observed(event, args, *rest):
         try:

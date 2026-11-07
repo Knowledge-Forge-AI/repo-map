@@ -5,7 +5,7 @@ from __future__ import annotations
 from argparse import Namespace
 import unittest
 
-from repomap_kg.cli.main import (
+from common_lore_index.cli.main import (
     HOST_CATEGORY_KEY_PREFIX,
     canonical_edge_identity_metadata_from_args,
     canonical_host_mutator_category,
@@ -14,7 +14,7 @@ from repomap_kg.cli.main import (
     psql_args_from_args,
     render_host_mutator_table_value,
 )
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.storage import StorageSchemaError
 
 
 class CliMainBoundariesUnitTests(unittest.TestCase):

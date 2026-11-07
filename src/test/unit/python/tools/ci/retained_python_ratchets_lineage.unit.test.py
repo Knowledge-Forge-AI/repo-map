@@ -54,14 +54,14 @@ def test_manually_raised_candidate_baseline_cannot_self_authorize(
         }]
     elif dimension == "mypy":
         actual["mypy"]["findings"] = [{
-            "module": "repomap_kg.future", "path": MODULE_PATH,
+            "module": "common_lore_index.future", "path": MODULE_PATH,
             "error_code": "arg-type", "normalized_fingerprint": "e" * 64,
             "count": 1,
         }]
     elif dimension == "imports":
         actual["migration_direction_imports"]["edges"] = [{
-            "source_module": "repomap_kg.future", "source_path": MODULE_PATH,
-            "target_module": "repomap_kg.planned", "target_tier": "T3",
+            "source_module": "common_lore_index.future", "source_path": MODULE_PATH,
+            "target_module": "common_lore_index.planned", "target_tier": "T3",
         }]
     else:
         actual["file_length"]["ceilings"] = [
@@ -174,7 +174,7 @@ def test_rename_into_t3_namespace_is_rejected_without_scope_record(
 ) -> None:
     baseline = baseline_fixture()
     repo = initialize_repository(tmp_path, baseline)
-    renamed = repo / "src/main/python/repomap_kg/planned/future.py"
+    renamed = repo / "src/main/python/common_lore_index/planned/future.py"
     renamed.parent.mkdir(parents=True)
     git(repo, "mv", MODULE_PATH, str(renamed.relative_to(repo)))
     candidate = copy.deepcopy(baseline)

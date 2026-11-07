@@ -10,10 +10,10 @@ from datetime import timedelta
 
 import psycopg
 
-from repomap_kg.coordinator import normalize_request
-from repomap_kg.coordinator.core import SyntheticCoordinator
-from repomap_kg.coordinator.storage import ControlStore, SingletonActiveError
-from repomap_kg.coordinator.protocol import WorkerLaunchError
+from common_lore_index.coordinator import normalize_request
+from common_lore_index.coordinator.core import SyntheticCoordinator
+from common_lore_index.coordinator.storage import ControlStore, SingletonActiveError
+from common_lore_index.coordinator.protocol import WorkerLaunchError
 from repomap_test_support.postgres_harness import (
     require_postgres_binaries,
     temporary_postgres,
@@ -317,7 +317,7 @@ class SyntheticCoordinatorIntegrationTests(unittest.TestCase):
         coordinator = SyntheticCoordinator(self.store, "coord-launch-err", failing_launch_worker)
         try:
             coordinator.startup(lambda: None)
-            with unittest.mock.patch("repomap_kg.coordinator._core_disposition.random", _StubRandom):
+            with unittest.mock.patch("common_lore_index.coordinator._core_disposition.random", _StubRandom):
                 self.assertEqual(coordinator.run_once(), "queued")
                 self.assertEqual(coordinator.run_once(), "queued")
                 self.assertEqual(coordinator.run_once(), "failed")

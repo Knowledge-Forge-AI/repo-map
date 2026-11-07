@@ -6,12 +6,12 @@ from pathlib import Path
 from unittest.mock import patch
 
 
-from repomap_kg.server import ops as mcp_ops
-from repomap_kg.server import mcp as mcp_server
-from repomap_kg.ops import config as ops_config
-from repomap_kg.ops import policy_dogfood as policy
-from repomap_kg.ops import refresh as ops_refresh
-from repomap_kg import storage
+from common_lore_index.server import ops as mcp_ops
+from common_lore_index.server import mcp as mcp_server
+from common_lore_index.ops import config as ops_config
+from common_lore_index.ops import policy_dogfood as policy
+from common_lore_index.ops import refresh as ops_refresh
+from common_lore_index import storage
 
 
 class OpsPreflightConfigMcpHelperBranchContract(unittest.TestCase):

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from repomap_kg.storage.authority import AttemptNumber, OperationId
-from repomap_kg.storage.staging_merge import (
+from common_lore_index.storage.authority import AttemptNumber, OperationId
+from common_lore_index.storage.staging_merge import (
     MergeContractError,
     MergeContext,
     build_source_index_merge_statements,
 )
-from repomap_kg.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging_ownership import StageOwner
 
 
 def context() -> MergeContext:

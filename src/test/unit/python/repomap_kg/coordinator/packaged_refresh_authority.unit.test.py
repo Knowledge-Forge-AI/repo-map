@@ -7,18 +7,18 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.coordinator.configured_refresh import (
+from common_lore_index.coordinator.configured_refresh import (
     ConfiguredRefreshResolver,
     _executable_search_path,
 )
-from repomap_kg.coordinator.refresh_adapter import (
+from common_lore_index.coordinator.refresh_adapter import (
     RefreshCapability,
     create_refresh_capability,
     load_refresh_capability,
     remove_refresh_capability,
 )
-from repomap_kg.runtime.database_role_contract import REFRESH_PUBLICATION_ROLE
-from repomap_kg.service_package.environment import apply_service_environment
+from common_lore_index.runtime.database_role_contract import REFRESH_PUBLICATION_ROLE
+from common_lore_index.service_package.environment import apply_service_environment
 from repomap_test_support.executable_authority import approved_psql
 
 

@@ -21,10 +21,10 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-import repomap_kg.runtime.local as runtime_local
-import repomap_kg.storage.readback_driver as storage_readback
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.storage import StorageSchemaError
+import common_lore_index.runtime.local as runtime_local
+import common_lore_index.storage.readback_driver as storage_readback
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.storage import StorageSchemaError
 from repomap_test_support.ops_refresh import VALID_REFRESH_CONFIG
 from repomap_test_support.process_boundary import (
     PsqlInvokedError,
@@ -77,7 +77,7 @@ def _psycopg_connection_failure() -> StorageSchemaError:
 
 def _arrange(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     """Fail the psycopg attempt; let the product's own topology planning run."""
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     real_dispatch = readback.execute_json_readback_with_driver
 
     def dispatch(sql: str, **kwargs: Any):
@@ -120,7 +120,7 @@ def _read(readback, config, mode: str) -> None:
 def test_psycopg_selected_success_creates_no_host_process(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     config = _container_internal_config(tmp_path)
     monkeypatch.setattr(
         readback,

@@ -8,7 +8,7 @@ from typing import Callable, ContextManager, Mapping, Protocol
 from actual_refresh_event_pump import ActualRefreshEventPump, _EventChannel
 from actual_refresh_failure_causality import FailureCausalityAuthority, failure_owner
 from actual_refresh_thresholds import seconds as _seconds
-from repomap_kg.storage.staging_event_transport import StagingEventFrame
+from common_lore_index.storage.staging_event_transport import StagingEventFrame
 from scale11_threshold_evaluator import IncrementalThresholdMonitor, MetricSample
 from scale14_active_boundary import ActiveBoundaryState
 from scale14_resource_sampling import Scale14ResourceSampler

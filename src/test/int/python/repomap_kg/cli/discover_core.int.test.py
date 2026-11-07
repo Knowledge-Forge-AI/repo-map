@@ -204,7 +204,7 @@ class CliDiscoverCoreIntegrationTests(CliIntegrationTestCase):
                 "projects": {"repo-map": {"root_path": "./projects/repo-map", "pg_database": "repomap_repo_map"}},
                 "mcp_servers": {
                     "repomap": {
-                        "command": "repomap-kg", "args": ["python3", "-m", "repomap_kg"],
+                        "command": "repomap-kg", "args": ["python3", "-m", "common_lore_index"],
                         "program": "repomap-kg --serve", "executable": "bin/tool",
                         "env": {"REPOMAP_MCP_CONFIG": "$REPOMAP_MCP_CONFIG", "TOKEN": "cfg1-sensitive-token"},
                         "docs_url": "https://example.com/docs", "mailto": "mailto:dev@example.com",

@@ -7,13 +7,13 @@ from typing import TypeAlias
 
 import pytest
 
-from repomap_kg.storage.staging_observability import (
+from common_lore_index.storage.staging_observability import (
     StagingMeasurementCategory,
     StagingMeasurementEvent,
     StagingMeasurements,
 )
-from repomap_kg.storage.staging_operation_events import StagingOperationEvent
-from repomap_kg.storage.staging_phase_events import StagingPhaseEvent
+from common_lore_index.storage.staging_operation_events import StagingOperationEvent
+from common_lore_index.storage.staging_phase_events import StagingPhaseEvent
 
 
 _LifecycleEvent: TypeAlias = StagingOperationEvent | StagingPhaseEvent

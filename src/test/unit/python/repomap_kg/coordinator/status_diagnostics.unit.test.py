@@ -6,10 +6,10 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.coordinator._control_types import JobStatus
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.transport import validate_public_result
-from repomap_kg.coordinator.core import (
+from common_lore_index.coordinator._control_types import JobStatus
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.transport import validate_public_result
+from common_lore_index.coordinator.core import (
     CoordinatorStore, SyntheticCoordinator, _coordinator_exception_diagnostic,
 )
 
@@ -105,7 +105,7 @@ def test_sanitizer_failure_cannot_prevent_real_catch_reconciliation(monkeypatch)
     def broken(_message):
         raise ImportError("synthetic dependency failure")
 
-    monkeypatch.setattr("repomap_kg.coordinator.core.sanitize_diagnostic_summary", broken)
+    monkeypatch.setattr("common_lore_index.coordinator.core.sanitize_diagnostic_summary", broken)
     store = DiagnosticStore()
 
     def fail(_claim, _cancel):
@@ -125,7 +125,7 @@ def test_diagnostic_construction_preserves_process_control(monkeypatch, signal):
     def interrupted(_message):
         raise signal()
 
-    monkeypatch.setattr("repomap_kg.coordinator.core.sanitize_diagnostic_summary", interrupted)
+    monkeypatch.setattr("common_lore_index.coordinator.core.sanitize_diagnostic_summary", interrupted)
     with pytest.raises(signal):
         _coordinator_exception_diagnostic(ValueError("safe"))
 

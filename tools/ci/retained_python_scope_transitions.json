@@ -4301,6 +4301,1246 @@
       "source_commit": "bec5bff3550fbfba68a4cecccc8a005c0158de7a",
       "source_manifest_sha256": "450ebca92f26439029e7f2b29a53ffb27f7bbe641dca45dce704893c8b4ea696",
       "status_path": "tools/ci/nav47-ci85-repair.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.cli._config_migration",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/cli/_config_migration.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_layout",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_layout.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409",
+      "new_selected_set_sha256": "98e91497be91574e8b927c7fc4d99edc2b578a8b4174d2e599e7b797a0523209",
+      "old_ownership_manifest_sha256": "cd794c217b9565f9a6eb5d84143c5ebb57c418e291c0e783a20b6fda9e522a14",
+      "old_selected_set_sha256": "005949e5ed5bf6410a42214852dacfd23f8a9e7a334d41efbf34ac6251fde882",
+      "phase": "REPOMAP-CLOE-CONFIG1",
+      "reason": "ADR0109: admit two clean configuration/CLI owners without changing any prior selection or debt.",
+      "source_commit": "5ad00d162ad8a04430874275246a53227578c533",
+      "source_manifest_sha256": "cd794c217b9565f9a6eb5d84143c5ebb57c418e291c0e783a20b6fda9e522a14",
+      "status_path": "tools/ci/cloe-config1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime.setup_config",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/setup_config.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
+      "new_selected_set_sha256": "473365ded39135f2333a986591f0ac9bfe267b71b649cc50c589a761dd677ff1",
+      "old_ownership_manifest_sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409",
+      "old_selected_set_sha256": "98e91497be91574e8b927c7fc4d99edc2b578a8b4174d2e599e7b797a0523209",
+      "phase": "REPOMAP-CLOE-RUNTIME1",
+      "reason": "ADR0112: one clean runtime producer authority owner; all prior selections/debt preserved.",
+      "source_commit": "bec838a210f3ffea84986ae85986e4081b2e8291",
+      "source_manifest_sha256": "8e059686b8e6c49b05edb1c0f825a2b9ba3162842f172cc78df09b1b318e7409",
+      "status_path": "tools/ci/cloe-runtime1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration_fs",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration_fs.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration_journal",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration_journal.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration_recovery",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration_recovery.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
+      "new_selected_set_sha256": "f744f6ff7fcbeba4df97a9cec675a8cd6c135ec31f1938911f0f7050d19b1571",
+      "old_ownership_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
+      "old_selected_set_sha256": "473365ded39135f2333a986591f0ac9bfe267b71b649cc50c589a761dd677ff1",
+      "phase": "REPOMAP-CLOE-MIGRATION1",
+      "reason": "ADR0114: four clean configuration migration apply/recovery owners; all prior selections/debt preserved.",
+      "source_commit": "433a2edf89284f71f10996d20c88bcf3e311c9de",
+      "source_manifest_sha256": "b9c7e79d7cf29e9227ab0b2c71a74bbca278da0981121e952778c99b0842a8b4",
+      "status_path": "tools/ci/cloe-migration1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.ops.home_selection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/home_selection.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325",
+      "new_selected_set_sha256": "3ac96bebcddc42d1706a0753f9fa6f761327617ff30b915a3156bf4583858691",
+      "old_ownership_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
+      "old_selected_set_sha256": "f744f6ff7fcbeba4df97a9cec675a8cd6c135ec31f1938911f0f7050d19b1571",
+      "phase": "REPOMAP-CLOE-OWNERSHIP1",
+      "reason": "ADR0118: one clean default-home selection owner; all prior selections/debt preserved.",
+      "source_commit": "ed23f6fff49b7796ee70e50e29d6e4db4779d6fe",
+      "source_manifest_sha256": "c71a17151a5e657bd3c95e6e3eac59e1f99287921b9a563348c7ae2a62db3152",
+      "status_path": "tools/ci/cloe-ownership1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "repomap_kg.runtime.installation_ownership",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/runtime/installation_ownership.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "0056c5299d8f230e578e22180b11889b6ef01ca36aaf5f3e7d8d62afb0da50d2",
+      "new_selected_set_sha256": "a2f49f054a9efaadd06916db66436a95799de25b0b84c19b857536c72b1cdf63",
+      "old_ownership_manifest_sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325",
+      "old_selected_set_sha256": "3ac96bebcddc42d1706a0753f9fa6f761327617ff30b915a3156bf4583858691",
+      "phase": "REPOMAP-CLOE-INSTALL1",
+      "reason": "ADR0121: one clean installed-ownership diagnostic owner; all prior selections/debt preserved.",
+      "source_commit": "b90fa8e9c8126be2eac73620001c3869b2cf8e33",
+      "source_manifest_sha256": "45f96a9cb887dabd232f6fb3641ffaab2f2f9bd7819fe0de752b9ecb0de32325",
+      "status_path": "tools/ci/cloe-install1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.entrypoints",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/entrypoints.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.__main__",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/__main__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.ops.config_migration",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/ops/config_migration.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.server",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "repomap_kg.server.mcp",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/repomap_kg/server/mcp.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "9d530ac19861c0d8a8e8c4f027a144309b4657a3c2753688b8c01e7e79564243",
+      "new_selected_set_sha256": "34d4044ce3a54dd5f1c0ead9214eb2630218a3a546c322e0e48390d11f77cf47",
+      "old_ownership_manifest_sha256": "0679fa6b3f452fb5b679b0b5a5b7f179039e23a0bbdf476a0e284886a6cbfbe4",
+      "old_selected_set_sha256": "c6498d1713ea22497e655ebfec3f6a08fc912deec6cde5a0f6574bb5c4afb817",
+      "phase": "REPOMAP-CLOE-CUTOVER1-CONSUMERS1",
+      "reason": "ADR0123 finite canonical entrypoint and documented legacy facades, admitted with zero new numerical debt.",
+      "source_commit": "644c139629a3c4680c9bfe84c64efc357329af89",
+      "source_manifest_sha256": "0679fa6b3f452fb5b679b0b5a5b7f179039e23a0bbdf476a0e284886a6cbfbe4",
+      "status_path": "tools/ci/cloe-cutover1-consumers1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.retrieval",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.projection_build",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/projection_build.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.projection_chunks",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/projection_chunks.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.projection_evidence",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/projection_evidence.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.projection_policy",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/projection_policy.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.projection_query",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/projection_query.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.projection_text",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/projection_text.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.publication_binding",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/publication_binding.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.query_contracts",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/query_contracts.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "b1cd1ecb821c9dd212a0a486b45a833a8b2a863db553ce5ebd8a424f3d2c4d22",
+      "new_selected_set_sha256": "a15fa73ac0793165753971558fc1683eeeb35ae79683115bc65f50f5b24ad797",
+      "old_ownership_manifest_sha256": "9d530ac19861c0d8a8e8c4f027a144309b4657a3c2753688b8c01e7e79564243",
+      "old_selected_set_sha256": "34d4044ce3a54dd5f1c0ead9214eb2630218a3a546c322e0e48390d11f77cf47",
+      "phase": "REPOMAP-CLOE-RETRIEVAL1",
+      "reason": "ADR0127 clean retrieval package admission; all predecessor selection and numerical debt/tool sections unchanged.",
+      "source_commit": "970d7dc9f6b895a210953e38bccb54cc839ccf75",
+      "source_manifest_sha256": "9d530ac19861c0d8a8e8c4f027a144309b4657a3c2753688b8c01e7e79564243",
+      "status_path": "tools/ci/cloe-retrieval1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.cli._parser_ops_lexical",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/_parser_ops_lexical.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.cli.ops_lexical_commands",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/ops_lexical_commands.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.lexical_output",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/lexical_output.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.lexical_publication",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/lexical_publication.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.lexical_service",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/lexical_service.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_aliases",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_aliases.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_capture",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_capture.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_envelopes",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_envelopes.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.lexical_policy",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/lexical_policy.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.runtime._lexical_restore",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/runtime/_lexical_restore.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.server._postgres_investigation_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/server/_postgres_investigation_queries.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_build_lease",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_build_lease.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_driver",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_driver.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_fence_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_fence_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_lifecycle",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_lifecycle.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_literal_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_literal_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_population",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_population.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_probe",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_probe.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_query_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_query_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.lexical_revoke",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/lexical_revoke.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.postgres_navigation_search",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/postgres_navigation_search.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.postgres_navigation_sql",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/postgres_navigation_sql.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.postgres_node_locations",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/postgres_node_locations.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "c30790d5ecf84463300c11e99364536a2e73147657b707243fdb3d1d21938525",
+      "new_selected_set_sha256": "8cf9304b5882a3dadf706e9abc0a54d7387428aed7b95b8fcaf7f94837b5e68a",
+      "old_ownership_manifest_sha256": "b1cd1ecb821c9dd212a0a486b45a833a8b2a863db553ce5ebd8a424f3d2c4d22",
+      "old_selected_set_sha256": "a15fa73ac0793165753971558fc1683eeeb35ae79683115bc65f50f5b24ad797",
+      "phase": "REPOMAP-CLOE-LEXICAL1",
+      "reason": "ADR0129 clean lexical and PG parity owner admission; all predecessor selection and numerical debt/tool sections unchanged.",
+      "source_commit": "ae636963abcf3c952150bb738b122464cec9399f",
+      "source_manifest_sha256": "b1cd1ecb821c9dd212a0a486b45a833a8b2a863db553ce5ebd8a424f3d2c4d22",
+      "status_path": "tools/ci/cloe-lexical1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.cli._parser_ops_context",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/_parser_ops_context.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.cli.ops_context_commands",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/ops_context_commands.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.advisory_freshness",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/advisory_freshness.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_admission",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_admission.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_assembly",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_assembly.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_budget",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_budget.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_budget_reservation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_budget_reservation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_contracts",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_contracts.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_identity",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_identity.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_packet_builder",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_packet_builder.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.context_work",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/context_work.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.intent_policy",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/intent_policy.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.intent_ranking",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/intent_ranking.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.retrieval.source_selection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/retrieval/source_selection.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.server.context_read_postgres",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/server/context_read_postgres.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.server.context_read_sqlite",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/server/context_read_sqlite.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.context_postgres_identity",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/context_postgres_identity.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.sqlite_local.context_expansion_queries",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/sqlite_local/context_expansion_queries.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "2639b792ba3fe54eac90221240a63563d32add4ea15b12297ff287ded7eafc18",
+      "new_selected_set_sha256": "e58aad8fa81ca629e8dc4557ed2dffe972b5ed09ac6315d4d642f23b12be8790",
+      "old_ownership_manifest_sha256": "c30790d5ecf84463300c11e99364536a2e73147657b707243fdb3d1d21938525",
+      "old_selected_set_sha256": "8cf9304b5882a3dadf706e9abc0a54d7387428aed7b95b8fcaf7f94837b5e68a",
+      "phase": "REPOMAP-CLOE-CONTEXT1",
+      "reason": "ADR0133 clean context owner admission; all predecessor selection and numerical debt/tool sections unchanged.",
+      "source_commit": "7babd887cb6b46c2791a22d57baddcdc24914463",
+      "source_manifest_sha256": "c30790d5ecf84463300c11e99364536a2e73147657b707243fdb3d1d21938525",
+      "status_path": "tools/ci/cloe-context1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.artifacts.rust_bundle_guard",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/artifacts/rust_bundle_guard.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.canonicalization.rust_pilot_family",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/canonicalization/rust_pilot_family.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.archive_verifier",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/archive_verifier.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.bounded_exec",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/bounded_exec.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.component_lock",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/component_lock.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.construction",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/construction.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.containment",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/containment.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.controller",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.controller_audit",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/controller_audit.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.docker_boundary",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/docker_boundary.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest.containment_probes",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/containment_probes.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest.install_readback",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/install_readback.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest.parse_helper",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/parse_helper.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest.runtime_probe",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/runtime_probe.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest.setup_writer",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest/setup_writer.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.guest_sources",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/guest_sources.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.helper_protocol",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/helper_protocol.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.observations",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/observations.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.pilot",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/pilot.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.prepared_profile",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/prepared_profile.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.probe_material",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/probe_material.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.readback",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/readback.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.receipts",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/receipts.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.selection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/selection.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.extractors.rust_pilot.witness_state",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/extractors/rust_pilot/witness_state.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.graph.rust_keys",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/rust_keys.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.rust_pilot_publication",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/rust_pilot_publication.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.runtime.release_dockerfile",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/runtime/release_dockerfile.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage.staged_prepared_refresh",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/staged_prepared_refresh.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472",
+      "new_selected_set_sha256": "e91899e06521fb4751ad3ec3442ad0b7231d36ded8355e328757465e3b858ea6",
+      "old_ownership_manifest_sha256": "2639b792ba3fe54eac90221240a63563d32add4ea15b12297ff287ded7eafc18",
+      "old_selected_set_sha256": "5aacf4291dc50e94449ea69a33ce179d0678ee034254bbbbbfa3cca1fc59e6d3",
+      "phase": "REPOMAP-CLOE-RUST-PILOT1",
+      "reason": "ADR0155 clean exact pilot owner admission; every inherited owner, numerical debt, tool, import and length ceiling remains unchanged.",
+      "source_commit": "a06142b17d026431ecf7596d246218d5c0883849",
+      "source_manifest_sha256": "2639b792ba3fe54eac90221240a63563d32add4ea15b12297ff287ded7eafc18",
+      "status_path": "tools/ci/cloe-rust-pilot1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.ops._portable_worker_terms",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/_portable_worker_terms.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._contracts",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_contracts.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._controls",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_controls.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._observer",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_observer.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._observer_reporting",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_observer_reporting.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._projections",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_projections.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "4f809b335b3f75b59a52883f57c6bf4a170dcb606c0c4297dc2b0a8ee7a8f69e",
+      "new_selected_set_sha256": "47e30f15bb9635db1c002eb9e69d75cdb44efafd37b6115d27b9682b5372066a",
+      "old_ownership_manifest_sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472",
+      "old_selected_set_sha256": "e91899e06521fb4751ad3ec3442ad0b7231d36ded8355e328757465e3b858ea6",
+      "phase": "REPOMAP-CLOE-RESOURCE-EXPERIENCE1",
+      "reason": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "source_commit": "4c61936725ed711cc0fe655eec143d90ea5f6143",
+      "source_manifest_sha256": "2d33b5c297ff077d972079482f1bba3231c892c19b3dc86313e7cbe306da8472",
+      "status_path": "tools/ci/cloe-resource-experience1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.artifacts._source_sealing_io",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/artifacts/_source_sealing_io.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage._repository_publication_lock",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/_repository_publication_lock.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "3ce2ff3654201fafc321fdf6627b75a28e838aea0dcbcbad0fe06ff5d9c79506",
+      "new_selected_set_sha256": "ddaa2a68b8937ba8a1bacc740889d2ef15ab50cf9a7792979f2215279b362887",
+      "old_ownership_manifest_sha256": "4f809b335b3f75b59a52883f57c6bf4a170dcb606c0c4297dc2b0a8ee7a8f69e",
+      "old_selected_set_sha256": "47e30f15bb9635db1c002eb9e69d75cdb44efafd37b6115d27b9682b5372066a",
+      "phase": "REPOMAP-CLOE-RESOURCE-GOVERNANCE1",
+      "reason": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "source_commit": "7631077c3a8c24aa6fd8151e0730f2acac7eb904",
+      "source_manifest_sha256": "4f809b335b3f75b59a52883f57c6bf4a170dcb606c0c4297dc2b0a8ee7a8f69e",
+      "status_path": "tools/ci/cloe-resource-governance1-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.cli._parser_ops_resource",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/_parser_ops_resource.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.cli._resource_report_session",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/_resource_report_session.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.cli.ops_resource_commands",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/cli/ops_resource_commands.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_reports",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_reports/__init__.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_reports._admission",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_reports/_admission.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_reports._codec",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_reports/_codec.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_reports._delivery",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_reports/_delivery.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_reports._files",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_reports/_files.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_reports._render",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_reports/_render.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._canonical",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_canonical.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._context_projection",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_context_projection.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._lexical_views",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_lexical_views.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.ops.resource_view._slots",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/ops/resource_view/_slots.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "452676b21f06eef030dd89565ffac4a977d49be16d47d4e08311cd4dbb0c4700",
+      "new_selected_set_sha256": "a6aca08f616955edf405731783d7fcbd490326f69e6721cb427187e1950f14fa",
+      "old_ownership_manifest_sha256": "3ce2ff3654201fafc321fdf6627b75a28e838aea0dcbcbad0fe06ff5d9c79506",
+      "old_selected_set_sha256": "ddaa2a68b8937ba8a1bacc740889d2ef15ab50cf9a7792979f2215279b362887",
+      "phase": "REPOMAP-CLOE-RESOURCE-REPORT1",
+      "reason": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "source_commit": "08956ee9f0a81d900422522db57a9f2f1bff6d4b",
+      "source_manifest_sha256": "3ce2ff3654201fafc321fdf6627b75a28e838aea0dcbcbad0fe06ff5d9c79506",
+      "status_path": "tools/ci/cloe-resource-report1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

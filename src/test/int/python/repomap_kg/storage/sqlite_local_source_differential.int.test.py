@@ -39,7 +39,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.server.source_read_store import (
+from common_lore_index.server.source_read_store import (
     IngestedSourcesQuery,
     SourceFeedItemExplanationQuery,
     SourceFeedItemsQuery,
@@ -47,8 +47,8 @@ from repomap_kg.server.source_read_store import (
     SourceRunsQuery,
     SourceSummaryQuery,
 )
-from repomap_kg.server.sqlite_read_binding import SqliteSourceReadStore
-from repomap_kg.storage import (
+from common_lore_index.server.sqlite_read_binding import SqliteSourceReadStore
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     ingested_source_records_to_jsonable,
@@ -63,10 +63,10 @@ from repomap_kg.storage import (
     source_run_records_to_jsonable,
     source_summary_to_jsonable,
 )
-from repomap_kg.storage.readback_driver import READBACK_DRIVER_ENV
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database, read_transaction
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
-from repomap_kg.storage.sqlite_local.source_queries import source_observations
+from common_lore_index.storage.readback_driver import READBACK_DRIVER_ENV
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database, read_transaction
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.storage.sqlite_local.source_queries import source_observations
 from repomap_test_support.portable_publication_fixtures import authority, binding, publish_portable_bundle
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.sqlite_local_feed_corpus import (

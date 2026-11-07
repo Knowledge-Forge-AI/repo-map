@@ -31,7 +31,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.storage.sqlite_local.migrations import schema_objects_digest
+from common_lore_index.storage.sqlite_local.migrations import schema_objects_digest
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_shell_source, write_sqlite_home
 from repomap_test_support.sqlite_local_harness import (
     LocalHarness,
@@ -53,13 +53,13 @@ V2_ROW = ("sqlite-local-v2-observation-path-index",
 V2_PHYSICAL_DIGEST = "06f2cd0e35bd77d7dbc14ec894637c4b7b4b1605f25416b0d1922b7f9ccf4afe"
 INDEX = "idx_raw_observations_path_run"
 POSTGRES_IMPLEMENTATION = {
-    "repomap_kg.coordinator.local_mode",
-    "repomap_kg.coordinator.local_lifecycle",
-    "repomap_kg.service_package.api",
-    "repomap_kg.storage.staged_ingestion",
-    "repomap_kg.runtime.maintenance",
-    "repomap_kg.runtime.release_cluster",
-    "repomap_kg.ops.refresh",
+    "common_lore_index.coordinator.local_mode",
+    "common_lore_index.coordinator.local_lifecycle",
+    "common_lore_index.service_package.api",
+    "common_lore_index.storage.staged_ingestion",
+    "common_lore_index.runtime.maintenance",
+    "common_lore_index.runtime.release_cluster",
+    "common_lore_index.ops.refresh",
     "psycopg",
 }
 

@@ -14,14 +14,14 @@ from typing import Any, cast
 
 import pytest
 
-from repomap_kg.runtime import _extension_restore_exec as exec_mod
-from repomap_kg.runtime import _extension_restore_preflight as preflight_mod
-from repomap_kg.runtime._backup_process import BoundedProcessError, ProcessRetirement
-from repomap_kg.runtime._backup_provenance import DEFAULT_TOC_TIMEOUT_SECONDS, MAX_TOC_OUTPUT_BYTES, provenance_error
-from repomap_kg.runtime._extension_restore_compensation import cleanup_extension_restore_intents
-from repomap_kg.runtime._extension_restore_custody import DatabaseCreationIntent, retain_unknown_commands
-from repomap_kg.runtime._extension_restore_exec import ExecOutcome, bound_exec_custody
-from repomap_kg.runtime._extension_restore_exec_control import (
+from common_lore_index.runtime import _extension_restore_exec as exec_mod
+from common_lore_index.runtime import _extension_restore_preflight as preflight_mod
+from common_lore_index.runtime._backup_process import BoundedProcessError, ProcessRetirement
+from common_lore_index.runtime._backup_provenance import DEFAULT_TOC_TIMEOUT_SECONDS, MAX_TOC_OUTPUT_BYTES, provenance_error
+from common_lore_index.runtime._extension_restore_compensation import cleanup_extension_restore_intents
+from common_lore_index.runtime._extension_restore_custody import DatabaseCreationIntent, retain_unknown_commands
+from common_lore_index.runtime._extension_restore_exec import ExecOutcome, bound_exec_custody
+from common_lore_index.runtime._extension_restore_exec_control import (
     SETTLE_PROCESS_SH,
     SUPERVISOR_SH,
     parse_process_settlement,
@@ -29,12 +29,12 @@ from repomap_kg.runtime._extension_restore_exec_control import (
     split_container_exec,
     supervised_command,
 )
-from repomap_kg.runtime._extension_restore_lifecycle import _reconcile_failed_create
-from repomap_kg.runtime._extension_restore_native import run_bounded_ext_command
-from repomap_kg.runtime._extension_restore_preflight import _list_archive_toc
-from repomap_kg.runtime.backup_commands import planned_psql_command, planned_psql_stdin_command
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import LocalRuntimeDiagnostic, build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime._extension_restore_lifecycle import _reconcile_failed_create
+from common_lore_index.runtime._extension_restore_native import run_bounded_ext_command
+from common_lore_index.runtime._extension_restore_preflight import _list_archive_toc
+from common_lore_index.runtime.backup_commands import planned_psql_command, planned_psql_stdin_command
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import LocalRuntimeDiagnostic, build_local_runtime_plan, setup_local_runtime
 
 CONTAINER_ID = "c" * 64
 

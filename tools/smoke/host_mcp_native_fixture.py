@@ -29,16 +29,16 @@ import shutil
 import stat
 from typing import Any
 
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.direct_publication import publish_observation_generation
-from repomap_kg.ops.ingestion.source import FeedFetchResponse, ingest_feed_source
-from repomap_kg.ops.resolved_config import configured_repository_identity
-from repomap_kg.runtime.database_roles import READ_STATUS_ROLE, RoleSecrets
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.postgres_route import effective_postgres_route, readback_postgres_authority
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.direct_publication import publish_observation_generation
+from common_lore_index.ops.ingestion.source import FeedFetchResponse, ingest_feed_source
+from common_lore_index.ops.resolved_config import configured_repository_identity
+from common_lore_index.runtime.database_roles import READ_STATUS_ROLE, RoleSecrets
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.postgres_route import effective_postgres_route, readback_postgres_authority
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.sql_core import sql_literal
 from repomap_test_support.host_mcp_publication import (
     COUNTED_TABLES, SHELL_LIB, SHELL_MAIN, HostPublication, provision_roles, role_secrets,
 )

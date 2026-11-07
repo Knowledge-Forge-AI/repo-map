@@ -4,13 +4,13 @@ import sys
 
 import pytest
 
-from repomap_kg.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
+from common_lore_index.coordinator.protocol import WorkerLaunchSpec, run_worker_spec
 from repomap_test_support.portable_worker_conformance import run_portable_worker_conformance
 
 
 @pytest.mark.parametrize("completion", ["eof", "delayed-zero", "exit-error", "late-protocol", "blocked-exit", "group-error", "stdout-unsettled", "stderr-unsettled"])
 def test_terminal_closes_input_and_preserves_real_completion(completion, monkeypatch):
-    from repomap_kg.coordinator.process_supervision import ManagedProcess
+    from common_lore_index.coordinator.process_supervision import ManagedProcess
     import threading
 
     if completion == "group-error":
@@ -102,9 +102,9 @@ if mode == "blocked-exit":
 
 @pytest.mark.parametrize("completion", ["normal", "exit-error", "duplicate", "cleanup-error"])
 def test_parity_consumer_requires_successful_process_completion(tmp_path, monkeypatch, completion):
-    from repomap_kg.artifacts import parity_harness
-    from repomap_kg.coordinator._portable_worker_launch import _run_portable_worker_command
-    from repomap_kg.coordinator import _portable_worker_launch
+    from common_lore_index.artifacts import parity_harness
+    from common_lore_index.coordinator._portable_worker_launch import _run_portable_worker_command
+    from common_lore_index.coordinator import _portable_worker_launch
     from repomap_test_support.portable_publication_fixtures import create_single_source_graph_config
 
     source = tmp_path / "source"

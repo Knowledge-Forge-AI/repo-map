@@ -8,21 +8,21 @@ from unittest.mock import MagicMock
 
 from repomap_test_support.ops_refresh import OpsRefreshUnitTestCase
 
-from repomap_kg.ops._refresh_psql import (
+from common_lore_index.ops._refresh_psql import (
     _load_file_observations_with_ops_psql,
     _ops_psql_executions,
     _ops_psql_tail_args,
 )
-from repomap_kg.ops.ingestion._source_archive_scan import (
+from common_lore_index.ops.ingestion._source_archive_scan import (
     _is_hidden_relative_path,
     _resolve_archive_artifact_path,
 )
-from repomap_kg.ops.ingestion.source_archive import (
+from common_lore_index.ops.ingestion.source_archive import (
     SourcePolicyError,
     load_archive_source_config,
 )
-from repomap_kg.storage import StorageSchemaError
-from repomap_kg.storage.publication import (
+from common_lore_index.storage import StorageSchemaError
+from common_lore_index.storage.publication import (
     AttemptNumber,
     JobId,
     RunPublicationAttempt,

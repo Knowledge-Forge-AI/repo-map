@@ -77,7 +77,7 @@ def candidate(tmp_path: Path, paths: tuple[str, ...]) -> tuple[Path, Path]:
               "justification": "Synthetic maintained product owner", "disposition": "retained_python_ratcheted"}
              for item in selection]
     if not rules:
-        rules = [{"module_prefix": "repomap_kg", "match": "exact", "ownership_class": "python_retained",
+        rules = [{"module_prefix": "common_lore_index", "match": "exact", "ownership_class": "python_retained",
                   "architecture_box": "go_control_and_api", "enforcement_tier": "T1-future",
                   "justification": "Synthetic product root owner", "disposition": "retained_python_ratcheted"}]
     (folder / "python_type_ownership.json").write_text(json.dumps({
@@ -180,7 +180,7 @@ def test_analysis_inputs_are_separate_from_executable_fixtures(tmp_path: Path) -
 
 
 @pytest.mark.parametrize("path", [
-    "src/main/python/repomap_kg/owner.py", "tools/owner.py",
+    "src/main/python/common_lore_index/owner.py", "tools/owner.py",
     "src/test/support/python/owner.py", "src/test/unit/python/owner.py",
     "src/test/int/python/owner.py", "src/test/conftest.py",
 ])
@@ -239,7 +239,7 @@ def test_duplicate_classification_fails(tmp_path: Path) -> None:
 
 
 def test_eligible_deferred_product_is_unassigned(tmp_path: Path) -> None:
-    paths = candidate(tmp_path, ("src/main/python/repomap_kg/example.py",))
+    paths = candidate(tmp_path, ("src/main/python/common_lore_index/example.py",))
     change(paths[0], status="deferred_decomposition")
     paths[1].write_text(json.dumps(baseline([])))
     manifest_path = tmp_path / "tools/ci/python_type_ownership.json"
@@ -252,12 +252,12 @@ def test_eligible_deferred_product_is_unassigned(tmp_path: Path) -> None:
     paths[1].write_text(json.dumps(document))
     (tmp_path / "tools/ci/python_retention_transitions.json").write_text(json.dumps({
         "schema": "repomap-python-retention-transitions-v1", "records": [{
-            "path": "src/main/python/repomap_kg/example.py", "disposition": "pending_admission",
+            "path": "src/main/python/common_lore_index/example.py", "disposition": "pending_admission",
             "superseded_rule": rule, "reason": "Maintain Python obligations while migration remains forecast",
         }],
     }))
     assert validate(tmp_path, paths)["unassigned"]["product"] == [
-        "src/main/python/repomap_kg/example.py"]
+        "src/main/python/common_lore_index/example.py"]
 
 
 def test_removal_requires_preserved_history(tmp_path: Path) -> None:
@@ -312,7 +312,7 @@ def test_source_change_invalidates_enforcement(tmp_path: Path, monkeypatch: pyte
 def test_product_type_tool_failure_is_retained_separately(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    paths = candidate(tmp_path, ("src/main/python/repomap_kg/owner.py",))
+    paths = candidate(tmp_path, ("src/main/python/common_lore_index/owner.py",))
     result = validate(tmp_path, paths)
     def run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess:
         if "tools/ci/retained_python_ratchets.py" in command:
@@ -343,7 +343,7 @@ def test_dependency_attribution_requires_current_product_pass_and_clean_root(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     product_passed: bool, direct_debt: bool,
 ) -> None:
-    product = "src/main/python/repomap_kg/owner.py"
+    product = "src/main/python/common_lore_index/owner.py"
     tool = "tools/owner.py"
     paths = candidate(tmp_path, (product, tool))
     result = validate(tmp_path, paths)

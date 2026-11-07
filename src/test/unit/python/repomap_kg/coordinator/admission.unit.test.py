@@ -9,16 +9,16 @@ import time
 
 import pytest
 
-from repomap_kg.coordinator import _transport_validation as validation
-from repomap_kg.coordinator import limits
-from repomap_kg.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
-from repomap_kg.coordinator.contracts import normalize_request
-from repomap_kg.coordinator.local_mode import (
+from common_lore_index.coordinator import _transport_validation as validation
+from common_lore_index.coordinator import limits
+from common_lore_index.coordinator.client import CoordinatorClientError, LocalCoordinatorClient
+from common_lore_index.coordinator.contracts import normalize_request
+from common_lore_index.coordinator.local_mode import (
     CoordinatorModeError,
     run_coordinator_refresh,
 )
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.coordinator.transport import (
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.coordinator.transport import (
     LocalRequestDispatcher,
     TransportError,
     UnixSocketService,

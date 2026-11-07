@@ -4,7 +4,7 @@ import socketserver
 from unittest.mock import patch
 
 import pytest
-from repomap_kg.coordinator import transport
+from common_lore_index.coordinator import transport
 
 
 @pytest.mark.parametrize("completion_stage", ["handler_finish", "socket_shutdown"])
@@ -148,7 +148,7 @@ def test_live_handler_saturation_refuses_without_handoff_wait(tmp_path):
 
 def test_client_reuses_capacity_after_response_before_handler_finish(tmp_path):
     """Response visibility ends work; delayed stream teardown owns no work slot."""
-    from repomap_kg.coordinator.client import LocalCoordinatorClient
+    from common_lore_index.coordinator.client import LocalCoordinatorClient
 
     tmp_path.chmod(0o700)
     dispatcher = transport.LocalRequestDispatcher(

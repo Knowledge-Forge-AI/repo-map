@@ -8,9 +8,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.config import OpsConfigDiagnostic, OpsConfigError
-from repomap_kg.ops.refresh import OpsRefreshError
+from common_lore_index.cli import main
+from common_lore_index.ops.config import OpsConfigDiagnostic, OpsConfigError
+from common_lore_index.ops.refresh import OpsRefreshError
 
 CONFIG = SimpleNamespace(label="config-double")
 PRIVATE_MESSAGE = (
@@ -29,7 +29,7 @@ def run_cli(argv):
 
 
 def patch_cli(stack, name, **kwargs):
-    return stack.enter_context(patch(f"repomap_kg.cli.{name}", **kwargs))
+    return stack.enter_context(patch(f"common_lore_index.cli.{name}", **kwargs))
 
 
 class CliBaselineDispatchGraphBaselineContractTests(unittest.TestCase):

@@ -14,33 +14,33 @@ import time
 import psycopg as psycopg
 
 from actual_refresh_startup import ActualRefreshStartup
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.ops.config_loading import load_ops_config as load_ops_config
-from repomap_kg.ops.generations import (
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.ops.config_loading import load_ops_config as load_ops_config
+from common_lore_index.ops.generations import (
     canonicalizer_generation,
     config_generation,
     extractor_generation,
     source_generation,
 )
-from repomap_kg.runtime.backup_commands import (
+from common_lore_index.runtime.backup_commands import (
     read_runtime_password as read_runtime_password,
 )
-from repomap_kg.runtime.local import (
+from common_lore_index.runtime.local import (
     down_local_runtime as down_local_runtime,
     setup_local_runtime as setup_local_runtime,
     up_local_runtime as up_local_runtime,
 )
-from repomap_kg.runtime.plan import (
+from common_lore_index.runtime.plan import (
     LocalRuntimePlan as LocalRuntimePlan,
     build_local_runtime_plan as build_local_runtime_plan,
 )
-from repomap_kg.storage.authority import PublicationGenerations
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
-from repomap_kg.storage.backend_telemetry import read_telemetry_event
-from repomap_kg.storage.readback_driver import _psycopg_connection_params_from_psql_args
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.structural_digest import digest_prepared_stage_rows
-from repomap_kg.storage.staging_event_transport import StagingEventChannel
+from common_lore_index.storage.authority import PublicationGenerations
+from common_lore_index.storage.backend_observer import BackendOwnershipObserver
+from common_lore_index.storage.backend_telemetry import read_telemetry_event
+from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.structural_digest import digest_prepared_stage_rows
+from common_lore_index.storage.staging_event_transport import StagingEventChannel
 from scale12_resource_sampling import (
     Scale12ResourceSampler,
     read_cluster_wal_bytes,
@@ -341,7 +341,7 @@ def _refresh_argv(
             "--json",
         )
     if cancel_code is None:
-        return (sys.executable, "-m", "repomap_kg", *product)
+        return (sys.executable, "-m", "common_lore_index", *product)
     controls = [
         sys.executable,
         "-m",

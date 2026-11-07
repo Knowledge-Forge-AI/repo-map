@@ -1,0 +1,11 @@
+{
+  "catalog_sha256": "sha256:d0309f95e1b017a4b1788f8ac5ef4194a2c07546e70a573a178e651c4d46a034",
+  "committed_fixture_files": {
+    "mixed-v1/freeze-v1.json": "sha256:bee7c72ccdb2a6cef2673351f6b4caa81893a252338be4c8a6585f22b6cf5a99",
+    "task_catalog.json": "sha256:d0309f95e1b017a4b1788f8ac5ef4194a2c07546e70a573a178e651c4d46a034"
+  },
+  "fixture_id": "context-v1",
+  "mixed_v1_freeze_sha256": "sha256:bee7c72ccdb2a6cef2673351f6b4caa81893a252338be4c8a6585f22b6cf5a99",
+  "policy_digest": "sha256:3dca874db61e0f4e0e72994d31434c06b8ada53f30719c5e534c4e7d005b2f64",
+  "schema_version": "cloe-context-freeze-v1"
+}

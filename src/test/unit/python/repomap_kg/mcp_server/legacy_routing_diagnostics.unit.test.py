@@ -2,18 +2,18 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.storage import CanonicalStorageSummaryRecord
+from common_lore_index.storage import CanonicalStorageSummaryRecord
 from repomap_test_support.mcp_server import McpServerTestSupport
 
 class McpServerLegacyRoutingDiagnosticUnitTests(McpServerTestSupport):
     def test_live_ops2_legacy_project_tools_reject_hidden_and_disabled_graphs(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_canonical_nodes
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_canonical_nodes
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
 
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
-            with patch("repomap_kg.server.mcp.query_canonical_node_records") as query:
+            with patch("common_lore_index.server.mcp.query_canonical_node_records") as query:
                 with self.assertRaisesRegex(RepoMapMcpError, "not enabled"):
                     repomap_canonical_nodes(project="disabled")
                 with self.assertRaisesRegex(RepoMapMcpError, "not MCP-visible"):
@@ -22,13 +22,13 @@ class McpServerLegacyRoutingDiagnosticUnitTests(McpServerTestSupport):
         query.assert_not_called()
 
     def test_live_ops2_unknown_project_diagnostic_mentions_legacy_vs_graph_registry(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_status
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_status
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
 
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
-            with patch("repomap_kg.server.mcp.query_canonical_storage_summary") as query:
+            with patch("common_lore_index.server.mcp.query_canonical_storage_summary") as query:
                 with self.assertRaisesRegex(
                     RepoMapMcpError,
                     "unknown legacy MCP project or graph-registry graph_id",
@@ -40,7 +40,7 @@ class McpServerLegacyRoutingDiagnosticUnitTests(McpServerTestSupport):
         query.assert_not_called()
 
     def test_live_ops2_legacy_project_diagnostic_does_not_leak_private_roots(self):
-        from repomap_kg.server.mcp import RepoMapMcpError, repomap_status
+        from common_lore_index.server.mcp import RepoMapMcpError, repomap_status
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
@@ -49,7 +49,7 @@ class McpServerLegacyRoutingDiagnosticUnitTests(McpServerTestSupport):
 
         with self.patch_mcp_and_ops_config(mcp_config_path, ops_config_path):
             with patch(
-                "repomap_kg.server.mcp.query_canonical_storage_summary",
+                "common_lore_index.server.mcp.query_canonical_storage_summary",
                 return_value=CanonicalStorageSummaryRecord(
                     root_path=private_root,
                     repository_name="private-visible",
@@ -73,7 +73,7 @@ class McpServerLegacyRoutingDiagnosticUnitTests(McpServerTestSupport):
         self.assertEqual(query.call_args.kwargs["root_path"], private_root)
 
     def test_live_ops2_legacy_project_schema_mentions_graph_registry_fallback(self):
-        from repomap_kg.server.mcp import tool_input_schema
+        from common_lore_index.server.mcp import tool_input_schema
 
         project_schema = tool_input_schema("repomap_status")["properties"]["project"]
 

@@ -18,18 +18,18 @@ from dataclasses import dataclass, field, replace
 import json
 from typing import Any
 
-from repomap_kg.graph.keys import GRAPH_KEY_VERSION
-from repomap_kg.ops.config import load_ops_config_home
-from repomap_kg.ops.refresh import query_refresh_status
-from repomap_kg.server._ops_records import McpOpsGraphContext
-from repomap_kg.server._ops_sanitization import readback_path_markers, sanitize_jsonable, summary_root_value
-from repomap_kg.server._ops_search import build_mcp_search_sql
-from repomap_kg.server.ops import refresh_graph_status_payload
-from repomap_kg.storage import (
+from common_lore_index.graph.keys import GRAPH_KEY_VERSION
+from common_lore_index.ops.config import load_ops_config_home
+from common_lore_index.ops.refresh import query_refresh_status
+from common_lore_index.server._ops_records import McpOpsGraphContext
+from common_lore_index.server._ops_sanitization import readback_path_markers, sanitize_jsonable, summary_root_value
+from common_lore_index.server._ops_search import build_mcp_search_sql
+from common_lore_index.server.ops import refresh_graph_status_payload
+from common_lore_index.storage import (
     canonical_neighborhood_to_jsonable, public_read_page, query_canonical_neighborhood,
     query_canonical_storage_summary,
 )
-from repomap_kg.storage.readback_driver import execute_json_readback
+from common_lore_index.storage.readback_driver import execute_json_readback
 from repomap_test_support.host_mcp_publication import HostPublication, cli, jsonable
 from repomap_test_support.mcp_response_assertions import structural_difference
 

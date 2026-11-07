@@ -1,7 +1,7 @@
 """Test-owned launcher that runs the RepoMap CLI with PostgreSQL paths denied.
 
 Executed by path as a child process (``python sqlite_local_guard.py <cli args>``)
-before ``repomap_kg`` is imported. It records and denies, through a
+before ``common_lore_index`` is imported. It records and denies, through a
 ``sys.addaudithook`` hook and a psycopg import finder:
 
 * every ``socket.connect`` (TCP, IPv6 and Unix sockets, including
@@ -137,14 +137,14 @@ INFO_IMPORTS = frozenset(
     {
         "psycopg",
         "psycopg2",
-        "repomap_kg.coordinator.client",
-        "repomap_kg.coordinator.local_lifecycle",
-        "repomap_kg.coordinator.local_mode",
-        "repomap_kg.ops.refresh",
-        "repomap_kg.runtime.maintenance",
-        "repomap_kg.runtime.release_cluster",
-        "repomap_kg.service_package.api",
-        "repomap_kg.storage.staged_ingestion",
+        "common_lore_index.coordinator.client",
+        "common_lore_index.coordinator.local_lifecycle",
+        "common_lore_index.coordinator.local_mode",
+        "common_lore_index.ops.refresh",
+        "common_lore_index.runtime.maintenance",
+        "common_lore_index.runtime.release_cluster",
+        "common_lore_index.service_package.api",
+        "common_lore_index.storage.staged_ingestion",
     }
 )
 
@@ -171,7 +171,7 @@ def _install_pause() -> None:
     if not point:
         return
     barrier = Path(os.environ[BARRIER_ENV])
-    from repomap_kg.storage.sqlite_local import backup, connection, publisher, restore, upgrade
+    from common_lore_index.storage.sqlite_local import backup, connection, publisher, restore, upgrade
 
     # A paused child must turn SIGINT into KeyboardInterrupt even when it
     # inherited an ignored SIGINT disposition from its launcher.
@@ -226,7 +226,7 @@ def _install_schema_ceiling() -> None:
     ceiling = os.environ.get(SCHEMA_CEILING_ENV)
     if not ceiling:
         return
-    from repomap_kg.storage.sqlite_local import migrations
+    from common_lore_index.storage.sqlite_local import migrations
 
     count = int(ceiling)
     if not 1 <= count <= len(migrations.MIGRATIONS):
@@ -238,7 +238,7 @@ def _install_sync_log() -> None:
     log = os.environ.get(SYNC_LOG_ENV)
     if not log:
         return
-    from repomap_kg.storage.sqlite_local import durability
+    from common_lore_index.storage.sqlite_local import durability
 
     synced = durability.fsync_directory
 
@@ -260,7 +260,7 @@ def main(argv: list[str]) -> int:
     _install_pause()
     _install_schema_ceiling()
     _install_sync_log()
-    from repomap_kg.cli.main import main as cli_main
+    from common_lore_index.cli.main import main as cli_main
 
     return cli_main(argv)
 

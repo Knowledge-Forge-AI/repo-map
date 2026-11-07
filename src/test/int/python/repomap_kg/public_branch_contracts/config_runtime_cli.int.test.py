@@ -5,8 +5,8 @@ from contextlib import redirect_stdout
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.extractors.config.generic import extract_config_file_observations
+from common_lore_index.cli import main
+from common_lore_index.extractors.config.generic import extract_config_file_observations
 
 
 class PublicBranchConfigRuntimeCliIntegrationTests(unittest.TestCase):
@@ -202,7 +202,7 @@ inline:
             with self.subTest(helper=helper_name):
                 stdout = io.StringIO()
                 with patch(
-                    f"repomap_kg.cli.{helper_name}",
+                    f"common_lore_index.cli.{helper_name}",
                     return_value=result(payload["command"]),
                 ) as helper:
                     with redirect_stdout(stdout):
@@ -329,11 +329,11 @@ inline:
                 command = " ".join(argv[:3])
                 with (
                     patch(
-                        f"repomap_kg.cli.{helper_name}",
+                        f"common_lore_index.cli.{helper_name}",
                         return_value=result(command),
                     ) as helper,
                     patch(
-                        f"repomap_kg.cli.{formatter_name}",
+                        f"common_lore_index.cli.{formatter_name}",
                         return_value=table_text,
                     ) as formatter,
                     redirect_stdout(stdout),

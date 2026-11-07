@@ -14,6 +14,7 @@ UPPER = "/var/lib/docker/overlay2/layer/diff"
 TOKEN = "a" * 64
 DIGEST = "b" * 64
 GIB = capacity.GIB
+SYSTEM_UPPER = "/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/42/fs"
 
 
 def evidence(free=10 * GIB):
@@ -24,6 +25,58 @@ def evidence(free=10 * GIB):
         "total_bytes": 100 * GIB,
         "free_percent": free * 100 // (100 * GIB),
     }
+
+
+def test_system_containerd_layout_is_bound_after_real_driver_checks(capsys):
+    calls = []
+    responses = {
+        "{{json .Driver}}": "overlayfs", "{{json .DockerRootDir}}": "/var/lib/docker",
+        "{{json .DriverStatus}}": [["driver-type", "io.containerd.snapshotter.v1"]],
+        "{{json .GraphDriver}}": None,
+        "{{json .Storage}}": {"RootFS": {"Snapshot": {"Name": "overlayfs"}}},
+    }
+
+    def runner(command, **kwargs):
+        calls.append((command, kwargs))
+        if command[1] in {"info", "inspect"}:
+            output = json.dumps(responses[command[-1]])
+        elif command[-1] == "probe":
+            output = json.dumps(evidence() | {"upper": SYSTEM_UPPER})
+        else:
+            output = ""
+        return subprocess.CompletedProcess(command, 0, output, "")
+
+    capacity.bind_backing_capacity(runner, "d" * 64, TOKEN)
+    assert json.loads(calls[-1][1]["input"]) == {
+        "schema": capacity.SCHEMA, "token": TOKEN, "mount_sha256": DIGEST,
+    }
+    assert calls[-2][0][-1] == "probe" and calls[-1][0][:3] == ["docker", "exec", "-i"]
+    event = json.loads(capsys.readouterr().err)
+    assert event["decision"] == "admitted" and event["byte_floor_passed"] and event["percentage_floor_passed"]
+    assert SYSTEM_UPPER not in json.dumps(event) and TOKEN not in json.dumps(event)
+
+
+@pytest.mark.parametrize("upper,root", [
+    (SYSTEM_UPPER, "/custom/docker"), (SYSTEM_UPPER, "/var/lib/docker/"),
+    (SYSTEM_UPPER.replace("/42/", "/0/"), "/var/lib/docker"),
+    (SYSTEM_UPPER.replace("/42/", "/042/"), "/var/lib/docker"),
+    (SYSTEM_UPPER.replace("/42/", "/-1/"), "/var/lib/docker"),
+    (SYSTEM_UPPER.replace("/42/", "/name/"), "/var/lib/docker"),
+    (SYSTEM_UPPER + "/child", "/var/lib/docker"),
+    (SYSTEM_UPPER + "/../fs", "/var/lib/docker"),
+    (SYSTEM_UPPER.replace(".overlayfs/", ".native/"), "/var/lib/docker"),
+    (SYSTEM_UPPER.replace("containerd/", "containerd-other/", 1), "/var/lib/docker"),
+])
+def test_system_containerd_mapping_refuses_unknown_or_malformed_layout(upper, root):
+    with pytest.raises(RuntimeError, match="unbound_backing_evidence"):
+        capacity.validate_probe(evidence() | {"upper": upper}, driver="overlayfs", docker_root=root)
+
+
+@pytest.mark.parametrize("free,total", [(10 * GIB - 1, 100 * GIB), (10 * GIB, 201 * GIB)])
+def test_system_containerd_layout_preserves_both_capacity_floors(free, total):
+    value = evidence(free) | {"upper": SYSTEM_UPPER, "total_bytes": total, "free_percent": free * 100 // total}
+    with pytest.raises(RuntimeError, match="free_disk_reserve"):
+        capacity.validate_probe(value, driver="overlayfs", docker_root="/var/lib/docker")
 
 
 
@@ -102,9 +155,12 @@ def test_parent_refuses_unsupported_driver_without_installing_binding(driver):
         ("unbound_upper_path", [["driver-type", "io.containerd.snapshotter.v1"]], None, "overlayfs", {"RootFS": {"Snapshot": {"Name": "overlayfs"}}}, "/var/lib/other/snapshots/1/fs", "unbound_backing_evidence"),
     ],
 )
+@pytest.mark.parametrize("store", ["managed", "system"])
 def test_overlayfs_refuses_invalid_or_contradictory_metadata(
-    case, status_val, graph_val, c_driver, storage_val, upper_val, expected_reason
+    case, status_val, graph_val, c_driver, storage_val, upper_val, expected_reason, store
 ):
+    if store == "system" and case != "unbound_upper_path":
+        upper_val = SYSTEM_UPPER
     calls = []
 
     def runner(command, **kwargs):

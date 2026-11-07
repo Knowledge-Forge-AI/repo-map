@@ -3,16 +3,16 @@
 from dataclasses import replace
 from unittest.mock import patch
 
-from repomap_kg.ops.config import load_ops_config
-from repomap_kg.ops.config_local import LocalSqliteConfig
-from repomap_kg.ops.resolved_config import configured_repository_identity
-from repomap_kg.server.investigation_read_store import (
+from common_lore_index.ops.config import load_ops_config
+from common_lore_index.ops.config_local import LocalSqliteConfig
+from common_lore_index.ops.resolved_config import configured_repository_identity
+from common_lore_index.server.investigation_read_store import (
     InvestigationStorageQueries, LanguageSummaryQueries, PostgresInvestigationReadStore,
 )
-from repomap_kg.storage.semantic_candidates import unavailable
-from repomap_kg.storage.semantic_seed import SimilarNodesQuery
+from common_lore_index.storage.semantic_candidates import unavailable
+from common_lore_index.storage.semantic_seed import SimilarNodesQuery
 from repomap_test_support.semantic_candidate_fixtures import PROFILE
-from repomap_kg.server.sqlite_read_binding import SqliteInvestigationReadStore
+from common_lore_index.server.sqlite_read_binding import SqliteInvestigationReadStore
 from repomap_test_support.host_read_store_config import fail_if_reached, patched_guards
 from repomap_test_support.mcp_server import McpServerTestSupport
 from repomap_test_support.semantic_candidate_fixtures import candidate_query
@@ -26,14 +26,14 @@ class SemanticCandidateStoreTests(McpServerTestSupport):
     def test_seed_read_dispatch_uses_configured_graph_scope(self) -> None:
         store = self._store()
         query = self._seed()
-        with patch("repomap_kg.server.investigation_read_store.read_configured_graph", return_value=unavailable("extension_absent")) as read:
+        with patch("common_lore_index.server.investigation_read_store.read_configured_graph", return_value=unavailable("extension_absent")) as read:
             self.assertEqual(store.similar_nodes("repo-map", query).reason, "extension_absent")
         self.assertIs(read.call_args.kwargs["query"], query)
         self.assertEqual(read.call_args.args[0].repository_identity, str(configured_repository_identity("repo-map")))
 
     def test_seed_disabled_private_and_hidden_graphs_do_no_io(self) -> None:
         store = self._store()
-        with patched_guards(), patch("repomap_kg.server.investigation_read_store.read_configured_graph", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.investigation_read_store.read_configured_graph", fail_if_reached):
             self.assertEqual(store.similar_nodes("repo-map", self._seed(selected=False)).reason, "disabled")
             self.assertEqual(store.similar_nodes("private-visible", self._seed()).reason, "private_graph_unsupported")
             for graph_id in ("hidden", "disabled", "unknown"):
@@ -46,7 +46,7 @@ class SemanticCandidateStoreTests(McpServerTestSupport):
             config.config_path, config.config_home, config.config_files, config.schema_version,
             config.service, config.graphs, config.server_memory, config.sources,
         )
-        with patched_guards(), patch("repomap_kg.server.sqlite_read_binding.read_transaction", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.sqlite_read_binding.read_transaction", fail_if_reached):
             store = SqliteInvestigationReadStore(local)
             self.assertEqual(store.similar_nodes("repo-map", self._seed()).reason, "sqlite_unsupported")
             self.assertEqual(store.similar_nodes("repo-map", self._seed(selected=False)).reason, "disabled")
@@ -66,14 +66,14 @@ class SemanticCandidateStoreTests(McpServerTestSupport):
 
     def test_default_selection_has_no_read_authority_or_io(self) -> None:
         store = self._store()
-        with patched_guards(), patch("repomap_kg.server.investigation_read_store.read_configured_graph", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.investigation_read_store.read_configured_graph", fail_if_reached):
             result = store.semantic_candidates("repo-map", replace(self._query(), selected=False))
         self.assertEqual(result.reason, "disabled")
 
     def test_public_query_reaches_existing_read_owner_with_exact_scope(self) -> None:
         store = self._store()
         query = self._query()
-        with patch("repomap_kg.server.investigation_read_store.read_configured_graph", return_value=unavailable("extension_absent")) as read:
+        with patch("common_lore_index.server.investigation_read_store.read_configured_graph", return_value=unavailable("extension_absent")) as read:
             result = store.semantic_candidates("repo-map", query)
         self.assertEqual(result.reason, "extension_absent")
         self.assertIs(read.call_args.kwargs["query"], query)
@@ -81,7 +81,7 @@ class SemanticCandidateStoreTests(McpServerTestSupport):
 
     def test_foreign_graph_and_private_graph_are_refused_before_io(self) -> None:
         store = self._store()
-        with patched_guards(), patch("repomap_kg.server.investigation_read_store.read_configured_graph", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.investigation_read_store.read_configured_graph", fail_if_reached):
             self.assertEqual(store.semantic_candidates("repo-map", candidate_query()).reason, "graph_scope_mismatch")
             self.assertEqual(store.semantic_candidates("private-visible", self._query("private-visible")).reason, "private_graph_unsupported")
 
@@ -99,6 +99,6 @@ class SemanticCandidateStoreTests(McpServerTestSupport):
             config.service, config.graphs, config.server_memory, config.sources,
         )
         store = SqliteInvestigationReadStore(local)
-        with patched_guards(), patch("repomap_kg.server.sqlite_read_binding.read_transaction", fail_if_reached):
+        with patched_guards(), patch("common_lore_index.server.sqlite_read_binding.read_transaction", fail_if_reached):
             self.assertEqual(store.semantic_candidates("repo-map", self._query()).reason, "sqlite_unsupported")
             self.assertEqual(store.semantic_candidates("repo-map", replace(self._query(), selected=False)).reason, "disabled")

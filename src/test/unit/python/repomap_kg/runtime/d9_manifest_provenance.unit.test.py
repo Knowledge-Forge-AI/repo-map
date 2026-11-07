@@ -15,29 +15,29 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from repomap_kg.runtime._backup_observation import parse_and_validate_catalog_observation, verify_provenance_fingerprints
-from repomap_kg.runtime._backup_operations import acquire_or_reuse_backup_maintenance_window
-from repomap_kg.runtime._backup_provenance import (
+from common_lore_index.runtime._backup_observation import parse_and_validate_catalog_observation, verify_provenance_fingerprints
+from common_lore_index.runtime._backup_operations import acquire_or_reuse_backup_maintenance_window
+from common_lore_index.runtime._backup_provenance import (
     BACKUP_FORMAT_VERSION, CORE_V1_RESTORE_PROTOCOL, EXTENSION_V2_RESTORE_PROTOCOL,
     MAX_CONFIG_ENTRIES_PER_DATABASE, MAX_DATABASES_PER_MANIFEST, MAX_DEPENDENCY_EDGES_PER_DATABASE,
     MAX_EXTENSIONS_PER_DATABASE, MAX_MANIFEST_UTF8_BYTES, MAX_OBSERVATION_JSON_BYTES,
     MAX_QUERY_OBSERVED_OUTPUT_BYTES, MAX_SCHEMAS_PER_DATABASE, MAX_TOC_OUTPUT_BYTES,
     SUPPORTED_BACKUP_FORMAT_VERSIONS, parse_and_verify_toc_provenance, run_bounded_popen,
 )
-from repomap_kg.runtime._backup_support import (
+from common_lore_index.runtime._backup_support import (
     derive_database_blockers, evaluate_backup_restore_support, evaluate_release_cluster_upgrade_artifact,
     load_and_verify_release_cluster_upgrade_artifact, require_verified_backup_inspection_supported,
 )
-from repomap_kg.runtime.backup import (
+from common_lore_index.runtime.backup import (
     drop_database, dump_database, init_database_from_dump, inspect_backup, read_backup_info,
 )
-from repomap_kg.runtime.backup_inspection import verify_archive_toc_for_restore
-from repomap_kg.runtime.backup_manifests import read_manifest_file
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.backup_restore_sets import (
+from common_lore_index.runtime.backup_inspection import verify_archive_toc_for_restore
+from common_lore_index.runtime.backup_manifests import read_manifest_file
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.backup_restore_sets import (
     COORDINATED_SCOPE, STABLE_RECOVERY_POINT, restore_coordinated_backup,
 )
-from repomap_kg.runtime.local import LocalRuntimeIdentity, build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.local import LocalRuntimeIdentity, build_local_runtime_plan, setup_local_runtime
 from repomap_test_support.local_db_backup import (
     baseline_toc_bytes, default_baseline_database_catalog,
     default_baseline_server_provenance, maybe_provenance_runner_result,
@@ -57,8 +57,8 @@ def _unit_custody() -> Iterator[None]:
 
     mock_conn.execute.side_effect = _exec
     with (
-        patch("repomap_kg.runtime._backup_operations.psycopg.connect", return_value=mock_conn),
-        patch("repomap_kg.runtime._backup_operations.maintenance_window", side_effect=lambda *a, **kw: contextlib.nullcontext()),
+        patch("common_lore_index.runtime._backup_operations.psycopg.connect", return_value=mock_conn),
+        patch("common_lore_index.runtime._backup_operations.maintenance_window", side_effect=lambda *a, **kw: contextlib.nullcontext()),
     ):
         yield
 
@@ -144,7 +144,7 @@ def test_manifest_reader_version_gate_and_json_strictness(tmp_path: Path) -> Non
             read_manifest_file(manifest_path)
         assert j_exc.value.diagnostics[0].code == "backup-manifest-invalid"
 
-    with patch("repomap_kg.runtime._backup_manifest_records.MAX_MANIFEST_UTF8_BYTES", 64):
+    with patch("common_lore_index.runtime._backup_manifest_records.MAX_MANIFEST_UTF8_BYTES", 64):
         manifest_path.write_text(json.dumps(base_v1), encoding="utf-8")
         with pytest.raises(LocalDbBackupError) as size_exc:
             read_manifest_file(manifest_path)

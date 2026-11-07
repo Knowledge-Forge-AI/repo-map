@@ -5,10 +5,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.coordinator import _control_schema as schema
-from repomap_kg.coordinator._control_types import ControlSchemaError
+from common_lore_index.coordinator import _control_schema as schema
+from common_lore_index.coordinator._control_types import ControlSchemaError
 from repomap_test_support.fencing_control_fakes import FencingControl
-from repomap_kg.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._control_types import JobClaim
 
 
 def test_graph_lease_epoch_migration_is_append_only() -> None:

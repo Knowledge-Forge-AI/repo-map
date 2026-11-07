@@ -2,7 +2,7 @@
 
 from typing import Mapping, Sequence
 
-from repomap_kg.storage.staging_family_rows import StageFamily
+from common_lore_index.storage.staging_family_rows import StageFamily
 
 
 def sample_publication_families(

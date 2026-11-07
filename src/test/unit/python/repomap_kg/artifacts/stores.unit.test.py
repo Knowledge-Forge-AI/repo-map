@@ -8,13 +8,13 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.artifacts import (
+from common_lore_index.artifacts import (
     ArtifactIntegrityError,
     ArtifactReference,
     FileSystemArtifactStore,
     MemoryArtifactStore,
 )
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def put(store: FileSystemArtifactStore | MemoryArtifactStore, content: bytes = b"abc"):
@@ -316,7 +316,7 @@ def test_memory_store_collision_missing_and_tampered_read() -> None:
     ],
 )
 def test_artifact_locator_rejects_unsafe_constructs(kind: str, value: str) -> None:
-    from repomap_kg.artifacts.references import ArtifactLocator
+    from common_lore_index.artifacts.references import ArtifactLocator
 
     message = "invalid locator kind" if kind == "invalid-kind" else "invalid locator"
     with pytest.raises(ValueError, match=f"^{message}$"):
@@ -324,7 +324,7 @@ def test_artifact_locator_rejects_unsafe_constructs(kind: str, value: str) -> No
 
 
 def test_artifact_reference_semantics_contracts() -> None:
-    from repomap_kg.artifacts.references import (
+    from common_lore_index.artifacts.references import (
         ArtifactLocator,
         ArtifactReference,
         MAX_ARTIFACT_SIZE,

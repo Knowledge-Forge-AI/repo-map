@@ -27,8 +27,8 @@ for import_root in (
 
 from runner_coverage_execution import prepare_child_coverage_environment
 from process_rss_monitor import ProcessRssMonitor
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.ops.generations import source_generation
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.ops.generations import source_generation
 from repomap_test_support.scale18_digest_campaign import (
     SCALE18_PROFILES,
     build_scale18_workload,

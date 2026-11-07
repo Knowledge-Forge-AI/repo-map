@@ -15,9 +15,9 @@ import psycopg.conninfo
 
 from actual_refresh_failure_causality import FailureCausalityAuthority
 from actual_refresh_startup import ActualRefreshStartup
-from repomap_kg.storage.backend_observer import BackendOwnershipObserver
-from repomap_kg.storage.backend_telemetry import read_telemetry_event
-from repomap_kg.storage.staging_event_transport import StagingEventChannel
+from common_lore_index.storage.backend_observer import BackendOwnershipObserver
+from common_lore_index.storage.backend_telemetry import read_telemetry_event
+from common_lore_index.storage.staging_event_transport import StagingEventChannel
 from scale12_resource_sampling import (
     Scale12ResourceSampler,
     read_cluster_wal_bytes,
@@ -44,7 +44,7 @@ from scale28_preparation_authority import HybridPreparationAuthority
 from scale28_preparation_policy import DEFAULT_PREPARATION_DEADLINE_POLICY
 from scale28_preparation_resources import PreparationResourceSpecification
 from scale28_preparation_values import PreparationDeadlinePolicy
-from repomap_kg.runtime.plan import LocalRuntimePlan
+from common_lore_index.runtime.plan import LocalRuntimePlan
 
 from .scale15_runtime_environment import Scale15RuntimeFixture
 from .scale15_runtime_injection import (

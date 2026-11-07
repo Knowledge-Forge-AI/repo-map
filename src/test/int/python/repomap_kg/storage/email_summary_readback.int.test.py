@@ -11,14 +11,14 @@ from repomap_test_support.postgres_harness import (
 )
 from repomap_test_support.storage_integration import canonicalization_fixture
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
     default_rdbms_root,
     email_summary_to_jsonable,
     query_email_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
-from repomap_kg.storage.sql_core import sql_literal
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV, READBACK_DRIVER_ENV
+from common_lore_index.storage.sql_core import sql_literal
 
 
 EXPECTED_FIELDS = tuple(

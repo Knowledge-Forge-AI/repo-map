@@ -6,15 +6,15 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from repomap_kg.runtime.database_roles import (
+from common_lore_index.runtime.database_roles import (
     REFRESH_PUBLICATION_ROLE,
     RoleSecrets,
     render_database_role_sql,
 )
-from repomap_kg.storage import apply_migrations, default_rdbms_root
-from repomap_kg.storage.canonical_staging_merge import build_canonical_merge_statements
-from repomap_kg.storage.readback_driver import _psycopg_connection_params_from_psql_args
-from repomap_kg.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
+from common_lore_index.storage import apply_migrations, default_rdbms_root
+from common_lore_index.storage.canonical_staging_merge import build_canonical_merge_statements
+from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
+from common_lore_index.storage.staging_copy import STAGING_COPY_TABLES, copy_stage_rows
 from repomap_test_support.canonical_merge_reference import (
     build_reference_edge_evidence_merge_statement, check_temp_tables_analyzed as _check_temp_analyzed,
     copy_canonical_fixture as _copy_canonical_fixture, copy_multi_run_canonical_fixtures as _copy_multi_run,

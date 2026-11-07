@@ -5,25 +5,25 @@ import ast
 from pathlib import Path
 import tempfile
 import unittest
-from repomap_kg.canonicalization.document_family import _document_definition
-from repomap_kg.canonicalization.diagnostics import CanonicalizationDiagnostic
-from repomap_kg.extractors.config.openapi_helpers import (
+from common_lore_index.canonicalization.document_family import _document_definition
+from common_lore_index.canonicalization.diagnostics import CanonicalizationDiagnostic
+from common_lore_index.extractors.config.openapi_helpers import (
     _openapi_scope_names,
     _openapi_url_metadata,
 )
-from repomap_kg.extractors.languages.go_protocol import (
+from common_lore_index.extractors.languages.go_protocol import (
     GoDiagnostic,
     GoFileEnd,
     GoProtocolError,
     GoProtocolMessage,
     validate_go_protocol_message,
 )
-from repomap_kg.extractors.languages.python_web_helpers import (
+from common_lore_index.extractors.languages.python_web_helpers import (
     _expression_kind,
     _route_path_metadata,
 )
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.runtime.plan import resolve_runtime_source_root
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.runtime.plan import resolve_runtime_source_root
 
 
 class Slice15LanguageCanonicalPipelineUnitTests(unittest.TestCase):
@@ -269,7 +269,7 @@ class Slice15LanguageCanonicalPipelineUnitTests(unittest.TestCase):
         self.assertTrue((repo_root / "pyproject.toml").is_file())
         self.assertTrue((repo_root / "README.md").is_file())
         self.assertTrue(
-            (repo_root / "src" / "main" / "python" / "repomap_kg" / "__main__.py").is_file()
+            (repo_root / "src" / "main" / "python" / "common_lore_index" / "__main__.py").is_file()
         )
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -329,6 +329,6 @@ class Slice15LanguageCanonicalPipelineUnitTests(unittest.TestCase):
             extractor_version="1.0.0",
             metadata={},
         )
-        from repomap_kg.graph.keys import GraphKeyError
+        from common_lore_index.graph.keys import GraphKeyError
         with self.assertRaises(GraphKeyError):
             _document_definition(bad_sec, ordinal=2, diagnostics=diagnostics)

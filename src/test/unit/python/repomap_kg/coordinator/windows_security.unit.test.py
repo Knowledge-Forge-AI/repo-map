@@ -2,7 +2,7 @@ from pathlib import PureWindowsPath
 
 import pytest
 
-from repomap_kg.coordinator.windows_security import (
+from common_lore_index.coordinator.windows_security import (
     WindowsPathError,
     normalize_windows_path,
     validate_supported_windows_path,

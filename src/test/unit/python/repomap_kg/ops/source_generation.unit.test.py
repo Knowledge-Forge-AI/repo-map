@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import threading
 
-from repomap_kg.ops import source_generation
-from repomap_kg.graph.discovery import discover_observations
-from repomap_kg.ops.generations import source_generation as observation_generation
-from repomap_kg.ops.generations import source_generation_records
+from common_lore_index.ops import source_generation
+from common_lore_index.graph.discovery import discover_observations
+from common_lore_index.ops.generations import source_generation as observation_generation
+from common_lore_index.ops.generations import source_generation_records
 
 
 def test_scan_source_generation_is_content_aware_and_path_independent(tmp_path):

@@ -3,8 +3,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.cli import main
+from common_lore_index.storage import StorageSchemaError
 from repomap_test_support.cli_storage_summaries import (
     nix_summary_fixture,
 )
@@ -15,7 +15,7 @@ class CliStorageConfigNixEmailSummaryBoundariesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_terraform_summary",
+            "common_lore_index.cli.query_terraform_summary",
             side_effect=StorageSchemaError(
                 "psql did not return terraform summary"
             ),
@@ -40,7 +40,7 @@ class CliStorageConfigNixEmailSummaryBoundariesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_python_summary",
+            "common_lore_index.cli.query_python_summary",
             side_effect=StorageSchemaError("psql did not return python summary"),
         ):
             with redirect_stderr(stderr):
@@ -63,7 +63,7 @@ class CliStorageConfigNixEmailSummaryBoundariesUnitTests(unittest.TestCase):
         stdout = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_nix_summary",
+            "common_lore_index.cli.query_nix_summary",
             return_value=nix_summary_fixture(),
         ):
             with redirect_stdout(stdout):
@@ -105,7 +105,7 @@ class CliStorageConfigNixEmailSummaryBoundariesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_nix_summary",
+            "common_lore_index.cli.query_nix_summary",
             side_effect=StorageSchemaError("psql did not return nix summary"),
         ):
             with redirect_stderr(stderr):
@@ -128,7 +128,7 @@ class CliStorageConfigNixEmailSummaryBoundariesUnitTests(unittest.TestCase):
         stderr = io.StringIO()
 
         with patch(
-            "repomap_kg.cli.query_email_summary",
+            "common_lore_index.cli.query_email_summary",
             side_effect=StorageSchemaError("psql did not return email summary"),
         ):
             with redirect_stderr(stderr):

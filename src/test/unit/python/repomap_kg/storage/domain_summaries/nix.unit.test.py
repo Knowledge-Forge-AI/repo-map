@@ -4,11 +4,11 @@ import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     StorageSchemaError,
     query_nix_summary,
 )
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV
 
 def nix_summary10_extra_count_maps():
     return {
@@ -186,7 +186,7 @@ class StorageDomainNixSummaryUnitTests(unittest.TestCase):
             stdout=json.dumps(nix_summary10_storage_payload(), sort_keys=True) + "\n"
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed) as run:
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed) as run:
             summary = query_nix_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -284,7 +284,7 @@ class StorageDomainNixSummaryUnitTests(unittest.TestCase):
             + "\n"
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             summary = query_nix_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -335,7 +335,7 @@ class StorageDomainNixSummaryUnitTests(unittest.TestCase):
             + "\n"
         )
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             summary = query_nix_summary(
                 ["-d", "postgres"],
                 root_path="/tmp/fixture",
@@ -353,6 +353,6 @@ class StorageDomainNixSummaryUnitTests(unittest.TestCase):
     def test_nix_summary2_query_nix_summary_rejects_malformed_json(self):
         completed = SimpleNamespace(stdout='{"root_path": "/tmp/fixture"}\n')
 
-        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("repomap_kg.storage.subprocess.run", return_value=completed):
+        with patch.dict(os.environ, {PG_CONNECTOR_ENV: "psql"}), patch("common_lore_index.storage.subprocess.run", return_value=completed):
             with self.assertRaisesRegex(StorageSchemaError, "nix summary"):
                 query_nix_summary(["-d", "postgres"], root_path="/tmp/fixture")

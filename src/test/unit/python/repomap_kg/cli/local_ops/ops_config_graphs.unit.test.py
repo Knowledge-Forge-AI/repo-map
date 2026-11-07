@@ -6,8 +6,8 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.cli import main
-from repomap_kg.ops.config import OpsGraphStorageStatus
+from common_lore_index.cli import main
+from common_lore_index.ops.config import OpsGraphStorageStatus
 
 
 class CliLocalOpsConfigGraphsUnitTests(unittest.TestCase):
@@ -155,7 +155,7 @@ mode = "read_only"
             )
             stdout = io.StringIO()
 
-            with patch("repomap_kg.cli.check_ops_postgres_status") as check_db:
+            with patch("common_lore_index.cli.check_ops_postgres_status") as check_db:
                 check_db.return_value.to_jsonable.return_value = {
                     "db_checked": True,
                     "connected": True,
@@ -341,7 +341,7 @@ mode = "read_only"
             )
             stdout = io.StringIO()
 
-            with patch("repomap_kg.cli.check_ops_graph_storage_status") as check_db:
+            with patch("common_lore_index.cli.check_ops_graph_storage_status") as check_db:
                 check_db.return_value = {
                     "repo-map": OpsGraphStorageStatus(
                         db_checked=True,

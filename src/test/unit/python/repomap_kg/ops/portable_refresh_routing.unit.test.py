@@ -8,17 +8,17 @@ from unittest.mock import patch
 
 from repomap_test_support.ops_refresh import OpsRefreshUnitTestCase
 
-from repomap_kg.graph.multi_source_pipeline import scan_multi_source_generations
-from repomap_kg.ops.generations import canonicalizer_generation, extractor_generation
-from repomap_kg.ops.portable_refresh import (
+from common_lore_index.graph.multi_source_pipeline import scan_multi_source_generations
+from common_lore_index.ops.generations import canonicalizer_generation, extractor_generation
+from common_lore_index.ops.portable_refresh import (
     _private_directory,
     _prune_expired_terminal_attempts,
     execute_portable_refresh,
     PortableRefreshError,
 )
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.main import LoadSummary
-from repomap_kg.storage.staged_ingestion import IngestionAuthority
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.main import LoadSummary
+from common_lore_index.storage.staged_ingestion import IngestionAuthority
 
 
 class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
@@ -41,7 +41,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with patch(
-                "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+                "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
                 return_value=LoadSummary(repository_id=7, run_id=11, files=1),
             ) as publish:
                 outcome = execute_portable_refresh(
@@ -87,14 +87,14 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
             )
 
             with patch(
-                "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+                "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
                 return_value=LoadSummary(repository_id=7, run_id=11, files=1),
             ) as publish:
                 first = execute_portable_refresh(
                     config, graph, "repomap_repo_map", authority=authority
                 )
                 with patch(
-                    "repomap_kg.ops.portable_refresh.run_portable_worker",
+                    "common_lore_index.ops.portable_refresh.run_portable_worker",
                     side_effect=AssertionError("worker replayed"),
                 ):
                     second = execute_portable_refresh(
@@ -150,7 +150,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
             config = self.config_for_roots(root)
 
             with patch(
-                "repomap_kg.ops.portable_refresh.run_staged_portable_refresh",
+                "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
                 side_effect=RuntimeError("database exploded"),
             ):
                 with self.assertRaises(RuntimeError):
@@ -176,7 +176,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
         Note: This sequence holds within execute_portable_refresh, but does not isolate publication
         from the outer coordinator worker process deadline in configured_refresh (see ADR 0073).
         """
-        import repomap_kg.ops.portable_refresh as pr_module
+        import common_lore_index.ops.portable_refresh as pr_module
         call_order = []
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "repo"
@@ -197,8 +197,8 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
                 return LoadSummary(repository_id=7, run_id=11, files=1)
 
             with (
-                patch("repomap_kg.ops.portable_refresh.run_portable_worker", side_effect=tracked_run_portable),
-                patch("repomap_kg.ops.portable_refresh.run_staged_portable_refresh", side_effect=tracked_publish),
+                patch("common_lore_index.ops.portable_refresh.run_portable_worker", side_effect=tracked_run_portable),
+                patch("common_lore_index.ops.portable_refresh.run_staged_portable_refresh", side_effect=tracked_publish),
             ):
                 outcome = execute_portable_refresh(
                     config,
@@ -231,7 +231,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
                     "summary": "synthetic process_timeout",
                 }
             )
-            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
+            with patch("common_lore_index.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
                 with self.assertRaises(PortableRefreshError) as ctx:
                     execute_portable_refresh(
                         config,
@@ -258,7 +258,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
                     "summary": "synthetic heartbeat_timeout",
                 }
             )
-            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
+            with patch("common_lore_index.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
                 with self.assertRaises(PortableRefreshError) as ctx:
                     execute_portable_refresh(
                         config,
@@ -271,7 +271,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
 
     def test_refresh_graph_leaf_worker_timeout_records_not_started(self):
         from types import SimpleNamespace
-        from repomap_kg.ops.refresh import refresh_graph
+        from common_lore_index.ops.refresh import refresh_graph
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "repo"
@@ -286,7 +286,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
                     "summary": "synthetic process_timeout",
                 }
             )
-            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
+            with patch("common_lore_index.ops.portable_refresh.run_portable_worker", return_value=fake_worker):
                 report = refresh_graph(config, config.graphs[0].id)
                 self.assertEqual(report.result, "failure")
                 self.assertEqual(report.publication_state, "not_started")
@@ -323,7 +323,7 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
                     "summary": "synthetic process_timeout",
                 }
             )
-            with patch("repomap_kg.ops.portable_refresh.run_portable_worker", return_value=fake_worker) as spy:
+            with patch("common_lore_index.ops.portable_refresh.run_portable_worker", return_value=fake_worker) as spy:
                 with self.assertRaises(PortableRefreshError):
                     execute_portable_refresh(
                         config,

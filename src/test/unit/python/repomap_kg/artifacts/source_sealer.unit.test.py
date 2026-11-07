@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.graph.multi_source import (
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
 
 
 def _graph(root):
@@ -77,14 +75,15 @@ def test_parent_seals_complete_inventory_without_source_locator_in_manifest(tmp_
 
 def test_seal_configured_sources_rejects_unsealable_file(tmp_path, monkeypatch):
     import os
-    import repomap_kg.artifacts.source_sealer as sealer_mod
+    import stat
+    import common_lore_index.artifacts._source_sealing_io as io_mod
+    import common_lore_index.artifacts.source_sealer as sealer_mod
 
     source = tmp_path / "source"
     source.mkdir()
     (source / "main.py").write_text("X = 1\n", encoding="utf-8")
     store = FileSystemArtifactStore(tmp_path / "store")
 
-    orig_lstat = Path.lstat
     sealing_active = False
 
     orig_scan = sealer_mod.scan_multi_source_generations
@@ -97,15 +96,28 @@ def test_seal_configured_sources_rejects_unsealable_file(tmp_path, monkeypatch):
 
     monkeypatch.setattr(sealer_mod, "scan_multi_source_generations", instrumented_scan)
 
-    def tampered_lstat(self):
-        st = orig_lstat(self)
-        if sealing_active and self.name == "main.py":
-            return os.stat_result(
-                (st.st_mode, st.st_ino, st.st_dev, 2, st.st_uid, st.st_gid, st.st_size, int(st.st_atime), int(st.st_mtime), int(st.st_ctime))
-            )
-        return st
+    orig_fstat = io_mod.os.fstat
 
-    monkeypatch.setattr(Path, "lstat", tampered_lstat)
+    def tampered_fstat(descriptor):
+        details = orig_fstat(descriptor)
+        if sealing_active and stat.S_ISREG(details.st_mode):
+            return os.stat_result(
+                (
+                    details.st_mode,
+                    details.st_ino,
+                    details.st_dev,
+                    2,
+                    details.st_uid,
+                    details.st_gid,
+                    details.st_size,
+                    details.st_atime,
+                    details.st_mtime,
+                    details.st_ctime,
+                )
+            )
+        return details
+
+    monkeypatch.setattr(io_mod.os, "fstat", tampered_fstat)
 
     with pytest.raises(ValueError, match="source inventory is not sealable"):
         seal_configured_sources(
@@ -117,19 +129,33 @@ def test_seal_configured_sources_rejects_unsealable_file(tmp_path, monkeypatch):
 
 
 def test_seal_configured_sources_detects_content_hash_mutation(tmp_path, monkeypatch):
+    import common_lore_index.artifacts._source_sealing_io as io_mod
+    import common_lore_index.artifacts.source_sealer as sealer_mod
+
     source = tmp_path / "source"
     source.mkdir()
     (source / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
     store = FileSystemArtifactStore(tmp_path / "store")
 
-    orig_read_bytes = Path.read_bytes
+    sealing_active = False
+    orig_scan = sealer_mod.scan_multi_source_generations
 
-    def tampered_read(self):
-        if self.name == "main.py":
-            return b"MUTATED"
-        return orig_read_bytes(self)
+    def instrumented_scan(g):
+        nonlocal sealing_active
+        result = orig_scan(g)
+        sealing_active = True
+        return result
 
-    monkeypatch.setattr(Path, "read_bytes", tampered_read)
+    monkeypatch.setattr(sealer_mod, "scan_multi_source_generations", instrumented_scan)
+    orig_read = io_mod.os.read
+
+    def tampered_read(descriptor, size):
+        result = orig_read(descriptor, size)
+        if sealing_active and result:
+            return b"X" * len(result)
+        return result
+
+    monkeypatch.setattr(io_mod.os, "read", tampered_read)
 
     with pytest.raises(ValueError, match="source changed while sealing"):
         seal_configured_sources(
@@ -143,7 +169,7 @@ def test_seal_configured_sources_detects_content_hash_mutation(tmp_path, monkeyp
 def test_seal_configured_sources_detects_generation_drift(tmp_path, monkeypatch):
     import pytest
     from dataclasses import replace
-    import repomap_kg.artifacts.source_sealer as sealer_mod
+    import common_lore_index.artifacts.source_sealer as sealer_mod
 
     source = tmp_path / "source"
     source.mkdir()

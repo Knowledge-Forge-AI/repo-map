@@ -10,8 +10,8 @@ from typing_extensions import TypeVar
 import psycopg
 
 from actual_refresh_failure_causality import FailureCausalityAuthority
-from repomap_kg.storage.backend_observer import BackendObservationError
-from repomap_kg.storage.backend_telemetry_contracts import ConnectionTelemetryError
+from common_lore_index.storage.backend_observer import BackendObservationError
+from common_lore_index.storage.backend_telemetry_contracts import ConnectionTelemetryError
 from scale15_terminal_contracts import ControlFailure
 from scale28_backend_observer_session_cleanup import (
     begin_close as _begin_close_func,

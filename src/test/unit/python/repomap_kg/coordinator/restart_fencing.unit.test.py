@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.coordinator import _publication_phase as phase
-from repomap_kg.coordinator._control_types import JobClaim
-from repomap_kg.coordinator._restart_fencing import (
+from common_lore_index.coordinator import _publication_phase as phase
+from common_lore_index.coordinator._control_types import JobClaim
+from common_lore_index.coordinator._restart_fencing import (
     StaleDurableAuthorityError, build_store_fencing_proof, execute_durable_closure,
 )
-from repomap_kg.coordinator.startup_recovery import PublicationRouteChangedError
+from common_lore_index.coordinator.startup_recovery import PublicationRouteChangedError
 from repomap_test_support.fencing_control_fakes import FencingControl
 
 
@@ -145,7 +145,7 @@ def test_route_change_is_preserved_for_recovery_classification() -> None:
 def test_pending_restart_reconciliation_retries_after_successful_heartbeat(renewed) -> None:
     from types import SimpleNamespace
     from unittest.mock import Mock
-    from repomap_kg.coordinator.core import SyntheticCoordinator
+    from common_lore_index.coordinator.core import SyntheticCoordinator
 
     store = Mock()
     store.heartbeat_singleton.return_value = renewed
@@ -195,7 +195,7 @@ def test_contention_query_canceled_refuses_closure_safely(tmp_path) -> None:
 
 
 def test_quarantine_legacy_attempt_fence_before_release() -> None:
-    from repomap_kg.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
 
     legacy = replace(claim(), graph_lease_fencing_epoch=0)
     control = FencingControl(legacy, restart=True)
@@ -227,7 +227,7 @@ def test_quarantine_legacy_attempt_fence_before_release() -> None:
 
 
 def test_quarantine_legacy_attempt_unavailable_fence_preserves() -> None:
-    from repomap_kg.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
 
     legacy = replace(claim(), graph_lease_fencing_epoch=0)
     control = FencingControl(legacy, restart=True)
@@ -250,7 +250,7 @@ def test_quarantine_legacy_attempt_unavailable_fence_preserves() -> None:
     ["claim_positive", "attempt_positive", "lease_positive", "stale_replacement_epoch", "lease_active"],
 )
 def test_quarantine_legacy_attempt_zeroexact_validation(invalid: str) -> None:
-    from repomap_kg.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
 
     legacy = replace(claim(), graph_lease_fencing_epoch=0)
     control = FencingControl(legacy, restart=True)
@@ -276,4 +276,59 @@ def test_quarantine_legacy_attempt_zeroexact_validation(invalid: str) -> None:
         reconciler_epoch=reconciler_epoch,
         fence_callback=lambda *a, **k: True,
     ) is False
+    assert not control.committed
+
+
+@pytest.mark.parametrize("route", ["closure", "proof", "quarantine"])
+def test_storage_publication_contention_refuses_without_closure(route, tmp_path) -> None:
+    from common_lore_index.coordinator._restart_fencing import quarantine_legacy_attempt
+    from common_lore_index.storage._repository_publication_lock import PublicationContentionError
+
+    prior = replace(claim(), graph_lease_fencing_epoch=0) if route == "quarantine" else claim()
+    control = FencingControl(prior, restart=True)
+    phase.initialize(tmp_path, prior)
+
+    def contended(*args: Any, **kwargs: Any) -> bool:
+        raise PublicationContentionError("graph publication already active")
+
+    if route == "quarantine":
+        assert not quarantine_legacy_attempt(
+            control.connect, prior, reconciler_instance_id="replacement", reconciler_epoch=4,
+            fence_callback=contended,
+        )
+    elif route == "proof":
+        proof = build_store_fencing_proof(
+            control.connect, prior, reconciler_instance_id="replacement", reconciler_epoch=4,
+            fence_callback=contended,
+        )
+        assert proof is not None
+        assert not phase.close_unpublished(tmp_path, prior, proof=proof)
+    else:
+        assert not execute_durable_closure(
+            control.connect, prior, reconciler_instance_id="replacement", reconciler_epoch=4,
+            fence_callback=contended,
+            file_closer=lambda c, p: phase.close_unpublished(tmp_path, c, proof=p),
+        )
+    assert not control.committed
+    assert not any(query.lstrip().startswith(("UPDATE", "DELETE")) for query, _ in control.executions)
+    assert phase.publication_state(tmp_path, prior) == "commit_unknown"
+
+
+@pytest.mark.parametrize("error_type", [ValueError, RuntimeError])
+def test_unrelated_storage_failure_is_not_a_contention_refusal(error_type) -> None:
+    from common_lore_index.storage.errors import StorageSchemaError
+
+    original = StorageSchemaError("graph publication already active") if error_type is ValueError else error_type("fixture failure")
+    prior = claim()
+    control = FencingControl(prior, restart=True)
+
+    def failed(*args: Any, **kwargs: Any) -> bool:
+        raise original
+
+    with pytest.raises(type(original)) as caught:
+        execute_durable_closure(
+            control.connect, prior, reconciler_instance_id="replacement", reconciler_epoch=4,
+            fence_callback=failed, file_closer=lambda *a: pytest.fail("failed fence cannot authorize closure"),
+        )
+    assert caught.value is original
     assert not control.committed

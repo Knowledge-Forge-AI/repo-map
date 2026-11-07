@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.storage.backend_connection_telemetry import BackendTelemetry
-from repomap_kg.storage.backend_ownership import ConnectionRole
-from repomap_kg.storage.staged_connection_telemetry import open_owned_connection
+from common_lore_index.storage.backend_connection_telemetry import BackendTelemetry
+from common_lore_index.storage.backend_ownership import ConnectionRole
+from common_lore_index.storage.staged_connection_telemetry import open_owned_connection
 
 
 class _InterruptingConnection:

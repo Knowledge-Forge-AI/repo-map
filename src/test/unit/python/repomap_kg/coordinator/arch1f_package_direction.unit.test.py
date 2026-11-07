@@ -22,11 +22,11 @@ def _coordinator_imports(module: ModuleType) -> set[str]:
 
 
 def test_protocol_facade_preserves_launch_and_contract_identities() -> None:
-    import repomap_kg.coordinator.protocol as protocol
-    import repomap_kg.coordinator._protocol_core as protocol_core
-    import repomap_kg.coordinator._worker_launch as worker_launch
-    import repomap_kg.coordinator.refresh_adapter as refresh_adapter
-    import repomap_kg.coordinator._refresh_contracts as refresh_contracts
+    import common_lore_index.coordinator.protocol as protocol
+    import common_lore_index.coordinator._protocol_core as protocol_core
+    import common_lore_index.coordinator._worker_launch as worker_launch
+    import common_lore_index.coordinator.refresh_adapter as refresh_adapter
+    import common_lore_index.coordinator._refresh_contracts as refresh_contracts
 
     assert getattr(protocol, "ProtocolError") is getattr(protocol_core, "ProtocolError")
     assert (
@@ -49,17 +49,17 @@ def test_protocol_facade_preserves_launch_and_contract_identities() -> None:
 
 
 def test_coordinator_internal_imports_follow_one_direction() -> None:
-    from repomap_kg.coordinator import _protocol_core, _worker_launch, refresh_adapter, _refresh_execution
+    from common_lore_index.coordinator import _protocol_core, _worker_launch, refresh_adapter, _refresh_execution
 
     assert not (
         _coordinator_imports(_protocol_core)
         & {
-            "repomap_kg.coordinator._worker_launch",
-            "repomap_kg.coordinator.protocol",
-            "repomap_kg.coordinator.refresh_adapter",
+            "common_lore_index.coordinator._worker_launch",
+            "common_lore_index.coordinator.protocol",
+            "common_lore_index.coordinator.refresh_adapter",
         }
     )
-    assert "repomap_kg.coordinator.protocol" not in _coordinator_imports(_worker_launch)
-    assert "repomap_kg.coordinator.protocol" not in _coordinator_imports(refresh_adapter)
-    assert "repomap_kg.coordinator.refresh_adapter" not in _coordinator_imports(_refresh_execution)
-    assert "repomap_kg.coordinator._refresh_contracts" in _coordinator_imports(_refresh_execution)
+    assert "common_lore_index.coordinator.protocol" not in _coordinator_imports(_worker_launch)
+    assert "common_lore_index.coordinator.protocol" not in _coordinator_imports(refresh_adapter)
+    assert "common_lore_index.coordinator.refresh_adapter" not in _coordinator_imports(_refresh_execution)
+    assert "common_lore_index.coordinator._refresh_contracts" in _coordinator_imports(_refresh_execution)

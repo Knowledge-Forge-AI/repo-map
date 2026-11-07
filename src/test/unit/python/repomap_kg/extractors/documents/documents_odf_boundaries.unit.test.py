@@ -2,7 +2,7 @@ import io
 import unittest
 import zipfile
 
-from repomap_kg.extractors.documents.office_odf import extract_odf_file_observations
+from common_lore_index.extractors.documents.office_odf import extract_odf_file_observations
 
 class DocumentsOdfBoundariesUnitTests(unittest.TestCase):
     def _create_odf_zip(self, mimetype: str, meta_xml: str, content_xml: str) -> bytes:

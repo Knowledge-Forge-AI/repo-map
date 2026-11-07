@@ -1,10 +1,10 @@
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-import repomap_kg.extractors.config.nix as nix
-import repomap_kg.graph.keys as k
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.canonical_rows import canonical_rows_from_result, prepare_canonical_load
+from common_lore_index.canonicalization.main import canonicalize_observations
+import common_lore_index.extractors.config.nix as nix
+import common_lore_index.graph.keys as k
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.canonical_rows import canonical_rows_from_result, prepare_canonical_load
 
 
 class Slice6NixPipelineIntegrationTests(unittest.TestCase):

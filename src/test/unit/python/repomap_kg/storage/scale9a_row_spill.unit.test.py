@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from repomap_kg.observations.raw import RawObservation
-from repomap_kg.storage.row_spool import RowSpool
-from repomap_kg.storage.staged_rows import build_staged_rows
+from common_lore_index.observations.raw import RawObservation
+from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage.staged_rows import build_staged_rows
 
 
 def test_large_families_spill_and_prepared_rows_close_private_files() -> None:

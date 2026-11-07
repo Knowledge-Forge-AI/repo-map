@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 import compare_pg_connectors as compare_pg_connectors
-from repomap_kg.storage.readback_driver import PG_CONNECTOR_ENV
+from common_lore_index.storage.readback_driver import PG_CONNECTOR_ENV
 
 
 def load_tool_module():

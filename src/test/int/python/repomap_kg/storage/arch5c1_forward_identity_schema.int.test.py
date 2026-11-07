@@ -5,7 +5,7 @@ import shutil
 
 import psycopg
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     GraphSchemaStatus,
     apply_migrations,
     default_rdbms_root,
@@ -14,7 +14,7 @@ from repomap_kg.storage import (
     graph_schema_readiness,
     run_psql,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args,
 )
 from repomap_test_support.postgres_harness import (

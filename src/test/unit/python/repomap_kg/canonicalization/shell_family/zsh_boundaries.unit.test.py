@@ -4,11 +4,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.extractors.shell.zsh import extract_zsh_file_observations
-from repomap_kg.graph.readback.zsh import summarize_zsh_evidence
-from repomap_kg.observations import RawObservation
-from repomap_kg.storage import prepare_canonical_load
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.extractors.shell.zsh import extract_zsh_file_observations
+from common_lore_index.graph.readback.zsh import summarize_zsh_evidence
+from common_lore_index.observations import RawObservation
+from common_lore_index.storage import prepare_canonical_load
 
 FIXTURE_ROOT = Path(__file__).parents[5] / "fixtures" / "shell" / "zsh"
 FIXTURE_NAMES = (

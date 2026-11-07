@@ -134,7 +134,7 @@ def test_source_drift_and_arbitrary_role_or_duplicate_launch_refused():
 
 
 def test_go_observer_records_real_supervisor_termination_and_restores_owners(tmp_path):
-    from repomap_kg.extractors.languages import go_protocol as owner
+    from common_lore_index.extractors.languages import go_protocol as owner
     from repomap_test_support.staging_abrupt_launch import observe_go_hang
     from runner_integration_obligations import GO_HANG_NODE
     ctx = AbruptRunnerContext(nodeids=(GO_HANG_NODE,), invocation_id="b" * 32,

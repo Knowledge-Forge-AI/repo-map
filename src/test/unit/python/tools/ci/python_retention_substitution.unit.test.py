@@ -34,20 +34,20 @@ def _base_package_params(tree: ast.Module) -> tuple[ast.AST, dict[str, object], 
     ops = dynamic_operations(fn)
     chain = [{k: op[k] for k in ("kind", "fingerprint")} for op in ops]
     call = next(n for n in ast.walk(fn) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "exec_module")
-    target_path = "src/main/python/repomap_kg/__init__.py"
+    target_path = "src/main/python/common_lore_index/__init__.py"
     target_sha = hashlib.sha256((_REPO_ROOT / target_path).read_bytes()).hexdigest()
     domain = _derive_blocked_domain(_REPO_ROOT)
     params = {
         "schema": "optional-import-substitution-v1",
         "case": "base_package_import",
         "blocked_domain": domain,
-        "target_module": "repomap_kg",
+        "target_module": "common_lore_index",
         "target_path": target_path,
         "target_sha256": target_sha,
         "alternate_names": spec["alternate_names"],
         "chain": chain,
     }
-    modules = {"repomap_kg": target_path}
+    modules = {"common_lore_index": target_path}
     return call, params, modules
 
 
@@ -78,7 +78,7 @@ def test_base_package_import_resolves_cleanly() -> None:
     tree = _dep_tree()
     call, params, modules = _base_package_params(tree)
     resolved = optional_import_substitution(call, tree, params, _REPO_ROOT, modules)
-    assert resolved == {("repomap_kg", "")}
+    assert resolved == {("common_lore_index", "")}
 
 
 @pytest.mark.parametrize("case", ["sampling_missing_psutil", "sampling_missing_docker"])

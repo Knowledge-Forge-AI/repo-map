@@ -4,7 +4,7 @@ During measured integration runs, ``ChildCoverageSession`` exports ``COVERAGE_PR
 (and pinned Coverage ``7.15.4`` supports inherited ``COVERAGE_PROCESS_CONFIG`` alongside
 ``COVERAGE_PROCESS_START`` in its ``a1_coverage.pth`` startup hook from ``coverage/pth_file.py``
 and ``coverage/control.py``) and prepends its bootstrap ``sitecustomize.py`` directory to
-``PYTHONPATH``. When ``repomap_kg.runtime.python_payload`` probes candidate SDK dynamic extensions
+``PYTHONPATH``. When ``common_lore_index.runtime.python_payload`` probes candidate SDK dynamic extensions
 via ``[sys.executable, "-I", "-B", "-c", "import <mod>"]`` with
 ``env={**os.environ, "LD_BIND_NOW": "1"}``, CPython's ``-I`` flag ignores ``PYTHONPATH`` (skipping
 the runner's ``sitecustomize.py`` manifest registration) while ``site.py`` still processes

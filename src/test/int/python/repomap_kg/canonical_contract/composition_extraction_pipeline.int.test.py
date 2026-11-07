@@ -16,12 +16,12 @@ import tempfile
 from pathlib import Path
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.graph.multi_source_pipeline import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
     capture_multi_source_candidate,
 )
-from repomap_kg.observations.raw import RawObservation
+from common_lore_index.observations.raw import RawObservation
 from repomap_test_support.composition_extraction_fixtures import (
     create_composition_graph_config,
     populate_valid_script_project,

@@ -27,16 +27,16 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.ops import _portable_retention, local_refresh
-from repomap_kg.ops._portable_retention import _annotate_retained_attempt, _mark_retained_terminal
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.ops.local_cleanup import LocalCleanupError, cleanup_local_graph
-from repomap_kg.ops.local_refresh import ATTEMPT_BLOCK, attempts_namespace
-from repomap_kg.ops.portable_refresh import portable_attempts_parent
-from repomap_kg.storage.sqlite_local import durability
-from repomap_kg.storage.sqlite_local.connection import lock_path, publisher_lock
-from repomap_kg.storage.sqlite_local.durability import DURABILITY_FAILED
-from repomap_kg.storage.sqlite_local.schema import LocalStoreError
+from common_lore_index.ops import _portable_retention, local_refresh
+from common_lore_index.ops._portable_retention import _annotate_retained_attempt, _mark_retained_terminal
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.ops.local_cleanup import LocalCleanupError, cleanup_local_graph
+from common_lore_index.ops.local_refresh import ATTEMPT_BLOCK, attempts_namespace
+from common_lore_index.ops.portable_refresh import portable_attempts_parent
+from common_lore_index.storage.sqlite_local import durability
+from common_lore_index.storage.sqlite_local.connection import lock_path, publisher_lock
+from common_lore_index.storage.sqlite_local.durability import DURABILITY_FAILED
+from common_lore_index.storage.sqlite_local.schema import LocalStoreError
 from repomap_test_support.host_read_store_config import fail_if_reached
 from repomap_test_support.sqlite_local_fixtures import graph_toml, write_sqlite_home
 

@@ -13,15 +13,15 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from repomap_kg.server.canonical_read_store import PostgresCanonicalReadStore
-from repomap_kg.server.investigation_read_store import (
+from common_lore_index.server.canonical_read_store import PostgresCanonicalReadStore
+from common_lore_index.server.investigation_read_store import (
     InvestigationStorageQueries,
     LanguageSummaryFamily,
     LanguageSummaryQueries,
     LanguageSummaryQuery,
     PostgresInvestigationReadStore,
 )
-from repomap_kg.server.source_read_store import (
+from common_lore_index.server.source_read_store import (
     IngestedSourcesQuery,
     SourceFeedItemExplanationQuery,
     SourceFeedItemsQuery,
@@ -29,7 +29,7 @@ from repomap_kg.server.source_read_store import (
     SourceRunsQuery,
     SourceSummaryQuery,
 )
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalStorageSummaryRecord,
     IngestedSourceRecord,
     SourceFeedItemRecord,
@@ -175,16 +175,16 @@ class FakeInvestigationBinding:
 
 class DomainReadStoreDispatchTests(McpServerTestSupport):
     def _handle(self, name: str, args: dict[str, Any]) -> Any:
-        from repomap_kg.server.mcp import handle_tool_call
+        from common_lore_index.server.mcp import handle_tool_call
 
         return handle_tool_call(name, dict(args))["structuredContent"]
 
     def _adapter_owners(self):
-        patches: list[Any] = [patch(f"repomap_kg.server.ops.{owner}", lambda *_a, _f=family, **_k: SUMMARY_RECORDS[_f])
+        patches: list[Any] = [patch(f"common_lore_index.server.ops.{owner}", lambda *_a, _f=family, **_k: SUMMARY_RECORDS[_f])
                    for family, owner in SUMMARY_OWNERS.items()]
-        patches += [patch(f"repomap_kg.server.mcp.{owner}", lambda *_a, _o=operation, **_k: SOURCE_RESULTS[_o])
+        patches += [patch(f"common_lore_index.server.mcp.{owner}", lambda *_a, _o=operation, **_k: SOURCE_RESULTS[_o])
                     for operation, owner in SOURCE_OWNERS.items()]
-        patches.append(patch("repomap_kg.server.mcp.query_canonical_storage_summary", lambda *_a, **_k: SUMMARY))
+        patches.append(patch("common_lore_index.server.mcp.query_canonical_storage_summary", lambda *_a, **_k: SUMMARY))
         return patches
 
     def test_twelve_configured_tools_dispatch_through_named_stores_with_unchanged_results(self) -> None:
@@ -204,12 +204,12 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
         sources = source_calls({"project": "repo-map"})
         status = ("repomap_status", {"project": "repo-map"})
         calls = [*summary_calls, *((name, args) for name, args, _op, _query in sources), status]
-        guards = ("repomap_kg.ops.refresh.run_storage_readback_with_ops_psql",
-                  "repomap_kg.ops.refresh._container_psql_execution")
-        with env, patch("repomap_kg.server.ops.investigation_stores",
+        guards = ("common_lore_index.ops.refresh.run_storage_readback_with_ops_psql",
+                  "common_lore_index.ops.refresh._container_psql_execution")
+        with env, patch("common_lore_index.server.ops.investigation_stores",
                         lambda _config: FakeInvestigationBinding(investigation)), \
-                patch("repomap_kg.server.mcp.source_read_store", source_factory), \
-                patch("repomap_kg.server.mcp.canonical_read_store", canonical_factory):
+                patch("common_lore_index.server.mcp.source_read_store", source_factory), \
+                patch("common_lore_index.server.mcp.canonical_read_store", canonical_factory):
             seam_results = [self._handle(name, args) for name, args in calls]
         with env:
             for guard in guards:
@@ -266,10 +266,10 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
             calls = source_calls(project_args)
             with self.subTest(form=sorted(project_args)), \
                     patch.dict("os.environ", {"REPOMAP_MCP_CONFIG": str(legacy)}, clear=True), \
-                    patch("repomap_kg.server.mcp.source_read_store", source_factory), \
-                    patch("repomap_kg.server.mcp.canonical_read_store", canonical_factory), \
-                    patch("repomap_kg.server.mcp.graph_stores", fail_if_reached), \
-                    patch("repomap_kg.server.canonical_read_store.readback_postgres_authority", fail_if_reached):
+                    patch("common_lore_index.server.mcp.source_read_store", source_factory), \
+                    patch("common_lore_index.server.mcp.canonical_read_store", canonical_factory), \
+                    patch("common_lore_index.server.mcp.graph_stores", fail_if_reached), \
+                    patch("common_lore_index.server.canonical_read_store.readback_postgres_authority", fail_if_reached):
                 for name, args, _operation, _query in calls:
                     self._handle(name, args)
                 status = self._handle("repomap_status", project_args)
@@ -282,8 +282,8 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
                     self.assertEqual(getattr(connection, field), value, field)
 
     def test_legacy_connection_adapter_call_is_the_incumbent_ambient_call(self) -> None:
-        from repomap_kg.server.mcp import source_read_store
-        from repomap_kg.server.mcp_core import StorageConnection
+        from common_lore_index.server.mcp import source_read_store
+        from common_lore_index.server.mcp_core import StorageConnection
 
         connection = StorageConnection(
             root_path="/workspace/legacy", pg_database="legacy_db", root_path_display="[project-root]",
@@ -295,15 +295,15 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
             calls.append((args, kwargs))
             return RUNS
 
-        with patch("repomap_kg.server.mcp.query_source_run_records", owner), \
-                patch("repomap_kg.server.canonical_read_store.readback_postgres_authority", fail_if_reached):
+        with patch("common_lore_index.server.mcp.query_source_run_records", owner), \
+                patch("common_lore_index.server.canonical_read_store.readback_postgres_authority", fail_if_reached):
             source_read_store(connection).source_runs(SourceRunsQuery("example-feed", 4))
         kwargs = {"psql_command": "/opt/bin/psql", "root_path": "/workspace/legacy", "source_id": "example-feed"}
         self.assertEqual(calls, [((["-h", "db.internal", "-p", "6543", "-U", "reader", "-d", "legacy_db"],),
                                   {**kwargs, "limit": 4})])
 
     def test_invalid_arguments_and_graphs_refuse_before_store_access(self) -> None:
-        from repomap_kg.server.mcp import RepoMapMcpError
+        from common_lore_index.server.mcp import RepoMapMcpError
 
         feed = {"project": "repo-map", "source_id": "example-feed"}
         cases: tuple[tuple[str, dict[str, Any], str], ...] = (
@@ -337,22 +337,22 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
                                   "investigation_stores": failing_store_binding}
         mcp_owners: dict[str, Any] = {"graph_stores": failing_store_binding,
                                       **{owner: fail_if_reached for owner in SOURCE_OWNERS.values()}}
-        with env, patch.multiple("repomap_kg.server.ops", **owners), \
-                patch.multiple("repomap_kg.server.mcp", **mcp_owners):
+        with env, patch.multiple("common_lore_index.server.ops", **owners), \
+                patch.multiple("common_lore_index.server.mcp", **mcp_owners):
             for name, args, expected in cases:
                 with self.subTest(name=name, args=args), self.assertRaises(RepoMapMcpError) as raised:
                     self._handle(name, args)
                 self.assertEqual(str(raised.exception), expected)
 
     def test_unknown_summary_kind_refuses_before_store_and_adapter_is_closed(self) -> None:
-        from repomap_kg.ops.config import load_ops_config
-        from repomap_kg.server._ops_records import McpOpsError
-        from repomap_kg.server.ops import summary_payload
+        from common_lore_index.ops.config import load_ops_config
+        from common_lore_index.server._ops_records import McpOpsError
+        from common_lore_index.server.ops import summary_payload
 
         config_path = self.write_visible_ops_config()
         # The no-IO binding exists (psql-env refusal keeps its position); no store or read is reached.
         with self.patch_ops_config(config_path), \
-                patch("repomap_kg.server.ops.investigation_stores", failing_store_binding), \
+                patch("common_lore_index.server.ops.investigation_stores", failing_store_binding), \
                 self.assertRaises(KeyError):
             summary_payload("repo-map", summary_kind="ruby")
         store = PostgresInvestigationReadStore(load_ops_config(config_path), None, InvestigationStorageQueries(
@@ -367,7 +367,7 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
         # RESOLVE1 removed the dormant MCP readers; the explicit CLI
         # host_then_container route stays with ops.refresh and is unreachable
         # from every server module (exact names and the mode literal).
-        import repomap_kg.server as server
+        import common_lore_index.server as server
 
         retired = {"query_storage", "query_configured_storage", "run_storage_readback_with_ops_psql",
                    "_container_psql_execution"}
@@ -386,11 +386,11 @@ class DomainReadStoreDispatchTests(McpServerTestSupport):
                 self.assertNotIn("host_then_container", literals)
 
     def test_canonical_store_status_operation_uses_the_bound_summary_owner(self) -> None:
-        from repomap_kg.server.mcp import canonical_read_store
-        from repomap_kg.server.mcp_core import StorageConnection
+        from common_lore_index.server.mcp import canonical_read_store
+        from common_lore_index.server.mcp_core import StorageConnection
 
         connection = StorageConnection(root_path="/workspace/x", pg_database="x_db", root_path_display="[explicit-root]")
-        with patch("repomap_kg.server.mcp.query_canonical_storage_summary",
+        with patch("common_lore_index.server.mcp.query_canonical_storage_summary",
                    lambda *args, **kwargs: (args, kwargs)) as _owner:
             store = canonical_read_store(connection)
             assert isinstance(store, PostgresCanonicalReadStore)

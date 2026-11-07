@@ -6,7 +6,7 @@ import pytest
 
 pytestmark = pytest.mark.requires_build_profile
 
-from repomap_kg.storage.run_authority import read_run_authority
+from common_lore_index.storage.run_authority import read_run_authority
 from repomap_test_support.postgres_harness import require_postgres_binaries
 from scale15_async_storage import AsyncStorageStatistics
 from repomap_test_support.scale15_runtime_campaign import (

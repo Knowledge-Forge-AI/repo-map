@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import python_payload as payload
+from common_lore_index.runtime import python_payload as payload
 from repomap_test_support.python_payload_probes import (
     is_stdlib_import_probe_command,
     make_stdlib_import_probe_runner,
@@ -56,8 +56,8 @@ def test_validate_allowed_stdlib_modules_accepts_stdlib_and_refuses_product_or_i
         [""],
         ["1bad"],
         ["math.sin"],
-        ["repomap_kg"],
-        ["repomap_kg.runtime"],
+        ["common_lore_index"],
+        ["common_lore_index.runtime"],
         ["repomap_test_support"],
         ["not_a_stdlib_module_xyz"],
     ):
@@ -164,7 +164,7 @@ def test_non_probe_commands_pass_through_untouched_and_unapproved_probes_refuse(
     count_before = len(recorded)
     for refused_cmd in (
         [_PY, "-I", "-B", "-c", "import json"],
-        [_PY, "-I", "-B", "-c", "import repomap_kg"],
+        [_PY, "-I", "-B", "-c", "import common_lore_index"],
         [_PY, "-I", "-B", "-c", "import math; import os"],
         [_PY, "-I", "-B", "-c", "print(1)"],
         [_PY, "-c", "import math"],

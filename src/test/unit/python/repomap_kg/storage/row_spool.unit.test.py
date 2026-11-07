@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from repomap_kg.storage.row_spool import RowSpool
+from common_lore_index.storage.row_spool import RowSpool
 
 
 class RowSpoolUnitTests(unittest.TestCase):
@@ -64,7 +64,7 @@ class RowSpoolUnitTests(unittest.TestCase):
                 raise MemoryError("artifact ceiling")
 
             with patch(
-                "repomap_kg.storage.row_spool.tempfile.mkstemp",
+                "common_lore_index.storage.row_spool.tempfile.mkstemp",
                 private_mkstemp,
             ):
                 with self.assertRaisesRegex(MemoryError, "artifact ceiling"):

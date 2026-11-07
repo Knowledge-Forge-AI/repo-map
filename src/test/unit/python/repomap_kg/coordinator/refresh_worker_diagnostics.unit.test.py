@@ -5,10 +5,10 @@ import os
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from repomap_kg.coordinator.protocol import encode_jsonl
-from repomap_kg.coordinator.refresh_worker import main as worker_main
-from repomap_kg.coordinator.refresh_adapter import _extract_diagnostic_summary
-from repomap_kg.coordinator._core_disposition import CoreDispositionMixin
+from common_lore_index.coordinator.protocol import encode_jsonl
+from common_lore_index.coordinator.refresh_worker import main as worker_main
+from common_lore_index.coordinator.refresh_adapter import _extract_diagnostic_summary
+from common_lore_index.coordinator._core_disposition import CoreDispositionMixin
 
 
 def test_early_capability_bootstrap_failure_emits_structured_stderr() -> None:
@@ -22,7 +22,7 @@ def test_early_capability_bootstrap_failure_emits_structured_stderr() -> None:
 
 def test_early_identity_mismatch_failure_emits_structured_stderr() -> None:
     stderr = io.StringIO()
-    with patch("repomap_kg.coordinator.refresh_worker.load_refresh_capability") as mock_load:
+    with patch("common_lore_index.coordinator.refresh_worker.load_refresh_capability") as mock_load:
         mock_cap = MagicMock()
         mock_cap.job_id = "other_job"
         mock_cap.attempt = 1
@@ -36,7 +36,7 @@ def test_early_identity_mismatch_failure_emits_structured_stderr() -> None:
 
 def test_protocol_failure_emits_structured_stderr() -> None:
     stderr = io.StringIO()
-    with patch("repomap_kg.coordinator.refresh_worker.load_refresh_capability") as mock_load:
+    with patch("common_lore_index.coordinator.refresh_worker.load_refresh_capability") as mock_load:
         mock_cap = MagicMock()
         mock_cap.job_id = "j1"
         mock_cap.attempt = 1
@@ -52,7 +52,7 @@ def test_protocol_failure_emits_structured_stderr() -> None:
 
 def test_unexpected_exception_after_start_emits_redacted_stderr() -> None:
     stderr = io.StringIO()
-    with patch("repomap_kg.coordinator.refresh_worker.load_refresh_capability") as mock_load:
+    with patch("common_lore_index.coordinator.refresh_worker.load_refresh_capability") as mock_load:
         mock_cap = MagicMock()
         mock_cap.job_id = "j1"
         mock_cap.attempt = 1
@@ -76,9 +76,9 @@ def test_unexpected_exception_after_start_emits_redacted_stderr() -> None:
                 # writer open until the worker returns, then close both ends.
                 stdin = SimpleNamespace(buffer=stream, fileno=stream.fileno)
                 with patch("sys.stdin", stdin), patch("sys.stderr", stderr):
-                    with patch("repomap_kg.coordinator.refresh_worker._write", messages.append):
+                    with patch("common_lore_index.coordinator.refresh_worker._write", messages.append):
                         with patch(
-                            "repomap_kg.coordinator.refresh_worker._run_with_heartbeats",
+                            "common_lore_index.coordinator.refresh_worker._run_with_heartbeats",
                             side_effect=ValueError("secret password=supersecret in /secret/path"),
                         ) as operation:
                             exit_code = worker_main(["--capability", "dummy.json", "--job-id", "j1", "--attempt", "1"])

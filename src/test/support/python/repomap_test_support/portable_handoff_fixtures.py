@@ -43,7 +43,7 @@ def write_native(workspace: Path) -> None:
 
 def routed_locator(tmp_path: Path, monkeypatch: Any) -> tuple[dict[str, Any], Path, dict[str, Any]]:
     # Imports deliberately stay in this test-only helper, outside native-only use.
-    from repomap_kg.server import mcp
+    from common_lore_index.server import mcp
     from repomap_test_support.node_location_fixtures import BINDING, DOC, GRAPH, locator_home
 
     home, _ = locator_home(tmp_path)

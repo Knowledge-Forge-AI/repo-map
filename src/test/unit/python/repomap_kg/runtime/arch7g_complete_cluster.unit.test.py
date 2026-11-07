@@ -7,10 +7,10 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.coordinator.limits import DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS
-from repomap_kg.ops.config_loading import load_ops_config_home
-from repomap_kg.runtime.local import setup_local_runtime
-from repomap_kg.runtime.release_cluster import (
+from common_lore_index.coordinator.limits import DEFAULT_COORDINATOR_STARTUP_WAIT_SECONDS
+from common_lore_index.ops.config_loading import load_ops_config_home
+from common_lore_index.runtime.local import setup_local_runtime
+from common_lore_index.runtime.release_cluster import (
     GraphOperator,
     ReleaseClusterError,
     _initialize_or_upgrade_control,
@@ -232,7 +232,7 @@ def test_release_cluster_initializes_and_backup_first_upgrades_exact_topology(tm
         )
         return backup_dir
 
-    with patch("repomap_kg.runtime._backup_support.run_bounded_popen", return_value=b"1; 3079 13500 EXTENSION - plpgsql \n"):
+    with patch("common_lore_index.runtime._backup_support.run_bounded_popen", return_value=b"1; 3079 13500 EXTENSION - plpgsql \n"):
         payload = initialize_release_cluster(
             "/repo-map-home",
             operator_factory=lambda _home: operator,
@@ -273,12 +273,12 @@ def test_release_control_preledger_is_backup_first_upgraded(tmp_path: Path) -> N
     )
     with (
         patch(
-            "repomap_kg.runtime.release_cluster.LocalControlAuthority",
+            "common_lore_index.runtime.release_cluster.LocalControlAuthority",
             return_value=authority,
         ),
-        patch("repomap_kg.runtime.release_cluster.ReleaseGraphOperator"),
+        patch("common_lore_index.runtime.release_cluster.ReleaseGraphOperator"),
         patch(
-            "repomap_kg.runtime.release_cluster.upgrade_coordinator_control",
+            "common_lore_index.runtime.release_cluster.upgrade_coordinator_control",
             return_value={"result": "ready", "schema_before": "supported-preledger"},
         ) as upgrade,
     ):
@@ -309,8 +309,8 @@ def test_release_control_preledger_is_backup_first_upgraded(tmp_path: Path) -> N
         encoding="utf-8",
     )
     with (
-        patch("repomap_kg.runtime.release_cluster._backup_graph_before_upgrade", return_value=synthetic_dir) as backup,
-        patch("repomap_kg.runtime._backup_support.run_bounded_popen", return_value=b"1; 3079 13500 EXTENSION - plpgsql\n"),
+        patch("common_lore_index.runtime.release_cluster._backup_graph_before_upgrade", return_value=synthetic_dir) as backup,
+        patch("common_lore_index.runtime._backup_support.run_bounded_popen", return_value=b"1; 3079 13500 EXTENSION - plpgsql\n"),
     ):
         receipt = kwargs["dump_function"]("/repo-map-home", database="repomap_control")
         inspection = kwargs["inspect_function"]("/repo-map-home", receipt.plan.backup_path)
@@ -339,11 +339,11 @@ def test_release_control_fresh_and_current_paths_use_idempotent_initializer(
     )
     with (
         patch(
-            "repomap_kg.runtime.release_cluster.LocalControlAuthority",
+            "common_lore_index.runtime.release_cluster.LocalControlAuthority",
             return_value=authority,
         ),
         patch(
-            "repomap_kg.runtime.release_cluster.initialize_coordinator_control",
+            "common_lore_index.runtime.release_cluster.initialize_coordinator_control",
             return_value={"result": "ready"},
         ) as initialize,
     ):
@@ -357,7 +357,7 @@ def test_release_cluster_refuses_unmanaged_graph_schema() -> None:
     operator = _FakeGraphOperator()
     operator.states["graph_c"] = ("refused", 0)
     control_initializer = patch(
-        "repomap_kg.runtime.release_cluster._initialize_or_upgrade_control"
+        "common_lore_index.runtime.release_cluster._initialize_or_upgrade_control"
     )
 
     with control_initializer as initialize_control:
@@ -380,7 +380,7 @@ def test_release_cluster_refuses_preexisting_empty_database_without_adoption() -
     operator = _FakeGraphOperator()
     operator.exists["graph_a"] = True
     control_initializer = patch(
-        "repomap_kg.runtime.release_cluster._initialize_or_upgrade_control"
+        "common_lore_index.runtime.release_cluster._initialize_or_upgrade_control"
     )
 
     with control_initializer as initialize_control:

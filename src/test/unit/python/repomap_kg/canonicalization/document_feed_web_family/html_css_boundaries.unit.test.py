@@ -1,7 +1,7 @@
 import unittest
 
-from repomap_kg.canonicalization import canonicalize_observations
-from repomap_kg.observations import RawObservation
+from common_lore_index.canonicalization import canonicalize_observations
+from common_lore_index.observations import RawObservation
 
 
 class CanonicalizationHtmlCssFamilyBoundariesUnitTests(unittest.TestCase):

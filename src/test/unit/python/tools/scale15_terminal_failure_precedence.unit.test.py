@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from repomap_kg.storage.staging_event_transport import StagingEventFrame
+from common_lore_index.storage.staging_event_transport import StagingEventFrame
 from scale14_actual_refresh_supervisor import (
     ActualRefreshSupervisor,
     ProtectedLaunchLimits,

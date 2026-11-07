@@ -5,7 +5,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from repomap_kg.storage import default_rdbms_root, discover_migrations
+from common_lore_index.storage import default_rdbms_root, discover_migrations
 
 
 ARCH5D_REMOVAL_MIGRATION = (

@@ -1,0 +1,45 @@
+{
+  "arms": [
+    "native_tools_baseline",
+    "current_graph_navigation_sqlite",
+    "current_graph_navigation_postgres",
+    "intent_navigation_sqlite",
+    "intent_navigation_postgres",
+    "compact_context_16k_sqlite",
+    "compact_context_16k_postgres"
+  ],
+  "attempt_id": "w4-context-calibration-attempt-1",
+  "budget_tiers": [
+    4096,
+    16384,
+    65536
+  ],
+  "catalog_sha256": "sha256:d0309f95e1b017a4b1788f8ac5ef4194a2c07546e70a573a178e651c4d46a034",
+  "freeze_sha256": "sha256:9ca7fb3102de4a72db4c312ae2c9a25d2c7c8dd28f6cf95e60d9e0ceb7151fc6",
+  "ordered_task_ids": [
+    "CTX-CAL-01",
+    "CTX-CAL-02",
+    "CTX-CAL-03",
+    "CTX-CAL-04",
+    "CTX-CAL-05",
+    "CTX-CAL-06",
+    "CTX-CAL-07",
+    "CTX-CAL-08",
+    "CTX-CAL-09",
+    "CTX-CAL-10",
+    "CTX-CAL-11",
+    "CTX-CAL-12",
+    "CTX-CAL-13",
+    "CTX-CAL-14",
+    "CTX-CAL-15",
+    "CTX-CAL-16",
+    "CTX-CAL-17",
+    "CTX-CAL-18",
+    "CTX-CAL-19",
+    "CTX-CAL-20"
+  ],
+  "phase_id": "REPOMAP-CLOE-CONTEXT1",
+  "repetitions_per_task": 3,
+  "schema_version": "cloe-context-attempt-declaration-v1",
+  "split": "calibration"
+}

@@ -6,9 +6,9 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.storage.semantic_candidates import EmbeddingEntry, checked_vector
-from repomap_kg.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
-from repomap_kg.storage.semantic_candidate_sql import build_candidate_query_sql
+from common_lore_index.storage.semantic_candidates import EmbeddingEntry, checked_vector
+from common_lore_index.storage.semantic_candidate_import import build_embedding_import_sql, candidate_schema_sql
+from common_lore_index.storage.semantic_candidate_sql import build_candidate_query_sql
 from repomap_test_support.semantic_candidate_fixtures import BINDING, PROFILE, candidate_query
 from repomap_test_support.semantic_candidate_publication import candidate_bundle
 
@@ -72,6 +72,13 @@ def test_exact_query_is_source_blind_and_quotes_filter_literals() -> None:
     assert "node.last_seen_run_id = accepted.id" in sql
     for forbidden in ("CREATE ", "INSERT ", "UPDATE ", "DELETE ", "REFRESH ", "COPY "):
         assert forbidden not in sql
+
+
+def test_exact_query_scopes_candidates_and_evidence_to_accepted_links() -> None:
+    sql = build_candidate_query_sql(candidate_query())
+    accepted_link = "link.link_kind NOT IN ('inferred', 'inferred_from_edge')"
+
+    assert sql.count(accepted_link) == 2
 
 
 def _entry(**changes) -> EmbeddingEntry:

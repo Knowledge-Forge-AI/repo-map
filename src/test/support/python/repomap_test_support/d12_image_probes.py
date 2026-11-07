@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
+from os import PathLike
 import re
 import time
 from typing import Any
 
-from repomap_kg.runtime.release import (
+from common_lore_index.runtime.release import (
     PACKAGED_PG_DUMP,
     PACKAGED_PG_RESTORE,
     PACKAGED_PSQL,
@@ -77,9 +78,9 @@ PACKAGING_PY = r"""
 import hashlib, importlib.metadata as md, importlib.util as iu, json, os, pathlib, platform, re, shutil, subprocess
 import psycopg
 from psycopg import pq
-from repomap_kg.storage import discover_migrations
-from repomap_kg.coordinator._control_schema import discover_control_migrations
-from repomap_kg.extractors.languages.go_helper import resolve_go_helper_command
+from common_lore_index.storage import discover_migrations
+from common_lore_index.coordinator._control_schema import discover_control_migrations
+from common_lore_index.extractors.languages.go_helper import resolve_go_helper_command
 run = lambda *c: subprocess.run(list(c), capture_output=True, text=True, check=False)
 paths = json.loads(os.environ["D12_PATHS"]) + [w for w in map(shutil.which, ("psql", "pg_dump", "pg_restore")) if w]
 root = pathlib.Path(psycopg.__file__).parent.parent
@@ -104,7 +105,7 @@ print(json.dumps({"versions": {p: run(p, "--version").stdout.strip() for p in pa
 ROUND_TRIP_PY = r"""
 import hashlib, json, os, subprocess
 import psycopg
-from repomap_kg.storage import apply_migrations, graph_schema_readiness
+from common_lore_index.storage import apply_migrations, graph_schema_readiness
 env_keys = ("REPOMAP_PACKAGED_PSQL", "REPOMAP_PACKAGED_PG_DUMP", "REPOMAP_PACKAGED_PG_RESTORE")
 psql, dump, restore = (os.environ[k] for k in env_keys)
 base = ["-h", "127.0.0.1", "-p", "5432", "-U", os.environ["PGUSER"]]
@@ -153,6 +154,49 @@ toc_n = sum(1 for l in toc.splitlines() if l and not l.startswith(";"))
 print(json.dumps({"source": observe("d12_source"), "restored": observe("d12_restore"), "archive_sha256_before": before,
   "archive_sha256_after": after, "archive_toc_entries": toc_n}))
 """
+
+
+def restore_replay_shim_source(
+    python_executable: str,
+    real_restore: str | PathLike[str],
+    real_psql: str | PathLike[str],
+) -> str:
+    """Return a measured-child-safe pg_restore replay shim script for D12 round-trip probes."""
+    # The local PG17 client emits transaction_timeout, which PG16 cannot replay.
+    # Direct pg_restore against the server remains a hosted native qualification.
+    return (
+        f"#!{python_executable}\n"
+        "import subprocess, sys\n"
+        f"real_restore = {str(real_restore)!r}\n"
+        f"real_psql = {str(real_psql)!r}\n"
+        "if '-l' in sys.argv:\n"
+        "    raise SystemExit(subprocess.run([real_restore, *sys.argv[1:]]).returncode)\n"
+        "dumped = subprocess.run(\n"
+        "    [real_restore, '-f', '-', sys.argv[-1]],\n"
+        "    stdout=subprocess.PIPE,\n"
+        "    text=True,\n"
+        ")\n"
+        "if dumped.returncode != 0:\n"
+        "    raise SystemExit(dumped.returncode)\n"
+        "clean = '\\n'.join(\n"
+        "    line for line in dumped.stdout.splitlines() if line != 'SET transaction_timeout = 0;'\n"
+        ") + '\\n'\n"
+        "raise SystemExit(\n"
+        "    subprocess.run(\n"
+        "        [\n"
+        "            real_psql,\n"
+        "            *sys.argv[1:-3],\n"
+        "            '--single-transaction',\n"
+        "            '-X',\n"
+        "            '-qAt',\n"
+        "            '-v',\n"
+        "            'ON_ERROR_STOP=1',\n"
+        "        ],\n"
+        "        input=clean,\n"
+        "        text=True,\n"
+        "    ).returncode\n"
+        ")\n"
+    )
 
 
 def _tmpfs(client: Any, image: str) -> dict[str, str]:

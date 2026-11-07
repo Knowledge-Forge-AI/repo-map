@@ -17,12 +17,12 @@ from __future__ import annotations
 
 import unittest
 
-from repomap_kg.canonicalization.main import canonicalize_observations
-from repomap_kg.extractors.shell.bash import extract_bash_file_observations
-from repomap_kg.extractors.shell.powershell import (
+from common_lore_index.canonicalization.main import canonicalize_observations
+from common_lore_index.extractors.shell.bash import extract_bash_file_observations
+from common_lore_index.extractors.shell.powershell import (
     extract_powershell_file_observations,
 )
-from repomap_kg.extractors.shell.zsh import extract_zsh_file_observations
+from common_lore_index.extractors.shell.zsh import extract_zsh_file_observations
 
 
 class Slice11ShellCanonicalPipelineIntegrationTests(unittest.TestCase):

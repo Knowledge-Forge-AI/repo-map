@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.runtime import python_payload as payload
-from repomap_kg.runtime import release
-from repomap_kg.runtime import release_manifest as historical
+from common_lore_index.runtime import python_payload as payload
+from common_lore_index.runtime import release
+from common_lore_index.runtime import release_manifest as historical
 from repomap_test_support import d12_python31216 as proof
 from repomap_test_support.resource_docker_operation_records import DERIVED_OPERATION_FIELDS
 

@@ -7,18 +7,18 @@ from typing import cast
 
 import pytest
 
-from repomap_kg.service_package._artifacts_io import (
+from common_lore_index.service_package._artifacts_io import (
     _absolute_path,
     _safe_file_details,
     _validate_new_content,
 )
-from repomap_kg.service_package._artifacts_locking import _safe_lock_details
-from repomap_kg.service_package._operations_execution import (
+from common_lore_index.service_package._artifacts_locking import _safe_lock_details
+from common_lore_index.service_package._operations_execution import (
     ServicePackageError,
     _CoordinatorExecutionBase,
     _return_code,
 )
-from repomap_kg.service_package.artifacts import ServiceArtifactError
+from common_lore_index.service_package.artifacts import ServiceArtifactError
 
 
 def test_return_code_parsing() -> None:

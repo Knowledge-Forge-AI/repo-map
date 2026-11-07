@@ -1,6 +1,6 @@
 import unittest
 
-from repomap_kg.extractors.languages.python import (
+from common_lore_index.extractors.languages.python import (
     PythonModuleIndex,
     extract_python_file_observations,
 )

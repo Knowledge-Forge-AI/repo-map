@@ -8,29 +8,29 @@ from typing import Any
 
 import pytest
 
-from repomap_kg.artifacts import ArtifactLimits, PortableSnapshotManifest
-from repomap_kg.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
-from repomap_kg.artifacts.receipt import ExtractionReceipt
-from repomap_kg.artifacts.references import (
+from common_lore_index.artifacts import ArtifactLimits, PortableSnapshotManifest
+from common_lore_index.artifacts.bundle import PUBLICATION_FAMILIES, PublicationBundle
+from common_lore_index.artifacts.receipt import ExtractionReceipt
+from common_lore_index.artifacts.references import (
     ArtifactLocator,
     _privacy,
     _require_text,
     _validate_locator_value,
 )
-from repomap_kg.artifacts.source_sealer import seal_configured_sources
-from repomap_kg.artifacts.store import FileSystemArtifactStore
-from repomap_kg.graph.keys import (
+from common_lore_index.artifacts.source_sealer import seal_configured_sources
+from common_lore_index.artifacts.store import FileSystemArtifactStore
+from common_lore_index.graph.keys import (
     GraphKeyError,
     js_test_case_key,
     parse_key,
     validate_key,
 )
-from repomap_kg.graph.multi_source import (
+from common_lore_index.graph.multi_source import (
     SourceKind,
     graph_source_binding_id,
     source_selection_policy_id,
 )
-from repomap_kg.graph.multi_source_records import (
+from common_lore_index.graph.multi_source_records import (
     MultiSourceIdentityError,
     SourceDefinition,
     _graph_id,
@@ -38,11 +38,11 @@ from repomap_kg.graph.multi_source_records import (
     source_binding_input_name,
     source_binding_role,
 )
-from repomap_kg.graph.multi_source_pipeline import capture_multi_source_candidate
-from repomap_kg.ops.config_binding_records import OpsGraphSourceBindingConfig
-from repomap_kg.ops.config_records import OpsGraphConfig
-from repomap_kg.storage.staged_rows import build_staged_rows
-from repomap_kg.storage.staging_family_contracts import PrivacyClassification
+from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
+from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
+from common_lore_index.ops.config_records import OpsGraphConfig
+from common_lore_index.storage.staged_rows import build_staged_rows
+from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 
 def _sealed(tmp_path: Path):

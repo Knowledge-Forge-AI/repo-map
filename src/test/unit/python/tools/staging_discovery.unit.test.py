@@ -52,7 +52,7 @@ def fixture_tree(tmp_path: Path):
 
 def discover(root: Path, source: Path, test: Path, **kwargs):
     return discovery.discover_staging_population(
-        SimpleNamespace(suite="int"), [str(test), "--rootdir=" + str(root)],
+        SimpleNamespace(suite="int", report_dir=root / "reports"), [str(test), "--rootdir=" + str(root)],
         repo_root=root, source_root=source, test_support_root=SUPPORT,
         invocation_id="fixture-invocation", candidate_identity={"commit": "a" * 40, "source_sha256": "b" * 64},
         scoped=True, **kwargs,
@@ -184,7 +184,7 @@ def test_real_discovery_rebases_the_optional_record_past_profile_deselection(tmp
     monkeypatch.setattr(discovery_contract, "OPTIONAL_NODE_IDS", (optional,))
     monkeypatch.setenv("REPOMAP_TEST_PG_PROFILE", "core")
     partition = discovery.discover_staging_population(
-        SimpleNamespace(suite="int"),
+        SimpleNamespace(suite="int", report_dir=root / "reports"),
         [str(test), "--rootdir=" + str(root), "-p", "repomap_test_support.pgvector_profile"],
         repo_root=root, source_root=source, test_support_root=SUPPORT, invocation_id="fixture-invocation",
         candidate_identity={"commit": "a" * 40, "source_sha256": "b" * 64}, scoped=True,

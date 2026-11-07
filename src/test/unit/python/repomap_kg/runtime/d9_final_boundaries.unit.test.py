@@ -17,24 +17,24 @@ import psutil
 import psycopg
 import pytest
 
-from repomap_kg.cli import main
-from repomap_kg.runtime._backup_observation import _normalize_server_provenance
-from repomap_kg.runtime._backup_process import BoundedProcessError, ProcessRetirement, run_bounded_process
-from repomap_kg.runtime import _extension_restore_exec as exec_mod
-from repomap_kg.runtime import _extension_restore_native as native_mod
-from repomap_kg.runtime._backup_provenance import parse_toc_entries, provenance_error, run_bounded_popen
-from repomap_kg.runtime._extension_restore_exec import bound_exec_custody
-from repomap_kg.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH
-from repomap_kg.runtime._extension_restore_lifecycle import reconcile_restored_roles
-from repomap_kg.runtime._extension_restore_native import observe_custodied_client_identities
-from repomap_kg.runtime.backup_commands import planned_psql_stdin_command
-from repomap_kg.runtime.backup_manifests import summarize_pg_restore_toc
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.database_role_contract import read_role_secrets
-from repomap_kg.runtime.database_roles import render_database_role_sql
-from repomap_kg.runtime.local import build_local_runtime_plan, setup_local_runtime
-from repomap_kg.runtime.release import PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL
-from repomap_kg.runtime import maintenance, release_cluster
+from common_lore_index.cli import main
+from common_lore_index.runtime._backup_observation import _normalize_server_provenance
+from common_lore_index.runtime._backup_process import BoundedProcessError, ProcessRetirement, run_bounded_process
+from common_lore_index.runtime import _extension_restore_exec as exec_mod
+from common_lore_index.runtime import _extension_restore_native as native_mod
+from common_lore_index.runtime._backup_provenance import parse_toc_entries, provenance_error, run_bounded_popen
+from common_lore_index.runtime._extension_restore_exec import bound_exec_custody
+from common_lore_index.runtime._extension_restore_exec_control import SETTLE_PROCESS_SH
+from common_lore_index.runtime._extension_restore_lifecycle import reconcile_restored_roles
+from common_lore_index.runtime._extension_restore_native import observe_custodied_client_identities
+from common_lore_index.runtime.backup_commands import planned_psql_stdin_command
+from common_lore_index.runtime.backup_manifests import summarize_pg_restore_toc
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.database_role_contract import read_role_secrets
+from common_lore_index.runtime.database_roles import render_database_role_sql
+from common_lore_index.runtime.local import build_local_runtime_plan, setup_local_runtime
+from common_lore_index.runtime.release import PACKAGED_PG_DUMP, PACKAGED_PG_RESTORE, PACKAGED_PSQL
+from common_lore_index.runtime import maintenance, release_cluster
 from repomap_test_support.local_db_backup import default_baseline_server_provenance
 
 
@@ -110,7 +110,7 @@ def test_cli_dump_validates_target_before_outer_maintenance_window(tmp_path: Pat
         stderr = io.StringIO()
         with (
             patch(
-                "repomap_kg.cli.maintenance_window_for_database_drop",
+                "common_lore_index.cli.maintenance_window_for_database_drop",
                 side_effect=AssertionError("outer maintenance window entered before target validation"),
             ),
             redirect_stdout(io.StringIO()),
@@ -285,9 +285,35 @@ def test_client_version_probes_run_under_container_custody_with_existing_limits(
 def test_role_reconciliation_reuses_core_sql_under_custody_with_piped_input(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     plan = _custody_plan(tmp_path)
     database = plan.graph_databases[0]
+    secrets = read_role_secrets(plan.env_file)
     expected_sql = render_database_role_sql(
-        database=database, owner_role=plan.user, database_kind="graph", secrets=read_role_secrets(plan.env_file),
+        database=database, owner_role=plan.user, database_kind="graph", secrets=secrets, purge_restored_lexical=True,
     ).encode("utf-8")
+    no_purge_sql = render_database_role_sql(
+        database=database, owner_role=plan.user, database_kind="graph", secrets=secrets, purge_restored_lexical=False,
+    ).encode("utf-8")
+    default_sql = render_database_role_sql(
+        database=database, owner_role=plan.user, database_kind="graph", secrets=secrets,
+    ).encode("utf-8")
+    assert default_sql == no_purge_sql and expected_sql != no_purge_sql
+    sql_text, no_purge_text = expected_sql.decode("utf-8"), no_purge_sql.decode("utf-8")
+    for acl_line in (
+        "RAISE EXCEPTION 'cloe_lexical schema or object custody is not owned by the database owner';",
+        "EXECUTE 'REVOKE ALL ON SCHEMA cloe_lexical FROM PUBLIC';",
+        "ALTER DEFAULT PRIVILEGES FOR ROLE %I IN SCHEMA cloe_lexical REVOKE ALL ON TABLES FROM PUBLIC",
+        'EXECUTE \'REVOKE ALL ON ALL TABLES IN SCHEMA cloe_lexical FROM "repomap_read_status"\';',
+        'EXECUTE \'REVOKE ALL ON ALL TABLES IN SCHEMA cloe_lexical FROM "repomap_refresh_publication"\';',
+        'EXECUTE \'REVOKE ALL ON ALL TABLES IN SCHEMA cloe_lexical FROM "repomap_coordinator_control"\';',
+    ):
+        assert acl_line in sql_text and acl_line in no_purge_text
+    delete_stmts = [f"EXECUTE 'DELETE FROM cloe_lexical.{t}';" for t in ("authority", "omissions", "chunks", "documents")]
+    positions = [sql_text.index(stmt) for stmt in delete_stmts]
+    assert positions == sorted(positions) and "DELETE FROM cloe_lexical." not in no_purge_text
+    revoked_stmt = (
+        "UPDATE cloe_lexical.generations SET state = ''revoked'', "
+        "revocation_reason = ''restored_snapshot_unverified_lexical_index_invalidated''"
+    )
+    assert sql_text.index(revoked_stmt) > positions[-1] and "UPDATE cloe_lexical.generations" not in no_purge_text
     bounded = _ScriptedBounded(lambda command: b"BEGIN\nCOMMIT\n")
     monkeypatch.setattr(exec_mod, "run_bounded_popen", bounded)
     with bound_exec_custody("c" * 64) as custody:
@@ -303,3 +329,11 @@ def test_role_reconciliation_reuses_core_sql_under_custody_with_piped_input(tmp_
     shared = MagicMock(return_value=subprocess.CompletedProcess([], 0, b"", b""))
     reconcile_restored_roles(plan, database, "graph", shared)
     assert shared.call_args.kwargs["input"] == expected_sql, "a caller-supplied runner keeps the shared core path"
+    control_db = next(v for v in plan.owned_databases if v not in plan.graph_databases)
+    control_sql = render_database_role_sql(
+        database=control_db, owner_role=plan.user, database_kind="control", secrets=secrets,
+    ).encode("utf-8")
+    assert b"cloe_lexical" not in control_sql
+    shared_ctrl = MagicMock(return_value=subprocess.CompletedProcess([], 0, b"", b""))
+    reconcile_restored_roles(plan, control_db, "control", shared_ctrl)
+    assert shared_ctrl.call_args.kwargs["input"] == control_sql

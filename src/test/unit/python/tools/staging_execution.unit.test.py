@@ -113,7 +113,7 @@ def test_missing_collection_is_reported_without_running_a_leg(monkeypatch, tmp_p
     assert result == 1
     assert order == ["collect"]
     assert report["partition"] == {}
-    assert any("accounting" in error for error in report["errors"])
+    assert "discovery collection: RuntimeError" in report["errors"]
     assert not execution_succeeded(report)
 
 
@@ -155,7 +155,7 @@ def test_source_drift_blocks_next_leg(monkeypatch, tmp_path):
     assert result == 1
     assert order == ["collect", "M"]
     assert report["legs"]["A"]["status"] == "blocked"
-    assert any("accounting" in error for error in report["errors"])
+    assert "source verify: RuntimeError" in report["errors"]
 
 
 def test_abrupt_go_directory_is_separate_and_restored(monkeypatch, tmp_path):
@@ -193,8 +193,8 @@ def test_contract_failure_has_actionable_report_diagnostic(monkeypatch, tmp_path
     result, path, _, _, sessions = _execute(monkeypatch, tmp_path, coverage_summary=summary)
     report = load_report(path)
     assert result == 1
-    assert "report validation: M coverage percentage does not match counts" in report["errors"]
-    assert "report validation:" in capsys.readouterr().err
+    assert "report validation: StagingReportValidationError" in report["errors"]
+    assert "report validation" in capsys.readouterr().err
     assert all(session.cleaned for session in sessions)
 
 
@@ -232,8 +232,8 @@ def test_type_error_rendering_preserves_original_validation_failure(monkeypatch,
     )
     report = load_report(path)
     assert result == 1 and order == ["collect", "M", "A"]
-    assert "report validation: M coverage percentage does not match counts" in report["errors"]
-    assert "rendering: TypeError" in report["errors"]
-    assert "M coverage percentage does not match counts" in capsys.readouterr().err
+    assert "report validation: StagingReportValidationError" in report["errors"]
+    assert "report rendering: TypeError" in report["errors"]
+    assert "StagingReportValidationError" in capsys.readouterr().err
     assert report["legs"]["M"]["records"] and report["legs"]["A"]["records"]
     assert all(session.cleaned for session in sessions)

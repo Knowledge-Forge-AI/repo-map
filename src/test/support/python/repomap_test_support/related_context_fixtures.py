@@ -10,12 +10,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from repomap_kg.graph.keys import doc_page_key
-from repomap_kg.graph.multi_source import graph_source_binding_id
-from repomap_kg.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
-from repomap_kg.server import mcp
-from repomap_kg.storage.sqlite_local.connection import initialize_graph_database
-from repomap_kg.storage.sqlite_local.publisher import publish_generation
+from common_lore_index.graph.keys import doc_page_key
+from common_lore_index.graph.multi_source import graph_source_binding_id
+from common_lore_index.ops.config_local import LocalSqliteConfig, load_graph_registry_config_home
+from common_lore_index.server import mcp
+from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
+from common_lore_index.storage.sqlite_local.publisher import publish_generation
 from repomap_test_support.navigation_search_fixtures import navigation_bundle
 from repomap_test_support.sqlite_local_fixtures import graph_toml, local_binding, publication_for, write_sqlite_home
 

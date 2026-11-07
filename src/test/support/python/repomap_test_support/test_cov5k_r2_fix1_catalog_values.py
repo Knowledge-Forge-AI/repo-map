@@ -45,7 +45,7 @@ _BASE_OBSERVATION = (
     "cleanup_disposition",
 )
 _GROUP_G_OBSERVATION = _BASE_OBSERVATION + ("execution_parameter_digest",)
-_OWNER_ROOT = "src/main/python/repomap_kg"
+_OWNER_ROOT = "src/main/python/common_lore_index"
 _TOOL_ROOT = "tools"
 
 

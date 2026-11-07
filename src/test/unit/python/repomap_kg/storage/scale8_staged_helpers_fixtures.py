@@ -1,19 +1,19 @@
 from __future__ import annotations
 from typing import Any
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import (
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import (
     PortablePublicationBinding,
     RunPublicationAttempt,
     RunPublicationGenerations,
     RunPublicationReceipt,
 )
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.staged_ingestion import (
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
 )
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.staging_ownership import StageOwner
-from repomap_kg.storage.staging import STAGING_FAMILIES
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.staging_ownership import StageOwner
+from common_lore_index.storage.staging import STAGING_FAMILIES
 
 
 

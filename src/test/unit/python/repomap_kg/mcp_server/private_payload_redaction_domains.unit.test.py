@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     CanonicalNeighborhoodRecord,
     CanonicalNodeRecord,
     JSFrameworkSummaryRecord,
@@ -39,7 +39,7 @@ def _endpoint_fixture():
 
 
 def _endpoint_call(monkeypatch, payload):
-    from repomap_kg.server import mcp, _ops_summaries
+    from common_lore_index.server import mcp, _ops_summaries
 
     monkeypatch.setattr(_ops_summaries, "canonical_neighborhood_to_jsonable",
                         lambda record: copy.deepcopy(payload))
@@ -58,8 +58,8 @@ def _endpoint_call(monkeypatch, payload):
 def test_neighborhood_noneligible_public_facts_keep_exact_redaction(
     endpoint_home, monkeypatch, field, value,
 ):
-    from repomap_kg.server import ops
-    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from common_lore_index.server import ops
+    from common_lore_index.server._ops_sanitization import sanitize_jsonable
 
     original = ops.graph_payload
     def facts(*args, **kwargs):
@@ -78,7 +78,7 @@ def test_neighborhood_noneligible_public_facts_keep_exact_redaction(
 def test_neighborhood_actual_private_selection_keeps_endpoints_withheld(
     endpoint_home, monkeypatch, privacy,
 ):
-    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from common_lore_index.server._ops_sanitization import sanitize_jsonable
 
     config = endpoint_home / "repomap.rp.toml"
     config.write_text(config.read_text().replace('privacy = "public-dev"', f'privacy = "{privacy}"'))
@@ -88,8 +88,8 @@ def test_neighborhood_actual_private_selection_keeps_endpoints_withheld(
 
 def test_neighborhood_private_source_binding_refuses_public_graph_projection(endpoint_home, monkeypatch):
     from dataclasses import replace
-    from repomap_kg.server import ops
-    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from common_lore_index.server import ops
+    from common_lore_index.server._ops_sanitization import sanitize_jsonable
 
     original = ops.configured_graph
     def selected(*args, **kwargs):
@@ -130,7 +130,7 @@ def test_neighborhood_placeholder_unsafe_mutated_and_unseen_endpoint_refusal(
 def test_neighborhood_malformed_and_short_windows_refuse_without_guessing(
     endpoint_home, monkeypatch, change,
 ):
-    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from common_lore_index.server._ops_sanitization import sanitize_jsonable
 
     raw = _endpoint_fixture()
     if change in {"center", "nodes", "edges"}:
@@ -153,8 +153,8 @@ def test_neighborhood_malformed_and_short_windows_refuse_without_guessing(
 
 
 def test_neighborhood_own_record_alignment_self_loops_and_nested_redaction(endpoint_home, monkeypatch):
-    from repomap_kg.server import _ops_summaries
-    from repomap_kg.server._ops_sanitization import sanitize_jsonable
+    from common_lore_index.server import _ops_summaries
+    from common_lore_index.server._ops_sanitization import sanitize_jsonable
 
     raw = _endpoint_fixture()
     edge = raw["edges"][0]
@@ -215,14 +215,14 @@ class McpServerPrivatePayloadRedactionDomainsUnitTests(McpServerTestSupport):
     def test_mcp_harden3_private_graph_payloads_never_serialize_private_roots(
         self,
     ):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_graph_status,
             repomap_list_graphs,
             repomap_neighborhood,
             repomap_projects,
             repomap_search_files,
         )
-        from repomap_kg.ops.refresh import OpsRefreshGraphStatus
+        from common_lore_index.ops.refresh import OpsRefreshGraphStatus
 
         mcp_config_path = self.write_empty_mcp_config()
         ops_config_path = self.write_visible_ops_config()
@@ -262,11 +262,11 @@ class McpServerPrivatePayloadRedactionDomainsUnitTests(McpServerTestSupport):
         cases = [
             ("list_graphs", None, None, repomap_list_graphs, lambda p: p["graphs"][1], True),
             ("projects_hint", None, None, repomap_projects, lambda p: {g["graph_id"]: g for g in p["graphs"]}["private-visible"], False),
-            ("graph_status", "repomap_kg.server.ops.query_refresh_status", {"private-visible": private_status},
+            ("graph_status", "common_lore_index.server.ops.query_refresh_status", {"private-visible": private_status},
              lambda: repomap_graph_status(graph_id="private-visible"), lambda p: p["graph"], True),
-            ("neighborhood", "repomap_kg.server.ops.query_canonical_neighborhood", neighborhood,
+            ("neighborhood", "common_lore_index.server.ops.query_canonical_neighborhood", neighborhood,
              lambda: repomap_neighborhood(graph_id="private-visible", node="python.module:private.visible"), lambda p: p["graph"], True),
-            ("search_files", "repomap_kg.server.ops.query_mcp_search", {"results": [{"path": "src/private_visible.py", "metadata": {"origin": "synthetic-fixture"}}], "total": 1},
+            ("search_files", "common_lore_index.server.ops.query_mcp_search", {"results": [{"path": "src/private_visible.py", "metadata": {"origin": "synthetic-fixture"}}], "total": 1},
              lambda: repomap_search_files(graph_id="private-visible", query="private"), lambda p: p["graph"], True),
         ]
 
@@ -286,7 +286,7 @@ class McpServerPrivatePayloadRedactionDomainsUnitTests(McpServerTestSupport):
     def test_mcp_harden3_private_summary_roots_are_redacted_across_domains(
         self,
     ):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_js_framework_summary,
             repomap_openapi_summary,
             repomap_python_summary,
@@ -304,23 +304,23 @@ class McpServerPrivatePayloadRedactionDomainsUnitTests(McpServerTestSupport):
             "repository_url": credentialed_url,
         }
         cases = [
-            ("python", "repomap_kg.server.ops.query_python_summary", _make_record(
+            ("python", "common_lore_index.server.ops.query_python_summary", _make_record(
                 PythonSummaryRecord, root_path="synthetic-private-root", repository_name="private-visible", python_observations=3,
                 package_files={"pyproject": 1}, packaging={}, tests={}, frameworks={}, references={}, redactions={},
                 diagnostics=nested_sensitive_metadata, generic_python={}, generic_config={"source": nested_sensitive_metadata},
                 dogfooding={}, safety={"no_execution": True},
             ), lambda: repomap_python_summary(graph_id="private-visible")),
-            ("terraform", "repomap_kg.server.ops.query_terraform_summary", _make_record(
+            ("terraform", "common_lore_index.server.ops.query_terraform_summary", _make_record(
                 TerraformSummaryRecord, root_path="synthetic-private-root", repository_name="private-visible", terraform_observations=4,
                 terraform_files=2, file_families={}, terraform={}, references={}, tfvars={"sensitive": nested_sensitive_metadata},
                 redactions={}, diagnostics=nested_sensitive_metadata, generic_config={}, safety={"no_execution": True},
             ), lambda: repomap_terraform_summary(graph_id="private-visible")),
-            ("openapi", "repomap_kg.server.ops.query_openapi_summary", _make_record(
+            ("openapi", "common_lore_index.server.ops.query_openapi_summary", _make_record(
                 OpenAPISummaryRecord, root_path="synthetic-private-root", repository_name="private-visible", openapi_observations=5,
                 openapi_documents=1, spec_families={"openapi3": 1}, openapi={}, methods={}, references={"source": nested_sensitive_metadata},
                 redactions={}, diagnostics={}, generic_config={}, safety={"no_fetch": True},
             ), lambda: repomap_openapi_summary(graph_id="private-visible")),
-            ("js_framework", "repomap_kg.server.ops.query_js_framework_summary", _make_record(
+            ("js_framework", "common_lore_index.server.ops.query_js_framework_summary", _make_record(
                 JSFrameworkSummaryRecord, root_path="synthetic-private-root", repository_name="private-visible", framework_observations=6,
                 framework_profiles={"node": 1}, node=nested_sensitive_metadata, express={}, nest={}, next={}, jest={}, jquery={},
                 generic_js={}, diagnostics={}, safety={"no_execution": True},
@@ -338,7 +338,7 @@ class McpServerPrivatePayloadRedactionDomainsUnitTests(McpServerTestSupport):
                     self.assert_no_synthetic_private_root(payload, secret_token, credentialed_url)
 
     def test_mcp_harden3_search_payloads_redact_secret_like_metadata(self):
-        from repomap_kg.server.mcp import (
+        from common_lore_index.server.mcp import (
             repomap_search_files,
             repomap_search_nodes,
             repomap_search_observations,
@@ -372,7 +372,7 @@ class McpServerPrivatePayloadRedactionDomainsUnitTests(McpServerTestSupport):
         with self.patch_ops_config(config_path):
             for target_name, call_fn, ret_payload, include_raw in cases:
                 with self.subTest(target=target_name):
-                    with patch("repomap_kg.server.ops.query_mcp_search", return_value=ret_payload) as query:
+                    with patch("common_lore_index.server.ops.query_mcp_search", return_value=ret_payload) as query:
                         payload = call_fn()
                     self.assert_read_only_payload(payload)
                     self.assert_private_graph_payload(payload["graph"])

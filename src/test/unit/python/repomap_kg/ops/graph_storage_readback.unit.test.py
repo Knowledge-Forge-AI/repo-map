@@ -7,10 +7,10 @@ from typing import Any
 
 import pytest
 
-import repomap_kg.ops.config as module
-from repomap_kg.cli.parser import build_parser
-from repomap_kg.ops.config_records import OpsPostgresStatus
-from repomap_kg.storage import StorageSchemaError
+import common_lore_index.ops.config as module
+from common_lore_index.cli.parser import build_parser
+from common_lore_index.ops.config_records import OpsPostgresStatus
+from common_lore_index.storage import StorageSchemaError
 
 
 BASE_CONFIG = """\
@@ -338,7 +338,7 @@ def test_psycopg101_both_real_adapter_stages_are_host_only(
     psql_command: str | None,
 ) -> None:
     config = _config(tmp_path, ONE_GRAPH)
-    import repomap_kg.ops.readback as readback
+    import common_lore_index.ops.readback as readback
     calls: list[dict[str, Any]] = []
 
     def select_driver():
@@ -382,8 +382,8 @@ def test_psycopg101_both_real_adapter_stages_are_host_only(
 
 
 def test_psycopg101_moves_no_other_operational_owner() -> None:
-    import repomap_kg.ops.refresh as refresh_module
-    import repomap_kg.server.ops as server_module
+    import common_lore_index.ops.refresh as refresh_module
+    import common_lore_index.server.ops as server_module
     source = inspect.getsource(module.check_ops_graph_storage_status)
 
     assert "execute_ops_json_readback" in source

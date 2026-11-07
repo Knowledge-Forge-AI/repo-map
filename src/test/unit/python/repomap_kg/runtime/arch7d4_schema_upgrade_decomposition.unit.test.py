@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from repomap_kg.runtime._schema_upgrade_ledger import (
+from common_lore_index.runtime._schema_upgrade_ledger import (
     GraphSchemaUpgradeResult,
     _reference_database_name,
     _upgrade_error,
@@ -19,9 +19,9 @@ from repomap_kg.runtime._schema_upgrade_ledger import (
     query_schema_ledger,
     schema_ledger_exists,
 )
-from repomap_kg.runtime.backup_records import LocalDbBackupError
-from repomap_kg.runtime.local import LocalRuntimePlan
-from repomap_kg.storage import StorageSchemaError
+from common_lore_index.runtime.backup_records import LocalDbBackupError
+from common_lore_index.runtime.local import LocalRuntimePlan
+from common_lore_index.storage import StorageSchemaError
 
 
 def test_upgrade_error_formats_diagnostic_structure() -> None:
@@ -73,7 +73,7 @@ def test_apply_forward_schema_translates_storage_error() -> None:
         env_file=Path("/tmp"),
     )
     with patch(
-        "repomap_kg.runtime._schema_upgrade_ledger._default_graph_schema_forward_sql",
+        "common_lore_index.runtime._schema_upgrade_ledger._default_graph_schema_forward_sql",
         side_effect=StorageSchemaError("no migration files found"),
     ):
         with pytest.raises(LocalDbBackupError, match="no migration files found"):
@@ -89,7 +89,7 @@ def test_bootstrap_schema_ledger_translates_storage_error() -> None:
         env_file=Path("/tmp"),
     )
     with patch(
-        "repomap_kg.runtime._schema_upgrade_ledger._default_graph_schema_ledger_bootstrap_sql",
+        "common_lore_index.runtime._schema_upgrade_ledger._default_graph_schema_ledger_bootstrap_sql",
         side_effect=StorageSchemaError("bootstrap template missing"),
     ):
         with pytest.raises(LocalDbBackupError, match="bootstrap template missing"):
@@ -105,7 +105,7 @@ def test_schema_ledger_exists_returns_boolean() -> None:
         env_file=Path("/tmp"),
     )
     with patch(
-        "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command",
+        "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command",
         return_value=subprocess.CompletedProcess([], 0, stdout=b"f\n", stderr=b""),
     ):
         assert schema_ledger_exists(plan, "test_db", Mock(side_effect=AssertionError("unexpected command execution"))) is False
@@ -121,7 +121,7 @@ def test_query_schema_ledger_rejects_malformed_rows() -> None:
     )
     # Output with non-digit ordinal
     with patch(
-        "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command",
+        "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command",
         return_value=subprocess.CompletedProcess(
             [], 0, stdout=b"not_a_digit\tchange\tpath\thash\n", stderr=b""
         ),
@@ -131,7 +131,7 @@ def test_query_schema_ledger_rejects_malformed_rows() -> None:
 
     # Output with missing fields
     with patch(
-        "repomap_kg.runtime._schema_upgrade_ledger._default_run_container_command",
+        "common_lore_index.runtime._schema_upgrade_ledger._default_run_container_command",
         return_value=subprocess.CompletedProcess(
             [], 0, stdout=b"1\tchange\n", stderr=b""
         ),

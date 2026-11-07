@@ -8,7 +8,7 @@ from repomap_test_support.storage_integration import (
     discovery_fixture,
     terraform_hcl_fixture,
 )
-from repomap_kg.observations import RawObservation
+from common_lore_index.observations import RawObservation
 
 
 

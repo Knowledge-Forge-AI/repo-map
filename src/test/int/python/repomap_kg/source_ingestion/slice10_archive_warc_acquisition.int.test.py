@@ -19,7 +19,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from repomap_kg.ops.ingestion.source import (
+from common_lore_index.ops.ingestion.source import (
     SourcePolicyError,
     build_archive_manifest,
     build_warc_manifest,
@@ -258,7 +258,7 @@ profile = "warc-local-archive"
 
     def test_s10_b09_warc_record_extraction_and_observation_generation(self) -> None:
         """Valid and malformed WARC sources generate observations and prepared canonical rows."""
-        from repomap_kg.storage.canonical_rows import prepare_canonical_load
+        from common_lore_index.storage.canonical_rows import prepare_canonical_load
 
         with tempfile.TemporaryDirectory(dir=select_scratch_root()) as tmpdir:
             root = copy_warc_fixture_root(Path(tmpdir))

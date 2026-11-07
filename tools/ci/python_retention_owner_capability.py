@@ -1,7 +1,8 @@
 """Complete inert owner context for the exact capability measurement fixture."""
 
 SOURCE = r'''
-"""Unit tests for runner_coverage_capability structured capability and boundaries."""
+"""CLOE cutover re-attests the unchanged closed measurement fixture against current dependencies.
+Unit tests for runner_coverage_capability structured capability and boundaries."""
 
 from __future__ import annotations
 

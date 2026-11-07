@@ -29,16 +29,16 @@ import sys
 from pathlib import Path
 
 import psycopg
-from repomap_kg.storage.staged_publication import execute_final_transaction, existing_stage_state
-from repomap_kg.storage.staged_ingestion import IngestionAuthority
-from repomap_kg.storage.authority import AttemptNumber, JobId, OperationId
-from repomap_kg.storage.publication import publication_receipt_from_mapping
-from repomap_kg.storage.publication_fencing import PublicationHandoff
-from repomap_kg.storage.staging_merge import MergeContext
-from repomap_kg.storage.readback_driver import _psycopg_connection_params_from_psql_args
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.runtime.database_role_contract import REFRESH_PUBLICATION_ROLE, read_role_secrets
-from repomap_kg.runtime.release import PACKAGED_PSQL
+from common_lore_index.storage.staged_publication import execute_final_transaction, existing_stage_state
+from common_lore_index.storage.staged_ingestion import IngestionAuthority
+from common_lore_index.storage.authority import AttemptNumber, JobId, OperationId
+from common_lore_index.storage.publication import publication_receipt_from_mapping
+from common_lore_index.storage.publication_fencing import PublicationHandoff
+from common_lore_index.storage.staging_merge import MergeContext
+from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.runtime.database_role_contract import REFRESH_PUBLICATION_ROLE, read_role_secrets
+from common_lore_index.runtime.release import PACKAGED_PSQL
 
 home = Path(os.environ.get("REPOMAP_HOME", "/repo-map-home"))
 psql = Path(shutil.which("psql") or os.environ.get("REPOMAP_PACKAGED_PSQL", PACKAGED_PSQL))

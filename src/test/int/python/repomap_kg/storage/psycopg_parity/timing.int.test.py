@@ -11,10 +11,10 @@ from repomap_test_support.postgres_harness import (
 from repomap_test_support.schema_history import pre_arch5d_rdbms_root
 
 from repomap_test_support.storage_publication import load_file_observations
-from repomap_kg.storage import (
+from common_lore_index.storage import (
     apply_migrations,
 )
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.storage.readback_driver import (
     READBACK_DRIVER_ENV,
 )
 

@@ -11,20 +11,20 @@ from typing import Any, cast
 import unittest
 from unittest import mock
 
-from repomap_kg.coordinator._protocol_session import ProtocolSession
-from repomap_kg.coordinator._protocol_validation import ProtocolError
-from repomap_kg.coordinator.configured_refresh import ConfiguredRefreshResolver
-from repomap_kg.coordinator.polling import PollingScheduler, PollOutcome
-from repomap_kg.coordinator.service import CoordinatorService
-from repomap_kg.storage.errors import StorageSchemaError
-from repomap_kg.storage.readback_driver import (
+from common_lore_index.coordinator._protocol_session import ProtocolSession
+from common_lore_index.coordinator._protocol_validation import ProtocolError
+from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshResolver
+from common_lore_index.coordinator.polling import PollingScheduler, PollOutcome
+from common_lore_index.coordinator.service import CoordinatorService
+from common_lore_index.storage.errors import StorageSchemaError
+from common_lore_index.storage.readback_driver import (
     PG_CONNECTOR_ENV,
     READBACK_DRIVER_ENV,
     diagnose_psycopg_database_presence,
     execute_json_readback_with_driver,
     selected_json_readback_driver,
 )
-from repomap_kg.storage.staging_event_transport import (
+from common_lore_index.storage.staging_event_transport import (
     StagingEventChannel,
     StagingEventTransportError,
 )
@@ -261,7 +261,7 @@ class Slice6ControlReadbackIntegrationTests(unittest.TestCase):
             )
             self.assertEqual(res_timeout, "unavailable")
 
-            with mock.patch("repomap_kg.storage.readback_driver._import_psycopg") as mock_import:
+            with mock.patch("common_lore_index.storage.readback_driver._import_psycopg") as mock_import:
                 mock_psycopg = mock.MagicMock()
                 mock_import.return_value = mock_psycopg
 

@@ -10,7 +10,7 @@ import subprocess
 import time
 from typing import Any, Protocol
 
-from repomap_kg.runtime.plan import LocalRuntimePlan
+from common_lore_index.runtime.plan import LocalRuntimePlan
 from tools.system.config import SystemTestError
 from tools.system.report import SystemStepResult
 
