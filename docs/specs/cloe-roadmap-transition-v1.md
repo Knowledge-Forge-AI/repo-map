@@ -804,3 +804,21 @@ assertions select the actual run INSERT while retaining field/value checks.
 Scoped proof and independent review precede one fresh CI126 attempt 1; the
 [repair exit](../../tools/ci/cloe-ci125repair1-exit.md) records the exact
 selectors, limitations and pending hosted boundary. Full W7 remains open.
+
+
+### CI126 qualification and W7 operator reports
+
+CI126 run42352930739 attempt1 passed all nine jobs at staging08956ee9.
+Retained exact-source M/A, native, Rust and five system artifacts qualify that
+candidate. Actual application/native-Rust/wheel consumption is37/6/16. Unit
+branches20716/23886 and integration19149/23886 pass hard floors; desired87/82
+margins remain65/438 branches short. No successor is qualified by those counts.
+
+The operator's continuation selects `REPOMAP-CLOE-RESOURCE-REPORT1` under
+[ADR0165](../adr/2026/11/0165-bounded-operator-resource-reports.md) and the
+[report contract](cloe-resource-reports-v1.md). Three epics form one milestone:
+bounded report files/offline inspection, explicit single-operation CLI attachment,
+and lexical query/revoke views with connected custody proof. The
+[source exit](../../tools/ci/cloe-resource-report1-exit.md) owns actual evidence.
+No intermediate design-only publication is planned. Full W7, numeric governance,
+worker attribution, installed/release acceptance and scientific work stay open.

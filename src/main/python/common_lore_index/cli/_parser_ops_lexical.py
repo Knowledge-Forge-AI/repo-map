@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable
 
+from common_lore_index.cli._parser_ops_resource import add_resource_report_option
+
 StorageArgumentHelper = Callable[[argparse.ArgumentParser], None]
 
 
@@ -68,6 +70,7 @@ def add_ops_lexical_commands(
         action="store_true",
         help="emit lexical build outcome as JSON",
     )
+    add_resource_report_option(lex_build)
 
     lex_query = ops_subcommands.add_parser(
         "lexical-query",
@@ -164,6 +167,7 @@ def add_ops_lexical_commands(
         action="store_true",
         help="emit lexical QueryEnvelope outcome as JSON",
     )
+    add_resource_report_option(lex_query)
 
     lex_revoke = ops_subcommands.add_parser(
         "lexical-revoke",
@@ -197,6 +201,7 @@ def add_ops_lexical_commands(
         action="store_true",
         help="emit lexical revocation outcome as JSON",
     )
+    add_resource_report_option(lex_revoke)
 
 
 __all__ = ["add_ops_lexical_commands"]

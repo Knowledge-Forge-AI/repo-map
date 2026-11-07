@@ -8,6 +8,13 @@ import json
 import sys
 from types import ModuleType
 
+from common_lore_index.cli._resource_report_session import (
+    admit_report,
+    close_report_session,
+    finish_report,
+    report_observer_kwargs,
+    report_session,
+)
 from common_lore_index.ops.config_local import declared_storage_backend
 from common_lore_index.ops.config_storage import SQLITE_BACKEND
 from common_lore_index.ops.local_refresh import LocalRefreshError
@@ -23,7 +30,24 @@ def dispatch_ops_lexical_command(
     """Dispatch cloe ops lexical-build, lexical-query, and lexical-revoke."""
     if args.command != "ops" or args.ops_command not in _LEXICAL_OPS_COMMANDS:
         return None
+    # Delivery follows the fixed stdout and exit code, outside every subject catch block.
+    session = report_session(args)
+    try:
+        code = _dispatch_lexical(args, commands, print_cli_error)
+    except BaseException:
+        close_report_session(session, preserve_primary=True)
+        raise
+    if code is None:
+        close_report_session(session)
+        return None
+    return finish_report(session, code)
 
+
+def _dispatch_lexical(
+    args: argparse.Namespace,
+    commands: ModuleType,
+    print_cli_error: Callable[..., None],
+) -> int | None:
     repo_map_home = getattr(args, "repo_map_home", None)
     config_path = getattr(args, "config", None)
     if (
@@ -86,12 +110,15 @@ def dispatch_ops_lexical_command(
             )
             return 1
         try:
+            portable_store_root = getattr(args, "portable_store_root", None)
+            session = admit_report(args, config, overrides=(portable_store_root,))
             outcome = build_graph_lexical_generation(
                 config,
                 args.graph,
                 selected_binding_ids=selected_ids,
                 authorize_body=True,
-                portable_store_root=getattr(args, "portable_store_root", None),
+                portable_store_root=portable_store_root,
+                **report_observer_kwargs(session),
             )
             build_json = lexical_build_to_jsonable(outcome)
         except (LexicalStorageError, ValueError, OSError) as error:
@@ -150,8 +177,10 @@ def dispatch_ops_lexical_command(
                 offset=args.offset,
                 fallback=fallback,
             ).validate()
+            session = admit_report(args, config)
             envelope = query_graph_lexical_generation(
-                config, args.graph, req, authorize_body=True
+                config, args.graph, req, authorize_body=True,
+                **report_observer_kwargs(session),
             )
             query_json = lexical_query_to_jsonable(args.graph, args.query_style, envelope)
         except (LexicalStorageError, ValueError, OSError) as error:
@@ -181,6 +210,7 @@ def dispatch_ops_lexical_command(
         try:
             graph = resolve_ops_graph(config, args.graph)
             db_name = graph.database or config.postgres.database
+            session = admit_report(args, config)
             rev_outcome = revoke_graph_lexical_generation(
                 config,
                 args.graph,
@@ -188,6 +218,7 @@ def dispatch_ops_lexical_command(
                 purge_rows=not dry_run,
                 dry_run=dry_run,
                 confirmed=confirmed,
+                **report_observer_kwargs(session),
             )
             revoke_json = lexical_revoke_to_jsonable(rev_outcome, database=db_name, dry_run=dry_run)
         except (LexicalStorageError, ValueError, OSError) as error:

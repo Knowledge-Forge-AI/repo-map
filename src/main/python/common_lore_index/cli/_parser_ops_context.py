@@ -7,6 +7,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from common_lore_index.cli._parser_ops_resource import add_resource_report_option
 from common_lore_index.retrieval.context_contracts import DEFAULT_BUDGET_BYTES
 
 
@@ -66,6 +67,7 @@ def add_ops_context_commands(
         "--allow-partial", action="store_true", default=False,
         help="exit 0 instead of 3 when packet status is partial",
     )
+    add_resource_report_option(pack)
 
     select = ops_subcommands.add_parser(
         "context-select",

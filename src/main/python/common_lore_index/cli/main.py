@@ -204,6 +204,8 @@ from common_lore_index.storage import (
     terraform_summary_to_jsonable as terraform_summary_to_jsonable,
 )
 from common_lore_index.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
+from common_lore_index.cli._resource_report_session import release_report_session
+from common_lore_index.cli.ops_resource_commands import dispatch_ops_resource_report_command
 from common_lore_index.cli.ops_context_commands import dispatch_ops_context_command
 from common_lore_index.cli._config_migration import dispatch_config_migration
 from common_lore_index.cli._postgres_facade import (
@@ -298,6 +300,20 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
     # An unspecified brand keeps the original no-argument parser seam.
     parser = build_parser() if prog is None else build_parser(prog=prog)
     args = parser.parse_args(argv)
+    # Offline report inspection runs before product dispatch: no home or config.
+    offline_result = None if args.version else dispatch_ops_resource_report_command(args)
+    if offline_result is not None:
+        return offline_result
+    try:
+        result = _dispatch_main(args, parser)
+    except BaseException:
+        release_report_session(args, preserve_primary=True)
+        raise
+    release_report_session(args)
+    return result
+
+
+def _dispatch_main(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     try:
         _home_selection_notice(args)
     except OpsConfigError as error:

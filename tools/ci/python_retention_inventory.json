@@ -376,6 +376,41 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.resource-report1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/ops/resource_report_exception_custody.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_fault_custody.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_file_custody.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_local_cli.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_offline_cli.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_offline_render.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_sealing_ownership.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_server_cli.int.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_admission_aliases.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_cli.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_codec.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_delivery.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_delivery_failure_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_exception_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_query_presentation.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_view_lexical_views.unit.test.py"
+      ],
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.resource-report1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/resource_report_cli_files.py"
+      ],
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.retrieval1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/retrieval/corpus_publication.int.test.py",
@@ -57397,6 +57432,276 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/repository_admission_lock.unit.test.py",
       "rationale": "ADR0162 existing-policy sealing admission, descriptor streams and BIGINT publication with admission guards; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/_parser_ops_resource.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/_resource_report_session.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/ops_resource_commands.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_reports/__init__.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_reports/_admission.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_reports/_codec.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_reports/_delivery.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_reports/_files.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_reports/_render.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_canonical.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_context_projection.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_lexical_views.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_slots.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_exception_custody.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_fault_custody.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_file_custody.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_local_cli.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_offline_cli.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_offline_render.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_sealing_ownership.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_server_cli.int.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/resource_report_cli_files.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_admission_aliases.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_cli.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_codec.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_delivery.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_delivery_failure_custody.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_exception_custody.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_query_presentation.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_view_lexical_views.unit.test.py",
+      "rationale": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "root": "test_owners",
       "status": "active_unit_test"
     }

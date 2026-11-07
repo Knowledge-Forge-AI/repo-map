@@ -400,6 +400,15 @@
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli._parser_ops_resource",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.cli._parser_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli._parser_sources",
@@ -412,6 +421,15 @@
       "justification": "Deferred PostgreSQL-implementation names of the CLI facade so SQLite Local startup never imports the PostgreSQL driver; admitted with zero new quality debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli._postgres_facade",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli._resource_report_session",
       "ownership_class": "python_retained"
     },
     {
@@ -493,6 +511,15 @@
       "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli.ops_lexical_commands",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli.ops_resource_commands",
       "ownership_class": "python_retained"
     },
     {
@@ -2227,9 +2254,81 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_reports",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_reports._admission",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_reports._codec",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_reports._delivery",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_reports._files",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_reports._render",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resource_view",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._canonical",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._context_projection",
       "ownership_class": "python_retained"
     },
     {
@@ -2248,6 +2347,15 @@
       "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resource_view._controls",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._lexical_views",
       "ownership_class": "python_retained"
     },
     {
@@ -2275,6 +2383,15 @@
       "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resource_view._projections",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._slots",
       "ownership_class": "python_retained"
     },
     {

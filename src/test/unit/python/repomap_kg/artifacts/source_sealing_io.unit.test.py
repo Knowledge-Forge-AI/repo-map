@@ -123,6 +123,59 @@ def test_initial_file_fstat_failure_closes_opened_descriptor(tmp_path, monkeypat
         os.fstat(opened[-1])
 
 
+def test_previous_directory_close_failure_keeps_error_and_closes_only_the_child(
+    tmp_path, monkeypatch
+):
+    nested = tmp_path / "outer" / "inner"
+    nested.mkdir(parents=True)
+    (nested / "source.py").write_bytes(b"abc")
+    original_open = io_mod.os.open
+    original_close = io_mod.os.close
+    directories: list[int] = []
+    close_calls: list[int] = []
+    injected = OSError(5, "injected previous close failure")
+
+    def recording_open(path, flags, *args, **kwargs):
+        descriptor = original_open(path, flags, *args, **kwargs)
+        if flags & getattr(os, "O_DIRECTORY", 0):
+            directories.append(descriptor)
+        return descriptor
+
+    def failing_close(descriptor):
+        close_calls.append(descriptor)
+        if len(directories) == 2 and descriptor == directories[0] and close_calls.count(descriptor) == 1:
+            original_close(descriptor)  # the kernel number is released, as after EIO
+            raise injected
+        return original_close(descriptor)
+
+    monkeypatch.setattr(io_mod, "_supports_dir_fd", lambda: True)
+    monkeypatch.setattr(io_mod.os, "open", recording_open)
+    monkeypatch.setattr(io_mod.os, "close", failing_close)
+    with pytest.raises(OSError) as raised:
+        with open_source_body(
+            tmp_path, "outer/inner/source.py", expected_size=3,
+            expected_digest=hashlib.sha256(b"abc").hexdigest(), expected_executable=False,
+        ):
+            pass
+    assert raised.value is injected
+    root, child = directories[0], directories[1]
+    assert close_calls.count(root) == 1, "the previous number must never be closed twice"
+    assert close_calls.count(child) == 1, "the transferred child must be closed exactly once"
+    with pytest.raises(OSError):
+        os.fstat(child)
+
+
+def test_previous_directory_transfer_keeps_real_nested_body_streaming(tmp_path):
+    nested = tmp_path / "outer" / "inner"
+    nested.mkdir(parents=True)
+    (nested / "source.py").write_bytes(b"nested")
+    with open_source_body(
+        tmp_path, "outer/inner/source.py", expected_size=6,
+        expected_digest=hashlib.sha256(b"nested").hexdigest(), expected_executable=False,
+    ) as body:
+        assert b"".join(body) == b"nested"
+
+
 def test_fallback_checks_path_identity_and_streams(tmp_path, monkeypatch):
     path = tmp_path / "source.py"
     content = b"abc"

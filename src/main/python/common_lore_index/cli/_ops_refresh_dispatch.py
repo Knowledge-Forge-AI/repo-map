@@ -10,6 +10,14 @@ import sys
 from types import ModuleType
 
 from common_lore_index.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
+from common_lore_index.cli._resource_report_session import (
+    ResourceReportRefusal,
+    admit_report,
+    close_report_session,
+    finish_report,
+    report_observer_kwargs,
+    report_session,
+)
 from common_lore_index.cli.staging_event_instrumentation import (
     staging_event_instrumentation,
 )
@@ -93,106 +101,13 @@ def dispatch_ops_refresh_command(
         return 0
 
     if args.ops_command == "refresh-graph":
-        if args.mode == "coordinator":
-            if (
-                getattr(args, "backend_telemetry_fd", None) is not None
-                or getattr(args, "backend_telemetry_ack_fd", None) is not None
-                or getattr(args, "staging_event_fd", None) is not None
-            ):
-                print_cli_error(
-                    commands.CoordinatorModeError("coordinator_rejects_backend_telemetry"),
-                    file=sys.stderr,
-                )
-                return 1
-            if not args.repo_map_home or args.config:
-                print_cli_error(
-                    commands.CoordinatorModeError("coordinator_requires_repo_map_home"),
-                    file=sys.stderr,
-                )
-                return 1
-            if not args.idempotency_key:
-                print_cli_error(
-                    commands.CoordinatorModeError("coordinator_requires_idempotency_key"),
-                    file=sys.stderr,
-                )
-                return 1
-            if args.psql_command:
-                print_cli_error(
-                    commands.CoordinatorModeError("coordinator_rejects_psql_command"),
-                    file=sys.stderr,
-                )
-                return 1
-            try:
-                payload = commands.run_coordinator_refresh(
-                    args.repo_map_home,
-                    args.graph,
-                    args.idempotency_key,
-                    wait_timeout_seconds=args.coordinator_wait_seconds,
-                )
-            except (commands.CoordinatorClientError, commands.CoordinatorModeError) as error:
-                print_cli_error(error, file=sys.stderr)
-                return 1
-            if args.json:
-                print(json.dumps(payload, sort_keys=True))
-            else:
-                print(commands.format_coordinator_refresh_table(payload))
-            return 0 if payload["result"] == "success" else 1
+        session = report_session(args)
         try:
-            backend_telemetry = None
-            backend_telemetry_fd = getattr(args, "backend_telemetry_fd", None)
-            backend_telemetry_ack_fd = getattr(
-                args, "backend_telemetry_ack_fd", None
-            )
-            if (backend_telemetry_fd is None) != (
-                backend_telemetry_ack_fd is None
-            ):
-                raise commands.ConnectionTelemetryError(
-                    "backend telemetry channel is unavailable"
-                )
-            if backend_telemetry_fd is not None:
-                backend_telemetry = commands.telemetry_from_inherited_fds(
-                    backend_telemetry_fd,
-                    backend_telemetry_ack_fd,
-                )
-            with staging_event_instrumentation(
-                getattr(args, "staging_event_fd", None),
-                channel_factory=commands.staging_event_channel_from_inherited_fd,
-                measurements_factory=commands.StagingMeasurements,
-            ) as staging_measurements:
-                config = commands.load_ops_config_from_args(args)
-                admission = (
-                    commands.maintenance_activity_for_home(args.repo_map_home)
-                    if args.repo_map_home
-                    else nullcontext()
-                )
-                with admission:
-                    result = commands.refresh_graph(
-                        config,
-                        args.graph,
-                        psql_command=args.psql_command,
-                        ingestion_mode="staged",
-                        backend_telemetry=backend_telemetry,
-                        staging_measurements=staging_measurements,
-                    )
-        except (
-            commands.ConnectionTelemetryError,
-            commands.MaintenanceUnavailableError,
-            commands.OpsConfigError,
-            commands.OpsRefreshError,
-            commands.StagingEventTransportError,
-        ) as error:
-            print_cli_error(error, file=sys.stderr)
-            return 1
-        payload = commands.refresh_result_to_jsonable(
-            config,
-            [result],
-            command="refresh-graph",
-        )
-        if args.json:
-            print(json.dumps(payload, sort_keys=True))
-        else:
-            print(commands.format_refresh_result_table(config, [result], command="refresh-graph"))
-        return 0 if payload["result"] == "success" else 1
+            code = _refresh_graph(args, commands, print_cli_error)
+        except BaseException:
+            close_report_session(session, preserve_primary=True)
+            raise
+        return finish_report(session, code)
 
     if args.ops_command == "refresh-preflight":
         try:
@@ -286,3 +201,117 @@ def dispatch_ops_refresh_command(
         return 0 if summary.result == "success" else 1
 
     return None
+
+
+def _refresh_graph(
+    args: argparse.Namespace,
+    commands: ModuleType,
+    print_cli_error: Callable[..., None],
+) -> int:
+    if args.mode == "coordinator":
+        if (
+            getattr(args, "backend_telemetry_fd", None) is not None
+            or getattr(args, "backend_telemetry_ack_fd", None) is not None
+            or getattr(args, "staging_event_fd", None) is not None
+        ):
+            print_cli_error(
+                commands.CoordinatorModeError("coordinator_rejects_backend_telemetry"),
+                file=sys.stderr,
+            )
+            return 1
+        if not args.repo_map_home or args.config:
+            print_cli_error(
+                commands.CoordinatorModeError("coordinator_requires_repo_map_home"),
+                file=sys.stderr,
+            )
+            return 1
+        if not args.idempotency_key:
+            print_cli_error(
+                commands.CoordinatorModeError("coordinator_requires_idempotency_key"),
+                file=sys.stderr,
+            )
+            return 1
+        if args.psql_command:
+            print_cli_error(
+                commands.CoordinatorModeError("coordinator_rejects_psql_command"),
+                file=sys.stderr,
+            )
+            return 1
+        if getattr(args, "resource_report", None) is not None:
+            # Reports attach only to a single direct operation, never the coordinator.
+            print_cli_error(ResourceReportRefusal("coordinator_mode_unsupported"), file=sys.stderr)
+            return 1
+        try:
+            payload = commands.run_coordinator_refresh(
+                args.repo_map_home,
+                args.graph,
+                args.idempotency_key,
+                wait_timeout_seconds=args.coordinator_wait_seconds,
+            )
+        except (commands.CoordinatorClientError, commands.CoordinatorModeError) as error:
+            print_cli_error(error, file=sys.stderr)
+            return 1
+        if args.json:
+            print(json.dumps(payload, sort_keys=True))
+        else:
+            print(commands.format_coordinator_refresh_table(payload))
+        return 0 if payload["result"] == "success" else 1
+    try:
+        backend_telemetry = None
+        backend_telemetry_fd = getattr(args, "backend_telemetry_fd", None)
+        backend_telemetry_ack_fd = getattr(
+            args, "backend_telemetry_ack_fd", None
+        )
+        if (backend_telemetry_fd is None) != (
+            backend_telemetry_ack_fd is None
+        ):
+            raise commands.ConnectionTelemetryError(
+                "backend telemetry channel is unavailable"
+            )
+        if backend_telemetry_fd is not None:
+            backend_telemetry = commands.telemetry_from_inherited_fds(
+                backend_telemetry_fd,
+                backend_telemetry_ack_fd,
+            )
+        with staging_event_instrumentation(
+            getattr(args, "staging_event_fd", None),
+            channel_factory=commands.staging_event_channel_from_inherited_fd,
+            measurements_factory=commands.StagingMeasurements,
+        ) as staging_measurements:
+            config = commands.load_ops_config_from_args(args)
+            session = admit_report(args, config)
+            admission = (
+                commands.maintenance_activity_for_home(args.repo_map_home)
+                if args.repo_map_home
+                else nullcontext()
+            )
+            with admission:
+                result = commands.refresh_graph(
+                    config,
+                    args.graph,
+                    psql_command=args.psql_command,
+                    ingestion_mode="staged",
+                    backend_telemetry=backend_telemetry,
+                    staging_measurements=staging_measurements,
+                    **report_observer_kwargs(session),
+                )
+    except (
+        commands.ConnectionTelemetryError,
+        commands.MaintenanceUnavailableError,
+        commands.OpsConfigError,
+        commands.OpsRefreshError,
+        commands.StagingEventTransportError,
+        ResourceReportRefusal,
+    ) as error:
+        print_cli_error(error, file=sys.stderr)
+        return 1
+    payload = commands.refresh_result_to_jsonable(
+        config,
+        [result],
+        command="refresh-graph",
+    )
+    if args.json:
+        print(json.dumps(payload, sort_keys=True))
+    else:
+        print(commands.format_refresh_result_table(config, [result], command="refresh-graph"))
+    return 0 if payload["result"] == "success" else 1

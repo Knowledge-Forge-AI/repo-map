@@ -198,3 +198,30 @@ def test_not_recorded_is_valid_for_every_begun_operation() -> None:
         SCHEMA, "compact_context", None, "not_recorded", Instrumentation.INCOMPLETE
     )
     assert report.outcome == "not_recorded"
+
+
+@pytest.mark.parametrize("operation,backend,outcome", [
+    ("lexical_query", "postgresql", "available"),
+    ("lexical_query", "postgresql", "not_run"),
+    ("lexical_revoke", "postgresql", "revoked"),
+    ("lexical_revoke", "postgresql", "preview"),
+    ("compact_context", None, "budget_error"),
+])
+def test_report_lexical_query_and_revoke_pairs_are_closed(
+    operation: str, backend: str | None, outcome: str,
+) -> None:
+    assert ResourceReport(SCHEMA, operation, backend, outcome, Instrumentation.COMPLETE).outcome == outcome
+
+
+@pytest.mark.parametrize("operation,backend,outcome", [
+    ("lexical_query", "sqlite", "available"),
+    ("lexical_query", "postgresql", "revoked"),
+    ("lexical_revoke", "postgresql", "available"),
+    ("lexical_revoke", None, "preview"),
+    ("compact_context", "sqlite", "preview"),
+])
+def test_report_refuses_cross_operation_outcomes(
+    operation: str, backend: str | None, outcome: str,
+) -> None:
+    with pytest.raises(ValueError):
+        ResourceReport(SCHEMA, operation, backend, outcome, Instrumentation.COMPLETE)

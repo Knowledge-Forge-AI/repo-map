@@ -3,7 +3,8 @@
 LOCAL6 owns the generic no-Psycopg CLI initialization, refresh, MCP and
 failure-preservation path.  This owner adds mixed-v1 context selection/pack,
 source-blind reads across a generation change, pinned-selection staleness,
-recovery after a refused refresh, and in-process resource reports.
+recovery after a refused refresh, in-process resource reports, and the
+operator ``--resource-report`` file plus offline ``resource-report check``.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from repomap_test_support.first_use_workflow import (
     first_use_expectations,
     guard_first_use_root,
 )
+from repomap_test_support.resource_report_cli_files import private_directory, report_payload
 from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
 from repomap_test_support.retrieval_evaluation_fixture import (
     MIXED_V1_BINDINGS,
@@ -188,12 +190,20 @@ def test_first_use_local_mixed_v1_context_pin_stale_recovery_and_reports(tmp_pat
 
     guard_first_use_root(working_copy, work_root)
     materialize_mixed_v1_working_copy(working_copy, generation=2)
-    recovery_observer = ResourceObserver()
-    recovered = refresh_local_graph(config, MIXED_V1_GRAPH_ID, resource_observer=recovery_observer)
-    assert recovered.generation == 3
-    _resource_payload(
-        recovery_observer, operation="local_refresh", backend="sqlite",
-        outcome="published",
+    # The operator path: one guarded CLI child writes a private report file
+    # outside every configured root, then offline inspection validates it.
+    reports = private_directory(work_root / "reports")
+    recovered = _json(harness.run(
+        "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", MIXED_V1_GRAPH_ID, "--json",
+        "--resource-report", str(reports / "recovery.json"),
+    ))
+    assert recovered["accepted_generation"] == 3
+    report = report_payload(
+        reports / "recovery.json", operation="local_refresh", backend="sqlite", outcome="published",
+        instrumentation="complete", forbidden=(home, working_copy, "mixed-v1"),
     )
+    assert_canary_free(report)
+    checked = harness.run("ops", "resource-report", "check", "--input", str(reports / "recovery.json"))
+    assert checked.returncode == 0 and checked.stdout.startswith("valid cloe-resource-view-v1"), checked.stderr
     assert harness.forbidden_events() == [], harness.forbidden_events()
     assert harness.shim_invocations() == "", harness.shim_invocations()

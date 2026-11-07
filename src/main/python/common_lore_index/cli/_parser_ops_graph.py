@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable
 
+from common_lore_index.cli._parser_ops_resource import add_resource_report_option
+
 __all__ = (
     "_graph_file_limit",
     "_non_negative_offset",
@@ -121,6 +123,7 @@ def add_ops_graph_commands(
     )
     refresh_graph_command.add_argument("--psql-command", help="psql executable to use for loading storage")
     refresh_graph_command.add_argument("--json", action="store_true", help="emit graph refresh result as JSON")
+    add_resource_report_option(refresh_graph_command)
     sqlite_init = ops_subcommands.add_parser(
         "sqlite-init",
         help="create the SQLite Local database of one configured graph at the current schema",

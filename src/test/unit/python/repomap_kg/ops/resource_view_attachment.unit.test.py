@@ -263,3 +263,112 @@ def test_portable_execute_forwards_observer_only_when_selected(monkeypatch: pyte
         config, graph, "db", authority=None, resource_observer=observer
     )
     assert calls["capture"]["resource_observer"] is observer
+
+
+def _lexical_query_seams(monkeypatch: pytest.MonkeyPatch, envelope: Any) -> dict[str, Any]:
+    """Drive the real query owner to its immediate-envelope return."""
+    calls: dict[str, Any] = {}
+    graph = SimpleNamespace(id="fixture")
+    monkeypatch.setattr(lexical_service, "_fresh_ops_config", lambda config: config)
+    monkeypatch.setattr(lexical_service, "resolve_ops_graph", lambda _config, _graph_id: graph)
+
+    def parameters(_config: Any, _graph: Any, **kwargs: Any) -> Any:
+        calls["parameters"] = kwargs
+        return SimpleNamespace(user="owner")
+
+    monkeypatch.setattr(lexical_service, "lexical_connection_parameters", parameters)
+    monkeypatch.setattr(lexical_service, "build_lexical_generation_policy", lambda _graph: object())
+    monkeypatch.setattr(
+        lexical_service, "resolve_lexical_query_scope",
+        lambda **_kwargs: SimpleNamespace(immediate_envelope=envelope),
+    )
+    return calls
+
+
+def test_lexical_query_wrapper_preserves_unobserved_path_and_proves_no_statement(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    envelope: Any = SimpleNamespace(capability_state="not_run", hits=(), omissions=(object(),))
+    calls = _lexical_query_seams(monkeypatch, envelope)
+    request: Any = SimpleNamespace(limit=7, validate=lambda: None)
+    config = cast(OpsConfig, SimpleNamespace())
+    assert lexical_service.query_graph_lexical_generation(
+        config, "fixture", request, authorize_body=True,
+    ) is envelope
+    plain_parameters = dict(calls["parameters"])
+    observer = _observer()
+    assert lexical_service.query_graph_lexical_generation(
+        config, "fixture", request, authorize_body=True, resource_observer=observer,
+    ) is envelope
+    assert calls["parameters"] == plain_parameters
+    payload: dict[str, Any] = observer.report().to_payload()
+    assert (payload["operation"], payload["outcome"]) == ("lexical_query", "not_run")
+    assert {item["applies_this_call"] for item in payload["limits"]} == {False}
+    assert next(item for item in payload["limits"] if item["name"] == "query_result_limit")["value"] == 7
+
+
+def test_lexical_query_refusal_leaves_an_unfinished_observer(monkeypatch: pytest.MonkeyPatch) -> None:
+    observer = _observer()
+    with pytest.raises(ValueError, match="body-authorization-required"):
+        lexical_service.query_graph_lexical_generation(
+            cast(OpsConfig, SimpleNamespace()), "fixture", cast(Any, SimpleNamespace(limit=1)),
+            resource_observer=observer,
+        )
+    payload = observer.report().to_payload()
+    assert (payload["outcome"], payload["instrumentation"]) == ("not_recorded", "incomplete")
+
+
+def _revoke_seams(monkeypatch: pytest.MonkeyPatch, summary: Any) -> list[str]:
+    events: list[str] = []
+    graph = SimpleNamespace(id="fixture", repository_name="fixture")
+    monkeypatch.setattr(lexical_service, "_fresh_ops_config", lambda config: config)
+    monkeypatch.setattr(lexical_service, "resolve_ops_graph", lambda _config, _graph_id: graph)
+    monkeypatch.setattr(lexical_service, "lexical_connection_parameters", lambda *_a, **_k: object())
+    monkeypatch.setattr(lexical_service, "local_graph_binding", lambda _graph: SimpleNamespace(
+        repository_identity="repo1:fixture",
+    ))
+
+    class Connection:
+        def commit(self) -> None:
+            events.append("commit")
+
+        def rollback(self) -> None:
+            events.append("rollback")
+
+    @contextmanager
+    def scope(_params: Any, **kwargs: Any):
+        events.append(f"read_only={kwargs['read_only']}")
+        yield Connection()
+
+    def revoke(_connection: Any, **kwargs: Any) -> Any:
+        events.append(f"purge={kwargs['purge_rows']} dry={kwargs['dry_run']}")
+        return summary
+
+    monkeypatch.setattr(lexical_service, "lexical_connection_scope", scope)
+    monkeypatch.setattr(lexical_service, "revoke_lexical_generations", revoke)
+    return events
+
+
+@pytest.mark.parametrize("dry_run", (False, True))
+def test_lexical_revoke_wrapper_keeps_transactions_and_reports_after_completion(
+    monkeypatch: pytest.MonkeyPatch, dry_run: bool,
+) -> None:
+    from common_lore_index.storage.lexical_revoke import LexicalRevokeSummary
+
+    summary = LexicalRevokeSummary(1, ("g",), 1, 2, 3, 0, "operator_revoked", not dry_run)
+    events = _revoke_seams(monkeypatch, summary)
+    config = cast(OpsConfig, SimpleNamespace())
+    plain = lexical_service.revoke_graph_lexical_generation(
+        config, "fixture", dry_run=dry_run, confirmed=not dry_run,
+    )
+    plain_events = list(events)
+    events.clear()
+    observer = _observer()
+    observed = lexical_service.revoke_graph_lexical_generation(
+        config, "fixture", dry_run=dry_run, confirmed=not dry_run, resource_observer=observer,
+    )
+    assert observed == plain and events == plain_events
+    assert plain_events[-1] == ("rollback" if dry_run else "commit")
+    payload = observer.report().to_payload()
+    assert payload["outcome"] == ("preview" if dry_run else "revoked")
+    assert payload["instrumentation"] == "complete"

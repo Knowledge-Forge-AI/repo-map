@@ -241,6 +241,7 @@ def test_first_use_server_context_and_native_fts_lifecycle(
             lexical_observer, operation="lexical_build", backend="postgresql", outcome="published"
         )
 
+        query_observer = ResourceObserver()
         query = query_graph_lexical_generation(
             config,
             MIXED_V1_GRAPH_ID,
@@ -250,13 +251,28 @@ def test_first_use_server_context_and_native_fts_lifecycle(
                 selected_binding_ids=(core_id,),
             ),
             authorize_body=True,
+            resource_observer=query_observer,
         )
         assert query.capability_state in {CapabilityState.AVAILABLE, CapabilityState.PARTIAL}
         assert any(hit.locator.source_relative_path == "pkg/pipeline.py" for hit in query.hits)
+        query_view = _resource_payload(
+            query_observer, operation="lexical_query", backend="postgresql",
+            outcome=query.capability_state.value,
+        )
+        hits_metric = next(item for item in query_view["metrics"] if item["name"] == "query_hits_returned")
+        assert hits_metric["value"] == len(query.hits)
+        assert "RetrievalExecutionPipeline" not in json.dumps(query_view)
+        revoke_observer = ResourceObserver()
         revoked = revoke_graph_lexical_generation(
-            config, MIXED_V1_GRAPH_ID, reason="first_use_server", confirmed=True
+            config, MIXED_V1_GRAPH_ID, reason="first_use_server", confirmed=True,
+            resource_observer=revoke_observer,
         )
         assert revoked.revoked_generation_count >= 1
+        revoke_view = _resource_payload(
+            revoke_observer, operation="lexical_revoke", backend="postgresql", outcome="revoked",
+        )
+        generations = next(item for item in revoke_view["metrics"] if item["name"] == "revoked_generations")
+        assert generations["value"] == revoked.revoked_generation_count
         after_revoke = query_graph_lexical_generation(
             config,
             MIXED_V1_GRAPH_ID,

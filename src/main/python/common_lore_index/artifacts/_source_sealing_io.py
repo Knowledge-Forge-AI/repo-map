@@ -61,8 +61,11 @@ def _open_anchored(
         _validate_directory(os.fstat(directory))
         for component in parts[:-1]:
             child = os.open(component, _flags(directory=True), dir_fd=directory)
-            os.close(directory)
-            directory = child
+            # Transfer ownership before closing the previous descriptor: a
+            # failed close then leaves only the child for the finally block,
+            # which never re-closes an old, possibly reused number.
+            previous, directory = directory, child
+            os.close(previous)
             _validate_directory(os.fstat(directory))
         descriptor = os.open(parts[-1], _flags(directory=False), dir_fd=directory)
     except OSError as error:

@@ -11,6 +11,7 @@ from ._contracts import (
     Basis, Backend, Operation, ResourceLimit, ResourceMetric, ResourceReport, Unit, UnavailableReason,
 )
 from ._controls import lexical_limits, manifest_limits, sealing_io_limit, worker_limits
+from ._slots import BACKENDS_BY_OPERATION
 from ._observer_reporting import (
     build_report, finish_lexical as _finish_lexical_report,
     finish_local as _finish_local_report, finish_server as _finish_server_report,
@@ -36,6 +37,8 @@ _OBSERVED_OPERATIONS = frozenset(
         Operation.LOCAL_REFRESH.value,
         Operation.SERVER_REFRESH.value,
         Operation.LEXICAL_BUILD.value,
+        Operation.LEXICAL_QUERY.value,
+        Operation.LEXICAL_REVOKE.value,
     }
 )
 
@@ -76,6 +79,8 @@ class ResourceObserver:
         self._worker_launched = self._worker_noted = False
         self._manifest_noted = self._validated_noted = False
         self._lexical_controls: Mapping[str, object] | None = None
+        # Query/revoke call facts noted by the lexical view hooks.
+        self._view_facts: dict[str, object] = {}
         self._cached_report: ResourceReport | None = None
 
     def _degrade(self) -> None:
@@ -124,11 +129,8 @@ class ResourceObserver:
             raise ValueError("resource observer operation is unsupported")
         if backend not in {item.value for item in Backend}:
             raise ValueError("resource backend is invalid")
-        if operation == Operation.LOCAL_REFRESH.value and backend != Backend.SQLITE.value:
-            raise ValueError("local refresh requires sqlite backend")
-        if operation in {Operation.SERVER_REFRESH.value, Operation.LEXICAL_BUILD.value}:
-            if backend != Backend.POSTGRESQL.value:
-                raise ValueError("server and lexical operations require postgresql backend")
+        if backend not in BACKENDS_BY_OPERATION[operation]:
+            raise ValueError("resource backend does not match operation")
         self._owner_thread = threading.get_ident()
         self._begun, self._operation, self._backend = True, operation, backend
         self._start_ns = _int(self._monotonic(), "monotonic clock")

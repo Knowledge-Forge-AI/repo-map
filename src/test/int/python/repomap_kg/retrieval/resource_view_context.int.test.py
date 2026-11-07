@@ -11,7 +11,8 @@ from common_lore_index.retrieval.context_assembly import build_compact_context
 from common_lore_index.retrieval.context_budget import serialize_compact_json
 from common_lore_index.retrieval.context_contracts import ContextRequest
 from common_lore_index.retrieval.context_work import WorkLedger
-from common_lore_index.ops.resource_view._projections import project_compact_context
+# The Local-safe projection owner; ``_projections`` re-exports it for compatibility.
+from common_lore_index.ops.resource_view._context_projection import project_compact_context
 from repomap_test_support.context_assertions import (
     assert_valid_budget_error,
     assert_valid_context_packet,

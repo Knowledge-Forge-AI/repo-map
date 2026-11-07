@@ -773,7 +773,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "3ce2ff3654201fafc321fdf6627b75a28e838aea0dcbcbad0fe06ff5d9c79506"
+    "sha256": "452676b21f06eef030dd89565ffac4a977d49be16d47d4e08311cd4dbb0c4700"
   },
   "ruff": {
     "findings": [
@@ -14689,6 +14689,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.cli._parser_ops_resource",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/_parser_ops_resource.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.cli._parser_sources",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/_parser_sources.py",
@@ -14698,6 +14704,12 @@
         "module": "common_lore_index.cli._postgres_facade",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/_postgres_facade.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.cli._resource_report_session",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/_resource_report_session.py",
         "tier": "T1-future"
       },
       {
@@ -14752,6 +14764,12 @@
         "module": "common_lore_index.cli.ops_lexical_commands",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/ops_lexical_commands.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.cli.ops_resource_commands",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/ops_resource_commands.py",
         "tier": "T1-future"
       },
       {
@@ -16951,9 +16969,57 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops.resource_reports",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_reports/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_reports._admission",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_reports/_admission.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_reports._codec",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_reports/_codec.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_reports._delivery",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_reports/_delivery.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_reports._files",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_reports/_files.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_reports._render",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_reports/_render.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops.resource_view",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resource_view/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._canonical",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_canonical.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._context_projection",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_context_projection.py",
         "tier": "T1-future"
       },
       {
@@ -16966,6 +17032,12 @@
         "module": "common_lore_index.ops.resource_view._controls",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resource_view/_controls.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._lexical_views",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_lexical_views.py",
         "tier": "T1-future"
       },
       {
@@ -16984,6 +17056,12 @@
         "module": "common_lore_index.ops.resource_view._projections",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resource_view/_projections.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._slots",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_slots.py",
         "tier": "T1-future"
       },
       {

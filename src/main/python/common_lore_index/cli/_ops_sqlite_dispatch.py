@@ -17,6 +17,12 @@ is refused by design: direct serialized refresh is the Local baseline. A
 refresh that only settled an already-accepted retained attempt prints one
 stderr NOTE; its stdout shape is unchanged.
 
+``refresh-graph --resource-report FILE`` admits the destination after these
+cheap refusals and config resolution, before any database or source work, and
+delivers once after stdout and the exit code are fixed, outside the handler's
+catch block. The Namespace owns the session across the repeated dispatcher
+seam; without the option no observer keyword is forwarded.
+
 ``common_lore_index.cli.main`` calls this before the PostgreSQL dispatcher loads, so
 none of these commands imports the PostgreSQL driver.
 """
@@ -29,6 +35,13 @@ import sys
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from common_lore_index.cli._resource_report_session import (
+    admit_report,
+    close_report_session,
+    finish_report,
+    report_observer_kwargs,
+    report_session,
+)
 from common_lore_index.ops._refresh_preflight import (
     format_preflight_table,
     preflight_graph,
@@ -142,6 +155,16 @@ def dispatch_ops_sqlite_command(
     if refusal is not None:
         print_cli_error(LocalRefreshError(refusal), file=sys.stderr)
         return 1
+    session = report_session(args)
+    try:
+        code = _handle_routed(args, print_cli_error)
+    except BaseException:
+        close_report_session(session, preserve_primary=True)
+        raise
+    return finish_report(session, code)
+
+
+def _handle_routed(args: argparse.Namespace, print_cli_error: _PrintError) -> int:
     try:
         return _HANDLERS[args.ops_command](args, print_cli_error)
     except (OSError, ValueError) as error:
@@ -225,7 +248,9 @@ def _note_reconciled(results: Sequence[LocalRefreshOutcome], *, name_graph: bool
 
 
 def _refresh_graph(args: argparse.Namespace, _print_error: _PrintError) -> int:
-    result = refresh_local_graph(_local_config(args), args.graph)
+    config = _local_config(args)
+    session = admit_report(args, config)
+    result = refresh_local_graph(config, args.graph, **report_observer_kwargs(session))
     _note_reconciled((result,), name_graph=False)
     payload = result.to_jsonable()
     if args.json:

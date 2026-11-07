@@ -8,6 +8,7 @@ from ._contracts import (
     Basis, Instrumentation, Operation, ResourceMetric, ResourceReport, SCHEMA,
     Unit, UnavailableReason,
 )
+from ._slots import LIMIT_SLOTS, METRIC_SLOTS
 
 
 _STAGES = {
@@ -15,28 +16,6 @@ _STAGES = {
     "capture": "capture_elapsed", "validation": "validation_elapsed",
     "publication": "publication_elapsed",
 }
-_LOCAL_SLOTS = (
-    "operation_elapsed", "operation_process_cpu", "lock_and_reconcile_elapsed",
-    "capture_elapsed", "validation_elapsed", "publication_elapsed",
-    "sealed_manifest_files", "sealed_manifest_bytes", "validated_bundle_records",
-    "validated_bundle_bytes", "worker_cpu", "worker_peak_rss",
-)
-_SERVER_SLOTS = tuple(
-    name for name in _LOCAL_SLOTS if name != "lock_and_reconcile_elapsed"
-)
-_LEXICAL_SLOTS = (
-    "operation_elapsed", "operation_process_cpu", "lexical_input_bytes",
-    "lexical_projected_bytes", "lexical_documents", "lexical_omissions",
-)
-_REFRESH_LIMITS = (
-    "worker_process_deadline", "worker_max_artifact_bytes", "worker_max_bundle_bytes",
-    "manifest_max_artifacts", "manifest_max_total_bytes", "sealing_io_limit",
-)
-_LEXICAL_LIMITS = (
-    "max_projected_files", "max_aggregate_input_bytes", "max_input_artifact_bytes",
-    "max_projected_file_bytes", "max_chunk_lines", "max_chunk_bytes",
-    "lexical_build_statement_timeout",
-)
 _Result = TypeVar("_Result")
 
 
@@ -175,7 +154,7 @@ def finish_lexical(observer: Any, result: _Result) -> _Result:
     return result
 
 
-def _default_metric(observer: Any, name: str, unit: str, basis: str) -> ResourceMetric:
+def _default_metric(observer: Any, name: str, unit: str, basis: str | None) -> ResourceMetric:
     reason = (
         UnavailableReason.NOT_STARTED
         if name in {"operation_elapsed", "operation_process_cpu"}
@@ -188,94 +167,39 @@ def _default_metric(observer: Any, name: str, unit: str, basis: str) -> Resource
 
 
 def build_report(observer: Any) -> ResourceReport:
-    names: tuple[str, ...]
-    slots: tuple[str, ...]
+    """Build from the explicit operation tables; unknown slots never raise KeyError."""
     if not observer._begun:
         return ResourceReport(
             SCHEMA, None, None, "not_recorded",
             Instrumentation.DEGRADED if observer._degraded else Instrumentation.INCOMPLETE,
         )
+    operation = observer._operation
+    slots = METRIC_SLOTS[operation]
+    limits = tuple(
+        observer._limits[name] for name, _, _ in LIMIT_SLOTS[operation] if name in observer._limits
+    )
     if observer._degraded:
-        if observer._operation == Operation.LOCAL_REFRESH:
-            names = _LOCAL_SLOTS
-        elif observer._operation == Operation.SERVER_REFRESH:
-            names = _SERVER_SLOTS
-        else:
-            names = _LEXICAL_SLOTS
-        units = {
-            name: Unit.COUNT if name.endswith(("documents", "omissions", "files", "records"))
-            else Unit.BYTES if "bytes" in name or "rss" in name else Unit.NANOSECONDS
-            for name in names
-        }
-        bases: dict[str, str | None] = {
-            "operation_process_cpu": Basis.PROCESS_CLOCK_INCLUSIVE,
-            "sealed_manifest_files": Basis.ACCEPTED_MANIFEST_TOTAL,
-            "sealed_manifest_bytes": Basis.ACCEPTED_MANIFEST_TOTAL,
-            "validated_bundle_records": Basis.PARENT_VALIDATED_TOTAL,
-            "validated_bundle_bytes": Basis.PARENT_VALIDATED_TOTAL,
-            "worker_cpu": None, "worker_peak_rss": None,
-        }
-        metrics = tuple(ResourceMetric.unavailable(
-            name, units[name], bases.get(name,
-                Basis.OWNER_AGGREGATE if name.startswith("lexical") else Basis.MONOTONIC_SPAN),
-            UnavailableReason.OBSERVER_FAILED,
-        ) for name in names)
-        return ResourceReport(
-            SCHEMA, observer._operation, observer._backend, observer._outcome,
-            Instrumentation.DEGRADED, metrics,
-            tuple(observer._limits[name] for name in _REFRESH_LIMITS if name in observer._limits)
-            if observer._operation in {Operation.LOCAL_REFRESH, Operation.SERVER_REFRESH}
-            else tuple(observer._limits[name] for name in _LEXICAL_LIMITS if name in observer._limits),
+        metrics = tuple(
+            ResourceMetric.unavailable(name, unit, basis, UnavailableReason.OBSERVER_FAILED)
+            for name, unit, basis in slots
         )
-    if observer._operation in {Operation.LOCAL_REFRESH, Operation.SERVER_REFRESH}:
-        for name, unit, basis in (
-            ("operation_elapsed", Unit.NANOSECONDS, Basis.MONOTONIC_SPAN),
-            ("operation_process_cpu", Unit.NANOSECONDS, Basis.PROCESS_CLOCK_INCLUSIVE),
-            ("lock_and_reconcile_elapsed", Unit.NANOSECONDS, Basis.MONOTONIC_SPAN),
-            ("capture_elapsed", Unit.NANOSECONDS, Basis.MONOTONIC_SPAN),
-            ("validation_elapsed", Unit.NANOSECONDS, Basis.MONOTONIC_SPAN),
-            ("publication_elapsed", Unit.NANOSECONDS, Basis.MONOTONIC_SPAN),
-            ("sealed_manifest_files", Unit.COUNT, Basis.ACCEPTED_MANIFEST_TOTAL),
-            ("sealed_manifest_bytes", Unit.BYTES, Basis.ACCEPTED_MANIFEST_TOTAL),
-            ("validated_bundle_records", Unit.COUNT, Basis.PARENT_VALIDATED_TOTAL),
-            ("validated_bundle_bytes", Unit.BYTES, Basis.PARENT_VALIDATED_TOTAL),
-        ):
-            if (
-                name == "lock_and_reconcile_elapsed"
-                and observer._operation == Operation.SERVER_REFRESH
-            ):
-                continue
-            observer._metrics.setdefault(name, _default_metric(observer, name, unit, basis))
-        _ensure_worker_metrics(observer)
-    elif observer._operation == Operation.LEXICAL_BUILD:
-        for name, unit, basis in (
-            ("operation_elapsed", Unit.NANOSECONDS, Basis.MONOTONIC_SPAN),
-            ("operation_process_cpu", Unit.NANOSECONDS, Basis.PROCESS_CLOCK_INCLUSIVE),
-            ("lexical_input_bytes", Unit.BYTES, Basis.OWNER_AGGREGATE),
-            ("lexical_projected_bytes", Unit.BYTES, Basis.OWNER_AGGREGATE),
-            ("lexical_documents", Unit.COUNT, Basis.OWNER_AGGREGATE),
-            ("lexical_omissions", Unit.COUNT, Basis.OWNER_AGGREGATE),
-        ):
-            observer._metrics.setdefault(name, _default_metric(observer, name, unit, basis))
+        return ResourceReport(
+            SCHEMA, operation, observer._backend, observer._outcome,
+            Instrumentation.DEGRADED, metrics, limits,
+        )
+    _ensure_worker_metrics(observer)
+    for name, unit, basis in slots:
+        if name not in observer._metrics:
+            observer._metrics[name] = _default_metric(observer, name, unit, basis)
     instrumentation = (
         Instrumentation.COMPLETE
         if observer._outcome_recorded and all(end is not None for _, end in observer._stages.values())
         else Instrumentation.INCOMPLETE
     )
-    if observer._operation == Operation.LOCAL_REFRESH:
-        slots = _LOCAL_SLOTS
-    elif observer._operation == Operation.SERVER_REFRESH:
-        slots = _SERVER_SLOTS
-    else:
-        slots = _LEXICAL_SLOTS
-    limit_slots = _REFRESH_LIMITS if observer._operation in {
-        Operation.LOCAL_REFRESH, Operation.SERVER_REFRESH,
-    } else _LEXICAL_LIMITS
     return ResourceReport(
-        SCHEMA, observer._operation, observer._backend,
+        SCHEMA, operation, observer._backend,
         observer._outcome if observer._outcome_recorded else "not_recorded",
-        instrumentation, tuple(observer._metrics[name] for name in slots),
-        tuple(observer._limits[name] for name in limit_slots if name in observer._limits),
+        instrumentation, tuple(observer._metrics[name] for name, _, _ in slots), limits,
     )
 
 

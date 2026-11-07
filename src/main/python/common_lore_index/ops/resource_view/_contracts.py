@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-import json
 from typing import Any
+
+from ._canonical import CanonicalBoundError, canonical_bytes
+from ._slots import check_operation_pairing
 
 
 SCHEMA = "cloe-resource-view-v1"
@@ -19,6 +21,8 @@ class Operation(StrEnum):
     SERVER_REFRESH = "server_refresh"
     LEXICAL_BUILD = "lexical_build"
     COMPACT_CONTEXT = "compact_context"
+    LEXICAL_QUERY = "lexical_query"
+    LEXICAL_REVOKE = "lexical_revoke"
 
 
 class Backend(StrEnum):
@@ -86,7 +90,8 @@ OUTCOMES = frozenset(
     {
         "published", "reconciled_replay", "committed", "failed", "commit_unknown",
         "cancelled", "refused", "unclassified", "not_recorded", "complete",
-        "partial", "stale", "unavailable", "budget_error",
+        "partial", "stale", "unavailable", "budget_error", "available", "not_run",
+        "revoked", "preview",
     }
 )
 METRIC_NAMES = frozenset(
@@ -101,6 +106,8 @@ METRIC_NAMES = frozenset(
         "candidate_rows_scanned", "evidence_rows_scanned", "elapsed_ms", "actual_bytes",
         "sqlite_progress_callbacks", "sqlite_vm_steps_estimate", "sqlite_progress_interval_ops",
         "wal_upper_bound", "temporary_byte_upper_bound", "postgresql_memory", "client_memory",
+        "query_hits_returned", "query_omissions_returned", "revoked_generations",
+        "revoked_authority_rows", "purged_documents", "purged_chunks", "purged_omissions",
     }
 )
 LIMIT_NAMES = frozenset(
@@ -111,7 +118,8 @@ LIMIT_NAMES = frozenset(
         "max_projected_file_bytes", "max_chunk_lines", "max_chunk_bytes",
         "lexical_build_statement_timeout", "max_logical_read_units", "max_sql_statements",
         "max_scan_units", "max_seed_expansions", "budget_bytes", "wall_clock_deadline",
-        "sqlite_progress_callback_limit",
+        "sqlite_progress_callback_limit", "query_result_limit", "query_max_occurrences_per_file",
+        "lexical_query_statement_timeout", "lexical_revoke_statement_timeout",
     }
 )
 _OPERATIONS = frozenset(item.value for item in Operation)
@@ -240,30 +248,9 @@ class ResourceReport:
             _closed(self.operation, _OPERATIONS, "resource operation")
         if self.backend is not None:
             _closed(self.backend, _BACKENDS, "resource backend")
-        if self.operation is None:
-            if self.backend is not None:
-                raise ValueError("unbegun resource report must have null backend")
-        elif self.operation == Operation.LOCAL_REFRESH.value and self.backend != Backend.SQLITE.value:
-            raise ValueError("local refresh requires sqlite backend")
-        elif self.operation in {Operation.SERVER_REFRESH.value, Operation.LEXICAL_BUILD.value}:
-            if self.backend != Backend.POSTGRESQL.value:
-                raise ValueError("server and lexical operations require postgresql backend")
         _closed(self.outcome, OUTCOMES, "resource outcome")
         _closed(self.instrumentation, _INSTRUMENTATION, "resource instrumentation")
-        allowed_outcomes: dict[str | None, set[str]] = {
-            None: {"not_recorded", "unclassified"},
-            Operation.LOCAL_REFRESH.value: {"published", "reconciled_replay", "not_recorded", "unclassified"},
-            Operation.SERVER_REFRESH.value: {
-                "committed", "failed", "commit_unknown", "cancelled", "not_recorded", "unclassified",
-            },
-            Operation.LEXICAL_BUILD.value: {"published", "refused", "not_recorded", "unclassified"},
-            Operation.COMPACT_CONTEXT.value: {
-                "complete", "partial", "refused", "stale", "unavailable", "failed", "budget_error",
-                "not_recorded", "unclassified",
-            },
-        }
-        if self.outcome not in allowed_outcomes.get(self.operation, set()):
-            raise ValueError("resource outcome does not match operation")
+        check_operation_pairing(self.operation, self.backend, self.outcome)
         if not isinstance(self.metrics, tuple) or len(self.metrics) > MAX_METRICS:
             raise ValueError("resource metrics exceed the fixed bound")
         if not isinstance(self.limits, tuple) or len(self.limits) > MAX_LIMITS:
@@ -279,12 +266,10 @@ class ResourceReport:
         self._assert_payload_bound()
 
     def _assert_payload_bound(self) -> None:
-        encoded = json.dumps(
-            self.to_payload(), sort_keys=True, separators=(",", ":"),
-            ensure_ascii=False, allow_nan=False,
-        ).encode("utf-8")
-        if len(encoded) > MAX_PAYLOAD_BYTES:
-            raise ValueError("resource report payload exceeds 8192 bytes")
+        try:
+            canonical_bytes(self.to_payload(), MAX_PAYLOAD_BYTES)
+        except CanonicalBoundError:
+            raise ValueError("resource report payload exceeds 8192 bytes") from None
 
     def to_payload(self) -> dict[str, object]:
         """Return a fresh primitive-only mapping detached from the report."""
@@ -307,5 +292,5 @@ def report_payload(report: ResourceReport) -> dict[str, Any]:
 __all__ = (
     "Availability", "Backend", "Basis", "Enforcement", "Instrumentation", "Operation",
     "ResourceLimit", "ResourceMetric", "ResourceReport", "SCHEMA", "Unit",
-    "UnavailableReason", "MAX_PAYLOAD_BYTES", "report_payload",
+    "UnavailableReason", "MAX_LIMITS", "MAX_METRICS", "MAX_PAYLOAD_BYTES", "report_payload",
 )

@@ -10,6 +10,13 @@ import sys
 from types import ModuleType
 from typing import Any, Iterator
 
+from common_lore_index.cli._resource_report_session import (
+    ResourceReportSession,
+    admit_report,
+    close_report_session,
+    finish_report,
+    report_session,
+)
 from common_lore_index.ops.config_local import (
     LocalSqliteConfig,
     declared_storage_backend,
@@ -19,6 +26,10 @@ from common_lore_index.ops.config_local import (
     sqlite_graph_database_path,
 )
 from common_lore_index.ops.config_records import OpsConfigError
+from common_lore_index.ops.resource_view._context_projection import (
+    project_compact_context,
+    unfinished_compact_context,
+)
 from common_lore_index.retrieval.advisory_freshness import FreshnessCheckConfig
 from common_lore_index.retrieval.context_admission import OmissionCounter
 from common_lore_index.retrieval.context_assembly import (
@@ -73,7 +84,9 @@ def _parse_kv_pairs(
 
 
 @contextmanager
-def _open_configured_context_port(args: argparse.Namespace) -> Iterator[ContextReadPort]:
+def _open_configured_context_port(
+    args: argparse.Namespace, admit: Callable[[object], None] | None = None,
+) -> Iterator[ContextReadPort]:
     config_path = getattr(args, "config", None)
     repo_map_home = getattr(args, "repo_map_home", None)
     config = (
@@ -86,6 +99,8 @@ def _open_configured_context_port(args: argparse.Namespace) -> Iterator[ContextR
         raise McpOpsError(f"graph {args.graph!r} is not enabled")
     if graph.readback_unsupported_classification is not None:
         raise McpOpsError(graph.readback_unsupported_classification)
+    if admit is not None:
+        admit(config)  # opt-in destination admission: after config, before DB/source
 
     cfg_bindings = {
         b.binding_id: {
@@ -202,6 +217,41 @@ def _write_refused_or_unavailable_pack(
     return 1
 
 
+def _context_pack(
+    args: argparse.Namespace,
+    req: ContextRequest,
+    roots: dict[str, Any],
+    session: ResourceReportSession | None,
+    print_cli_error: Callable[..., None],
+) -> tuple[int, Callable[[], Any] | None]:
+    admit = None
+    if session is not None:
+        def admit(config: object) -> None:
+            admit_report(args, config, overrides=tuple(roots.values()))
+    try:
+        # Without the option the historical one-argument seam is called unchanged.
+        opened = (
+            _open_configured_context_port(args) if admit is None
+            else _open_configured_context_port(args, admit)
+        )
+        with opened as port:
+            packet = build_compact_context(
+                req,
+                port,
+                freshness=FreshnessCheckConfig(
+                    enabled=(req.freshness == "check"), source_roots=roots
+                ),
+            )
+    except (OpsConfigError, McpOpsError, ValueError) as error:
+        print_cli_error(error, file=sys.stderr)
+        return 1, unfinished_compact_context
+
+    sys.stdout.buffer.write(serialize_compact_json(packet))
+    st = packet.get("status")
+    code = 0 if st == "complete" else (0 if args.allow_partial else 3) if st == "partial" else 1
+    return code, lambda: project_compact_context(packet)
+
+
 def dispatch_ops_context_command(
     args: argparse.Namespace,
     commands: ModuleType,
@@ -251,27 +301,14 @@ def dispatch_ops_context_command(
 
         if req.mode in {"literal_captured_text", "semantic_discovery"}:
             return _write_refused_or_unavailable_pack(args, "unavailable", "capability_not_admitted")
-
+        # Early placeholder-ledger packets above never carry a report.
+        session = report_session(args)
         try:
-            with _open_configured_context_port(args) as port:
-                packet = build_compact_context(
-                    req,
-                    port,
-                    freshness=FreshnessCheckConfig(
-                        enabled=(req.freshness == "check"), source_roots=roots
-                    ),
-                )
-        except (OpsConfigError, McpOpsError, ValueError) as error:
-            print_cli_error(error, file=sys.stderr)
-            return 1
-
-        sys.stdout.buffer.write(serialize_compact_json(packet))
-        st = packet.get("status")
-        if st == "complete":
-            return 0
-        if st == "partial":
-            return 0 if args.allow_partial else 3
-        return 1
+            code, factory = _context_pack(args, req, roots, session, print_cli_error)
+        except BaseException:
+            close_report_session(session, preserve_primary=True)
+            raise
+        return finish_report(session, code, factory)
 
     if args.ops_command == "context-select":
         try:

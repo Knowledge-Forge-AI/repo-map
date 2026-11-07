@@ -10,7 +10,12 @@ import pytest
 
 from common_lore_index.ops.config_local import load_graph_registry_config_home
 from common_lore_index.ops.config_records import OpsConfig
-from common_lore_index.ops.lexical_service import build_graph_lexical_generation
+from common_lore_index.ops.lexical_service import (
+    build_graph_lexical_generation,
+    query_graph_lexical_generation,
+    revoke_graph_lexical_generation,
+)
+from common_lore_index.retrieval.lexical_envelopes import LexicalQueryRequest
 from common_lore_index.ops.refresh import refresh_graph
 from common_lore_index.ops.resource_view import ResourceObserver
 from common_lore_index.storage import apply_migrations, default_rdbms_root
@@ -145,3 +150,60 @@ def test_lexical_build_without_accepted_publication_is_not_recorded(
         assert str(home) not in encoded
         assert (not postgres.password) or postgres.password not in encoded
         assert "cloe_lexical_no_accepted_publication" not in encoded
+
+
+def _observed(call: Any, **kwargs: Any) -> tuple[Any, dict[str, Any]]:
+    observer = ResourceObserver()
+    result = call(resource_observer=observer, **kwargs)
+    payload = observer.report().to_payload()
+    assert_canary_free(payload)
+    assert "mixed-v1" not in json.dumps(payload, sort_keys=True)
+    return result, payload
+
+
+def test_query_and_revoke_views_follow_real_service_envelopes_and_effects(tmp_path: Path) -> None:
+    with temporary_postgres() as postgres:
+        config, _home, _password = _setup(tmp_path, postgres, aliases=("core", "companion"))
+        core = binding_id_for_alias("core")
+        build_graph_lexical_generation(
+            config, MIXED_V1_GRAPH_ID, selected_binding_ids=(core,), authorize_body=True,
+        )
+        envelope, sql_view = _observed(
+            lambda **kw: query_graph_lexical_generation(
+                config, MIXED_V1_GRAPH_ID,
+                LexicalQueryRequest(query="RetrievalExecutionPipeline", selected_binding_ids=(core,)),
+                authorize_body=True, **kw,
+            ),
+        )
+        assert sql_view["outcome"] == envelope.capability_state.value
+        assert _metric(sql_view, "query_hits_returned")["value"] == len(envelope.hits)
+        assert {item["applies_this_call"] for item in sql_view["limits"]} == {None}
+        immediate, immediate_view = _observed(
+            lambda **kw: query_graph_lexical_generation(
+                config, MIXED_V1_GRAPH_ID,
+                LexicalQueryRequest(query="x", selected_binding_ids=(binding_id_for_alias("feeds"),)),
+                authorize_body=True, **kw,
+            ),
+        )
+        assert immediate_view["outcome"] == immediate.capability_state.value == "refused"
+        assert {item["applies_this_call"] for item in immediate_view["limits"]} == {False}
+
+        preview, preview_view = _observed(
+            lambda **kw: revoke_graph_lexical_generation(
+                config, MIXED_V1_GRAPH_ID, dry_run=True, confirmed=False, **kw,
+            ),
+        )
+        assert preview.revoked_generation_count >= 1 and preview_view["outcome"] == "preview"
+        assert {item["reason"] for item in preview_view["metrics"][2:]} == {"not_selected"}
+        kept, kept_view = _observed(
+            lambda **kw: revoke_graph_lexical_generation(
+                config, MIXED_V1_GRAPH_ID, purge_rows=False, confirmed=True, **kw,
+            ),
+        )
+        assert _metric(kept_view, "revoked_generations")["value"] == kept.revoked_generation_count >= 1
+        assert _metric(kept_view, "purged_documents")["reason"] == "not_selected"
+        _again, again_view = _observed(
+            lambda **kw: revoke_graph_lexical_generation(config, MIXED_V1_GRAPH_ID, confirmed=True, **kw),
+        )
+        assert _metric(again_view, "revoked_generations")["value"] == 0
+        assert _metric(again_view, "purged_documents")["availability"] == "measured"

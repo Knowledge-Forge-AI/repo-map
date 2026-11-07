@@ -14,6 +14,12 @@ from common_lore_index.ops.config_local import (
 )
 from common_lore_index.ops.config_records import OpsConfig
 from common_lore_index.ops.resource_view import ResourceObserver, begin, note_lexical_limits
+from common_lore_index.ops.resource_view._lexical_views import (
+    finish_lexical_query,
+    finish_lexical_revoke,
+    note_lexical_query_controls,
+    note_lexical_revoke,
+)
 from common_lore_index.ops.resource_view._projections import finish_lexical
 from common_lore_index.ops.lexical_publication import (
     LexicalBuildOutcome,
@@ -155,8 +161,44 @@ def query_graph_lexical_generation(
     snapshot_manifest_id: str | None = None,
     max_occurrences_per_file: int = DEFAULT_MAX_OCCURRENCES_PER_FILE,
     statement_timeout_ms: int = DEFAULT_QUERY_STATEMENT_TIMEOUT_MS,
+    resource_observer: ResourceObserver | None = None,
 ) -> QueryEnvelope:
-    """Execute a single-statement fenced lexical query and return a validated QueryEnvelope."""
+    """Execute a single-statement fenced lexical query and return a validated QueryEnvelope.
+
+    With an observer, only the returned service envelope is projected (never a
+    CLI presentation); no SQL, source read or query/hit copy is added.
+    """
+    if resource_observer is not None:
+        begin(resource_observer, "lexical_query", "postgresql")
+        note_lexical_query_controls(
+            resource_observer, limit=getattr(request, "limit", None),
+            max_occurrences_per_file=max_occurrences_per_file,
+            statement_timeout_ms=statement_timeout_ms,
+        )
+    envelope, immediate = _query_graph_lexical_generation(
+        config, graph_id, request, authorize_body=authorize_body,
+        connection_factory=connection_factory, publication_bundle_id=publication_bundle_id,
+        snapshot_manifest_id=snapshot_manifest_id,
+        max_occurrences_per_file=max_occurrences_per_file,
+        statement_timeout_ms=statement_timeout_ms,
+    )
+    return envelope if resource_observer is None else finish_lexical_query(
+        resource_observer, envelope, immediate=immediate,
+    )
+
+
+def _query_graph_lexical_generation(
+    config: OpsConfig,
+    graph_id: str,
+    request: LexicalQueryRequest,
+    *,
+    authorize_body: bool,
+    connection_factory: LexicalConnectionFactory,
+    publication_bundle_id: str | None,
+    snapshot_manifest_id: str | None,
+    max_occurrences_per_file: int,
+    statement_timeout_ms: int,
+) -> tuple[QueryEnvelope, bool]:
     if not authorize_body:
         raise ValueError("body-authorization-required: authorize_body=True is required to query cloe_lexical")
     request.validate()
@@ -181,7 +223,7 @@ def query_graph_lexical_generation(
         snapshot_manifest_id=snapshot_manifest_id,
     )
     if resolution.immediate_envelope is not None:
-        return resolution.immediate_envelope
+        return resolution.immediate_envelope, True
 
     repo_identity = local_graph_binding(graph).repository_identity
     expected_binding_digests_json = _canonical_json(
@@ -221,7 +263,7 @@ def query_graph_lexical_generation(
         lexical_policy=lexical_policy,
         request=request,
         raw_row=raw_row,
-    )
+    ), False
 
 
 def revoke_graph_lexical_generation(
@@ -233,8 +275,36 @@ def revoke_graph_lexical_generation(
     dry_run: bool = False,
     confirmed: bool = True,
     connection_factory: LexicalConnectionFactory = open_psycopg_lexical_connection,
+    resource_observer: ResourceObserver | None = None,
 ) -> LexicalRevocationOutcome:
-    """Revoke active cloe_lexical generations and purge derived body rows for a graph."""
+    """Revoke active cloe_lexical generations and purge derived body rows for a graph.
+
+    With an observer, only returned aggregate effects after completion are
+    projected; confirmation, transaction, purge and dry-run behavior is unchanged.
+    """
+    if resource_observer is not None:
+        begin(resource_observer, "lexical_revoke", "postgresql")
+        note_lexical_revoke(
+            resource_observer, dry_run=dry_run,
+            statement_timeout_ms=DEFAULT_BUILD_STATEMENT_TIMEOUT_MS,
+        )
+    outcome = _revoke_graph_lexical_generation(
+        config, graph_id, reason=reason, purge_rows=purge_rows, dry_run=dry_run,
+        confirmed=confirmed, connection_factory=connection_factory,
+    )
+    return outcome if resource_observer is None else finish_lexical_revoke(resource_observer, outcome)
+
+
+def _revoke_graph_lexical_generation(
+    config: OpsConfig,
+    graph_id: str,
+    *,
+    reason: str,
+    purge_rows: bool,
+    dry_run: bool,
+    confirmed: bool,
+    connection_factory: LexicalConnectionFactory,
+) -> LexicalRevocationOutcome:
     if not dry_run and not confirmed:
         raise ValueError("revoke-confirmation-required: pass dry_run=True or confirmed=True")
     if dry_run and confirmed:
