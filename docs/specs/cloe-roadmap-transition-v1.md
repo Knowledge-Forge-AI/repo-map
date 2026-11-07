@@ -822,3 +822,15 @@ and lexical query/revoke views with connected custody proof. The
 [source exit](../../tools/ci/cloe-resource-report1-exit.md) owns actual evidence.
 No intermediate design-only publication is planned. Full W7, numeric governance,
 worker attribution, installed/release acceptance and scientific work stay open.
+
+### CI127 explicit admission-census repair
+
+CI127 attempt 1 failed one unit assertion; its other eight jobs passed. The
+resource-report admission itself passed static lineage validation. The unit
+test's independently enumerated forward-admission list omitted that new phase.
+`REPOMAP-CLOE-CI127REPAIR1` appends only the reviewed phase and preserves every
+proof/continuity/namespace/source check. Its projection owner reproduced red
+and then passed all 49 scoped cases. [ADR0167](../adr/2026/11/0167-projection-admission-census-and-ci128.md)
+and the [repair exit](../../tools/ci/cloe-ci127repair1-exit.md) bind one fresh
+reviewed CI128 attempt 1 at application/native-Rust/wheel caps 39/8/20, after
+actual 38/7/18. No successor qualification or full W7 completion is implied.
