@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from common_lore_index.artifacts.sealing_governance import (
+    RESOURCE_BUDGET_EXCEEDED,
+    SealingBudgetExceeded,
+)
 from common_lore_index.ops._portable_retention import PortableRefreshError
 from common_lore_index.storage.errors import StorageCommitUnknownError
 from common_lore_index.storage.publication_phase_witness import PublicationPhase
@@ -42,6 +46,10 @@ def classify_refresh_failure(
         error_category = "cancelled"
     elif publication_state == "commit_unknown":
         error_category = "publication_unknown"
+    elif isinstance(error, SealingBudgetExceeded) and phase is PublicationPhase.NOT_ENTERED:
+        # Only the terminal governed refusal with positive not-entered proof;
+        # a later cleanup failure or any publication progress stays a failure.
+        error_category = RESOURCE_BUDGET_EXCEEDED
     elif isinstance(error, PortableRefreshError):
         error_category = error.category
     else:
@@ -49,4 +57,14 @@ def classify_refresh_failure(
     return publication_state, error_category
 
 
-__all__ = ("classify_refresh_failure",)
+def refresh_failure_code(error_category: str) -> str:
+    """The public Server diagnostic code; the message names only the limit."""
+
+    return (
+        "sealing-budget-exceeded"
+        if error_category == RESOURCE_BUDGET_EXCEEDED
+        else "refresh-failed"
+    )
+
+
+__all__ = ("classify_refresh_failure", "refresh_failure_code")

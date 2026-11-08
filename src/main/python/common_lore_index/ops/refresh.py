@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from common_lore_index.runtime.postgres_route import PostgresRoute
+from common_lore_index.artifacts.sealing_governance import SealingBudget, governance_kwargs
 
 from common_lore_index.graph.discovery import discover_observations
 from common_lore_index.ops._refresh_preflight import (
@@ -47,10 +48,11 @@ from common_lore_index.ops.config import (
     graph_database,
 )
 from common_lore_index.ops.preflight import _scan_preflight_root
-from common_lore_index.ops.resource_view import ResourceObserver, begin, observer_kwargs
+from common_lore_index.ops.resource_view import ResourceObserver, begin, note_sealing_budget, observer_kwargs
+from common_lore_index.ops._portable_governance import require_budget_schema
 from common_lore_index.ops.resource_view._projections import finish_server
 from common_lore_index.ops.readback import _container_psql_execution
-from common_lore_index.ops._refresh_outcome import classify_refresh_failure
+from common_lore_index.ops._refresh_outcome import classify_refresh_failure, refresh_failure_code
 from common_lore_index.ops.refresh_graphs import (
     _find_graph,
     _graph_refresh_warnings,
@@ -99,8 +101,6 @@ class OpsRefreshGenerationChangedError(ValueError):
     """The fenced source changed before its storage transaction began."""
 
 
-
-
 def refresh_graph(
     config: OpsConfig,
     graph_id: str,
@@ -113,19 +113,22 @@ def refresh_graph(
     staging_measurements: StagingMeasurements | None = None,
     _postgres_route: PostgresRoute | None = None,
     resource_observer: ResourceObserver | None = None,
+    sealing_budget: SealingBudget | None = None,
 ) -> OpsRefreshGraphResult:
     """Refresh with optional reporting outside the owner's interrupt handler."""
+    budget = require_budget_schema(resource_observer, sealing_budget)  # before any work
     def invoke() -> OpsRefreshGraphResult:
         return _refresh_graph_call(
             config, graph_id, psql_command=psql_command,
             publication_receipt=publication_receipt, ingestion_mode=ingestion_mode,
             staged_authority=staged_authority, backend_telemetry=backend_telemetry,
             staging_measurements=staging_measurements, _postgres_route=_postgres_route,
-            **observer_kwargs(resource_observer),
+            **observer_kwargs(resource_observer), **governance_kwargs(budget),
         )
     if resource_observer is None:
         return invoke()
     begin(resource_observer, "server_refresh", "postgresql")
+    note_sealing_budget(resource_observer, budget)
     return finish_server(resource_observer, invoke())
 
 
@@ -141,6 +144,7 @@ def _refresh_graph_call(
     staging_measurements: StagingMeasurements | None = None,
     _postgres_route: PostgresRoute | None = None,
     resource_observer: ResourceObserver | None = None,
+    sealing_budget: SealingBudget | None = None,
 ) -> OpsRefreshGraphResult:
     started_at = _utc_now_text()
     publication_witness = PublicationPhaseWitness()
@@ -157,7 +161,7 @@ def _refresh_graph_call(
                 staging_measurements=None,
                 postgres_route=_postgres_route,
                 _publication_witness=publication_witness,
-                **observer_kwargs(resource_observer),
+                **observer_kwargs(resource_observer), **governance_kwargs(sealing_budget),
             )
         with staging_measurements.phase("refresh.total"):
             return _refresh_graph_impl(
@@ -171,7 +175,7 @@ def _refresh_graph_call(
                 staging_measurements=staging_measurements,
                 postgres_route=_postgres_route,
                 _publication_witness=publication_witness,
-                **observer_kwargs(resource_observer),
+                **observer_kwargs(resource_observer), **governance_kwargs(sealing_budget),
             )
     except KeyboardInterrupt as error:
         graph = _find_graph(config, graph_id)
@@ -214,6 +218,7 @@ def _refresh_graph_impl(
     postgres_route: PostgresRoute | None,
     resource_observer: ResourceObserver | None = None,
     _publication_witness: PublicationPhaseWitness | None = None,
+    sealing_budget: SealingBudget | None = None,
 ) -> OpsRefreshGraphResult:
     """Execute the selected portable production route without legacy fallback."""
     del psql_command
@@ -256,7 +261,7 @@ def _refresh_graph_impl(
             backend_telemetry=backend_telemetry,
             staging_measurements=staging_measurements,
             publication_witness=_publication_witness,
-            **observer_kwargs(resource_observer),
+            **observer_kwargs(resource_observer), **governance_kwargs(sealing_budget),
         )
     except OpsRefreshGenerationChangedError:
         raise
@@ -275,7 +280,7 @@ def _refresh_graph_impl(
             finished_at=_utc_now_text(),
             warnings=warnings,
             diagnostics=(
-                _diagnostic("error", "refresh-failed", f"graphs.{graph.id}", str(error)),
+                _diagnostic("error", refresh_failure_code(err_cat), f"graphs.{graph.id}", str(error)),
             ),
             error=str(error),
         )

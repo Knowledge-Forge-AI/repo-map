@@ -9,6 +9,10 @@ import hashlib
 import os
 from pathlib import Path
 import stat
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from common_lore_index.artifacts._sealing_meter import SealingMeter
 
 
 _CHUNK_SIZE = 1024 * 1024
@@ -43,6 +47,17 @@ def _supports_dir_fd() -> bool:
     return os.open in getattr(os, "supports_dir_fd", ())
 
 
+def _os_open(
+    meter: SealingMeter | None, path: str | os.PathLike[str], flags: int, dir_fd: int | None = None
+) -> int:
+    """``os.open``; an explicit meter admits and counts the attempt first."""
+    if meter is not None:
+        meter.admit_open()
+    if dir_fd is None:
+        return os.open(path, flags)
+    return os.open(path, flags, dir_fd=dir_fd)
+
+
 def _validate_regular(details: os.stat_result) -> None:
     if not stat.S_ISREG(details.st_mode) or details.st_nlink != 1:
         raise SourceUnsealableError("source inventory is not sealable")
@@ -54,20 +69,20 @@ def _validate_directory(details: os.stat_result) -> None:
 
 
 def _open_anchored(
-    root: Path, parts: tuple[str, ...]
+    root: Path, parts: tuple[str, ...], meter: SealingMeter | None = None
 ) -> tuple[int, os.stat_result, Callable[[], bool] | None]:
-    directory = os.open(root, _flags(directory=True))
+    directory = _os_open(meter, root, _flags(directory=True))
     try:
         _validate_directory(os.fstat(directory))
         for component in parts[:-1]:
-            child = os.open(component, _flags(directory=True), dir_fd=directory)
+            child = _os_open(meter, component, _flags(directory=True), directory)
             # Transfer ownership before closing the previous descriptor: a
             # failed close then leaves only the child for the finally block,
             # which never re-closes an old, possibly reused number.
             previous, directory = directory, child
             os.close(previous)
             _validate_directory(os.fstat(directory))
-        descriptor = os.open(parts[-1], _flags(directory=False), dir_fd=directory)
+        descriptor = _os_open(meter, parts[-1], _flags(directory=False), directory)
     except OSError as error:
         if getattr(error, "errno", None) in {errno.ELOOP, errno.ENOTDIR}:
             raise SourceUnsealableError("source inventory is not sealable") from error
@@ -87,7 +102,7 @@ def _open_anchored(
 
 
 def _open_fallback(
-    root: Path, parts: tuple[str, ...]
+    root: Path, parts: tuple[str, ...], meter: SealingMeter | None = None
 ) -> tuple[int, os.stat_result, Callable[[], bool]]:
     parent = root
     for component in parts[:-1]:
@@ -110,7 +125,7 @@ def _open_fallback(
     except FileNotFoundError as error:
         raise ValueError("source changed while sealing") from error
     try:
-        descriptor = os.open(candidate, _flags(directory=False))
+        descriptor = _os_open(meter, candidate, _flags(directory=False))
     except OSError as error:
         if getattr(error, "errno", None) in {errno.ELOOP, errno.ENOTDIR}:
             raise SourceUnsealableError("source inventory is not sealable") from error
@@ -141,14 +156,15 @@ def _open_fallback(
 
 
 def _open_source(
-    root: Path, relative_path: str
+    root: Path, relative_path: str, meter: SealingMeter | None = None
 ) -> tuple[int, os.stat_result, Callable[[], bool] | None]:
     parts = tuple(relative_path.split("/"))
     if not parts or any(not part or part in {".", ".."} for part in parts):
         raise SourceUnsealableError("source inventory is not sealable")
+    metered = () if meter is None else (meter,)
     if _supports_dir_fd():
-        return _open_anchored(root, parts)
-    return _open_fallback(root, parts)
+        return _open_anchored(root, parts, *metered)
+    return _open_fallback(root, parts, *metered)
 
 
 class _SourceBody(Iterator[bytes]):
@@ -161,7 +177,9 @@ class _SourceBody(Iterator[bytes]):
         expected_digest: str,
         expected_executable: bool,
         identity_check: Callable[[], bool] | None = None,
+        meter: SealingMeter | None = None,
     ) -> None:
+        self._meter = meter
         self._descriptor = descriptor
         self._opened = opened
         self._expected_size = expected_size
@@ -181,10 +199,15 @@ class _SourceBody(Iterator[bytes]):
         remaining = self._expected_size - self._size
         if remaining == 0:
             return self._finish()
+        length = min(_CHUNK_SIZE, remaining)
+        if self._meter is not None:
+            self._meter.admit_read(length)  # R6: exact size, no EOF probe
         try:
-            chunk = os.read(self._descriptor, min(_CHUNK_SIZE, remaining))
+            chunk = os.read(self._descriptor, length)
         except OSError as error:
             raise ValueError("source changed while sealing") from error
+        if self._meter is not None:
+            self._meter.charge_read("copy", len(chunk), length)
         if chunk:
             self._size += len(chunk)
             if self._size > self._expected_size:
@@ -233,8 +256,13 @@ def open_source_body(
     expected_size: int,
     expected_digest: str,
     expected_executable: bool,
+    io_meter: SealingMeter | None = None,
 ) -> Iterator[_SourceBody]:
-    descriptor, opened, identity_check = _open_source(root, relative_path)
+    if io_meter is None:
+        descriptor, opened, identity_check = _open_source(root, relative_path)
+    else:
+        io_meter.require_read_headroom(expected_size)  # A5: refuse before opening
+        descriptor, opened, identity_check = _open_source(root, relative_path, io_meter)
     try:
         body = _SourceBody(
             descriptor,
@@ -243,6 +271,7 @@ def open_source_body(
             expected_digest=expected_digest,
             expected_executable=expected_executable,
             identity_check=identity_check,
+            meter=io_meter,
         )
     except BaseException:
         os.close(descriptor)

@@ -9,6 +9,9 @@ import os
 from pathlib import Path
 import stat
 import sys
+from typing import TYPE_CHECKING, Any
+
+from common_lore_index.artifacts.sealing_governance import SealingBudgetExceeded
 
 from common_lore_index.graph.discovery import discover_repository
 from common_lore_index.graph.discovery_records import FileInfo
@@ -19,6 +22,9 @@ from common_lore_index.graph.multi_source import (
 )
 from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
 from common_lore_index.ops.config_records import OpsGraphConfig
+
+if TYPE_CHECKING:
+    from common_lore_index.artifacts._sealing_meter import SealingMeter
 
 
 class MultiSourceCaptureError(ValueError):
@@ -156,7 +162,10 @@ def _capture_files(
     discovered: Sequence[FileInfo],
     *,
     stage_root: Path | None = None,
+    io_meter: SealingMeter | None = None,
 ) -> tuple[tuple[FileInfo, ...], tuple[tuple[str, int], ...]]:
+    if io_meter is not None and stage_root is not None:
+        raise ValueError("metered capture never stages semantic copies")
     files: list[FileInfo] = []
     sizes: list[tuple[str, int]] = []
     for item in discovered:
@@ -164,10 +173,15 @@ def _capture_files(
         if relative.is_absolute() or ".." in relative.parts:
             raise _SourceInvalid
         stage_path = stage_root / item.path if stage_root is not None else None
-        digest, size, executable = _read_stable_file(
-            root / item.path,
-            stage_path=stage_path,
-        )
+        if io_meter is not None:
+            from common_lore_index.graph._metered_capture import read_stable_file_metered
+
+            digest, size, executable = read_stable_file_metered(root / item.path, io_meter)
+        else:
+            digest, size, executable = _read_stable_file(
+                root / item.path,
+                stage_path=stage_path,
+            )
         files.append(replace(item, content_hash=digest, executable=executable))
         sizes.append((item.path, size))
     return tuple(files), tuple(sizes)
@@ -190,6 +204,7 @@ def _capture_inventory(
     *,
     stage_root: Path | None = None,
     discover_fn: Callable[..., Sequence[FileInfo]] | None = None,
+    io_meter: SealingMeter | None = None,
 ) -> tuple[_CapturedSource, ...]:
     bindings = graph.effective_source_bindings
     if (
@@ -211,6 +226,15 @@ def _capture_inventory(
             if facade is not None
             else discover_repository
         )
+    # Metered keywords are forwarded only for an explicit meter (default seams).
+    # The caller binds the meter to discovery hooks so graph.discovery stays
+    # free of artifacts imports (D12 Rust-qualification closure).
+    metered: dict[str, Any] = {} if io_meter is None else {"io_meter": io_meter}
+    discover_metered: dict[str, Any] = {}
+    if io_meter is not None:
+        from common_lore_index.graph._metered_discovery import MeteredDiscoveryHooks
+
+        discover_metered["io_hooks"] = MeteredDiscoveryHooks(io_meter)
     captured: list[_CapturedSource] = []
     for binding in sorted(bindings, key=lambda item: item.binding_id):
         root = Path(binding.root_path_expanded)
@@ -218,7 +242,7 @@ def _capture_inventory(
             if not root.is_dir():
                 raise _SourceUnavailable
             discovered = tuple(
-                discover_fn(root, exclude_paths=binding.exclude_paths)
+                discover_fn(root, exclude_paths=binding.exclude_paths, **discover_metered)
             )
             binding_stage_root = (
                 stage_root / binding.alias if stage_root is not None else None
@@ -227,6 +251,7 @@ def _capture_inventory(
                 root,
                 discovered,
                 stage_root=binding_stage_root,
+                **metered,
             )
             snapshot = SourceSnapshot.create(
                 binding.domain_binding(graph.id),
@@ -236,8 +261,8 @@ def _capture_inventory(
                 ignore_policy_id="ignore1:declared-selection",
                 metadata_identity="meta1:content-manifest-v1",
             )
-        except MultiSourceCaptureError:
-            raise
+        except (MultiSourceCaptureError, SealingBudgetExceeded):
+            raise  # A7: a governed refusal never becomes a capture category
         except FileNotFoundError as error:
             raise _inventory_error(_SourceUnavailable()) from error
         except OSError as error:

@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import stat
 import tempfile
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 from common_lore_index.artifacts._store_common import (
     _DIGEST_PREFIX,
@@ -26,6 +26,9 @@ from common_lore_index.artifacts._store_stream import (
 )
 from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
 from common_lore_index.storage.staging_family_contracts import PrivacyClassification
+
+if TYPE_CHECKING:
+    from common_lore_index.artifacts._sealing_meter import SealingMeter
 
 
 def _private_details(path: Path, *, owner_uid: int) -> os.stat_result:
@@ -193,7 +196,16 @@ class FileSystemArtifactStore:
         record_format: str = "bytes-v1",
         privacy: PrivacyClassification = PrivacyClassification.PUBLIC,
         max_bytes: int | None = None,
+        io_meter: SealingMeter | None = None,
     ) -> ArtifactReference:
+        if io_meter is not None:  # ADR 0173: an explicit sealing meter admits every step
+            from common_lore_index.artifacts._store_metered import metered_put
+
+            return metered_put(
+                self, content, content_digest=content_digest, media_type=media_type,
+                record_format=record_format, privacy=privacy, max_bytes=max_bytes,
+                io_meter=io_meter, private_details_fn=_private_details,
+            )
         _validate_requested_digest(content_digest)
         self._ensure_directory(self.root, create=False, label="store root")
         self._ensure_directory(self._objects, create=False, label="object directory")

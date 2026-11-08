@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import threading
-from typing import Callable, Mapping
+from typing import Any, Callable, Mapping
 
 from common_lore_index.coordinator._protocol_core import (
     SyntheticWorkerResult,
@@ -35,9 +35,17 @@ def run_worker_spec(
     job_context: Mapping[str, object] | None = None,
     cancel_event: threading.Event | None = None,
     _launch_process: Callable[..., ManagedProcess] | None = None,
+    collect_usage: bool = False,
 ) -> SyntheticWorkerResult:
-    """Run one explicit worker specification under bounded supervision."""
+    """Run one explicit worker specification under bounded supervision.
 
+    ``collect_usage`` is forwarded only when selected and requires the owned
+    default launch; an injected launch factory is refused before launch.
+    """
+
+    if collect_usage and _launch_process is not None:
+        raise ValueError("usage collection requires owned launch")
+    usage: dict[str, Any] = {"collect_usage": True} if collect_usage else {}
     environment = dict(spec.environment)
     add_windows_runtime_environment(environment)
     return _run_protocol_worker(
@@ -50,4 +58,5 @@ def run_worker_spec(
         job_context=job_context,
         cancel_event=cancel_event,
         _launch_process=_launch_process,
+        **usage,
     )

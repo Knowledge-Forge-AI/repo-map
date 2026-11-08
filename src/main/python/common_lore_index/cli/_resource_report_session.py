@@ -26,9 +26,10 @@ from common_lore_index.ops.resource_reports._codec import ResourceReportError, e
 from common_lore_index.ops.resource_reports._delivery import AdmittedDestination, DeliveryError, deliver
 from common_lore_index.ops.resource_view import ResourceObserver
 from common_lore_index.ops.resource_view._contracts import ResourceReport
+from common_lore_index.ops.resource_view._contracts_v2 import SCHEMA_V2, ResourceReportV2, upgrade_report
 
 _SESSION_ATTRIBUTE = "_cloe_resource_report_session"
-ReportFactory = Callable[[], ResourceReport]
+ReportFactory = Callable[[], ResourceReport | ResourceReportV2]
 
 
 def _warning(message: str) -> None:
@@ -44,11 +45,14 @@ class ResourceReportSession:
 
     __slots__ = ("_text", "_destination", "_attempted", "observer")
 
-    def __init__(self, text: str) -> None:
+    def __init__(self, text: str, schema: int | None = None) -> None:
         self._text = text
         self._destination: AdmittedDestination | None = None
         self._attempted = False
-        self.observer = ResourceObserver()
+        # Schema 2 is explicit (``--resource-report-schema 2``); v1 stays the default.
+        self.observer = (
+            ResourceObserver(report_schema=SCHEMA_V2) if schema == 2 else ResourceObserver()
+        )
 
     @property
     def admitted(self) -> bool:
@@ -72,6 +76,8 @@ class ResourceReportSession:
             pass  # stdout custody belongs to the subject; delivery stays independent
         try:
             report = factory() if factory is not None else self.observer.report()
+            if self.observer.report_schema == SCHEMA_V2 and type(report) is ResourceReport:
+                report = upgrade_report(report)  # equal lexical/context tables, explicit v2
             deliver(destination, encode_report(report))
         except DeliveryError as error:
             state = "incomplete" if error.installed else "not-delivered"
@@ -94,7 +100,7 @@ def report_session(args: argparse.Namespace) -> ResourceReportSession | None:
         return None
     session = getattr(args, _SESSION_ATTRIBUTE, None)
     if not isinstance(session, ResourceReportSession):
-        session = ResourceReportSession(str(text))
+        session = ResourceReportSession(str(text), getattr(args, "resource_report_schema", None))
         setattr(args, _SESSION_ATTRIBUTE, session)
     return session
 

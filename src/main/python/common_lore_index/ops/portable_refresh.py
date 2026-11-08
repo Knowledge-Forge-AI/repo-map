@@ -4,16 +4,15 @@ from __future__ import annotations
 
 from common_lore_index.runtime.postgres_route import PostgresRoute, effective_postgres_route
 
-from collections.abc import Mapping
-from dataclasses import dataclass
-import hashlib, os, secrets, stat
-from pathlib import Path
+import secrets
 from typing import Any
 
 from common_lore_index.artifacts import (
-    ArtifactReference, FileSystemArtifactStore, PortableSnapshotManifest, PublicationExpectation,
+    ArtifactReference as ArtifactReference, FileSystemArtifactStore,
+    PortableSnapshotManifest as PortableSnapshotManifest, PublicationExpectation,
     PublisherBundleValidator,
 )
+from common_lore_index.artifacts.sealing_governance import SealingBudget, governance_kwargs
 from common_lore_index.artifacts._bundle_stream_parse import ValidatedBundleDescriptor
 from common_lore_index.artifacts.bundle import STREAMING_MAX_BUNDLE_BYTES
 from common_lore_index.artifacts.receipt import ExtractionReceipt
@@ -27,8 +26,9 @@ from common_lore_index.ops._portable_worker_terms import (
 )
 from common_lore_index.ops.resource_view import (
     ResourceObserver, end_stage, mark, note_manifest, note_validated,
-    note_worker_launch, observer_kwargs,
+    note_worker_launch, note_worker_usage, observer_kwargs,
 )
+from common_lore_index.ops._portable_governance import seal_with_meter, start_sealing_meter, usage_kwargs
 from common_lore_index.ops.config_records import OpsConfig, OpsGraphConfig
 from common_lore_index.ops.generations import canonicalizer_generation, extractor_generation
 from common_lore_index.ops.graph_registry import GraphRegistryConfig
@@ -42,14 +42,21 @@ from common_lore_index.storage.publication_phase_witness import (
 from common_lore_index.ops.resolved_config import configured_repository_identity
 from common_lore_index.ops._portable_retention import (
     PortableRefreshError,
-    _annotate_retained_attempt,
-    _mark_retained_terminal,
+    _annotate_retained_attempt as _annotate_retained_attempt,
+    _mark_retained_terminal as _mark_retained_terminal,
     _prune_expired_terminal_attempts,
     _retained_result,
     _write_retained_result,
 )
 from common_lore_index.ops._portable_refresh_custody import close_validated, note_secondary, prepare_server_publication_root, settle_after_publisher_error
 from common_lore_index.ops._portable_refresh_custody import remove_capture_attempt as _remove_attempt_root
+from common_lore_index.ops._portable_capture_record import (
+    PortableCapture as PortableCapture, PortableRefreshOutcome as PortableRefreshOutcome,
+)
+from common_lore_index.ops._portable_paths import (
+    _attempt_root as _attempt_root, _private_directory as _private_directory,
+    _publication_root as _publication_root, portable_attempts_parent as portable_attempts_parent,
+)
 from common_lore_index.storage.staging_observability import StagingMeasurements
 from common_lore_index.storage._staged_ingestion_authority import IngestionAuthority, stage_id_for_authority
 
@@ -65,40 +72,6 @@ def run_staged_portable_refresh(*args: Any, **kwargs: Any) -> LoadSummary:
     return publish(*args, **kwargs)
 
 
-@dataclass(frozen=True)
-class PortableRefreshOutcome:
-    summary: LoadSummary
-    files: int
-    observations: int
-
-
-@dataclass(frozen=True)
-class PortableCapture:
-    """One sealed, executed portable candidate awaiting parent validation."""
-
-    graph: OpsGraphConfig
-    store: FileSystemArtifactStore
-    manifest: PortableSnapshotManifest
-    candidate_id: str
-    authority: IngestionAuthority
-    result_path: Path
-    workspace_root: Path
-    receipt_reference: ArtifactReference
-    bundle_reference: ArtifactReference
-
-    def mark_terminal(self, *, accepted: bool, sync_directory: bool = False) -> None:
-        _mark_retained_terminal(
-            self.result_path,
-            "terminal-accepted" if accepted else "terminal-failed",
-            sync_directory=sync_directory,
-        )
-
-    def annotate(
-        self, key: str, value: Mapping[str, object], *, sync_directory: bool = False
-    ) -> None:
-        _annotate_retained_attempt(self.result_path, key, value, sync_directory=sync_directory)
-
-
 def execute_portable_refresh(
     config: OpsConfig,
     graph: OpsGraphConfig,
@@ -111,6 +84,7 @@ def execute_portable_refresh(
     postgres_route: PostgresRoute | None = None,
     resource_observer: ResourceObserver | None = None,
     publication_witness: PublicationPhaseWitness | None = None,
+    sealing_budget: SealingBudget | None = None,
 ) -> PortableRefreshOutcome:
     """Seal, execute once, validate, and publish through one trusted adapter."""
 
@@ -120,7 +94,7 @@ def execute_portable_refresh(
     mark(resource_observer, "capture")
     capture = capture_portable_candidate(
         config, graph, authority=authority, limits=limits,
-        **observer_kwargs(resource_observer),
+        **observer_kwargs(resource_observer), **governance_kwargs(sealing_budget),
     )
     end_stage(resource_observer, "capture")
     stage_id = stage_id_for_authority(capture.authority)
@@ -179,12 +153,16 @@ def capture_portable_candidate(
     limits: object | None = None,
     attempts_namespace: str | None = None,
     resource_observer: ResourceObserver | None = None,
+    sealing_budget: SealingBudget | None = None,
 ) -> PortableCapture:
     """Seal the configured sources and run the database-independent worker once.
 
     ``attempts_namespace`` scopes the attempt directory (SQLite Local uses one
-    per graph); ``None`` keeps the shared PostgreSQL-route layout.
+    per graph); ``None`` keeps the shared PostgreSQL-route layout. A budget or
+    a v2 observer meters the parent sealing boundary (ADR 0173).
     """
+
+    meter = start_sealing_meter(resource_observer, sealing_budget)
 
     operation_id = (
         authority.operation_id if authority is not None else OperationId(f"direct-{secrets.token_hex(16)}")
@@ -208,11 +186,12 @@ def capture_portable_candidate(
     store = FileSystemArtifactStore(store_root)
     extractor = extractor_generation(graph)
     canonicalizer = canonicalizer_generation()
-    manifest, manifest_reference, candidate_id = seal_configured_sources(
-        graph,
-        store,
-        extractor_generation=extractor,
-        canonicalizer_generation=canonicalizer,
+    manifest, manifest_reference, candidate_id = seal_with_meter(
+        resource_observer, meter,
+        lambda **metered: seal_configured_sources(
+            graph, store, extractor_generation=extractor,
+            canonicalizer_generation=canonicalizer, **metered,
+        ),
     )
     note_manifest(resource_observer, manifest)
     resolved_authority = authority or IngestionAuthority(
@@ -262,8 +241,9 @@ def capture_portable_candidate(
             worker = run_portable_worker(
                 capability_path,
                 {"job_id": capability.job_id, "attempt": capability.attempt},
-                leaf_limits,
+                leaf_limits, **usage_kwargs(resource_observer),
             )
+            note_worker_usage(resource_observer, getattr(worker, "resource_usage", None))
             references = _worker_references(worker.terminal)
             _write_retained_result(result_path, manifest.manifest_id, references, manifest_reference=manifest_reference)
         except BaseException as error:
@@ -352,39 +332,6 @@ def portable_publication_binding(
             for item in validated.family_summaries
         },
     ).validate()
-
-
-def _publication_root(config):
-    control_root = Path(config.config_home or Path(config.config_path).resolve().parent)
-    return (control_root / "state" / "portable-publication").resolve()
-
-
-def portable_attempts_parent(config: GraphRegistryConfig, namespace: str | None = None) -> Path:
-    """The directory holding one route's retained attempts; never created here."""
-    root = _publication_root(config)
-    return root / "attempts" if namespace is None else root / namespace / "attempts"
-
-
-def _attempt_root(config, graph, operation_id, attempt, namespace=None):
-    root = _publication_root(config)
-    for binding in graph.effective_source_bindings:
-        source = Path(binding.root_path_expanded).resolve()
-        if root == source or root.is_relative_to(source):
-            raise PortableRefreshError("portable artifact root overlaps source")
-    token = hashlib.sha256(f"{operation_id}\0{attempt}".encode()).hexdigest()
-    return portable_attempts_parent(config, namespace) / token
-
-
-def _private_directory(path):
-    path.mkdir(mode=0o700, parents=True, exist_ok=True)
-    descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0))
-    try:
-        details = os.fstat(descriptor)
-        if not stat.S_ISDIR(details.st_mode) or details.st_uid != os.getuid():
-            raise PortableRefreshError("portable control directory is not private")
-        os.fchmod(descriptor, 0o700)
-    finally:
-        os.close(descriptor)
 
 
 __all__ = (

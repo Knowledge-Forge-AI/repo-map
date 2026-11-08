@@ -914,12 +914,20 @@
         "sha256": "2de8fb82c2aabc47d49c69bbb6337f9dcf72017b894824c0f324ceaa59c358e1"
       },
       {
+        "path": "src/main/python/common_lore_index/graph/_discovery_classify.py",
+        "sha256": "a13c9919b1ce9995a6eb8b16c57d30e9ff369183a043c081e0b7f86b851ae86c"
+      },
+      {
+        "path": "src/main/python/common_lore_index/graph/_discovery_selection.py",
+        "sha256": "a9fb586354996da8ce46f6690edbbab186da5e9f512e374eeb43546f2658c4da"
+      },
+      {
         "path": "src/main/python/common_lore_index/graph/_key_namespaces.py",
         "sha256": "734b7c771233632466a073a4ed3fdd43eaccf9dfd9ab0afe83e11c16dc8c760c"
       },
       {
         "path": "src/main/python/common_lore_index/graph/discovery.py",
-        "sha256": "945d35b8dfd5221b3533943f768f250c7bf28e6068c6c74d5eb2b9918b68a08b"
+        "sha256": "c9e7bd885fe975e44190cc09ee3bbce1e3f40c26a25ec78912aec504fcb2017a"
       },
       {
         "path": "src/main/python/common_lore_index/graph/discovery_extractors.py",
@@ -1007,7 +1015,7 @@
       },
       {
         "path": "tools/ci/d12_system_grant.py",
-        "sha256": "a2cc53c44eb900d49adf4666a0f5ae8edd2128af86897c7ef4b0ef8f42f8bbf0"
+        "sha256": "292b284ec0f1a1d1fb7cb98c1c6b8d7b0a319a7009b91fb40089c11b6bb6ef3d"
       },
       {
         "path": "tools/ci/d12_system_grant_io.py",
@@ -1305,6 +1313,8 @@
       "src/main/python/common_lore_index/extractors/shell/zunit_helpers.py",
       "src/main/python/common_lore_index/extractors/shell/zunit_observations.py",
       "src/main/python/common_lore_index/graph/__init__.py",
+      "src/main/python/common_lore_index/graph/_discovery_classify.py",
+      "src/main/python/common_lore_index/graph/_discovery_selection.py",
       "src/main/python/common_lore_index/graph/_key_namespaces.py",
       "src/main/python/common_lore_index/graph/discovery.py",
       "src/main/python/common_lore_index/graph/discovery_extractors.py",

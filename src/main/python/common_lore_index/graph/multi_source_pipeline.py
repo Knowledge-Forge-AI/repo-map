@@ -7,6 +7,7 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from common_lore_index._temporary import OwnedTemporaryDirectory
 
@@ -40,6 +41,9 @@ from common_lore_index.graph.multi_source_routing import (
 from common_lore_index.observations.raw import RawObservation
 from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
 from common_lore_index.ops.config_records import OpsGraphConfig
+
+if TYPE_CHECKING:
+    from common_lore_index.artifacts._sealing_meter import SealingMeter
 
 
 _MULTI_SOURCE_EXTRACTOR_IDENTITY = "cap1:python-static-v1"
@@ -330,8 +334,14 @@ def capture_sealed_multi_source_candidate(
     return result
 
 
-def scan_multi_source_generations(graph: OpsGraphConfig) -> MultiSourceGenerationScan:
-    """Derive multi-source fences from discovery manifests without semantics."""
+def scan_multi_source_generations(
+    graph: OpsGraphConfig, *, io_meter: SealingMeter | None = None
+) -> MultiSourceGenerationScan:
+    """Derive multi-source fences from discovery manifests without semantics.
+
+    ``discover_repository`` stays the dynamic module-global seam; an explicit
+    sealing meter is forwarded only when one was supplied.
+    """
 
     if not graph.explicit_source_bindings:
         graph = replace(
@@ -339,7 +349,12 @@ def scan_multi_source_generations(graph: OpsGraphConfig) -> MultiSourceGeneratio
             source_bindings=graph.effective_source_bindings,
             explicit_source_bindings=True,
         )
-    captured = _capture_inventory(graph, discover_fn=discover_repository)
+    if io_meter is None:
+        captured = _capture_inventory(graph, discover_fn=discover_repository)
+    else:
+        captured = _capture_inventory(
+            graph, discover_fn=discover_repository, io_meter=io_meter
+        )
     snapshots = tuple(item.snapshot for item in captured)
     files = tuple(item for source in captured for item in source.files)
     return MultiSourceGenerationScan(

@@ -5,11 +5,13 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 import threading
 import time
-from typing import Callable, TypedDict, TypeVar
+from typing import Any, Callable, TypedDict, TypeVar
 
 from ._contracts import (
-    Basis, Backend, Operation, ResourceLimit, ResourceMetric, ResourceReport, Unit, UnavailableReason,
+    SCHEMA, Basis, Backend, Operation, ResourceLimit, ResourceMetric, ResourceReport, Unit,
+    UnavailableReason,
 )
+from ._contracts_v2 import SCHEMA_V2, ResourceReportV2
 from ._controls import lexical_limits, manifest_limits, sealing_io_limit, worker_limits
 from ._slots import BACKENDS_BY_OPERATION
 from ._observer_reporting import (
@@ -63,7 +65,16 @@ class ResourceObserver:
         *,
         _monotonic_ns: Callable[[], int] | None = None,
         _process_time_ns: Callable[[], int] | None = None,
+        report_schema: str = SCHEMA,
     ) -> None:
+        if report_schema not in (SCHEMA, SCHEMA_V2):
+            raise ValueError("resource report schema is invalid")
+        self.report_schema = report_schema
+        # v2-only call facts (ADR 0173); v1 observers ignore these notes.
+        self._sealing_meter: Any = None
+        self._sealing_budget: Any = None
+        self._sealing_refusal: BaseException | None = None
+        self._worker_usage: Any = None
         self._monotonic = _monotonic_ns if _monotonic_ns is not None else time.monotonic_ns
         self._process_time = _process_time_ns if _process_time_ns is not None else time.process_time_ns
         self._owner_thread: int | None = None
@@ -81,7 +92,7 @@ class ResourceObserver:
         self._lexical_controls: Mapping[str, object] | None = None
         # Query/revoke call facts noted by the lexical view hooks.
         self._view_facts: dict[str, object] = {}
-        self._cached_report: ResourceReport | None = None
+        self._cached_report: ResourceReport | ResourceReportV2 | None = None
 
     def _degrade(self) -> None:
         self._degraded = True
@@ -136,7 +147,8 @@ class ResourceObserver:
         self._start_ns = _int(self._monotonic(), "monotonic clock")
         self._start_cpu_ns = _int(self._process_time(), "process clock")
         if operation in {Operation.LOCAL_REFRESH, Operation.SERVER_REFRESH}:
-            self._add_limit(sealing_io_limit())
+            if self.report_schema == SCHEMA:
+                self._add_limit(sealing_io_limit())
             for row in manifest_limits(applies_this_call=None):
                 self._add_limit(row)
         # Lexical controls are recorded by note_lexical_limits immediately
@@ -221,6 +233,41 @@ class ResourceObserver:
         for row in lexical_limits(self._lexical_controls, applies_this_call=None):
             self._add_limit(row)
 
+    def _v2_refresh(self) -> bool:
+        if not self._active():
+            return False
+        if self._operation not in {Operation.LOCAL_REFRESH, Operation.SERVER_REFRESH}:
+            raise ValueError("sealing facts require a refresh operation")
+        return True
+
+    def _note_sealing_budget(self, budget: object) -> None:
+        if self.report_schema == SCHEMA_V2 and self._v2_refresh():
+            if self._sealing_budget is not None or self._sealing_meter is not None:
+                raise ValueError("sealing budget was repeated or late")
+            self._sealing_budget = budget
+
+    def _note_sealing_meter(self, meter: Any) -> None:
+        if self.report_schema == SCHEMA_V2 and self._v2_refresh():
+            if self._sealing_meter is not None or (
+                self._sealing_budget is not None and meter.budget != self._sealing_budget
+            ):
+                raise ValueError("sealing meter was repeated or does not match its budget")
+            self._sealing_meter = meter
+            self._sealing_budget = meter.budget
+
+    def _note_sealing_refusal(self, error: BaseException) -> None:
+        if self.report_schema == SCHEMA_V2 and self._v2_refresh():
+            meter = self._sealing_meter
+            if meter is None or getattr(error, "limit", None) != meter.refused_limit:
+                raise ValueError("sealing refusal does not match the call meter")
+            self._sealing_refusal = error
+
+    def _note_worker_usage(self, usage: object) -> None:
+        if self.report_schema == SCHEMA_V2 and self._v2_refresh():
+            if not self._worker_launched or self._worker_usage is not None:
+                raise ValueError("worker usage requires one noted launch")
+            self._worker_usage = usage
+
     def _finish_local(self, result: _Result) -> _Result:
         return _finish_local_report(self, result)
 
@@ -230,10 +277,10 @@ class ResourceObserver:
     def _finish_lexical(self, result: _Result) -> _Result:
         return _finish_lexical_report(self, result)
 
-    def _build_report(self) -> ResourceReport:
+    def _build_report(self) -> ResourceReport | ResourceReportV2:
         return build_report(self)
 
-    def report(self) -> ResourceReport:
+    def report(self) -> ResourceReport | ResourceReportV2:
         """Seal on first read; subsequent reads return the identical object."""
         if self._cached_report is None:
             self._cached_report = self._build_report()
@@ -290,6 +337,24 @@ def note_lexical_limits(
     })
 
 
+def note_sealing_budget(observer: object | None, budget: object) -> None:
+    if budget is not None:
+        _call(observer, "_note_sealing_budget", budget)
+
+
+def note_sealing_meter(observer: object | None, meter: object) -> None:
+    _call(observer, "_note_sealing_meter", meter)
+
+
+def note_sealing_refusal(observer: object | None, error: BaseException) -> None:
+    _call(observer, "_note_sealing_refusal", error)
+
+
+def note_worker_usage(observer: object | None, usage: object) -> None:
+    if usage is not None:
+        _call(observer, "_note_worker_usage", usage)
+
+
 def finish_local(observer: ResourceObserver | None, result: _Result) -> _Result:
     if observer is None or type(observer) is not ResourceObserver:
         return result
@@ -306,5 +371,7 @@ def observer_kwargs(observer: ResourceObserver | None) -> ObserverKwargs:
 
 __all__ = (
     "ObserverKwargs", "ResourceObserver", "begin", "end_stage", "finish_local", "mark",
-    "note_lexical_limits", "note_manifest", "note_validated", "note_worker_launch", "observer_kwargs",
+    "note_lexical_limits", "note_manifest", "note_sealing_budget", "note_sealing_meter",
+    "note_sealing_refusal", "note_validated", "note_worker_launch", "note_worker_usage",
+    "observer_kwargs",
 )

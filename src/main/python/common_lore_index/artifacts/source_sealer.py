@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+from typing import Any
 
 from common_lore_index.artifacts.manifest import (
     DEFAULT_ARTIFACT_LIMITS,
@@ -16,6 +17,7 @@ from common_lore_index.artifacts._manifest_records import (
     _validate_inventory_shape,
     _validate_limits,
 )
+from common_lore_index.artifacts._sealing_meter import SealingMeter
 from common_lore_index.artifacts.references import ArtifactReference
 from common_lore_index.artifacts.store import FileSystemArtifactStore
 from common_lore_index.artifacts._source_sealing_io import (
@@ -47,11 +49,22 @@ def seal_configured_sources(
     extractor_generation: str,
     canonicalizer_generation: str,
     limits: ArtifactLimits = DEFAULT_ARTIFACT_LIMITS,
+    io_meter: SealingMeter | None = None,
 ) -> tuple[PortableSnapshotManifest, ArtifactReference, str]:
-    """Seal one stable configured inventory without running semantic extraction."""
+    """Seal one stable configured inventory without running semantic extraction.
+
+    ``io_meter`` (ADR 0173) is forwarded to every owned reader and store write
+    only when supplied. A governed meter first walks every binding's metadata
+    and refuses a provable inventory or budget overrun before any body read.
+    """
 
     _validate_limits(limits)
-    first = scan_multi_source_generations(graph)
+    metered: dict[str, Any] = {} if io_meter is None else {"io_meter": io_meter}
+    if io_meter is not None and io_meter.governed:
+        from common_lore_index.graph._metered_discovery import preflight_inventory
+
+        preflight_inventory(graph, io_meter, limits)
+    first = scan_multi_source_generations(graph, **metered)
     snapshots = {item.binding.binding_id: item for item in first.snapshots}
     configured_bindings = tuple(
         sorted(graph.effective_source_bindings, key=lambda item: item.binding_id)
@@ -85,6 +98,7 @@ def seal_configured_sources(
                     expected_size=item.size_bytes,
                     expected_digest=item.content_sha256,
                     expected_executable=item.executable,
+                    **metered,
                 ) as body:
                     reference = store.put(
                         body,
@@ -93,6 +107,7 @@ def seal_configured_sources(
                         media_type="application/octet-stream",
                         record_format="bytes-v1",
                         privacy=PrivacyClassification.RAW_SOURCE,
+                        **metered,
                     )
             except SourceUnsealableError:
                 raise
@@ -111,7 +126,7 @@ def seal_configured_sources(
                     item.executable,
                 )
             )
-    second = scan_multi_source_generations(graph)
+    second = scan_multi_source_generations(graph, **metered)
     if second.source_generation != first.source_generation or second.snapshots != first.snapshots:
         raise ValueError("source changed while sealing")
     identities = multi_source_semantic_identities(graph)
@@ -149,6 +164,7 @@ def seal_configured_sources(
         record_format="canonical-json-v1",
         privacy=manifest.effective_privacy,
         max_bytes=limits.max_manifest_bytes,
+        **metered,
     )
     return manifest, reference, candidate.candidate_id
 

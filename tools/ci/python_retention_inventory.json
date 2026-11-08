@@ -376,6 +376,45 @@
     {
       "admission": "admitted",
       "governing_profile": "clean_test_owners",
+      "id": "cloe.resource-governance2.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/artifacts/sealing_alias_retry.int.test.py",
+        "src/test/int/python/repomap_kg/artifacts/sealing_governance.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/usage_reaper.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_v2_local_cli.int.test.py",
+        "src/test/int/python/repomap_kg/ops/resource_report_v2_server_cli.int.test.py",
+        "src/test/int/python/repomap_kg/ops/sealing_plan_boundary_witness.int.test.py",
+        "src/test/int/python/repomap_kg/ops/sealing_plan_cli.int.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/metered_io.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/sealing_meter.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/source_sealer_governance.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/store_metered_put.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/protocol_interrupt_cleanup.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/usage_reaper.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/metered_discovery_equivalence.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_report_v2_codec.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_view_v2_contracts.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/resource_view_v2_observer.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sealing_budget_cli.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/sealing_plan.unit.test.py"
+      ],
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "cloe.resource-governance2.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/sealing_governance_fixtures.py",
+        "src/test/support/python/repomap_test_support/usage_worker.py"
+      ],
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
       "id": "cloe.resource-report1.test_owners",
       "members": [
         "src/test/int/python/repomap_kg/ops/resource_report_exception_custody.int.test.py",
@@ -58344,6 +58383,393 @@
       "rationale": "ADR0168 real persisted10001direct-evidence overflow and bounded provenance proof; clean test owner with no new debt or policy change.",
       "root": "test_owners",
       "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/sealing_governance.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_sealing_meter.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_metered_io.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_store_metered.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_discovery_classify.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_discovery_selection.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_metered_discovery.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_metered_capture.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_metered_classification.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_usage_reaper.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_usage_interrupt.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/_portable_capture_record.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/_portable_paths.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/_portable_governance.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/sealing_plan.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_contracts_v2.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_slots_v2.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_observer_v2.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_sealing_projection.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/ops/resource_view/_worker_projection.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/_sealing_budget_options.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/cli/ops_sealing_plan_commands.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/sealing_meter.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/metered_io.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/store_metered_put.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/source_sealer_governance.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/metered_discovery_equivalence.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/usage_reaper.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/protocol_interrupt_cleanup.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_view_v2_contracts.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_view_v2_observer.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/resource_report_v2_codec.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sealing_budget_cli.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/sealing_plan.unit.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/sealing_governance.int.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/usage_reaper.int.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_v2_local_cli.int.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/resource_report_v2_server_cli.int.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/sealing_plan_cli.int.test.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/sealing_governance_fixtures.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/usage_worker.py",
+      "rationale": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/sealing_alias_retry.int.test.py",
+      "rationale": "ADR0173 real-file canonical alias accounting, metadata-only planning and cumulative retry charging; strict clean test proof, no new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/sealing_plan_boundary_witness.int.test.py",
+      "rationale": "ADR0173 real Local/Server plan CLI witnesses for source-body opens, DB/worker/lock effects and exact independent multi-binding metadata counts; zero new debt.",
+      "root": "test_owners",
+      "status": "active_integration_test"
     }
   ],
   "historical_revise10_counts": {

@@ -18,6 +18,7 @@ from common_lore_index.cli._resource_report_session import (
     report_observer_kwargs,
     report_session,
 )
+from common_lore_index.cli._sealing_budget_options import sealing_budget_kwargs
 from common_lore_index.cli.staging_event_instrumentation import (
     staging_event_instrumentation,
 )
@@ -294,6 +295,7 @@ def _refresh_graph(
                     backend_telemetry=backend_telemetry,
                     staging_measurements=staging_measurements,
                     **report_observer_kwargs(session),
+                    **sealing_budget_kwargs(args),
                 )
     except (
         commands.ConnectionTelemetryError,

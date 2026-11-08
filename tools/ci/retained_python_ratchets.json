@@ -234,10 +234,6 @@
         "path": "src/main/python/common_lore_index/extractors/shell/zunit_observations.py"
       },
       {
-        "line_count": 605,
-        "path": "src/main/python/common_lore_index/graph/discovery.py"
-      },
-      {
         "line_count": 855,
         "path": "src/main/python/common_lore_index/graph/keys.py"
       },
@@ -773,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "cd05e1854f1c8cfca28994cbb3442688465e4ce506ea793811b3fe827b26a503"
+    "sha256": "ba2400d09ecf6ec7388abff2abda414e23ec715ff60cdd4dbbf9ea8c20bf93bd"
   },
   "ruff": {
     "findings": [
@@ -14191,9 +14187,21 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.artifacts._metered_io",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_metered_io.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.artifacts._parity_sealing",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/_parity_sealing.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.artifacts._sealing_meter",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_sealing_meter.py",
         "tier": "T1-future"
       },
       {
@@ -14218,6 +14226,12 @@
         "module": "common_lore_index.artifacts._store_memory",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/_store_memory.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.artifacts._store_metered",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_store_metered.py",
         "tier": "T1-future"
       },
       {
@@ -14266,6 +14280,12 @@
         "module": "common_lore_index.artifacts.rust_bundle_guard",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/rust_bundle_guard.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.artifacts.sealing_governance",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/sealing_governance.py",
         "tier": "T1-future"
       },
       {
@@ -14719,6 +14739,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.cli._sealing_budget_options",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/_sealing_budget_options.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.cli._storage_parser_summaries",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/_storage_parser_summaries.py",
@@ -14782,6 +14808,12 @@
         "module": "common_lore_index.cli.ops_retained_attempt_commands",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/ops_retained_attempt_commands.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.cli.ops_sealing_plan_commands",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/ops_sealing_plan_commands.py",
         "tier": "T1-future"
       },
       {
@@ -15088,6 +15120,18 @@
         "module": "common_lore_index.coordinator._transport_validation",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_transport_validation.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._usage_interrupt",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_usage_interrupt.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._usage_reaper",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_usage_reaper.py",
         "tier": "T1-future"
       },
       {
@@ -16273,10 +16317,40 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.graph._discovery_classify",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_discovery_classify.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph._discovery_selection",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_discovery_selection.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.graph._key_namespaces",
         "ownership_class": "cross_language_contract",
         "path": "src/main/python/common_lore_index/graph/_key_namespaces.py",
         "tier": "T0"
+      },
+      {
+        "module": "common_lore_index.graph._metered_capture",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_metered_capture.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph._metered_classification",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_metered_classification.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph._metered_discovery",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_metered_discovery.py",
+        "tier": "T1-future"
       },
       {
         "module": "common_lore_index.graph._multi_source_identity",
@@ -16462,6 +16536,24 @@
         "module": "common_lore_index.ops",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._portable_capture_record",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_portable_capture_record.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._portable_governance",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_portable_governance.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._portable_paths",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_portable_paths.py",
         "tier": "T1-future"
       },
       {
@@ -17077,6 +17169,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops.resource_view._contracts_v2",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_contracts_v2.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops.resource_view._controls",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resource_view/_controls.py",
@@ -17101,15 +17199,39 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops.resource_view._observer_v2",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_observer_v2.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops.resource_view._projections",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resource_view/_projections.py",
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops.resource_view._sealing_projection",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_sealing_projection.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops.resource_view._slots",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/resource_view/_slots.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._slots_v2",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_slots_v2.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.resource_view._worker_projection",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/resource_view/_worker_projection.py",
         "tier": "T1-future"
       },
       {
@@ -17122,6 +17244,12 @@
         "module": "common_lore_index.ops.rust_pilot_publication",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/rust_pilot_publication.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops.sealing_plan",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/sealing_plan.py",
         "tier": "T1-future"
       },
       {

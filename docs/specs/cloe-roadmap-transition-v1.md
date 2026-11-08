@@ -906,3 +906,60 @@ suites, local Python coverage and full W6/W7 completion remain unselected.
 Application start 40, native AMD command 9 and wheel transfers 21–22 require a
 fresh final-candidate campaign binding after proof and independent review;
 they are not spent or qualified by this design record.
+
+
+### CI131 qualification and next resource-governance batch
+
+CI131 run 42489743980 attempt 1 qualified staging
+`52c60169303458905d11c1f307504ec9ff3ebe4b` against public main
+`5ad00d162ad8a04430874275246a53227578c533`. All nine jobs passed
+(`EXECUTED_PASS`). Retained same-attempt staging M/A, five-scenario system,
+D12 native AMD and Rust component obligations validate against source, merge
+`66554d9928ad644878a80e1f7165a1c774be0c69` and tree
+`43002184513e95b003a09477aa5ab15ae30fa424`. Unit passed 17,274 cases
+(40 skipped), with 69,696/75,336 lines and 21,271/24,570 branches (86.57%).
+Measured integration passed 2,344 cases (12 skipped), with
+67,076/75,336 lines and 19,673/24,570 branches (80.07%); the report also
+contains three passing smoke checks. Hard coverage floors pass; desired
+87%/82% branch margins remain 105/475 branches short. Authenticated cumulative
+consumption is 42 application starts, 11 native AMD Rust commands and 26 wheel
+transfers. This qualifies only the named staging candidate, including the
+bounded Server parity and positive retained-attempt recovery batch. It does
+not close W6/W7, installed qualification or release acceptance.
+
+The current roadmap continuation assigns
+`REPOMAP-CLOE-RESOURCE-GOVERNANCE2` to the next connected W7 batch: actual
+sealing-I/O accounting and call-owned governance, honest worker resource
+attribution, and compatible resource-plan/report delivery. These are ordinary
+W7 design choices under the current continuation; the parent must accept an
+ADR and concrete contract after independent design review before product
+implementation. The accepted first resource-governance phase remains
+immutable, and this phase continues its namespace rather than allocating a
+near-duplicate family.
+
+The design must inventory real reads, traversal/retry work and child-process
+ownership before choosing limits or attributing measurements. It must label
+self-process versus descendant/whole-operation cost, measured versus estimated
+values and unavailable observations honestly. Existing public v1 report
+contracts cannot gain vocabulary in place; compatibility and any separate
+versioned surface require an explicit design disposition. Numeric policies
+need a stated basis and refusal/cleanup proof. No blanket hard-RSS, physical
+PostgreSQL work, efficiency or full-W7 claim follows.
+
+The rejected startup-option timeout remains held. New dependencies, images,
+DDL, role grants, native parser/model work, installed/live-state mutation,
+complete local suites and local coverage are outside this selection. Scoped
+unit and real containerized integration proof, strict new-owner quality
+enrollment, full resulting-source review and parent acceptance precede any
+substantial milestone publication. Aim for a useful 10k–100k line batch without
+padding. No intermediate design-only public CI is planned. A future single
+campaign requires its own final-source binding; the consumed CI131 grant is
+not reusable. Main and release boundaries remain unchanged.
+
+Implementation status (feature proof, not qualification): ADR 0173 and its
+contract were accepted after two independent design reviews, and the three
+epics are implemented in source with scoped unit and containerized integration
+proof through the canonical runner, strict new-owner enrollment and the exit
+record `tools/ci/cloe-resource-governance2-exit.md`. Independent work review,
+parent verification, campaign binding, commit and publication remain open;
+CI131 does not qualify this successor.

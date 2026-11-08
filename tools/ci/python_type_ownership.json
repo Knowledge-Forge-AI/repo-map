@@ -103,9 +103,27 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._metered_io",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Existing >=80% Python retention forecast governs present maintenance. Exact dependency-independent module admitted cleanly; future architecture placement and descendant forecasts remain deferred.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts._parity_sealing",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._sealing_meter",
       "ownership_class": "python_retained"
     },
     {
@@ -142,6 +160,15 @@
       "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts._store_memory",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "publication_bundle_v1",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._store_metered",
       "ownership_class": "python_retained"
     },
     {
@@ -214,6 +241,15 @@
       "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts.rust_bundle_guard",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts.sealing_governance",
       "ownership_class": "python_retained"
     },
     {
@@ -445,6 +481,15 @@
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli._sealing_budget_options",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.cli._storage_parser_summaries under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli._storage_parser_summaries",
@@ -538,6 +583,15 @@
       "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli.ops_retained_attempt_commands",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli.ops_sealing_plan_commands",
       "ownership_class": "python_retained"
     },
     {
@@ -1000,6 +1054,24 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._usage_interrupt",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._usage_reaper",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
@@ -1297,6 +1369,24 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "python_semantic_engine",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._discovery_classify",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "python_semantic_engine",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._discovery_selection",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "graph_identity_contract",
       "disposition": "durable_contract",
       "enforcement_tier": "T0",
@@ -1304,6 +1394,33 @@
       "match": "exact",
       "module_prefix": "common_lore_index.graph._key_namespaces",
       "ownership_class": "cross_language_contract"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._metered_capture",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._metered_classification",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._metered_discovery",
+      "ownership_class": "python_retained"
     },
     {
       "architecture_box": "graph_identity_contract",
@@ -1492,6 +1609,33 @@
       "justification": "Maintain repomap_kg.ops under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._portable_capture_record",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._portable_governance",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._portable_paths",
       "ownership_class": "python_retained"
     },
     {
@@ -2416,6 +2560,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._contracts_v2",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resource_view._controls",
@@ -2452,6 +2605,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._observer_v2",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resource_view._projections",
@@ -2461,9 +2623,36 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._sealing_projection",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.resource_view._slots",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._slots_v2",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.resource_view._worker_projection",
       "ownership_class": "python_retained"
     },
     {
@@ -2482,6 +2671,15 @@
       "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.rust_pilot_publication",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.sealing_plan",
       "ownership_class": "python_retained"
     },
     {

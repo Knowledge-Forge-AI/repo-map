@@ -8,7 +8,7 @@ from pathlib import Path
 import secrets
 import sys
 import threading
-from typing import Mapping
+from typing import Any, Mapping
 
 from common_lore_index.coordinator._portable_capability import (
     create_portable_capability,
@@ -32,15 +32,18 @@ def run_portable_worker(
     limits: object,
     *,
     cancel_event: threading.Event | None = None,
+    collect_usage: bool = False,
 ) -> SyntheticWorkerResult:
     """Run the fixed production worker in one parent-owned attempt root."""
 
+    usage: dict[str, Any] = {"collect_usage": True} if collect_usage else {}
     return _run_portable_worker_command(
         capability_path,
         identity,
         limits,
         module="common_lore_index.coordinator.portable_worker",
         cancel_event=cancel_event,
+        **usage,
     )
 
 
@@ -54,7 +57,9 @@ def _run_portable_worker_command(
     python_paths: tuple[Path, ...] = (),
     job_graph_id: str | None = None,
     cancel_event: threading.Event | None = None,
+    collect_usage: bool = False,
 ) -> SyntheticWorkerResult:
+    usage: dict[str, Any] = {"collect_usage": True} if collect_usage else {}
     capability = None
     attempt_root: Path | None = None
     attempt_identity: OwnedDirectoryIdentity | None = None
@@ -118,6 +123,7 @@ def _run_portable_worker_command(
                 },
             },
             cancel_event=cancel_event,
+            **usage,
         )
     except BaseException as error:
         primary_error = error

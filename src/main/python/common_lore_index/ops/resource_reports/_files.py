@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 import stat
 
-from ._codec import MAX_FILE_BYTES, ResourceReportError
+from ._codec import MAX_FILE_BYTES_V2 as MAX_FILE_BYTES, ResourceReportError
 
 _READ_FLAGS = (
     os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
@@ -29,7 +29,11 @@ def _private_regular(details: os.stat_result) -> bool:
 
 
 def read_report_file(path: str | os.PathLike[str]) -> bytes:
-    """Return at most ``MAX_FILE_BYTES`` from one private regular report file."""
+    """Return at most the v2 file bound from one private regular report file.
+
+    The codec then re-applies the per-schema bound, so an oversized v1 file
+    remains ``too_large``.
+    """
     try:
         before = os.lstat(path)
     except OSError:

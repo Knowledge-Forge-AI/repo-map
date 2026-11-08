@@ -206,6 +206,8 @@ from common_lore_index.storage import (
 from common_lore_index.cli._ops_sqlite_dispatch import dispatch_ops_sqlite_command
 from common_lore_index.cli._resource_report_session import release_report_session
 from common_lore_index.cli.ops_resource_commands import dispatch_ops_resource_report_command
+from common_lore_index.cli._sealing_budget_options import refuse_sealing_conflicts
+from common_lore_index.cli.ops_sealing_plan_commands import dispatch_ops_sealing_plan_command
 from common_lore_index.cli.ops_context_commands import dispatch_ops_context_command
 from common_lore_index.cli._config_migration import dispatch_config_migration
 from common_lore_index.cli._postgres_facade import (
@@ -300,8 +302,11 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
     # An unspecified brand keeps the original no-argument parser seam.
     parser = build_parser() if prog is None else build_parser(prog=prog)
     args = parser.parse_args(argv)
+    refuse_sealing_conflicts(args, parser)  # bounded usage errors before any configuration
     # Offline report inspection runs before product dispatch: no home or config.
     offline_result = None if args.version else dispatch_ops_resource_report_command(args)
+    if offline_result is None and not args.version:
+        offline_result = dispatch_ops_sealing_plan_command(args, _print_cli_error)
     if offline_result is not None:
         return offline_result
     try:

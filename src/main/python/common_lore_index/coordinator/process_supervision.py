@@ -19,6 +19,7 @@ from common_lore_index.coordinator._process_supervision_windows import (
     WindowsJobObject,
     _dispose_failed_process,
 )
+from common_lore_index.coordinator._usage_reaper import ChildUsageReaper, WorkerResourceUsage
 
 
 class ProcessBoundary(Protocol):
@@ -46,6 +47,22 @@ class ManagedProcess:
     popen: WorkerProcess
     boundary: ProcessBoundary
     _closed: bool = False
+    # Opt-in usage collection (ADR 0173): the reaper is the only poll/wait owner.
+    _reaper: ChildUsageReaper | None = None
+    _usage_requested: bool = False
+
+    @property
+    def resource_usage(self) -> WorkerResourceUsage | None:
+        if not self._usage_requested:
+            return None
+        if self._reaper is None:
+            return WorkerResourceUsage.unavailable("platform_unsupported")
+        return self._reaper.usage()
+
+    @property
+    def closed(self) -> bool:
+        """True once ``close`` released the owned boundary (cleanup completed)."""
+        return self._closed
 
     @property
     def supervision_kind(self) -> str:
@@ -72,9 +89,13 @@ class ManagedProcess:
         return self.popen.returncode
 
     def poll(self):
+        if self._reaper is not None:
+            return self._reaper.poll(self.popen)
         return self.popen.poll()
 
     def wait(self, timeout: float | None = None):
+        if self._reaper is not None:
+            return self._reaper.wait(self.popen, timeout)
         return self.popen.wait(timeout=timeout)
 
     def terminate_gracefully(self) -> None:
@@ -119,18 +140,30 @@ def launch_managed_process(
     working_directory: Path,
     *,
     popen_factory: Callable[..., object] = subprocess.Popen,
+    collect_usage: bool = False,
 ) -> ManagedProcess:
-    """Launch one worker with an OS-specific descendant boundary."""
+    """Launch one worker with an OS-specific descendant boundary.
+
+    ``collect_usage`` (opt-in, POSIX) hands all reaping to one ``wait4`` owner;
+    elsewhere the request is reported as ``platform_unsupported``.
+    """
 
     if (
         os.name == "nt" and not environment.get("SystemRoot")
     ):  # pragma: no cover - native Windows runner
         raise ProcessBoundaryError("worker_environment_invalid")
     if os.name == "nt":  # pragma: no cover - native Windows runner
-        return _launch_windows(
+        managed = _launch_windows(
             argv, dict(environment), working_directory, popen_factory
         )
-    return _launch_posix(argv, environment, working_directory, popen_factory)
+        managed._usage_requested = bool(collect_usage)
+        return managed
+    managed = _launch_posix(argv, environment, working_directory, popen_factory)
+    if collect_usage:
+        managed._usage_requested = True
+        reaper = ChildUsageReaper(managed.pid)
+        managed._reaper = reaper if reaper.supported else None
+    return managed
 
 
 def _launch_posix(argv, environment, working_directory, popen_factory) -> ManagedProcess:

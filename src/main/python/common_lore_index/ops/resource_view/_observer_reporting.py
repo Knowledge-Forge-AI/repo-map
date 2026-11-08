@@ -8,6 +8,7 @@ from ._contracts import (
     Basis, Instrumentation, Operation, ResourceMetric, ResourceReport, SCHEMA,
     Unit, UnavailableReason,
 )
+from ._contracts_v2 import SCHEMA_V2
 from ._slots import LIMIT_SLOTS, METRIC_SLOTS
 
 
@@ -102,6 +103,12 @@ def finish_server(observer: Any, result: _Result) -> _Result:
         observer._outcome = "commit_unknown"
     elif category == "cancelled":
         observer._outcome = "cancelled"
+    elif (
+        getattr(observer, "report_schema", SCHEMA) == SCHEMA_V2
+        and category == "resource_budget_exceeded" and state == "not_started"
+        and getattr(observer, "_sealing_refusal", None) is not None
+    ):
+        observer._outcome = "refused"  # positive publisher-not-entered refusal
     elif raw_result == "failure":
         observer._outcome = "failed"
     else:
@@ -166,8 +173,16 @@ def _default_metric(observer: Any, name: str, unit: str, basis: str | None) -> R
     return ResourceMetric.unavailable(name, unit, basis, reason)
 
 
-def build_report(observer: Any) -> ResourceReport:
+def build_report(observer: Any) -> Any:
     """Build from the explicit operation tables; unknown slots never raise KeyError."""
+    if getattr(observer, "report_schema", SCHEMA) == SCHEMA_V2:
+        from ._observer_v2 import build_report_v2
+
+        return build_report_v2(observer, _build_report_v1, _default_metric)
+    return _build_report_v1(observer)
+
+
+def _build_report_v1(observer: Any) -> ResourceReport:
     if not observer._begun:
         return ResourceReport(
             SCHEMA, None, None, "not_recorded",

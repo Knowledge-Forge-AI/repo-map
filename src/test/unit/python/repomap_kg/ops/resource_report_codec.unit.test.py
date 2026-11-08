@@ -43,6 +43,12 @@ def _observer() -> ResourceObserver:
     )
 
 
+def _v1(report: object) -> ResourceReport:
+    """Default observers build v1 reports; narrow the observer's two-schema return."""
+    assert type(report) is ResourceReport
+    return report
+
+
 def _context(**ledger: Any) -> ResourceReport:
     packet = {
         "status": "complete", "scope": {"backend": "sqlite"},
@@ -59,7 +65,7 @@ def _local() -> ResourceReport:
         end_stage(observer, stage)
     note_manifest(observer, SimpleNamespace(total_files=3, total_bytes=99))
     finish_local(observer, SimpleNamespace(reconciled=True))
-    return observer.report()
+    return _v1(observer.report())
 
 
 def _server(*, degrade: bool = False) -> ResourceReport:
@@ -68,7 +74,7 @@ def _server(*, degrade: bool = False) -> ResourceReport:
     if degrade:
         mark(observer, "not-a-stage")
     finish_server(observer, SimpleNamespace(result="success", publication_state="committed"))
-    return observer.report()
+    return _v1(observer.report())
 
 
 def _lexical_build() -> ResourceReport:
@@ -82,7 +88,7 @@ def _lexical_build() -> ResourceReport:
         aggregate_input_bytes=10, aggregate_projected_bytes=9, documents=(1, 2), omissions=(),
     )
     finish_lexical(observer, SimpleNamespace(result="published", plan=plan))
-    return observer.report()
+    return _v1(observer.report())
 
 
 def _query() -> ResourceReport:
@@ -91,7 +97,7 @@ def _query() -> ResourceReport:
     note_lexical_query_controls(observer, limit=20, max_occurrences_per_file=3, statement_timeout_ms=5000)
     envelope = SimpleNamespace(capability_state=SimpleNamespace(value="not_run"), hits=(), omissions=(1,))
     finish_lexical_query(observer, envelope, immediate=False)
-    return observer.report()
+    return _v1(observer.report())
 
 
 def _revoke(*, dry_run: bool) -> ResourceReport:
@@ -102,17 +108,17 @@ def _revoke(*, dry_run: bool) -> ResourceReport:
         revoked_generation_ids=("a",), authority_rows_removed=1, purged_document_count=2,
         purged_chunk_count=3, purged_omission_count=0, purge_rows=not dry_run,
     ))
-    return observer.report()
+    return _v1(observer.report())
 
 
 def _unbegun() -> ResourceReport:
-    return ResourceObserver().report()
+    return _v1(ResourceObserver().report())
 
 
 def _unfinished_lexical_query() -> ResourceReport:
     observer = _observer()
     begin(observer, "lexical_query", "postgresql")
-    return observer.report()
+    return _v1(observer.report())
 
 
 PRODUCERS = {

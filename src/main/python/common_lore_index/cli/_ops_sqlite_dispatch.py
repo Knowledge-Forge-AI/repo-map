@@ -55,6 +55,8 @@ from common_lore_index.ops.config_local import (
 )
 from common_lore_index.ops.config_storage import SQLITE_BACKEND
 from common_lore_index.cli.ops_retained_attempt_commands import refuse_retained_attempt
+from common_lore_index.artifacts.sealing_governance import SealingBudgetExceeded
+from common_lore_index.cli._sealing_budget_options import sealing_budget_kwargs
 from common_lore_index.ops.local_backup import (
     backup_local_graph,
     restore_local_graph,
@@ -178,6 +180,9 @@ def dispatch_ops_sqlite_command(
 def _handle_routed(args: argparse.Namespace, print_cli_error: _PrintError) -> int:
     try:
         return _HANDLERS[args.ops_command](args, print_cli_error)
+    except SealingBudgetExceeded as error:  # path-free; the report is still delivered
+        print_cli_error(ValueError(f"sealing-budget-exceeded:{error.limit}"), file=sys.stderr)
+        return 1
     except (OSError, ValueError) as error:
         print_cli_error(error, file=sys.stderr)
         return 1
@@ -261,7 +266,9 @@ def _note_reconciled(results: Sequence[LocalRefreshOutcome], *, name_graph: bool
 def _refresh_graph(args: argparse.Namespace, _print_error: _PrintError) -> int:
     config = _local_config(args)
     session = admit_report(args, config)
-    result = refresh_local_graph(config, args.graph, **report_observer_kwargs(session))
+    result = refresh_local_graph(
+        config, args.graph, **report_observer_kwargs(session), **sealing_budget_kwargs(args)
+    )
     _note_reconciled((result,), name_graph=False)
     payload = result.to_jsonable()
     if args.json:

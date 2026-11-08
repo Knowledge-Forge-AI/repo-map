@@ -55,6 +55,8 @@ from common_lore_index.ops.config_local import (
     LocalSqliteConfig,
     local_graph_binding,
 )
+from common_lore_index.artifacts.sealing_governance import SealingBudget, governance_kwargs
+from common_lore_index.ops._portable_governance import require_budget_schema
 from common_lore_index.ops.config_records import OpsGraphConfig
 from common_lore_index.ops._portable_retention import (
     PortableRefreshError,
@@ -71,7 +73,7 @@ from common_lore_index.ops.portable_refresh import (
 )
 from common_lore_index.ops.resource_view import (
     ResourceObserver, begin, end_stage, finish_local, mark,
-    note_validated, observer_kwargs,
+    note_validated, observer_kwargs, note_sealing_budget,
 )
 from common_lore_index.storage.publication import PortablePublicationBinding, RunPublicationReceipt
 from common_lore_index.storage.sqlite_local import investigation_queries
@@ -170,9 +172,12 @@ def refresh_local_graph(
     *,
     limits: object | None = None,
     resource_observer: ResourceObserver | None = None,
+    sealing_budget: SealingBudget | None = None,
 ) -> LocalRefreshResult:
     """Reconcile a pending attempt, then capture, validate and publish one generation."""
+    budget = require_budget_schema(resource_observer, sealing_budget)  # before any work
     begin(resource_observer, "local_refresh", "sqlite")
+    note_sealing_budget(resource_observer, budget)
     graph = _graph(config, graph_id)
     if not graph.enabled:
         raise LocalRefreshError(f"graph {graph_id!r} is disabled")
@@ -196,7 +201,7 @@ def refresh_local_graph(
         capture = capture_portable_candidate(
             config, graph, authority=None, limits=limits,
             attempts_namespace=attempts_namespace(graph.id),
-            **observer_kwargs(resource_observer),
+            **observer_kwargs(resource_observer), **governance_kwargs(budget),
         )
         end_stage(resource_observer, "capture")
         mark(resource_observer, "validation")
