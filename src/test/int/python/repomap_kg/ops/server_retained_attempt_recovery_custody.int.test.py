@@ -18,7 +18,7 @@ from common_lore_index.ops._server_retention_lock import ServerRetentionLock
 from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
 from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
 from repomap_test_support.server_retained_recovery_fixture import (
-    prepare_retained_server, publish_unsettled,
+    home_files, prepare_retained_server, publish_unsettled,
 )
 
 
@@ -322,3 +322,66 @@ def test_real_record_close_failure_stays_categorical_and_closes_its_descriptor(
         assert path.read_bytes() == original
         assert not (path.parent / BACKUP_NAME).exists()
         assert "private injected close detail" not in str(result.to_jsonable())
+
+
+def test_real_conflicting_backup_holds_after_valid_proofs_without_graph_change(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        fixture = prepare_retained_server(tmp_path, postgres)
+        capture = publish_unsettled(fixture, monkeypatch, "retained-custody-conflict")
+        record = capture.result_path.read_bytes()
+        backup = capture.result_path.parent / BACKUP_NAME
+        backup.write_bytes(b"foreign-backup-bytes")
+        backup.chmod(0o600)
+        before_files = home_files(fixture.home)
+        conninfo = make_conninfo(**_psycopg_connection_params_from_psql_args(postgres.psql_args))
+        with psycopg.connect(conninfo) as connection:
+            before_runs = connection.execute("SELECT count(*), max(id) FROM public.runs").fetchone()
+        outcome = recovery.recover_server_retained_attempt(
+            fixture.config, fixture.graph.id, "retained-custody-conflict", 1,
+            settle=True, psql_command=postgres.psql_command,
+        )
+        assert outcome.result == "held" and outcome.reason == "metadata-write-failed"
+        assert outcome.retention_state == "publication-reconciliation"
+        assert outcome.artifact_proof == outcome.publication_proof == "matched"
+        assert outcome.metadata_write_state == "not-attempted"
+        assert capture.result_path.read_bytes() == record
+        assert backup.read_bytes() == b"foreign-backup-bytes"
+        assert home_files(fixture.home) == before_files
+        with psycopg.connect(conninfo) as connection:
+            assert connection.execute("SELECT count(*), max(id) FROM public.runs").fetchone() == before_runs
+
+
+@pytest.mark.parametrize("case", ["non-object", "manifest-id-type"])
+def test_real_retained_record_schema_refusals_preserve_private_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        fixture = prepare_retained_server(tmp_path, postgres)
+        capture = publish_unsettled(fixture, monkeypatch, "retained-record-schema")
+        path = capture.result_path
+        original = path.read_bytes()
+        if case == "non-object":
+            path.write_bytes(b"[]")
+        else:
+            payload = json.loads(original)
+            payload["manifest_id"] = None
+            path.write_bytes(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode())
+        before_files = home_files(fixture.home)
+        try:
+            outcome = recovery.recover_server_retained_attempt(
+                fixture.config, fixture.graph.id, "retained-record-schema", 1,
+                settle=True, psql_command=postgres.psql_command,
+            )
+            assert outcome.to_jsonable() == {
+                "operation": "settle", "result": "held", "reason": "record-invalid",
+                "retention_state": "unavailable", "artifact_proof": "not-checked",
+                "publication_proof": "not-checked", "metadata_write_state": "not-attempted",
+            }
+            assert not (path.parent / BACKUP_NAME).exists()
+            assert home_files(fixture.home) == before_files
+        finally:
+            path.write_bytes(original)

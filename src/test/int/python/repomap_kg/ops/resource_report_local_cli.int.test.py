@@ -214,3 +214,47 @@ def test_offline_check_refuses_unsafe_inputs_in_a_guarded_child(tmp_path: Path) 
         assert completed.returncode == 1 and completed.stdout == ""
         assert completed.stderr == f"ERROR: resource-report-invalid: {category}\n"
     assert harness.forbidden_events() == []  # the FIFO was refused without being opened
+
+
+def test_destination_admission_refuses_real_unsafe_paths_before_any_refresh(tmp_path: Path) -> None:
+    home, _source, _other, harness, reports = _setup(tmp_path)
+    shared = tmp_path / "shared-reports"
+    shared.mkdir(mode=0o755)
+    shared.chmod(0o755)
+    regular = tmp_path / "regular-parent"
+    regular.write_bytes(b"parent sentinel")
+    alias = tmp_path / "report-alias"
+    alias.symlink_to(reports, target_is_directory=True)
+    existing = reports / "existing.json"
+    existing.write_bytes(b"destination sentinel")
+    directory = reports / "directory.json"
+    directory.mkdir(mode=0o700)
+    dangling = reports / "dangling.json"
+    dangling.symlink_to(reports / "absent.json")
+    fifo = reports / "fifo.json"
+    os.mkfifo(fifo, 0o600)
+    cases = (
+        ("", "invalid_destination"),
+        (str(reports) + os.sep, "invalid_destination"),
+        (str(reports / ".." / "outside.json"), "invalid_destination"),
+        (str(tmp_path / "absent" / "r.json"), "parent_missing"),
+        (str(regular / "r.json"), "parent_not_directory"),
+        (str(alias / "r.json"), "parent_symlink"),
+        (str(shared / "r.json"), "parent_not_private"),
+        *((str(path), "destination_exists") for path in (existing, directory, dangling, fifo)),
+    )
+    before = {p.relative_to(home): p.read_bytes() for p in home.rglob("*") if p.is_file()}
+    for target, category in cases:
+        completed = harness.run(*_refresh(home, "--resource-report", target))
+        assert completed.returncode == 1 and completed.stdout == ""
+        assert completed.stderr == f"ERROR: resource-report-refused: {category}\n"
+        assert str(tmp_path) not in completed.stderr
+        assert report_leftovers(reports) == []
+    assert {p.relative_to(home): p.read_bytes() for p in home.rglob("*") if p.is_file()} == before
+    assert existing.read_bytes() == b"destination sentinel"
+    assert regular.read_bytes() == b"parent sentinel"
+    assert dangling.is_symlink() and not dangling.exists()
+    assert directory.is_dir() and not any(directory.iterdir())
+    assert harness.forbidden_events() == []
+    accepted = json.loads(_driver_free(harness, harness.run(*_refresh(home))).stdout)
+    assert accepted["accepted_generation"] == 1

@@ -144,12 +144,18 @@ def test_a_symlinked_state_with_another_name_is_refused(tmp_path: Path, monkeypa
     _refused_untouched(record, monkeypatch)
 
 
+@pytest.mark.parametrize("mask", [0o022, 0o002])
 def test_the_postgres_default_uses_its_private_namespace_without_local_chain_sync(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mask: int,
 ) -> None:
     monkeypatch.setattr(_portable_retention, "fsync_directory_chain", fail_if_reached)
-    shared = _write_record(tmp_path / "home" / "state" / "portable-publication" / "attempts" / TOKEN)
+    previous = os.umask(mask)
+    try:
+        shared = _write_record(tmp_path / "home" / "state" / "portable-publication" / "attempts" / TOKEN)
+    finally:
+        os.umask(previous)
     shared.parent.parent.chmod(0o700)
+    shared.parent.parent.parent.chmod(0o700)
     _mark_retained_terminal(shared, "terminal-accepted")
     assert (shared.parent.parent.parent / ".server-retention.lock").is_file()
     assert _read_retention_payload(shared)["retention_class"] == "terminal-accepted"

@@ -19,7 +19,7 @@ from common_lore_index.retrieval.projection_query import (
     query_captured_text,
 )
 from common_lore_index.retrieval.query_contracts import CapabilityState, QueryEnvelope
-from common_lore_index.retrieval.publication_binding import CorrespondenceErrorCode, CorrespondenceRefusal
+from common_lore_index.retrieval.publication_binding import CorrespondenceErrorCode, CorrespondenceRefusal, check_correspondence
 from repomap_test_support.postgres_harness import temporary_postgres
 from repomap_test_support.retrieval_evaluation_canaries import assert_canary_free
 from repomap_test_support.retrieval_evaluation_fixture import (
@@ -333,3 +333,52 @@ def test_empty_selected_aliases_max_projected_files_cap_and_none_current_referen
     assert stale_none.hits == ()
     assert stale_none.scope_complete is False
     assert stale_none.establishes_absence() is False
+
+
+@pytest.mark.parametrize("case", [
+    "missing-portable", "portable-manifest", "canonical-identity", "receipt-id",
+    "missing-spool", "missing-manifest-reference", "bundle-cap", "without-extraction-receipt",
+])
+def test_real_sqlite_publication_correspondence_custody_gates(
+    tmp_path: Path, case: str,
+) -> None:
+    working = materialize_mixed_v1_working_copy(tmp_path / "working", generation=1)
+    state = publish_and_load_sqlite_corpus(write_mixed_v1_sqlite_home(tmp_path / "home", working))
+    inputs = state.projection_inputs()
+    portable = inputs.receipt.portable
+    assert portable is not None and inputs.extraction_receipt is not None
+    mutated = inputs
+    expected: CorrespondenceErrorCode | None
+    if case == "missing-portable":
+        mutated = replace(mutated, receipt=replace(mutated.receipt, portable=None))
+        expected = CorrespondenceErrorCode.MISSING_PORTABLE_BINDING
+    elif case == "portable-manifest":
+        wrong = replace(portable, snapshot_manifest_id="snapmanifest1:" + "f" * 64)
+        mutated = replace(mutated, receipt=replace(mutated.receipt, portable=wrong))
+        expected = CorrespondenceErrorCode.MANIFEST_ID_MISMATCH
+    elif case == "canonical-identity":
+        wrong = replace(portable, resolver_identity="resolver1:" + "f" * 64)
+        mutated = replace(mutated, receipt=replace(mutated.receipt, portable=wrong))
+        expected = CorrespondenceErrorCode.CANONICAL_IDENTITY_MISMATCH
+    elif case == "receipt-id":
+        wrong_receipt = replace(inputs.extraction_receipt, receipt_id="receipt1:" + "f" * 64)
+        mutated = replace(mutated, extraction_receipt=wrong_receipt)
+        expected = CorrespondenceErrorCode.RECEIPT_ID_MISMATCH
+    elif case == "missing-spool":
+        mutated = replace(mutated, spool_dir=None)
+        expected = CorrespondenceErrorCode.BUNDLE_VALIDATION_FAILED
+    elif case == "missing-manifest-reference":
+        mutated = replace(mutated, manifest_reference=None)
+        expected = CorrespondenceErrorCode.STORE_VERIFICATION_FAILED
+    elif case == "bundle-cap":
+        mutated = replace(mutated, max_bundle_bytes=1)
+        expected = CorrespondenceErrorCode.BUNDLE_VALIDATION_FAILED
+    else:
+        mutated = replace(mutated, extraction_receipt=None)
+        expected = None
+    if expected is None:
+        assert check_correspondence(mutated) == inputs.accepted_reference
+    else:
+        with pytest.raises(CorrespondenceRefusal) as failure:
+            check_correspondence(mutated)
+        assert failure.value.code == expected

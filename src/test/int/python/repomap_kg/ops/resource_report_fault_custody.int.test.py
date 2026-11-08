@@ -157,3 +157,94 @@ def test_server_install_failure_after_commit_keeps_the_committed_publication(
             "--psql-command", postgres.psql_command, "--json",
         ]) == 0, "the accepted Server publication remains readable (exit 0 only on success)"
         assert isinstance(json.loads(capsys.readouterr().out), dict)
+
+
+@pytest.mark.parametrize("change", ["missing", "replaced", "shared"])
+def test_destination_parent_change_after_publication_preserves_both_directories(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], change: str,
+) -> None:
+    home, reports, config = _local(tmp_path, capsys)
+    held = reports.with_name("held-reports")
+
+    def changing_refresh(local_config: Any, graph_id: str, **kwargs: Any) -> Any:
+        outcome = refresh_local_graph(local_config, graph_id, **kwargs)
+        if change == "shared":
+            reports.chmod(0o755)
+        else:
+            reports.rename(held)
+            if change == "replaced":
+                reports.mkdir(mode=0o700)
+        return outcome
+
+    monkeypatch.setattr(sqlite_dispatch, "refresh_local_graph", changing_refresh)
+    assert main(_refresh(home, reports / "r.json")) == 0
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)["accepted_generation"] == 1
+    assert captured.err.endswith("WARNING: resource-report-not-delivered: parent_changed\n")
+    assert str(tmp_path) not in captured.err
+    assert _latest_run(config) == 1
+    for directory in (reports, held):
+        if directory.exists():
+            assert list(directory.iterdir()) == []
+
+
+@pytest.mark.parametrize("fault", ["short-write", "file-sync", "file-mode", "close-oserror", "close-interrupt"])
+def test_owned_report_write_and_cleanup_faults_never_undo_the_real_publication(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], fault: str,
+) -> None:
+    home, reports, config = _local(tmp_path, capsys)
+    real_write, real_sync, real_mode = os.write, os.fsync, os.fchmod
+    real_close, real_stat = os.close, os.fstat
+    interrupt = KeyboardInterrupt("injected report cleanup interrupt")
+
+    def owned(descriptor: int) -> bool:
+        details = real_stat(descriptor)
+        identity = details.st_dev, details.st_ino
+        return any(
+            (p.stat().st_dev, p.stat().st_ino) == identity
+            for p in reports.iterdir() if p.name.startswith(TEMP_PREFIX)
+        )
+
+    def write(descriptor: int, data: Any) -> int:
+        if fault in {"short-write", "close-oserror", "close-interrupt"} and owned(descriptor):
+            return 0
+        return real_write(descriptor, data)
+
+    def sync(descriptor: int) -> None:
+        if fault == "file-sync" and owned(descriptor):
+            raise OSError(errno.EIO, "injected report file sync")
+        real_sync(descriptor)
+
+    def mode(descriptor: int, permissions: int) -> None:
+        if fault == "file-mode" and owned(descriptor):
+            raise OSError(errno.EIO, "injected report file mode")
+        real_mode(descriptor, permissions)
+
+    def close(descriptor: int) -> None:
+        if fault in {"close-oserror", "close-interrupt"} and owned(descriptor):
+            real_close(descriptor)
+            if fault == "close-interrupt":
+                raise interrupt
+            raise OSError(errno.EIO, "injected report descriptor close")
+        real_close(descriptor)
+
+    monkeypatch.setattr(delivery.os, "write", write)
+    monkeypatch.setattr(delivery.os, "fsync", sync)
+    monkeypatch.setattr(delivery.os, "fchmod", mode)
+    monkeypatch.setattr(delivery.os, "close", close)
+    if fault == "close-interrupt":
+        with pytest.raises(KeyboardInterrupt) as caught:
+            main(_refresh(home, reports / "r.json"))
+        assert caught.value is interrupt
+        capsys.readouterr()
+    else:
+        assert main(_refresh(home, reports / "r.json")) == 0
+        captured = capsys.readouterr()
+        assert json.loads(captured.out)["accepted_generation"] == 1
+        category = {"file-sync": "file_sync_failed", "file-mode": "temp_create_failed"}.get(fault, "short_write")
+        assert captured.err.endswith(f"WARNING: resource-report-not-delivered: {category}\n")
+        assert str(tmp_path) not in captured.err
+    assert _latest_run(config) == 1
+    assert list(reports.iterdir()) == []

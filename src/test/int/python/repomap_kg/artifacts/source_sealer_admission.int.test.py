@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from collections.abc import Iterator
+import os
 from pathlib import Path
 
 import pytest
@@ -256,3 +258,72 @@ def test_symlinked_root_prefix_is_accepted_after_resolution(tmp_path):
     )
 
     assert store.read(manifest.entries[0].reference) == content
+
+
+@pytest.mark.parametrize(
+    "mutation", ["none", "symlink", "hardlink", "directory", "size", "executable", "missing", "replaced"],
+)
+def test_fallback_source_open_uses_real_identity_checks_and_preserves_store_custody(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str,
+) -> None:
+    import common_lore_index.artifacts._source_sealing_io as source_io
+    import common_lore_index.artifacts.source_sealer as sealer
+
+    source = tmp_path / "source"
+    parent = source / "package"
+    parent.mkdir(parents=True)
+    path = parent / "main.py"
+    content = b"VALUE = 1\n"
+    path.write_bytes(content)
+    store = FileSystemArtifactStore(tmp_path / "store")
+    sentinel = store.put(b"preexisting object")
+    original_open = sealer.open_source_body
+    monkeypatch.setattr(source_io, "_supports_dir_fd", lambda: False)
+
+    @contextmanager
+    def controlled_open(
+        root: Path, relative_path: str, *, expected_size: int,
+        expected_digest: str, expected_executable: bool,
+    ) -> Iterator[Iterator[bytes]]:
+        moved = path.with_name("moved.py")
+        if mutation == "symlink":
+            path.rename(moved)
+            path.symlink_to(moved)
+        elif mutation == "hardlink":
+            os.link(path, moved)
+        elif mutation == "directory":
+            path.unlink()
+            path.mkdir()
+        elif mutation == "size":
+            path.write_bytes(content[:-1])
+        elif mutation == "executable":
+            path.chmod(0o700)
+        with original_open(
+            root, relative_path, expected_size=expected_size,
+            expected_digest=expected_digest, expected_executable=expected_executable,
+        ) as body:
+            if mutation in {"missing", "replaced"}:
+                path.rename(moved)  # keep the opened inode and its link count unchanged
+                if mutation == "replaced":
+                    path.write_bytes(content)
+            yield body
+
+    monkeypatch.setattr(sealer, "open_source_body", controlled_open)
+    if mutation == "none":
+        manifest, reference, _candidate = seal_configured_sources(
+            _graph(source), store, extractor_generation="eg1:portable",
+            canonicalizer_generation="kg1:portable",
+        )
+        assert store.read(reference) == manifest.canonical_bytes()
+        assert store.read(manifest.entries[0].reference) == content
+    else:
+        with pytest.raises(ValueError, match="source (changed while sealing|inventory is not sealable)"):
+            seal_configured_sources(
+                _graph(source), store, extractor_generation="eg1:portable",
+                canonicalizer_generation="kg1:portable",
+            )
+        assert [p.name for p in (tmp_path / "store" / "objects").iterdir()] == [
+            sentinel.content_digest.removeprefix("sha256:"),
+        ]
+    assert store.read(sentinel) == b"preexisting object"
+    assert list((tmp_path / "store" / "temporary").iterdir()) == []

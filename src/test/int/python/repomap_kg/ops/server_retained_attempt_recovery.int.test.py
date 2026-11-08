@@ -7,6 +7,10 @@ import io
 import json
 from pathlib import Path
 import stat
+from collections.abc import Callable
+from dataclasses import replace
+from common_lore_index.artifacts import ExtractionReceipt
+from common_lore_index.artifacts._canonical import canonical_json
 import select
 import subprocess
 import sys
@@ -25,6 +29,8 @@ import pytest
 from common_lore_index.cli.main import main
 from common_lore_index.ops import portable_refresh
 from common_lore_index.ops._retained_attempt_record import BACKUP_NAME
+from common_lore_index.ops._retained_attempt_record import read_retained_record
+from common_lore_index.ops._retained_attempt_artifacts import RetainedArtifactError, read_retained_artifacts
 from common_lore_index.ops.retained_attempt_recovery import RetainedAttemptRecovery, recover_server_retained_attempt
 from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
 from repomap_test_support.postgres_harness import PostgresCluster, require_postgres_binaries, temporary_postgres
@@ -249,3 +255,126 @@ def test_cli_refuses_sqlite_home_before_server_recovery(tmp_path: Path) -> None:
         "retention_state": "unavailable", "artifact_proof": "not-checked",
         "publication_proof": "not-checked", "metadata_write_state": "not-attempted",
     }
+
+
+def _repoint_retained_objects(
+    capture: portable_refresh.PortableCapture, bundle_bytes: bytes, *,
+    receipt_change: Callable[[ExtractionReceipt], ExtractionReceipt] | None = None,
+) -> None:
+    old_receipt = ExtractionReceipt.from_bytes(capture.store.read(capture.receipt_reference))
+    bundle_ref = capture.store.put(
+        bundle_bytes,
+        media_type=capture.bundle_reference.media_type,
+        record_format=capture.bundle_reference.record_format,
+        privacy=capture.bundle_reference.privacy,
+    )
+    receipt = replace(old_receipt, bundle_reference=bundle_ref)
+    if receipt_change is not None:
+        receipt = receipt_change(receipt)
+    receipt = receipt.reidentify()
+    receipt_ref = capture.store.put(
+        receipt.canonical_bytes(),
+        media_type=capture.receipt_reference.media_type,
+        record_format=capture.receipt_reference.record_format,
+        privacy=capture.receipt_reference.privacy,
+    )
+    payload = json.loads(capture.result_path.read_bytes())
+    payload["receipt"] = receipt_ref.to_mapping()
+    payload["bundle"] = bundle_ref.to_mapping()
+    capture.result_path.write_bytes(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode())
+
+
+@pytest.mark.parametrize("mutation", [
+    "receipt-header", "receipt-cancellation", "bundle-identity", "header-vector",
+    "unknown-family", "trailer-summary", "receipt-count", "header-framing",
+    "header-keys", "header-types", "candidate-type", "header-values", "stage-contract",
+    "record-shape", "record-order", "missing-trailer",
+])
+def test_real_rehashed_retained_objects_reach_deeper_artifact_gates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        fixture = prepare_retained_server(tmp_path, postgres)
+        capture = publish_unsettled(fixture, monkeypatch, "retained-deep-gate")
+        original_record = capture.result_path.read_bytes()
+        raw_bundle = capture.store.read(capture.bundle_reference)
+        header_line, remainder = raw_bundle.split(b"\n", 1)
+        before_runs = _run_marker(postgres)
+        try:
+            if mutation == "receipt-header":
+                _repoint_retained_objects(
+                    capture, raw_bundle,
+                    receipt_change=lambda value: replace(value, graph_id="foreign-graph"),
+                )
+            elif mutation == "receipt-cancellation":
+                _repoint_retained_objects(
+                    capture, raw_bundle,
+                    receipt_change=lambda value: replace(value, cancellation="requested"),
+                )
+            elif mutation == "bundle-identity":
+                header = json.loads(header_line)
+                header["candidate_id"] = "foreign-candidate"
+                _repoint_retained_objects(capture, canonical_json(header) + remainder)
+            elif mutation == "header-vector":
+                header = json.loads(header_line)
+                header["snapshot_vector"] = ["malformed-vector-item"]
+                _repoint_retained_objects(capture, canonical_json(header) + remainder)
+            elif mutation == "unknown-family":
+                frames = [json.loads(line) for line in raw_bundle.splitlines()]
+                frames[1]["family"] = "foreign-family"
+                _repoint_retained_objects(capture, b"".join(canonical_json(frame) for frame in frames))
+            elif mutation == "trailer-summary":
+                frames = [json.loads(line) for line in raw_bundle.splitlines()]
+                frames[-1]["families"][0]["record_count"] += 1
+                _repoint_retained_objects(capture, b"".join(canonical_json(frame) for frame in frames))
+            elif mutation == "receipt-count":
+                _repoint_retained_objects(
+                    capture, raw_bundle,
+                    receipt_change=lambda value: replace(
+                        value, family_counts={**value.family_counts, "files": value.family_counts["files"] + 1},
+                    ),
+                )
+            elif mutation in {"header-keys", "header-types", "candidate-type", "header-values", "stage-contract"}:
+                header = json.loads(header_line)
+                if mutation == "header-keys":
+                    del header["graph_id"]
+                else:
+                    field, value = {"header-types": ("schema_version", True), "candidate-type": ("candidate_id", 7),
+                                    "header-values": ("graph_id", "foreign-graph"),
+                                    "stage-contract": ("row_stage_contract", "foreign-stage")}[mutation]
+                    header[field] = value
+                _repoint_retained_objects(capture, canonical_json(header) + remainder)
+            elif mutation in {"record-shape", "record-order", "missing-trailer"}:
+                frames = [json.loads(line) for line in raw_bundle.splitlines()]
+                if mutation == "record-shape":
+                    frames[1]["record"] = []
+                elif mutation == "missing-trailer":
+                    frames.pop()
+                else:
+                    index = next(i for i in range(1, len(frames) - 2) if frames[i].get("family") == frames[i + 1].get("family") and frames[i]["record"] != frames[i + 1]["record"])
+                    frames[index], frames[index + 1] = frames[index + 1], frames[index]
+                _repoint_retained_objects(capture, b"".join(canonical_json(frame) for frame in frames))
+            else:
+                header = json.loads(header_line)
+                header["framing_version"] = "foreign-framing"
+                _repoint_retained_objects(capture, canonical_json(header) + remainder)
+            expected = {"receipt-header": "manifest-mismatch", "receipt-cancellation": "receipt-invalid",
+                        "bundle-identity": "bundle-mismatch", "header-values": "bundle-mismatch",
+                        "trailer-summary": "bundle-mismatch", "receipt-count": "receipt-mismatch"}.get(mutation, "bundle-invalid")
+            with pytest.raises(RetainedArtifactError) as gate:
+                read_retained_artifacts(read_retained_record(capture.result_path.parent), capture.store)
+            assert str(gate.value) == expected
+            outcome = recover_server_retained_attempt(
+                fixture.config, fixture.graph.id, "retained-deep-gate", 1,
+                settle=True, psql_command=postgres.psql_command,
+            )
+            _assert_recovery_payload(outcome, {
+                "operation": "settle", "result": "held", "reason": "artifact-invalid",
+                "retention_state": "publication-reconciliation", "artifact_proof": "invalid",
+                "publication_proof": "not-checked", "metadata_write_state": "not-attempted",
+            })
+            assert not (capture.result_path.parent / BACKUP_NAME).exists()
+            assert _run_marker(postgres) == before_runs
+        finally:
+            capture.result_path.write_bytes(original_record)
