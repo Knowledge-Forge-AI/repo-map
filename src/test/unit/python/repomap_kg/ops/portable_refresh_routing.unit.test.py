@@ -40,9 +40,17 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
             (root / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
             config = self.config_for_roots(root)
 
+            published_stage_ids: list[str] = []
+
+            def inspect_publisher(_args, bundle, **_kwargs):
+                published_stage_ids.extend(
+                    row["stage_id"] for rows in bundle.families.values() for row in rows
+                )
+                return LoadSummary(repository_id=7, run_id=11, files=1)
+
             with patch(
                 "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
-                return_value=LoadSummary(repository_id=7, run_id=11, files=1),
+                side_effect=inspect_publisher,
             ) as publish:
                 outcome = execute_portable_refresh(
                     config,
@@ -58,11 +66,9 @@ class PortableRefreshRoutingUnitTests(OpsRefreshUnitTestCase):
         assert bundle.row_stage_contract == "stage-unassigned-v1"
         assert binding.execution_mode == "direct"
         assert binding.publication_bundle_id == bundle.bundle_id
-        assert all(
-            row["stage_id"] == "stage-unassigned"
-            for rows in bundle.families.values()
-            for row in rows
-        )
+        assert published_stage_ids and set(published_stage_ids) == {"stage-unassigned"}
+        with self.assertRaisesRegex(RuntimeError, "row spool is closed"):
+            list(next(iter(bundle.families.values())))
 
     def test_coordinator_replay_uses_retained_bundle_without_second_worker(self):
         with tempfile.TemporaryDirectory() as temporary:

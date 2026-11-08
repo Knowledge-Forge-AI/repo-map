@@ -8,7 +8,7 @@ import sqlite3
 from typing import Any
 
 from common_lore_index.retrieval.context_identity import attach_vector_status as _attach_vector_status
-
+from common_lore_index.retrieval.context_relation_identity import relation_identity_from_edge
 from common_lore_index.retrieval.context_work import (
     MAX_AGGREGATE_RELATIONS,
     MAX_CANDIDATE_NEIGHBORS,
@@ -282,8 +282,8 @@ class SqliteContextReadAdapter:
         neighbor_by_ck: dict[str, dict[str, Any]] = {}
         edges_by_nbr: dict[str, list[dict[str, Any]]] = {}
         seed_to_seed_edges: list[dict[str, Any]] = []
-        seen_edge_keys: set[str] = set()
-        rejected_edge_keys: set[str] = set()
+        seen_relation_ids: set[tuple[str, str, str, str]] = set()
+        rejected_relation_ids: set[tuple[str, str, str, str]] = set()
         seeds_expanded = 0
         edge_limit_hit = 0
         node_limit_hit = 0
@@ -316,15 +316,15 @@ class SqliteContextReadAdapter:
             seed_nbr_count = 0
             for edge in exp.get("edges", ()):
                 nbr_ck = str(edge["neighbor_canonical_key"])
-                ekey = str(edge["edge_key"])
-                if ekey in seen_edge_keys or ekey in rejected_edge_keys:
+                relation_id = relation_identity_from_edge(edge)
+                if relation_id in seen_relation_ids or relation_id in rejected_relation_ids:
                     continue
-                if len(seen_edge_keys) >= MAX_AGGREGATE_RELATIONS:
-                    rejected_edge_keys.add(ekey)
+                if len(seen_relation_ids) >= MAX_AGGREGATE_RELATIONS:
+                    rejected_relation_ids.add(relation_id)
                     edge_limit_hit += 1
                     continue
                 if nbr_ck in seed_set:
-                    seen_edge_keys.add(ekey)
+                    seen_relation_ids.add(relation_id)
                     seed_to_seed_edges.append(edge)
                     continue
                 if nbr_ck not in neighbor_by_ck:
@@ -342,7 +342,7 @@ class SqliteContextReadAdapter:
                         "locations": [],
                     }
                     edges_by_nbr[nbr_ck] = []
-                seen_edge_keys.add(ekey)
+                seen_relation_ids.add(relation_id)
                 edges_by_nbr[nbr_ck].append(edge)
         neighbor_locations_incomplete = False
         if neighbor_by_ck and partial_reason is None:

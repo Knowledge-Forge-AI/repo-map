@@ -65,6 +65,7 @@ def test_unsupported_modes_and_postgresql_refusal_need_no_storage(tmp_path: Path
         raise AssertionError("unsupported mode must not read storage")
 
     pg_adapter = PostgresContextReadAdapter(graph_id=sq_adapter.graph_id, executor=unexpected_sql)
+    pg_adapter.supports_depth1_expansion = False
 
     for unadmitted in ("literal_captured_text", "semantic_discovery"):
         pkt = build_compact_context(
@@ -75,7 +76,7 @@ def test_unsupported_modes_and_postgresql_refusal_need_no_storage(tmp_path: Path
         assert pkt["status"] == "unavailable"
         assert pkt["reason"] == "capability_not_admitted"
 
-    # PostgreSQL graph_investigation without fallback -> unavailable/backend_unsupported
+    # An explicitly unsupported PostgreSQL port retains the refusal without storage.
     pg_no_fb = build_compact_context(
         ContextRequest(
             graph_id=pg_adapter.graph_id,

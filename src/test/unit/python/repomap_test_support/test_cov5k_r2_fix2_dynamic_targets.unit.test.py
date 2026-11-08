@@ -390,3 +390,10 @@ def test_current_preparation_owner_binding_passes_and_prior_digest_fails(prior_r
             match="runtime owner module digest differs from registered owner",
         ):
             _verify_registered_owner(prior_bound)
+
+
+def test_server_recovery_dispatch_has_current_closed_source_identity() -> None:
+    module, qualified, digest, code_id = _python_identity("src/main/python/common_lore_index/cli/dispatch.py", "dispatch_command")
+    assert (module, qualified) == ("common_lore_index.cli.dispatch", "common_lore_index.cli.dispatch.dispatch_command")
+    assert digest == "2e45c5a9c00f0a298178872ad260f9ec690e800fcb8be0b99eef9bf5fc977722" and digest != "d534f4c05ded72bfa9816e3d30d46039f8ca54a8b8543ddc1056e7360bc9ad5c"
+    assert code_id == _code_object_identity(_resolve_symbol(module, "dispatch_command").__code__)

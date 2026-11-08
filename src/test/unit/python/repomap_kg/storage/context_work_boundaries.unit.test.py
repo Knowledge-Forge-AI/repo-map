@@ -188,7 +188,9 @@ def test_aggregate_relation_cap_reports_every_observed_overflow(
         seed_index = seeds.index(seed_canonical_key)
         neighbor = f"neighbor:{seed_index}" if external_neighbor else seeds[(seed_index + 1) % len(seeds)]
         return {"truncated": False, "edges": [
-            {"edge_key": f"{seed_canonical_key}:{index}", "neighbor_canonical_key": neighbor,
+            {"source_canonical_key": seed_canonical_key, "edge_kind": "calls",
+             "target_canonical_key": neighbor, "edge_key": f"{seed_canonical_key}:{index}",
+             "neighbor_canonical_key": neighbor,
              "neighbor_id": seed_index + 1, "neighbor_kind": "python.class",
              "neighbor_display_name": neighbor, "neighbor_first_seen_run_id": 1,
              "neighbor_last_seen_run_id": 1}

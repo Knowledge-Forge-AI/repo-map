@@ -409,6 +409,15 @@
       "architecture_box": "go_control_and_api",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli._parser_ops_retained",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.cli._parser_sources under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli._parser_sources",
@@ -520,6 +529,15 @@
       "justification": "ADR0165 bounded operator reports, opt-in command attachment and lexical query/revoke views; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.cli.ops_resource_commands",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_api",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.cli.ops_retained_attempt_commands",
       "ownership_class": "python_retained"
     },
     {
@@ -1480,6 +1498,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._portable_refresh_custody",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Retained portable attempt records and SQLite Local reconciliation helpers shared by the PostgreSQL and SQLite routes, extracted from portable_refresh; admitted with zero new quality debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops._portable_retention",
@@ -1492,6 +1519,15 @@
       "justification": "ADR0159 internal call-owned resource reports and source-level first-use workflows; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops._portable_worker_terms",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._refresh_outcome",
       "ownership_class": "python_retained"
     },
     {
@@ -1528,6 +1564,42 @@
       "justification": "Backend-neutral config-check and graphs status envelopes shared by PostgreSQL and SQLite Local projections; admitted with zero new quality debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops._registry_status",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._retained_attempt_artifacts",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._retained_attempt_proof",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._retained_attempt_record",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops._server_retention_lock",
       "ownership_class": "python_retained"
     },
     {
@@ -2398,6 +2470,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.ops.retained_attempt_recovery",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0155 bounded witnessed Rust pilot owner; existing architecture placement preserved, immediate zero-new-debt enforcement required.",
       "match": "exact",
       "module_prefix": "common_lore_index.ops.rust_pilot_publication",
@@ -2500,6 +2581,15 @@
       "justification": "ADR0133 explicit intent, compact context, source selection and structural advisory freshness; exact clean admission with predecessor debt unchanged.",
       "match": "exact",
       "module_prefix": "common_lore_index.retrieval.context_packet_builder",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.retrieval.context_relation_identity",
       "ownership_class": "python_retained"
     },
     {
@@ -3739,6 +3829,15 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage._staged_refresh_custody",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.storage._staged_row_adapters under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage._staged_row_adapters",
@@ -4072,6 +4171,24 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.postgres_context_expansion",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.postgres_context_expansion_sql",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0129: PostgreSQL-native lexical search and request-pinned metadata parity admitted with zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.postgres_navigation_search",
@@ -4126,6 +4243,15 @@
       "architecture_box": "transitional_graph_store_and_publisher",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.publication_phase_witness",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "REVISE13 clean maintenance admission after full applicable quality checks and no new migration-direction debt; existing language-retention forecast and architecture placement preserved.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.publication_readback",
@@ -4165,6 +4291,15 @@
       "justification": "Enrolled in retained Python ratchets under operator direction with >=80% confidence.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage.repository_identity",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage.retained_publication_readback",
       "ownership_class": "python_retained"
     },
     {

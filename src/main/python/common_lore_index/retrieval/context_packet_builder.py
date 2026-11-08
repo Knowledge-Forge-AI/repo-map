@@ -36,9 +36,14 @@ def _required_budget_error(budget: int, required: int) -> dict[str, Any]:
     return build_budget_error_envelope(reason="required_envelope_does_not_fit", budget_bytes=budget, required_min_bytes=required)
 def _finish_unavailable(packet: dict[str, Any], reason: str, ledger: WorkLedger, budget: int) -> dict[str, Any]:
     packet.update(status="unavailable", reason=reason, unavailable_reason=reason)
-    packet["scope"]["scope_complete"] = False
-    packet["work_ledger"] = ledger.to_dict()
+    packet["scope"]["scope_complete"] = False; packet["work_ledger"] = ledger.to_dict()
     return finalize_packet_within_budget(packet, budget)
+def _finish_stale(packet: dict[str, Any], ledger: WorkLedger, budget: int) -> dict[str, Any]:
+    packet.update(status="stale", reason="publication_advanced_during_assembly")
+    packet["scope"]["scope_complete"] = False; packet["work_ledger"] = ledger.to_dict()
+    return finalize_packet_within_budget(packet, budget)
+def port_supports_depth1_expansion(port: Any) -> bool:
+    return getattr(port, "supports_depth1_expansion", port.backend != "postgresql") is True
 def project_node_to_candidate(
     node: Mapping[str, Any], *, markers: tuple[str, ...]
 ) -> tuple[CandidateRankingInput, dict[str, Any], list[dict[str, Any]]]:
@@ -216,10 +221,7 @@ def execute_scans_and_pack(
         if res.get("status") == "unavailable":
             return _finish_unavailable(skeleton, _sanitized_unavailable_reason(res.get("reason")), ledger, budget_int)
         if res.get("status") == "stale":
-            skeleton.update(status="stale", reason="publication_advanced_during_assembly")
-            skeleton["scope"]["scope_complete"] = False
-            skeleton["work_ledger"] = ledger.to_dict()
-            return finalize_packet_within_budget(skeleton, budget_int)
+            return _finish_stale(skeleton, ledger, budget_int)
         if res.get("status") == "exhausted":
             scope_complete = False
             omissions.increment("candidate_scan_incomplete", 1, detail=res.get("reason"))
@@ -252,10 +254,7 @@ def execute_scans_and_pack(
                 if st == "unavailable":
                     return _finish_unavailable(skeleton, _sanitized_unavailable_reason(scan_res.get("reason")), ledger, budget_int)
                 if st == "stale":
-                    skeleton.update(status="stale", reason="publication_advanced_during_assembly")
-                    skeleton["scope"]["scope_complete"] = False
-                    skeleton["work_ledger"] = ledger.to_dict()
-                    return finalize_packet_within_budget(skeleton, budget_int)
+                    return _finish_stale(skeleton, ledger, budget_int)
                 if st in {"exhausted", "incomplete"}:
                     scope_complete = False
                     unit_incomplete = True
@@ -313,7 +312,7 @@ def execute_scans_and_pack(
     extra_relations: list[dict[str, Any]] = []
     seeds_expanded = 0
     if exp_depth == 1:
-        if port.backend == "postgresql":
+        if not port_supports_depth1_expansion(port):
             exp_state, exp_reason, scope_complete = "unavailable", "backend_unsupported", False
             omissions.increment("expansion_backend_unsupported", 1)
         else:
@@ -329,6 +328,8 @@ def execute_scans_and_pack(
                 )
                 if exp_res.get("status") == "unavailable":
                     return _finish_unavailable(skeleton, _sanitized_unavailable_reason(exp_res.get("reason")), ledger, budget_int)
+                if exp_res.get("status") == "stale":
+                    return _finish_stale(skeleton, ledger, budget_int)
                 seeds_expanded = int(exp_res.get("seeds_expanded", 0))
                 for hit_key, om_key, r_name in (
                     ("edge_limit_hit", "expansion_edge_limit", "edge_limit"),

@@ -20,7 +20,7 @@ from common_lore_index.artifacts.receipt import ExtractionReceipt
 from common_lore_index.artifacts.source_sealer import seal_configured_sources
 from common_lore_index.coordinator._portable_capability import PortableExecutionCapability, create_portable_capability
 from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
-from common_lore_index.coordinator._portable_materialization import _directory_identity, _remove_attempt_root
+from common_lore_index.coordinator._portable_materialization import _directory_identity
 from common_lore_index.coordinator._portable_semantic_adapter import WORKER_CAPABILITY_IDENTITY
 from common_lore_index.ops._portable_worker_terms import (
     PORTABLE_MAX_ARTIFACT_BYTES, _worker_references, effective_leaf_limits,
@@ -35,8 +35,10 @@ from common_lore_index.ops.graph_registry import GraphRegistryConfig
 from common_lore_index.storage.main import LoadSummary
 from common_lore_index.storage.authority import AttemptNumber, OperationId
 from common_lore_index.storage.backend_telemetry import BackendTelemetry
-from common_lore_index.storage.errors import StorageCommitUnknownError
 from common_lore_index.storage.publication import PortablePublicationBinding
+from common_lore_index.storage.publication_phase_witness import (
+    PublicationPhase, PublicationPhaseWitness,
+)
 from common_lore_index.ops.resolved_config import configured_repository_identity
 from common_lore_index.ops._portable_retention import (
     PortableRefreshError,
@@ -46,6 +48,8 @@ from common_lore_index.ops._portable_retention import (
     _retained_result,
     _write_retained_result,
 )
+from common_lore_index.ops._portable_refresh_custody import close_validated, note_secondary, prepare_server_publication_root, settle_after_publisher_error
+from common_lore_index.ops._portable_refresh_custody import remove_capture_attempt as _remove_attempt_root
 from common_lore_index.storage.staging_observability import StagingMeasurements
 from common_lore_index.storage._staged_ingestion_authority import IngestionAuthority, stage_id_for_authority
 
@@ -66,8 +70,6 @@ class PortableRefreshOutcome:
     summary: LoadSummary
     files: int
     observations: int
-
-
 
 
 @dataclass(frozen=True)
@@ -108,9 +110,12 @@ def execute_portable_refresh(
     limits: object | None = None,
     postgres_route: PostgresRoute | None = None,
     resource_observer: ResourceObserver | None = None,
+    publication_witness: PublicationPhaseWitness | None = None,
 ) -> PortableRefreshOutcome:
     """Seal, execute once, validate, and publish through one trusted adapter."""
 
+    if publication_witness is None:
+        publication_witness = PublicationPhaseWitness()
     execution_postgres = (postgres_route or effective_postgres_route(config)).apply(config.postgres)
     mark(resource_observer, "capture")
     capture = capture_portable_candidate(
@@ -121,37 +126,49 @@ def execute_portable_refresh(
     stage_id = stage_id_for_authority(capture.authority)
     mark(resource_observer, "validation")
     receipt, validated = validate_portable_capture(capture, stage_id=stage_id)
+    primary: BaseException | None = None
+    publisher_started = publisher_returned = False
     try:
         end_stage(resource_observer, "validation")
         note_validated(resource_observer, validated)
         binding = portable_publication_binding(capture, receipt, validated, stage_id=stage_id)
-        try:
-            mark(resource_observer, "publication")
-            summary = run_staged_portable_refresh(
-                execution_postgres.psql_args_for_database(database),
-                validated,
-                prepared_override=validated.to_prepared_stage_rows(),
-                repository_name=graph.repository_name,
-                root_path=f"graph:{graph.id}",
-                authority=capture.authority,
-                portable_binding=binding,
-                repository_identity=str(configured_repository_identity(graph.id)),
-                backend_telemetry=backend_telemetry,
-                staging_measurements=staging_measurements,
+        publisher_started = True
+        mark(resource_observer, "publication")
+        publisher_kwargs = {
+            "prepared_override": validated.to_prepared_stage_rows(),
+            "repository_name": graph.repository_name,
+            "root_path": f"graph:{graph.id}",
+            "authority": capture.authority,
+            "portable_binding": binding,
+            "repository_identity": str(configured_repository_identity(graph.id)),
+            "backend_telemetry": backend_telemetry,
+            "staging_measurements": staging_measurements,
+        }
+        publisher_kwargs["publication_witness"] = publication_witness
+        summary = run_staged_portable_refresh(
+            execution_postgres.psql_args_for_database(database),
+            validated,
+            **publisher_kwargs,
+        )
+        publisher_returned = True
+        publication_witness.advance(PublicationPhase.RETURNED)
+        capture.mark_terminal(accepted=True)
+        return PortableRefreshOutcome(
+            summary, validated.family_counts["files"],
+            validated.family_counts["raw_observations"],
+        )
+    except BaseException as error:
+        primary = error
+        if publisher_started:
+            settle_after_publisher_error(
+                capture,
+                error,
+                publication_witness=publication_witness,
+                publisher_returned=publisher_returned,
             )
-            capture.mark_terminal(accepted=True)
-            return PortableRefreshOutcome(
-                summary,
-                validated.family_counts["files"],
-                validated.family_counts["raw_observations"],
-            )
-        except BaseException as error:
-            if not isinstance(error, StorageCommitUnknownError) and not getattr(error, "is_commit_unknown", False):
-                capture.mark_terminal(accepted=False)
-            raise
-    except BaseException:
-        validated.close()
         raise
+    finally:
+        close_validated(validated, primary)
 
 
 def capture_portable_candidate(
@@ -180,6 +197,8 @@ def capture_portable_candidate(
         publication_root = _publication_root(config)
         for level in reversed(attempt_parent.relative_to(publication_root).parents):
             _private_directory(publication_root / level)
+    else:
+        prepare_server_publication_root(attempt_parent.parent)
     _private_directory(attempt_parent)
     _prune_expired_terminal_attempts(attempt_parent, exclude=attempt_root)
     store_root = attempt_root / "objects"
@@ -251,10 +270,7 @@ def capture_portable_candidate(
             try:
                 _remove_attempt_root(attempt_root, _directory_identity(attempt_root))
             except BaseException as cleanup_error:
-                error.add_note(
-                    "portable attempt cleanup failure: "
-                    f"{type(cleanup_error).__name__}"
-                )
+                note_secondary(error, cleanup_error)
             raise
     receipt_reference, bundle_reference = references
     return PortableCapture(

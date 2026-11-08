@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from common_lore_index.cli._parser_ops_retained import add_ops_retained_attempt_commands
 
 from common_lore_index import PREFERRED_CLI
 from common_lore_index.cli._local_parser import add_local_commands
@@ -162,6 +163,7 @@ def build_parser(*, prog: str = PREFERRED_CLI) -> argparse.ArgumentParser:
     ops_subcommands = ops.add_subparsers(dest="ops_command")
     add_ops_control_commands(ops_subcommands)
     add_ops_graph_commands(ops_subcommands, add_ops_config_arguments)
+    add_ops_retained_attempt_commands(ops_subcommands, add_ops_config_arguments)
     add_ops_lexical_commands(ops_subcommands, add_ops_config_arguments)
     add_ops_context_commands(ops_subcommands, add_ops_config_arguments)
     add_ops_resource_commands(ops_subcommands)

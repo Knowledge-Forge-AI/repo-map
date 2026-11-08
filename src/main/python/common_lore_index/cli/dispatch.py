@@ -19,6 +19,7 @@ from common_lore_index.cli._observations_dispatch import dispatch_observation_co
 from common_lore_index.cli._ops_baselines_dispatch import dispatch_ops_baselines_command
 from common_lore_index.cli._ops_control_dispatch import dispatch_ops_control_command
 from common_lore_index.cli._ops_refresh_dispatch import dispatch_ops_refresh_command
+from common_lore_index.cli.ops_retained_attempt_commands import dispatch_ops_retained_attempt_command
 from common_lore_index.cli.coordinator_runtime_commands import (
     dispatch_coordinator_runtime_command,
 )
@@ -67,6 +68,9 @@ def dispatch_command(
     parser: argparse.ArgumentParser,
     commands: ModuleType,
 ) -> int:
+    retained_result = dispatch_ops_retained_attempt_command(args, commands, _print_cli_error)
+    if retained_result is not None:
+        return retained_result
     coordinator_service_exit = dispatch_coordinator_service_command(
         args,
         commands,

@@ -20,6 +20,7 @@ from common_lore_index.ops.config_records import (
     OpsGraphConfig, OpsServerMemoryConfig, OpsServiceConfig, OpsSourcesConfig,
 )
 from common_lore_index.server.context_read_sqlite import SqliteContextReadAdapter
+from common_lore_index.storage.row_helpers import identity_metadata_hash
 from common_lore_index.storage.sqlite_local.connection import initialize_graph_database
 from common_lore_index.storage.sqlite_local.schema import LocalGraphBinding
 
@@ -266,6 +267,7 @@ def build_sqlite_context_fixture(
     )
     all_subjects = list(POLYGLOT_SUBJECTS) + list(extra_subjects)
     all_edges = list(POLYGLOT_EDGES) + list(extra_edges)
+    empty_identity_hash = identity_metadata_hash({})
 
     conn = sqlite3.connect(sqlite_path)
     try:
@@ -336,7 +338,7 @@ def build_sqlite_context_fixture(
                         "target_canonical_key, identity_metadata_json, identity_metadata_hash, metadata_json, "
                         "confidence, conflict, first_seen_run_id, last_seen_run_id) "
                         "VALUES (?, 1, ?, ?, ?, '{}', ?, '{}', 'extracted', 0, 1, 1)",
-                        (e_idx, src_ck, ekind, tgt_ck, f"sha256:edge{e_idx:04d}"),
+                        (e_idx, src_ck, ekind, tgt_ck, empty_identity_hash),
                     )
     finally:
         conn.close()

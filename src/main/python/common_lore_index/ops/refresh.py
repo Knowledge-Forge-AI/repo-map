@@ -50,6 +50,7 @@ from common_lore_index.ops.preflight import _scan_preflight_root
 from common_lore_index.ops.resource_view import ResourceObserver, begin, observer_kwargs
 from common_lore_index.ops.resource_view._projections import finish_server
 from common_lore_index.ops.readback import _container_psql_execution
+from common_lore_index.ops._refresh_outcome import classify_refresh_failure
 from common_lore_index.ops.refresh_graphs import (
     _find_graph,
     _graph_refresh_warnings,
@@ -84,6 +85,9 @@ from common_lore_index.ops.reports import (
 from common_lore_index.storage import StorageSchemaError, run_psql
 from common_lore_index.storage.backend_telemetry import BackendTelemetry
 from common_lore_index.storage.publication import RunPublicationReceipt
+from common_lore_index.storage.publication_phase_witness import (
+    PublicationPhase, PublicationPhaseWitness,
+)
 from common_lore_index.storage.staged_ingestion import (
     IngestionAuthority,
     run_staged_full_refresh,
@@ -139,6 +143,7 @@ def _refresh_graph_call(
     resource_observer: ResourceObserver | None = None,
 ) -> OpsRefreshGraphResult:
     started_at = _utc_now_text()
+    publication_witness = PublicationPhaseWitness()
     try:
         if staging_measurements is None:
             return _refresh_graph_impl(
@@ -151,6 +156,7 @@ def _refresh_graph_call(
                 backend_telemetry=backend_telemetry,
                 staging_measurements=None,
                 postgres_route=_postgres_route,
+                _publication_witness=publication_witness,
                 **observer_kwargs(resource_observer),
             )
         with staging_measurements.phase("refresh.total"):
@@ -164,18 +170,22 @@ def _refresh_graph_call(
                 backend_telemetry=backend_telemetry,
                 staging_measurements=staging_measurements,
                 postgres_route=_postgres_route,
+                _publication_witness=publication_witness,
                 **observer_kwargs(resource_observer),
             )
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as error:
         graph = _find_graph(config, graph_id)
         database = graph_database(config, graph)
         warnings = _graph_refresh_warnings(graph)
+        publication_state, error_category = classify_refresh_failure(
+            publication_witness.phase, error
+        )
         return _result_from_graph(
             graph,
             database=database,
             result="failure",
-            publication_state="rolled_back",
-            error_category="cancelled",
+            publication_state=publication_state,
+            error_category=error_category,
             started_at=started_at,
             finished_at=_utc_now_text(),
             warnings=warnings,
@@ -203,6 +213,7 @@ def _refresh_graph_impl(
     staging_measurements: StagingMeasurements | None,
     postgres_route: PostgresRoute | None,
     resource_observer: ResourceObserver | None = None,
+    _publication_witness: PublicationPhaseWitness | None = None,
 ) -> OpsRefreshGraphResult:
     """Execute the selected portable production route without legacy fallback."""
     del psql_command
@@ -231,8 +242,6 @@ def _refresh_graph_impl(
         PortableRefreshError,
         execute_portable_refresh,
     )
-    from common_lore_index.storage.errors import StorageCommitUnknownError
-
     started_at = _utc_now_text()
     try:
         if ingestion_mode != "staged":
@@ -246,18 +255,15 @@ def _refresh_graph_impl(
             postgres_route=postgres_route,
             backend_telemetry=backend_telemetry,
             staging_measurements=staging_measurements,
+            publication_witness=_publication_witness,
             **observer_kwargs(resource_observer),
         )
     except OpsRefreshGenerationChangedError:
         raise
     except (OSError, StorageSchemaError, ValueError, PortableRefreshError) as error:
-        is_commit_unknown = isinstance(error, StorageCommitUnknownError) or (
-            isinstance(error, StorageSchemaError)
-            and getattr(error, "is_commit_unknown", False)
-        )
-        pub_state = "commit_unknown" if is_commit_unknown else "not_started"
-        err_cat = "publication_unknown" if is_commit_unknown else (
-            error.category if isinstance(error, PortableRefreshError) else "worker_crash"
+        pub_state, err_cat = classify_refresh_failure(
+            _publication_witness.phase if _publication_witness is not None else PublicationPhase.NOT_ENTERED,
+            error,
         )
         return _result_from_graph(
             graph,

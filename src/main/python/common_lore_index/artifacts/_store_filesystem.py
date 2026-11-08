@@ -83,14 +83,20 @@ def _fsync_directory(path: Path) -> None:
 class FileSystemArtifactStore:
     """Owner-private content-addressed filesystem store."""
 
-    def __init__(self, root: Path | str, *, owner_uid: int | None = None) -> None:
+    def __init__(
+        self,
+        root: Path | str,
+        *,
+        owner_uid: int | None = None,
+        create: bool = True,
+    ) -> None:
         self.root = Path(root).absolute()
         self._owner_uid = os.getuid() if owner_uid is None else owner_uid
-        self._ensure_directory(self.root, create=True, label="store root")
-        self._objects = self._ensure_directory(self.root / "objects", create=True, label="object directory")
-        self._temporary = self._ensure_directory(
-            self.root / "temporary", create=True, label="temporary directory"
-        )
+        self._ensure_directory(self.root, create=create, label="store root")
+        self._objects = self._ensure_directory(self.root / "objects", create=create, label="object directory")
+        self._temporary = self.root / "temporary"
+        if create:
+            self._ensure_directory(self._temporary, create=True, label="temporary directory")
 
     def _ensure_directory(self, path: Path, *, create: bool, label: str) -> Path:
         try:

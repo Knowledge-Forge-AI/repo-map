@@ -14,6 +14,7 @@ from psycopg.types.json import Jsonb
 
 from common_lore_index.observations.raw import RawObservation
 from common_lore_index.storage._repository_publication_lock import guard_existing_large_repository
+from common_lore_index.storage._staged_refresh_custody import note_secondary as _note_secondary
 from common_lore_index.storage.authority import GraphRunId, StageId
 from common_lore_index.storage.backend_telemetry import BackendTelemetry
 from common_lore_index.storage.errors import (
@@ -387,11 +388,12 @@ def _handle_refresh_failure(
                     connection, resolved_stage_id, run_id, owner
                 )
                 connection.commit()
-        except Exception:
+        except BaseException as secondary:
+            _note_secondary(error, "failed-stage", secondary)
             try:
                 connection.rollback()
-            except Exception:
-                pass
+            except BaseException as rollback_error:
+                _note_secondary(error, "rollback", rollback_error)
     if isinstance(error, psycopg.Error):
         raise StorageSchemaError("staged PostgreSQL operation failed") from error
     raise error

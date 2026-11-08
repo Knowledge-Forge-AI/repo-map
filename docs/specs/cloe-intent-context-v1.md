@@ -9,6 +9,7 @@
   - [cloe-retrieval-evaluation-v1.md](cloe-retrieval-evaluation-v1.md) ([ADR 0127](../adr/2026/10/0127-cloe-retrieval-contracts-and-evaluation.md))
   - [cloe-native-lexical-search-v1.md](cloe-native-lexical-search-v1.md) ([ADR 0129](../adr/2026/10/0129-postgresql-native-lexical-search-and-publication-pinning.md), [ADR 0130](../adr/2026/10/0130-lexical-milestone-staging-campaign.md))
   - [cloe-development-custody-v1.md](cloe-development-custody-v1.md)
+  - [cloe-server-parity-v1.md](cloe-server-parity-v1.md) ([ADR 0168](../adr/2026/11/0168-bounded-server-context-and-refresh-outcomes.md)), the parent-accepted partial W7 amendment for PostgreSQL depth-1 parity and truthful refresh outcomes. Its Epic 3 server-timeout proposal remains held; the W4 PostgreSQL refusal remains the historical baseline until the accepted parity implementation qualifies.
 
 ## 1. Scope, authority, and preserved contracts
 
@@ -71,8 +72,8 @@ cloe ops context-pack
 |---|---|---|
 | `exact_identity` | Requires `--canonical-key`; rejects `--query`, `--intent`, `--expand-depth 1` | Reads `node_locations` for `--canonical-key`. Seed item uses `item_role="seed"`, `match_surface="stored_metadata"`. |
 | `current_literal_enumeration` | Requires `--query` (`1..200` stripped Unicode characters, `<= 800` UTF-8 bytes); rejects `--canonical-key`, `--intent`, `--expand-depth 1` | Preserves existing ascending `canonical_key` scan order (`ordering_policy_version="canonical-key-asc-v1"`). Items use `item_role="seed"`, `match_surface="stored_metadata"`. |
-| `ranked_discovery` | Requires `--query` (`1..200` stripped Unicode characters, `<= 800` UTF-8 bytes); optional `--intent` (default `general`), `--expand-depth 0\|1` (default `0`); rejects `--canonical-key` | Ranks complete candidate scans under `cloe-intent-rank-v1`. Ranked seeds use `item_role="seed"`, `match_surface="stored_metadata"`. When `--expand-depth 1` runs on SQLite, `requested_mode == effective_mode == "ranked_discovery"` (`fallback=None`) and expanded depth-1 neighbors/relations use `item_role="neighbor"`, `match_surface="graph_topology"`. |
-| `graph_investigation` | Requires `--canonical-key`; `--expand-depth` must be `1` (default `1`); optional `--intent` (default `general`, selecting default edge kinds); rejects `--query` unless `--fallback-to ranked_discovery` is also set | On SQLite: locates center seed (`item_role="seed"`, `match_surface="stored_metadata"`) and expands depth-1 typed neighbors (`item_role="neighbor"`, `match_surface="graph_topology"`). On PostgreSQL: returns `status="unavailable"`, `unavailable_reason="backend_unsupported"` unless caller explicitly passes `--fallback-to exact_identity` (uses `--canonical-key`) or `--fallback-to ranked_discovery` (requires `--query`), recording `FallbackDisclosure`. |
+| `ranked_discovery` | Requires `--query` (`1..200` stripped Unicode characters, `<= 800` UTF-8 bytes); optional `--intent` (default `general`), `--expand-depth 0\|1` (default `0`); rejects `--canonical-key` | Ranks complete candidate scans under `cloe-intent-rank-v1`. Ranked seeds use `item_role="seed"`, `match_surface="stored_metadata"`. When `--expand-depth 1` runs on a port that supports expansion (SQLite in W4), `requested_mode == effective_mode == "ranked_discovery"` (`fallback=None`) and expanded depth-1 neighbors/relations use `item_role="neighbor"`, `match_surface="graph_topology"`. The accepted ADR 0168 Epics 1 and 2 amendment extends this capability to the built-in PostgreSQL adapter; source proof and qualification remain pending. |
+| `graph_investigation` | Requires `--canonical-key`; `--expand-depth` must be `1` (default `1`); optional `--intent` (default `general`, selecting default edge kinds); rejects `--query` unless `--fallback-to ranked_discovery` is also set | On SQLite: locates center seed (`item_role="seed"`, `match_surface="stored_metadata"`) and expands depth-1 typed neighbors (`item_role="neighbor"`, `match_surface="graph_topology"`). W4 PostgreSQL behavior remains the historical baseline: returns `status="unavailable"`, `unavailable_reason="backend_unsupported"` unless the caller explicitly passed `--fallback-to exact_identity` (uses `--canonical-key`) or `--fallback-to ranked_discovery` (requires `--query`), recording `FallbackDisclosure`. Under the accepted ADR 0168 Epics 1 and 2 amendment ([cloe-server-parity-v1.md](cloe-server-parity-v1.md) §2.1), the built-in PostgreSQL adapter declares a private capability and runs natively with `fallback=None`, exactly as SQLite does today. A port without that capability keeps the W4 refusal and fallback behavior. No W7 closure is claimed. |
 | `literal_captured_text` | Any | Returns `status="unavailable"`, `unavailable_reason="capability_not_admitted"` with zero storage reads. Body search remains in `cloe ops lexical-query`. |
 | `semantic_discovery` | Any | Returns `status="unavailable"`, `unavailable_reason="capability_not_admitted"` with zero storage reads. |
 
@@ -106,7 +107,7 @@ cloe ops context-select
   - Existing storage builders (`storage/sqlite_local/navigation_queries.py`, `storage/sqlite_local/node_location_queries.py`, `storage/postgres_navigation_sql.py`, `storage/postgres_navigation_search.py`, and `storage/postgres_node_locations.py`) accept a keyword-only `role_sql: str = _EVIDENCE_ROLE_SQL` parameter. Existing MCP and CLI callers omit `role_sql` and continue using `_EVIDENCE_ROLE_SQL` unchanged; the context adapters pass `role_sql=CONTEXT_DIRECT_EVIDENCE_ROLE_V1`.
 - **`ContextReadPort` implementations and per-backend `snapshot_manifest_id` provenance:**
   - `SqliteContextReadAdapter` (`server/context_read_sqlite.py`): executes all reads inside one `read_transaction` (`consistency_mode="single_read_transaction"`). Its initial accepted-publication query (`1` SQL statement, `1` logical read unit) joins `accepted_publication a JOIN runs r ON r.id = a.run_id` (`storage/sqlite_local/schema.py:39-74`) to read `(a.generation, a.run_id, r.publication_bundle_id, r.snapshot_manifest_id, r.snapshot_vector_json)`, supplying both the run-level `publication.snapshot_manifest_id` and the per-binding `(binding_id, binding_revision, snapshot_id)` vector used for `cloe-source-selection-v1` revalidation. It then reuses `navigation_candidates` / `node_locations` with `role_sql=CONTEXT_DIRECT_EVIDENCE_ROLE_V1`, calls `storage/sqlite_local/context_expansion_queries.py` for incident-selective depth-1 expansion, fetches all neighbor direct locations in **at most one batched SQL statement** (`batch_neighbor_direct_locations`), and enforces `SQLITE_CONTEXT_PROGRESS_CALLBACK_LIMIT` via `sqlite3.Connection.set_progress_handler`.
-  - `PostgresContextReadAdapter` (`server/context_read_postgres.py`): executes one self-contained JSON statement per scan unit (`consistency_mode="per_statement_identity_checked"`), reusing `read_postgres_navigation_search_with_executor` / `read_postgres_node_locations_with_executor` with `role_sql=CONTEXT_DIRECT_EVIDENCE_ROLE_V1` and projecting `r.snapshot_manifest_id` and `r.snapshot_vector_json` from `public.runs` in the `accepted_run` CTE (`storage/postgres_navigation_sql.py:101-141`) so run-level `snapshot_manifest_id` and per-binding `(binding_id, binding_revision, snapshot_id)` are present even on zero-candidate scans. Verifies identical `accepted_publication` `(generation, run_id, publication_bundle_id, snapshot_manifest_id)` across all statements and refuses depth-1 expansion as `expansion_backend_unsupported`.
+  - `PostgresContextReadAdapter` (`server/context_read_postgres.py`): executes one self-contained JSON statement per scan unit (`consistency_mode="per_statement_identity_checked"`), reusing `read_postgres_navigation_search_with_executor` / `read_postgres_node_locations_with_executor` with `role_sql=CONTEXT_DIRECT_EVIDENCE_ROLE_V1` and projecting `r.snapshot_manifest_id` and `r.snapshot_vector_json` from `public.runs` in the `accepted_run` CTE (`storage/postgres_navigation_sql.py:101-141`) so run-level `snapshot_manifest_id` and per-binding `(binding_id, binding_revision, snapshot_id)` are present even on zero-candidate scans. Verifies identical `accepted_publication` `(generation, run_id, publication_bundle_id, snapshot_manifest_id)` across all statements. W4's refusal remains the historical baseline; under the accepted ADR 0168 Epics 1 and 2 amendment ([cloe-server-parity-v1.md](cloe-server-parity-v1.md) §2.3), it executes one self-contained statement (`storage/postgres_context_expansion_sql.py`). That statement covers all `<= 5` seeds' edge windows, the greedy neighbor admission, and the admitted neighbors' direct locations, with full accepted-identity comparison (`stale` on drift). Source proof and whole-candidate qualification remain pending.
 - **Shared projection helper:** extracts one public, non-paging member-projection function in `server/_navigation_groups.py` reused by both `group_page` and context adapters so `_identity`, `_destination`, `sanitize_jsonable`, and private markers behave identically.
 
 ---
@@ -357,16 +358,25 @@ Every non-error packet is serialized with `json.dumps(payload, ensure_ascii=Fals
 | `NODE_SCAN_LIMIT` / `EVIDENCE_SCAN_LIMIT` | `2,000` nodes / `10,000` evidence rows / `100,000` admission checks (`32 MiB`) | Scan unit yields 0 ranked items, records `candidate_scan_incomplete`, sets `scope_complete=False` |
 | `--max-items` | `1..50` (default `12`) | Omission `item_limit`, `status="partial"` |
 | `--expand-depth` | `0..1` (default `0`, or `1` in `graph_investigation`) | `>= 2` refused (`invalid_expand_depth`) |
-| `--expand-seeds` | `1..5` (default `3`) | Bounds seeds expanded on SQLite |
+| `--expand-seeds` | `1..5` (default `3`) | Bounds seeds expanded on SQLite and capable PostgreSQL ports |
 | `--node-limit` / `--edge-limit` | `1..32` (default `8`) / `1..64` (default `16`) per seed; aggregate `128` neighbors / `256` edges | Omission `expansion_node_limit` / `expansion_edge_limit`, `status="partial"` |
 | `MAX_LOGICAL_READ_UNITS` | `16` (`1` accepted-identity & selection DB check + `<= 8` scan units + `<= 5` seed expansions + `1` batched neighbor-location read + `1` margin) | Stops further reads, records `work_budget_exhausted`, `status="partial"` |
 | `MAX_SQL_STATEMENTS_SQLITE` | `36` (`1` accepted-identity & selection DB check + `<= 8×2` scan statements + `<= 5×3` seed expansion statements + `1` batched neighbor-location statement + `3` margin) | Stops further statements, records `statement_limit`, `status="partial"` |
-| `MAX_SQL_STATEMENTS_POSTGRES` | `12` (`1` accepted-identity & selection DB check + `<= 8` single-statement `execute_json_readback` scans + `1` single-statement `node_locations` read + `2` margin) | Stops further statements, records `statement_limit`, `status="partial"` |
+| `MAX_SQL_STATEMENTS_POSTGRES` | `12` (`1` accepted-identity & selection DB check + `<= 8` single-statement `execute_json_readback` scans + `1` single-statement `node_locations` or batched seed-expansion/neighbor-location read + `2` margin) | Stops further statements, records `statement_limit`, `status="partial"` |
 | `SQLITE_CONTEXT_PROGRESS_CALLBACK_LIMIT` | Initial calibration hypothesis (250 callbacks/statement at a 1000-operation interval; 250000 operations is an estimate via `set_progress_handler`) | Interrupts statement, discards partial statement rows, records `work_budget_exhausted`, `status="partial"` |
-| `WALL_CLOCK_DEADLINE_MS` | `10,000 ms` (checked between statements) | Stops further statements, records `deadline_exceeded`, `status="partial"` |
+| `WALL_CLOCK_DEADLINE_MS` | `10,000 ms` (checked between statements; ADR 0168's Epic 3 server statement-timeout proposal is held and does not add a startup option) | Stops further statements, records `deadline_exceeded`, `status="partial"` |
 
-**PostgreSQL bounded neighborhood policy choice:**
-- Although PostgreSQL has an unbounded neighborhood query owner (`storage/sql_neighborhood.py`), executing an unbounded neighborhood scan and clipping rows in Python would violate Epic B's bounded-storage-work invariant. Therefore, on PostgreSQL, `--expand-depth 1` in `ranked_discovery` retains all ranked seeds, sets `expansion.state="unavailable"`, `expansion.reason="backend_unsupported"`, records omission `expansion_backend_unsupported`, and sets `scope_complete=False` (`status="partial"`).
+**PostgreSQL bounded neighborhood policy choice (historical W4 baseline and W7 forward amendment):**
+- *Historical W4 baseline (`REPOMAP-CLOE-CONTEXT1`):* Although PostgreSQL had an unbounded neighborhood query owner (`storage/sql/neighborhood.py`), executing an unbounded neighborhood scan and clipping rows in Python would have violated Epic B's bounded-storage-work invariant. Therefore, in W4, `--expand-depth 1` in `ranked_discovery` on PostgreSQL retained all ranked seeds, set `expansion.state="unavailable"`, `expansion.reason="backend_unsupported"`, recorded omission `expansion_backend_unsupported`, and set `scope_complete=False` (`status="partial"`).
+- *Accepted W7 forward amendment for Epics 1 and 2 (`REPOMAP-CLOE-SERVER-PARITY1`, [cloe-server-parity-v1.md](cloe-server-parity-v1.md) §2):* ADR 0168 accepts the bounded parity design without changing the W4 historical records. The design does not reuse `build_canonical_neighborhood_query_sql`. The built-in PostgreSQL adapter runs one statement, costing 1 SQL statement and 1 logical unit:
+  - per-seed, per-direction windows limited to `edge_limit + 1` rows;
+  - the SQLite greedy admission replayed as a bounded `WITH RECURSIVE` walk of at most 320 steps, with the 256-relation and 128-neighbor caps and per-seed `node_limit` charged only for new neighbors;
+  - direct locations for exactly the admitted neighbors, using the SQLite selected-run rule and order, limited to `EVIDENCE_SCAN_LIMIT + 1 = 10,001` rows.
+
+  These limits bound returned rows, not physical scans or sorts. Execution
+  duration remains bounded only by the existing between-statement ledger checks;
+  the startup-option server statement-timeout proposal is rejected/held under
+  ADR 0168 RD-1 and is not part of this contract.
 
 ---
 
@@ -529,7 +539,8 @@ design and evidence. Source excerpts remain outside W4.
 - **Privacy & isolation:** private markers applied and withheld identities (`_destination is None`) never merged; packets and selection files contain zero body text and zero filesystem root paths; MCP tool catalog snapshot and `InvestigationReadStore` unchanged; lexical tables/credentials never touched; default packet (`--freshness none`) succeeds identically after the local source tree is deleted on disk.
 - **Stale publication:** pinned `cloe-source-selection-v1` mismatch (`selection_publication_advanced` -> `status="stale"`, zero items); PostgreSQL mid-assembly publication drift across scan units (`publication_advanced_during_assembly` -> `status="stale"`, zero items); SQLite single-transaction snapshot consistency during concurrent publish.
 - **Ambiguity & identity collision:** equal-tier top candidates (`exactness_tier`, `affinity_tier`, `match_class_tier`) set `ambiguity.status="ambiguous"` with `tied_top_count` and count budget drops in `ambiguous_alternative_omitted_by_budget`; identical `source_relative_path` across two bindings, two revisions, two snapshots, and a historical run remain distinct locations.
-- **Unsupported backend & explicit mode/fallback:** missing `--mode` exits `2`; PostgreSQL `graph_investigation` without `--fallback-to` returns `unavailable`/`backend_unsupported`; `--fallback-to exact_identity` and `--fallback-to ranked_discovery` (requiring `--query`) populate `FallbackDisclosure`; `literal_captured_text` and `semantic_discovery` return `unavailable`/`capability_not_admitted`; PostgreSQL `--expand-depth 1` retains seeds and records `expansion_backend_unsupported` (`status="partial"`, exit `3` by default, `0` with `--allow-partial`).
+- **Unsupported backend & explicit mode/fallback:** missing `--mode` exits `2`; A PostgreSQL port without depth-one capability in `graph_investigation` without `--fallback-to` returns `unavailable`/`backend_unsupported`; `--fallback-to exact_identity` and `--fallback-to ranked_discovery` (requiring `--query`) populate `FallbackDisclosure`; `literal_captured_text` and `semantic_discovery` return `unavailable`/`capability_not_admitted`; A PostgreSQL port without depth-one capability with `--expand-depth 1` retains seeds and records `expansion_backend_unsupported` (`status="partial"`, exit `3` by default, `0` with `--allow-partial`).
+- The built-in PostgreSQL adapter supports depth-one expansion under ADR 0168; unsupported-port refusal cases above use an explicitly incapable port, and do not describe the built-in adapter.
 - **Malformed & budget boundary inputs:** CLI non-int string `--budget-bytes` exits `2` (`argparse`); CLI out-of-range integer `< 4096` or `> 65536` and library `bool`, `float`, `str`, or huge `int` (`> 999,999,999` echoed as `budget_bytes: null`) emit `budget_error` (`<= 512` bytes, exit `1`); exactly measure compaction for long query/binding provenance and legal4096-byte requests, admitting either a valid bounded packet or the bounded minimal error; `actual_bytes` self-referential fixpoint converges across the `9,999 -> 10,000` digit boundary without exceeding `budget_bytes`; 4-byte UTF-8 and combining characters landing on `budget_bytes` and `budget_bytes - 1` never slice code points; lone surrogates become `null` (`unencodable_field_withheld`); `> 8` `(binding_id, path_prefix)` pairs refused up front (`scan_unit_limit_exceeded`); `INTENT_DEFAULT_EDGE_KINDS` validated as subset of `CANONICAL_EDGE_KINDS`; `DIRECT_LOCATABLE_CANONICAL_KINDS_V1` matches `CONTEXT_DIRECT_EVIDENCE_ROLE_V1`; scoped selection + `--kind tool` returns `unavailable`/`unlocatable_kind_in_scoped_selection`; scoped selection without `--kind` under `definition` discloses `unlocatable_kind_patterns_excluded`, `unlocatable_kind_pattern_excluded`, and `scope_complete=False`.
 - **Expansion & work exhaustion:** high-degree seed hits `--node-limit` / `--edge-limit`; SQLite `set_progress_handler` triggers `SQLITE_CONTEXT_PROGRESS_CALLBACK_LIMIT` and discards partial statement rows; statement ceiling (`36` SQLite / `12` PostgreSQL) and `10,000 ms` deadline yield `status="partial"`; scan unit exceeding `2,000` nodes yields zero ranked items and `candidate_scan_incomplete`.
 - **Freshness safety & truthfulness:** Real extractor/canonicalizer cases for qualified Python/JS/Ruby names, empty Markdown headings and synthetic test names remain structurally inconclusive, never false name-based drift. Prove symlink/parent-component swaps cannot open outside files; FIFO/nonregular files, Unicode path parity, exact byte/file/span limits and failed checks preserve indexed items.
@@ -572,7 +583,7 @@ design and evidence. Source excerpts remain outside W4.
 - **F3 (explicit `--mode`, PostgreSQL fallback target, and mixed surfaces under expansion):** Resolved in §2.1. Required `--mode` on `cloe ops context-pack` and `ContextRequest`, supported `--fallback-to exact_identity` (using `--canonical-key`) and `--fallback-to ranked_discovery` (requiring `--query`) for PostgreSQL `graph_investigation`, and specified per-item `match_surface` (`stored_metadata` on seeds, `graph_topology` on depth-1 neighbors/relations).
 - **F4 (initial kind-restricted lexical proposal):** The initial response was superseded by the parent counterexamples and structural-only policy in section5.2; kind-wide literal-name guarantees were false. The descriptor-anchored policy also replaces the initial lstat/absolute-open proposal.
 - **F5 (Historical initial-draft response; superseded below: minimum legal budget vs echoed caller strings in skeleton):** Resolved in §4.1. Specified `skeleton_compaction_v1` (withholding oversized `target_echo` and `selected_binding_ids`/`path_prefixes` while keeping fixed-width `target_sha256`, counts, and `selection_fingerprint`), derived `MIN_BUDGET_BYTES = 4,096` from the measured maximally compacted skeleton (`<= 3,072` bytes), and defined the Minimal Standard Request Class (`< 3,584` bytes uncompacted) at `4,096` bytes.
-- **F6 (minor — PostgreSQL unbounded neighborhood vs bounded policy refusal):** Resolved in §4.3. Recorded that `storage/sql_neighborhood.py` exists for unbounded PostgreSQL neighborhoods and that `expansion_backend_unsupported` is a policy choice to preserve storage-work bounds.
+- **F6 (minor — PostgreSQL unbounded neighborhood vs bounded policy refusal):** Resolved in §4.3. Recorded as historical W4 baseline that `storage/sql/neighborhood.py` (live owner: `build_canonical_neighborhood_query_sql` in `storage/sql_canonical.py`) exists for unbounded PostgreSQL neighborhoods and that `expansion_backend_unsupported` was a W4 policy choice to preserve storage-work bounds. The accepted partial W7 amendment is in [cloe-server-parity-v1.md](cloe-server-parity-v1.md); source proof and qualification remain pending.
 - **F7 (minor — reuse `_destination` location identity shape):** Resolved in §4.2. Reused the exact `_destination` dictionary keys from `server/_navigation_groups.py` plus `(start_line, end_line)`.
 - **F8 (minor — distinct CLI exit code for usable `partial` packets):** Resolved in §2.1. Assigned exit code `3` to usable `partial` packets by default (`0` with `--allow-partial`).
 
@@ -592,7 +603,7 @@ design and evidence. Source excerpts remain outside W4.
 ### Deferred choices and parent-owned acceptance decisions (`OD1`–`OD7`) and rollback
 
 - **OD1:** Whether a metadata-only read-only MCP context tool follows W4 calibration (proposed: no in W4).
-- **OD2:** Whether PostgreSQL bounded incident-selective neighborhood parity joins W4 or moves to W7 (proposed: defer to W7).
+- **OD2:** PostgreSQL bounded incident-selective neighborhood parity remains a W7 concern, not a W4 closure. ADR 0168 accepts the bounded Epics 1 and 2 design in [cloe-server-parity-v1.md](cloe-server-parity-v1.md) §2; source proof and qualification remain pending.
 - **OD3:** Whether a per-binding explicit opt-in to use the configured `root_path` for advisory freshness is acceptable (proposed: require explicit `--source-root BINDING=ABS_PATH` in W4).
 - **OD4:** Whether a future milestone admits bounded caller-local source excerpts under P1 public-dev policy (excluded from W4).
 - **OD5:** Accepting [ADR 0133](../adr/2026/11/0133-intent-aware-navigation-and-bounded-context.md), its initial limits (`4,096..65,536` bytes, `SQLITE_CONTEXT_PROGRESS_CALLBACK_LIMIT`, `10,000 ms` deadline), and the `context-v1` task/arm declaration before `REPOMAP-CLOE-CONTEXT1`.
@@ -728,10 +739,12 @@ contract; they add no dependencies, schema or body exposure.
    relation support fields are preserved; no invented relationship evidence.
 
 OD5 is satisfied by parent acceptance of this corrected design under the current
-roadmap continuation. OD7 is later parent binding of one milestone campaign.
-MCP additions, PostgreSQL bounded expansion parity, configured-root shortcuts,
-excerpts and held-out/criteria acceptance remain deferred. Implementation source
-and whole-candidate qualification remain pending.
+roadmap continuation. OD7 remains a later parent binding of one milestone
+campaign. MCP additions, configured-root shortcuts, excerpts and
+held-out/criteria acceptance remain deferred. ADR 0168 is parent-accepted for
+the bounded PostgreSQL parity and truthful-refresh Epics 1 and 2; its source
+proof and whole-candidate qualification remain pending. Epic 3's startup-option
+timeout remains rejected/held and is not an accepted W7 closure.
 
 
 
@@ -791,3 +804,39 @@ output-budget counters count considered output admission units (including atomic
 neighbor/first-relation units). Categories can overlap and do not form a distinct
 node/edge cardinality total. Incomplete-scan counters mark uncertain scan units;
 their partial status never asserts a complete global result.
+
+
+### Accepted partial W7 amendment: PostgreSQL bounded expansion parity (ADR 0168)
+
+Status: parent-accepted for ADR 0168 Epics 1 and 2; implementation proof and
+whole-candidate qualification remain pending. W4 behavior above remains the
+historical baseline, and no W7 closure is claimed.
+
+Under `REPOMAP-CLOE-SERVER-PARITY1`
+([ADR 0168](../adr/2026/11/0168-bounded-server-context-and-refresh-outcomes.md),
+[cloe-server-parity-v1.md](cloe-server-parity-v1.md)), OD2 and F6 are amended
+forward. The historical W4 records, ADR 0133 and the retained
+`w4-context-functional-attempt-7` artifacts are not altered.
+
+- A private port capability replaces the two backend checks in
+  `build_compact_context` and `execute_scans_and_pack`. The built-in PostgreSQL
+  adapter has the capability. Ports without it keep `backend_unsupported`, the
+  explicit `FallbackDisclosure` and `expansion_backend_unsupported`.
+- `PostgresContextReadAdapter.expand_seeds_depth1` returns the existing consumer
+  shape (`ok`/`partial`/`stale`/`unavailable`) from one statement. The packet
+  builder treats expansion `stale` as a stale packet
+  (`publication_advanced_during_assembly`).
+- Limits are unchanged:
+  - `MAX_SQL_STATEMENTS_POSTGRES = 12`, `MAX_LOGICAL_READ_UNITS = 16`;
+  - 5 seeds, 64 edges per seed, 128 neighbors and 256 relations;
+  - `EVIDENCE_SCAN_LIMIT = 10,000` plus a 1-row lookahead.
+- Consistency remains `per_statement_identity_checked`. Physical work and
+  whole-request latency are not bounded by these limits.
+- Relation deduplication during expansion follows selected RD-2(a)
+  ([cloe-server-parity-v1.md](cloe-server-parity-v1.md) §2.7): both backends
+  use this specification's 4-tuple relation identity
+  `(source_key, edge_kind, target_key, identity_metadata_hash)`. The prior
+  SQLite hash-only behavior and RD-2(b) are rejected-alternative history.
+- The ADR 0168 startup-option server statement-timeout proposal remains
+  rejected/held under RD-1. Existing between-statement ledger checks remain;
+  no startup-option timeout or additional W7 authority is implied.

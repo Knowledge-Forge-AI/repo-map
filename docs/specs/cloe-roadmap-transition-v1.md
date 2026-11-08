@@ -834,3 +834,75 @@ and then passed all 49 scoped cases. [ADR0167](../adr/2026/11/0167-projection-ad
 and the [repair exit](../../tools/ci/cloe-ci127repair1-exit.md) bind one fresh
 reviewed CI128 attempt 1 at application/native-Rust/wheel caps 39/8/20, after
 actual 38/7/18. No successor qualification or full W7 completion is implied.
+
+### CI128 qualification and W7 Server parity design
+
+CI128 run 42414664976 attempt 1 passed all nine hosted jobs (`EXECUTED_PASS`) on
+staging `5ce48979661a13cd017bca48fea7f61ac6ec23b8` (merge
+`a8575b4f759303c3d0f7f5a228c60db85bbe3aeb`, tree
+`997fdaa1491693ff0ac6c8f927bae767b4492ed5`, source SHA-256
+`d49cd86397359feaa607b28b091beae6b50f30f1d26154cb034873f511e2f9f3`) against
+public main `5ad00d162ad8a04430874275246a53227578c533`. Retained same-attempt
+staging M/A, native AMD (`D12_qualified=true`, `Rust_component_qualified=true`,
+420 claims, 13 comparisons, 15 containment probes) and five-scenario system
+(`intent_sha256=0ffdbb4108022215b87d5ef6177a50750e18e6c37a85b5e89d168b5888fd2fcb`,
+`report_sha256=aca5583983f5002957de9318537f5229f5d7937685415fd265b3d8e628f6ee88`,
+`cleanup_verified=true`) obligations pass. Authenticated cumulative counters
+reach 39 application starts (`new_application_builds=0`), 8 native AMD Rust
+commands and 20 parser wheel transfers (`same_exact_wheel_transfers=2`). Unit
+passed 17,140 (40 skipped, 0 failed; 68,635/74,100 lines, 20,939/24,140 branches
+at 86.74%, raw log `c79740387ebab54ad55042a42ab86e085f9edeb9858eecf76e070f7b1af4c965`)
+and integration passed 2,277 (12 skipped, 0 failed; 66,013/74,100 lines,
+19,341/24,140 branches at 80.12%). Hard coverage floors pass; the desired 87%/82%
+branch margins remain 63 unit and 454 integration branches short at 24,140
+branches. CI128 qualifies `5ce48979661a13cd017bca48fea7f61ac6ec23b8` only;
+release and full W6/W7 acceptance remain false.
+
+The operator's current manual continuation selects
+`REPOMAP-CLOE-SERVER-PARITY1` as a partial W7 batch. The parent accepted the
+first two components under
+[ADR 0168](../adr/2026/11/0168-bounded-server-context-and-refresh-outcomes.md)
+and [the parity contract](cloe-server-parity-v1.md), then separately accepted
+[ADR 0169](../adr/2026/11/0169-positive-server-retained-attempt-recovery.md)
+and [explicit retained-attempt recovery](cloe-server-retained-attempt-recovery-v1.md).
+Implementation and scoped proof are in progress; no successor is qualified.
+
+1. **Bounded PostgreSQL depth-1 context parity.** The selected contract uses
+   one repository- and accepted-identity-pinned expansion statement. It reads
+   directional seed windows, applies the SQLite greedy admission order, and
+   projects locations only for admitted neighbors. Both backends use the
+   existing four-part canonical relation identity: production relations with
+   identical empty metadata hashes must survive, while self-loops deduplicate.
+   Unsupported ports keep explicit refusal/fallback. Existing logical, SQL,
+   seed, edge, node and evidence limits remain unchanged; returned-window
+   bounds do not imply bounded physical query work or a shared snapshot.
+2. **Truthful Server refresh outcomes.** A private per-call phase witness
+   distinguishes pre-publication, confirmed rollback and possible publication
+   using the existing public vocabulary. Cleanup after publisher return must
+   never mark the attempt failed. Primary BaseExceptions survive secondary
+   settlement and close faults. Resource reports prioritize commit uncertainty
+   over cancellation. Existing coordinator receipt reconciliation is unchanged.
+3. **Explicit positive-only retained-attempt recovery.** Inspect or settle one
+   named Server attempt after validating its retained artifacts and exact
+   graph/operation-bound historical PostgreSQL publication. Inspect performs
+   no filesystem writes. Settle changes only retained bookkeeping, with a
+   private backup, cooperating namespace lock and compare-and-replace. Missing
+   or conflicting proof remains held; no capture, publication retry, failure
+   inference, automatic scan or artifact deletion is introduced. SQLite Local
+   retains its separate existing recovery. Optional receipt materialization is
+   bounded at 16 MiB, without changing the general artifact/publication limit.
+
+The proposed startup-option timeout was rejected because it can override a
+stricter effective server, database or role default. It remains held; no such
+compatibility change or server-side request deadline is introduced. A future
+safe control/query alternative must charge both statements honestly under the
+unchanged cap. The current deadline remains cooperative between statements.
+
+This batch adds no dependency, DDL, role, runtime image or test-runner policy.
+The original 3.5k–4.4k design forecast covered the first design, not the later
+recovery selection or an observed delta. The parent aims for substantial
+related work without padding. Local Rust, model/held-out work, complete local
+suites, local Python coverage and full W6/W7 completion remain unselected.
+Application start 40, native AMD command 9 and wheel transfers 21–22 require a
+fresh final-candidate campaign binding after proof and independent review;
+they are not spent or qualified by this design record.

@@ -45,7 +45,8 @@ def test_expand_seed_incident_edges_and_batch_neighbor_locations(tmp_path: Path)
         assert len(res["edges"]) >= 3
         nbr_ids: list[int] = []
         for e in res["edges"]:
-            assert e["edge_key"].startswith("sha256:")
+            assert len(e["edge_key"]) == 64
+            assert all(char in "0123456789abcdef" for char in e["edge_key"])
             nbr_ids.append(int(e["neighbor_id"]))
 
         # Truncation when per_seed_limit=1

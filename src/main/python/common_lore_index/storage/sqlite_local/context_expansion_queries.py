@@ -10,6 +10,7 @@ import json
 from typing import Any
 
 from common_lore_index.retrieval.intent_policy import CONTEXT_DIRECT_EVIDENCE_ROLE_V1
+from common_lore_index.retrieval.context_relation_identity import incident_edge_record
 from common_lore_index.retrieval.context_identity import (
     ContextIdentityError,
     normalize_accepted_publication,
@@ -167,27 +168,21 @@ def expand_seed_incident_edges(
         direction = str(row[0])
         edge_kind = str(row[2])
         neighbor_ck = str(row[10])
-        parsed.append(
+        parsed.append(incident_edge_record(
             {
                 "direction": direction,
                 "direction_rank": 0 if direction == "outgoing" else 1,
-                "edge_key": str(row[1]),
-                "edge_kind": edge_kind,
-                "edge_kind_priority": kind_priority.get(edge_kind, len(ordered_kinds)),
-                "source_canonical_key": str(row[3]),
-                "target_canonical_key": str(row[4]),
-                "confidence": str(row[5]),
-                "conflict": bool(row[6]),
-                "first_seen_run_id": int(row[7]),
-                "last_seen_run_id": int(row[8]),
-                "neighbor_id": int(row[9]),
-                "neighbor_canonical_key": neighbor_ck,
-                "neighbor_kind": str(row[11]),
-                "neighbor_display_name": row[12],
-                "neighbor_first_seen_run_id": int(row[13]),
-                "neighbor_last_seen_run_id": int(row[14]),
-            }
-        )
+                "edge_key": row[1], "edge_kind": edge_kind,
+                "source_canonical_key": row[3], "target_canonical_key": row[4],
+                "confidence": row[5], "conflict": row[6],
+                "first_seen_run_id": row[7], "last_seen_run_id": row[8],
+                "neighbor_id": row[9], "neighbor_canonical_key": neighbor_ck,
+                "neighbor_kind": row[11], "neighbor_display_name": row[12],
+                "neighbor_first_seen_run_id": row[13],
+                "neighbor_last_seen_run_id": row[14],
+            },
+            edge_kind_priority=kind_priority.get(edge_kind, len(ordered_kinds)),
+        ))
 
     parsed.sort(
         key=lambda item: (

@@ -98,10 +98,10 @@ def finish_server(observer: Any, result: _Result) -> _Result:
     category = getattr(result, "error_category", None)
     if raw_result == "success" and state == "committed":
         observer._outcome = "committed"
-    elif category == "cancelled":
-        observer._outcome = "cancelled"
     elif state == "commit_unknown":
         observer._outcome = "commit_unknown"
+    elif category == "cancelled":
+        observer._outcome = "cancelled"
     elif raw_result == "failure":
         observer._outcome = "failed"
     else:

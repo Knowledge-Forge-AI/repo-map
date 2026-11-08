@@ -1,4 +1,9 @@
-"""Immutable executor evidence with the exact CLOE catalog target custody."""
+"""Immutable executor evidence with the exact CLOE catalog target custody.
+
+The closed CLI dispatch target includes explicit Server retained-attempt
+inspection and settlement. Its current source and code identity require fresh
+binding; resolving it does not execute a command or authorize a replay.
+"""
 
 from __future__ import annotations
 

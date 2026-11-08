@@ -773,7 +773,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "452676b21f06eef030dd89565ffac4a977d49be16d47d4e08311cd4dbb0c4700"
+    "sha256": "cd05e1854f1c8cfca28994cbb3442688465e4ce506ea793811b3fe827b26a503"
   },
   "ruff": {
     "findings": [
@@ -14695,6 +14695,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.cli._parser_ops_retained",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/_parser_ops_retained.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.cli._parser_sources",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/_parser_sources.py",
@@ -14770,6 +14776,12 @@
         "module": "common_lore_index.cli.ops_resource_commands",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/cli/ops_resource_commands.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.cli.ops_retained_attempt_commands",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/cli/ops_retained_attempt_commands.py",
         "tier": "T1-future"
       },
       {
@@ -16453,6 +16465,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops._portable_refresh_custody",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_portable_refresh_custody.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops._portable_retention",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/_portable_retention.py",
@@ -16462,6 +16480,12 @@
         "module": "common_lore_index.ops._portable_worker_terms",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/_portable_worker_terms.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._refresh_outcome",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_refresh_outcome.py",
         "tier": "T1-future"
       },
       {
@@ -16486,6 +16510,30 @@
         "module": "common_lore_index.ops._registry_status",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/_registry_status.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._retained_attempt_artifacts",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_retained_attempt_artifacts.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._retained_attempt_proof",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_retained_attempt_proof.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._retained_attempt_record",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_retained_attempt_record.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.ops._server_retention_lock",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/_server_retention_lock.py",
         "tier": "T1-future"
       },
       {
@@ -17065,6 +17113,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.ops.retained_attempt_recovery",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/ops/retained_attempt_recovery.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.ops.rust_pilot_publication",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/ops/rust_pilot_publication.py",
@@ -17134,6 +17188,12 @@
         "module": "common_lore_index.retrieval.context_packet_builder",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/retrieval/context_packet_builder.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.retrieval.context_relation_identity",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/retrieval/context_relation_identity.py",
         "tier": "T1-future"
       },
       {
@@ -17959,6 +18019,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.storage._staged_refresh_custody",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/_staged_refresh_custody.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.storage._staged_row_adapters",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/_staged_row_adapters.py",
@@ -18181,6 +18247,18 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.storage.postgres_context_expansion",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/postgres_context_expansion.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.storage.postgres_context_expansion_sql",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/postgres_context_expansion_sql.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.storage.postgres_navigation_search",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/postgres_navigation_search.py",
@@ -18217,6 +18295,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.storage.publication_phase_witness",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/publication_phase_witness.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.storage.publication_readback",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/publication_readback.py",
@@ -18244,6 +18328,12 @@
         "module": "common_lore_index.storage.repository_identity",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/repository_identity.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.storage.retained_publication_readback",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/retained_publication_readback.py",
         "tier": "T1-future"
       },
       {

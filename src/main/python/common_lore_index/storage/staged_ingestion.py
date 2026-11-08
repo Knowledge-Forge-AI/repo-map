@@ -26,6 +26,7 @@ from common_lore_index.storage._staged_ingestion_stages import (
     _refresh_canonical_node_evidence_statistics,
     _resolve_prepared_rows, _restore_connection_signal_handlers as _restore_connection_signal_handlers,
 )
+from common_lore_index.storage._staged_refresh_custody import run_owned_step, settle_owned_cleanup, settle_staged_resources
 from common_lore_index.storage._staged_publication_pause import (
     _run_system_test_publication_pause,
     _run_system_test_post_publication_pause as _run_system_test_post_publication_pause,
@@ -37,6 +38,7 @@ from common_lore_index.storage.errors import StorageCommitUnknownError, StorageS
 from common_lore_index.storage.main import LoadSummary
 from common_lore_index.storage.portable_ingestion import prepare_portable_bundle_rows
 from common_lore_index.storage.publication import PortablePublicationBinding, RunPublicationReceipt
+from common_lore_index.storage.publication_phase_witness import PublicationPhase, PublicationPhaseWitness
 from common_lore_index.storage.publication_fencing import PublicationHandoff, build_graph_publication_claim_statements
 from common_lore_index.storage.readback_driver import (
     _psycopg_connection_params_from_psql_args as _psycopg_connection_params_from_psql_args,
@@ -70,7 +72,6 @@ __all__ = (
     "stage_id_for_authority",
 )
 
-
 def _admit_and_run(
     psql_args: Sequence[str],
     authority: IngestionAuthority,
@@ -93,7 +94,6 @@ def _admit_and_run(
             return runner()
     except psycopg.Error as error:
         raise StorageSchemaError("staged PostgreSQL connection failed") from error
-
 
 def run_staged_full_refresh(
     psql_args: Sequence[str],
@@ -133,7 +133,6 @@ def run_staged_full_refresh(
         ),
     )
 
-
 def run_staged_portable_refresh(
     psql_args: Sequence[str],
     bundle: PublicationBundle | ValidatedBundleDescriptor | None = None,
@@ -147,6 +146,7 @@ def run_staged_portable_refresh(
     backend_telemetry: BackendTelemetry | None = None,
     staging_measurements: StagingMeasurements | None = None,
     prepared_override: PreparedStageRows | None = None,
+    publication_witness: PublicationPhaseWitness | None = None,
 ) -> LoadSummary:
     """Publish one validated current bundle through the existing sole writer."""
     stage_id = stage_id_for_authority(authority)
@@ -165,12 +165,13 @@ def run_staged_portable_refresh(
         prepared = prepare_portable_bundle_rows(bundle, stage_id=stage_id)
     else:
         raise ValueError("either bundle or prepared_override is required")
-    receipt = RunPublicationReceipt(
-        authority.receipt().attempt,
-        authority.receipt().generations,
-        portable_binding,
-    ).validate()
+    primary: BaseException | None = None
     try:
+        receipt = RunPublicationReceipt(
+            authority.receipt().attempt,
+            authority.receipt().generations,
+            portable_binding,
+        ).validate()
         return _admit_and_run(
             psql_args,
             authority,
@@ -181,13 +182,14 @@ def run_staged_portable_refresh(
                 connect=connect, backend_telemetry=backend_telemetry,
                 staging_measurements=staging_measurements, prepared_override=prepared,
                 receipt_override=receipt,
+                publication_witness=publication_witness,
             ),
         )
+    except BaseException as error:
+        primary = error
+        raise
     finally:
-        prepared.close()
-
-
-
+        settle_owned_cleanup(primary, (("prepared rows close", prepared.close),))
 
 def _run_staged_full_refresh_admitted(
     psql_args: Sequence[str],
@@ -205,6 +207,7 @@ def _run_staged_full_refresh_admitted(
     staging_measurements: StagingMeasurements | None = None,
     prepared_override: PreparedStageRows | None = None,
     receipt_override: RunPublicationReceipt | None = None,
+    publication_witness: PublicationPhaseWitness | None = None,
 ) -> LoadSummary:
     """Execute one staged publication after maintenance admission."""
     authority.validate()
@@ -218,8 +221,8 @@ def _run_staged_full_refresh_admitted(
     )
     try:
         params = _psycopg_connection_params_from_psql_args(psql_args)
-    except BaseException:
-        prepared.close()
+    except BaseException as error:
+        settle_owned_cleanup(error, (("prepared rows close", prepared.close),))
         raise
     connection_factory = connect or psycopg.connect
     try:
@@ -227,31 +230,38 @@ def _run_staged_full_refresh_admitted(
             connection_factory, params, role=ConnectionRole.DIRECT_STAGED_REFRESH, telemetry=backend_telemetry
         )
     except psycopg.Error as error:
-        prepared.close()
-        raise StorageSchemaError("staged PostgreSQL connection failed") from error
-    except BaseException:
-        prepared.close()
+        connect_failure = StorageSchemaError("staged PostgreSQL connection failed")
+        settle_owned_cleanup(connect_failure, (("prepared rows close", prepared.close),))
+        raise connect_failure from error
+    except BaseException as error:
+        settle_owned_cleanup(error, (("prepared rows close", prepared.close),))
         raise
     signal_handlers: dict[int, Any] = {}
     try:
         signal_handlers = _install_connection_signal_handlers(connection)
-    except BaseException:
-        close_owned_connection(connection)
-        prepared.close()
+    except BaseException as error:
+        settle_owned_cleanup(error, (("connection close", lambda: close_owned_connection(connection)), ("prepared rows close", prepared.close)))
         raise
-    resources_before = capture_staging_resources(connection) if staging_measurements is not None else None
+    resources_before = None
     handoff: PublicationHandoff | None = None
     repository_id: int | None = None
     run_id: int | None = None
     stage_committed = False
     transaction_committed = False
     owner: StageOwner | None = None
+    primary: BaseException | None = None
     try:
+        resources_before = capture_staging_resources(connection) if staging_measurements is not None else None
         repository_id = _ensure_repository(connection, repository_name, root_path, repository_identity)
         owner = authority.owner(repository_id)
         receipt = receipt_override or authority.receipt()
         existing_state = existing_stage_state(connection, resolved_stage_id, owner)
         if existing_state is not None:
+            if (
+                publication_witness is not None
+                and existing_state in {"published", "commit_unknown"}
+            ):
+                publication_witness.advance(PublicationPhase.RECONCILING)
             return _handle_existing_stage_state(
                 connection=connection,
                 connection_factory=connection_factory,
@@ -302,28 +312,53 @@ def _run_staged_full_refresh_admitted(
                 connection.commit()
         handoff = PublicationHandoff(MergeContext(resolved_stage_id, owner, run_id), receipt).validate()
         try:
+            if publication_witness is not None:
+                publication_witness.advance(PublicationPhase.FINAL_TRANSACTION)
             _run_system_test_publication_pause(handoff)
             if authority.before_publication is not None:
                 authority.before_publication()
             _run_system_test_post_publication_pause()
             execute_final_transaction(connection, handoff, staging_measurements=staging_measurements)
-        except (Exception, KeyboardInterrupt):
-            connection.rollback()
-            mark_failed_before_publication(connection, resolved_stage_id, run_id, owner)
-            connection.commit()
+        except BaseException as error:
+            rollback_succeeded = run_owned_step(error, "publication rollback", connection.rollback)
+            if rollback_succeeded:
+                if publication_witness is not None:
+                    publication_witness.advance(PublicationPhase.ROLLED_BACK)
+                mark_succeeded = run_owned_step(
+                    error,
+                    "failed-stage mark",
+                    lambda: mark_failed_before_publication(connection, resolved_stage_id, run_id, owner),
+                )
+                if mark_succeeded:
+                    run_owned_step(error, "rollback commit", connection.commit)
             raise
         try:
             if staging_measurements is None:
+                if publication_witness is not None:
+                    publication_witness.advance(PublicationPhase.COMMIT_ATTEMPTED)
                 connection.commit()
             else:
                 with staging_measurements.operation("transaction.commit"):
+                    if publication_witness is not None:
+                        publication_witness.advance(PublicationPhase.COMMIT_ATTEMPTED)
                     connection.commit()
             transaction_committed = True
+            if publication_witness is not None:
+                publication_witness.advance(PublicationPhase.COMMITTED)
         except (Exception, KeyboardInterrupt) as error:
-            _restore_connection_signal_handlers(signal_handlers)
+            cleanup_fault = settle_owned_cleanup(
+                error,
+                (
+                    ("signal handler restore", lambda: _restore_connection_signal_handlers(signal_handlers)),
+                    ("connection close", lambda: close_owned_connection(connection)),
+                ),
+            )
             signal_handlers = {}
-            close_owned_connection(connection)
             connection = None
+            if cleanup_fault is not None:
+                raise error
+            if publication_witness is not None:
+                publication_witness.advance(PublicationPhase.RECONCILING)
             if reconcile_commit_unknown(
                 connection_factory, params, handoff, repository_id, backend_telemetry=backend_telemetry
             ):
@@ -345,6 +380,7 @@ def _run_staged_full_refresh_admitted(
             publication_receipt=handoff.receipt,
         )
     except (Exception, KeyboardInterrupt) as error:
+        primary = error
         if transaction_committed:
             raise StorageCommitUnknownError("post-transaction failure occurred after publication commit") from error
         _handle_refresh_failure(
@@ -356,8 +392,8 @@ def _run_staged_full_refresh_admitted(
             resolved_stage_id=resolved_stage_id,
             run_id=run_id,
         )
+    except BaseException as error:
+        primary = error
+        raise
     finally:
-        _restore_connection_signal_handlers(signal_handlers)
-        prepared.close()
-        if connection is not None:
-            close_owned_connection(connection)
+        settle_staged_resources(primary, signal_handlers, prepared, connection, _restore_connection_signal_handlers, close_owned_connection)

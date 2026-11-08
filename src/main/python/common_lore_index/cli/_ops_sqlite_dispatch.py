@@ -54,6 +54,7 @@ from common_lore_index.ops.config_local import (
     load_graph_registry_config_home,
 )
 from common_lore_index.ops.config_storage import SQLITE_BACKEND
+from common_lore_index.cli.ops_retained_attempt_commands import refuse_retained_attempt
 from common_lore_index.ops.local_backup import (
     backup_local_graph,
     restore_local_graph,
@@ -126,6 +127,16 @@ def dispatch_ops_sqlite_command(
 ) -> int | None:
     if args.command != "ops":
         return None
+    if args.ops_command == "retained-attempt":
+        try:
+            backend = declared_storage_backend(
+                repo_map_home=getattr(args, "repo_map_home", None),
+                config_path=getattr(args, "config", None),
+            )
+        except (OSError, ValueError):
+            return refuse_retained_attempt(args, "invalid-config")
+        if backend == SQLITE_BACKEND:
+            return refuse_retained_attempt(args, "sqlite-backend")
     if args.ops_command in _STORE_COMMANDS:
         try:
             payload = _STORE_COMMANDS[args.ops_command](_local_config(args), args)

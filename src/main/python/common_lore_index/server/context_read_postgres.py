@@ -26,6 +26,12 @@ from common_lore_index.storage.node_locations import NodeLocationsQuery
 from common_lore_index.storage.postgres_navigation_search import (
     read_postgres_navigation_search_with_executor,
 )
+from common_lore_index.storage.postgres_context_expansion import (
+    parse_postgres_context_expansion_payload,
+)
+from common_lore_index.storage.postgres_context_expansion_sql import (
+    build_postgres_context_expansion_sql,
+)
 from common_lore_index.storage.postgres_node_locations import (
     read_postgres_node_locations_with_executor,
 )
@@ -78,6 +84,7 @@ class PostgresContextReadAdapter:
 
     backend: str = "postgresql"
     consistency_mode: str = "per_statement_identity_checked"
+    supports_depth1_expansion: bool = True
 
     def __init__(
         self,
@@ -273,4 +280,57 @@ class PostgresContextReadAdapter:
         ledger: WorkLedger,
         expected_identity: Mapping[str, Any],
     ) -> dict[str, Any]:
-        return {"status": "unavailable", "reason": "backend_unsupported"}
+        seeds = tuple(seed_keys)
+        kinds = tuple(edge_kinds)
+        if not 1 <= len(seeds) <= 5:
+            raise StorageSchemaError("context expansion requires 1..5 distinct seeds")
+        if any(not isinstance(seed, str) or not seed for seed in seeds):
+            raise StorageSchemaError("context expansion seeds must be non-empty strings")
+        if len(set(seeds)) != len(seeds):
+            raise StorageSchemaError("context expansion requires 1..5 distinct seeds")
+        if type(node_limit) is not int or not 1 <= node_limit <= 32:
+            raise StorageSchemaError("node_limit must be in 1..32")
+        if type(edge_limit) is not int or not 1 <= edge_limit <= 64:
+            raise StorageSchemaError("edge_limit must be in 1..64")
+        if not kinds:
+            return {
+                "status": "ok", "reason": None, "seeds_expanded": len(seeds),
+                "neighbor_units": [], "seed_to_seed_edges": [],
+                "edge_limit_hit": 0, "node_limit_hit": 0,
+                "neighbor_locations_incomplete": False,
+            }
+        sql = build_postgres_context_expansion_sql(
+            seeds,
+            edge_kinds=kinds,
+            node_limit=node_limit,
+            edge_limit=edge_limit,
+            repository_identity=self.repository_id,
+        )
+        if not ledger.can_execute_logical_unit() or not ledger.can_execute_statements(1):
+            return {"status": "partial", "reason": ledger.exhausted_reason or "statement_limit",
+                    "seeds_expanded": 0, "neighbor_units": [], "seed_to_seed_edges": [],
+                    "edge_limit_hit": 0, "node_limit_hit": 0,
+                    "neighbor_locations_incomplete": False}
+        ledger.record_logical_unit()
+        if not ledger.record_statement_start():
+            return {"status": "partial", "reason": ledger.exhausted_reason or "statement_limit",
+                    "seeds_expanded": 0, "neighbor_units": [], "seed_to_seed_edges": [],
+                    "edge_limit_hit": 0, "node_limit_hit": 0,
+                    "neighbor_locations_incomplete": False}
+        try:
+            payload = self._run_sql_object(sql, label="context expansion")
+            result = parse_postgres_context_expansion_payload(
+                payload,
+                seed_keys=seeds,
+                node_limit=node_limit,
+                edge_limit=edge_limit,
+                expected_identity=expected_identity,
+            )
+        except StorageSchemaError:
+            return {"status": "unavailable", "reason": "accepted_publication_unverified"}
+        except (RuntimeError, OSError):
+            return {"status": "unavailable", "reason": "database_unavailable"}
+        evidence_scanned = int(result.pop("_evidence_rows_scanned", 0))
+        ledger.seed_expansions_executed += int(result.get("seeds_expanded", 0))
+        ledger.evidence_rows_scanned += evidence_scanned
+        return result

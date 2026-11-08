@@ -332,7 +332,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
         self.assertIn("[REDACTED]", rendered)
         self.assertNotIn("fake-secret", rendered)
 
-    def test_refresh_graph_cancellation_returns_rolled_back_failure(self):
+    def test_refresh_graph_cancellation_before_publisher_returns_not_started_failure(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "repo"
             root.mkdir()
@@ -345,7 +345,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
                 result = refresh_graph(config, "repo-map")
 
             self.assertEqual(result.result, "failure")
-            self.assertEqual(result.publication_state, "rolled_back")
+            self.assertEqual(result.publication_state, "not_started")
             self.assertEqual(result.error_category, "cancelled")
             self.assertEqual(result.error, "refresh cancelled")
             self.assertTrue(
@@ -365,7 +365,7 @@ class OpsRefreshExecutionUnitTests(OpsRefreshUnitTestCase):
                 )
 
             self.assertEqual(measured_result.result, "failure")
-            self.assertEqual(measured_result.publication_state, "rolled_back")
+            self.assertEqual(measured_result.publication_state, "not_started")
             self.assertEqual(measured_result.error_category, "cancelled")
             self.assertTrue(
                 any(

@@ -24,6 +24,7 @@ from common_lore_index.retrieval.context_identity import (
 from common_lore_index.retrieval.context_packet_builder import (
     build_packet_skeleton,
     execute_scans_and_pack,
+    port_supports_depth1_expansion,
 )
 from common_lore_index.retrieval.context_work import WorkLedger
 from common_lore_index.retrieval.intent_policy import (
@@ -235,7 +236,7 @@ def build_compact_context(
 
     effective_mode = request.mode
     fallback_obj: dict[str, Any] | None = None
-    if request.mode == "graph_investigation" and port.backend == "postgresql":
+    if request.mode == "graph_investigation" and not port_supports_depth1_expansion(port):
         if request.fallback_to is None:
             return _early_packet("unavailable", "backend_unsupported")
         effective_mode = request.fallback_to

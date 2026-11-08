@@ -48,6 +48,7 @@ from common_lore_index.coordinator._portable_materialization import (
     _remove_attempt_root,
 )
 from common_lore_index.storage.sqlite_local.durability import fsync_directory_chain
+from common_lore_index.ops._server_retention_lock import retention_lock_for
 
 class PortableRefreshError(ValueError):
     """Bounded production-route failure that grants no fallback authority."""
@@ -66,26 +67,27 @@ _LOCAL_RETENTION_SYNC_LEVELS = 5
 
 
 def _write_retained_result(path, manifest_id, references, *, manifest_reference=None):
-    payload = {
-        "manifest_id": manifest_id,
-        "receipt": references[0].to_mapping(),
-        "bundle": references[1].to_mapping(),
-        "retention_class": "publication-reconciliation",
-    }
-    if manifest_reference is not None:
-        payload["manifest"] = manifest_reference.to_mapping()
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
-    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    try:
-        view = memoryview(encoded)
-        while view:
-            written = os.write(descriptor, view)
-            if written <= 0:
-                raise OSError("portable retention write failed")
-            view = view[written:]
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+    with retention_lock_for(path):
+        payload = {
+            "manifest_id": manifest_id,
+            "receipt": references[0].to_mapping(),
+            "bundle": references[1].to_mapping(),
+            "retention_class": "publication-reconciliation",
+        }
+        if manifest_reference is not None:
+            payload["manifest"] = manifest_reference.to_mapping()
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            view = memoryview(encoded)
+            while view:
+                written = os.write(descriptor, view)
+                if written <= 0:
+                    raise OSError("portable retention write failed")
+                view = view[written:]
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 
 def _retained_manifest_reference(
@@ -162,9 +164,20 @@ def _read_retention_payload(path: Path) -> dict[str, object]:
             remaining -= len(chunk)
     finally:
         os.close(descriptor)
-    payload = json.loads(b"".join(chunks).decode("utf-8"))
+    payload = json.loads(
+        b"".join(chunks).decode("utf-8"), object_pairs_hook=_unique_json_object
+    )
     if not isinstance(payload, dict):
         raise ValueError
+    return payload
+
+
+def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    payload: dict[str, object] = {}
+    for key, value in pairs:
+        if key in payload:
+            raise ValueError("duplicate retained record key")
+        payload[key] = value
     return payload
 
 
@@ -173,21 +186,23 @@ def _mark_retained_terminal(
 ) -> None:
     if retention_class not in _TERMINAL_RETENTION_CLASSES:
         raise ValueError("invalid portable retention class")
-    payload = _read_retention_payload(path)
-    payload["retention_class"] = retention_class
-    payload["expires_at_epoch"] = int(time.time()) + _TERMINAL_RETENTION_SECONDS
-    _replace_retention_payload(path, payload, sync_directory=sync_directory)
+    with retention_lock_for(path):
+        payload = _read_retention_payload(path)
+        payload["retention_class"] = retention_class
+        payload["expires_at_epoch"] = int(time.time()) + _TERMINAL_RETENTION_SECONDS
+        _replace_retention_payload(path, payload, sync_directory=sync_directory)
 
 
 def _annotate_retained_attempt(
     path: Path, key: str, value: Mapping[str, object], *, sync_directory: bool = False
 ) -> None:
     """Add one block to an unsettled attempt record; never overwrite or settle it."""
-    payload = _read_retention_payload(path)
-    if payload.get("retention_class") != "publication-reconciliation" or key in payload:
-        raise PortableRefreshError("retained portable attempt cannot be annotated")
-    payload[key] = dict(value)
-    _replace_retention_payload(path, payload, sync_directory=sync_directory)
+    with retention_lock_for(path):
+        payload = _read_retention_payload(path)
+        if payload.get("retention_class") != "publication-reconciliation" or key in payload:
+            raise PortableRefreshError("retained portable attempt cannot be annotated")
+        payload[key] = dict(value)
+        _replace_retention_payload(path, payload, sync_directory=sync_directory)
 
 
 def _unsettled_retained_attempts(parent: Path) -> list[tuple[Path, dict[str, object]]]:
@@ -264,23 +279,24 @@ def _local_attempt_directory(path: Path) -> Path:
 
 
 def _prune_expired_terminal_attempts(parent: Path, *, exclude: Path) -> None:
-    for candidate in parent.iterdir():
-        if candidate == exclude:
-            continue
-        try:
-            identity = _directory_identity(candidate)
-            payload = _read_retention_payload(candidate / "portable-result.json")
-            retention_class = payload.get("retention_class")
-            expires_at = payload.get("expires_at_epoch")
-            if (
-                retention_class in _TERMINAL_RETENTION_CLASSES
-                and isinstance(expires_at, int)
-                and not isinstance(expires_at, bool)
-                and expires_at <= int(time.time())
-            ):
-                _remove_attempt_root(candidate, identity)
-        except (FileNotFoundError, OSError, TypeError, ValueError, RuntimeError):
-            continue
+    with retention_lock_for(parent / "portable-result.json"):
+        for candidate in parent.iterdir():
+            if candidate == exclude:
+                continue
+            try:
+                identity = _directory_identity(candidate)
+                payload = _read_retention_payload(candidate / "portable-result.json")
+                retention_class = payload.get("retention_class")
+                expires_at = payload.get("expires_at_epoch")
+                if (
+                    retention_class in _TERMINAL_RETENTION_CLASSES
+                    and isinstance(expires_at, int)
+                    and not isinstance(expires_at, bool)
+                    and expires_at <= int(time.time())
+                ):
+                    _remove_attempt_root(candidate, identity)
+            except (FileNotFoundError, OSError, TypeError, ValueError, RuntimeError):
+                continue
 
 
 # LOCAL9 cleanup inventory. Statuses are public counts only; entry names never are.

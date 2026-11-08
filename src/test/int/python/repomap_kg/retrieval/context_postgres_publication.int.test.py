@@ -299,14 +299,14 @@ def test_postgres_mid_assembly_drift_and_same_db_second_repository_isolation(
 def test_postgres_fallbacks_expansion_policy_and_missing_job_provenance(
     tmp_path: Path,
 ) -> None:
-    """Verify PostgreSQL graph_investigation fallbacks, expand-depth=1 partial, and missing job_id refusal."""
+    """Verify built-in PostgreSQL graph expansion and missing job_id refusal."""
     require_postgres_binaries()
     with temporary_postgres() as postgres:
         _pg_home, pg_adapter = build_postgres_context_fixture(
             tmp_path / "pg", postgres
         )
-        # graph_investigation without fallback_to -> unavailable / backend_unsupported
-        unavail = build_compact_context(
+        # Built-in PostgreSQL now expands graph_investigation natively.
+        native_graph = build_compact_context(
             ContextRequest(
                 graph_id=CTX_GRAPH_ID,
                 mode="graph_investigation",
@@ -314,12 +314,14 @@ def test_postgres_fallbacks_expansion_policy_and_missing_job_provenance(
             ),
             pg_adapter,
         )
-        assert_valid_context_packet(unavail)
-        assert unavail["status"] == "unavailable"
-        assert unavail["reason"] == "backend_unsupported"
+        assert_valid_context_packet(native_graph)
+        assert native_graph["status"] in {"complete", "partial"}
+        assert native_graph["effective_mode"] == "graph_investigation"
+        assert native_graph["fallback"] is None
+        assert native_graph["expansion"]["reason"] != "backend_unsupported"
 
-        # graph_investigation with fallback_to=exact_identity (expand_depth=None -> depth 0) -> complete
-        fb_exact = build_compact_context(
+        # A fallback request does not override a capable built-in port.
+        capable_with_fallback = build_compact_context(
             ContextRequest(
                 graph_id=CTX_GRAPH_ID,
                 mode="graph_investigation",
@@ -328,14 +330,15 @@ def test_postgres_fallbacks_expansion_policy_and_missing_job_provenance(
             ),
             pg_adapter,
         )
-        assert_valid_context_packet(fb_exact)
-        assert fb_exact["status"] == "complete"
-        assert fb_exact["effective_mode"] == "exact_identity"
-        assert fb_exact["fallback"]["reason"] == "backend_unsupported"
-        assert len(fb_exact["items"]) == 1
+        assert_valid_context_packet(capable_with_fallback)
+        assert capable_with_fallback["status"] in {"complete", "partial"}
+        assert capable_with_fallback["effective_mode"] == "graph_investigation"
+        assert capable_with_fallback["fallback"] is None
+        assert capable_with_fallback["expansion"]["reason"] != "backend_unsupported"
+        assert len(capable_with_fallback["items"]) == 1
 
-        # graph_investigation with fallback_to=exact_identity and expand_depth=1 on PostgreSQL -> partial / backend_unsupported
-        exp_unavail = build_compact_context(
+        # Explicit depth 1 remains native even when fallback_to is supplied.
+        native_depth_one = build_compact_context(
             ContextRequest(
                 graph_id=CTX_GRAPH_ID,
                 mode="graph_investigation",
@@ -345,12 +348,12 @@ def test_postgres_fallbacks_expansion_policy_and_missing_job_provenance(
             ),
             pg_adapter,
         )
-        assert_valid_context_packet(exp_unavail)
-        assert exp_unavail["status"] == "partial"
-        assert exp_unavail["expansion"]["state"] == "unavailable"
-        assert exp_unavail["expansion"]["reason"] == "backend_unsupported"
-        assert exp_unavail["omission_counts"]["expansion_backend_unsupported"] == 1
-        assert len(exp_unavail["items"]) == 1
+        assert_valid_context_packet(native_depth_one)
+        assert native_depth_one["status"] in {"complete", "partial"}
+        assert native_depth_one["effective_mode"] == "graph_investigation"
+        assert native_depth_one["fallback"] is None
+        assert native_depth_one["expansion"]["reason"] != "backend_unsupported"
+        assert len(native_depth_one["items"]) == 1
 
         # Null out publication_job_id and publication_attempt in runs -> strong pinning must refuse
         with psycopg.connect(

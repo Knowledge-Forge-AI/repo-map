@@ -118,6 +118,7 @@ def build_postgres_context_fixture(
     from common_lore_index.graph.multi_source import graph_source_binding_id
     from common_lore_index.server.context_read_postgres import PostgresContextReadAdapter
     from common_lore_index.storage import apply_migrations, default_rdbms_root
+    from common_lore_index.storage.row_helpers import identity_metadata_hash
     from repomap_test_support.context_fixture import (
         BINDING_CORE,
         BINDING_DOCS,
@@ -259,7 +260,7 @@ def build_postgres_context_fixture(
                     "target_canonical_key, identity_metadata_json, identity_metadata_hash, metadata_json, "
                     "confidence, conflict, first_seen_run_id, last_seen_run_id) "
                     "VALUES (%s, 1, %s, %s, %s, '{}'::jsonb, %s, '{}'::jsonb, 'extracted', false, %s, %s)",
-                    (repo_id, src_ck, ekind, tgt_ck, f"{e_idx:064x}", run_id, run_id),
+                    (repo_id, src_ck, ekind, tgt_ck, identity_metadata_hash({}), run_id, run_id),
                 )
     adapter = PostgresContextReadAdapter(
         graph_id=graph_id, repository_id=repo_identity, root_path=root_path,
