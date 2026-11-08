@@ -80,7 +80,7 @@ def test_busy_flock_closes_open_lock_descriptor_and_preserves_lock_file(
     lock = locking.ServerRetentionLock(attempts)
     real_close = os.close
 
-    with mock.patch.object(locking.fcntl, "flock", side_effect=BlockingIOError()):
+    with mock.patch("fcntl.flock", side_effect=BlockingIOError()):
         with mock.patch.object(locking.os, "close", wraps=real_close) as close:
             with pytest.raises(locking.RetentionLockBusy):
                 lock.__enter__()
@@ -109,3 +109,20 @@ def test_real_competing_open_is_busy_and_releases_only_its_descriptor(tmp_path: 
         assert os.fstat(first._descriptor).st_ino == identity
     with locking.ServerRetentionLock(attempts) as acquired:
         assert acquired.path.stat().st_ino == identity
+
+
+def test_missing_server_lock_capability_refuses_before_lockfile_creation(tmp_path: Path) -> None:
+    attempts = _namespace(tmp_path)
+    lock = locking.ServerRetentionLock(attempts)
+    original_import = __import__
+
+    def without_fcntl(name, *args, **kwargs):
+        if name == "fcntl":
+            raise ImportError("fixture denies POSIX capability")
+        return original_import(name, *args, **kwargs)
+
+    with mock.patch("builtins.__import__", side_effect=without_fcntl):
+        with pytest.raises(locking.RetentionLockError, match="capability is unavailable"):
+            lock.__enter__()
+    assert lock._descriptor is None
+    assert not lock.path.exists()

@@ -221,13 +221,10 @@ def test_cli_context_select_and_pack_over_sqlite_and_postgres_homes(
         pg_fallback = json.loads(raw_pg_fallback.decode("utf-8"))
         assert_valid_context_packet(pg_fallback)
         assert pg_fallback["requested_mode"] == "graph_investigation"
-        assert pg_fallback["effective_mode"] == "ranked_discovery"
-        assert pg_fallback["fallback"] == {
-            "requested_mode": "graph_investigation",
-            "effective_mode": "ranked_discovery",
-            "reason": "backend_unsupported",
-            "target_used": "query",
-        }
+        assert pg_fallback["status"] in {"complete", "partial"}
+        assert pg_fallback["effective_mode"] == "graph_investigation"
+        assert pg_fallback["fallback"] is None
+        assert pg_fallback["expansion"]["reason"] != "backend_unsupported"
 
         # Argparse errors exit 2; budget out of range exits 1
         rc_arg, _, _ = _invoke_cli(

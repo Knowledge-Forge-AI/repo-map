@@ -102,6 +102,8 @@ def _record(
     namespace: str | None = attempts_namespace(GRAPH),
 ) -> Path:
     parent = portable_attempts_parent(config, namespace)
+    if namespace is None:
+        parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     root = parent / secrets.token_hex(8)
     root.mkdir(mode=0o700, parents=True)
     record = root / "portable-result.json"

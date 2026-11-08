@@ -5,6 +5,10 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+
+from common_lore_index.artifacts.bundle import PublicationBundle
+from common_lore_index.artifacts._bundle_stream_parse import ValidatedBundleDescriptor
 
 from common_lore_index.observations.raw import RawObservation
 from common_lore_index.ops.config import load_ops_config, load_ops_config_home
@@ -99,3 +103,23 @@ class OpsRefreshUnitTestCase(unittest.TestCase):
                 metadata={"language": "markdown", "role": "documentation"},
             )
         ]
+
+
+class SnapshotPublisher:
+    """Copy borrowed publication rows before the owner closes their spools."""
+
+    def __init__(self, files: int) -> None:
+        self.files = files
+        self._bundle: PublicationBundle | None = None
+
+    def __call__(
+        self, _psql_args: object, bundle: ValidatedBundleDescriptor, **_kwargs: object,
+    ) -> SimpleNamespace:
+        self._bundle = PublicationBundle.from_bytes(bundle.canonical_bytes())
+        return SimpleNamespace(repository_id=1, run_id=2, files=self.files)
+
+    @property
+    def bundle(self) -> PublicationBundle:
+        if self._bundle is None:
+            raise AssertionError("publisher has not received its borrowed bundle")
+        return self._bundle

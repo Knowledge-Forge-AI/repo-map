@@ -35,10 +35,8 @@ def _build_fixture_proof(
     grant_path, cand_path = pair / "d12_system_build_grant.json", pair / "d12_hosted_candidate.json"
     grant_path.write_bytes((REPO_ROOT / DEFAULT_GRANT_RELPATH).read_bytes())
     spent, _ = load_and_validate_system_build_grant(grant_path)
-    live_cand = d12_system_proof_host.validate_expected_candidate_record(
-        json.loads((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_text(encoding="utf-8")))
-    cand_path.write_text(json.dumps({**live_cand, "d12_context": dict(spent["d12_context"])}, indent=2,
-                                    sort_keys=True) + "\n", encoding="utf-8")
+    # The proof binds exact candidate bytes, including formatting, just as production does.
+    cand_path.write_bytes((REPO_ROOT / DEFAULT_CANDIDATE_RELPATH).read_bytes())
     cand_raw = json.loads(cand_path.read_text(encoding="utf-8"))
     expected_cand = d12_system_proof_host.validate_expected_candidate_record(cand_raw)
     cand_sha = hashlib.sha256(cand_path.read_bytes()).hexdigest()

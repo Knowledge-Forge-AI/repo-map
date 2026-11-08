@@ -356,3 +356,30 @@ def test_postgres_transport_overflow_returns_closed_empty_expansion(
     assert packet["expansion"]["reason"] == "work_budget_exhausted"
     assert packet["neighbors"] == []
     assert packet["relations"] == []
+
+
+def test_postgres_statement_cap_and_native_empty_node_are_closed_packets(
+    tmp_path: Path,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        _, adapter = build_postgres_context_fixture(tmp_path / "postgres", postgres)
+        with adapter:
+            capped = build_compact_context(
+                _request(edge_kinds=("contains",)), adapter,
+                work_ledger=WorkLedger(backend="postgresql", max_sql_statements=2),
+            )
+            assert_valid_context_packet(capped)
+            assert capped["status"] == "partial"
+            assert capped["expansion"]["reason"] == "statement_limit"
+            assert capped["expansion"]["seeds_expanded"] == 0
+            assert capped["neighbors"] == [] and capped["relations"] == []
+            empty = build_compact_context(
+                _request(canonical_key="py:pkg.billing.DoesNotExist"), adapter,
+            )
+    assert_valid_context_packet(empty)
+    assert empty["status"] == "complete"
+    assert empty["effective_mode"] == "graph_investigation"
+    assert empty["items"] == empty["neighbors"] == empty["relations"] == []
+    assert empty["expansion"]["seeds_expanded"] == 0
+    assert empty["expansion"]["reason"] is None

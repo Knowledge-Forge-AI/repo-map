@@ -78,10 +78,16 @@ def _attempt(
     if block:
         _annotate_retained_attempt(record, ATTEMPT_BLOCK, {"graph_id": GRAPH})
     if retention != "publication-reconciliation":
-        _mark_retained_terminal(record, retention)
-        payload = json.loads(record.read_bytes())
-        payload["expires_at_epoch"] = expires
-        _portable_retention._replace_retention_payload(record, payload)
+        if namespace is None:
+            # Historical flat Local records predate the private Server writer.
+            payload = json.loads(record.read_bytes())
+            payload.update(retention_class=retention, expires_at_epoch=expires)
+            record.write_bytes(json.dumps(payload).encode())
+        else:
+            _mark_retained_terminal(record, retention)
+            payload = json.loads(record.read_bytes())
+            payload["expires_at_epoch"] = expires
+            _portable_retention._replace_retention_payload(record, payload)
     return root
 
 

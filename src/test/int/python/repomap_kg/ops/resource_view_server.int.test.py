@@ -217,7 +217,7 @@ def test_server_sigint_is_sent_only_to_owned_child_after_post_ack_byte(tmp_path:
             raise
         assert child.returncode == 0, stderr
         payload = json.loads(stdout)
-        assert (payload["result"], payload["publication_state"]) == ("failure", "rolled_back")
+        assert (payload["result"], payload["publication_state"]) == ("failure", "not_started")
         assert payload["report"]["outcome"] == "cancelled"
         assert payload["report"]["instrumentation"] in {"complete", "incomplete"}
         assert_canary_free(payload["report"])

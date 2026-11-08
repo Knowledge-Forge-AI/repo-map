@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import errno
-import fcntl
 import os
 from pathlib import Path
 import stat
@@ -64,6 +63,10 @@ class ServerRetentionLock:
 
     def __enter__(self) -> "ServerRetentionLock":
         _check_namespace(self.parent)
+        try:
+            import fcntl
+        except ImportError as error:
+            raise RetentionLockError("retention lock capability is unavailable") from error
         flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
         descriptor: int | None = None
         primary: BaseException | None = None
@@ -124,6 +127,7 @@ class ServerRetentionLock:
             return
         secondary: BaseException | None = None
         try:
+            import fcntl
             fcntl.flock(descriptor, fcntl.LOCK_UN)
         except BaseException as error:
             secondary = error

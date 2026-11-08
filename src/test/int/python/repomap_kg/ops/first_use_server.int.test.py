@@ -201,7 +201,7 @@ def test_first_use_server_context_and_native_fts_lifecycle(
 
         current = work_root / "selection-current.json"
         _select(home, current, capsys, pin=False)
-        unsupported = _pack(
+        native = _pack(
             home,
             current,
             capsys,
@@ -210,8 +210,10 @@ def test_first_use_server_context_and_native_fts_lifecycle(
             intent=None,
             canonical_key="py:pkg.pipeline.RetrievalExecutionPipeline",
         )
-        assert unsupported["status"] == "unavailable"
-        assert unsupported["reason"] == "backend_unsupported"
+        assert native["status"] in {"complete", "partial"}
+        assert native["effective_mode"] == "graph_investigation"
+        assert native["fallback"] is None
+        assert native["expansion"]["reason"] != "backend_unsupported"
         fallback = _pack(
             home,
             current,
@@ -222,8 +224,10 @@ def test_first_use_server_context_and_native_fts_lifecycle(
             canonical_key="py:pkg.pipeline.RetrievalExecutionPipeline",
             fallback="ranked_discovery",
         )
-        assert fallback["effective_mode"] == "ranked_discovery"
-        assert fallback["fallback"]["reason"] == "backend_unsupported"
+        assert fallback["status"] in {"complete", "partial"}
+        assert fallback["effective_mode"] == "graph_investigation"
+        assert fallback["fallback"] is None
+        assert fallback["expansion"]["reason"] != "backend_unsupported"
 
         core_id = binding_id_for_alias("core")
         companion_id = binding_id_for_alias("companion")

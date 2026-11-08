@@ -18,6 +18,7 @@ from common_lore_index.ops.generations import source_generation
 from common_lore_index.ops.refresh import preflight_graph, refresh_enabled_graphs, refresh_graph
 from common_lore_index.ops.reports import refresh_result_to_jsonable
 from common_lore_index.server.ops import graph_context
+from repomap_test_support.ops_refresh import SnapshotPublisher
 
 
 def _config_text(first_root: Path, second_root: Path) -> str:
@@ -106,7 +107,7 @@ def test_direct_refresh_captures_all_bindings_before_one_database_call(tmp_path)
         patch("common_lore_index.ops.refresh.discover_observations") as discover,
         patch(
             "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
-            return_value=SimpleNamespace(repository_id=1, run_id=2, files=2),
+            side_effect=(snapshot := SnapshotPublisher(files=2)),
         ) as publish,
     ):
         result = refresh_graph(config, "fixture-graph")
@@ -118,10 +119,10 @@ def test_direct_refresh_captures_all_bindings_before_one_database_call(tmp_path)
     assert publish.call_args.kwargs["repository_name"] == graph.repository_name == "[multi-source]"
     assert publish.call_args.kwargs["root_path"] == "graph:fixture-graph"
     assert publish.call_args.kwargs["repository_identity"] == "repo1:fixture-graph"
-    bundle = publish.call_args.args[1]
+    bundle = snapshot.bundle
     raw_obs = bundle.families["raw_observations"]
     assert {
-        item["payload_json"]["metadata"]["binding_alias"]
+        cast(dict[str, dict[str, object]], item["payload_json"])["metadata"]["binding_alias"]
         for item in raw_obs
         if item.get("kind") == "file"
     } == {
@@ -161,15 +162,15 @@ def test_fractional_config_metadata_publishes_portably(tmp_path):
     assert preflight_graph(config, "fixture-graph").result == "success"
     with patch(
         "common_lore_index.ops.portable_refresh.run_staged_portable_refresh",
-        return_value=SimpleNamespace(repository_id=1, run_id=2, files=3),
+        side_effect=(snapshot := SnapshotPublisher(files=3)),
     ) as publish:
         result = refresh_graph(config, "fixture-graph")
     assert result.result == "success"
     assert result.publication_state == "committed"
     publish.assert_called_once()
-    bundle = publish.call_args.args[1]
+    bundle = snapshot.bundle
     summaries = [
-        row["payload_json"]["metadata"].get("value_summary")
+        cast(dict[str, dict[str, object]], row["payload_json"])["metadata"].get("value_summary")
         for row in bundle.families["raw_observations"]
     ]
     assert {"numeric_type": "binary64", "hex": "0x1.4000000000000p+0"} in summaries

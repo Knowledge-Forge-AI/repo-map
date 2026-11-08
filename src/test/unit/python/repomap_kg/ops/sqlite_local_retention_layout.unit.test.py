@@ -10,7 +10,7 @@ publication root is resolved first). This guard alone still admits a
 symlinked ``state`` whose target is itself named ``state``; since LOCAL10 every
 Local mutation owner refuses such a ``state`` earlier, before any lock or
 record write (``ops/sqlite_local_state_layout``). The PostgreSQL route's
-default replacement is untouched.
+default replacement skips Local chain syncing and retains its private Server lock.
 """
 
 from __future__ import annotations
@@ -144,13 +144,35 @@ def test_a_symlinked_state_with_another_name_is_refused(tmp_path: Path, monkeypa
     _refused_untouched(record, monkeypatch)
 
 
-def test_the_postgres_default_never_checks_or_syncs_the_layout(
+def test_the_postgres_default_uses_its_private_namespace_without_local_chain_sync(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(_portable_retention, "fsync_directory_chain", fail_if_reached)
     shared = _write_record(tmp_path / "home" / "state" / "portable-publication" / "attempts" / TOKEN)
+    shared.parent.parent.chmod(0o700)
     _mark_retained_terminal(shared, "terminal-accepted")
+    assert (shared.parent.parent.parent / ".server-retention.lock").is_file()
     assert _read_retention_payload(shared)["retention_class"] == "terminal-accepted"
     elsewhere = _local_record(tmp_path / "home" / "not-state")
     _mark_retained_terminal(elsewhere, "terminal-failed")
     assert _read_retention_payload(elsewhere)["retention_class"] == "terminal-failed"
+
+
+@pytest.mark.parametrize("operation", ["mark", "annotate"])
+def test_local_layout_refusal_never_creates_a_server_lock(
+    tmp_path: Path, operation: str,
+) -> None:
+    record = _write_record(tmp_path / "portable-publication" / "attempts" / TOKEN)
+    record.parent.parent.chmod(0o700)
+    before = record.read_bytes()
+    lock = record.parent.parent.parent / ".server-retention.lock"
+    assert not lock.exists()
+    with pytest.raises(PortableRefreshError):
+        if operation == "mark":
+            _mark_retained_terminal(record, "terminal-failed", sync_directory=True)
+        else:
+            _portable_retention._annotate_retained_attempt(
+                record, "fixture", {}, sync_directory=True,
+            )
+    assert record.read_bytes() == before
+    assert not lock.exists(), "a refused Local operation must not create Server state"

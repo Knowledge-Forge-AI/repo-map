@@ -39,6 +39,7 @@ import stat
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass
+from contextlib import nullcontext
 from pathlib import Path
 
 from common_lore_index.artifacts import ArtifactReference
@@ -186,7 +187,7 @@ def _mark_retained_terminal(
 ) -> None:
     if retention_class not in _TERMINAL_RETENTION_CLASSES:
         raise ValueError("invalid portable retention class")
-    with retention_lock_for(path):
+    with (nullcontext() if sync_directory else retention_lock_for(path)):
         payload = _read_retention_payload(path)
         payload["retention_class"] = retention_class
         payload["expires_at_epoch"] = int(time.time()) + _TERMINAL_RETENTION_SECONDS
@@ -197,7 +198,7 @@ def _annotate_retained_attempt(
     path: Path, key: str, value: Mapping[str, object], *, sync_directory: bool = False
 ) -> None:
     """Add one block to an unsettled attempt record; never overwrite or settle it."""
-    with retention_lock_for(path):
+    with (nullcontext() if sync_directory else retention_lock_for(path)):
         payload = _read_retention_payload(path)
         if payload.get("retention_class") != "publication-reconciliation" or key in payload:
             raise PortableRefreshError("retained portable attempt cannot be annotated")

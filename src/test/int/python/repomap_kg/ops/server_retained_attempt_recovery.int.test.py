@@ -7,6 +7,16 @@ import io
 import json
 from pathlib import Path
 import stat
+import select
+import subprocess
+import sys
+import time
+
+from repomap_test_support.cli_in_process import module_process_environment
+from repomap_test_support.sqlite_local_fixtures import graph_toml, write_sqlite_home
+from repomap_test_support.sqlite_managed_child import ManagedChild, cleanup_after_failure
+from runner_coverage_observer import popen_observed_process
+
 
 import psycopg
 from psycopg.conninfo import make_conninfo
@@ -15,9 +25,9 @@ import pytest
 from common_lore_index.cli.main import main
 from common_lore_index.ops import portable_refresh
 from common_lore_index.ops._retained_attempt_record import BACKUP_NAME
-from common_lore_index.ops.retained_attempt_recovery import recover_server_retained_attempt
+from common_lore_index.ops.retained_attempt_recovery import RetainedAttemptRecovery, recover_server_retained_attempt
 from common_lore_index.storage.readback_driver import _psycopg_connection_params_from_psql_args
-from repomap_test_support.postgres_harness import require_postgres_binaries, temporary_postgres
+from repomap_test_support.postgres_harness import PostgresCluster, require_postgres_binaries, temporary_postgres
 from repomap_test_support.server_retained_recovery_fixture import (
     direct_authority, home_files, prepare_retained_server, publish_unsettled,
 )
@@ -92,3 +102,150 @@ def test_real_historical_publication_inspect_settle_and_cli_without_reexecution(
         assert backup.read_bytes() == original
         with psycopg.connect(conninfo) as connection:
             assert connection.execute("SELECT count(*), max(id) FROM public.runs").fetchone() == before_runs
+
+
+_RECOVERY_FIELDS = {
+    "operation", "result", "reason", "retention_state", "artifact_proof",
+    "publication_proof", "metadata_write_state",
+}
+
+
+def _assert_recovery_payload(outcome: RetainedAttemptRecovery, expected: dict[str, str]) -> None:
+    payload = outcome.to_jsonable()
+    assert set(payload) == _RECOVERY_FIELDS
+    assert payload == expected
+
+
+def _run_marker(postgres: PostgresCluster) -> tuple[int, int | None]:
+    conninfo = make_conninfo(
+        **_psycopg_connection_params_from_psql_args(postgres.psql_args)
+    )
+    with psycopg.connect(conninfo) as connection:
+        row = connection.execute(
+            "SELECT count(*), max(id) FROM public.runs"
+        ).fetchone()
+    assert row is not None
+    return int(row[0]), None if row[1] is None else int(row[1])
+
+
+def test_real_corrupt_referenced_bundle_is_held_without_metadata_or_new_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        fixture = prepare_retained_server(tmp_path, postgres)
+        capture = publish_unsettled(fixture, monkeypatch, "retained-corrupt")
+        record_before = capture.result_path.read_bytes()
+        bundle_path = capture.store.object_path(capture.bundle_reference)
+        bundle_before = bundle_path.read_bytes()
+        assert bundle_before
+        bundle_path.write_bytes(bundle_before[:-1] + bytes([bundle_before[-1] ^ 1]))
+        before_runs = _run_marker(postgres)
+        try:
+            outcome = recover_server_retained_attempt(
+                fixture.config, fixture.graph.id, "retained-corrupt", 1,
+                settle=True, psql_command=postgres.psql_command,
+            )
+            _assert_recovery_payload(outcome, {
+                "operation": "settle", "result": "held", "reason": "artifact-invalid",
+                "retention_state": "publication-reconciliation", "artifact_proof": "invalid",
+                "publication_proof": "not-checked", "metadata_write_state": "not-attempted",
+            })
+            assert capture.result_path.read_bytes() == record_before
+            assert not (capture.result_path.parent / BACKUP_NAME).exists()
+            assert _run_marker(postgres) == before_runs
+        finally:
+            bundle_path.write_bytes(bundle_before)
+
+
+_RETENTION_LOCK_SCRIPT = r"""
+import sys
+from pathlib import Path
+from common_lore_index.ops._server_retention_lock import ServerRetentionLock
+
+with ServerRetentionLock(Path(sys.argv[1])):
+    sys.stderr.buffer.write(b"retention-lock-ready-v1\n")
+    sys.stderr.buffer.flush()
+    if sys.stdin.buffer.read(1) != b"x":
+        raise RuntimeError("retention lock release token missing")
+"""
+
+
+def _wait_retention_lock(child: ManagedChild) -> None:
+    stream = child.stderr
+    assert stream is not None
+    deadline = time.monotonic() + 60.0
+    while time.monotonic() < deadline:
+        readable, _, _ = select.select([stream], [], [], 0.25)
+        if not readable:
+            if child.poll() is not None:
+                _, stderr = child.communicate(timeout=2)
+                raise AssertionError("lock holder exited before readiness")
+            continue
+        if stream.readline() == b"retention-lock-ready-v1\n":
+            return
+    raise AssertionError("lock holder did not complete the readiness handshake")
+
+
+def test_real_retention_lock_busy_holds_metadata_and_run_count_steady(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    require_postgres_binaries()
+    with temporary_postgres() as postgres:
+        fixture = prepare_retained_server(tmp_path, postgres)
+        capture = publish_unsettled(fixture, monkeypatch, "retained-lock")
+        raw = popen_observed_process(
+            [sys.executable, "-c", _RETENTION_LOCK_SCRIPT,
+             str(capture.result_path.parent.parent)],
+            family="cli_module", cwd=tmp_path, env=module_process_environment(),
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=False, pid_namespace_relation="shared", start_new_session=True,
+        )
+        child = ManagedChild(raw, group_owned=True)
+        try:
+            _wait_retention_lock(child)
+            before_files = home_files(fixture.home)
+            before_runs = _run_marker(postgres)
+            outcome = recover_server_retained_attempt(
+                fixture.config, fixture.graph.id, "retained-lock", 1,
+                settle=True, psql_command=postgres.psql_command,
+            )
+            _assert_recovery_payload(outcome, {
+                "operation": "settle", "result": "held", "reason": "lock-busy",
+                "retention_state": "publication-reconciliation", "artifact_proof": "matched",
+                "publication_proof": "matched", "metadata_write_state": "not-attempted",
+            })
+            assert home_files(fixture.home) == before_files
+            assert _run_marker(postgres) == before_runs
+            assert not (capture.result_path.parent / BACKUP_NAME).exists()
+        finally:
+            try:
+                stdin = child.stdin
+                assert stdin is not None
+                stdin.write(b"x")
+                stdin.flush()
+                _, stderr = child.communicate(timeout=60)
+                child.verify_dead_and_group()
+            except BaseException as error:
+                cleanup_after_failure(child, error)
+                raise
+        assert child.returncode == 0, stderr
+
+
+def test_cli_refuses_sqlite_home_before_server_recovery(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    home = write_sqlite_home(tmp_path / "sqlite-home", graph_toml("local", source))
+    output = io.StringIO()
+    with redirect_stdout(output):
+        code = main([
+            "ops", "retained-attempt", "inspect", "--repo-map-home", str(home),
+            "--graph", "local", "--operation-id", "unsupported", "--attempt", "1",
+            "--json",
+        ])
+    assert code == 1
+    assert json.loads(output.getvalue()) == {
+        "operation": "inspect", "result": "refused", "reason": "sqlite-backend",
+        "retention_state": "unavailable", "artifact_proof": "not-checked",
+        "publication_proof": "not-checked", "metadata_write_state": "not-attempted",
+    }
