@@ -16,13 +16,14 @@ ROOT = Path(__file__).resolve().parents[6]
 def test_commands_reexports_pure_leaf_and_preserves_recipe_bytes() -> None:
     assert commands.render_server_dockerfile is render_server_dockerfile
     # Original a06142b renderer, with only the approved exact four-notice COPY
-    # correction. These frozen output identities were compared before extraction
-    # acceptance; an alias calling itself would not detect a renderer regression.
+    # correction, and the D12 linux-libc-dev 6.12.116-1 manifest refresh.
+    # The former D12 hash is reproduced by restoring only that package row;
+    # an alias calling itself would not detect a renderer regression.
     cases = (
         (release.DYNAMIC_PACKAGE_MANIFEST, release.PSYCOPG_LIBPQ_VERSION,
          "20db9ee3957945882d3a2f1fa83626a6cd37235ed0fdd4665e6d83c99ca37cf2"),
         (release_manifest.D12_CANDIDATE_PACKAGE_MANIFEST, release_manifest.D12_CANDIDATE_LIBPQ_VERSION,
-         "b4b1e44be8d99d0f481e8e35b5e172c96dba58cebe2199a3926d3cde092b6337"),
+         "03157e09e1b68f731c7869578fdc2f685198817b70e4544dcbdd63e840a350ce"),
     )
     for manifest, libpq_version, expected in cases:
         assert hashlib.sha256(render_server_dockerfile(manifest, libpq_version).encode()).hexdigest() == expected
