@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+import hashlib
 import os
 from pathlib import Path
 import sys
@@ -58,6 +59,79 @@ class AbruptLaunch:
         return record
 
 
+@dataclass
+class UsageAbruptLaunch:
+    """Observer-only evidence for a declared usage helper termination.
+
+    The native owner supplies only a PID and immutable settlement facts. No
+    process object, factory, wait, poll, reap or signal capability crosses
+    this test-owned boundary.
+    """
+
+    context: Any
+    declaration: Any
+    launch_id: str
+    pid: int | None = None
+    started_ns: int | None = None
+    checkpoint: str | None = None
+    settlement: Any = None
+
+    def launched(self, pid: int) -> None:
+        if self.pid is not None or type(pid) is not int or pid <= 0:
+            raise RuntimeError("usage abrupt launch identity is missing or duplicated")
+        self.pid = pid
+        self.started_ns = time.monotonic_ns()
+
+    def observed_checkpoint(self, value: str, pid: int | None = None) -> None:
+        if self.pid is None or (
+                pid is not None and (type(pid) is not int or pid != self.pid)):
+            raise RuntimeError("usage abrupt checkpoint PID mismatch")
+        if value != self.declaration.checkpoint:
+            raise RuntimeError("usage abrupt child checkpoint mismatch")
+        self.checkpoint = value
+
+    def settled(self, facts: Any) -> None:
+        """Accept only real native facts, never a test expectation."""
+        self._validate_settlement(facts)
+        if self.settlement is not None:
+            raise RuntimeError("usage abrupt native settlement is unproved")
+        self.settlement = facts
+
+    def _validate_settlement(self, facts: Any) -> None:
+        from common_lore_index.coordinator._usage_observation import UsageSettlement
+        if type(facts) is not UsageSettlement:
+            raise RuntimeError("usage abrupt settlement must be immutable native facts")
+        statuses = ("waited", "process_group_cleaned", "readers_closed", "streams_closed", "proven")
+        if (self.pid is None or type(facts.pid) is not int or facts.pid <= 0
+                or facts.pid != self.pid or type(facts.returncode) is not int
+                or facts.returncode != self.declaration.expected_returncode
+                or any(type(getattr(facts, field)) is not bool
+                       or getattr(facts, field) is not True for field in statuses)):
+            raise RuntimeError("usage abrupt native settlement is unproved")
+
+    def record(self) -> dict[str, Any]:
+        self.context.verify_source()
+        if self.pid is None or self.started_ns is None or self.checkpoint is None:
+            raise RuntimeError("usage abrupt evidence is incomplete")
+        if self.settlement is None:
+            raise RuntimeError("usage abrupt settlement is missing")
+        self._validate_settlement(self.settlement)
+        returncode = self.settlement.returncode
+        if self.declaration.nodeid in self.context.records:
+            raise RuntimeError("abrupt role executed twice")
+        record = {
+            "nodeid": self.declaration.nodeid, "role": self.declaration.role,
+            "invocation_id": self.context.invocation_id,
+            "source_sha256": self.context.source_sha256, "launch_id": self.launch_id,
+            "pid": self.pid, "parent_pid": os.getpid(), "started_ns": self.started_ns,
+            "checkpoint": self.checkpoint, "returncode": returncode,
+            "settled_ns": time.monotonic_ns(), "cleanup": True,
+            "measurement": "unavailable",
+        }
+        self.context.records[self.declaration.nodeid] = record
+        return record
+
+
 class AbruptRunnerContext:
     """Object authority selected by the sealed A plugin, never an ambient flag."""
 
@@ -72,7 +146,7 @@ class AbruptRunnerContext:
         self.verify_source = verify_source
         self.declarations = tuple(declarations or MAINTAINED_ABRUPT_DECLARATIONS)
         self.records: dict[str, dict[str, Any]] = {}
-        self.launches: dict[str, AbruptLaunch] = {}
+        self.launches: dict[str, AbruptLaunch | UsageAbruptLaunch] = {}
         self.nodeid: str | None = None
         self.session: Any = None
 
@@ -87,6 +161,19 @@ class AbruptRunnerContext:
             raise RuntimeError("undeclared or repeated abrupt launch")
         self.verify_source()
         launch = AbruptLaunch(self, declaration, uuid4().hex)
+        self.launches[declaration.nodeid] = launch
+        return launch
+
+    def begin_usage(self, role: str, case: str) -> UsageAbruptLaunch:
+        declaration = find_declaration(self.nodeid, self.declarations)
+        if (declaration is None or declaration.role != role
+                or self.nodeid not in self.nodeids
+                or declaration.launch_case != case or self.nodeid in self.launches
+                or declaration.owner_sha256 != hashlib.sha256(
+                    f"{self.nodeid} (call)".encode()).hexdigest()):
+            raise RuntimeError("undeclared or repeated usage abrupt launch")
+        self.verify_source()
+        launch = UsageAbruptLaunch(self, declaration, uuid4().hex)
         self.launches[declaration.nodeid] = launch
         return launch
 
@@ -123,6 +210,25 @@ class AbruptRunnerContext:
                 if p and str(Path(p).resolve()) not in owned)
         return environment
 
+    def _usage_environment(self, original: dict[str, str]) -> dict[str, str]:
+        """Build a coverage/bootstrap-free environment for the exact A child."""
+        environment = {key: value for key, value in original.items()
+                       if not key.startswith("COVERAGE_")}
+        owned: set[str] = set()
+        if self.session is not None:
+            owned.update((str(self.session.session_dir), str(self.session.bootstrap_dir)))
+        if "PYTHONPATH" in environment:
+            environment["PYTHONPATH"] = os.pathsep.join(
+                item for item in environment["PYTHONPATH"].split(os.pathsep)
+                if item and str(Path(item).resolve()) not in owned
+            )
+        return environment
+
+    def _usage_declaration(self) -> Any:
+        declaration = find_declaration(self.nodeid, self.declarations)
+        return (declaration if declaration is not None and self.nodeid in self.nodeids
+                and declaration.launch_case else None)
+
     @contextmanager
     def bind_session(self, session):
         import common_lore_index.coordinator._portable_worker_launch as owner
@@ -134,6 +240,80 @@ class AbruptRunnerContext:
 
         def observe(spec, identity, limits, **kwargs):
             # All ordinary children still take the measured adapter.
+            declaration = self._usage_declaration()
+            usage_case = None
+            if len(spec.argv) >= 5 and tuple(spec.argv[1:3]) == (
+                "-m", "repomap_test_support.usage_worker"):
+                if spec.argv[3] == "--case" and len(spec.argv) > 4:
+                    usage_case = spec.argv[4]
+            if declaration is not None and usage_case == declaration.launch_case:
+                if spec.argv[0] != sys.executable:
+                    raise RuntimeError("usage abrupt interpreter identity mismatch")
+                if kwargs.get("_launch_process") is not None or kwargs.get("_launch_ticket") is not None:
+                    raise RuntimeError("usage abrupt launch cannot inject factory or ticket")
+                if "_usage_observer" in kwargs:
+                    raise RuntimeError("usage abrupt observer authority cannot be overridden")
+                if kwargs.get("collect_usage") is not True:
+                    raise RuntimeError("usage abrupt observer requires native usage collection")
+                from runner_usage_command import (
+                    USAGE_COMMAND, usage_python_paths, validate_usage_arguments,
+                    validate_usage_probe,
+                )
+                from runner_usage_abrupt import observe_usage_checkpoint
+                if tuple(spec.argv[1:3]) != USAGE_COMMAND:
+                    raise RuntimeError("usage abrupt command identity mismatch")
+                capability = getattr(self.session, "_portable_capability", None)
+                parsed_case, probe = validate_usage_arguments(
+                    tuple(spec.argv[3:]), measured_only=False,
+                )
+                if parsed_case != usage_case:
+                    raise RuntimeError("usage abrupt case identity mismatch")
+                tail = tuple(spec.argv[3:])
+                try:
+                    job_id = tail[tail.index("--job-id") + 1]
+                    attempt = int(tail[tail.index("--attempt") + 1])
+                except (ValueError, IndexError) as error:
+                    raise RuntimeError("usage abrupt capability identity is malformed") from error
+                if (job_id, attempt) != (identity.get("job_id"), identity.get("attempt")):
+                    raise RuntimeError("usage abrupt capability identity mismatch")
+                if capability is not None:
+                    roots = (self.session.session_dir, self.session.child_manifest_dir,
+                             self.session.data_dir)
+                else:
+                    roots = (None, None, None)
+                if probe is not None:
+                    validate_usage_probe(
+                        probe, case=parsed_case, session_dir=roots[0],
+                        child_manifest_dir=roots[1], data_dir=roots[2],
+                    )
+                expected_paths = usage_python_paths(Path(__file__).resolve().parents[1])
+                actual_paths = tuple(
+                    Path(item).resolve() for item in
+                    str(spec.environment.get("PYTHONPATH", "")).split(os.pathsep) if item
+                )
+                if actual_paths != expected_paths:
+                    raise RuntimeError("usage abrupt source paths mismatch")
+                usage_launch = self.begin_usage(declaration.role, usage_case)
+                clean = replace(spec, environment=self._usage_environment(dict(spec.environment)))
+                original_kwargs = dict(kwargs)
+                original_kwargs["_usage_observer"] = usage_launch
+                # Keep the native default launcher and resource reaper; A is
+                # intentionally outside coverage registration and M receipts.
+                try:
+                    result = original(clean, identity, limits, **original_kwargs)
+                except BaseException as error:
+                    try:
+                        observe_usage_checkpoint(usage_launch, clean, None)
+                        usage_launch.record()
+                    except Exception as checkpoint_error:
+                        error.add_note(
+                            f"usage abrupt checkpoint evidence failure: "
+                            f"{type(checkpoint_error).__name__}"
+                        )
+                    raise
+                observe_usage_checkpoint(usage_launch, clean, result)
+                usage_launch.record()
+                return result
             if (find_declaration(self.nodeid, self.declarations) is None
                     or self.nodeid not in self.nodeids
                     or tuple(spec.argv[1:5]) != (
@@ -178,6 +358,15 @@ class AbruptRunnerContext:
             owner.run_worker_spec = measured_adapter
             type(self)._CURRENT = previous_context
             self.session = None
+
+    def record_usage(self) -> dict[str, Any]:
+        declaration = self._usage_declaration()
+        if declaration is None:
+            raise RuntimeError("no usage abrupt declaration selected")
+        launch = self.launches.get(declaration.nodeid)
+        if not isinstance(launch, UsageAbruptLaunch):
+            raise RuntimeError("usage abrupt launch was not observed")
+        return launch.record()
 
 
 def active_abrupt_context() -> AbruptRunnerContext:

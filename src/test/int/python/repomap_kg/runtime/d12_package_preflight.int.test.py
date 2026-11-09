@@ -1,4 +1,4 @@
-"""CI107 regression for the exact Debian package manifest observed by D12 E1."""
+"""CI132 regression for the exact Debian package manifest observed by D12 E1."""
 
 from __future__ import annotations
 
@@ -19,15 +19,15 @@ from tools.system.d12_system_session import SYSTEM_BUILD_INTENT_FILENAME
 
 CURRENT_LINUX_LIBC_DEV = (
     "linux-libc-dev",
-    "6.12.115-2",
+    "6.12.116-1",
     "all",
-    "235ba2cb2ea677f4acaf402b027e76d305342870f6d80d822d7ee9713e2f0ff5",
+    "c43f5c6dc104f2a2ce985d6d68d3575a7be6fe904313efa7b10edfa0170f9dce",
 )
 STALE_LINUX_LIBC_DEV = (
     "linux-libc-dev",
-    "6.12.113-1",
+    "6.12.115-2",
     "all",
-    "b2d475e01aaf0030c72bd3a0300d311f8be64aa9e82d82eae5da1a04f4010071",
+    "235ba2cb2ea677f4acaf402b027e76d305342870f6d80d822d7ee9713e2f0ff5",
 )
 
 

@@ -16433,6 +16433,43 @@
       ],
       "rationale": "ADRs 0168 and 0169 bounded Server context, truthful refresh outcomes and positive retained-attempt recovery; clean exact admission with inherited history and debt ceilings preserved.",
       "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzz.cloe_ci132repair1.sealing_io.owners",
+      "members": [
+        "src/test/int/python/repomap_kg/artifacts/sealing_classification_boundaries.int.test.py",
+        "src/test/int/python/repomap_kg/artifacts/sealing_io_boundaries.int.test.py"
+      ],
+      "rationale": "ADR0173 and ADR0175 CI132 remediation: real filesystem classification, descriptor and immutable-object refusal custody; zero-debt test-owner admission without source denominator or threshold changes.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzz.cloe_ci132repair1.usage.owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/usage_runner_admission.int.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/protocol_usage_observation.unit.test.py",
+        "src/test/unit/python/tools/runner_usage_abrupt.unit.test.py",
+        "src/test/unit/python/tools/runner_usage_coverage.unit.test.py",
+        "src/test/unit/python/tools/usage_receipt_rejection.unit.test.py"
+      ],
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "zzzz.cloe_ci132repair1.usage.tools",
+      "members": [
+        "tools/runner_usage_abrupt.py",
+        "tools/runner_usage_command.py",
+        "tools/runner_usage_coverage.py"
+      ],
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "tools"
     }
   ],
   "decompositions": [
@@ -27897,6 +27934,92 @@
       ],
       "test": "src/test/unit/python/repomap_test_support/test_cov5k_r2_fix2_dynamic_targets.unit.test.py",
       "test_sha256": "23d72d673f84d54c90e9eeec7b4570f7cf0a3f13ed609848c58d0653545d7e67"
+    },
+    {
+      "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15",
+      "id": "cloe.ci132repair1.capability.compile",
+      "kind": "compile",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "55add33f4978236519d4f2db36b28b5ade55b95ed4b06050db661a9e90d9d75d",
+      "parameters": {
+        "case": "capability_mod",
+        "chain": [
+          {
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15",
+            "kind": "compile"
+          },
+          {
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014",
+            "kind": "exec"
+          }
+        ],
+        "filename": "sample.py",
+        "schema": "literal-coverage-fixture-v1",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation"
+      },
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "cloe.cutover1.fix22.r3.public.capability.compile",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "path": "tools/runner_coverage.py",
+          "sha256": "fa7f4528542f30c7380e977383681c17337fd4e69995d74bafcbd209cc1da236",
+          "symbol": ""
+        },
+        {
+          "module": "runner_coverage_capability",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "3d546e89d9dd7aac9864072ceec31b03038d1e7d809f3d919a4873cd5da3185e",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "55add33f4978236519d4f2db36b28b5ade55b95ed4b06050db661a9e90d9d75d"
+    },
+    {
+      "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014",
+      "id": "cloe.ci132repair1.capability.exec",
+      "kind": "exec",
+      "owner": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "owner_sha256": "55add33f4978236519d4f2db36b28b5ade55b95ed4b06050db661a9e90d9d75d",
+      "parameters": {
+        "case": "capability_mod",
+        "chain": [
+          {
+            "fingerprint": "3c922a3f0d8b4c7f6737b1369405d015b2c603b07b365aa8a6defcd9a53e8d15",
+            "kind": "compile"
+          },
+          {
+            "fingerprint": "fef1d2381765cb8f4102999e8708b71c9a9a6d7b539a0c5ba87e514c93160014",
+            "kind": "exec"
+          }
+        ],
+        "filename": "sample.py",
+        "schema": "literal-coverage-fixture-v1",
+        "source_utf8": "def fn():\n    return 42\n",
+        "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation"
+      },
+      "recipe": "literal_coverage_fixture",
+      "supersedes": "cloe.cutover1.fix22.r3.public.capability.exec",
+      "symbol": "ChildCoverageCapabilityUnitTests.test_prelaunch_registration_and_accept_validation",
+      "targets": [
+        {
+          "module": "runner_coverage",
+          "path": "tools/runner_coverage.py",
+          "sha256": "fa7f4528542f30c7380e977383681c17337fd4e69995d74bafcbd209cc1da236",
+          "symbol": ""
+        },
+        {
+          "module": "runner_coverage_capability",
+          "path": "tools/runner_coverage_capability.py",
+          "sha256": "3d546e89d9dd7aac9864072ceec31b03038d1e7d809f3d919a4873cd5da3185e",
+          "symbol": ""
+        }
+      ],
+      "test": "src/test/unit/python/tools/test_runner_coverage_capability.unit.test.py",
+      "test_sha256": "55add33f4978236519d4f2db36b28b5ade55b95ed4b06050db661a9e90d9d75d"
     }
   ],
   "dynamic_schema": "repomap-python-retention-dynamic-v1",
@@ -58770,6 +58893,114 @@
       "rationale": "ADR0173 real Local/Server plan CLI witnesses for source-body opens, DB/worker/lock effects and exact independent multi-binding metadata counts; zero new debt.",
       "root": "test_owners",
       "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_capture_contracts.py",
+      "rationale": "CI132 acyclic capture repair: shared existing failures and pure signature helper move to a clean leaf owner; no added debt, threshold or import-containment relaxation.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/sealing_classification_boundaries.int.test.py",
+      "rationale": "ADR0173 and ADR0175 CI132 remediation: real filesystem classification, descriptor and immutable-object refusal custody; zero-debt test-owner admission without source denominator or threshold changes.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/sealing_io_boundaries.int.test.py",
+      "rationale": "ADR0173 and ADR0175 CI132 remediation: real filesystem classification, descriptor and immutable-object refusal custody; zero-debt test-owner admission without source denominator or threshold changes.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_usage_observation.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_usage_abrupt.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_usage_command.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/runner_usage_coverage.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/usage_runner_admission.int.test.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "test_owners",
+      "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/protocol_usage_observation.unit.test.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_usage_abrupt.unit.test.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/runner_usage_coverage.unit.test.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/usage_receipt_rejection.unit.test.py",
+      "rationale": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

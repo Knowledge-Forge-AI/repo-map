@@ -15,6 +15,10 @@ from common_lore_index.coordinator._worker_environment import (
     add_windows_runtime_environment,
 )
 from common_lore_index.coordinator.process_supervision import ManagedProcess
+from common_lore_index.coordinator._usage_observation import (
+    UsageObserver,
+    validate_usage_observer,
+)
 
 
 @dataclass(frozen=True)
@@ -35,6 +39,7 @@ def run_worker_spec(
     job_context: Mapping[str, object] | None = None,
     cancel_event: threading.Event | None = None,
     _launch_process: Callable[..., ManagedProcess] | None = None,
+    _usage_observer: UsageObserver | None = None,
     collect_usage: bool = False,
 ) -> SyntheticWorkerResult:
     """Run one explicit worker specification under bounded supervision.
@@ -45,7 +50,10 @@ def run_worker_spec(
 
     if collect_usage and _launch_process is not None:
         raise ValueError("usage collection requires owned launch")
+    validate_usage_observer(_usage_observer, collect_usage, _launch_process, None)
     usage: dict[str, Any] = {"collect_usage": True} if collect_usage else {}
+    if _usage_observer is not None:
+        usage["_usage_observer"] = _usage_observer
     environment = dict(spec.environment)
     add_windows_runtime_environment(environment)
     return _run_protocol_worker(

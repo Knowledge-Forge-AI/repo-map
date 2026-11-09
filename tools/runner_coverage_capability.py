@@ -190,19 +190,9 @@ class ChildCoverageCapability:
         return tok
 
     def paths_for_command(self, command: tuple[str, ...]) -> tuple[Path, ...]:
-        """Select one exact launch identity without widening production paths."""
-        if command == self.portable_command:
-            return self.permitted_python_paths
-        from runner_coverage_conformance import CONFORMANCE_COMMAND
-
-        if command != CONFORMANCE_COMMAND or self.conformance_root is None:
-            raise CapabilityValidationError("invalid worker command identity")
-        expected_root = Path(__file__).resolve().parents[1] / "src/test/support/python"
-        if self.conformance_root != expected_root:
-            raise CapabilityContainmentError("conformance source root mismatch")
-        if compute_source_commitment(self.conformance_root) != self.conformance_commitment:
-            raise CapabilityValidationError("conformance source commitment mismatch")
-        return (self.conformance_root, *self.permitted_python_paths)
+        """Select exact committed worker paths through the closed parser."""
+        from runner_usage_command import permitted_worker_paths
+        return permitted_worker_paths(self, command)
 
     def validate_for_accept(self, token: str, pid: int | None = None) -> Path:
         """Validate child produced expected terminal markers and a readable coverage shard."""

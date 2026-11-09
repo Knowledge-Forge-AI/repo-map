@@ -769,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "ba2400d09ecf6ec7388abff2abda414e23ec715ff60cdd4dbbf9ea8c20bf93bd"
+    "sha256": "00b4540e4ceb12dfd684a4f42f857f81876c306be2e2de6755d240f620ba5e0f"
   },
   "ruff": {
     "findings": [
@@ -15129,6 +15129,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.coordinator._usage_observation",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_usage_observation.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.coordinator._usage_reaper",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_usage_reaper.py",
@@ -16314,6 +16320,12 @@
         "module": "common_lore_index.graph",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/graph/__init__.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph._capture_contracts",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_capture_contracts.py",
         "tier": "T1-future"
       },
       {

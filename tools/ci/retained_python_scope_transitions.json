@@ -5900,6 +5900,37 @@
       "source_commit": "52c60169303458905d11c1f307504ec9ff3ebe4b",
       "source_manifest_sha256": "cd05e1854f1c8cfca28994cbb3442688465e4ce506ea793811b3fe827b26a503",
       "status_path": "tools/ci/cloe-resource-governance2-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.coordinator._usage_observation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/coordinator/_usage_observation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.graph._capture_contracts",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/_capture_contracts.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "00b4540e4ceb12dfd684a4f42f857f81876c306be2e2de6755d240f620ba5e0f",
+      "new_selected_set_sha256": "d335dde678418d8694297994797dcf00a9cc397962b254cf90965ad312e99b36",
+      "old_ownership_manifest_sha256": "ba2400d09ecf6ec7388abff2abda414e23ec715ff60cdd4dbbf9ea8c20bf93bd",
+      "old_selected_set_sha256": "734db5231aa593b9ef037d36a49568a4a1c77303c56bf1e3071989097287928c",
+      "phase": "REPOMAP-CLOE-CI132REPAIR1",
+      "reason": "CI132 acyclic capture repair: shared existing failures and pure signature helper move to a clean leaf owner; no added debt, threshold or import-containment relaxation. ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "source_commit": "2fdd683670ddbdd7e09e55dca83cfdcb157e7d16",
+      "source_manifest_sha256": "ba2400d09ecf6ec7388abff2abda414e23ec715ff60cdd4dbbf9ea8c20bf93bd",
+      "status_path": "tools/ci/cloe-ci132repair1-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

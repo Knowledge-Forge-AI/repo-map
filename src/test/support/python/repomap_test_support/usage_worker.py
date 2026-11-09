@@ -99,12 +99,13 @@ def _write_cpu_witness(descriptor: int) -> None:
 def _grandchild(seconds: float) -> subprocess.Popen[bytes]:
     code = _BURN.format(seconds=seconds) if seconds else "import time; time.sleep(600)"
     return subprocess.Popen(
-        (sys.executable, "-c", code),
+        (sys.executable, "-I", "-S", "-B", "-c", code),
         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        env={"LANG": "C", "LC_ALL": "C", "PATH": ""}, close_fds=True,
     )
 
 
-def _prepare(case: str, probe_path: Path | None) -> Any:
+def _prepare(case: str, probe_path: Path | None, probe_fd: int | None = None) -> Any:
     held = None
     if case == "burn":
         _burn(BURN_SECONDS)
@@ -116,14 +117,16 @@ def _prepare(case: str, probe_path: Path | None) -> Any:
         _grandchild(BURN_SECONDS).wait()
     elif case == "grandchild-remaining":
         remaining = _grandchild(0)
-        if probe_path is not None:
-            probe_path.write_text(f"{remaining.pid}\n", encoding="ascii")
+        if probe_fd is not None:
+            os.write(probe_fd, f"{remaining.pid}\n".encode("ascii"))
     elif case == "sigkill":
         _burn(0.1)
+        os.write(2, f"REPOMAP_ABRUPT_CHECKPOINT pre_hello {os.getpid()}\n".encode("ascii"))
         os.kill(os.getpid(), signal.SIGKILL)
     elif case == "block" and probe_path is not None:
         _grandchild(0)
-        probe_path.write_text(f"{os.getpid()}\n", encoding="ascii")
+        if probe_fd is not None:
+            os.write(probe_fd, f"{os.getpid()}\n".encode("ascii"))
     return held
 
 
@@ -133,9 +136,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--probe-path")
     known, worker_argv = parser.parse_known_args(argv)
     witness = None
-    if known.case == "grandchild-waited" and known.probe_path:
-        witness = os.open(known.probe_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    held = _prepare(known.case, Path(known.probe_path) if known.probe_path else None)
+    if known.probe_path:
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        flags |= getattr(os, "O_NOFOLLOW", 0)
+        witness = os.open(known.probe_path, flags, 0o600)
+    held = _prepare(known.case, Path(known.probe_path) if known.probe_path else None, witness)
     from common_lore_index.coordinator import portable_worker
     from common_lore_index.coordinator._portable_semantic_adapter import PortableExecutionError
 
@@ -152,8 +157,10 @@ def main(argv: list[str] | None = None) -> int:
         return portable_worker.main(worker_argv)
     finally:
         del held
-        if witness is not None:
+        if witness is not None and known.case == "grandchild-waited":
             _write_cpu_witness(witness)
+        elif witness is not None:
+            os.close(witness)
 
 
 if __name__ == "__main__":

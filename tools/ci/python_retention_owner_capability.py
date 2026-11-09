@@ -62,6 +62,10 @@ class ChildCoverageCapabilityUnitTests(unittest.TestCase):
         cap_staging = self._make_capability(suite="staging")
         self.assertTrue(cap_staging.active)
         self.assertEqual(cap_staging.suite, "staging")
+        for capability in (cap_int, cap_staging):
+            self.assertIsNone(capability.conformance_root)
+            with self.assertRaisesRegex(CapabilityRefusalError, "test-conformance authority"):
+                capability.paths_for_command(("-m", "repomap_test_support.usage_worker"))
 
     def test_capability_refusal_for_disallowed_suites(self) -> None:
         for disallowed in ("unit", "smoke", "system", "inert", "unknown"):

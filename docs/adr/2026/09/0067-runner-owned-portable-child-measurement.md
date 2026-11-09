@@ -324,3 +324,12 @@ its old step-derived gate result does not itself bind this new report policy.
 Acceptance additionally requires same-attempt report validation and a separately
 authorized exact-candidate hosted request adopting this amendment. No candidate
 workflow or gate-contract copy may silently deploy that consumer change.
+
+## ADR 0175 amendment
+
+[ADR 0175](../11/0175-measured-native-usage-and-ci133.md) adds the exact
+usage-helper command, native notification-only ownership bridge and two
+additional unregistered abrupt roles. It preserves the three original roles,
+all A data exclusion, strict issued-child receipts and the bootstrap allowlist.
+Its closed capability fixture adds exact refusal assertions while retaining
+whole-owner AST matching and the unchanged literal compile/exec contract.

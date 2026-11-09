@@ -17,8 +17,6 @@ from runner_coverage_capability import (
     CapabilityValidationError,
     ChildCoverageCapability,
 )
-
-
 RUNNER_MEASUREMENT_RECEIPT_HEADROOM_SECONDS: float = 0.5
 RUNNER_MEASURED_CHILD_HELLO_DEADLINE_SECONDS: float = 2.0
 RUNNER_MEASURED_CHILD_PROCESS_DEADLINE_SECONDS: float = 3.0
@@ -36,7 +34,6 @@ class _CoveredManagedProcess:
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._inner, name)
-
     def _wait_for_exit_receipt(self) -> bool:
         if self._deadline is None:
             self._deadline = time.monotonic() + self._exit_timeout
@@ -68,8 +65,6 @@ class _CoveredManagedProcess:
     def cleanup(self, term_timeout: float, kill_timeout: float) -> bool:
         self._wait_for_exit_receipt()
         return self._inner.cleanup(term_timeout, kill_timeout)
-
-
 def make_portable_worker_spec_adapter(
     original_run_worker_spec: Callable[..., Any],
     capability: ChildCoverageCapability,
@@ -84,22 +79,32 @@ def make_portable_worker_spec_adapter(
         job_context: Mapping[str, object] | None = None,
         cancel_event: threading.Event | None = None,
         _launch_process: Callable[..., Any] | None = None,
+        _usage_observer: Any = None,
+        collect_usage: bool = False,
     ) -> Any:
-        # 1. Validate capability authority at launch
         capability.validate_for_launch()
         if not spec.argv or spec.argv[0] != sys.executable:
             raise CapabilityValidationError("portable interpreter identity mismatch")
 
-        # 2. Validate canonical fixed portable command
         cmd_slice = tuple(spec.argv[1:1 + len(capability.portable_command)])
+        from runner_usage_command import USAGE_COMMAND
+        usage_helper = cmd_slice == USAGE_COMMAND
+        if usage_helper and not collect_usage:
+            raise CapabilityValidationError("usage helper requires collect_usage")
+        if _usage_observer is not None:
+            raise CapabilityValidationError("usage adapter owns the native observer")
+        if collect_usage and _launch_process is not None:
+            raise CapabilityValidationError("usage collection forbids an injected launch factory")
         permitted_paths = capability.paths_for_command(cmd_slice)
         from runner_coverage_conformance import (
             CONFORMANCE_COMMAND, validate_conformance_arguments,
         )
         if cmd_slice == CONFORMANCE_COMMAND:
             validate_conformance_arguments(tuple(spec.argv[3:]))
+        if usage_helper:
+            from runner_usage_command import validate_usage_arguments
+            validate_usage_arguments(tuple(spec.argv[3:]), capability=capability, measured_only=True)
 
-        # 3. Validate allowed product paths in spec PYTHONPATH
         spec_pypath = spec.environment.get("PYTHONPATH", "")
         approved_paths: list[str] = []
         if spec_pypath:
@@ -110,15 +115,13 @@ def make_portable_worker_spec_adapter(
                 if p_res not in permitted_paths:
                     raise CapabilityContainmentError(f"unpermitted path in spec PYTHONPATH: {p}")
                 approved_paths.append(str(p_res))
-        if cmd_slice == CONFORMANCE_COMMAND and tuple(approved_paths) != tuple(map(str, permitted_paths)):
+        if (cmd_slice == CONFORMANCE_COMMAND or usage_helper) and tuple(approved_paths) != tuple(map(str, permitted_paths)):
             raise CapabilityContainmentError("conformance Python paths mismatch")
 
-        # 4. Reject ambient coverage
         for k in spec.environment:
             if k.startswith("COVERAGE_"):
                 raise CapabilityValidationError(f"ambient coverage variable rejected: {k}")
 
-        # 5. Pre-register expected child process token
         token = capability.register_prelaunch_child()
         capability.launched_commands[token] = cmd_slice
 
@@ -149,30 +152,27 @@ def make_portable_worker_spec_adapter(
         )
         augmented_spec = replace(spec, environment=env)
 
-        # 7. Synchronous launch and reap under original run_worker_spec
         workload_exc: BaseException | None = None
         result: Any = None
-        from common_lore_index.coordinator.process_supervision import launch_managed_process
-        launcher = _launch_process or launch_managed_process
-
-        def registered_launch(*args: Any, **kwargs: Any) -> Any:
-            process = launcher(*args, **kwargs)
-            capability.launched_pids[token] = process.pid
-            observer = session.process_observer
-            if observer is None:
-                raise RuntimeError("scoped_portable_coverage_adapter requires active session.process_observer")
-            launch_argv = args[0] if args else kwargs.get("argv")
-            launch_env = kwargs.get("environment") or env
-            inner_pid = kwargs.get("inner_pid")
-            pid_relation = "translated" if kwargs.get("is_container_namespace", False) else kwargs.get("pid_namespace_relation", "shared")
-            inv_id = job_context.get("invocation_id") if isinstance(job_context, dict) else env.get("COVERAGE_SESSION_INVOCATION_ID")
-            owner_val = getattr(identity, "worker_id", None) or env.get("COVERAGE_CHILD_TEST_OWNER")
-            observer.observe_launch(
-                host_pid=process.pid, inner_pid=inner_pid, pid_namespace_relation=pid_relation,
-                invocation_id=inv_id, argv=launch_argv, env=launch_env, ppid=os.getpid(),
-                executable_family="portable_worker", test_owner=owner_val, capability=session.bootstrap_capability,
+        native_observer = None
+        if collect_usage:
+            from runner_usage_coverage import MeasuredUsageObserver
+            launch_args = tuple(spec.argv)
+            observer_context = dict(job_context or {})
+            observer_context["argv"] = launch_args
+            native_observer = MeasuredUsageObserver(
+                session=session, capability=capability, token=token, environment=env,
+                identity=identity, job_context=observer_context,
             )
-            return _CoveredManagedProcess(process, token, capability.child_manifest_dir)
+        else:
+            from common_lore_index.coordinator.process_supervision import launch_managed_process
+            from runner_usage_coverage import make_registered_launch
+            launcher = _launch_process or launch_managed_process
+            registered_launch = make_registered_launch(
+                launcher=launcher, capability=capability, token=token, session=session,
+                environment=env, job_context=job_context, identity=identity,
+                wrapper=_CoveredManagedProcess,
+            )
 
         measured_limits = limits
         cur_h = float(limits.get("hello_deadline_seconds", 0.5) if isinstance(limits, Mapping) else getattr(limits, "hello_deadline_seconds", 0.5))
@@ -186,22 +186,25 @@ def make_portable_worker_spec_adapter(
                 measured_limits = SimpleNamespace(**{**vars(limits), "hello_deadline_seconds": new_h, "process_deadline_seconds": new_p})
 
         try:
-            result = original_run_worker_spec(
-                augmented_spec,
-                identity,
-                measured_limits,
-                job_context=job_context,
-                cancel_event=cancel_event,
-                _launch_process=registered_launch,
-            )
+            kwargs: dict[str, Any] = {
+                "job_context": job_context, "cancel_event": cancel_event,
+            }
+            if collect_usage:
+                kwargs.update({"collect_usage": True, "_usage_observer": native_observer})
+            else:
+                kwargs["_launch_process"] = registered_launch
+            result = original_run_worker_spec(augmented_spec, identity, measured_limits, **kwargs)
         except BaseException as exc:
             workload_exc = exc
 
-        # 8. Acceptance validation
         accept_exc: Exception | None = None
         meas_rec_err: BaseException | None = None
         diag_rec_note: str | None = None
         try:
+            if collect_usage:
+                from runner_usage_coverage import require_usage_settlement
+                assert native_observer is not None
+                require_usage_settlement(native_observer, result)
             if token not in capability.launched_pids:
                 raise CapabilityValidationError("registered child was not launched")
             if result is not None and (not result.waited or not result.process_group_cleaned):
@@ -235,7 +238,6 @@ def make_portable_worker_spec_adapter(
                     "diagnostic_recording_failure", diag_fault, "diagnostic_fault_unrenderable"
                 )
 
-        # 9. Disposition: preserve primary workload result and exception
         if workload_exc is not None:
             from runner_portable_diagnostics import attach_workload_disposition_notes
             attach_workload_disposition_notes(workload_exc, accept_exc, meas_rec_err, diag_rec_note)

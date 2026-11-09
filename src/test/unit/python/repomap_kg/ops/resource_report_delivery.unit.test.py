@@ -14,7 +14,7 @@ import common_lore_index.ops.resource_reports._delivery as delivery
 from common_lore_index.ops.resource_reports._admission import (
     ResourceReportRefusal, admit_report_destination, configured_roots,
 )
-from common_lore_index.ops.resource_reports._codec import ResourceReportError
+from common_lore_index.ops.resource_reports._codec import MAX_FILE_BYTES_V2, ResourceReportError
 from common_lore_index.ops.resource_reports._delivery import DeliveryError, admit_destination, deliver
 from common_lore_index.ops.resource_reports._files import read_report_file
 from repomap_test_support.resource_report_cli_files import private_directory, report_leftovers
@@ -258,7 +258,7 @@ def test_reader_refuses_unsafe_or_oversized_inputs(tmp_path: Path, kind: str) ->
         path.write_bytes(DATA)
         path.chmod(0o644)
     else:
-        path.write_bytes(b"x" * 8194)
+        path.write_bytes(b"x" * (MAX_FILE_BYTES_V2 + 1))
         path.chmod(0o600)
     with pytest.raises(ResourceReportError) as raised:
         read_report_file(path)

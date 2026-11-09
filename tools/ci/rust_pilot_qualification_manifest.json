@@ -983,7 +983,7 @@
       },
       {
         "path": "src/main/python/common_lore_index/runtime/release_manifest.py",
-        "sha256": "2f2c2d7986861669b7edd52a0a1004d5cca477f359bd3d434c3eee99691f6aa4"
+        "sha256": "fe73aa84cc27a40a3864b7f315f16314d5b44a5de62f8b13d2b954cb595167ca"
       },
       {
         "path": "src/test/support/python/repomap_test_support/__init__.py",
@@ -1015,7 +1015,7 @@
       },
       {
         "path": "tools/ci/d12_system_grant.py",
-        "sha256": "292b284ec0f1a1d1fb7cb98c1c6b8d7b0a319a7009b91fb40089c11b6bb6ef3d"
+        "sha256": "1d7e491f23ddd5fcf682e9d8e525b6941b07ba632899967c8e12b761291f0677"
       },
       {
         "path": "tools/ci/d12_system_grant_io.py",

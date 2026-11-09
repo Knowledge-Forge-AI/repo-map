@@ -13,6 +13,10 @@ from typing import TYPE_CHECKING, Any
 
 from common_lore_index.artifacts.sealing_governance import SealingBudgetExceeded
 
+from common_lore_index.graph._capture_contracts import (
+    MultiSourceCaptureError, _SourceCapture, _SourceChanged, _SourceInvalid,
+    _SourceUnavailable, _file_signature,
+)
 from common_lore_index.graph.discovery import discover_repository
 from common_lore_index.graph.discovery_records import FileInfo
 from common_lore_index.graph.multi_source import (
@@ -25,30 +29,6 @@ from common_lore_index.ops.config_records import OpsGraphConfig
 
 if TYPE_CHECKING:
     from common_lore_index.artifacts._sealing_meter import SealingMeter
-
-
-class MultiSourceCaptureError(ValueError):
-    """Public-safe fail-closed multi-source capture error."""
-
-    def __init__(self, message: str, *, category: str = "source_capture") -> None:
-        self.category = category
-        super().__init__(message)
-
-
-class _SourceUnavailable(Exception):
-    """A configured source could not be opened or no longer exists."""
-
-
-class _SourceChanged(Exception):
-    """A selected source entry changed while it was being captured."""
-
-
-class _SourceCapture(Exception):
-    """A source entry could not be captured safely."""
-
-
-class _SourceInvalid(Exception):
-    """A source inventory contains an unsupported or unsafe entry."""
 
 
 @dataclass(frozen=True)
@@ -74,17 +54,6 @@ def _manifest(
             item.executable,
         )
         for item in files
-    )
-
-
-def _file_signature(details: os.stat_result) -> tuple[int, int, int, int, int, int]:
-    return (
-        details.st_mode,
-        details.st_size,
-        details.st_mtime_ns,
-        details.st_ctime_ns,
-        details.st_ino,
-        details.st_dev,
     )
 
 

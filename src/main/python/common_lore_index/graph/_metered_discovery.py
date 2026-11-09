@@ -25,7 +25,7 @@ from common_lore_index.graph._discovery_selection import (
     selected_files,
 )
 from common_lore_index.graph.multi_source import SourceKind
-from common_lore_index.graph.multi_source_capture import MultiSourceCaptureError
+from common_lore_index.graph._capture_contracts import MultiSourceCaptureError
 from common_lore_index.ops.config_records import OpsGraphConfig
 
 

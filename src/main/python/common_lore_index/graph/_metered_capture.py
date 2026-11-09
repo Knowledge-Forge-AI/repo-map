@@ -21,7 +21,7 @@ from common_lore_index.artifacts.sealing_governance import (
     STABLE_CAPTURE_MAX_ATTEMPTS,
     SealingBudgetExceeded,
 )
-from common_lore_index.graph.multi_source_capture import (
+from common_lore_index.graph._capture_contracts import (
     _SourceCapture,
     _SourceChanged,
     _SourceInvalid,

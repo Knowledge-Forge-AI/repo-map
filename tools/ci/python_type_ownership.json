@@ -1066,6 +1066,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0175 measured native usage observation and exact unregistered abrupt evidence; clean zero-debt admission, original ownership forecasts and every inherited quality ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._usage_observation",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._usage_reaper",
@@ -1366,6 +1375,15 @@
       "justification": "Graph discovery and semantic identity logic remain Python beyond the initial hard seed.",
       "match": "subtree",
       "module_prefix": "common_lore_index.graph",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "CI132 acyclic capture repair: shared existing failures and pure signature helper move to a clean leaf owner; no added debt, threshold or import-containment relaxation.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._capture_contracts",
       "ownership_class": "python_retained"
     },
     {

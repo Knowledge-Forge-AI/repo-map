@@ -29,6 +29,10 @@ from common_lore_index.coordinator.process_supervision import (
 )
 from common_lore_index.coordinator._usage_interrupt import interrupt_cleanup
 from common_lore_index.coordinator._usage_reaper import WorkerResourceUsage
+from common_lore_index.coordinator._usage_observation import (
+    UsageObserver, settlement_for_process, validate_usage_observer,
+    usage_streams_closed,
+)
 
 @dataclass(frozen=True)
 class SyntheticWorkerResult:
@@ -69,8 +73,10 @@ def _run_protocol_worker(
     _timeout_probe: Callable[[], bool] | None = None,
     _launch_ticket: object | None = None,
     _fencing_identity: Mapping[str, object] | None = None,
+    _usage_observer: UsageObserver | None = None,
     collect_usage: bool = False,
 ) -> SyntheticWorkerResult:
+    validate_usage_observer(_usage_observer, collect_usage, _launch_process, _launch_ticket)
     if collect_usage and (_launch_process is not None or _launch_ticket is not None):
         raise ValueError("usage collection requires owned launch")
     if _launch_ticket is not None:
@@ -98,9 +104,10 @@ def _run_protocol_worker(
     _validate_line_limit(line_limit)
     if message_limit <= 0:
         raise ValueError("message limit must be positive")
-
     launch_process = _launch_process or launch_managed_process
     managed_process_launches: list[tuple[str, ...]] = []
+    settled_notified = False
+    readers: list[threading.Thread] = []
     try:
         process = launch_process(
             argv,
@@ -112,15 +119,15 @@ def _run_protocol_worker(
         managed_process_launches.append(tuple(argv))
     except (OSError, ProcessBoundaryError) as error:
         raise WorkerLaunchError("worker_launch_failed") from error
+    assert process is not None
     if _launch_ticket is not None:
         from common_lore_index.coordinator._supervisor_fencing import _bind_launch_process
-
         _bind_launch_process(_launch_ticket, process)
     assert process.stdin is not None and process.stdout is not None
     assert process.stderr is not None
-
-    readers: list[threading.Thread] = []
     try:
+        if _usage_observer is not None:
+            _usage_observer.launched(process.pid)
         lock = threading.Lock()
         messages: list[dict[str, object]] = []
         stdout_state: dict[str, object] = {
@@ -136,7 +143,6 @@ def _run_protocol_worker(
         readers.extend((stdout_thread, stderr_thread))
         stdout_thread.start()
         stderr_thread.start()
-
         started_at = time.monotonic()
         process_timed_out = heartbeat_timed_out = hello_timed_out = False
         terminated = killed = waited = cancel_sent = False
@@ -218,10 +224,11 @@ def _run_protocol_worker(
         elif process.poll() is not None:
             waited = _bounded_wait(process, termination_grace)
         group_cleaned = process.cleanup(cancel_grace, termination_grace)
+        streams_closed = True
         try:
             process.stdin.close()
         except BrokenPipeError:
-            pass
+            streams_closed = bool(getattr(process.stdin, "closed", False))
         stdout_thread.join(timeout=termination_grace)
         stderr_thread.join(timeout=termination_grace)
         if stdout_thread.is_alive() or stderr_thread.is_alive():
@@ -229,9 +236,16 @@ def _run_protocol_worker(
             process.stderr.close()
             stdout_thread.join(timeout=termination_grace)
             stderr_thread.join(timeout=termination_grace)
+        if _usage_observer is not None:
+            for stream in (process.stdout, process.stderr):
+                try:
+                    stream.close()
+                except (BrokenPipeError, OSError):
+                    streams_closed = streams_closed and getattr(stream, "closed", False) is True
         process_group_cleaned = (
             waited and group_cleaned
             and not stdout_thread.is_alive() and not stderr_thread.is_alive())
+        readers_closed = not stdout_thread.is_alive() and not stderr_thread.is_alive()
 
         protocol_error = str(err) if (err := stdout_state["error"]) is not None else None
         if protocol_error is not None:
@@ -266,9 +280,24 @@ def _run_protocol_worker(
             original_terminal=session.terminal,
             resource_usage=process.resource_usage if collect_usage else None,
         )
+        if _usage_observer is not None:
+            settled_notified = True
+            _usage_observer.settled(settlement_for_process(
+                process, waited=waited, process_group_cleaned=process_group_cleaned,
+                readers_closed=readers_closed,
+                streams_closed=streams_closed and usage_streams_closed(process),
+            ))
     except BaseException as error:
         if collect_usage:  # opt-in B1 only; default supervision is unchanged
-            interrupt_cleanup(process, readers, termination_grace, error)
+            facts = interrupt_cleanup(process, readers, termination_grace, error)
+            if _usage_observer is not None and not settled_notified and facts is not None:
+                settled_notified = True
+                try:
+                    _usage_observer.settled(facts)
+                except Exception as observer_error:
+                    error.add_note(
+                        f"usage observer settlement failure: {type(observer_error).__name__}"
+                    )
         raise
     if process_group_cleaned and _launch_process is None and _launch_ticket is not None:
         from common_lore_index.coordinator._supervisor_fencing import _record_reaped_launch
