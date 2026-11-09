@@ -114,11 +114,11 @@ cloe ops context-pack --repo-map-home <postgres-home> \
 ```
 
 When the accepted publication advances, the pinned selection becomes stale.
-An unpinned current selection can be used to demonstrate that PostgreSQL
-graph expansion remains `unavailable` with `backend_unsupported` unless the
-caller explicitly requests an existing ranked-discovery fallback. The
-first-use workflow records that status; it does not add a PostgreSQL
-expansion implementation.
+An unpinned current selection supports native PostgreSQL graph
+investigation. The maintained Server workflow requires complete/partial
+readback and an expansion reason other than `backend_unsupported`; an
+explicit ranked-discovery fallback remains available under the existing
+contract. This workload composes that existing implementation.
 
 Native PostgreSQL FTS uses the existing explicit body authorization and
 binding selection:
@@ -194,3 +194,118 @@ native host acceptance, a complete suite, coverage, a release image, a
 campaign result, or evaluator/held-out qualification. The parent phase
 owner records execution results and any required runtime qualification
 separately.
+
+## Reproducing the first-use workload (checkout only)
+
+`REPOMAP-CLOE-FIRST-USE-WORKLOAD1` turns the three flows above into one frozen,
+reproducible workload with inspectable evidence
+([ADR 0180](../adr/2026/11/0180-reproducible-first-use-workloads-and-evidence.md),
+[contract](../specs/cloe-first-use-workload-v1.md)). It is checkout-only: no
+installed module, console script, CLI option, MCP field, configuration key,
+runner flag or package data changes, and no product module imports it.
+
+### What is frozen
+
+| Input | Owner | Binding |
+| --- | --- | --- |
+| Materialized `mixed-v1` generations 1 and 2 | `src/test/fixtures/first_use_workload/mixed-v1-census-v1.json` | Census digest; any materialized drift refuses as `stale_input` before execution |
+| Committed fixture inputs (four alias trees and `python-sources-v1.json`) | `tools/first_use_workload_census.py` | `fixture_digest`; task, gold, held-out and trial material is never read |
+| Ordered steps, expected codes, labels and manual locations | `tools/first_use_workload_recipe.py` | `recipe_digest` |
+| Product bytes (`src/main`, `pyproject.toml`) | `tools/first_use_workload_source_identity.py` | Git-free `product_digest` |
+| Complete candidate source | same | `candidate_census`, the runner's `candidate_identity.source_sha256` algorithm |
+
+The recipe has 13 Local, 15 Server and 8 mixed rows. Local uses all four
+aliases; Server uses `core` and `companion`; mixed uses all four on both
+backends. Only the two planned-refusal rows pass a limit (`4S`, with `S` from
+the census). Manual locations come from public fixture text:
+`RetrievalExecutionPipeline` in `core:pkg/pipeline.py`, the generation-2
+marker in `core:pkg/gen2_extension.py`, and no generation-1-only token location
+after generation 2. These are fixture readback checks, not evaluation claims.
+
+### Running it
+
+The three integration owners run the recipe inside the canonical integration
+sandbox over pytest-owned homes, SQLite and the temporary PostgreSQL cluster:
+
+```text
+python3 tools/run_tests.py --suite int --no-coverage --pg-container-port 55433 -- \
+  src/test/int/python/repomap_kg/ops/first_use_workload_local.int.test.py \
+  src/test/int/python/repomap_kg/ops/first_use_workload_server.int.test.py \
+  src/test/int/python/repomap_kg/ops/first_use_workload_mixed.int.test.py
+```
+
+Each row is prepared, called once, observed by witnesses and cleaned up, with
+`prepare_ns`, `call_ns`, `observe_ns` and `cleanup_ns` recorded separately.
+`parent_process_ns` is test-process CPU; `waited_descendants_ns` covers every
+descendant reaped during the call span (CLI children, `psql` and helpers) and
+is attributable only under the runner's serial default. PostgreSQL server
+CPU, memory, physical I/O and peak RSS are never recorded or inferred. A
+failed row is recorded once and never retried; later ordinary rows are recorded as
+`unavailable/not_reached`. The terminal cleanup row still records actual
+cleanup before its final witnesses; the owner fails citing verdict categories.
+These are per-row phase measurements, not a whole-run timer: framework
+bookkeeping around execution (intent/census reads and bundle/index/verdict
+serialization and reconciliation) is outside the row spans, so no aggregate
+wall/CPU cost or completeness claim is made.
+
+### Where the bundle goes
+
+Each scenario writes one bundle directory `<scenario>-<attempt>` under a
+`first-use-workload/` base:
+
+- in the existing coverage-enabled hosted `--report` run, the base is the
+  inner report root, so the bundles
+  are exported beside the HTML report by the existing bounded export;
+- without `--report`, the base is the test's pytest temporary directory and
+  the bundles are discarded with the sandbox (the in-sandbox verdict still
+  gates the test).
+
+A bundle holds `intent.json`, `observation-SS-U.json` rows, referenced
+`reports/report-SS-U.json` and `plans/plan-SS-U.json` members, then
+`index.json` (every payload member, excluding itself and `verdict.json`) and
+finally `verdict.json`. Members are written exclusively and never repaired.
+
+The runner forbids `--report --no-coverage`: local scoped proof validates
+bundles in the sandbox and does not export them. Hosted CI137's normal staging
+artifact carries the final-source bundles; host validation is required after
+that run before accepting this bounded milestone. No local coverage or runner
+override follows from this guide.
+
+### Checking a bundle on the host
+
+Extract the hosted artifact outside `src/main`, `src/test` and `tools` (or
+under a gitignored location). Read the same-attempt CI137
+`candidate_identity.source_sha256` and recorded merge commit/tree, then use
+that exact executed tree for the host check. A staging checkout/head is valid
+only when its complete candidate census equals the reported executed tree;
+otherwise obtain the exact recorded tree. Never repin the artifact or weaken
+the check; unavailable exact-tree evidence keeps acceptance pending.
+
+```text
+python3 tools/first_use_workload.py plan [--source-parent HEX40]
+python3 tools/first_use_workload.py check --bundle <bundle-dir>
+python3 tools/first_use_workload.py show --bundle <bundle-dir> [--json]
+```
+
+`plan` prints the canonical intent of the current checkout. `check`
+recomputes the intent and the verdict and prints `<outcome> <scenario>
+<categories>`; it exits 0 for `accepted`, 1 for `rejected` or `incomplete`,
+and 2 for usage errors or an unreadable bundle. `show` prints per-step spans,
+CPU scope labels, results and refusals and never sums them. Neither command
+writes to the bundle, and output names no path.
+
+A host `check` proves format, binding, ordering and arithmetic consistency of
+the retained bytes. It does not prove producer authenticity: bundles are
+unsigned, like resource reports. Source or product drift appears as
+`candidate_mismatch`; other intent drift as `intent_mismatch`. A stored
+verdict never supplies acceptance.
+
+### Boundaries
+
+The evidence formats (`cloe-first-use-census-v1`, `-intent-v1`,
+`-observation-v1`, `-bundle-v1`, `-verdict-v1`) are derived observations with
+no graph, publication or resource authority. Resource-report and sealing-plan
+schemas are only decoded. Evidence holds no absolute path, host, port,
+database name, user, password, environment value, body, snippet or query
+text beyond recipe constants. Installed-wheel, W6, full W7, held-out
+evaluation, efficiency and coverage claims stay outside this workload.

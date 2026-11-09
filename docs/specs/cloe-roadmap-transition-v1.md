@@ -1015,3 +1015,118 @@ transition receipt is `tools/ci/cloe-resource-governance3-exit.md`. Final static
 enforcement, independent resulting-source review, fresh campaign binding and
 hosted qualification remain separate. This does not close W6/W7 or qualify the
 successor through CI134.
+
+### CI136 outcome and W7 first-use workload continuation
+
+CI136 attempt 1
+([run 42647736470](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/42647736470))
+executed on staging `cc6c91e1e4170d2775540945e5996d734bc0800e` over public
+base `5ad00d162ad8a04430874275246a53227578c533`. The candidate merge was
+`0927d7deca02be215238cc992f2133398a9d45d9`, the tree
+`7d152cc656253ca0a3314213276ab86ebdfac758` and the source SHA-256
+`6dc33cc1cb3c0fa5665f9615536d01097c08887b89d3bf4a917be94165d92492`.
+The result is `EXECUTED_PASS`. All nine jobs executed and passed, and the
+same-attempt M, A and system evidence was validated together.
+
+| Area | Accepted result |
+|---|---|
+| Unit | 17,710 passed, 40 skipped, 0 failed. Lines 71,749/77,415; branches 21,858/25,152 (86.90%). Hard 85/85 met. The desired 87% branch margin is 25 branches short |
+| Measured integration (M) | 2,468 passed, 12 skipped, coverage valid. Lines 68,967/77,415; branches 20,124/25,152 (80.01%), above the hard 80% floor. The desired 82% margin is 501 branches short |
+| Abrupt integration (A) | 5 passed. Cleanup passed. Measurement unavailable by role |
+| System, native D12 and Rust | `EXECUTED_PASS`; system cleanup proven |
+| Retained artifacts (SHA-256) | native `2e72ce9f05741b02b5ea5b38c2889e2bf7c3c100e689b9bd717b409fdde09a48`; rust `510b3d8d5c3368df54004ec2b52f26672beffcf0d92ca8a7563e5f2075f2f533`; staging `f0fb7325dda3ae07f9cc5ddc6f2accab15fac4f6f2dfc2eeceba71a020ee869f`; system `aa64eb4cb8a8cac488033cf5fc9db00d2881409ff7ae635d40d2733c037b59e2` |
+| Consumption | This attempt: 1 application start, 1 native Rust AMD qualifier invocation and 2 wheel transfers. Cumulative: 46/16/36. The slot is spent and there is no automatic re-arm |
+
+This accepts `cc6c91e` as a qualified staging source candidate only. It does
+not promote main, does not accept installed, release or image delivery, W6
+or W7, and qualifies no later source. The selected retained-member digests
+stay with the accepted evidence and are not repeated here.
+
+The user's instruction to carry on with the roadmap after CI136 selects
+`REPOMAP-CLOE-FIRST-USE-WORKLOAD1`. It reserves the specific
+`CLOE-FIRST-USE-WORKLOAD` family and is ordinary W7 design within current
+authority; it does not reopen the roadmap. Accepted
+[ADR0180](../adr/2026/11/0180-reproducible-first-use-workloads-and-evidence.md)
+and its [contract](cloe-first-use-workload-v1.md) define three connected
+epics:
+
+1. **Reproducible workload and evidence harness.** A committed census
+   freezes the public `mixed-v1` generation inventories. A code-owned recipe
+   fixes the ordered Local, Server and mixed steps, manual expected
+   locations and explicit opt-in budgets. The intent binds the recipe,
+   census, a product-source digest and the complete canonical candidate census, with
+   no future commit SHA required.
+2. **Real execution and readback.** New integration owners run cold and
+   repeat refresh, generation change, replay, navigation, context and
+   lexical readback, privacy and scope, sealing plans and v2 reports,
+   refusal before worker launch with accepted-pin preservation, failure and
+   cleanup. They run in the canonical sandbox over disposable homes, SQLite
+   and temporary PostgreSQL. `4S+C+m+m_c+r` and `4S+1` come from fixture
+   and store witnesses.
+3. **Reconciliation and inspectable evidence.** A checkout-only pure
+   reconciler refuses stale, partial, cross-attempt, cross-backend,
+   cross-candidate, tampered, unbounded and unsafe evidence. It keeps
+   expected refusals, failures and skips distinct. Bundles leave the
+   sandbox only through the existing `--report` export, including
+   CI137's hosted staging artifact, and `tools/first_use_workload.py check`
+   re-validates them.
+
+Deferred custody hardening, native Windows, installed or runtime delivery,
+and optional parser or model work are not prerequisites.
+
+The milestone adds:
+
+- no product or installed command, runner flag or admission class;
+- no change to the resource-report v1/v2 or sealing-plan schemas;
+- no dependency, lock, packaging, image, DDL or role change;
+- no native parser or model acquisition, live or private target,
+  default-home migration, MCP change, retry or sweeping cleanup.
+
+Quality roots, ceilings, measured and abrupt roles, suppression policy, the
+complete product denominator and the hard 85/85 unit and 80/80 integration
+gates are preserved. Frozen tasks, golds, the held-out split and old trials
+stay unread and unchanged.
+
+Status: accepted design implemented as a source candidate with scoped
+unit/integration diagnostics. Corrective source review, final-source binding,
+one ordinary staging publication and CI137 attempt 1 remain; hosted acceptance
+is pending.
+That campaign's inferred minimum cumulative consumption is 47 application
+starts, 17 native Rust AMD invocations and 38 wheel transfers. This comes
+from the normal roadmap campaign, not a separate numeric operator selection,
+and binds only once final source exists.
+
+There is no design-only CI, automatic CI138, 48th start, retry or second
+push. Bounded first-use acceptance means the recipe reconciles on the
+resulting source candidate. W8 installed acceptance, held-out evaluation, full
+W6/W7, physical PostgreSQL and hard-RSS governance, and ADR0177's deferred
+custody scenarios remain open.
+
+The parent accepted ADR0180 and its bounded workload contract after independent
+design review and the explicit returned/CLI/raised refusal-classification
+correction. Implementation, scoped execution, final source review and the
+CI137 candidate binding remain separate and pending. No design-only campaign
+or full-W7/installed acceptance follows.
+
+Local report admission refused `--report --no-coverage` before Python tests.
+The first-use design now keeps local proof scoped and coverage-free, with
+in-sandbox bundle validation. The normal hosted CI137 report supplies all
+three exported bundles; their host check remains a required pending milestone
+acceptance gate. No runner-policy change, local coverage or gate waiver is
+introduced. Terminal cleanup is unconditional and observed after its callbacks.
+The exact-commit private report binds final owner SHA-256 values and physical
+line counts for the census, inventory, ADR, workload spec and roadmap append;
+the private report may hash the exit, which never embeds its own hash.
+Host checks of hosted evidence must use the same-attempt `candidate_identity.source_sha256`
+and recorded merge commit/tree. A staging head is eligible only when its
+complete candidate census equals that reported executed tree; otherwise obtain
+the exact tree. Never repin an artifact or weaken the check; unavailable exact
+tree evidence keeps hosted acceptance pending.
+
+The three-epic first-use workload implementation now has scoped unit and real
+Local/Server/mixed integration diagnostics, independent call-return/pin
+witnesses, refusal checks and bounded inspectable evidence. The phase exit
+records that source-tested boundary. Final review and campaign binding precede
+one CI137 publication; exact-source hosted bundle export and host checks still
+block bounded first-use acceptance. Full W7, installed qualification and
+held-out scientific evaluation remain open.

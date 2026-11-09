@@ -16514,6 +16514,73 @@
       ],
       "rationale": "Resource Governance 3 retained-Python admission; zero new debt pending final static and independent source review.",
       "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzz.cloe_first_use_workload1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/ops/first_use_workload_local.int.test.py",
+        "src/test/int/python/repomap_kg/ops/first_use_workload_mixed.int.test.py",
+        "src/test/int/python/repomap_kg/ops/first_use_workload_server.int.test.py",
+        "src/test/unit/python/repomap_kg/ops/first_use_workload_call_returns.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/first_use_workload_cleanup_precedence.unit.test.py",
+        "src/test/unit/python/repomap_kg/ops/first_use_workload_driver.unit.test.py",
+        "src/test/unit/python/tools/first_use_workload_bundle.unit.test.py",
+        "src/test/unit/python/tools/first_use_workload_census.unit.test.py",
+        "src/test/unit/python/tools/first_use_workload_cli.unit.test.py",
+        "src/test/unit/python/tools/first_use_workload_reconcile.unit.test.py",
+        "src/test/unit/python/tools/first_use_workload_records.unit.test.py",
+        "src/test/unit/python/tools/first_use_workload_rules.unit.test.py"
+      ],
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzz.cloe_first_use_workload1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/first_use_workload_call_results.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_cleanup.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_driver.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_local_steps.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_mixed_steps.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_mutations.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_rows.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_samples.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_server_steps.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_session.py",
+        "src/test/support/python/repomap_test_support/first_use_workload_witness.py"
+      ],
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "zzzzz.cloe_first_use_workload1.tools",
+      "members": [
+        "tools/first_use_workload.py",
+        "tools/first_use_workload_bundle.py",
+        "tools/first_use_workload_census.py",
+        "tools/first_use_workload_cli_views.py",
+        "tools/first_use_workload_domains.py",
+        "tools/first_use_workload_encoding.py",
+        "tools/first_use_workload_integrity.py",
+        "tools/first_use_workload_pins.py",
+        "tools/first_use_workload_readback_rules.py",
+        "tools/first_use_workload_recipe.py",
+        "tools/first_use_workload_recipe_shapes.py",
+        "tools/first_use_workload_reconcile.py",
+        "tools/first_use_workload_records.py",
+        "tools/first_use_workload_report_rules.py",
+        "tools/first_use_workload_rules.py",
+        "tools/first_use_workload_source_identity.py",
+        "tools/first_use_workload_validation.py"
+      ],
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools"
     }
   ],
   "decompositions": [
@@ -59261,6 +59328,366 @@
       "rationale": "First-party integration test owner (gated in CI Staging Gate).",
       "root": "test_owners",
       "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/first_use_workload_local.int.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/first_use_workload_mixed.int.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/ops/first_use_workload_server.int.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_call_results.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_cleanup.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_driver.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_local_steps.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_mixed_steps.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_mutations.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_rows.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_samples.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_server_steps.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_session.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/first_use_workload_witness.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/first_use_workload_call_returns.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/first_use_workload_cleanup_precedence.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/ops/first_use_workload_driver.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/first_use_workload_bundle.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/first_use_workload_census.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/first_use_workload_cli.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/first_use_workload_reconcile.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/first_use_workload_records.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/first_use_workload_rules.unit.test.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_bundle.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_census.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_cli_views.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_domains.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_encoding.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_integrity.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_pins.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_readback_rules.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_recipe.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_recipe_shapes.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_reconcile.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_records.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_report_rules.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_rules.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_source_identity.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/first_use_workload_validation.py",
+      "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
+      "root": "tools",
+      "status": "active_tool"
     }
   ],
   "historical_revise10_counts": {
