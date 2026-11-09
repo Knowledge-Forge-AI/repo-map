@@ -33,9 +33,9 @@ from common_lore_index.graph.multi_source import (
     SourceKind,
     multi_source_configuration_id,
 )
+from common_lore_index.graph._sealing_scan import scan_sealing_generations
 from common_lore_index.graph.multi_source_pipeline import (
     multi_source_semantic_identities,
-    scan_multi_source_generations,
 )
 from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
 from common_lore_index.ops.config_records import OpsGraphConfig
@@ -64,7 +64,7 @@ def seal_configured_sources(
         from common_lore_index.graph._metered_discovery import preflight_inventory
 
         preflight_inventory(graph, io_meter, limits)
-    first = scan_multi_source_generations(graph, **metered)
+    first = scan_sealing_generations(graph, **metered)
     snapshots = {item.binding.binding_id: item for item in first.snapshots}
     configured_bindings = tuple(
         sorted(graph.effective_source_bindings, key=lambda item: item.binding_id)
@@ -126,7 +126,7 @@ def seal_configured_sources(
                     item.executable,
                 )
             )
-    second = scan_multi_source_generations(graph, **metered)
+    second = scan_sealing_generations(graph, **metered)
     if second.source_generation != first.source_generation or second.snapshots != first.snapshots:
         raise ValueError("source changed while sealing")
     identities = multi_source_semantic_identities(graph)

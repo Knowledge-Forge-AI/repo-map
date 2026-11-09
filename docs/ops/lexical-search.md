@@ -146,12 +146,12 @@ repository-ID range; a collision conservatively serializes unrelated work.
 Restore always requests the explicit lexical-purge contract and refuses an
 unsupported reconciler instead of silently skipping the purge.
 
-The incumbent staged graph publisher separately retains a two-int advisory lock
-(namespace19042), which refuses repository IDs above its int32 range before
-lexical operations. Native lexical tests prove the BIGINT lease/final-fence key
-expressions and competition, plus an ordinary-ID publication/build/query/revoke
-round trip. They do not qualify end-to-end graph publication for large IDs.
-That publisher compatibility work remains a named W7 follow-up.
+Staged graph publication supports positive PostgreSQL BIGINT repository IDs
+under [ADR0162](../adr/2026/11/0162-early-sealing-admission-and-bigint-publication.md).
+Integration owners cover publication at `2**63-1` with the refresh role and
+high-ID portable publication followed by lexical build/query/revoke, including
+competing-lock boundaries. The publisher compatibility follow-up is implemented;
+installed and release qualification remain separate.
 
 ## First-use workflow
 

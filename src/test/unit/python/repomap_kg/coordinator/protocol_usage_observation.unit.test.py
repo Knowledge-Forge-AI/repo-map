@@ -155,6 +155,7 @@ class _Process:
         self.stderr = _Stream(self.events, "stderr")
         self.closed = False
         self.resource_usage = None
+        self.group_empty_observed: bool | None = None
 
     def poll(self) -> int | None:
         self.events.append("poll")
@@ -176,7 +177,21 @@ class _Process:
     def cleanup(self, _term: float, _kill: float) -> bool:
         self.events.append("cleanup")
         self.closed = True
+        self.group_empty_observed = True
         return True
+
+    # T0 simulation of the custody surface; native eligibility stays false.
+    def reap_state(self) -> str:
+        return "live" if self.returncode is None else "reaped"
+
+    def _wait_quiet(self, timeout: float | None = None) -> int | None:
+        status = self.wait(timeout)
+        if type(status) is int:
+            self.returncode = status
+        return status
+
+    def group_state(self) -> str:
+        return "members" if self.tree_exists() else "empty"
 
 
 class _OrderingObserver(_Observer):
@@ -282,7 +297,8 @@ def test_no_result_interrupt_preserves_primary_and_notifies_one_native_settlemen
     assert raised.value is original
     assert len(observer.settlements) == 1
     assert observer.settlements[0].returncode == -9
-    assert observer.settlements[0].proven is True
+    assert observer.settlements[0].proven is True  # T0 simulated callback, not kernel proof
+    assert process.events.index("kill") < process.events.index("cleanup")
 
 
 def test_settlement_callback_failure_is_not_retried(monkeypatch, tmp_path) -> None:

@@ -20,6 +20,7 @@ from common_lore_index.artifacts.sealing_governance import (
     SealingBudgetExceeded,
     effective_max_directory_entries,
     normalize_budget,
+    planned_min_read_bytes,
 )
 
 READERS = ("discovery", "classification", "capture", "copy", "store")
@@ -206,7 +207,7 @@ class SealingMeter:
             raise SealingMeterMisuse("plan facts require one governed preflight")
         self._plan = plan
         remaining_read = self.remaining_read()
-        if remaining_read is not None and 6 * plan.inventory_bytes + 1 > remaining_read:
+        if remaining_read is not None and planned_min_read_bytes(plan.inventory_bytes) > remaining_read:
             raise self._refuse("planned_read_bytes")
         remaining_write = self.remaining_write()
         if remaining_write is not None and plan.inventory_bytes > remaining_write:

@@ -67,11 +67,11 @@ def test_v2_published_report_measures_the_sealing_boundary_and_the_worker(tmp_pa
     sealed = metric(payload, "sealed_manifest_bytes")["value"]
     assert sealed == total
     read = metric(payload, "sealing_read_bytes")
-    assert read["basis"] == "call_meter_exact" and read["value"] > 6 * total
+    assert read["basis"] == "call_meter_exact" and read["value"] > 4 * total
     assert metric(payload, "sealing_copy_read_bytes")["value"] == total
-    assert metric(payload, "sealing_discovery_read_bytes")["value"] == 2 * total
+    assert metric(payload, "sealing_discovery_read_bytes")["value"] == 0
     assert metric(payload, "sealing_capture_read_bytes")["value"] == 2 * total
-    assert metric(payload, "sealing_classification_read_bytes")["value"] > 0, "shell sources reach R2"
+    assert metric(payload, "sealing_classification_read_bytes")["value"] == 0
     assert metric(payload, "planned_min_read_bytes")["reason"] == "not_selected"
     assert metric(payload, "worker_launches")["value"] == 1
     for name in ("worker_cpu", "worker_user_cpu", "worker_peak_rss"):

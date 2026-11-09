@@ -160,17 +160,25 @@ def test_missing_wait4_is_platform_unsupported_and_status_is_never_guessed() -> 
         reaper.poll(_Popen())
 
 
-def test_default_launch_installs_no_reaper_and_uses_popen_reaping(tmp_path: Path, monkeypatch) -> None:
-    def no_wait4(*args: object) -> None:
-        raise AssertionError("default supervision must not call wait4")
+def test_default_native_launch_selects_one_wait4_owner_without_retaining_usage(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    real_wait4 = os.wait4
+    calls: list[int] = []
 
-    monkeypatch.setattr(os, "wait4", no_wait4, raising=False)
+    def counting_wait4(pid: int, flags: int) -> Any:
+        calls.append(pid)
+        return real_wait4(pid, flags)
+
+    monkeypatch.setattr(os, "wait4", counting_wait4)
     managed = supervision.launch_managed_process(("/bin/sh", "-c", "exit 4"), dict(os.environ), tmp_path)
     try:
-        assert managed._reaper is None and managed.resource_usage is None
-        assert managed.wait(timeout=10) == 4
+        assert managed.native and not isinstance(managed._reaper, ChildUsageReaper)
+        assert managed.wait(timeout=10) == 4 == managed.returncode
+        assert managed.reap_state() == "reaped" and calls and set(calls) == {managed.pid}
+        assert managed.resource_usage is None, "default launches retain no usage"
     finally:
-        managed.cleanup(0.1, 0.1)
+        assert managed.cleanup(0.1, 0.1)
 
 
 def test_opt_in_launch_reaps_with_wait4_and_reports_usage(tmp_path: Path) -> None:
@@ -178,7 +186,7 @@ def test_opt_in_launch_reaps_with_wait4_and_reports_usage(tmp_path: Path) -> Non
         ("/bin/sh", "-c", "exit 5"), dict(os.environ), tmp_path, collect_usage=True,
     )
     try:
-        assert managed._reaper is not None
+        assert isinstance(managed._reaper, ChildUsageReaper)
         assert managed.wait(timeout=10) == 5 == managed.returncode
         usage = managed.resource_usage
         assert usage is not None and usage.total_cpu_ns is not None and usage.peak_rss_bytes

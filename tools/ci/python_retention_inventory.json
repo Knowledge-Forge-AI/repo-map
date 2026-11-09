@@ -16485,6 +16485,35 @@
       ],
       "rationale": "CI133 corrective coverage proof for maintained resource, sealing and graph routing contracts; clean zero-debt test admission with full product denominator, receipt checks, historical records and all thresholds preserved.",
       "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzz.cloe_resource_governance3.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/artifacts/governance3_sealing.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/governance3_native_custody.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/governance3_ticketed_custody.int.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/governance3_collision.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/governance3_child_reaper.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/governance3_custody_dispatch.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/governance3_owned_launch_matrix.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/governance3_quiet_cleanup.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/governance3_ticket_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/governance3_sealing_scan.unit.test.py"
+      ],
+      "rationale": "Resource Governance 3 retained-Python admission; zero new debt pending final static and independent source review.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzz.cloe_resource_governance3.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/governance3_first_use_sealing.py"
+      ],
+      "rationale": "Resource Governance 3 retained-Python admission; zero new debt pending final static and independent source review.",
+      "root": "test_support"
     }
   ],
   "decompositions": [
@@ -59070,6 +59099,168 @@
       "rationale": "CI133 corrective coverage proof for real filesystem portability and artifact integrity refusals; clean zero-debt owner with unchanged complete product denominator and thresholds.",
       "root": "test_owners",
       "status": "active_integration_test"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_child_reaper.py",
+      "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_launch_custody.py",
+      "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_launch_custody_steps.py",
+      "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_process_supervision_state.py",
+      "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.85,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_protocol_streams.py",
+      "rationale": "Current maintained Python admitted with zero new quality debt; path-specific prior forecast remains in append-only transition authority.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_canonical_selection.py",
+      "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_sealing_scan.py",
+      "rationale": "Product module in active architecture-derived quality ratchet (T0/T1).",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/artifacts/governance3_sealing.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/governance3_native_custody.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/governance3_ticketed_custody.int.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/governance3_first_use_sealing.py",
+      "rationale": "Shared test harness and test execution support library.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/governance3_collision.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/governance3_child_reaper.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/governance3_custody_dispatch.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/governance3_owned_launch_matrix.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/governance3_quiet_cleanup.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/governance3_ticket_custody.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/governance3_sealing_scan.unit.test.py",
+      "rationale": "First-party integration test owner (gated in CI Staging Gate).",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

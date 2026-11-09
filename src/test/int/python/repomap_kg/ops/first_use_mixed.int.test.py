@@ -18,6 +18,7 @@ from common_lore_index.ops.resource_view._projections import project_compact_con
 from common_lore_index.retrieval.context_contracts import CONTEXT_LOCATION_KEYS
 from common_lore_index.retrieval.projection_policy import ExclusionReason
 from repomap_test_support.context_assertions import assert_valid_context_packet
+from repomap_test_support.governance3_first_use_sealing import assert_mixed_snapshot_equivalence
 from repomap_test_support.first_use_workflow import (
     first_use_expectations,
     guard_first_use_root,
@@ -147,7 +148,8 @@ def test_first_use_mixed_context_is_alias_qualified_and_body_blind(
         assert isinstance(payload, dict)
         assert_canary_free(payload)
     selection = work_root / "selection.json"
-    _select_all_local(harness, home, selection)
+    record = _select_local(harness, home, selection, aliases=MIXED_V1_BINDINGS, expected_generation=1)
+    assert_mixed_snapshot_equivalence(home, working_copy, record["expected_publication"])
 
     packets = {
         "core": _pack_local(

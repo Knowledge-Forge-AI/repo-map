@@ -2,11 +2,12 @@
 
 This mirrors the incumbent put step for step: temporary creation and
 ``fsync``; a new object is installed and its directory synchronized, while an
-existing digest is compared (R7c) without a directory ``fsync``; every put is
-read back (R7). Each write chunk, open, read and synchronization is admitted
-first. A refusal propagates through the incumbent temporary unlink; no refusal
-deletes an installed object or claims durable persistence. The comparison also
-closes the stored-object descriptor when the temporary cannot be opened.
+existing digest is compared and verified in one R7c/R7 pass without a
+directory ``fsync``. New objects retain their separate R7 readback. Each
+write chunk, open, read and synchronization is admitted first. A refusal
+propagates through the incumbent temporary unlink; no refusal deletes an
+installed object or claims durable persistence. The single-pass comparison
+closes both descriptors on every refusal.
 """
 
 from __future__ import annotations
@@ -67,46 +68,107 @@ def metered_compare_collision(
     target: Path, temporary: Path, length: int, digest: str, *,
     owner_uid: int, private_details_fn: _PrivateDetails, meter: SealingMeter,
 ) -> None:
-    """R7c: read both objects; identical digest and bytes or a closed refusal."""
+    """Compatibility adapter for the pre-E2 metered collision signature."""
+
+    metered_compare_and_verify_collision(
+        target,
+        temporary,
+        length,
+        digest,
+        length,
+        owner_uid=owner_uid,
+        private_details_fn=private_details_fn,
+        meter=meter,
+    )
+    return None
+
+
+def metered_compare_and_verify_collision(
+    target: Path,
+    temporary: Path,
+    length: int,
+    digest: str,
+    bound: int,
+    *,
+    owner_uid: int,
+    private_details_fn: _PrivateDetails,
+    meter: SealingMeter,
+) -> str:
+    """Metered one-pass collision comparison and target custody check."""
 
     details = private_details_fn(target, owner_uid=owner_uid)
     if details.st_size != length:
         raise ArtifactIntegrityError("artifact size does not match reference")
+    if length > bound:
+        raise _bounds()
     meter.require_read_headroom(2 * length)
-    hasher = hashlib.sha256()
-    differs = False
-    try:
-        target_fd = metered_open(meter, target, _READ_FLAGS)
-    except OSError as error:
-        raise ArtifactIntegrityError("artifact is not a regular file") from error
+    target_fd: int | None = None
+    temporary_fd: int | None = None
     try:
         try:
-            temp_fd = metered_open(meter, temporary, _READ_FLAGS)
+            target_fd = metered_open(meter, target, _READ_FLAGS)
+        except OSError as error:
+            raise ArtifactIntegrityError("artifact is not a regular file") from error
+        opened = os.fstat(target_fd)
+        if not _same_file_stat(details, opened) or not stat.S_ISREG(opened.st_mode):
+            raise ArtifactIntegrityError("artifact changed during read")
+        try:
+            temporary_fd = metered_open(meter, temporary, _READ_FLAGS)
         except OSError as error:
             raise ArtifactIntegrityError("artifact read failed") from error
-        try:
-            consumed = 0
-            while True:
-                size = request_length(meter, STORE_CHUNK, length - consumed)
-                first = metered_read(meter, "store", target_fd, size)
-                second = metered_read(meter, "store", temp_fd, size)
-                hasher.update(first)
-                consumed += len(first)
-                differs = differs or first != second
-                if not first:
+        if not stat.S_ISREG(os.fstat(temporary_fd).st_mode):
+            raise ArtifactIntegrityError("artifact read failed")
+        hasher = hashlib.sha256()
+        differs = False
+        total = 0
+        while True:
+            first = metered_read(
+                meter,
+                "store",
+                target_fd,
+                request_length(meter, STORE_CHUNK, length - total),
+            )
+            total += len(first)
+            if total > length:
+                raise ArtifactIntegrityError("artifact size does not match reference")
+            hasher.update(first)
+            remaining = len(first)
+            pieces: list[bytes] = []
+            while remaining:
+                piece = metered_read(meter, "store", temporary_fd, remaining)
+                if not piece:
                     break
-        finally:
-            os.close(temp_fd)
+                pieces.append(piece)
+                remaining -= len(piece)
+            if first != b"".join(pieces):
+                differs = True
+            if not first:
+                if metered_read(meter, "store", temporary_fd, 1):
+                    differs = True
+                break
+        if total != length:
+            raise ArtifactIntegrityError("artifact size does not match reference")
+        if _DIGEST_PREFIX + hasher.hexdigest() != digest:
+            raise ArtifactIntegrityError("artifact digest does not match reference")
+        if differs:
+            raise ArtifactIntegrityError("content-address collision")
+        after = os.fstat(target_fd)
+        if not _same_file_stat(opened, after):
+            raise ArtifactIntegrityError("artifact changed during read")
+        if _file_version(after) != _file_version(details):
+            raise ArtifactIntegrityError(
+                "artifact store version is stale", code="artifact_stale"
+            )
+        return _file_version(after)
     except ArtifactIntegrityError:
         raise
     except OSError as error:
         raise ArtifactIntegrityError("artifact read failed") from error
     finally:
-        os.close(target_fd)
-    if _DIGEST_PREFIX + hasher.hexdigest() != digest:
-        raise ArtifactIntegrityError("artifact digest does not match reference")
-    if differs:
-        raise ArtifactIntegrityError("content-address collision")
+        if temporary_fd is not None:
+            os.close(temporary_fd)
+        if target_fd is not None:
+            os.close(target_fd)
 
 
 def metered_verify_path(
@@ -210,15 +272,21 @@ def metered_put(
         locator = ArtifactLocator("filesystem", f"objects/{digest[7:]}", None)
         _reference(digest, length, media_type, record_format, privacy, locator)
         target = store._objects / digest[7:]
+        collision_version: str | None = None
         if target.exists() or target.is_symlink():
-            metered_compare_collision(
-                target, temporary, length, digest, owner_uid=store._owner_uid,
-                private_details_fn=private_details_fn, meter=meter,
+            collision_version = metered_compare_and_verify_collision(
+                target, temporary, length, digest, bound,
+                owner_uid=store._owner_uid, private_details_fn=private_details_fn, meter=meter,
             )
         else:
             os.replace(temporary, target)
             temporary = None
             metered_fsync_directory(store._objects, meter)
+        if collision_version is not None:
+            return _reference(
+                digest, length, media_type, record_format, privacy,
+                ArtifactLocator("filesystem", f"objects/{digest[7:]}", collision_version),
+            )
         details = private_details_fn(target, owner_uid=store._owner_uid)
         version = _file_version(details)
         reference = _reference(
@@ -252,6 +320,7 @@ def metered_put(
 
 
 __all__ = (
+    "metered_compare_and_verify_collision",
     "metered_compare_collision",
     "metered_fsync_directory",
     "metered_put",

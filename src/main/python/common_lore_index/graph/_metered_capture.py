@@ -28,7 +28,12 @@ from common_lore_index.graph._capture_contracts import (
     _file_signature,
 )
 
-_FLAGS = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+_FLAGS = (
+    os.O_RDONLY
+    | getattr(os, "O_BINARY", 0)
+    | getattr(os, "O_NOFOLLOW", 0)
+    | getattr(os, "O_NONBLOCK", 0)
+)
 
 
 def read_stable_file_metered(path: Path, meter: SealingMeter) -> tuple[str, int, bool]:

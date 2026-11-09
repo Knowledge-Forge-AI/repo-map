@@ -688,6 +688,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._child_reaper",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "REPAIR4 cohesive extension of retained coordinator publication fencing; preserves architecture forecast and zero-new-debt maintenance.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._configured_fencing",
@@ -814,6 +823,24 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._launch_custody",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._launch_custody_steps",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.coordinator._lifecycle_authority under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._lifecycle_authority",
@@ -895,6 +922,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._process_supervision_state",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.coordinator._process_supervision_windows under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._process_supervision_windows",
@@ -925,6 +961,15 @@
       "justification": "Maintain repomap_kg.coordinator._protocol_session under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._protocol_session",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Maintain repomap_kg.coordinator under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._protocol_streams",
       "ownership_class": "python_retained"
     },
     {
@@ -1378,6 +1423,15 @@
       "ownership_class": "python_retained"
     },
     {
+      "architecture_box": "python_semantic_engine",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Graph discovery and semantic identity logic remain Python beyond the initial hard seed.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._canonical_selection",
+      "ownership_class": "python_retained"
+    },
+    {
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
@@ -1438,6 +1492,15 @@
       "justification": "ADR0173 call-owned sealing governance, owned-worker attribution and versioned v2 report delivery; existing adjacent ownership and every inherited quality ceiling preserved, zero new debt.",
       "match": "exact",
       "module_prefix": "common_lore_index.graph._metered_discovery",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "python_semantic_engine",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "Graph discovery and semantic identity logic remain Python beyond the initial hard seed.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._sealing_scan",
       "ownership_class": "python_retained"
     },
     {

@@ -52,7 +52,7 @@ def test_observe_only_seal_equals_the_unmetered_seal_with_exact_counters(tmp_pat
     m = _manifest_bytes(plain)
     snapshot = meter.snapshot()
     assert snapshot.read_bytes == expected.read_bytes(m, collision=False)
-    assert snapshot.reader("discovery") == snapshot.reader("capture") == 2 * expected.total
+    assert snapshot.reader("discovery") == 0 and snapshot.reader("capture") == 2 * expected.total
     assert snapshot.reader("copy") == expected.total and snapshot.reader("classification") == 0
     assert snapshot.reader("store") == expected.total + m
     assert snapshot.read_calls == expected.read_calls(m, collision=False)
@@ -72,7 +72,7 @@ def test_metered_capture_inventory_tuple_equals_the_default_tuple(tmp_path: Path
     assert metered == default
 
 
-def test_collision_reseal_reads_eight_s_plus_three_manifests(tmp_path: Path) -> None:
+def test_collision_reseal_counts_each_object_and_manifest_once(tmp_path: Path) -> None:
     _root, graph, expected = _fixture(tmp_path)
     first = seal(graph, tmp_path / "store")
     meter = SealingMeter(None, governed=False)
@@ -80,7 +80,7 @@ def test_collision_reseal_reads_eight_s_plus_three_manifests(tmp_path: Path) -> 
     assert again[0] == first[0]
     m = _manifest_bytes(first)
     snapshot = meter.snapshot()
-    assert snapshot.read_bytes == expected.read_bytes(m, collision=True) == 8 * expected.total + 3 * m
+    assert snapshot.read_bytes == expected.read_bytes(m, collision=True) == 5 * expected.total + 2 * m
     assert snapshot.read_calls == expected.read_calls(m, collision=True)
     assert snapshot.opens == expected.opens(walks=2, collision=True)
     assert snapshot.fsyncs == expected.fsyncs(collision=True)
@@ -140,7 +140,7 @@ def test_elapsed_budget_refuses_cooperatively_with_an_injected_clock(tmp_path: P
 
 
 @pytest.mark.parametrize(("budget", "limit"), [
-    (lambda total: SealingBudget(max_read_bytes=6 * total), "planned_read_bytes"),
+    (lambda total: SealingBudget(max_read_bytes=4 * total), "planned_read_bytes"),
     (lambda total: SealingBudget(max_write_bytes=total - 1), "planned_write_bytes"),
 ])
 def test_planned_overruns_refuse_before_any_body_read(tmp_path: Path, budget, limit: str) -> None:
@@ -187,7 +187,7 @@ def test_availability_of_every_binding_precedes_any_governed_body_read(tmp_path:
 
 def test_refusals_inside_scans_are_never_relabelled_as_capture_categories(tmp_path: Path) -> None:
     _root, graph, expected = _fixture(tmp_path)
-    meter = SealingMeter(SealingBudget(max_read_bytes=6 * expected.total + 1), governed=True)
+    meter = SealingMeter(SealingBudget(max_read_bytes=4 * expected.total + 1), governed=True)
     with pytest.raises(SealingBudgetExceeded) as raised:
         seal(graph, tmp_path / "store", io_meter=meter)
     assert not isinstance(raised.value, MultiSourceCaptureError)
@@ -221,4 +221,4 @@ def test_in_root_symlink_aliases_are_hashed_twice_but_sealed_once(tmp_path: Path
     plain = seal(graph, tmp_path / "plain")
     metered = seal(graph, tmp_path / "metered", io_meter=meter)
     assert metered[0] == plain[0]
-    assert meter.snapshot().reader("discovery") == 2 * 2 * len(b"target\n")
+    assert meter.snapshot().reader("discovery") == 0 and meter.snapshot().reader("capture") == 2 * len(b"target\n")

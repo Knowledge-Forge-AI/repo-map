@@ -769,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "00b4540e4ceb12dfd684a4f42f857f81876c306be2e2de6755d240f620ba5e0f"
+    "sha256": "eafd90124c8d3265d7809cf02a470ea6a68e2ff90316b8f4062ae1a1fdaadfe0"
   },
   "ruff": {
     "findings": [
@@ -14877,6 +14877,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.coordinator._child_reaper",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_child_reaper.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.coordinator._configured_fencing",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_configured_fencing.py",
@@ -14961,6 +14967,18 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.coordinator._launch_custody",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_launch_custody.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._launch_custody_steps",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_launch_custody_steps.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.coordinator._lifecycle_authority",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_lifecycle_authority.py",
@@ -15015,6 +15033,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.coordinator._process_supervision_state",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_process_supervision_state.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.coordinator._process_supervision_windows",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_process_supervision_windows.py",
@@ -15036,6 +15060,12 @@
         "module": "common_lore_index.coordinator._protocol_session",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_protocol_session.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._protocol_streams",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_protocol_streams.py",
         "tier": "T1-future"
       },
       {
@@ -16323,6 +16353,12 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.graph._canonical_selection",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_canonical_selection.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.graph._capture_contracts",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/graph/_capture_contracts.py",
@@ -16368,6 +16404,12 @@
         "module": "common_lore_index.graph._multi_source_identity",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/graph/_multi_source_identity.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph._sealing_scan",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_sealing_scan.py",
         "tier": "T1-future"
       },
       {

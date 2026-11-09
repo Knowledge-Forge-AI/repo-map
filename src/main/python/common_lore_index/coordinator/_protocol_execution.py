@@ -1,4 +1,12 @@
-"""Worker execution, thread management, and process supervision for ASYNC1."""
+"""Worker execution, thread management, and process supervision for ASYNC1.
+
+After the managed launch returns, ticket bind/validation, stream assertions,
+reader start, the protocol loops, normal settlement and result/observer
+delivery all run inside one guard. An escaping exception enters
+``WorkerCustody.settle`` (worker custody contract D1/D2) and the original
+object is re-raised. The narrow post-Popen/pre-return window stays outside
+the guard (X10); coordinator main-thread cancellation is unchanged (X9).
+"""
 
 from __future__ import annotations
 
@@ -9,13 +17,21 @@ import threading
 import time
 from typing import Callable, Mapping
 
+from common_lore_index.coordinator._launch_custody import WorkerCustody, is_canonical_launch
 from common_lore_index.coordinator._protocol_session import ProtocolSession
+from common_lore_index.coordinator._protocol_streams import (
+    _bounded_wait,
+    _cancel,
+    _job_start,
+    _read_worker_stderr,
+    _read_worker_stdout,
+    _worker_exit,
+)
 from common_lore_index.coordinator._protocol_validation import (
     MAX_JSONL_LINE_BYTES,
     MAX_RETAINED_DIAGNOSTIC_BYTES,
     ProtocolError,
     WorkerLaunchError,
-    _PORTABLE_SNAPSHOT_FIELD,
     _int_limit,
     _limit,
     _validate_line_limit,
@@ -57,6 +73,23 @@ class SyntheticWorkerResult:
     cleanup_error: str | None = None
     original_terminal: dict[str, object] | None = None
     resource_usage: WorkerResourceUsage | None = None
+
+
+def _send_coordinator(process, session, lock, message, *following) -> bool:
+    # Kept here: ``encode_jsonl`` in this module is the wire-encoding patch seam.
+    try:
+        with lock:
+            if message["message_type"] == "cancel" and session.terminal is not None:
+                return False
+            frames = []
+            for frame in (message, *following):
+                session.accept_coordinator(frame)
+                frames.append(encode_jsonl(frame))
+            process.stdin.write(b"".join(frames))
+            process.stdin.flush()
+        return True
+    except (BrokenPipeError, OSError) as error:
+        raise ProtocolError("worker_input_closed") from error
 
 
 def _run_protocol_worker(
@@ -104,9 +137,10 @@ def _run_protocol_worker(
     _validate_line_limit(line_limit)
     if message_limit <= 0:
         raise ValueError("message limit must be positive")
+    # Resolve the effective callable now; runtime-patched Popen keeps forwarding.
     launch_process = _launch_process or launch_managed_process
+    canonical = is_canonical_launch(launch_process)
     managed_process_launches: list[tuple[str, ...]] = []
-    settled_notified = False
     readers: list[threading.Thread] = []
     try:
         process = launch_process(
@@ -120,12 +154,16 @@ def _run_protocol_worker(
     except (OSError, ProcessBoundaryError) as error:
         raise WorkerLaunchError("worker_launch_failed") from error
     assert process is not None
-    if _launch_ticket is not None:
-        from common_lore_index.coordinator._supervisor_fencing import _bind_launch_process
-        _bind_launch_process(_launch_ticket, process)
-    assert process.stdin is not None and process.stdout is not None
-    assert process.stderr is not None
+    custody = WorkerCustody(
+        process, canonical=canonical, readers=readers, termination_grace=termination_grace,
+        collect_usage=collect_usage, observer=_usage_observer, ticket=_launch_ticket,
+    )
     try:
+        if _launch_ticket is not None:
+            from common_lore_index.coordinator._supervisor_fencing import _bind_launch_process
+            _bind_launch_process(_launch_ticket, process)
+        assert process.stdin is not None and process.stdout is not None
+        assert process.stderr is not None
         if _usage_observer is not None:
             _usage_observer.launched(process.pid)
         lock = threading.Lock()
@@ -281,118 +319,20 @@ def _run_protocol_worker(
             resource_usage=process.resource_usage if collect_usage else None,
         )
         if _usage_observer is not None:
-            settled_notified = True
-            _usage_observer.settled(settlement_for_process(
+            custody.notify_settled(settlement_for_process(
                 process, waited=waited, process_group_cleaned=process_group_cleaned,
                 readers_closed=readers_closed,
                 streams_closed=streams_closed and usage_streams_closed(process),
             ))
+        if process_group_cleaned and _launch_process is None and _launch_ticket is not None:
+            from common_lore_index.coordinator._supervisor_fencing import _record_reaped_launch
+
+            # Normal ticket proof needs canonical intent as well as native provenance.
+            if not custody.native:
+                raise PermissionError("exact registered child and process group have not been reaped")
+            _record_reaped_launch(result, process, _launch_ticket)
     except BaseException as error:
-        if collect_usage:  # opt-in B1 only; default supervision is unchanged
-            facts = interrupt_cleanup(process, readers, termination_grace, error)
-            if _usage_observer is not None and not settled_notified and facts is not None:
-                settled_notified = True
-                try:
-                    _usage_observer.settled(facts)
-                except Exception as observer_error:
-                    error.add_note(
-                        f"usage observer settlement failure: {type(observer_error).__name__}"
-                    )
+        # The opt-in usage entry stays the module-global, patchable shim.
+        custody.settle(error, interrupt_cleanup)
         raise
-    if process_group_cleaned and _launch_process is None and _launch_ticket is not None:
-        from common_lore_index.coordinator._supervisor_fencing import _record_reaped_launch
-
-        _record_reaped_launch(result, process, _launch_ticket)
     return result
-
-
-def _read_worker_stdout(
-    stream, session, lock, messages, state, line_limit, message_limit
-) -> None:
-    while True:
-        frame = stream.readline(line_limit + 1)
-        if not frame:
-            return
-        if state["error"] is not None:
-            continue
-        try:
-            with lock:
-                message = session.accept_worker(frame)
-            message_type = message["message_type"]
-            if message_type == "worker_hello":
-                state["hello"] = True
-            elif message_type in {"progress", "heartbeat"}:
-                state["heartbeat_at"] = time.monotonic()
-            if message_type != "heartbeat":
-                if len(messages) >= message_limit:
-                    raise ProtocolError("message_limit")
-                messages.append(message)
-        except ProtocolError as error:
-            state["error"] = str(error)
-
-
-def _read_worker_stderr(stream, state, max_bytes) -> None:
-    while True:
-        chunk = stream.read(8192)
-        if not chunk:
-            return
-        state["total"] += len(chunk)
-        retained = state["retained"]
-        retained.extend(chunk[: max(0, max_bytes - len(retained))])
-
-
-def _send_coordinator(process, session, lock, message, *following) -> bool:
-    try:
-        with lock:
-            if message["message_type"] == "cancel" and session.terminal is not None:
-                return False
-            frames = []
-            for frame in (message, *following):
-                session.accept_coordinator(frame)
-                frames.append(encode_jsonl(frame))
-            process.stdin.write(b"".join(frames))
-            process.stdin.flush()
-        return True
-    except (BrokenPipeError, OSError) as error:
-        raise ProtocolError("worker_input_closed") from error
-
-
-def _job_start(
-    identity: Mapping[str, object], context: Mapping[str, object] | None
-) -> dict[str, object]:
-    selected = dict(context or {
-        "graph_id": "synthetic-graph",
-        "source_generation": "sg1:synthetic",
-        "config_generation": "cg1:synthetic",
-    })
-    base_fields = {"graph_id", "source_generation", "config_generation"}
-    if set(selected) not in {
-        frozenset(base_fields),
-        frozenset(base_fields | {_PORTABLE_SNAPSHOT_FIELD}),
-    }:
-        raise ProtocolError("invalid_job_context")
-    return {
-        "schema_version": 1, "message_type": "job_start", **dict(identity),
-        "job_kind": "refresh_graph", **selected,
-    }
-
-
-def _cancel(identity: Mapping[str, object]) -> dict[str, object]:
-    return {"schema_version": 1, "message_type": "cancel", **dict(identity)}
-
-
-def _worker_exit(
-    identity: Mapping[str, object], exit_code: int | None, reason: str
-) -> dict[str, object]:
-    return {
-        "schema_version": 1, "message_type": "worker_exit", **dict(identity),
-        "exit_code": exit_code, "reason": reason,
-    }
-
-
-def _bounded_wait(process, timeout: float) -> bool:
-    try:
-        process.wait(timeout=timeout)
-        return True
-    except subprocess.TimeoutExpired:
-        return False

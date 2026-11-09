@@ -18,6 +18,9 @@ from common_lore_index.ops.local_refresh import refresh_local_graph
 from common_lore_index.ops.resource_view import ResourceObserver
 from common_lore_index.ops.resource_view._projections import project_compact_context
 from repomap_test_support.context_assertions import assert_valid_context_packet
+from repomap_test_support.governance3_first_use_sealing import (
+    assert_planned_refusal, assert_v2_sealing_counts, manifest_for_pin, mixed_inventory,
+)
 from repomap_test_support.first_use_workflow import (
     first_use_expectations,
     guard_first_use_root,
@@ -195,7 +198,7 @@ def test_first_use_local_mixed_v1_context_pin_stale_recovery_and_reports(tmp_pat
     reports = private_directory(work_root / "reports")
     recovered = _json(harness.run(
         "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", MIXED_V1_GRAPH_ID, "--json",
-        "--resource-report", str(reports / "recovery.json"),
+        "--resource-report", str(reports / "recovery.json"), "--resource-report-schema", "2",
     ))
     assert recovered["accepted_generation"] == 3
     report = report_payload(
@@ -204,6 +207,29 @@ def test_first_use_local_mixed_v1_context_pin_stale_recovery_and_reports(tmp_pat
     )
     assert_canary_free(report)
     checked = harness.run("ops", "resource-report", "check", "--input", str(reports / "recovery.json"))
-    assert checked.returncode == 0 and checked.stdout.startswith("valid cloe-resource-view-v1"), checked.stderr
+    assert checked.returncode == 0 and checked.stdout.startswith("valid cloe-resource-view-v2"), checked.stderr
+    # The accepted workflow's actual stored manifest supplies m; source bytes
+    # and duplicate digests supply S/C independently of the report and planner.
+    current = _select_all(harness, home, work_root / "selection-g3.json", expected_generation=3)
+    manifest, manifest_bytes = manifest_for_pin(home, current["expected_publication"])
+    inventory = mixed_inventory(working_copy)
+    assert_v2_sealing_counts(report, inventory, manifest, manifest_bytes)
+    total = sum(size for _digest, size in inventory.values())
+    refused = harness.run(
+        "ops", "refresh-graph", "--repo-map-home", str(home), "--graph", MIXED_V1_GRAPH_ID,
+        "--json", "--sealing-max-read-bytes", str(4 * total),
+        "--resource-report", str(reports / "planned-refusal.json"), "--resource-report-schema", "2",
+    )
+    assert refused.returncode == 1 and refused.stdout == ""
+    assert refused.stderr == "ERROR: sealing-budget-exceeded:planned_read_bytes\n"
+    refusal = report_payload(
+        reports / "planned-refusal.json", operation="local_refresh", backend="sqlite", outcome="refused",
+        instrumentation="incomplete", forbidden=(home, working_copy, "mixed-v1"),
+    )
+    assert_planned_refusal(refusal, inventory)
+    after_budget = _select_all(
+        harness, home, work_root / "selection-after-budget.json", expected_generation=3,
+    )
+    assert after_budget["expected_publication"] == current["expected_publication"]
     assert harness.forbidden_events() == [], harness.forbidden_events()
     assert harness.shim_invocations() == "", harness.shim_invocations()

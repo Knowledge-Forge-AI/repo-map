@@ -963,3 +963,55 @@ proof through the canonical runner, strict new-owner enrollment and the exit
 record `tools/ci/cloe-resource-governance2-exit.md`. Independent work review,
 parent verification, campaign binding, commit and publication remain open;
 CI131 does not qualify this successor.
+
+### CI134 outcome and W7 lifetime/efficiency continuation
+
+CI134 attempt 1 executed on staging
+`efdb5286b8a0bc40e242cdfc89a37b99dec89e18`. All 17,632 unit cases and
+2,450 measured integration cases passed, as did five abrupt cases and five
+system scenarios. Unit branches were 21,743/25,030. Measured integration
+branches were 20,023/25,030: one branch below the hard 80% floor despite
+display rounding to 80.0%. The desired 87%/82% branch margins remain 34/502
+branches short. Static-tool bootstrap and Syft acquisition separately failed
+with HTTP 504 responses; their missing checks are not qualified. The campaign
+is `EXECUTED_FAIL`, and no whole-candidate acceptance follows. Authenticated
+application/native-Rust/wheel consumption is 44/14/32.
+
+The operator's roadmap continuation, together with the earlier direction to
+carry coverage work into substantial milestones and proceed past 504-only
+failures, selects `REPOMAP-CLOE-RESOURCE-GOVERNANCE3`. This continues the
+existing resource-governance namespace with two connected design objectives:
+
+1. **Worker lifetime custody:** extend interruption cleanup to default and
+   ticketed launches with exact child/group ownership, one reaper, durable
+   ticket/fencing reconciliation and primary-exception preservation.
+2. **Sealing read efficiency:** remove only proven redundant body reads while
+   preserving ordinary discovery hashes, content identity, retry and race/error
+   semantics, alias/collision handling and truthful meter/plan/report values.
+
+Both objectives were explicitly left open for later ordinary W7 design by
+ADR0173. An independent source-backed design review and parent acceptance of
+ADR0177 and a concrete contract must precede implementation. Real connected
+Local/Server first-use and refusal/cleanup proof belong in this batch; they
+must add new assertions rather than duplicate existing first-use owners.
+The scope does not introduce a speculative whole-operation planner or grow
+the public v1/v2 report vocabulary in place.
+
+Aim for a useful 10k–100k line batch without padding. Coverage remediation
+must exercise useful real boundaries over the unchanged denominator and
+floors. No intermediate design-only publication is planned. New dependencies,
+base/SDK-image admission, DDL/roles, runner-policy classes, native-platform
+expansion, live/installed
+mutation, complete local suites and local coverage remain outside this
+selection. The PostgreSQL startup timeout and unsupported hard-RSS or
+whole-operation guarantees remain held. Final proof, independent work review,
+fresh campaign binding and one separately qualified staging attempt remain
+required; full W6/W7, installed/release and main acceptance stay open.
+
+Implementation status: ADR0177 and the two concrete contracts were accepted
+for source implementation. The two connected epics and strengthened first-use
+owners now have passing scoped unit/containerized integration proof; the public
+transition receipt is `tools/ci/cloe-resource-governance3-exit.md`. Final static
+enforcement, independent resulting-source review, fresh campaign binding and
+hosted qualification remain separate. This does not close W6/W7 or qualify the
+successor through CI134.

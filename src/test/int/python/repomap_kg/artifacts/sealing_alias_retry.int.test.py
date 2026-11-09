@@ -104,13 +104,13 @@ def test_alias_inventory_deduplicates_but_charges_every_encounter(
     assert reads.read_calls == 0 and reads.regular_opens == set()
     assert payload["inventory_files"] == 1 and payload["inventory_bytes"] == len(BODY)
     assert payload["inventory_symlinked_files"] == 1, "all eligible aliases, regardless of visit order"
-    assert payload["planned_min_read_bytes"] == 6 * len(BODY) + 1
+    assert payload["planned_min_read_bytes"] == 4 * len(BODY) + 1
     assert payload["planned_min_write_bytes"] == len(BODY)
     assert payload["directory_entries"] == 4 and payload["projected_directory_entries"] == 12
     assert payload["effective_max_directory_entries"] == 100_000
     assert payload["factors"] == {
-        "full_body_reads_per_file": 6,
-        "collision_extra_reads_per_file": 2,
+        "full_body_reads_per_file": 4,
+        "collision_extra_reads_per_file": 1,
         "stable_capture_max_attempts": 3,
     }
     assert payload["projection_basis"] == "three_walks_of_unchanged_metadata_tree_estimate"
@@ -118,15 +118,15 @@ def test_alias_inventory_deduplicates_but_charges_every_encounter(
     plain = seal(graph, tmp_path / "plain")
     manifest_bytes = len(plain[0].canonical_bytes())
     # An overinclusive 2S plan would falsely refuse this otherwise sufficient cap.
-    budget = 8 * len(BODY) + manifest_bytes + 1
-    assert 12 * len(BODY) + 1 > budget
+    budget = 4 * len(BODY) + manifest_bytes + 1
+    assert 4 * len(BODY) + 1 <= budget
     meter = SealingMeter(SealingBudget(max_read_bytes=budget), governed=True)
     with _native_reads(monkeypatch, source) as reads:
         actual = seal(graph, tmp_path / "governed", io_meter=meter)
     snapshot = meter.snapshot()
     assert (actual[0], actual[2]) == (plain[0], plain[2])
-    assert reads.source_bytes == 7 * len(BODY)
-    assert reads.all_bytes == 8 * len(BODY) + manifest_bytes
+    assert reads.source_bytes == 3 * len(BODY)
+    assert reads.all_bytes == 4 * len(BODY) + manifest_bytes
     assert snapshot.read_bytes == reads.all_bytes and snapshot.read_calls == reads.read_calls
     assert not reads.regular_opens & forbidden
     assert open_descriptor_count() == descriptors
@@ -141,14 +141,14 @@ def test_real_signature_change_retries_without_refunding_the_budget(
     graph = graph_for(binding_for("entry", root))
     plain = seal(graph, tmp_path / "plain")
     manifest_bytes = len(plain[0].canonical_bytes())
-    limit = 6 * len(BODY) + manifest_bytes + 1 if limited else 10**12
+    limit = 4 * len(BODY) + manifest_bytes + 1 if limited else 10**12
     meter = SealingMeter(SealingBudget(max_read_bytes=limit), governed=True)
     changed = []
 
     def change_signature(eof_number: int) -> None:
-        # R1 hashes first. Change the real file only after R5's first complete
+        # R5 captures first. Change the real file only after R5's first complete
         # read and before its closing fstat. No sleeps or synthetic stat result.
-        if eof_number == 2:
+        if eof_number == 1:
             before = source.stat()
             os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns + 1_000_000_000))
             changed.append(source.stat().st_mtime_ns != before.st_mtime_ns)
@@ -168,10 +168,12 @@ def test_real_signature_change_retries_without_refunding_the_budget(
     assert snapshot.read_bytes == reads.all_bytes and snapshot.read_calls == reads.read_calls
     assert snapshot.read_bytes <= limit
     if limited:
-        assert reads.source_bytes == 5 * len(BODY) and reads.all_bytes == 6 * len(BODY)
+        assert reads.source_bytes == 3 * len(BODY)
+        # The second scan refuses before manifest construction/readback.
+        assert reads.all_bytes == 4 * len(BODY)
         assert snapshot.refused_limit == "read_bytes"
         assert not list((store / "temporary").iterdir())
     else:
-        assert reads.source_bytes == 6 * len(BODY)
-        assert reads.all_bytes == 7 * len(BODY) + manifest_bytes
+        assert reads.source_bytes == 4 * len(BODY)
+        assert reads.all_bytes == 5 * len(BODY) + manifest_bytes
     assert source.read_bytes() == BODY and open_descriptor_count() == descriptors

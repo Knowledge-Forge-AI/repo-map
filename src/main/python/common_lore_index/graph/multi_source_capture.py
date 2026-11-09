@@ -77,6 +77,7 @@ def _read_stable_file(
                 raise _SourceInvalid
             flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
             flags |= getattr(os, "O_NOFOLLOW", 0)
+            flags |= getattr(os, "O_NONBLOCK", 0)
             descriptor = os.open(path, flags)
             opened = os.fstat(descriptor)
             if _file_signature(before) != _file_signature(opened):

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from common_lore_index.cli.main import main as cli_main
+from common_lore_index.artifacts.sealing_governance import SealingBudget
 from common_lore_index.ops.config import OpsConfig
 from common_lore_index.ops.config_local import load_graph_registry_config_home
 from common_lore_index.ops.lexical_service import (
@@ -21,6 +22,9 @@ from common_lore_index.retrieval.lexical_envelopes import LexicalQueryRequest
 from common_lore_index.retrieval.query_contracts import CapabilityState
 from common_lore_index.storage import apply_migrations, default_rdbms_root
 from repomap_test_support.context_assertions import assert_valid_context_packet
+from repomap_test_support.governance3_first_use_sealing import (
+    assert_planned_refusal, assert_v2_sealing_counts, manifest_for_pin, mixed_inventory,
+)
 from repomap_test_support.first_use_workflow import (
     first_use_expectations,
     guard_first_use_root,
@@ -41,13 +45,15 @@ def _resource_payload(
     operation: str,
     backend: str,
     outcome: str,
+    schema: str = "cloe-resource-view-v1",
+    instrumentation: str = "complete",
 ) -> dict[str, Any]:
     payload = observer.report().to_payload()
-    assert payload["schema"] == "cloe-resource-view-v1"
+    assert payload["schema"] == schema
     assert payload["operation"] == operation
     assert payload["backend"] == backend
     assert payload["outcome"] == outcome
-    assert payload["instrumentation"] == "complete"
+    assert payload["instrumentation"] == instrumentation
     assert "mixed-v1" not in json.dumps(payload, sort_keys=True)
     assert_canary_free(payload)
     return payload
@@ -121,7 +127,8 @@ def _select(
         binding_id_for_alias("core"), binding_id_for_alias("companion"),
     }
     if pin:
-        assert payload["expected_publication"]["generation"] == 1
+        assert type(payload["expected_publication"]["generation"]) is int
+        assert payload["expected_publication"]["generation"] > 0
         assert all(item["snapshot_id"] for item in payload["bindings"])
     else:
         assert payload["expected_publication"] is None
@@ -160,7 +167,7 @@ def test_first_use_server_context_and_native_fts_lifecycle(
             psql_command=postgres.psql_command,
         )
 
-        refresh_observer = ResourceObserver()
+        refresh_observer = ResourceObserver(report_schema="cloe-resource-view-v2")
         first_refresh = refresh_graph(
             config,
             MIXED_V1_GRAPH_ID,
@@ -169,13 +176,17 @@ def test_first_use_server_context_and_native_fts_lifecycle(
         )
         assert first_refresh.result == "success"
         assert first_refresh.publication_state == "committed"
-        _resource_payload(
-            refresh_observer, operation="server_refresh", backend="postgresql", outcome="committed"
+        first_report = _resource_payload(
+            refresh_observer, operation="server_refresh", backend="postgresql", outcome="committed",
+            schema="cloe-resource-view-v2",
         )
 
         pinned = work_root / "selection-v1.json"
         pinned_record = _select(home, pinned, capsys, pin=True)
         assert pinned_record["expected_publication"]["generation"] == 1
+        manifest, manifest_bytes = manifest_for_pin(home, pinned_record["expected_publication"])
+        inventory = mixed_inventory(working_copy, ("core", "companion"))
+        assert_v2_sealing_counts(first_report, inventory, manifest, manifest_bytes)
         _pack(home, pinned, capsys)
 
         guard_first_use_root(working_copy, work_root)
@@ -195,6 +206,25 @@ def test_first_use_server_context_and_native_fts_lifecycle(
             backend="postgresql",
             outcome="committed",
         )
+        # Refuse at the new read lower bound before any worker starts and
+        # retain the exact accepted Server pin, not only its displayed version.
+        before_budget = _select(home, work_root / "budget-before.json", capsys, pin=True)
+        inventory = mixed_inventory(working_copy, ("core", "companion"))
+        total = sum(size for _digest, size in inventory.values())
+        budget_observer = ResourceObserver(report_schema="cloe-resource-view-v2")
+        refused = refresh_graph(
+            config, MIXED_V1_GRAPH_ID, psql_command=postgres.psql_command,
+            resource_observer=budget_observer, sealing_budget=SealingBudget(max_read_bytes=4 * total),
+        )
+        assert refused.result == "failure"
+        assert (refused.error_category, refused.publication_state) == ("resource_budget_exceeded", "not_started")
+        refusal = _resource_payload(
+            budget_observer, operation="server_refresh", backend="postgresql", outcome="refused",
+            schema="cloe-resource-view-v2", instrumentation="incomplete",
+        )
+        assert_planned_refusal(refusal, inventory)
+        after_budget = _select(home, work_root / "budget-after.json", capsys, pin=True)
+        assert after_budget["expected_publication"] == before_budget["expected_publication"]
         stale = _pack(home, pinned, capsys)
         assert stale["status"] == "stale"
         assert stale["reason"] == "selection_publication_advanced"

@@ -61,7 +61,7 @@ def test_local_plan_is_driver_free_metadata_only_and_matches_the_tree(tmp_path: 
     assert plan["schema"] == "cloe-sealing-plan-v1" and plan["refusal"] is None
     assert (plan["inventory_files"], plan["inventory_bytes"]) == (files, total)
     assert (plan["directory_entries"], plan["opens"]) == (entries, listings)
-    assert plan["planned_min_read_bytes"] == 6 * total + 1
+    assert plan["planned_min_read_bytes"] == 4 * total + 1
     assert plan["projected_directory_entries"] == 3 * entries
     assert _snapshot([source, home]) == before, "the plan wrote nothing and changed no source"
     for forbidden in (str(source), str(home), GRAPH, "lib.sh"):

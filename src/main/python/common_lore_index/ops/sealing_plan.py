@@ -2,7 +2,7 @@
 
 After ordinary read-only configuration resolution, the plan runs only the
 governed metadata walk of every binding: no selected-source body read, database
-connection, graph lock, worker or write. ``planned_min_read_bytes`` (``6S+1``)
+connection, graph lock, worker or write. ``planned_min_read_bytes`` (``4S+1``)
 is a ``derived_lower_bound`` for one *successful* seal of the metadata
 inventory at that instant; a refusal reads less, and the value is not a promise
 about a later refresh. ``projected_directory_entries`` is a labelled estimate:

@@ -191,6 +191,94 @@ class VerifyingArtifactStream(io.RawIOBase, BinaryIO):
             self.close()
 
 
+def compare_and_verify_collision(
+    target: Path,
+    temporary: Path,
+    length: int,
+    digest: str,
+    bound: int,
+    *,
+    owner_uid: int,
+    private_details_fn: _PrivateDetails,
+) -> str:
+    """Compare a collision and return the version of the descriptor read."""
+
+    details = private_details_fn(target, owner_uid=owner_uid)
+    if details.st_size != length:
+        raise ArtifactIntegrityError("artifact size does not match reference")
+    if length > bound:
+        raise ArtifactIntegrityError(
+            "artifact bounds exceeded", code=ArtifactErrorCode.ARTIFACT_BOUNDS
+        )
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    target_fd: int | None = None
+    temporary_fd: int | None = None
+    try:
+        try:
+            target_fd = os.open(target, flags)
+        except OSError as error:
+            raise ArtifactIntegrityError("artifact is not a regular file") from error
+        opened = os.fstat(target_fd)
+        if not _same_file_stat(details, opened) or not stat.S_ISREG(opened.st_mode):
+            raise ArtifactIntegrityError("artifact changed during read")
+        try:
+            temporary_fd = os.open(temporary, flags)
+        except OSError as error:
+            raise ArtifactIntegrityError("artifact read failed") from error
+        if not stat.S_ISREG(os.fstat(temporary_fd).st_mode):
+            raise ArtifactIntegrityError("artifact read failed")
+        hasher = hashlib.sha256()
+        differs = False
+        total = 0
+        with os.fdopen(target_fd, "rb", closefd=True) as target_stream:
+            target_fd = None
+            with os.fdopen(temporary_fd, "rb", closefd=True) as temporary_stream:
+                temporary_fd = None
+                while True:
+                    first = target_stream.read(min(65536, length - total + 1))
+                    total += len(first)
+                    if total > length:
+                        raise ArtifactIntegrityError("artifact size does not match reference")
+                    hasher.update(first)
+                    remaining = len(first)
+                    pieces: list[bytes] = []
+                    while remaining:
+                        piece = temporary_stream.read(remaining)
+                        if not piece:
+                            break
+                        pieces.append(piece)
+                        remaining -= len(piece)
+                    if first != b"".join(pieces):
+                        differs = True
+                    if not first:
+                        if temporary_stream.read(1):
+                            differs = True
+                        break
+                after = os.fstat(target_stream.fileno())
+        if total != length:
+            raise ArtifactIntegrityError("artifact size does not match reference")
+        if _DIGEST_PREFIX + hasher.hexdigest() != digest:
+            raise ArtifactIntegrityError("artifact digest does not match reference")
+        if differs:
+            raise ArtifactIntegrityError("content-address collision")
+        if not _same_file_stat(opened, after):
+            raise ArtifactIntegrityError("artifact changed during read")
+        if _file_version(after) != _file_version(details):
+            raise ArtifactIntegrityError(
+                "artifact store version is stale", code="artifact_stale"
+            )
+        return _file_version(after)
+    except ArtifactIntegrityError:
+        raise
+    except OSError as error:
+        raise ArtifactIntegrityError("artifact read failed") from error
+    finally:
+        if temporary_fd is not None:
+            os.close(temporary_fd)
+        if target_fd is not None:
+            os.close(target_fd)
+
+
 def compare_stream_collision(
     target: Path,
     temporary: Path,
@@ -200,43 +288,18 @@ def compare_stream_collision(
     owner_uid: int,
     private_details_fn: _PrivateDetails,
 ) -> None:
-    details = private_details_fn(target, owner_uid=owner_uid)
-    if details.st_size != length:
-        raise ArtifactIntegrityError("artifact size does not match reference")
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        target_fd = os.open(target, flags)
-    except OSError as error:
-        raise ArtifactIntegrityError("artifact is not a regular file") from error
-    try:
-        temp_fd = os.open(temporary, flags)
-        try:
-            target_hasher = hashlib.sha256()
-            differs = False
-            with (
-                os.fdopen(target_fd, "rb", closefd=True) as t_stream,
-                os.fdopen(temp_fd, "rb", closefd=True) as s_stream,
-            ):
-                while True:
-                    c1 = t_stream.read(65536)
-                    c2 = s_stream.read(65536)
-                    if c1:
-                        target_hasher.update(c1)
-                    if c1 != c2:
-                        differs = True
-                    if not c1:
-                        break
-            actual_target_digest = _DIGEST_PREFIX + target_hasher.hexdigest()
-            if actual_target_digest != digest:
-                raise ArtifactIntegrityError("artifact digest does not match reference")
-            if differs:
-                raise ArtifactIntegrityError("content-address collision")
-        finally:
-            pass
-    except ArtifactIntegrityError:
-        raise
-    except OSError as error:
-        raise ArtifactIntegrityError("artifact read failed") from error
+    """Compatibility adapter for the pre-E2 collision helper signature."""
+
+    compare_and_verify_collision(
+        target,
+        temporary,
+        length,
+        digest,
+        length,
+        owner_uid=owner_uid,
+        private_details_fn=private_details_fn,
+    )
+    return None
 
 
 def verify_stream_path(
@@ -284,6 +347,7 @@ __all__ = [
     "VerifyingArtifactStream",
     "_file_version",
     "_same_file_stat",
+    "compare_and_verify_collision",
     "compare_stream_collision",
     "verify_stream_path",
 ]

@@ -21,7 +21,7 @@ from common_lore_index.artifacts._store_common import (
 )
 from common_lore_index.artifacts._store_stream import (
     VerifyingArtifactStream,
-    compare_stream_collision,
+    compare_and_verify_collision,
     verify_stream_path,
 )
 from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
@@ -252,14 +252,21 @@ class FileSystemArtifactStore:
                 ArtifactLocator("filesystem", f"objects/{digest[7:]}", None),
             )
             target = self._objects / digest[7:]
+            collision_version: str | None = None
             if target.exists() or target.is_symlink():
-                compare_stream_collision(
-                    target, temporary, length, digest, owner_uid=self._owner_uid, private_details_fn=_private_details
+                collision_version = compare_and_verify_collision(
+                    target, temporary, length, digest, bound,
+                    owner_uid=self._owner_uid, private_details_fn=_private_details,
                 )
             else:
                 os.replace(temporary, target)
                 temporary = None
                 _fsync_directory(self._objects)
+            if collision_version is not None:
+                return _reference(
+                    digest, length, media_type, record_format, privacy,
+                    ArtifactLocator("filesystem", f"objects/{digest[7:]}", collision_version),
+                )
             details = _private_details(target, owner_uid=self._owner_uid)
             reference = _reference(
                 digest,

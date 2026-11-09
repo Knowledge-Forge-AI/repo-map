@@ -103,7 +103,7 @@ def governance_limits(
         budget_row("sealing_max_elapsed", _field(budget, "max_elapsed_ms"), "milliseconds",
                    "call_budget_cooperative"),
         ResourceLimitV2("classification_max_retained_chars", CLASSIFICATION_MAX_RETAINED_CHARS,
-                        "count", "governed_owner_bound", entered and governed),
+                        "count", "governed_owner_bound", False),
         ResourceLimitV2("stable_capture_max_attempts", STABLE_CAPTURE_MAX_ATTEMPTS,
                         "count", "owner_enforced", applies),
     )

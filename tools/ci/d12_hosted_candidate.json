@@ -1,10 +1,10 @@
 {
   "d12_context": {
-    "context_file_count": 866,
-    "dockerfile_sha256": "03157e09e1b68f731c7869578fdc2f685198817b70e4544dcbdd63e840a350ce",
-    "recipe_sha256": "fad64b4f87f61462c3213f91a84299379aade3bc153818573545800e95a7ad21",
-    "source_sha256": "248f2cca3f670d67023052bde31e12eff9feb3848d26d85cf6cee85cce0f750e"
-  },
+  "context_file_count": 873,
+  "dockerfile_sha256": "03157e09e1b68f731c7869578fdc2f685198817b70e4544dcbdd63e840a350ce",
+  "recipe_sha256": "fad64b4f87f61462c3213f91a84299379aade3bc153818573545800e95a7ad21",
+  "source_sha256": "61e9dee20baaf0c7bc3fb2a94393ff7511a3890a310b7f203b5fcd194b99f8f8"
+},
   "platform": "linux/amd64",
   "schema": "repomap-d12-hosted-candidate-v1",
   "sdk_sandbox": {

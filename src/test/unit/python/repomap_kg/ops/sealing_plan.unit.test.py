@@ -42,12 +42,12 @@ def test_plan_counts_equal_an_independent_metadata_walk_and_open_no_body(tmp_pat
     )
     assert payload["directory_entries"] == expected.listed_entries
     assert payload["opens"] == expected.walked_directories
-    assert payload["planned_min_read_bytes"] == 6 * expected.total + 1
+    assert payload["planned_min_read_bytes"] == 4 * expected.total + 1
     assert payload["planned_min_write_bytes"] == expected.total
     assert payload["projected_directory_entries"] == 3 * expected.listed_entries
     assert payload["effective_max_directory_entries"] == 100_000
     assert payload["factors"] == {
-        "full_body_reads_per_file": 6, "collision_extra_reads_per_file": 2, "stable_capture_max_attempts": 3,
+        "full_body_reads_per_file": 4, "collision_extra_reads_per_file": 1, "stable_capture_max_attempts": 3,
     }
 
 

@@ -1,12 +1,10 @@
-"""Single-owner ``wait4`` reaping and owned-worker usage attribution (ADR 0173 E2).
+"""Owned-worker usage attribution on the selected ``wait4`` owner (ADR 0173 E2).
 
-For an opt-in usage-collecting POSIX launch the supervising thread is the only
-caller of ``poll``/``wait``; nothing else may call ``Popen.poll`` or
-``Popen.wait``, because CPython reports return code 0 after ``ECHILD``. The
-reaper validates the kernel-returned pid, sets ``Popen.returncode`` exactly as
-Popen would (negative for a signal), and keeps that child's rusage. An
-``ECHILD`` with no legitimately established status raises
-``ProtocolError("worker_status_unknown")``; unknown status is never success.
+Every native POSIX launch has one ``ChildReaper`` (``_child_reaper``) as its
+only ``poll``/``wait`` owner. Only an opt-in usage-collecting launch selects
+``ChildUsageReaper``, which additionally keeps the reaped child's rusage and
+the post-reap group probe. An ``ECHILD`` or foreign status marks usage
+``reaped_elsewhere`` and fails closed with ``worker_status_unknown``.
 
 Values are worker user/system CPU in nanoseconds at microsecond resolution and
 peak RSS in bytes (Linux KiB x 1024, Darwin bytes). Peak RSS is the largest
@@ -20,12 +18,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 import os
-import subprocess
 import sys
 import time
 from typing import Any, Callable
 
-from common_lore_index.coordinator._protocol_validation import ProtocolError
+from common_lore_index.coordinator._child_reaper import ChildReaper
 
 MAX_CPU_NS = 2**63 - 1
 _LINUX_CPU = "wait4_self_and_waited_descendants"
@@ -104,8 +101,13 @@ def probe_group(pgid: int, killpg: Callable[[int, int], None] = os.killpg) -> tu
     return 1, None
 
 
-class ChildUsageReaper:
-    """The one reaper of one launched child; the launch and this reap are its identity."""
+class ChildUsageReaper(ChildReaper):
+    """Compatibility entry: the selected wait owner that also retains usage.
+
+    Only ``collect_usage=True`` launches select this owner. It adds the reaped
+    child's rusage and the post-reap group probe to the shared ``ChildReaper``
+    states; default launches use the base owner and retain no usage.
+    """
 
     def __init__(
         self,
@@ -117,71 +119,27 @@ class ChildUsageReaper:
         _sleep: Callable[[float], None] = time.sleep,
         _monotonic: Callable[[], float] = time.monotonic,
     ) -> None:
-        self._pid = int(pid)
+        super().__init__(pid, _wait4=_wait4, _sleep=_sleep, _monotonic=_monotonic)
         self._platform = sys.platform if platform is None else platform
-        self._wait4 = _wait4 if _wait4 is not None else getattr(os, "wait4", None)
         self._killpg = _killpg if _killpg is not None else os.killpg
-        self._sleep = _sleep
-        self._monotonic = _monotonic
         self._usage: WorkerResourceUsage | None = None
-        self._owned_status = False
-
-    @property
-    def supported(self) -> bool:
-        return self._wait4 is not None
 
     def usage(self) -> WorkerResourceUsage:
         if self._wait4 is None:
             return WorkerResourceUsage.unavailable("platform_unsupported")
         return self._usage or WorkerResourceUsage.unavailable("not_observed")
 
-    def _reap(self, popen: Any, flags: int) -> int | None:
-        if popen.returncode is not None:
-            if self._owned_status:
-                return int(popen.returncode)
+    def _observe_unknown(self, *, reaped_elsewhere: bool) -> None:
+        if reaped_elsewhere:
             self._usage = WorkerResourceUsage.unavailable("reaped_elsewhere")
-            raise ProtocolError("worker_status_unknown")
-        if self._wait4 is None:
-            raise ProtocolError("worker_status_unknown")
-        try:
-            pid, status, rusage = self._wait4(self._pid, flags)
-        except ChildProcessError:
-            self._usage = WorkerResourceUsage.unavailable("reaped_elsewhere")
-            raise ProtocolError("worker_status_unknown") from None
-        if pid == 0:
-            return None
-        if pid != self._pid:
-            raise ProtocolError("worker_status_unknown")
-        code = os.waitstatus_to_exitcode(status)
-        popen.returncode = code
-        self._owned_status = True
+
+    def _observe_reap(self, rusage: Any) -> None:
         usage = usage_from_rusage(rusage, self._platform)
         members, group_reason = probe_group(self._pid, self._killpg)
         self._usage = WorkerResourceUsage(
             usage.user_cpu_ns, usage.system_cpu_ns, usage.peak_rss_bytes, usage.cpu_basis,
             usage.rss_basis, usage.reason, members, group_reason,
         )
-        return code
-
-    def poll(self, popen: Any) -> int | None:
-        return self._reap(popen, getattr(os, "WNOHANG", 1))
-
-    def wait(self, popen: Any, timeout: float | None = None) -> int:
-        if timeout is None:
-            code = self._reap(popen, 0)
-            assert code is not None
-            return code
-        deadline = self._monotonic() + max(0.0, float(timeout))
-        delay = 0.0005
-        while True:
-            code = self.poll(popen)
-            if code is not None:
-                return code
-            remaining = deadline - self._monotonic()
-            if remaining <= 0:
-                raise subprocess.TimeoutExpired(getattr(popen, "args", ()), timeout)
-            self._sleep(min(delay, remaining))
-            delay = min(delay * 2, 0.05)
 
 
 __all__ = (

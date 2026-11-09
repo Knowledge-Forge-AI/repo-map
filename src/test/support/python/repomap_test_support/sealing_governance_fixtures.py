@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+import hashlib
 import math
 import os
 from pathlib import Path
@@ -98,34 +99,95 @@ class TreeExpectation:
     walked_directories: int
     listed_entries: int
     depth: Mapping[str, int] = field(default_factory=dict)
+    digests: Mapping[str, str] = field(default_factory=dict)
 
     @property
     def total(self) -> int:
         return sum(self.sizes.values())
 
-    def read_bytes(self, manifest_bytes: int, *, collision: bool) -> int:
-        store = (3 if collision else 1) * (self.total + manifest_bytes)
-        return 2 * self.total + 2 * self.total + self.total + store
+    def collision_paths(self, *prior: "TreeExpectation") -> tuple[str, ...]:
+        """Return paths whose content digest already belongs to an earlier tree."""
+        seen = {digest for expectation in prior for digest in expectation.digests.values()}
+        collisions: list[str] = []
+        for path, digest in self.digests.items():
+            if digest in seen:
+                collisions.append(path)
+            seen.add(digest)
+        return tuple(collisions)
 
-    def read_calls(self, manifest_bytes: int, *, collision: bool) -> int:
-        """R1+R5 per scan with one EOF probe each, R6 exact, R7 plus probe, R7c both sides."""
-        scans = 2 * sum(2 * (_calls(size, MIB) + 1) for size in self.sizes.values())
+    def _collision_set(self, collision: bool, collision_paths: tuple[str, ...]) -> set[str]:
+        return set(self.sizes) if collision else set(collision_paths)
+
+    def read_bytes(
+        self,
+        manifest_bytes: int,
+        *,
+        collision: bool,
+        collision_paths: tuple[str, ...] = (),
+        manifest_collision: bool | None = None,
+        include_manifest: bool = True,
+    ) -> int:
+        source_collisions = self._collision_set(collision, collision_paths)
+        source_store = sum(
+            size * (2 if path in source_collisions else 1)
+            for path, size in self.sizes.items()
+        )
+        manifest_is_collision = collision if manifest_collision is None else manifest_collision
+        manifest_store = manifest_bytes * (2 if manifest_is_collision else 1)
+        return 3 * self.total + source_store + (manifest_store if include_manifest else 0)
+
+    def read_calls(
+        self,
+        manifest_bytes: int,
+        *,
+        collision: bool,
+        collision_paths: tuple[str, ...] = (),
+        manifest_collision: bool | None = None,
+        scans: int = 2,
+        include_manifest: bool = True,
+    ) -> int:
+        """R5 per scan, R6, and independent R7/R7c calls for each object."""
+        source_collisions = self._collision_set(collision, collision_paths)
+        capture = scans * sum(_calls(size, MIB) + 1 for size in self.sizes.values())
         copy = sum(_calls(size, MIB) for size in self.sizes.values())
-        stored = (*self.sizes.values(), manifest_bytes)
-        verify = sum(_calls(size, STORE_CHUNK) + 1 for size in stored)
-        compare = sum(2 * (_calls(size, STORE_CHUNK) + 1) for size in stored) if collision else 0
-        return scans + copy + verify + compare
+        store = sum(
+            (2 if path in source_collisions else 1) * (_calls(size, STORE_CHUNK) + 1)
+            for path, size in self.sizes.items()
+        )
+        if include_manifest:
+            manifest_is_collision = collision if manifest_collision is None else manifest_collision
+            store += (2 if manifest_is_collision else 1) * (_calls(manifest_bytes, STORE_CHUNK) + 1)
+        return capture + copy + store
 
-    def opens(self, *, walks: int, collision: bool) -> int:
-        per_put = 4 if collision else 3
+    def opens(
+        self,
+        *,
+        walks: int,
+        collision: bool,
+        capture_scans: int = 2,
+        include_manifest: bool = True,
+    ) -> int:
+        per_put = 3
         copy = sum(self.depth.get(path, 0) + 2 for path in self.sizes)
         return (
-            walks * self.walked_directories + 2 * 2 * len(self.sizes) + copy
-            + per_put * (len(self.sizes) + 1)
+            walks * self.walked_directories + capture_scans * len(self.sizes) + copy
+            + per_put * (len(self.sizes) + (1 if include_manifest else 0))
         )
 
-    def fsyncs(self, *, collision: bool) -> int:
-        return (1 if collision else 2) * (len(self.sizes) + 1)
+    def fsyncs(
+        self,
+        *,
+        collision: bool,
+        collision_paths: tuple[str, ...] = (),
+        manifest_collision: bool | None = None,
+        include_manifest: bool = True,
+    ) -> int:
+        source_collisions = self._collision_set(collision, collision_paths)
+        count = sum(1 if path in source_collisions else 2 for path in self.sizes)
+        if include_manifest:
+            manifest_is_collision = collision if manifest_collision is None else manifest_collision
+            count += 1 if manifest_is_collision else 2
+        return count
 
 
 def expectation_for(root: Path, files: Mapping[str, bytes]) -> TreeExpectation:
@@ -138,6 +200,7 @@ def expectation_for(root: Path, files: Mapping[str, bytes]) -> TreeExpectation:
     return TreeExpectation(
         {path: len(data) for path, data in files.items()}, directories, entries,
         {path: path.count("/") for path in files},
+        {path: hashlib.sha256(data).hexdigest() for path, data in files.items()},
     )
 
 

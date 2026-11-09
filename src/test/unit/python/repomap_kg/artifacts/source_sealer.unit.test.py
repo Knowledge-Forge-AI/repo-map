@@ -86,7 +86,7 @@ def test_seal_configured_sources_rejects_unsealable_file(tmp_path, monkeypatch):
 
     sealing_active = False
 
-    orig_scan = sealer_mod.scan_multi_source_generations
+    orig_scan = sealer_mod.scan_sealing_generations
 
     def instrumented_scan(g):
         nonlocal sealing_active
@@ -94,7 +94,7 @@ def test_seal_configured_sources_rejects_unsealable_file(tmp_path, monkeypatch):
         sealing_active = True
         return res
 
-    monkeypatch.setattr(sealer_mod, "scan_multi_source_generations", instrumented_scan)
+    monkeypatch.setattr(sealer_mod, "scan_sealing_generations", instrumented_scan)
 
     orig_fstat = io_mod.os.fstat
 
@@ -138,7 +138,7 @@ def test_seal_configured_sources_detects_content_hash_mutation(tmp_path, monkeyp
     store = FileSystemArtifactStore(tmp_path / "store")
 
     sealing_active = False
-    orig_scan = sealer_mod.scan_multi_source_generations
+    orig_scan = sealer_mod.scan_sealing_generations
 
     def instrumented_scan(g):
         nonlocal sealing_active
@@ -146,7 +146,7 @@ def test_seal_configured_sources_detects_content_hash_mutation(tmp_path, monkeyp
         sealing_active = True
         return result
 
-    monkeypatch.setattr(sealer_mod, "scan_multi_source_generations", instrumented_scan)
+    monkeypatch.setattr(sealer_mod, "scan_sealing_generations", instrumented_scan)
     orig_read = io_mod.os.read
 
     def tampered_read(descriptor, size):
@@ -176,7 +176,7 @@ def test_seal_configured_sources_detects_generation_drift(tmp_path, monkeypatch)
     (source / "main.py").write_text("VALUE = 1\n", encoding="utf-8")
     store = FileSystemArtifactStore(tmp_path / "store")
 
-    real_scan = sealer_mod.scan_multi_source_generations
+    real_scan = sealer_mod.scan_sealing_generations
     call_count = 0
 
     def drifted_scan(g):
@@ -187,7 +187,7 @@ def test_seal_configured_sources_detects_generation_drift(tmp_path, monkeypatch)
             return replace(res, source_generation="sg1:drifted")
         return res
 
-    monkeypatch.setattr(sealer_mod, "scan_multi_source_generations", drifted_scan)
+    monkeypatch.setattr(sealer_mod, "scan_sealing_generations", drifted_scan)
 
     with pytest.raises(ValueError, match="source changed while sealing"):
         seal_configured_sources(

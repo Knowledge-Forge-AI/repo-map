@@ -131,14 +131,14 @@ def test_plan_cli_never_opens_source_bodies_or_operational_boundaries(
     assert (plan["inventory_files"], plan["inventory_bytes"]) == (files, total)
     assert plan["inventory_symlinked_files"] == 1
     assert (plan["directory_entries"], plan["opens"]) == (entries, listings)
-    assert plan["planned_min_read_bytes"] == 6 * total + 1
+    assert plan["planned_min_read_bytes"] == 4 * total + 1
     assert plan["planned_min_read_bytes_basis"] == "derived_lower_bound"
     assert plan["planned_min_write_bytes"] == total
     assert plan["effective_max_directory_entries"] == 100_000
     assert plan["projected_directory_entries"] == 3 * entries
     assert plan["projection_basis"] == "three_walks_of_unchanged_metadata_tree_estimate"
     assert plan["factors"] == {
-        "full_body_reads_per_file": 6, "collision_extra_reads_per_file": 2,
+        "full_body_reads_per_file": 4, "collision_extra_reads_per_file": 1,
         "stable_capture_max_attempts": 3,
     }
     assert _snapshot([*roots, home]) == before

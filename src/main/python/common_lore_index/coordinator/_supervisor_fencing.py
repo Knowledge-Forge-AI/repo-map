@@ -8,12 +8,12 @@ import itertools
 import json
 from pathlib import Path
 import secrets
-import subprocess
 import sys
 from typing import Any, Mapping, cast
 import weakref
 
 from common_lore_index.coordinator._control_types import ConnectionFactory, JobClaim
+from common_lore_index.coordinator._process_supervision_state import ORIGINAL_POPEN
 from common_lore_index.coordinator._publication_phase import WorkerFencingProof, _fencing_identity, _issue_fencing_proof
 from common_lore_index.coordinator._refresh_capability import load_refresh_capability
 from common_lore_index.coordinator.process_supervision import ManagedProcess, PosixProcessGroup, WindowsJobObject
@@ -122,11 +122,20 @@ def _validate_launch(ticket: object, argv: tuple[str, ...], identity: Mapping[st
 
 
 def _bind_launch_process(ticket: object, process: ManagedProcess) -> None:
+    """Bind custody to the real child first, then validate it.
+
+    A real original-Popen child is held by the registration before any later
+    validation can raise, so abnormal settlement can still release it only
+    with proof; an unproven child keeps the registration (D9/X6).
+    """
     launch = _registered(ticket)
-    if (launch.process is not None or not isinstance(process.popen, subprocess.Popen)
-            or process.popen.args != launch.ticket.expected_argv):
+    if launch.process is not None:
         raise PermissionError("launch registration requires its exact real child")
-    launch.process = process
+    if isinstance(process, ManagedProcess) and isinstance(process.popen, ORIGINAL_POPEN):
+        launch.process = process
+    if (launch.process is not process or not process.native
+            or getattr(process.popen, "args", None) != launch.ticket.expected_argv):
+        raise PermissionError("launch registration requires its exact real child")
 
 
 def release_unlaunched_registration(ticket: object) -> None:
@@ -140,11 +149,18 @@ def release_unlaunched_registration(ticket: object) -> None:
 
 
 def _record_reaped_launch(result: object, process: ManagedProcess, ticket: object) -> None:
+    """Normal reaped-result recording from native provenance and owner status.
+
+    Never ``Popen.poll`` (CPython reports 0 after ECHILD), a passive return code
+    or a probe of the released boundary: the selected owner's status and the
+    retained cleanup result are the only accepted facts.
+    """
     launch = _registered(ticket)
-    if (launch.process is not process or not isinstance(process.popen, subprocess.Popen)
-            or not process._closed or process.popen.poll() is None
+    if (launch.process is not process or not isinstance(process, ManagedProcess)
+            or not process.native or not isinstance(process.popen, ORIGINAL_POPEN)
+            or not process.closed or not process.owner_reaped
+            or process._cleanup_clean is not True
             or not isinstance(process.boundary, (PosixProcessGroup, WindowsJobObject))
-            or process.boundary.tree_exists()
             or process.popen.args != launch.ticket.expected_argv
             or tuple(getattr(result, "argv", ())) != launch.ticket.expected_argv
             or not getattr(result, "waited", False) or not getattr(result, "process_group_cleaned", False)):
@@ -152,6 +168,33 @@ def _record_reaped_launch(result: object, process: ManagedProcess, ticket: objec
     _PENDING_LAUNCHES.pop(launch.ticket.token)
     _ACTIVE_IDENTITIES.pop(launch.ticket.identity, None)
     _retain_result(result, launch.ticket)
+
+
+def _release_abnormal_launch(ticket: object, process: object, outcome: object) -> bool:
+    """Release a proven abnormal settlement without minting fencing evidence.
+
+    Requires the exact registered ticket and bound child, native owner status
+    and every proven custody fact. Only the matching in-memory registration is
+    popped; no result is retained, so no fencing proof can be earned, and the
+    durable supervisor registration digest is never consumed here. Unproven
+    custody keeps the registration held.
+    """
+    launch = _registered(ticket)
+    if launch.process is None or launch.process is not process:
+        raise PermissionError("abnormal release requires the exact registered child")
+    proven = (
+        isinstance(process, ManagedProcess) and process.native and process.owner_reaped
+        and getattr(outcome, "proven", False) is True
+        and all(getattr(outcome, fact, False) is True for fact in (
+            "status_known", "group_empty", "released", "readers_joined", "streams_closed"))
+    )
+    if not proven:
+        return False
+    if _PENDING_LAUNCHES.get(launch.ticket.token) is launch:
+        _PENDING_LAUNCHES.pop(launch.ticket.token)
+        if _ACTIVE_IDENTITIES.get(launch.ticket.identity) == launch.ticket.token:
+            _ACTIVE_IDENTITIES.pop(launch.ticket.identity)
+    return True
 
 
 def _retain_result(result: object, ticket: SupervisorLaunchTicket) -> None:

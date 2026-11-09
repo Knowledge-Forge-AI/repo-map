@@ -20,6 +20,7 @@ from pathlib import Path
 from common_lore_index.artifacts._manifest_records import ArtifactLimits
 from common_lore_index.artifacts._sealing_meter import SealingMeter, SealingPlanFacts
 from common_lore_index.graph._metered_classification import ClassificationReaders
+from common_lore_index.graph._canonical_selection import canonical_relative_path
 from common_lore_index.graph._discovery_selection import (
     normalize_discovery_exclude_paths,
     selected_files,
@@ -131,7 +132,7 @@ def preflight_inventory(
             repository_root, excludes, metered_walk(repository_root, meter)
         ):
             try:
-                relative = file_path.resolve().relative_to(repository_root).as_posix()
+                relative = canonical_relative_path(repository_root, file_path)
                 size = file_path.stat().st_size
             except FileNotFoundError as error:
                 raise MultiSourceCaptureError(

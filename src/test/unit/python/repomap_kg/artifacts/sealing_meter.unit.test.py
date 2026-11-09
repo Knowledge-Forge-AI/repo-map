@@ -46,7 +46,7 @@ def test_budget_ranges_and_normalization() -> None:
         normalize_budget({"max_opens": 1})
     assert effective_max_directory_entries(None) == GOVERNED_DEFAULT_MAX_DIRECTORY_ENTRIES == 100_000
     assert effective_max_directory_entries(SealingBudget(max_directory_entries=7)) == 7
-    assert planned_min_read_bytes(10) == 61
+    assert planned_min_read_bytes(10) == 41
 
 
 @pytest.mark.parametrize("limit", BUDGET_LIMITS)
@@ -166,9 +166,9 @@ def test_governed_entries_have_a_finite_default_ceiling_and_observe_only_has_non
 
 def test_plan_facts_refuse_provable_planned_overruns() -> None:
     plan = SealingPlanFacts(bindings=1, inventory_files=2, inventory_bytes=10, inventory_symlinked_files=0)
-    SealingMeter(SealingBudget(max_read_bytes=61, max_write_bytes=10), governed=True).note_plan(plan)
+    SealingMeter(SealingBudget(max_read_bytes=41, max_write_bytes=10), governed=True).note_plan(plan)
     with pytest.raises(SealingBudgetExceeded, match="planned_read_bytes"):
-        SealingMeter(SealingBudget(max_read_bytes=60), governed=True).note_plan(plan)
+        SealingMeter(SealingBudget(max_read_bytes=40), governed=True).note_plan(plan)
     with pytest.raises(SealingBudgetExceeded, match="planned_write_bytes"):
         SealingMeter(SealingBudget(max_write_bytes=9), governed=True).note_plan(plan)
     with pytest.raises(SealingMeterMisuse):

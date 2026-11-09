@@ -1015,7 +1015,7 @@
       },
       {
         "path": "tools/ci/d12_system_grant.py",
-        "sha256": "59fba24aab3bcac603faf7242de3f6db20044712b5e8811d2b5fbb16b2bca581"
+        "sha256": "be970399c19220729a0e1e14f534b386418f3ccd0889be5215b58fa44964b89a"
       },
       {
         "path": "tools/ci/d12_system_grant_io.py",

@@ -68,7 +68,7 @@ def test_server_v2_committed_refused_and_v1_default_reports(tmp_path: Path) -> N
         assert v2["schema"] == "cloe-resource-view-v2" and len(v2["metrics"]) == 30
         sealed = metric(v2, "sealed_manifest_bytes")["value"]
         assert metric(v2, "sealing_copy_read_bytes")["value"] == sealed
-        assert metric(v2, "sealing_read_bytes")["value"] > 6 * sealed
+        assert metric(v2, "sealing_read_bytes")["value"] > 4 * sealed
         assert metric(v2, "sealing_read_bytes")["basis"] == "call_meter_exact"
         assert metric(v2, "worker_launches")["value"] == 1
         for name in ("worker_cpu", "worker_user_cpu", "worker_system_cpu", "worker_peak_rss"):
