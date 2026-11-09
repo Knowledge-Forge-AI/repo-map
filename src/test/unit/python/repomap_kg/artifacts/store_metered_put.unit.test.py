@@ -44,18 +44,23 @@ def test_metered_put_returns_the_incumbent_reference_with_exact_new_object_count
     assert _temporaries(store) == []
 
 
-def test_collision_reads_both_objects_then_reads_back_for_three_s(tmp_path: Path) -> None:
+def test_collision_compares_and_verifies_both_streams_in_one_pass_for_two_s(tmp_path: Path) -> None:
     data = b"z" * (2 * CHUNK + 1)
     store = FileSystemArtifactStore(tmp_path / "store")
     first = store.put(data)
+    target = store.object_path(first)
+    before = open_descriptor_count()
     meter = SealingMeter(None, governed=False)
     second = store.put(data, io_meter=meter)
-    assert second.content_digest == first.content_digest
+    assert second == first and second.locator == first.locator, "incumbent object and store version"
     snapshot = meter.snapshot()
-    assert snapshot.reader("store") == 3 * len(data)
-    assert snapshot.read_calls == 3 * _calls(len(data))
-    assert (snapshot.opens, snapshot.fsyncs) == (4, 1), "collision path never syncs the directory"
-    assert _temporaries(store) == []
+    # One compare/verify pass: each stream is read once to its EOF probe; no R7 readback.
+    assert snapshot.reader("store") == 2 * len(data)
+    assert snapshot.read_calls == 2 * _calls(len(data))
+    assert (snapshot.opens, snapshot.fsyncs) == (3, 1), "mkstemp, stored and temporary descriptors; no directory sync"
+    assert snapshot.write_bytes == len(data)
+    assert target.read_bytes() == data and store.read(second) == data
+    assert _temporaries(store) == [] and open_descriptor_count() == before
 
 
 def test_collision_with_different_bytes_is_refused_and_the_temporary_removed(tmp_path: Path) -> None:
@@ -183,6 +188,31 @@ def test_verify_maps_size_digest_bound_and_version_failures(tmp_path: Path) -> N
             owner_uid=os.getuid(), private_details_fn=lambda item, *, owner_uid: os.lstat(path),
             meter=meter,
         )
+
+
+def test_readback_refuses_an_object_changed_during_the_metered_read_and_closes_it(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    store = FileSystemArtifactStore(tmp_path / "store")
+    data = os.urandom(CHUNK + 3)
+    real_read = store_metered.metered_read
+    mutated: list[int] = []
+
+    def mutating_read(meter: SealingMeter, reader: str, descriptor: int, length: int) -> bytes:
+        if not mutated:  # the installed object's stat identity changes mid-readback
+            os.fchmod(descriptor, 0o400)
+            mutated.append(descriptor)
+        return real_read(meter, reader, descriptor, length)
+
+    monkeypatch.setattr(store_metered, "metered_read", mutating_read)
+    before = open_descriptor_count()
+    meter = SealingMeter(None, governed=False)
+    with pytest.raises(ArtifactIntegrityError, match="artifact changed during read"):
+        store.put(data, io_meter=meter)
+    assert len(mutated) == 1 and meter.snapshot().reader("store") == len(data)
+    assert open_descriptor_count() == before and _temporaries(store) == []
+    (installed,) = os.listdir(store.root / "objects")  # refusal never deletes the object
+    assert (store.root / "objects" / installed).read_bytes() == data
 
 
 def test_default_put_never_touches_the_metered_module(tmp_path: Path, monkeypatch) -> None:

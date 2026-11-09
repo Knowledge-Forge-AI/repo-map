@@ -142,7 +142,8 @@ def test_governed_budget_rows_report_the_effective_entry_ceiling() -> None:
     assert (entries["value"], entries["enforcement"], entries["applies_this_call"]) == (
         100_000, "call_budget_pre_io", True,
     )
-    assert _row(payload, "planned_min_read_bytes")["value"] == 181
+    # Accepted planned lower bound is 4S+1 for the S=30 inventory (no longer 6S+1).
+    assert _row(payload, "planned_min_read_bytes")["value"] == 4 * 30 + 1 == 121
     assert _row(payload, "planned_inventory_bytes")["basis"] == "metadata_inventory"
     assert _row(payload, "worker_cpu")["reason"] == "platform_unsupported"
     assert _row(payload, "inventory_max_artifacts", "limits")["applies_this_call"] is True

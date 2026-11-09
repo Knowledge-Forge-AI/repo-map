@@ -19,6 +19,7 @@ from common_lore_index.artifacts._bundle_stream import (
     StreamingBundleEncoder,
     StreamingBundleParser,
 )
+from common_lore_index.artifacts._store_stream import VerifyingArtifactStream
 from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_LINE_BYTES,
     STREAMING_MAX_BUNDLE_BYTES,
@@ -221,6 +222,33 @@ def test_filesystem_open_stream_does_not_call_full_read(tmp_path: Path, monkeypa
         assert stream.readline(10) == b"line3\n"
         assert stream.read(1) == b""
     assert read_spy.call_count == 0
+
+
+def test_filesystem_open_stream_readinto_fills_a_writable_buffer_across_chunks(tmp_path: Path):
+    """readinto() fills a caller buffer chunk by chunk and verifies only at EOF."""
+    store = FileSystemArtifactStore(tmp_path / "store")
+    payload = b"0123456789abcdef" * 3 + b"tail-13-bytes"
+    ref = store.put(
+        payload, media_type="text/plain", record_format="text",
+        privacy=PrivacyClassification.CANONICAL_PROVENANCE,
+    )
+    buffer = bytearray(16)
+    received = bytearray()
+    counts: list[int] = []
+    with store.open_stream(ref) as stream:
+        assert isinstance(stream, VerifyingArtifactStream)
+        while True:
+            count = stream.readinto(memoryview(buffer))
+            counts.append(count)
+            if not count:
+                break
+            received += buffer[:count]
+            assert not stream.verified, "verification waits for the EOF probe"
+        assert stream.verified
+        stream.verify_complete()
+        assert stream.readinto(buffer) == 0
+    assert counts == [16, 16, 16, 13, 0]
+    assert bytes(received) == payload
 
 
 def test_store_open_stream_digest_version_and_unsafe_refusals(tmp_path: Path):

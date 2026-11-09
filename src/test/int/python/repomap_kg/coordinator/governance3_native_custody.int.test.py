@@ -3,7 +3,9 @@
 Each case launches the existing nine-argument ``refresh_worker`` command with a
 valid sealed capability over disposable refresh/PostgreSQL fixtures. The real
 ``ManagedProcess`` is captured by a delegated ``_launch_posix`` spy, so the
-effective launch callable stays the canonical original.
+effective launch callable stays the canonical original. The parent test stays
+M; the direct maintained child is not a registered portable child, so every
+launch builds its environment through the admitted ``unmeasured`` family.
 """
 
 from __future__ import annotations
@@ -38,7 +40,33 @@ _LIMITS = {
     "process_termination_grace_seconds": 1, "max_diagnostic_bytes": 4096,
     "max_protocol_line_bytes": 1024 * 1024, "max_array_items": 32,
 }
-_ENV = {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[6] / "src/main/python")}
+_SOURCE_ROOT = Path(__file__).resolve().parents[6] / "src/main/python"
+
+
+def _bootstrap_authority() -> Any:
+    from runner_coverage_bootstrap import resolve_bootstrap_capability
+
+    return resolve_bootstrap_capability(env=os.environ)
+
+
+def _worker_environment() -> dict[str, str]:
+    """Per-launch scrubbed environment; ambient coverage never activates the child."""
+    from runner_coverage_execution import prepare_child_coverage_environment
+
+    return prepare_child_coverage_environment(
+        {**os.environ, "PYTHONPATH": str(_SOURCE_ROOT)}, family="unmeasured",
+        source_root=_SOURCE_ROOT, capability=_bootstrap_authority(),
+    )
+
+
+def _assert_unmeasured_child(environments: list[dict[str, str]], authority: Any) -> None:
+    from runner_coverage_bootstrap import is_runner_bootstrap_path
+
+    (environment,) = environments
+    assert not [key for key in environment if key.startswith("COVERAGE_")]
+    entries = environment["PYTHONPATH"].split(os.pathsep)
+    assert entries == [str(_SOURCE_ROOT)], "preserve the explicit native fixture import path"
+    assert not [item for item in entries if is_runner_bootstrap_path(item, capability=authority)]
 
 
 @contextmanager
@@ -61,7 +89,7 @@ def _maintained_worker(job_id: str) -> Iterator[tuple[tuple[str, ...], dict[str,
         yield argv, {"job_id": job_id, "attempt": 1}, context, cap_dir
 
 
-def _spies(monkeypatch) -> tuple[list[Any], list[Any], list[str]]:
+def _spies(monkeypatch, environments: list[dict[str, str]] | None = None) -> tuple[list[Any], list[Any], list[str]]:
     launched: list[Any] = []
     outcomes: list[Any] = []
     sent: list[str] = []
@@ -69,6 +97,8 @@ def _spies(monkeypatch) -> tuple[list[Any], list[Any], list[str]]:
     real_send = execution._send_coordinator
 
     def launch(*args: Any, **kwargs: Any) -> Any:
+        if environments is not None:  # the exact mapping handed to genuine Popen
+            environments.append(dict(kwargs["environment"] if "environment" in kwargs else args[1]))
         launched.append(real_launch(*args, **kwargs))
         return launched[-1]
 
@@ -110,20 +140,27 @@ def _exact_cleanup(launched: list[Any]) -> None:
 
 def _run(mode: str, argv: tuple[str, ...], identity: dict[str, object], context: dict[str, object],
          cwd: Path) -> Any:
+    environment = _worker_environment()
     if mode == "facade":
-        return protocol.run_worker_spec(WorkerLaunchSpec(argv, _ENV, cwd), identity, _LIMITS,
+        return protocol.run_worker_spec(WorkerLaunchSpec(argv, environment, cwd), identity, _LIMITS,
                                         job_context=context)
-    return execution._run_protocol_worker(argv, _ENV, cwd, False, identity, _LIMITS,
+    return execution._run_protocol_worker(argv, environment, cwd, False, identity, _LIMITS,
                                           job_context=context, cancel_event=None)
 
 
 @pytest.mark.parametrize("mode", ["default", "facade"])
 def test_extra_job_context_key_after_real_hello_is_settled_before_job_start(monkeypatch, mode: str) -> None:
     with _maintained_worker(f"gov3-invalid-{mode}") as (argv, identity, context, cwd):
-        launched, outcomes, sent = _spies(monkeypatch)
+        authority = _bootstrap_authority()  # genuine authority, resolved before poisoning
+        environments: list[dict[str, str]] = []
+        launched, outcomes, sent = _spies(monkeypatch, environments)
         try:
-            with pytest.raises(ProtocolError, match="invalid_job_context"):
-                _run(mode, argv, identity, {**context, "unexpected": "extra"}, cwd)
+            with monkeypatch.context() as poisoned:  # restored before harness teardown
+                poisoned.setenv("COVERAGE_PROCESS_START", str(cwd / "poisoned" / ".coveragerc"))
+                poisoned.setenv("COVERAGE_PROCESS_CONFIG", "poisoned")
+                with pytest.raises(ProtocolError, match="invalid_job_context"):
+                    _run(mode, argv, identity, {**context, "unexpected": "extra"}, cwd)
+            _assert_unmeasured_child(environments, authority)
             assert sent == [], "job_start is never sent"
             (process,), (outcome,) = launched, outcomes
             _assert_native_settled(process, outcome, -9)
