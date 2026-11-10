@@ -72,18 +72,31 @@ def test_current_authority_covers_every_python_fixture() -> None:
     )
 
     assert result["status"] == "passed"
-    assert result["entry_count"] == 30
+    assert result["entry_count"] == 32
     assert result["role_counts"] == {
         "executable_first_party": 3,
         "generated": 0,
-        "inert_data": 27,
+        "inert_data": 29,
         "vendor": 0,
     }
-    assert result["source_shape_counts"] == {"malformed": 2, "valid": 28}
+    assert result["source_shape_counts"] == {"malformed": 2, "valid": 30}
+    manifest = authority.load_manifest(authority.DEFAULT_MANIFEST_PATH)
     assert authority.classify_fixture(
         "src/test/fixtures/direct_pytest/passing.test.py",
-        authority.load_manifest(authority.DEFAULT_MANIFEST_PATH),
+        manifest,
     ).role == "executable_first_party"
+    expected = {
+        "__init__.py": "aeb03b2e32352a3cec550490db74c6dfa425309f2880cb71dc286a7743538210",
+        "ledger.py": "b22bd1cfc2da72f3bacd044ec2dd9ec74a988f3ab8bd9d6b5169b3cddbe295e4",
+    }
+    for name, digest in expected.items():
+        path = f"src/test/fixtures/installed_experience/tiny-v1/code/tinypkg/{name}"
+        record = authority.classify_fixture(path, manifest)
+        assert (record.role, record.consumption_mode, record.source_shape) == (
+            "inert_data", "static_extraction", "valid"
+        )
+        assert record.content_sha256 == digest
+        assert hashlib.sha256((REPO_ROOT / path).read_bytes()).hexdigest() == digest
 
 
 def test_content_digest_drift_fails_closed(tmp_path: Path) -> None:
