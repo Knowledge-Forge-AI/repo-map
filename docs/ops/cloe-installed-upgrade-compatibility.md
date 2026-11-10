@@ -98,3 +98,46 @@ Fresh isolated installation, or removing the legacy distribution before installi
 the replacement, is the supported route. Keep the original explicit home for
 rollback to the qualified incumbent in a fresh environment. No data migration or
 automatic rollback after subsequent live writes is implied.
+
+## Installed experience proof
+
+[ADR 0181](../adr/2026/11/0181-exact-installed-experience-and-evidence.md) and the
+[installed-experience contract](../specs/cloe-installed-experience-v1.md) add a
+diagnostic proof that the exact candidate wheel, installed on its own, gives a
+working experience. An implementation candidate and scoped diagnostic evidence exist. Final
+corrective proof and review govern publication; hosted acceptance remains
+pending and is not claimed here.
+
+What it covers: the candidate wheel is built offline once per test process and
+checked against an inventory derived from source. Installed wrappers and modules
+then run the Local workflow (configure, initialize, check, guarded refresh, a
+predeclared navigation question, context selection and packing, backup, restore
+and source-blind readback), canonical and finite legacy stdio MCP, and
+configuration migration apply, rollback and finalize over owned homes whose
+paths contain spaces. The incumbent `repomap-kg` command checks the legacy home
+where it supports it. Each owner writes one bounded bundle under
+`first-use-workload/installed-experience/<owner>/<local|server>-<attempt>/`
+through the unchanged first-use writer and reader. Bundles are checked from a
+checkout with `python3 tools/installed_experience.py check <bundle-dir>
+--candidate-source-sha256 <hex>`.
+
+The environment classes and their labels:
+
+| Label | Construction | Meaning |
+|---|---|---|
+| `pure-local` | Fresh venv without system site packages; the wheel plus a verified projection of the SDK's installed `typing-extensions` 4.16.0, nothing else | Wheel-only Local; origin closure is witnessed, never assumed |
+| `incumbent-local` | The same construction with the incumbent `repomap-kg` 0.0.3 wheel, in a separate root | Rollback target for migration checks only |
+| `provisioned-server` | Venv with system site packages; the wheel installed without dependencies | Installed Server code paths over the SDK's Psycopg and libpq and a temporary PostgreSQL; never reported as pure |
+
+The scoped proof runs in the canonical Linux sandbox on the host's architecture
+(currently ARM64) with CPython 3.13.12. Hosted AMD64 evidence comes only from
+the next ordinary staging CI and its host `check` of the exported bundles.
+
+The `typing-extensions` projection copies only `RECORD`-verified files of the
+SDK's installed distribution and compares them with reviewed frozen digests.
+It is test preprovisioning, not public package resolution: it proves nothing
+about installing from an index, and no wheel is fabricated or downloaded.
+
+These holds are unchanged: attended macOS installed-wheel proof, native
+services, Windows Local mutation, the release image and package-manager
+publication.

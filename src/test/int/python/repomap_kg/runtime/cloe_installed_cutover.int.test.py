@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-import tarfile
 import venv
 import zipfile
 
@@ -47,25 +46,12 @@ def catalog_bytes(wheel: Path, prefix: str) -> dict[str, str]:
 
 @pytest.fixture(scope="module")
 def wheels(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
-    scratch = tmp_path_factory.mktemp("cloe-offline-wheels")
-    # Immutable predecessor objects, not a source working tree or a downloaded wheel.
-    archive = scratch / "incumbent.tar"
-    require(("git", "archive", "--format=tar", "--output=" + str(archive), INCUMBENT,
-             "pyproject.toml", "README.md", "LICENSE", "src/main/python/repomap_kg",
-             "src/main/resources"), ROOT)
-    incumbent = scratch / "incumbent"
-    incumbent.mkdir()
-    with tarfile.open(archive) as source_archive:
-        source_archive.extractall(incumbent, filter="data")
-    built = []
-    for label, source in (("old", incumbent), ("new", ROOT)):
-        destination = scratch / label
-        destination.mkdir()
-        require((sys.executable, "-m", "pip", "wheel", "--no-index", "--no-deps",
-                 "--no-build-isolation", "--wheel-dir", str(destination), str(source)), scratch, pip=True)
-        candidates = list(destination.glob("*.whl"))
-        assert len(candidates) == 1
-        built.append(candidates[0])
+    # Immutable predecessor objects and the exact candidate, shared per pytest process.
+    from repomap_test_support.installed_candidate import candidate_wheel, incumbent_wheel
+
+    old_build, new_build = incumbent_wheel(tmp_path_factory, ROOT), candidate_wheel(tmp_path_factory, ROOT)
+    incumbent = old_build.source
+    built = [old_build.wheel, new_build.wheel]
     old, new = built
     assert old.name.startswith("repomap_kg-0.0.3-")
     assert new.name.startswith("common_lore_index-0.0.3-")

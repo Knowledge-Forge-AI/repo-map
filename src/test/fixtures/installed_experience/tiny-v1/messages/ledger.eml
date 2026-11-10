@@ -1,0 +1,10 @@
+From: Ledger Notices <notices@example.org>
+To: Ledger Readers <readers@example.org>
+Subject: Public ledger reconciliation note
+Date: Mon, 09 Nov 2026 00:00:00 +0000
+Message-ID: <ledger-note-1@example.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+This synthetic public message says that ledger reconciliation is documented
+in the tiny guide. It contains no private data.

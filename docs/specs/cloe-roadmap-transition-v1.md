@@ -1130,3 +1130,87 @@ records that source-tested boundary. Final review and campaign binding precede
 one CI137 publication; exact-source hosted bundle export and host checks still
 block bounded first-use acceptance. Full W7, installed qualification and
 held-out scientific evaluation remain open.
+
+### CI137 outcome and W8 installed-experience prerequisite
+
+CI137 attempt 1
+([run 42717271564](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/42717271564))
+executed on staging `5997d06b7bf08b774e479968b518c6d167f556c6` over public
+base `5ad00d162ad8a04430874275246a53227578c533`. The candidate merge was
+`e9b94d883392d9c6fd5e41f6505d2c19292d3c5c`, the tree
+`948de9c7d769153ba0a1ee853eaa523207990991` and the source SHA-256
+`16ea54c3d1c8df45dba079926271e77a628394a1fca73433bc0460df80ec9e34`.
+The result is `EXECUTED_PASS`. All nine jobs executed and passed, and the
+same-attempt M, A and system evidence was validated together.
+
+| Area | Accepted result |
+|---|---|
+| Unit | 17,901 passed, 40 skipped, 0 failed. Lines 71,752/77,415; branches 21,860/25,152 (86.91%). Hard 85/85 met. The desired 87% branch margin is 23 branches short |
+| Measured integration (M) | 2,471 passed, 12 skipped, coverage valid. Lines 68,967/77,415; branches 20,124/25,152 (80.01%), above the hard 80% floor. The desired 82% margin is 501 branches short |
+| Abrupt integration (A) | 5 passed. Cleanup passed. Measurement unavailable by role |
+| System, native D12 and Rust | `EXECUTED_PASS`; system cleanup proven |
+| First-use export | The host check of the exact-source exported bundles passed (check record SHA-256 `cc291481185f8df81496fbb1f6e5323f630d8e2c6776ecce132fa0bbb7980034`). Bounded first-use workload accepted |
+| Retained artifacts (SHA-256) | native `bc556aea1fcbc8bf7c2737be144e963cead70029fa952b861abada7166907fb2`; rust `2af0405fca7c298b03c991ebfe14fbb3829d4db4a3f9541f9da23552dbbb21f6`; staging `e9ad8eb5945c54fbfe1f320eb4020eb399868564f6c93b9a5393ec030d2ef7c5`; system `3d41a77645c61684230c202f8bbc835660280d725c2e044603aca5f7b627feed` |
+| Consumption | This attempt: 1 application start, 1 native Rust AMD qualifier invocation and 2 wheel transfers. Cumulative: 47/17/38. The slot is spent and there is no automatic re-arm |
+
+This accepts `5997d06` as a qualified staging source candidate and accepts
+the bounded first-use workload (ADR0180). It does not promote main, does not
+accept installed, release or image delivery, W6 or full W7, and qualifies no
+later source. The selected retained-member digests stay with the accepted
+evidence and are not repeated here.
+
+The user's instruction to continue the roadmap selects
+`REPOMAP-CLOE-INSTALLED-EXPERIENCE1`, an independent W8 prerequisite. It does
+not claim that every earlier workstream is accepted. Proposed
+[ADR0181](../adr/2026/11/0181-exact-installed-experience-and-evidence.md)
+and its [contract](cloe-installed-experience-v1.md) define three connected
+epics:
+
+1. **Exact offline installed environments.** The shared builder assembles
+   the current wheel once per proof process and checks its inventory against
+   the current owners. A pure-Local venv (`system_site_packages=False`) holds
+   only the wheel and a verified projection of the SDK's installed
+   `typing-extensions` 4.16.0, checked against its installed `RECORD`.
+   Witnesses check closure, origin, distribution set and driver absence.
+2. **Real installed workflows.** Installed wrappers run Local configure,
+   init, refresh, a predeclared useful question, navigation and context,
+   backup, restore and source-blind readback. Canonical and finite legacy
+   stdio MCP run too. Configuration migration apply, rollback and finalize
+   run over homes whose paths contain spaces, with the incumbent command
+   where supported. A provisioned-Server environment, explicitly labelled,
+   uses the SDK's existing dynamic Psycopg and a temporary PostgreSQL.
+3. **Inspectable exact-candidate evidence.** A frozen recipe and an intent
+   bind the wheel bytes, candidate inputs, provenance and expected facts. A
+   checkout-only reconciler and `tools/installed_experience.py check`
+   compare them with independently witnessed observations.
+
+The milestone adds:
+
+- no product or installed command, runner flag, launch family or admission
+  class;
+- no dependency, lock, version, license, packaging, image, DDL or role change;
+- no native, macOS, Windows or service activation, live or default home, or
+  network.
+
+The `arch7f_pip` and `arch7f_probe` children stay unmeasured, so the
+installed proof is diagnostic and not M coverage. The hard 85/85 unit and
+80/80 integration gates, the 87/82 desired margins, quality roots and
+ceilings are preserved. The W1 cutover and its unsupported overlap matrix
+are not reopened. W5 and W6 decisions and ADR0177's deferred custody items
+are not prerequisites. Named stop gates cover four cases: an unverifiable
+projection (image decision), an unreachable installed-Server harness,
+export that would need a runner change, and a packaging-metadata finding.
+
+Status: design reviewed and parent accepted; implementation and scoped diagnostics
+present with scoped unit and containerized integration diagnostics, without
+Python coverage. Corrective source review/proof governs final publication. One ordinary staging campaign and exact-source host
+acceptance remain pending; independent final-source review and binding are
+required before publication. The next normal roadmap publication
+binds a fresh final-source CI138 attempt 1. Its inferred minimum cumulative
+consumption is 48 application starts, 18 native Rust AMD invocations and 40
+wheel transfers. This comes from the normal campaign, not a separate
+numeric operator selection, and binds only once final source exists. There
+is no design-only CI, automatic CI139, 49th start, retry or second push.
+Bounded installed-experience acceptance needs that publication's host
+`check` of the exported bundles. W8 release acceptance, full W5, W6 and W7,
+held-out evaluation and native AMD or attended macOS proof remain open.

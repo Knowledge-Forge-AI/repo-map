@@ -16581,6 +16581,68 @@
       ],
       "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
       "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzz.cloe_installed_experience1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/runtime/cloe_installed_environment.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/cloe_installed_local.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/cloe_installed_mcp.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/cloe_installed_migration.int.test.py",
+        "src/test/int/python/repomap_kg/runtime/cloe_installed_server.int.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installed_candidate.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installed_driver.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installed_environment.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installed_mcp_session.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installed_origin.unit.test.py",
+        "src/test/unit/python/repomap_kg/runtime/installed_projection.unit.test.py",
+        "src/test/unit/python/tools/installed_experience_cli.unit.test.py",
+        "src/test/unit/python/tools/installed_experience_recipe.unit.test.py",
+        "src/test/unit/python/tools/installed_experience_reconcile.unit.test.py",
+        "src/test/unit/python/tools/installed_experience_records.unit.test.py"
+      ],
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzzz.cloe_installed_experience1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/installed_candidate.py",
+        "src/test/support/python/repomap_test_support/installed_environment.py",
+        "src/test/support/python/repomap_test_support/installed_experience_driver.py",
+        "src/test/support/python/repomap_test_support/installed_experience_fixture.py",
+        "src/test/support/python/repomap_test_support/installed_experience_witnesses.py",
+        "src/test/support/python/repomap_test_support/installed_mcp_session.py",
+        "src/test/support/python/repomap_test_support/installed_origin.py",
+        "src/test/support/python/repomap_test_support/installed_projection.py"
+      ],
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "zzzzzz.cloe_installed_experience1.tools",
+      "members": [
+        "tools/installed_experience.py",
+        "tools/installed_experience_bundle.py",
+        "tools/installed_experience_cli_views.py",
+        "tools/installed_experience_domains.py",
+        "tools/installed_experience_encoding.py",
+        "tools/installed_experience_pins.py",
+        "tools/installed_experience_recipe.py",
+        "tools/installed_experience_reconcile.py",
+        "tools/installed_experience_records.py",
+        "tools/installed_experience_rules.py",
+        "tools/installed_experience_source_identity.py",
+        "tools/installed_experience_validation.py"
+      ],
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools"
     }
   ],
   "decompositions": [
@@ -59688,6 +59750,341 @@
       "rationale": "ADR0180 first-use workload owners; existing clean profiles and every inherited quality root and debt ceiling preserved; final source acceptance requires complete clean checks.",
       "root": "tools",
       "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/cloe_installed_environment.int.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/cloe_installed_local.int.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/cloe_installed_mcp.int.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/cloe_installed_migration.int.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/runtime/cloe_installed_server.int.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_candidate.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_environment.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_experience_driver.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_experience_fixture.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_mcp_session.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_origin.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_projection.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installed_candidate.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installed_driver.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installed_environment.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installed_mcp_session.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installed_origin.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/runtime/installed_projection.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/installed_experience_cli.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/installed_experience_recipe.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/installed_experience_reconcile.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/installed_experience_records.unit.test.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_bundle.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_cli_views.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_domains.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_encoding.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_pins.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_recipe.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_reconcile.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_records.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_rules.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_source_identity.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/installed_experience_validation.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "counterevidence": "Static extraction input under the installed-experience fixture corpus; not a maintained executable implementation or test owner and never imported or executed by enrollment.",
+      "governing_profile": "analysis_input",
+      "maintained_executable": false,
+      "path": "src/test/fixtures/installed_experience/tiny-v1/code/tinypkg/__init__.py",
+      "rationale": "ADR0181 tiny-v1 analysis fixture supplied to the static extractor; it is not a maintained executable implementation or test owner.",
+      "root": "fixtures",
+      "status": "active_fixture"
+    },
+    {
+      "confidence": 0.95,
+      "counterevidence": "Static extraction input under the installed-experience fixture corpus; not a maintained executable implementation or test owner and never imported or executed by enrollment.",
+      "governing_profile": "analysis_input",
+      "maintained_executable": false,
+      "path": "src/test/fixtures/installed_experience/tiny-v1/code/tinypkg/ledger.py",
+      "rationale": "ADR0181 tiny-v1 analysis fixture supplied to the static extractor; it is not a maintained executable implementation or test owner.",
+      "root": "fixtures",
+      "status": "active_fixture"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/installed_experience_witnesses.py",
+      "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
+      "root": "test_support",
+      "status": "active_test_support"
     }
   ],
   "historical_revise10_counts": {

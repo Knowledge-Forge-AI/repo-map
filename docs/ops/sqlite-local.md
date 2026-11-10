@@ -22,14 +22,15 @@ SQLite Local install needs none of this:
 
 ```sh
 # SQLite Local, from a directory holding the reviewed wheel or a source checkout
-python -m pip install --find-links ./dist 'repomap-kg==0.1.0'
+# (local wheel only; not a PyPI, release or publication claim)
+python -m pip install --find-links ./dist 'common-lore-index==0.0.3'
 python -m pip install .
 # Server Engine (PostgreSQL): hash-locked build tools, then hash-pinned psycopg-c
 # built without isolation, then RepoMap without resolving again
 python -m pip install --require-hashes --no-deps --only-binary :all: --requirement tools/ci/psycopg_build.lock
 python -m pip install --require-hashes --no-deps --no-build-isolation --check-build-dependencies \
   --requirement tools/ci/project_dependencies.lock
-python -m pip install --no-deps --find-links ./dist 'repomap-kg[postgres]==0.1.0'   # or: --no-deps '.[postgres]'
+python -m pip install --no-deps --find-links ./dist 'common-lore-index[postgres]==0.0.3'   # or: --no-deps '.[postgres]'
 ```
 
 The README describes the Debian-family `tools/ci/psycopg_bootstrap.py` check
@@ -77,6 +78,9 @@ directory and uses no network: the operator kit installs with
 The kit removes only its own marked work directory. The same kit passed in a
 Linux container (status 00987). The manager authorizes and reviews the native
 run; it is not self-accepted.
+
+The containerized exact-candidate installed proof is described in
+[Installed experience proof](cloe-installed-upgrade-compatibility.md#installed-experience-proof).
 
 ## Home
 
