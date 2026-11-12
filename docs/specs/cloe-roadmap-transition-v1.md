@@ -1530,3 +1530,38 @@ Both approved claude_only checkpoints are closed; that exception is spent and
 future dispatches use dynamic_default. This remains a local source checkpoint
 within a larger milestone. Hosted coverage and full W5-W8 acceptance, builds,
 model studies, staging publication and release decisions remain separate.
+
+
+### Governance6 metered artifact custody source preparation
+
+Ordinary W7 continuation under `REPOMAP-CLOE-RESOURCE-GOVERNANCE6` follows
+[ADR0187](../adr/2026/11/0187-metered-artifact-failure-custody.md): temporary
+acquisition, all-owned raw descriptor cleanup, buffered close and operation-local
+unlink preserve the actual primary against secondary OSError. Normal cleanup
+failure remains visible and post-install refusal retains the installed object.
+Accepted bytes, references, meter counters and default unmetered routing remain.
+
+The [source receipt](../../tools/ci/cloe-resource-governance6-exit.md) records
+25 corrected RED failures,92 scoped unit passes,31 containerized integration
+passes and all-profile static PASS without new debt. Earlier fixture and
+preflight-refusal mistakes are retained accurately. New source receives fresh
+independent review before parent acceptance. This stays local in the larger
+milestone batch: no new build/model/native allocation or public campaign,
+coverage cushion measurement or full W5-W8 acceptance is implied.
+
+
+### Governance6 bounded source acceptance
+
+The parent accepts ADR0187's bounded source after one independently audited
+19-copy checkpoint with no code correctness findings. Two accuracy advisories
+are corrected: both necessary local-variable increases are explicitly disclosed,
+and the RED helper hash is extracted from the original canonical receipt. Python
+and quality metadata are unchanged after review. Exact current proof remains92
+scoped unit and31 containerized integration passes, with all quality profiles
+passing and zero new debt. The source receipt preserves scope and exclusions.
+
+The conditional second review is unnecessary for these documentation/evidence
+corrections. This phase-specific claude_only exception is closed; future
+dispatches use dynamic_default. This local source checkpoint joins the larger
+milestone. No build, model/native allocation, public CI or release is granted;
+hosted coverage cushions and full W5-W8 acceptance remain separate.
