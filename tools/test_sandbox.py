@@ -160,6 +160,16 @@ def ensure_sandbox_image(*, dockerfile: Path, runner: Runner = subprocess.run) -
     )
 
 
+def cached_sandbox_image(*, dockerfile: Path, expected_image_id: str,
+                         runner: Runner = subprocess.run) -> str:
+    """Opt-in attestation uses an exact cache only: no build, pull or prune."""
+    recipe = _images.sandbox_recipe(_images.sandbox_recipe_inputs(dockerfile))
+    status, image_id = _inspect_managed_image(runner, recipe)
+    if status != 0 or image_id != expected_image_id:
+        raise RuntimeError("attested sandbox requires the exact cached SDK")
+    return image_id
+
+
 def prune_managed_sandbox_images(
     runner: Runner, *, keep_image_id: str, retention_limit: int = 2
 ) -> None:
@@ -338,6 +348,7 @@ def run_in_sandbox(
     snapshotter: Snapshotter = snapshot_host_resources,
     boundary_prover: BoundaryProver = prove_inner_boundary,
     archive_reader: ReportArchiveReader = _read_container_report_archive,
+    ownership_reporter=None,
 ) -> int:
     return _execution.run_in_sandbox(
         argv, repo_root=repo_root, image_id=image_id, runner=runner,
@@ -358,4 +369,5 @@ def run_in_sandbox(
         report_arguments=_sandbox_report_arguments,
         cleanup_error_for=_bounded_cleanup_error,
         transfer_gate=_transfer_gate_request,
+        ownership_reporter=ownership_reporter,
     )

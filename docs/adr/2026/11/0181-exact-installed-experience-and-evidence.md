@@ -1,9 +1,12 @@
 # ADR 0181: Exact installed experience and evidence
 
-Status: accepted for ordinary scoped implementation after independent design2
-review and parent disposition. An implementation candidate and scoped diagnostic
-evidence now exist. Corrective source proof and final review govern publication;
-hosted installed-experience acceptance remains pending.
+Status: bounded installed-experience milestone accepted for staging source
+`c31fdfbc6bd7c65df75b1e473be2a3f0134233be` after CI139 attempt 1 and the
+exact-source five-owner host bundle check. This accepts the diagnostic installed
+Local and provisioned-Server workflows in the hosted Linux AMD64 sandbox only.
+Full W8, package-manager release, a fresh Server dependency install, release
+images, host-native qualification and attended macOS remain open. The original
+design and source-parent record below are preserved.
 Date: 2026-11-09. Phase: `REPOMAP-CLOE-INSTALLED-EXPERIENCE1` (W8 prerequisite).
 Source parent: `5997d06b7bf08b774e479968b518c6d167f556c6`. Public base: `5ad00d162ad8a04430874275246a53227578c533`.
 
@@ -141,6 +144,10 @@ native platform, live service, global resource default, runner class or
 measurement class. A new test case does not create runner authority. Independent design review and parent disposition are complete. Corrective
 scoped proof, final-source review and one staging publication remain governed
 by the parent; this design alone authorizes no publication.
+
+Historical design-time pending work in this paragraph is superseded for the
+bounded hosted installed checks by the CI139 qualification in Status above.
+The remaining full-W8 and release/platform exclusions still apply.
 
 ## Consequences
 

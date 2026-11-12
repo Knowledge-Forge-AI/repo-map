@@ -27,11 +27,14 @@ def integration_sandbox_dispatch(
             )
             return 2
         return None
-    from test_sandbox import active_sandbox, ensure_sandbox_image, run_in_sandbox
+    from test_sandbox import active_sandbox, cached_sandbox_image, ensure_sandbox_image, run_in_sandbox
+    from test_sandbox_ownership import prepare_ownership_reporter
 
+    ownership_reporter = None
     try:
         if active_sandbox():
             return None
+        ownership_reporter = prepare_ownership_reporter(raw_argv, repo_root)
         if args.suite == "system":
             verify_host_system_proof_for_dispatch(
                 args, raw_argv=raw_argv, repo_root=repo_root
@@ -39,12 +42,20 @@ def integration_sandbox_dispatch(
         from repomap_test_support.unit_purity import require_live_resource_allowed
 
         require_live_resource_allowed("integration sandbox Docker boundary")
-        image_id = ensure_sandbox_image(dockerfile=dockerfile)
+        image_id = (ensure_sandbox_image(dockerfile=dockerfile) if ownership_reporter is None
+                    else cached_sandbox_image(dockerfile=dockerfile,
+                        expected_image_id=ownership_reporter.expected_sdk_image_id))
+        if ownership_reporter is None:
+            return run_in_sandbox(raw_argv, repo_root=repo_root, image_id=image_id)
         return run_in_sandbox(
             raw_argv,
             repo_root=repo_root,
             image_id=image_id,
+            ownership_reporter=ownership_reporter,
         )
     except RuntimeError as error:
         print(f"ERROR: integration sandbox failed: {error}", file=sys.stderr)
         return 2
+    finally:
+        if ownership_reporter is not None:
+            ownership_reporter.close()

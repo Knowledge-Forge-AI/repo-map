@@ -241,6 +241,7 @@ def run_in_sandbox(
     cleanup_error_for: Callable[[Exception], RuntimeError],
     transfer_gate: Callable[[Runner, str, bytes], None] | None = None,
     transfer_proof: Callable[[Runner, str, bytes], None] | None = None,
+    ownership_reporter: Callable[[str, str, str], None] | None = None,
 ) -> int:
     set_cleanup_phase(False)
     arguments_result = report_arguments(argv, repo_root=repo_root)
@@ -258,10 +259,8 @@ def run_in_sandbox(
     logging_error: RuntimeError | None = None
     setup_error: BaseException | None = None
     outer_stopped = False
-
     def interrupt_for_termination(_signum, _frame) -> None:
         raise KeyboardInterrupt
-
     previous_sigterm = signal.signal(signal.SIGTERM, interrupt_for_termination)
     try:
         result = captured(
@@ -282,6 +281,8 @@ def run_in_sandbox(
             )
         container_id = candidate
         install_owner_marker(runner, container_id, marker_token)
+        if ownership_reporter is not None:
+            ownership_reporter(container_id, image_id, marker_token)
         log_follower = start_follower(follower_factory, container_id)
         wait_for_inner_daemon(runner, container_id)
         prepare_workspace(runner, container_id)

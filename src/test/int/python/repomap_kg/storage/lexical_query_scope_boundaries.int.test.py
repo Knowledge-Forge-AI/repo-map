@@ -323,3 +323,65 @@ def test_postgres_lexical_scope_prefixes_are_segment_bounded_and_ordered(
                     source_path_prefix=bad_prefix,
                     connection_factory=no_connection,
                 )
+
+def test_postgres_lexical_scope_refuses_empty_and_preserves_mixed_unknown_selection(
+    tmp_path: Path,
+) -> None:
+    with temporary_postgres() as pg_db:
+        working_copy = materialize_mixed_v1_working_copy(tmp_path / "working-copy", generation=1)
+        _write_boundary_files(working_copy)
+        home = write_mixed_v1_postgres_home(
+            tmp_path / "postgres-home",
+            working_copy,
+            host=pg_db.host,
+            port=pg_db.port,
+            database=pg_db.database,
+            user=pg_db.user,
+            password=pg_db.password,
+            declared_aliases=PUBLIC_ALIASES,
+        )
+        publish_and_load_postgres_corpus(home, psql_command=pg_db.psql_command)
+        config = load_graph_registry_config_home(home)
+        assert isinstance(config, OpsConfig)
+        build = build_graph_lexical_generation(
+            config,
+            MIXED_V1_GRAPH_ID,
+            selected_binding_ids=(CORE_ID, COMPANION_ID),
+            authorize_body=True,
+        )
+        assert build.result == "published"
+
+        with pytest.raises(ValueError, match="selected_binding_ids"):
+            query_graph_lexical_generation(
+                config,
+                MIXED_V1_GRAPH_ID,
+                LexicalQueryRequest(
+                    query=BOUNDARY_MARKER,
+                    query_style="ranked_terms",
+                    selected_binding_ids=(),
+                    limit=20,
+                ),
+                authorize_body=True,
+            )
+
+        unknown_id = "bind1:" + ("0" * 64)
+        mixed_scope = query_graph_lexical_generation(
+            config,
+            MIXED_V1_GRAPH_ID,
+            LexicalQueryRequest(
+                query=BOUNDARY_MARKER,
+                query_style="ranked_terms",
+                selected_binding_ids=(CORE_ID, unknown_id),
+                limit=20,
+            ),
+            authorize_body=True,
+        )
+        assert mixed_scope.hits
+        assert mixed_scope.scope.selected_binding_ids == (CORE_ID, unknown_id)
+        assert all(hit.locator.binding_id == CORE_ID for hit in mixed_scope.hits)
+        assert mixed_scope.scope_complete is False
+        assert any(
+            omission.binding_id == unknown_id
+            and omission.reason_code == "unresolved_inherit_policy"
+            for omission in mixed_scope.omissions
+        )

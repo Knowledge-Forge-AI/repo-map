@@ -16643,6 +16643,122 @@
       ],
       "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
       "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzzz.cloe_public_text1.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/retrieval/public_text_custody_regressions.int.test.py",
+        "src/test/int/python/repomap_kg/storage/semantic_candidate_runtime_boundaries.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_capture.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_census.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_journal.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_lifecycle.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_postgres.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_request.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_study.int.test.py",
+        "src/test/int/python/tools/retrieval_public_text_tasks.int.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_admission.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_allocation.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_allocation_io.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_baselines.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_capture.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_census.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_contracts.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_descriptors.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_evidence.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_excerpt.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_export.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_functional.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_fusion.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_generation.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_journal.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_learned.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_native_gate.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_native_inputs.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_preflight.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_privacy.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_report.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_report_cells.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_report_contracts.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_report_joins.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_request.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_response.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_sources.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_study.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_study_catalog.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_study_queries.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_study_schema.unit.test.py",
+        "src/test/unit/python/tools/retrieval_public_text_tasks.unit.test.py",
+        "src/test/unit/python/tools/test_sandbox_ownership.unit.test.py"
+      ],
+      "rationale": "ADR0182/0183 public-text and host-receipt clean additive owners; inherited cohorts and every debt ceiling unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzzzz.cloe_public_text1.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/w5_public_text_artifacts.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_baselines.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_evidence.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_functional.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_generation.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_journal.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_learned.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_postgres.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_readback.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_registered_fixture.py",
+        "src/test/support/python/repomap_test_support/w5_public_text_study.py"
+      ],
+      "rationale": "ADR0182/0183 public-text and host-receipt clean additive owners; inherited cohorts and every debt ceiling unchanged.",
+      "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "zzzzzzz.cloe_public_text1.tools",
+      "members": [
+        "tools/retrieval_public_text_admission.py",
+        "tools/retrieval_public_text_allocation.py",
+        "tools/retrieval_public_text_allocation_io.py",
+        "tools/retrieval_public_text_capture.py",
+        "tools/retrieval_public_text_census.py",
+        "tools/retrieval_public_text_contracts.py",
+        "tools/retrieval_public_text_descriptors.py",
+        "tools/retrieval_public_text_excerpt.py",
+        "tools/retrieval_public_text_export.py",
+        "tools/retrieval_public_text_fusion.py",
+        "tools/retrieval_public_text_native_gate.py",
+        "tools/retrieval_public_text_native_inputs.py",
+        "tools/retrieval_public_text_preflight.py",
+        "tools/retrieval_public_text_privacy.py",
+        "tools/retrieval_public_text_report.py",
+        "tools/retrieval_public_text_report_cells.py",
+        "tools/retrieval_public_text_report_contracts.py",
+        "tools/retrieval_public_text_report_joins.py",
+        "tools/retrieval_public_text_request.py",
+        "tools/retrieval_public_text_response.py",
+        "tools/retrieval_public_text_sources.py",
+        "tools/retrieval_public_text_study_catalog.py",
+        "tools/retrieval_public_text_study_queries.py",
+        "tools/retrieval_public_text_study_schema.py",
+        "tools/retrieval_public_text_tasks.py"
+      ],
+      "rationale": "ADR0182/0183 public-text and host-receipt clean additive owners; inherited cohorts and every debt ceiling unchanged.",
+      "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_tooling",
+      "id": "zzzzzzz.cloe_public_text1.tools_ownership",
+      "members": [
+        "tools/test_sandbox_ownership.py"
+      ],
+      "rationale": "ADR0183 pure host-only ownership framing primitive, separately governed from the calibration tools to preserve root separation and avoid an artificial aggregate dependency cycle.",
+      "root": "tools"
     }
   ],
   "decompositions": [
@@ -60085,6 +60201,726 @@
       "rationale": "ADR0181 exact installed experience implementation owners; existing clean profiles, every inherited quality root and debt ceiling preserved; clean profile execution is enforced by the existing static gate; current execution evidence is recorded separately.",
       "root": "test_support",
       "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/retrieval/public_text_custody_regressions.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/storage/semantic_candidate_runtime_boundaries.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_capture.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_census.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_journal.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_lifecycle.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_postgres.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_request.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_study.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/tools/retrieval_public_text_tasks.int.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_artifacts.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_baselines.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_evidence.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_functional.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_generation.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_journal.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_learned.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_postgres.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_readback.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_registered_fixture.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/w5_public_text_study.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_admission.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_allocation.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_allocation_io.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_baselines.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_capture.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_census.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_contracts.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_descriptors.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_evidence.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_excerpt.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_export.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_functional.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_fusion.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_generation.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_journal.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_learned.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_native_gate.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_native_inputs.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_preflight.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_privacy.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_report.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_report_cells.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_report_contracts.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_report_joins.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_request.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_response.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_sources.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_study.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_study_catalog.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_study_queries.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_study_schema.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/retrieval_public_text_tasks.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/tools/test_sandbox_ownership.unit.test.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_admission.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_allocation.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_allocation_io.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_capture.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_census.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_contracts.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_descriptors.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_excerpt.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_export.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_fusion.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_native_gate.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_native_inputs.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_preflight.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_privacy.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_report.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_report_cells.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_report_contracts.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_report_joins.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_request.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_response.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_sources.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_study_catalog.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_study_queries.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_study_schema.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/retrieval_public_text_tasks.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_tooling",
+      "maintained_executable": true,
+      "path": "tools/test_sandbox_ownership.py",
+      "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
+      "root": "tools",
+      "status": "active_tool"
     }
   ],
   "historical_revise10_counts": {

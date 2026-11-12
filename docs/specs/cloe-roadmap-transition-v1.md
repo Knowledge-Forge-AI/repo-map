@@ -1201,7 +1201,9 @@ are not prerequisites. Named stop gates cover four cases: an unverifiable
 projection (image decision), an unreachable installed-Server harness,
 export that would need a runner change, and a packaging-metadata finding.
 
-Status: design reviewed and parent accepted; implementation and scoped diagnostics
+Historical status before CI138/CI139 (the bounded installed acceptance and
+spent counts are superseded by the CI139 section below): design reviewed and
+parent accepted; implementation and scoped diagnostics
 present with scoped unit and containerized integration diagnostics, without
 Python coverage. Corrective source review/proof governs final publication. One ordinary staging campaign and exact-source host
 acceptance remain pending; independent final-source review and binding are
@@ -1214,3 +1216,141 @@ is no design-only CI, automatic CI139, 49th start, retry or second push.
 Bounded installed-experience acceptance needs that publication's host
 `check` of the exported bundles. W8 release acceptance, full W5, W6 and W7,
 held-out evaluation and native AMD or attended macOS proof remain open.
+
+### CI139 qualification of the installed-experience prerequisite
+
+CI138 attempt 1 executed but failed one stale fixture-census assertion. The
+forward correction changes the expected count from 30 to 32, pins both added
+fixtures as inert data, and preserves the manifest and fixture bytes. CI139
+attempt 1 ([run 42829792591](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/42829792591))
+qualified staging `c31fdfbc6bd7c65df75b1e473be2a3f0134233be` over public
+base `5ad00d162ad8a04430874275246a53227578c533`. Its executed merge is
+`40002d10be08e536440676c1dc4efef9b84d86ee`, tree
+`3ee76046c2e3b20067674afaff751c9dde9e433b`, and runner-equivalent source
+SHA-256 `86ddefd62d835361f392ea8b1eb37797f6dd0b25832d8e5c50eb29000dfbad80`.
+All nine jobs executed and passed. Same-attempt smoke, M, A, system, native D12
+and Rust evidence, merge parents/tree, archive digests and the complete source
+census were independently reconciled. Classification: `EXECUTED_PASS`.
+
+| Area | Accepted result |
+|---|---|
+| Unit | 18,051 passed, 40 skipped, zero failed; lines 71,752/77,415 and branches 21,861/25,152. Hard 85/85 met; desired 87% branch margin remains 22 arcs short |
+| Measured integration M | 2,476 passed, 12 skipped; valid measured coverage, lines 68,965/77,415 and branches 20,123/25,152 (80.0056%). Hard 80/80 met; desired 82% branch margin remains 502 arcs short |
+| Abrupt integration A | Five passed, exact cleanup passed; measurement unavailable by its declared role |
+| First-use evidence | All three exact-source Local, Server and mixed exported bundles passed the host consistency checker |
+| Installed evidence | Exactly one bundle for each of environment, Local, MCP, migration and provisioned Server passed the bounded reader and host checker; 56,000 actual aggregate bytes within 655,360 bytes |
+| Consumption | One application start, one logical native Rust AMD qualifier invocation and two wheel transfers; cumulative 49/19/42. This slot is spent; no automatic re-arm |
+
+The five installed owners share the independently verified candidate census and
+NOTICE-inclusive wheel-input identity. Independent owner attempt nonces and
+wheel ZIP digests are not required to match. The host check record SHA-256 is
+`818378c820d31bab2cb337441808e2341f9e2a15a3d739bd7fcf11eae06f4e47`. These observations accept ADR0181's bounded
+installed-experience prerequisite on this source, including wheel-only Local
+and explicitly dependency-provisioned Server behavior. They do not establish a
+fresh Server dependency install, release-image delivery, package-manager or
+host-native support, attended macOS/Windows qualification, full W5/W6/W7/W8,
+held-out scientific acceptance, main promotion or qualification of later source.
+The desired coverage cushions remain open and accompany the next substantial
+behavior-bearing milestone; no threshold or denominator is weakened.
+
+### Proposed next W5 decision after CI139 (historical checkpoint)
+
+This subsection records the initial design checkpoint. Its operator wait and
+pre-implementation stop were superseded by the amendment and source progress
+recorded in the following subsection.
+
+[Proposed ADR0182](../adr/2026/11/0182-public-text-semantic-calibration.md) and
+[its protocol](cloe-public-text-semantic-calibration-v1.md) propose three
+connected public-text calibration epics: publication-bound representations,
+disposable learned comparisons, and inspectable evidence. ADR0136 reserved
+captured text separately from its metadata-only first slice. On 2026-11-11 the
+operator selected this input class and its conditional `PUBLICTEXT-CAL1`
+allocation ("proceed"). Declaration 1 then stopped at its model-free task
+census: generation 2's only calibration task (cal-23) requests a mode the
+learned seam refuses, so its per-generation query floor could not pass. No
+body, model, held-out content or learned slot was used.
+
+[The technical design](cloe-public-text-calibration-implementation-v1.md)
+proposes declaration 2: generation-1 fixed ranked-discovery comparisons only
+and a document-only generation 2, with the same population, input class and
+wholly unspent allocation. Independent review found no new reserved class,
+dependency or budget, and the design was revised for its technical findings.
+Review returned one actual blocker, B-AUTH, to the operator: did "proceed"
+bind declaration 1's per-generation query floor? Declaration 2 waits for that
+answer and then for parent acceptance. If the floor was bound, declaration 2 is
+withdrawn and the declaration-1 stop is final. No implementation is scheduled
+or accepted.
+
+The preliminary meaningful-line planning range is about 8k–15k, uncertain until
+technical design, with reuse taking precedence over size. Pair the new behavior
+with regression coverage of existing admission, publication, SQL and evidence
+failure branches, aiming to recover the 22/502 arc deficits without artificial
+test padding. No design-only public CI is planned. The proposal admits neither
+held-outs nor production vector search and does not close full W5.
+
+### Public-text floor amendment and source preparation (historical)
+
+The operator selected the public-text input class, then explicitly approved
+document-only generation 2 after the model-free preflight. All 24 frozen tasks,
+queries, labels, golds and repetitions remain; generation 1 admits queries from
+four fixed ranked candidates, requiring at least one public-text query under
+declared policy, while generation 2 has zero model query
+inference with original incumbent outcomes preserved. B-AUTH is resolved.
+The same two-worker/one-study/no-retry allocation is unreserved and unspent.
+
+The first APGR technical-design checkpoint produced a proposal and useful
+advisory corrections but did not read every required source owner or obey all
+read-tool limits. It is not a conforming acceptance checkpoint. Parent
+corrections and conforming bounded checkpoints subsequently established
+foundation source acceptance (142 unit and four integration cases), then
+comparison/report source acceptance. The actual final driver now has scoped
+proof: 758 unit, 25 CORE integration and four pgvector cases, including its
+real two-generation functional lifecycle with 864 cells and synthetic raw
+delivery. Independent final source review is being composed with exact byte
+audits; private-host review and native qualification remain separate gates.
+
+The [technical design](cloe-public-text-calibration-implementation-v1.md)
+keeps production profiles and all original artifact/runtime/quality gates.
+The [study contract's final selector record](cloe-public-text-study-v1.md#203-exact-final-driver-source-integration-owners)
+names the source integration scope. These checks establish neither complete
+suite coverage nor model-origin, scientific or hosted-CI acceptance. The two
+native workers and one study remain unreserved. No new public CI has run for
+this milestone.
+
+### Public-text native milestone and CI140 preparation
+
+The three connected public-text epics now have reviewed source, scoped proof,
+the actual two-generation functional driver and native CAL5 PASS. The parent
+verified all 864 actual report cells against original component artifacts,
+source/task pins and cleanup evidence. Both model workers completed cleanly;
+generation 2 has fresh documents and zero model query inference. The 24 fixed
+tasks, original v1 arm and every unavailable/refused incumbent cell remain.
+CAL5 is bound to its frozen evaluator before the final typing corrections.
+CI140's corrected evaluator has fresh scoped and synthetic functional proof;
+the earlier native run is not reclassified as execution of this new source.
+See [the exact outcome and proof scope](cloe-public-text-calibration-outcome-v1.md).
+
+CAL1–CAL4 history remains immutable, including CAL4's unproven strict closure.
+The five-study allocation and both model workers are spent. Native PASS does
+not close full W5, scientific usefulness, held-outs, production vector admission,
+W6/W7/W8, release-image delivery or platform support. The next decision uses the
+calibration evidence and hosted milestone results rather than repeating models.
+
+One approved CI140 attempt 1 is being prepared after actual native PASS, with
+fresh grant/source binding and independent review. Its cumulative application,
+Rust and wheel limits are 50/20/43. Complete hosted qualification of this new
+source remains pending; prior CI139 success is historical. Desired 87% unit and
+82% integration coverage cushions remain targets above unchanged hard gates.
+There is no local complete-suite/coverage substitution or automatic CI141.
+
+
+### CI140 wheel-counter correction
+
+The operator approved the exact cumulative wheel-transfer correction from 43
+to 44 after CAL5 passed. CI139 spent 42 transfers; the unchanged Rust qualifier
+requires two pinned wheels. The final conditional CI140 attempt-1 limits are
+application 50, native Rust AMD 20 and wheel transfers 44. Earlier cap43 records
+remain historical. This correction permits no extra campaign, local build or
+acquisition, study/model worker, automatic retry, CI141 or main/tag/release
+action. The one staging push still requires final grant proof and independent
+review; hosted qualification remains pending.

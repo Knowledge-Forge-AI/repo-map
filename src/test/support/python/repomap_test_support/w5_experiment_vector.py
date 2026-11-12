@@ -21,7 +21,7 @@ from retrieval_evaluation_grading import ExecutionState
 from retrieval_evaluation_schema import EvaluationTask
 from retrieval_semantic_arm_validation import FileIdentityTuple, _verify_envelope_against_pin
 from retrieval_semantic_experiment_contracts import (
-    ExperimentCell, ExperimentCostLedger,
+    ExperimentCell, ExperimentCostLedger, ExperimentRefusal,
 )
 from retrieval_semantic_experiment_outcomes import require_admitted_vector_execution
 from retrieval_semantic_experiment_evaluator import (
@@ -310,7 +310,7 @@ def baseline_file_metrics_with_correspondence(
             execution_state=state, capability_state=envelope.capability_state.value,
             refusal_code=envelope.refusal_code, scope_complete=envelope.scope_complete,
         )
-    except Exception as exc:
+    except ExperimentRefusal as exc:
         code = getattr(exc, "code", "file_metric_provenance_unresolved")
         retained_cost = getattr(exc, "correspondence_cost", None)
         fail_cost = (
