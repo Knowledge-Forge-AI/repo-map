@@ -769,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "eafd90124c8d3265d7809cf02a470ea6a68e2ff90316b8f4062ae1a1fdaadfe0"
+    "sha256": "040239c1e87f2ae17af7450d361d734831a0078327a0bd70e06acf1e084cd70c"
   },
   "ruff": {
     "findings": [
@@ -14145,6 +14145,18 @@
         "tier": "T1-future"
       },
       {
+        "module": "common_lore_index.artifacts._bundle_cancellation",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_bundle_cancellation.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.artifacts._bundle_parse_resources",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_bundle_parse_resources.py",
+        "tier": "T1-future"
+      },
+      {
         "module": "common_lore_index.artifacts._bundle_stream",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/_bundle_stream.py",
@@ -14238,6 +14250,12 @@
         "module": "common_lore_index.artifacts._store_stream",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/_store_stream.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.artifacts._store_temporary",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_store_temporary.py",
         "tier": "T1-future"
       },
       {
@@ -15012,6 +15030,12 @@
         "module": "common_lore_index.coordinator._portable_materialization",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_portable_materialization.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._portable_sealed_bindings",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_portable_sealed_bindings.py",
         "tier": "T1-future"
       },
       {
@@ -16362,6 +16386,12 @@
         "module": "common_lore_index.graph._capture_contracts",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/graph/_capture_contracts.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.graph._capture_discovery",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/graph/_capture_discovery.py",
         "tier": "T1-future"
       },
       {
@@ -18168,6 +18198,12 @@
         "module": "common_lore_index.storage._schema_migrations",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/storage/_schema_migrations.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.storage._spool_cleanup",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/storage/_spool_cleanup.py",
         "tier": "T1-future"
       },
       {

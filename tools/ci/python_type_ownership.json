@@ -40,6 +40,24 @@
       "architecture_box": "publication_bundle_v1",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._bundle_cancellation",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "publication_bundle_v1",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._bundle_parse_resources",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "publication_bundle_v1",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts._bundle_stream",
@@ -178,6 +196,15 @@
       "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts._store_stream",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "publication_bundle_v1",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._store_temporary",
       "ownership_class": "python_retained"
     },
     {
@@ -895,6 +922,15 @@
       "architecture_box": "go_control_and_supervisor",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.coordinator._portable_sealed_bindings",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintain repomap_kg.coordinator._portable_semantic_adapter under zero-new-debt Python enforcement; superseded forecasts remain in the append-only retention transitions.",
       "match": "exact",
       "module_prefix": "common_lore_index.coordinator._portable_semantic_adapter",
@@ -1438,6 +1474,15 @@
       "justification": "CI132 acyclic capture repair: shared existing failures and pure signature helper move to a clean leaf owner; no added debt, threshold or import-containment relaxation.",
       "match": "exact",
       "module_prefix": "common_lore_index.graph._capture_contracts",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "go_control_and_supervisor",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.graph._capture_discovery",
       "ownership_class": "python_retained"
     },
     {
@@ -4057,6 +4102,15 @@
       "justification": "Maintain repomap_kg.storage._schema_migrations under zero-new-debt Python enforcement; specific superseded architectural rationale is preserved in python_retention_transitions.json.",
       "match": "exact",
       "module_prefix": "common_lore_index.storage._schema_migrations",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "transitional_graph_store_and_publisher",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
+      "justification": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.storage._spool_cleanup",
       "ownership_class": "python_retained"
     },
     {

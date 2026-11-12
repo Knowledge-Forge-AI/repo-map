@@ -6,6 +6,7 @@ from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import nullcontext
 from dataclasses import dataclass
 from itertools import chain
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 from common_lore_index.canonicalization.main import canonicalize_observations
@@ -36,6 +37,7 @@ from common_lore_index.storage.file_rows import (
     file_rows_from_observations,
 )
 from common_lore_index.storage.row_spool import RowSpool
+from common_lore_index.storage._spool_cleanup import close_spooled_rows
 from common_lore_index.storage.staged_row_measurements import (
     measure_family_checksum,
     measure_family_preparation,
@@ -91,9 +93,13 @@ class PreparedStageRows:
     def close(self) -> None:
         """Remove private family spools after the caller finishes with them."""
 
-        for rows in self.family_rows.values():
-            if isinstance(rows, RowSpool):
-                rows.close()
+        _close_family_rows(self.family_rows)
+
+    def __enter__(self) -> PreparedStageRows:
+        return self
+
+    def __exit__(self, _exc_type: object, exc: object, _traceback: object) -> None:
+        _close_family_rows(self.family_rows, preserve_primary=exc is not None)
 
 
 def build_staged_rows(
@@ -104,6 +110,7 @@ def build_staged_rows(
     staging_measurements: StagingMeasurements | None = None,
     spool_artifact_observer: Callable[[str, int], None] | None = None,
     witnessed: WitnessedCanonicalization | None = None,
+    spool_dir: Path | str | None = None,
 ) -> PreparedStageRows:
     """Adapt one canonicalized observation sequence to every stage family."""
 
@@ -158,6 +165,7 @@ def build_staged_rows(
             result,
             staging_measurements,
             spool_artifact_observer,
+            spool_dir,
         )
         rows = {
             family: prepared.rows
@@ -211,7 +219,7 @@ def build_staged_rows(
             files=len(file_rows),
         )
     except BaseException:
-        _close_family_rows(rows)
+        _close_family_rows(rows, preserve_primary=True)
         raise
 
 
@@ -222,6 +230,7 @@ def _family_rows(
     result: Any,
     staging_measurements: StagingMeasurements | None,
     spool_artifact_observer: Callable[[str, int], None] | None,
+    spool_dir: Path | str | None,
 ) -> Mapping[str, _PreparedFamilyRows]:
     edges_by_key = {edge.edge_key: edge for edge in result.graph.edges}
     sources: Mapping[str, tuple[Iterable[Any], Any]] = {
@@ -255,16 +264,20 @@ def _family_rows(
     }
     families: dict[str, _PreparedFamilyRows] = {}
     try:
+        def prepare(family: StageFamily, descriptor: StageFamilyDescriptor) -> _PreparedFamilyRows:
+            prepared = _materialize_or_spool(
+                _indexed(descriptor, stage_id, *sources[family]), descriptor=descriptor,
+                staging_measurements=staging_measurements,
+                spool_artifact_observer=spool_artifact_observer, spool_dir=spool_dir,
+            )
+            families[family] = prepared
+            return prepared
+
         for family, descriptor in STAGING_FAMILY_DESCRIPTORS.items():
-            families[family] = measure_family_preparation(
+            measure_family_preparation(
                 staging_measurements,
                 family,
-                lambda: _materialize_or_spool(
-                    _indexed(descriptor, stage_id, *sources[family]),
-                    descriptor=descriptor,
-                    staging_measurements=staging_measurements,
-                    spool_artifact_observer=spool_artifact_observer,
-                ),
+                lambda: prepare(family, descriptor),
             )
         return families
     except BaseException:
@@ -278,6 +291,7 @@ def _materialize_or_spool(
     descriptor: StageFamilyDescriptor,
     staging_measurements: StagingMeasurements | None,
     spool_artifact_observer: Callable[[str, int], None] | None,
+    spool_dir: Path | str | None = None,
 ) -> _PreparedFamilyRows:
     iterator = iter(rows)
     buffered: list[dict[str, object]] = []
@@ -311,29 +325,31 @@ def _materialize_or_spool(
             f"staging.family_spool.{descriptor.family}"
         )
     )
-    with checksum_phase:
-        artifact_observer = (
-            None
-            if spool_artifact_observer is None
-            else lambda projected_bytes: spool_artifact_observer(
-                descriptor.family,
-                projected_bytes,
-            )
-        )
-        spool = RowSpool.from_rows(
-            rows_with_checksum(),
-            artifact_observer=artifact_observer,
-            timing_observer=(
+    spool: RowSpool | None = None
+    try:
+        with checksum_phase:
+            artifact_observer = (
                 None
-                if staging_measurements is None
-                else lambda elapsed_ns: staging_measurements.record_duration(
-                    StagingMeasurementCategory.FAMILY_SPOOL_WRITE,
-                    elapsed_ns,
-                    family=descriptor.family,
+                if spool_artifact_observer is None
+                else lambda projected_bytes: spool_artifact_observer(
+                    descriptor.family,
+                    projected_bytes,
                 )
-            ),
-        )
-        try:
+            )
+            spool = RowSpool.from_rows(
+                rows_with_checksum(),
+                dir=spool_dir,
+                artifact_observer=artifact_observer,
+                timing_observer=(
+                    None
+                    if staging_measurements is None
+                    else lambda elapsed_ns: staging_measurements.record_duration(
+                        StagingMeasurementCategory.FAMILY_SPOOL_WRITE,
+                        elapsed_ns,
+                        family=descriptor.family,
+                    )
+                ),
+            )
             if staging_measurements is None:
                 checksum = accumulator.finish()
             else:
@@ -341,21 +357,23 @@ def _materialize_or_spool(
                     accumulator.finish
                 )
                 checksum_elapsed_ns += elapsed_ns
-        except BaseException:
-            spool.close()
-            raise
-    return _PreparedFamilyRows(spool, checksum, checksum_elapsed_ns)
+        return _PreparedFamilyRows(spool, checksum, checksum_elapsed_ns)
+    except BaseException:
+        if spool is not None:
+            close_spooled_rows((spool,), preserve_primary=True)
+        raise
 
 
-def _close_family_rows(rows: Mapping[str, Iterable[dict[str, object]]]) -> None:
-    for family_rows in rows.values():
-        if isinstance(family_rows, RowSpool):
-            family_rows.close()
+def _close_family_rows(
+    rows: Mapping[str, Iterable[dict[str, object]]], *, preserve_primary: bool = False,
+) -> None:
+    close_spooled_rows(rows.values(), preserve_primary=preserve_primary)
 
 
 def _close_prepared_families(
     families: Mapping[str, _PreparedFamilyRows],
 ) -> None:
     _close_family_rows(
-        {family: prepared.rows for family, prepared in families.items()}
+        {family: prepared.rows for family, prepared in families.items()},
+        preserve_primary=True,
     )

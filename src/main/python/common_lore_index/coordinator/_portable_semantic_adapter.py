@@ -20,10 +20,10 @@ from common_lore_index.artifacts.store import (
 )
 from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
 from common_lore_index.coordinator._portable_materialization import MaterializedWorkspace
-from common_lore_index.graph.multi_source import SourceKind
+from common_lore_index.coordinator._portable_sealed_bindings import sealed_bindings as _sealed_bindings
+from common_lore_index.artifacts._bundle_cancellation import BundleEncodingCancelled, closing_bundle_resource
 from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
-    SealedSourceBinding,
     capture_sealed_multi_source_candidate,
 )
 from common_lore_index.storage.staged_rows import build_staged_rows
@@ -135,12 +135,17 @@ def execute_portable_extraction(
             _cancelled(cancel_event)
             emit_progress("canonicalization", manifest.total_files, manifest.total_files)
             _cancelled(cancel_event)
-            prepared = build_staged_rows(
-                semantic.observations,
-                repository_name=manifest.bindings[0].repository_scope or "",
-                stage_id="stage-unassigned",
-            )
             try:
+                prepared = build_staged_rows(
+                    semantic.observations,
+                    repository_name=manifest.bindings[0].repository_scope or "",
+                    stage_id="stage-unassigned", spool_dir=materialized.attempt_root,
+                )
+            except PortableExecutionError:
+                raise
+            except ValueError as error:
+                raise PortableExecutionError("contract_validation") from error
+            with prepared:
                 _cancelled(cancel_event)
                 emit_progress("storage_prepare", manifest.total_files, manifest.total_files)
                 _cancelled(cancel_event)
@@ -163,27 +168,28 @@ def execute_portable_extraction(
                     family_rows=prepared.family_rows,
                     row_stage_contract="stage-unassigned-v1",
                     max_bundle_bytes=capability.max_bundle_bytes,
-                    spool_dir=capability.workspace_root,
+                    spool_dir=materialized.attempt_root,
                     cancel_event=cancel_event,
                     checkpoint=lambda: _checkpoint("during_bundle", cancel_event, checkpoint),
                 )
-                try:
-                    bundle_reference = store.put(
-                        encoder.stream_chunks(),
-                        media_type="application/x-repomap-publication-bundle-v1+jsonl",
-                        record_format="canonical-jsonl-v1",
-                        privacy=manifest.effective_privacy,
-                    )
-                    bundle = encoder.descriptor()
-                except PortableExecutionError:
-                    raise
-                except ArtifactIntegrityError as error:
-                    raise PortableExecutionError(_artifact_error_category(error)) from error
-                except (ValueError, CanonicalEncodingError) as error:
-                    raise PortableExecutionError("contract_validation") from error
+                with closing_bundle_resource(encoder.stream_chunks()) as chunks:
+                    try:
+                        bundle_reference = store.put(
+                            chunks,
+                            media_type="application/x-repomap-publication-bundle-v1+jsonl",
+                            record_format="canonical-jsonl-v1",
+                            privacy=manifest.effective_privacy,
+                        )
+                        bundle = encoder.descriptor()
+                    except PortableExecutionError:
+                        raise
+                    except BundleEncodingCancelled as error:
+                        raise PortableExecutionError("cancelled") from error
+                    except ArtifactIntegrityError as error:
+                        raise PortableExecutionError(_artifact_error_category(error)) from error
+                    except (ValueError, CanonicalEncodingError) as error:
+                        raise PortableExecutionError("contract_validation") from error
                 _checkpoint("after_bundle", cancel_event, checkpoint)
-            finally:
-                prepared.close()
             _cancelled(cancel_event)
             receipt = ExtractionReceipt.create(
                 request_id=capability.job_id,
@@ -346,35 +352,6 @@ def _artifact_error_category(
     return "artifact_corrupt"
 
 
-def _sealed_bindings(manifest, roots):
-    result = []
-    for binding in manifest.bindings:
-        if binding.alias is None:
-            raise PortableExecutionError("unsupported_contract")
-        result.append(
-            SealedSourceBinding(
-                binding_id=binding.binding_id,
-                source_definition_id=binding.source_definition_id,
-                alias=binding.alias,
-                revision=binding.revision,
-                source_kind=(
-                    SourceKind.FOLDER
-                    if binding.source_kind == "local-directory"
-                    else SourceKind.GIT_WORKING_TREE
-                ),
-                root=roots[binding.binding_id],
-                repository_scope=binding.repository_scope or "",
-                logical_root=binding.logical_root or "",
-                privacy=binding.privacy_policy,
-                evidence_retention=binding.evidence_retention_policy or "",
-                extractor_profile=binding.extractor_profile or "",
-                selection_policy_id=binding.selection_policy_id,
-                resolution_policy=binding.resolution_policy or "",
-                role=binding.role,
-                input_name=binding.input_name,
-            )
-        )
-    return tuple(result)
 
 
 def _cancelled(event: threading.Event) -> None:

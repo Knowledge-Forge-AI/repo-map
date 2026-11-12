@@ -5,11 +5,13 @@ from __future__ import annotations
 import heapq
 from pathlib import Path
 import tempfile
+import threading
 from typing import IO, Iterable, Iterator, Mapping
 
 from common_lore_index._temporary import OwnedTemporaryDirectory
 
 from common_lore_index.artifacts._canonical import canonical_json
+from common_lore_index.artifacts._bundle_cancellation import BundleEncodingCancelled, close_iterator
 from common_lore_index.artifacts.bundle import MAX_BUNDLE_LINE_BYTES
 from common_lore_index.storage.staging_family_rows import StageFamily
 
@@ -25,12 +27,18 @@ class BoundedExternalRowSorter:
         *,
         max_buffer_bytes: int = _MAX_MEMORY_BUFFER_BYTES,
         spool_dir: Path | str | None = None,
+        cancel_event: threading.Event | None = None,
     ) -> None:
+        self._cancel_event = cancel_event
         self._max_buffer_bytes = max_buffer_bytes
         self._spool_dir = Path(spool_dir) if spool_dir is not None else None
         self._temp_dir: OwnedTemporaryDirectory | None = None
         self.spill_run_count = 0
         self.spill_bytes = 0
+
+    def _check_cancelled(self) -> None:
+        if self._cancel_event is not None and self._cancel_event.is_set():
+            raise BundleEncodingCancelled()
 
     def _ensure_temp_dir(self) -> Path:
         if self._temp_dir is None:
@@ -53,8 +61,18 @@ class BoundedExternalRowSorter:
         run_paths: list[Path] = []
         temp_dir: Path | None = None
 
+        iterator = None
+        failed = False
         try:
-            for row in rows:
+            self._check_cancelled()
+            iterator = iter(rows)
+            while True:
+                self._check_cancelled()
+                try:
+                    row = next(iterator)
+                except StopIteration:
+                    break
+                self._check_cancelled()
                 line = canonical_json(
                     {"family": family, "frame": "record", "record": dict(row)}
                 )
@@ -72,6 +90,7 @@ class BoundedExternalRowSorter:
                     )
                     try:
                         for item in buffer:
+                            self._check_cancelled()
                             run_file.write(item)
                         run_file.flush()
                     finally:
@@ -85,7 +104,9 @@ class BoundedExternalRowSorter:
             if not run_paths:
                 # All rows fit in memory buffer
                 buffer.sort()
-                yield from buffer
+                for line in buffer:
+                    self._check_cancelled()
+                    yield line
                 return
 
             if buffer:
@@ -97,6 +118,7 @@ class BoundedExternalRowSorter:
                 )
                 try:
                     for item in buffer:
+                        self._check_cancelled()
                         run_file.write(item)
                     run_file.flush()
                 finally:
@@ -109,8 +131,11 @@ class BoundedExternalRowSorter:
             # Merge sorted binary runs
             opened_files: list[IO[bytes]] = []
             try:
-                opened_files = [open(path, "rb") for path in run_paths]
+                for path in run_paths:
+                    self._check_cancelled()
+                    opened_files.append(open(path, "rb"))
                 for line in heapq.merge(*opened_files):
+                    self._check_cancelled()
                     yield line
             finally:
                 for file_obj in opened_files:
@@ -118,12 +143,18 @@ class BoundedExternalRowSorter:
                         file_obj.close()
                     except OSError:
                         pass
+        except BaseException:
+            failed = True
+            raise
         finally:
-            for path in run_paths:
-                try:
-                    path.unlink(missing_ok=True)
-                except OSError:
-                    pass
+            try:
+                close_iterator(iterator, preserve_primary=failed)
+            finally:
+                for path in run_paths:
+                    try:
+                        path.unlink(missing_ok=True)
+                    except OSError:
+                        pass
 
     def close(self) -> None:
         """Clean up temporary directory and resources."""

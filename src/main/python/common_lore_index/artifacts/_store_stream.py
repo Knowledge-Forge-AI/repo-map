@@ -21,6 +21,37 @@ class _PrivateDetails(Protocol):
     def __call__(self, path: Path, *, owner_uid: int) -> os.stat_result: ...
 
 
+def open_verified_path(
+    path: Path, *, reference: ArtifactReference, bound: int, before: os.stat_result,
+    same_file: Callable[[os.stat_result, os.stat_result], bool],
+    stream_factory: type[VerifyingArtifactStream],
+) -> BinaryIO:
+    """Retain descriptor custody through verified-wrapper construction."""
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(path, flags)
+    raw: BinaryIO | None = None
+    try:
+        opened = os.fstat(descriptor)
+        if not same_file(before, opened) or not stat.S_ISREG(opened.st_mode):
+            raise ArtifactIntegrityError("artifact changed during read")
+        raw = os.fdopen(descriptor, "rb", closefd=True)
+        return stream_factory(
+            raw, reference=reference, bound=bound, before_stat=opened,
+            expected_version=reference.store_version,
+        )
+    except BaseException:
+        try:
+            if raw is None:
+                os.close(descriptor)
+            else:
+                raw.close()
+        except BaseException:
+            pass
+        raise
+
+
 def _same_file_stat(before: os.stat_result, after: os.stat_result) -> bool:
     return (
         before.st_dev == after.st_dev

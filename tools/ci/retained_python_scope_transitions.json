@@ -6007,6 +6007,73 @@
       "source_commit": "efdb5286b8a0bc40e242cdfc89a37b99dec89e18",
       "source_manifest_sha256": "00b4540e4ceb12dfd684a4f42f857f81876c306be2e2de6755d240f620ba5e0f",
       "status_path": "tools/ci/cloe-resource-governance3-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.artifacts._bundle_cancellation",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/artifacts/_bundle_cancellation.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.artifacts._bundle_parse_resources",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/artifacts/_bundle_parse_resources.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.artifacts._store_temporary",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/artifacts/_store_temporary.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.coordinator._portable_sealed_bindings",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/coordinator/_portable_sealed_bindings.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.graph._capture_discovery",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/graph/_capture_discovery.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        },
+        {
+          "new": {
+            "module": "common_lore_index.storage._spool_cleanup",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/storage/_spool_cleanup.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "040239c1e87f2ae17af7450d361d734831a0078327a0bd70e06acf1e084cd70c",
+      "new_selected_set_sha256": "679afb423f2107446a16f1f22af0b3746b9f1280931af0a2de9d8749bab058cd",
+      "old_ownership_manifest_sha256": "eafd90124c8d3265d7809cf02a470ea6a68e2ff90316b8f4062ae1a1fdaadfe0",
+      "old_selected_set_sha256": "68c198f82b5cb94f3988020eecb99ef0776688e17ade37ad137efc73a1a8dd9d",
+      "phase": "REPOMAP-CLOE-RESOURCE-GOVERNANCE4",
+      "reason": "ADR0184/0185 clean W7 discovery and temporary-row custody owners; adjacent architecture placement, every inherited selection and numerical debt ceiling preserved.",
+      "source_commit": "694bc7f077cf1b1aad8fe1d7b9316084ede08b5b",
+      "source_manifest_sha256": "eafd90124c8d3265d7809cf02a470ea6a68e2ff90316b8f4062ae1a1fdaadfe0",
+      "status_path": "tools/ci/cloe-resource-governance4-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

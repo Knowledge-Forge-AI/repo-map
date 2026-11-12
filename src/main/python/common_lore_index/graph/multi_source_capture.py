@@ -175,7 +175,12 @@ def _capture_inventory(
     stage_root: Path | None = None,
     discover_fn: Callable[..., Sequence[FileInfo]] | None = None,
     io_meter: SealingMeter | None = None,
+    elide_discovery_hash: bool = False,
 ) -> tuple[_CapturedSource, ...]:
+    if type(elide_discovery_hash) is not bool:
+        raise ValueError("capture hash elision must be boolean")
+    if elide_discovery_hash and io_meter is not None:
+        raise ValueError("capture hash elision cannot use a sealing meter")
     bindings = graph.effective_source_bindings
     if (
         not graph.explicit_source_bindings
@@ -205,6 +210,10 @@ def _capture_inventory(
         from common_lore_index.graph._metered_discovery import MeteredDiscoveryHooks
 
         discover_metered["io_hooks"] = MeteredDiscoveryHooks(io_meter)
+    if elide_discovery_hash:
+        from common_lore_index.graph._capture_discovery import CaptureDiscoveryHooks
+
+        discover_metered["io_hooks"] = CaptureDiscoveryHooks()
     captured: list[_CapturedSource] = []
     for binding in sorted(bindings, key=lambda item: item.binding_id):
         root = Path(binding.root_path_expanded)

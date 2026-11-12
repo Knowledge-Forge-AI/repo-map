@@ -16759,6 +16759,36 @@
       ],
       "rationale": "ADR0183 pure host-only ownership framing primitive, separately governed from the calibration tools to preserve root separation and avoid an artificial aggregate dependency cycle.",
       "root": "tools"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzzzz.cloe_resource_governance4.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/portable_spool_custody.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/portable_worker_discovery_elision.int.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/bundle_cancellation.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/bundle_stream_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/link_validator_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/store_producer_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/capture_discovery_hooks.unit.test.py",
+        "src/test/unit/python/repomap_kg/graph/multi_source_capture_elision.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/row_spool_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/row_spool_failures.unit.test.py",
+        "src/test/unit/python/repomap_kg/storage/staged_spool_custody.unit.test.py"
+      ],
+      "rationale": "ADR0184/0185 additive clean W7 worker custody and byte-equivalence owners; inherited cohort membership, profiles and every debt ceiling preserved.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzzzzz.cloe_resource_governance4.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/portable_worker_equivalence.py"
+      ],
+      "rationale": "ADR0184/0185 additive clean W7 worker custody and byte-equivalence owners; inherited cohort membership, profiles and every debt ceiling preserved.",
+      "root": "test_support"
     }
   ],
   "decompositions": [
@@ -60921,6 +60951,168 @@
       "rationale": "ADR0182/0183 bounded public-text calibration and host-only runner ownership; clean additive owner, existing profiles and all debt ceilings preserved.",
       "root": "tools",
       "status": "active_tool"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_bundle_cancellation.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_bundle_parse_resources.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_store_temporary.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_portable_sealed_bindings.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/graph/_capture_discovery.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/storage/_spool_cleanup.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/portable_spool_custody.int.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/portable_worker_discovery_elision.int.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/portable_worker_equivalence.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/bundle_cancellation.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/bundle_stream_custody.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/link_validator_custody.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/store_producer_custody.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/capture_discovery_hooks.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/graph/multi_source_capture_elision.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/row_spool_custody.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/row_spool_failures.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/storage/staged_spool_custody.unit.test.py",
+      "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
     }
   ],
   "historical_revise10_counts": {

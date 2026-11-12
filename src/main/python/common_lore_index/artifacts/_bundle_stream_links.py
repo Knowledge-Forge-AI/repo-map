@@ -21,17 +21,32 @@ class DiskFamilyLinkValidator:
             dir=str(self._spool_dir) if self._spool_dir is not None else None,
         )
         self._db_path = Path(self._temp_dir.name) / "links.db"
-        self._conn = sqlite3.connect(str(self._db_path))
-        self._conn.execute("PRAGMA synchronous = OFF")
-        self._conn.execute("PRAGMA journal_mode = OFF")
-        self._conn.execute("PRAGMA temp_store = MEMORY")
-        self._conn.execute("CREATE TABLE raw_ordinals (ordinal TEXT PRIMARY KEY)")
-        self._conn.execute("CREATE TABLE node_keys (key TEXT PRIMARY KEY)")
-        self._conn.execute(
-            "CREATE TABLE edge_keys (src TEXT, kind TEXT, tgt TEXT, hash TEXT, "
-            "PRIMARY KEY (src, kind, tgt, hash))"
-        )
-        self._conn.execute("CREATE TABLE evidence_keys (key TEXT PRIMARY KEY)")
+        connection: sqlite3.Connection | None = None
+        try:
+            connection = sqlite3.connect(str(self._db_path))
+            self._conn = connection
+            self._conn.execute("PRAGMA synchronous = OFF")
+            self._conn.execute("PRAGMA journal_mode = OFF")
+            self._conn.execute("PRAGMA temp_store = MEMORY")
+            self._conn.execute("CREATE TABLE raw_ordinals (ordinal TEXT PRIMARY KEY)")
+            self._conn.execute("CREATE TABLE node_keys (key TEXT PRIMARY KEY)")
+            self._conn.execute(
+                "CREATE TABLE edge_keys (src TEXT, kind TEXT, tgt TEXT, hash TEXT, "
+                "PRIMARY KEY (src, kind, tgt, hash))"
+            )
+            self._conn.execute("CREATE TABLE evidence_keys (key TEXT PRIMARY KEY)")
+        except BaseException:
+            if connection is not None:
+                try:
+                    connection.close()
+                except BaseException:
+                    pass
+            if self._temp_dir is not None:
+                try:
+                    self._temp_dir.cleanup()
+                except BaseException:
+                    pass
+            raise
 
         self._pending_raw_ordinals: list[tuple[str]] = []
         self._pending_node_keys: list[tuple[str]] = []

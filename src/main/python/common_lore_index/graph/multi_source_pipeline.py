@@ -144,14 +144,19 @@ def multi_source_semantic_identities(
     )
 
 
-def capture_multi_source_candidate(graph: OpsGraphConfig) -> MultiSourceCandidateBundle:
+def capture_multi_source_candidate(
+    graph: OpsGraphConfig, *, elide_discovery_hash: bool = False,
+) -> MultiSourceCandidateBundle:
     """Capture every binding, resolve one bound candidate, then reverify all inputs."""
 
+    if type(elide_discovery_hash) is not bool:
+        raise ValueError("capture hash elision must be boolean")
     with OwnedTemporaryDirectory(prefix="repomap-multi-source-") as temporary:
         captured = _capture_inventory(
             graph,
             stage_root=Path(temporary),
             discover_fn=discover_repository,
+            elide_discovery_hash=elide_discovery_hash,
         )
         observations: list[RawObservation] = []
         module_exports: dict[str, Mapping[str, str | tuple[str, ...]]] = {}
@@ -220,6 +225,7 @@ def capture_multi_source_candidate(graph: OpsGraphConfig) -> MultiSourceCandidat
             final_captured = _capture_inventory(
                 graph,
                 discover_fn=discover_repository,
+                elide_discovery_hash=elide_discovery_hash,
             )
         except MultiSourceCaptureError:
             raise
@@ -325,7 +331,7 @@ def capture_sealed_multi_source_candidate(
         source_bindings=configured,
         explicit_source_bindings=True,
     )
-    result = capture_multi_source_candidate(graph)
+    result = capture_multi_source_candidate(graph, elide_discovery_hash=True)
     if result.candidate.snapshot_vector != tuple(expected_snapshot_vector):
         raise MultiSourceCaptureError(
             "sealed source inventory disagrees with manifest",

@@ -10,6 +10,7 @@ from typing import Callable, Iterable, Iterator, Mapping
 
 from common_lore_index.artifacts._canonical import canonical_json
 from common_lore_index.artifacts._bundle_stream_sort import BoundedExternalRowSorter
+from common_lore_index.artifacts._bundle_cancellation import BundleEncodingCancelled, closing_bundle_resource
 from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_LINE_BYTES,
     MAX_BUNDLE_RECORDS,
@@ -303,21 +304,22 @@ class StreamingBundleEncoder:
         # 2. Family record lines (ordered by family)
         for family in PUBLICATION_FAMILIES:
             if self.cancel_event is not None and self.cancel_event.is_set():
-                raise ValueError("cancelled")
+                raise BundleEncodingCancelled()
             if self.max_sorter_buffer_bytes is not None:
                 sorter = BoundedExternalRowSorter(
                     max_buffer_bytes=self.max_sorter_buffer_bytes,
-                    spool_dir=self.spool_dir,
+                    spool_dir=self.spool_dir, cancel_event=self.cancel_event,
                 )
             else:
-                sorter = BoundedExternalRowSorter(spool_dir=self.spool_dir)
-            try:
+                sorter = BoundedExternalRowSorter(spool_dir=self.spool_dir, cancel_event=self.cancel_event)
+            records = sorter.sort_family_records(family, self.family_rows[family])
+            with closing_bundle_resource(sorter), closing_bundle_resource(records):
                 family_records = 0
                 family_bytes = 0
                 family_hasher = hashlib.sha256()
-                for line in sorter.sort_family_records(family, self.family_rows[family]):
+                for line in records:
                     if self.cancel_event is not None and self.cancel_event.is_set():
-                        raise ValueError("cancelled")
+                        raise BundleEncodingCancelled()
                     family_records += 1
                     family_bytes += len(line)
                     total_records += 1
@@ -337,8 +339,6 @@ class StreamingBundleEncoder:
                         "sha256:" + family_hasher.hexdigest(),
                     )
                 )
-            finally:
-                sorter.close()
 
         # 3. Trailer frame
         trailer_mapping = {

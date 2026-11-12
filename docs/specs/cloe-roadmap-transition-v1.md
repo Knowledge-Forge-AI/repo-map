@@ -1354,3 +1354,132 @@ remain historical. This correction permits no extra campaign, local build or
 acquisition, study/model worker, automatic retry, CI141 or main/tag/release
 action. The one staging push still requires final grant proof and independent
 review; hosted qualification remains pending.
+
+
+### CI140 qualification and the next W7 efficiency milestone
+
+[CI140 attempt 1](https://github.com/Knowledge-Forge-AI/repo-map/actions/runs/43220944167)
+qualified staging `694bc7f077cf1b1aad8fe1d7b9316084ede08b5b` over public main
+`5ad00d162ad8a04430874275246a53227578c533`. Its executed merge is
+`4bae9897efb4f2f7ab3280257898c55b76772571`, tree
+`eccb168aa9c7c541aa350801c04c10f0d8b22591`. All nine jobs passed. The parent
+verified authenticated archive digests, source/tree/merge parents, same-attempt
+smoke/M/A/system/native evidence and all three first-use plus five installed
+bundle host checks. Classification: `EXECUTED_PASS` for that exact source.
+
+Unit: 18,849 passed, 40 skipped; statements 71,760/77,415 and branches
+21,862/25,152. Measured integration: 2,499 passed, 12 skipped; statements
+68,984/77,415 and branches 20,143/25,152 (80.0851%). Five abrupt cases and
+cleanup passed, with measurement unavailable by their declared role. Hard
+85/85 and 80/80 gates pass; desired 87%/82% branch cushions remain21/482 arcs
+short and accompany useful real-boundary work. Consumption is50 application
+starts,20 native Rust AMD invocations and44 wheel transfers; the slot is spent.
+There is no automatic re-arm, main promotion or qualification of later source.
+
+CAL5's retained864 cells contain315 completed,459 unavailable and90 refused
+observations. The shared completed generation-1 learned cohort is only four
+unique tasks, each repeated three times; repetitions are not independent
+samples. On that cohort, the current graph and v1 exact-vector arms have
+file-MRR@10/recall@10 of1.0/1.0; public-text exact-vector has0.75/0.75.
+Public-text fusion retains recall1.0 but MRR falls to0.535714. HNSW has only
+one commonly graded task and is not averaged as a four-task cohort. Per-arm
+runtime cost remains unknown. These descriptive calibration observations do
+not establish general superiority, scientific acceptance or production vector
+admission. Tasks, golds, held-outs, original artifacts and all failed study
+history remain unchanged; no further model/study is authorized. The reserved
+scientific/task-class decision remains open.
+
+The operator's renewed roadmap-continuation request selects ordinary W7 design
+under `REPOMAP-CLOE-RESOURCE-GOVERNANCE4`, continuing the existing namespace.
+The connected design questions are (1) removing proven unused discovery/body
+work on the sealed portable-worker path, and (2) carrying already normalized
+row bytes into bounded publication sorting/encoding without weakening row or
+source validation. Inspect current source before committing to either design;
+reject a supposed optimization if the work is actually required or already
+reused. Preserve ordinary discovery/classification, before/after source fences,
+static semantics, candidate and bundle bytes, checksums, ownership, cancellation,
+cleanup and all public protocols. No efficiency claim follows from code inspection.
+
+A source-backed ADR/contract and independent design checkpoint precede source
+implementation. Batch the resulting two connected epics and meaningful Local/
+Server/worker failure and compatibility coverage, aiming at10k–100k useful
+changed lines without padding, before another public campaign. No design-only
+push, new dependency/image/runner class, schema/role/CLI/MCP change, live target,
+held-out/model work, complete local suite or local coverage is selected.
+Any new reserved authority requirement returns a concrete decision rather
+than being folded into an optimization. Hosted successor qualification and
+campaign binding remain separate; full W5/W6/W7/W8 and release acceptance stay open.
+
+
+### W7 worker read and temporary-row custody source preparation
+
+[ADR0184](../adr/2026/11/0184-sealed-worker-discovery-hash-elision.md)
+selects sealed-worker hash elision, retaining classification and both actual
+capture fences. The regression witness changed from discarded hashing to zero
+such hash calls while preserving authoritative reads, snapshots, candidate
+identity, family checksums and exact worker bundle bytes. Ordinary discovery
+retains its original behavior. No wall-clock performance claim is made.
+
+The row-byte reuse proposal was rejected: the spool and canonical bundle have
+different encoding/value contracts. The connected implemented work instead
+follows [ADR0185](../adr/2026/11/0185-spool-custody-and-cooperative-cancellation.md):
+three reproduced row-file leaks, atomic parser/writer custody, measured-family
+cleanup, explicit primary-error ownership, attempt-root spool placement and
+cooperative sorter/encoder cancellation. An unrelated data error remains a
+contract error when cancellation is also set. Existing encoding/store I/O
+categories and public protocol fields remain unchanged.
+
+Current source proof:119 exact scoped unit cases and10 containerized integration
+cases pass with --no-coverage. The latter includes a real4201-function sealed
+source exceeding the spool threshold, byte-equivalent publication, actual Local
+and disposable PostgreSQL behavior, normal supervised worker success and
+in-process fault witnesses. The injected fault cases do not claim an unmodified
+native cancellation run. All source retention/type/clean-root profiles pass;
+all inherited debt and quality thresholds remain unchanged. Source-only lint,
+length, compilation, topology, export and suppression checks pass. Complete
+local suites and Python coverage remain unselected.
+
+This is source preparation, with fresh independent resulting-code review still
+required before publication. The useful source/test delta remains below the
+operator's10k-100k publication batching target; quality metadata is not counted
+as feature work. No design-only or small-slice public CI, new campaign allocation,
+build, model study, public commit, main promotion or release is claimed. The
+CI140 coverage cushion gaps remain historical targets, not measurements of this
+candidate. Full W5/W6/W7/W8, hard spill/fan-in admission, outer workspace identity
+refusal policy and native preemption remain outside this source acceptance.
+
+
+### Governance4 corrective proof
+
+The first full independent source review found no blocking changed-code defect
+but could not verify omitted PostgreSQL selectors. Its correction is recorded
+in the [exact public transition receipt](../../tools/ci/cloe-resource-governance4-exit.md).
+Current scoped proof passes122 unit and27 containerized integration cases,
+including16 maintained worker-to-PostgreSQL corpora and accepted-marker/family
+preservation after refusal. Two existing store descriptor defects reproduced
+and are fixed. All quality profiles pass with unchanged debt ceilings.
+The cancellation category distinction is adapter-scoped; worker terminal event
+precedence and legacy cleanup surfaces remain unchanged. Sorter-spill placement
+is source/unit evidence, not a forced-spill native integration claim.
+Independent corrective review is still pending, and this local slice is not
+the next public campaign. Full roadmap and desired coverage acceptance remain
+open; no native/build/model allocation or remote action is implied.
+
+
+### Governance4 bounded source acceptance
+
+Two audited independent checkpoints and parent disposition accept this bounded
+source:122 scoped unit cases,27 containerized integration cases and unchanged-
+debt static profiles pass. The exact selectors and limitations remain in the
+[transition receipt](../../tools/ci/cloe-resource-governance4-exit.md). The
+corrective review verified the PostgreSQL evidence, two descriptor repairs and
+discovery parity with no blocking findings. A third, unchanged descriptor
+lifetime gap in verify_stream_path remains a named ordinary W7 follow-up, along
+with bounded spill/fan-in admission. Raw open_stream error propagation is
+verified as pre-existing. Only non-permission preparation OSError maps to the
+worker source_capture category; the adapter/worker distinction remains explicit.
+
+The two-checkpoint claude_only exception is spent and future dispatches use
+dynamic_default. This source slice stays local within a larger milestone;
+there is no new build allocation, public CI, main promotion or release. Current
+hosted coverage and full W5-W8 acceptance remain pending.

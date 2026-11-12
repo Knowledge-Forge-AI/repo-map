@@ -44,13 +44,11 @@ class RowSpool:
         count = 0
         byte_count = 0
         elapsed_ns = 0
+        descriptor_owned = True
         try:
-            with os.fdopen(
-                descriptor,
-                "w",
-                encoding="utf-8",
-                newline="\n",
-            ) as handle:
+            handle = os.fdopen(descriptor, "w", encoding="utf-8", newline="\n")
+            descriptor_owned = False
+            try:
                 for row in rows:
                     if not isinstance(row, Mapping):
                         raise ValueError("staged row is invalid")
@@ -72,17 +70,29 @@ class RowSpool:
                     byte_count = projected_bytes
                     if timing_observer is not None:
                         elapsed_ns += max(0, monotonic_ns() - started)
+            except BaseException:
+                try:
+                    handle.close()
+                except BaseException:
+                    pass
+                raise
+            else:
+                handle.close()
+            if timing_observer is not None:
+                timing_observer(elapsed_ns)
+            stat = path.stat()
+            return cls(path, count, byte_count, stat.st_blocks * 512)
         except BaseException:
+            if descriptor_owned:
+                try:
+                    os.close(descriptor)
+                except BaseException:
+                    pass
             try:
-                os.close(descriptor)
-            except OSError:
+                path.unlink(missing_ok=True)
+            except BaseException:
                 pass
-            path.unlink(missing_ok=True)
             raise
-        if timing_observer is not None:
-            timing_observer(elapsed_ns)
-        stat = path.stat()
-        return cls(path, count, byte_count, stat.st_blocks * 512)
 
     def __len__(self) -> int:
         return self.count
@@ -129,11 +139,24 @@ class RowSpoolWriter:
             descriptor, raw_path = tempfile.mkstemp(prefix="repomap-stage-rows-", suffix=".jsonl")
         self.path = Path(raw_path)
         self._descriptor = descriptor
-        self._handle = os.fdopen(descriptor, "w", encoding="utf-8", newline="\n")
+        try:
+            self._handle = os.fdopen(descriptor, "w", encoding="utf-8", newline="\n")
+        except BaseException:
+            try:
+                os.close(descriptor)
+            except BaseException:
+                pass
+            try:
+                self.path.unlink(missing_ok=True)
+            except BaseException:
+                pass
+            raise
         self._count = 0
         self._byte_count = 0
         self._artifact_observer = artifact_observer
         self._finished = False
+        self._transferred = False
+        self._aborted = False
 
     def write_row(self, row: Mapping[str, object]) -> None:
         if self._finished:
@@ -161,23 +184,39 @@ class RowSpoolWriter:
         self._handle.close()
         self._finished = True
         stat = self.path.stat()
-        return RowSpool(self.path, self._count, self._byte_count, stat.st_blocks * 512)
+        spool = RowSpool(self.path, self._count, self._byte_count, stat.st_blocks * 512)
+        self._transferred = True
+        return spool
 
     def abort(self) -> None:
-        if not self._finished:
-            try:
-                self._handle.close()
-            except OSError:
-                pass
-            self._finished = True
-        self.path.unlink(missing_ok=True)
+        if self._transferred or self._aborted:
+            return
+        error: BaseException | None = None
+        try:
+            self._handle.close()
+        except BaseException as caught:
+            error = caught
+        self._finished = True
+        try:
+            self.path.unlink(missing_ok=True)
+            self._aborted = True
+        except BaseException:
+            if error is None:
+                raise
+        if error is not None:
+            raise error
 
     def __enter__(self) -> RowSpoolWriter:
         return self
 
     def __exit__(self, exc_type: object, _exc: object, _traceback: object) -> None:
-        if exc_type is not None:
+        if exc_type is None:
             self.abort()
+        else:
+            try:
+                self.abort()
+            except BaseException:
+                pass
 
 
 __all__ = ["RowSpool", "RowSpoolWriter"]

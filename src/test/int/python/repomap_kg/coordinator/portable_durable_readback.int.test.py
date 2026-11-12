@@ -326,6 +326,19 @@ def test_worker_produced_portable_bundle_durable_publication_readback_and_reconc
                     root_path=f"graph:{config.id}", authority=mismatched_authority, portable_binding=binding,
                 )
 
+            accepted_after_refusal = read_latest_receipt_bearing_publication(
+                postgres.psql_args, psql_command=postgres.psql_command,
+            )
+            assert accepted_after_refusal == latest
+            assert read_run_publication(
+                postgres.psql_args, job_id=job_id, attempt=attempt, psql_command=postgres.psql_command,
+            ) == published
+            with psycopg.connect(make_conninfo(**params)) as connection:
+                assert assert_durable_families(
+                    connection, bundle, summary.repository_id, summary.run_id,
+                    record_property=record_property,
+                ) == initial_counts
+
             # 10. Commit-unknown reconciliation: matching transitions to published, conflict to quarantined
             stage_id = stage_id_for_authority(authority)
             owner = authority.owner(summary.repository_id)

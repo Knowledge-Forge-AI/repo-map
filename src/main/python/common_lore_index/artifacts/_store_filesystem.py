@@ -22,9 +22,11 @@ from common_lore_index.artifacts._store_common import (
 from common_lore_index.artifacts._store_stream import (
     VerifyingArtifactStream,
     compare_and_verify_collision,
+    open_verified_path,
     verify_stream_path,
 )
 from common_lore_index.artifacts.references import ArtifactLocator, ArtifactReference
+from common_lore_index.artifacts._store_temporary import open_temporary_stream, remove_temporary
 from common_lore_index.storage.staging_family_contracts import PrivacyClassification
 
 if TYPE_CHECKING:
@@ -214,13 +216,13 @@ class FileSystemArtifactStore:
         temporary: Path | None = None
         hasher = hashlib.sha256()
         length = 0
+        failed = False
         try:
             descriptor, temporary_name = tempfile.mkstemp(
                 prefix=".artifact-", suffix=".tmp", dir=self._temporary
             )
             temporary = Path(temporary_name)
-            os.fchmod(descriptor, 0o600)
-            with os.fdopen(descriptor, "wb", closefd=True) as stream:
+            with open_temporary_stream(descriptor) as stream:
                 if isinstance(content, (bytes, bytearray, memoryview)):
                     chunks: Iterable[bytes | bytearray | memoryview] = (content,)
                 elif isinstance(content, Iterable):
@@ -290,25 +292,22 @@ class FileSystemArtifactStore:
             )
             return reference
         except ArtifactIntegrityError:
+            failed = True
             raise
         except OSError as error:
+            failed = True
             code = (
                 ArtifactErrorCode.PERMISSION_DENIED
                 if isinstance(error, PermissionError)
                 else ArtifactErrorCode.WRITE_FAILED
             )
             raise ArtifactIntegrityError("artifact publication failed", code=code) from error
+        except BaseException:
+            failed = True
+            raise
         finally:
             if temporary is not None:
-                try:
-                    temporary.unlink()
-                except FileNotFoundError:
-                    pass
-                except OSError as error:
-                    raise ArtifactIntegrityError(
-                        "artifact temporary cleanup failed",
-                        code=ArtifactErrorCode.WRITE_FAILED,
-                    ) from error
+                remove_temporary(temporary, preserve_primary=failed)
 
     def read(self, reference: ArtifactReference, max_bytes: int | None = None) -> bytes:
         if not isinstance(reference, ArtifactReference):
@@ -339,28 +338,10 @@ class FileSystemArtifactStore:
                 "artifact bounds exceeded", code=ArtifactErrorCode.ARTIFACT_BOUNDS
             )
         before = _private_details(path, owner_uid=self._owner_uid)
-        flags = os.O_RDONLY
-        if hasattr(os, "O_NOFOLLOW"):
-            flags |= os.O_NOFOLLOW
-        descriptor = os.open(path, flags)
-        try:
-            opened = os.fstat(descriptor)
-            if not _same_file(before, opened) or not stat.S_ISREG(opened.st_mode):
-                raise ArtifactIntegrityError("artifact changed during read")
-            raw = os.fdopen(descriptor, "rb", closefd=True)
-            return VerifyingArtifactStream(
-                raw,
-                reference=reference,
-                bound=bound,
-                before_stat=opened,
-                expected_version=reference.store_version,
-            )
-        except BaseException:
-            try:
-                os.close(descriptor)
-            except OSError:
-                pass
-            raise
+        return open_verified_path(
+            path, reference=reference, bound=bound, before=before,
+            same_file=_same_file, stream_factory=VerifyingArtifactStream,
+        )
 
     def verify(self, reference: ArtifactReference, max_bytes: int | None = None) -> bool:
         try:

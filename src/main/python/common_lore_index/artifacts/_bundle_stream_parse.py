@@ -12,6 +12,7 @@ from common_lore_index.artifacts._bundle_stream_encode import (
     BundleValidationResult, PublicationExpectation, STREAMING_MAX_BUNDLE_BYTES,
 )
 from common_lore_index.artifacts._bundle_stream_links import DiskFamilyLinkValidator
+from common_lore_index.artifacts._bundle_parse_resources import BundleParseResources
 from common_lore_index.artifacts._canonical import canonical_json, decode_canonical_json
 from common_lore_index.artifacts.bundle import (
     MAX_BUNDLE_LINE_BYTES, MAX_BUNDLE_RECORDS, PUBLICATION_FAMILIES,
@@ -178,14 +179,6 @@ class StreamingBundleParser:
         artifact_hasher = hashlib.sha256(header_line)
         bundle_hasher = hashlib.sha256(b"repomap-publication-bundle-v1\x00" + header_line)
         total_bytes, total_records = len(header_line), 0
-        spool_writers: dict[StageFamily, RowSpoolWriter] = (
-            {f: RowSpoolWriter(dir=self.spool_dir) for f in PUBLICATION_FAMILIES} if stage_id is not None else {}
-        )
-        checksum_accumulators: dict[StageFamily, _FamilyChecksumAccumulator] = (
-            {f: _FamilyChecksumAccumulator(STAGING_FAMILY_DESCRIPTORS[f].identity_columns) for f in PUBLICATION_FAMILIES}
-            if stage_id is not None else {}
-        )
-        link_validator = DiskFamilyLinkValidator(spool_dir=self.spool_dir)
         current_family_idx, last_canonical_record_bytes = 0, None
         family_record_counts = {f: 0 for f in PUBLICATION_FAMILIES}
         family_byte_lengths = {f: 0 for f in PUBLICATION_FAMILIES}
@@ -193,7 +186,17 @@ class StreamingBundleParser:
         trailer_frame: dict[str, object] | None = None
         family_spools: dict[StageFamily, RowSpool] | None = None
 
-        try:
+        with BundleParseResources() as resources:
+            spool_writers = resources.writers
+            if stage_id is not None:
+                for writer_family in PUBLICATION_FAMILIES:
+                    spool_writers[writer_family] = RowSpoolWriter(dir=self.spool_dir)
+            checksum_accumulators = {
+                f: _FamilyChecksumAccumulator(STAGING_FAMILY_DESCRIPTORS[f].identity_columns)
+                for f in PUBLICATION_FAMILIES
+            } if stage_id is not None else {}
+            link_validator = DiskFamilyLinkValidator(spool_dir=self.spool_dir)
+            resources.links = link_validator
             while True:
                 line = stream.readline(MAX_BUNDLE_LINE_BYTES + 1)
                 if not line:
@@ -299,13 +302,14 @@ class StreamingBundleParser:
 
             checksums, row_counts, normalized_byte_counts = None, None, None
             if stage_id is not None:
-                family_spools = {f: spool_writers[f].finish() for f in PUBLICATION_FAMILIES}
+                family_spools = resources.finish_rows()
                 checksums = {f: checksum_accumulators[f].finish() for f in PUBLICATION_FAMILIES}
                 row_counts = {f: checksums[f].row_count for f in PUBLICATION_FAMILIES}
                 normalized_byte_counts = {f: checksums[f].normalized_byte_count for f in PUBLICATION_FAMILIES}
 
             replay = prior_attempt == (receipt.receipt_id, bundle_id, "completed")
 
+            resources.transfer = True
             return ValidatedBundleDescriptor(
                 bundle_id=bundle_id, receipt_id=receipt.receipt_id,
                 candidate_id=_string(header, "candidate_id"), graph_id=_string(header, "graph_id"),
@@ -335,15 +339,6 @@ class StreamingBundleParser:
                 terminal_complete=True, family_spools=family_spools, checksums=checksums,
                 row_counts=row_counts, normalized_byte_counts=normalized_byte_counts,
             )
-        except Exception:
-            if stage_id is not None:
-                for s in (family_spools or {}).values():
-                    s.close()
-                for w in spool_writers.values():
-                    w.abort()
-            raise
-        finally:
-            link_validator.close()
 
     @staticmethod
     def _validate_header(
