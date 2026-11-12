@@ -312,7 +312,10 @@ class StreamingBundleEncoder:
                 )
             else:
                 sorter = BoundedExternalRowSorter(spool_dir=self.spool_dir, cancel_event=self.cancel_event)
-            records = sorter.sort_family_records(family, self.family_rows[family])
+            records = sorter.sort_family_records(
+                family, self.family_rows[family], byte_budget=self.max_bundle_bytes - total_bytes,
+                record_budget=MAX_BUNDLE_RECORDS - total_records,
+            )
             with closing_bundle_resource(sorter), closing_bundle_resource(records):
                 family_records = 0
                 family_bytes = 0

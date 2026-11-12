@@ -354,18 +354,27 @@ def verify_stream_path(
         descriptor = os.open(path, flags)
     except OSError as error:
         raise ArtifactIntegrityError("artifact is not a regular file") from error
+    raw: BinaryIO | None = None
     try:
-        opened = os.fstat(descriptor)
-        if not _same_file_stat(before, opened) or not stat.S_ISREG(opened.st_mode):
-            raise ArtifactIntegrityError("artifact changed during read")
-        ref_dummy = reference_factory(digest, length, expected_version)
-        stream = VerifyingArtifactStream(
-            os.fdopen(descriptor, "rb", closefd=True),
-            reference=ref_dummy,
-            bound=bound,
-            before_stat=opened,
-            expected_version=expected_version,
-        )
+        try:
+            opened = os.fstat(descriptor)
+            if not _same_file_stat(before, opened) or not stat.S_ISREG(opened.st_mode):
+                raise ArtifactIntegrityError("artifact changed during read")
+            ref_dummy = reference_factory(digest, length, expected_version)
+            raw = os.fdopen(descriptor, "rb", closefd=True)
+            stream = VerifyingArtifactStream(
+                raw, reference=ref_dummy, bound=bound, before_stat=opened,
+                expected_version=expected_version,
+            )
+        except BaseException:
+            try:
+                if raw is None:
+                    os.close(descriptor)
+                else:
+                    raw.close()
+            except BaseException:
+                pass
+            raise
         with stream:
             stream.verify_complete()
     except ArtifactIntegrityError:

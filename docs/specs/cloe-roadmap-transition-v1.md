@@ -1483,3 +1483,50 @@ The two-checkpoint claude_only exception is spent and future dispatches use
 dynamic_default. This source slice stays local within a larger milestone;
 there is no new build allocation, public CI, main promotion or release. Current
 hosted coverage and full W5-W8 acceptance remain pending.
+
+
+### Governance5 bounded sorting and verification source preparation
+
+[ADR0186](../adr/2026/11/0186-bounded-bundle-admission-and-merge.md) follows
+governance4 with existing-limit admission before spill, owned bounded fan-in and
+the remaining verify_stream_path acquisition repair. Accepted bundle bytes,
+family checksums and identities remain exact. Earlier over-limit refusal can
+preempt later faults; there is no new category vocabulary or whole-worker quota.
+The [source receipt](../../tools/ci/cloe-resource-governance5-exit.md) records
+81 initial scoped unit cases,29 integration cases on identical production bytes,
+and8 rerun cases after IO-witness extraction, plus all-profile static PASS with
+zero new debt. It names exact selectors, actual failure witnesses and limits.
+Independent resulting-source review remains pending. This stays local within
+the larger milestone; no new build, native/model allocation or public campaign
+is selected, and desired coverage/full W5-W8 acceptance remains open.
+
+
+### Governance5 corrective source checkpoint
+
+The first independent source review identified proof and wording gaps, with
+one partial native source read found by parent audit. The parent corrects the
+proof rather than accepting that checkpoint as conforming. The source receipt
+now records pre-fallback cleanup observations, distinct equality/trailer and
+later-family byte boundaries, a three-case RED-to-GREEN private fan-in guard,
+86 scoped unit cases,29 integration cases and8 final-owner rechecks. All strict
+quality profiles pass without new debt. The forced merge remains in-process
+adapter evidence, not native worker-terminal qualification. One approved
+claude_only corrective review is being prepared; future dispatches return to
+dynamic_default. Publication, builds/models and whole-roadmap acceptance remain
+separate and no new campaign allocation is selected.
+
+
+### Governance5 bounded source acceptance
+
+The independently audited corrective checkpoint and parent disposition accept
+ADR0186's bounded source. Exact current proof remains86 scoped unit cases,
+29 integration cases and8 final-owner rechecks, with every strict quality
+profile passing and zero new debt. The source receipt records all selectors,
+pre-fallback cleanup, equality/later-family boundaries, refusal precedence,
+actual RED witnesses and the adapter/worker distinction. All26 current review
+copies and every granted stage's native reads reconcile to frozen bytes.
+
+Both approved claude_only checkpoints are closed; that exception is spent and
+future dispatches use dynamic_default. This remains a local source checkpoint
+within a larger milestone. Hosted coverage and full W5-W8 acceptance, builds,
+model studies, staging publication and release decisions remain separate.

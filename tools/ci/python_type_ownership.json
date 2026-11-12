@@ -58,6 +58,15 @@
       "architecture_box": "publication_bundle_v1",
       "disposition": "retained_python_ratcheted",
       "enforcement_tier": "T1-future",
+      "justification": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
+      "match": "exact",
+      "module_prefix": "common_lore_index.artifacts._bundle_sort_runs",
+      "ownership_class": "python_retained"
+    },
+    {
+      "architecture_box": "publication_bundle_v1",
+      "disposition": "retained_python_ratcheted",
+      "enforcement_tier": "T1-future",
       "justification": "Maintained portable artifact implementation admitted only after zero-added-debt quality checks; existing retention forecast preserved without architecture relocation.",
       "match": "exact",
       "module_prefix": "common_lore_index.artifacts._bundle_stream",

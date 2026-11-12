@@ -6074,6 +6074,28 @@
       "source_commit": "694bc7f077cf1b1aad8fe1d7b9316084ede08b5b",
       "source_manifest_sha256": "eafd90124c8d3265d7809cf02a470ea6a68e2ff90316b8f4062ae1a1fdaadfe0",
       "status_path": "tools/ci/cloe-resource-governance4-exit.md"
+    },
+    {
+      "changes": [
+        {
+          "new": {
+            "module": "common_lore_index.artifacts._bundle_sort_runs",
+            "ownership_class": "python_retained",
+            "path": "src/main/python/common_lore_index/artifacts/_bundle_sort_runs.py",
+            "tier": "T1-future"
+          },
+          "old": null
+        }
+      ],
+      "new_ownership_manifest_sha256": "2a9b1c747fc7caee7ece39b3b684df7e8e6bd0c80b9bd7bd76f2b690d27505c2",
+      "new_selected_set_sha256": "1fde0449a7d4ceb745b05bb19574739180c30e04052191c8abba8c55a6d195fe",
+      "old_ownership_manifest_sha256": "040239c1e87f2ae17af7450d361d734831a0078327a0bd70e06acf1e084cd70c",
+      "old_selected_set_sha256": "679afb423f2107446a16f1f22af0b3746b9f1280931af0a2de9d8749bab058cd",
+      "phase": "REPOMAP-CLOE-RESOURCE-GOVERNANCE5",
+      "reason": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
+      "source_commit": "5b8a9c0314c4c0dee14d941c8319fc7aa492efd6",
+      "source_manifest_sha256": "040239c1e87f2ae17af7450d361d734831a0078327a0bd70e06acf1e084cd70c",
+      "status_path": "tools/ci/cloe-resource-governance5-exit.md"
     }
   ],
   "schema": "repomap-retained-python-scope-transitions-v2"

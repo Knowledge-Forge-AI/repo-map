@@ -16789,6 +16789,28 @@
       ],
       "rationale": "ADR0184/0185 additive clean W7 worker custody and byte-equivalence owners; inherited cohort membership, profiles and every debt ceiling preserved.",
       "root": "test_support"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzzzzz.cloe_resource_governance5.test_owners",
+      "members": [
+        "src/test/unit/python/repomap_kg/artifacts/bundle_sort_failures.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/bundle_sort_resources.unit.test.py",
+        "src/test/unit/python/repomap_kg/artifacts/store_verify_custody.unit.test.py"
+      ],
+      "rationale": "ADR0186 clean bundle-sort and verification-custody witnesses; additive membership only, all inherited cohorts, profiles and numerical debt unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzzzzzz.cloe_resource_governance5.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/bundle_sort_fixtures.py"
+      ],
+      "rationale": "ADR0186 clean bundle-sort and verification-custody witnesses; additive membership only, all inherited cohorts, profiles and numerical debt unchanged.",
+      "root": "test_support"
     }
   ],
   "decompositions": [
@@ -61111,6 +61133,51 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/staged_spool_custody.unit.test.py",
       "rationale": "ADR0184/0185 W7 sealed-worker discovery and temporary-row custody; additive clean owner with inherited profiles and all debt ceilings preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/artifacts/_bundle_sort_runs.py",
+      "rationale": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/bundle_sort_fixtures.py",
+      "rationale": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/bundle_sort_failures.unit.test.py",
+      "rationale": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/bundle_sort_resources.unit.test.py",
+      "rationale": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/artifacts/store_verify_custody.unit.test.py",
+      "rationale": "ADR0186 bounded bundle admission, owned merge runs and verification custody; additive clean owners, inherited profiles/order/debt preserved.",
       "root": "test_owners",
       "status": "active_unit_test"
     }

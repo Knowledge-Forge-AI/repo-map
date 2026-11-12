@@ -769,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "040239c1e87f2ae17af7450d361d734831a0078327a0bd70e06acf1e084cd70c"
+    "sha256": "2a9b1c747fc7caee7ece39b3b684df7e8e6bd0c80b9bd7bd76f2b690d27505c2"
   },
   "ruff": {
     "findings": [
@@ -14154,6 +14154,12 @@
         "module": "common_lore_index.artifacts._bundle_parse_resources",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/artifacts/_bundle_parse_resources.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.artifacts._bundle_sort_runs",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/artifacts/_bundle_sort_runs.py",
         "tier": "T1-future"
       },
       {

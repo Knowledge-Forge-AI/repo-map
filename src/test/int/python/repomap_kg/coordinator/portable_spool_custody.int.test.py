@@ -10,6 +10,9 @@ import pytest
 
 from common_lore_index.artifacts.source_sealer import seal_configured_sources
 from common_lore_index.artifacts._bundle_stream_encode import StreamingBundleEncoder
+from common_lore_index.artifacts import _bundle_stream_encode as encoder_module
+from common_lore_index.artifacts import _bundle_stream_sort as sorter_module
+from common_lore_index.artifacts import _bundle_sort_runs as runs_module
 from common_lore_index.artifacts.store import FileSystemArtifactStore
 from common_lore_index.artifacts.validator import PublisherBundleValidator
 from common_lore_index.coordinator import _portable_semantic_adapter as adapter
@@ -19,6 +22,7 @@ from common_lore_index.storage.errors import StorageSchemaError
 from common_lore_index.storage.row_spool import RowSpool
 from repomap_test_support.portable_publication_fixtures import create_single_source_graph_config
 from repomap_test_support.portable_worker_equivalence import reference_bytes, publication_expectation
+from repomap_test_support.bundle_sort_fixtures import SortIOWitness, observe_sort_directory_cleanup
 
 
 def _setup(tmp_path: Path, *, functions: int = 1):
@@ -151,5 +155,80 @@ def test_preparation_boundary_maps_only_contract_data_errors(
         assert caught.value.__cause__ is failure
     else:
         assert caught.value is failure
+    assert tuple(capability.workspace_root.iterdir()) == (sentinel,)
+    assert sentinel.read_bytes() == b"preserved"
+
+
+def test_real_worker_multilevel_merge_is_attempt_owned_and_byte_equivalent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, store, manifest, candidate_id, capability, sentinel = _setup(tmp_path, functions=12)
+    reference = capture_multi_source_candidate(config)
+    expected = reference_bytes(reference, manifest, capability, tmp_path / "reference-sort")
+    witness = SortIOWitness()
+    remaining = observe_sort_directory_cleanup(monkeypatch)
+
+    class Encoder(StreamingBundleEncoder):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs, max_sorter_buffer_bytes=1)
+
+    monkeypatch.setattr(adapter, "StreamingBundleEncoder", Encoder)
+    monkeypatch.setattr(sorter_module, "_MAX_MERGE_FAN_IN", 3)
+    monkeypatch.setattr(sorter_module, "open", witness.open_run, raising=False)
+    monkeypatch.setattr(runs_module.tempfile, "NamedTemporaryFile", witness.temporary)
+    result = adapter.execute_portable_extraction(
+        capability, emit_progress=lambda *_: None, cancel_event=threading.Event(),
+    )
+    assert result.candidate_id == candidate_id
+    assert store.read(result.bundle_reference) == expected
+    assert len(witness.merge_paths) > 3 and witness.inputs
+    assert witness.peak_handles <= 4 and witness.all_closed
+    assert remaining and not any(remaining)
+    assert all(not path.exists() for path in witness.merge_paths)
+    assert all(path.parent.parent.parent == capability.workspace_root for path in witness.merge_paths)
+    assert all(path.parent.parent.name.startswith("attempt-1-") for path in witness.merge_paths)
+    validated = PublisherBundleValidator().validate_bundle(
+        store=store, bundle_reference=result.bundle_reference, receipt_reference=result.receipt_reference,
+        expectation=publication_expectation(manifest, capability, candidate_id),
+    )
+    assert validated.byte_integrity_valid and validated.semantic_authority_valid
+    assert tuple(capability.workspace_root.iterdir()) == (sentinel,)
+    assert sentinel.read_bytes() == b"preserved"
+
+
+def test_real_worker_overflow_stops_sorter_consumption_without_publishing_artifacts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _, store, _, _, capability, sentinel = _setup(tmp_path, functions=12)
+    before = {path.name: path.read_bytes() for path in store._objects.iterdir()}
+    consumed: list[str] = []
+    closed: list[str] = []
+    remaining = observe_sort_directory_cleanup(monkeypatch)
+
+    def witnessed(family, values):
+        try:
+            for row in values:
+                consumed.append(family)
+                yield row
+        finally:
+            closed.append(family)
+
+    class Encoder(StreamingBundleEncoder):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs, max_sorter_buffer_bytes=1)
+            self.family_rows = {family: witnessed(family, values) for family, values in self.family_rows.items()}
+
+    monkeypatch.setattr(adapter, "StreamingBundleEncoder", Encoder)
+    monkeypatch.setattr(encoder_module, "MAX_BUNDLE_RECORDS", 2)
+    with pytest.raises(adapter.PortableExecutionError) as caught:
+        adapter.execute_portable_extraction(
+            capability, emit_progress=lambda *_: None, cancel_event=threading.Event(),
+        )
+    assert caught.value.category == "contract_validation"
+    assert consumed == ["files", "raw_observations", "raw_observations"]
+    assert closed == ["files", "raw_observations"]
+    assert remaining and not any(remaining)
+    assert {path.name: path.read_bytes() for path in store._objects.iterdir()} == before
+    assert not tuple(store._temporary.iterdir())
     assert tuple(capability.workspace_root.iterdir()) == (sentinel,)
     assert sentinel.read_bytes() == b"preserved"
