@@ -1565,3 +1565,17 @@ corrections. This phase-specific claude_only exception is closed; future
 dispatches use dynamic_default. This local source checkpoint joins the larger
 milestone. No build, model/native allocation, public CI or release is granted;
 hosted coverage cushions and full W5-W8 acceptance remain separate.
+
+
+### W7 resource milestone CI141 preparation
+
+The operator explicitly requests the next milestone on public staging/CI.
+[ADR0188](../adr/2026/11/0188-resource-milestone-ci141-publication.md) batches
+the three accepted governance4/5/6 checkpoints into one reviewed publication.
+The [milestone receipt](../../tools/ci/cloe-resource-milestone1-exit.md) records
+exact source/grant identity, scoped5-unit/7-integration compatibility proof,
+unchanged native closure and pending exhaustive hosted feedback. The new
+normal one-shot campaign caps51 application starts,21 native Rust invocations
+and46 existing wheel transfers; the spent CI140 grant is not reused. Final
+independent review and parent acceptance precede one staging push. No retry,
+CI142, main/tag/release, local build or model study is authorized.
