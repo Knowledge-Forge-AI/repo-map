@@ -1720,3 +1720,20 @@ fresh corrective review and exact 269 unit/46 integration proof. Executable and
 quality pins remain unchanged after advisory wording/evidence clarification.
 The three connected epics now proceed to one fresh exact staging campaign;
 complete hosted coverage/native qualification and full roadmap gates stay open.
+
+
+### Connected resource milestone publication design
+
+ADR0193 batches governance7/8/9 into one requested staging campaign. Accepted
+source is retained locally while exact CI143 grant/context/closure proof and
+independent tree review complete. CI14251/22/46 remain spent; one fresh normal
+campaign has ceilings52/23/48, no retry, and no local complete suite or coverage.
+
+
+### CI143 bound milestone proof
+
+The connected source is bound to one fresh CI143 attempt1 reservation. Exact
+grant5-unit/4-integration proof and strict static pass. Official context889/closure267
+are rechecked after rendering, with old source pins distinct from rendered guard
+pins. Final independent tree review, exact commit/report and one staging push
+remain pending; full hosted coverage/native qualification is not inferred.
