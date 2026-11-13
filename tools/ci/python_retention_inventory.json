@@ -16844,6 +16844,33 @@
       ],
       "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
       "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_owners",
+      "id": "zzzzzzzzzzzz.cloe_resource_governance8.test_owners",
+      "members": [
+        "src/test/int/python/repomap_kg/coordinator/materialization_custody.int.test.py",
+        "src/test/int/python/repomap_kg/coordinator/materialization_publication.int.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/materialization_custody.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/materialization_destination.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/materialization_source_contract.unit.test.py",
+        "src/test/unit/python/repomap_kg/coordinator/materialization_streaming.unit.test.py"
+      ],
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners"
+    },
+    {
+      "admission": "admitted",
+      "governing_profile": "clean_test_support",
+      "id": "zzzzzzzzzzzz.cloe_resource_governance8.test_support",
+      "members": [
+        "src/test/support/python/repomap_test_support/materialization_fixtures.py",
+        "src/test/support/python/repomap_test_support/portable_publication_context.py",
+        "src/test/support/python/repomap_test_support/portable_spool_case.py"
+      ],
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_support"
     }
   ],
   "decompositions": [
@@ -61292,6 +61319,105 @@
       "maintained_executable": true,
       "path": "src/test/unit/python/repomap_kg/storage/preparation_work.unit.test.py",
       "rationale": "ADR0190 prepared-spool admission, cooperative cancellation and actual publication preservation; additive clean owners only, existing profiles and debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_portable_materialization_copy.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "retained_python_ratchets",
+      "maintained_executable": true,
+      "path": "src/main/python/common_lore_index/coordinator/_portable_materialization_io.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "product",
+      "status": "retained_ratchet"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/materialization_custody.int.test.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/int/python/repomap_kg/coordinator/materialization_publication.int.test.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_int_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/materialization_fixtures.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/portable_publication_context.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_support",
+      "maintained_executable": true,
+      "path": "src/test/support/python/repomap_test_support/portable_spool_case.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_support",
+      "status": "active_test_support"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/materialization_custody.unit.test.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/materialization_destination.unit.test.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/materialization_source_contract.unit.test.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
+      "root": "test_owners",
+      "status": "active_unit_test"
+    },
+    {
+      "confidence": 0.95,
+      "governing_profile": "clean_test_owners",
+      "maintained_executable": true,
+      "path": "src/test/unit/python/repomap_kg/coordinator/materialization_streaming.unit.test.py",
+      "rationale": "ADR0191 bounded materialization, cooperative copy cancellation and real IO/publication custody; additive clean owners, inherited profiles and numerical debt unchanged.",
       "root": "test_owners",
       "status": "active_unit_test"
     }

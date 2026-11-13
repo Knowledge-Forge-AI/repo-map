@@ -1634,3 +1634,48 @@ This accepted local checkpoint joins the next connected W7 milestone; current
 operator authority requests eventual public staging/CI, which still needs a
 fresh exact campaign binding. No old spent slot, study or complete local suite
 is rearmed. Full roadmap, image/platform and release acceptance remain open.
+
+
+### W7 bounded materialization design
+
+The next connected governance8 epic follows ADR0191: bounded source copy and
+readback using the existing artifact stream, independent EOF/size/digest proof,
+cooperative chunk cancellation with unchanged per-artifact checkpoint frequency,
+and explicitly owned source/descriptor releases. All five independent design
+findings are incorporated before source. Parent checks resolve existing callers,
+actual worker error categories and case-ambiguous path refusal. Legacy outer
+cleanup precedence remains separate. Source, scoped proof and independently audited resulting-source review now
+pass with parent advisory dispositions; hosted qualification remains pending. No campaign was selected at design time.
+
+
+### Governance8 bounded-copy source proof
+
+ADR0191 now passes 193 scoped unit and 45 containerized integration cases,
+including actual child Local/PostgreSQL refusal/recovery, first-use compatibility,
+exact bundle bytes and real adapter/IO fault ownership. All unchanged-debt
+profiles pass. Source, default checkpoints and resource limits are recorded in
+the public exit; no local Python coverage or whole-suite claim is made. One independently audited resulting-source
+checkpoint and parent advisory dispositions accept the bounded source. The
+connected milestone still needs its exact public staging/CI binding. Old slots stay spent;
+full roadmap and image/platform/release gates remain open.
+
+
+### Governance8 bounded source acceptance and capture follow-up
+
+The parent accepts 193 scoped unit/45 containerized integration proof and the
+audited 29-copy dynamic_default review, with no blocking defect. Three advisory
+clarifications are recorded in the source exit; executable and quality metadata
+bytes are unchanged. The two connected epics currently total about 3200 changed
+lines, below the operator's larger batching aim. The next ordinary W7 design
+therefore addresses the already identified capture-loop cancellation gap before
+one public milestone, without padding or introducing a new quota/model class.
+
+Source capture currently brackets whole multi-binding acquisition/extraction
+with cancellation checks, leaving actual traversal, stable read/copy loops and
+observation consumption unresponsive between those brackets. A source-backed
+design must preserve both actual source fences, default seams, observations,
+candidate/bundle identities, IO/error policy and static-only extraction. No
+staged-copy elision, broad parser preemption, native-policy extension, dependency,
+new public protocol, study or complete local suite is selected by this follow-up.
+Independent design and parent adoption precede source. New dispatches continue
+dynamic_default; existing spent publication slots are never reused.

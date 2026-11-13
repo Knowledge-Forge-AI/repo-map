@@ -118,6 +118,7 @@ def execute_portable_extraction(
             cancel_check=lambda: _checkpoint(
                 "during_materialization", cancel_event, checkpoint
             ),
+            io_cancel_check=lambda: _cancelled(cancel_event),
         ) as materialized:
             _checkpoint("before_semantic", cancel_event, checkpoint)
             emit_progress("extraction", manifest.total_files, manifest.total_files)

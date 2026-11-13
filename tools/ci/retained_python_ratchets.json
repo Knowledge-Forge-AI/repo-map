@@ -769,7 +769,7 @@
   },
   "ownership": {
     "manifest_path": "tools/ci/python_type_ownership.json",
-    "sha256": "f75e07b56fd35be2af0cbd440518ef509b0db0e8d388207d28fc930fba0eb27f"
+    "sha256": "af2b342d886dbf50de752b254015a2d292421108053352de277d8a828aabf014"
   },
   "ruff": {
     "findings": [
@@ -15036,6 +15036,18 @@
         "module": "common_lore_index.coordinator._portable_materialization",
         "ownership_class": "python_retained",
         "path": "src/main/python/common_lore_index/coordinator/_portable_materialization.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._portable_materialization_copy",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_portable_materialization_copy.py",
+        "tier": "T1-future"
+      },
+      {
+        "module": "common_lore_index.coordinator._portable_materialization_io",
+        "ownership_class": "python_retained",
+        "path": "src/main/python/common_lore_index/coordinator/_portable_materialization_io.py",
         "tier": "T1-future"
       },
       {

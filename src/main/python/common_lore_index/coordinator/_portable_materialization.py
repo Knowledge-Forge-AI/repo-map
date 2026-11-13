@@ -17,6 +17,7 @@ from common_lore_index._temporary import (
 from common_lore_index.artifacts.manifest import PortableSnapshotManifest
 from common_lore_index.artifacts.store import ArtifactStore
 from common_lore_index.coordinator._refresh_capability_io import validate_private_directory
+from common_lore_index.coordinator._portable_materialization_copy import materialize_artifact
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,7 @@ class MaterializedWorkspace:
         attempt: int,
         max_artifact_bytes: int | None = None,
         cancel_check: Callable[[], None] | None = None,
+        io_cancel_check: Callable[[], None] | None = None,
     ) -> None:
         self._store = store
         self._manifest = manifest
@@ -48,6 +50,7 @@ class MaterializedWorkspace:
         self._attempt = attempt
         self._max_artifact_bytes = max_artifact_bytes
         self._cancel_check = cancel_check
+        self._io_cancel_check = io_cancel_check
         self._view: MaterializedView | None = None
 
     def __enter__(self) -> MaterializedView:
@@ -75,27 +78,12 @@ class MaterializedWorkspace:
                     if self._max_artifact_bytes is None
                     else min(self._max_artifact_bytes, entry.reference.size_bytes)
                 )
-                data = self._store.read(
-                    entry.reference,
-                    max_bytes=bound,
+                copied = materialize_artifact(
+                    self._store, entry.reference, destination, bound=bound,
+                    io_cancel_check=self._io_cancel_check,
                 )
-                flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-                if hasattr(os, "O_NOFOLLOW"):
-                    flags |= os.O_NOFOLLOW
-                descriptor = os.open(destination, flags, 0o600)
-                try:
-                    view = memoryview(data)
-                    while view:
-                        written = os.write(descriptor, view)
-                        if written <= 0:
-                            raise OSError("artifact write failed")
-                        view = view[written:]
-                finally:
-                    os.close(descriptor)
-                if destination.read_bytes() != data:
-                    raise OSError("artifact verification failed")
                 destination.chmod(0o500 if entry.executable else 0o400)
-                total += len(data)
+                total += copied
             self._view = MaterializedView(
                 attempt_root, attempt_identity, roots, total
             )
