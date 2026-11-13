@@ -6,10 +6,12 @@ from dataclasses import replace
 import hashlib
 from pathlib import Path
 import time
+from unittest.mock import Mock
 
 import pytest
 
 from repomap_test_support.scale28_preparation_worker_fixtures import (
+    ObservedPreparationWorkerAttempt,
     prepare_synthetic_resources,
     SlowBootstrapPreparer,
     SlowSemanticPreparer,
@@ -30,6 +32,24 @@ from scale28_preparation_worker import (
 
 
 _SEMANTIC_BOUND_MS = 1_000
+
+
+@pytest.mark.parametrize("observation_fails", [False, True])
+def test_fixture_observation_never_prevents_delegated_cleanup(monkeypatch, observation_fails: bool) -> None:
+    process = Mock()
+    process.is_alive.return_value = False
+    process.exitcode = 1
+    if observation_fails:
+        process.is_alive.side_effect = ValueError("synthetic observation failure")
+    cleaned: list[object] = []
+    monkeypatch.setattr(PreparationWorkerAttempt, "_settle_failed_process", lambda _self, child, **_kw: cleaned.append(child))
+    attempt = object.__new__(ObservedPreparationWorkerAttempt)
+    attempt._settle_failed_process(process)
+    assert cleaned == [process]
+    assert attempt.settlement_diagnostic is not None
+    expected = {"observation_error": "ValueError"} if observation_fails else {"alive": False, "exit_code": 1}
+    assert attempt.settlement_diagnostic["before_cleanup"] == expected
+    assert attempt.settlement_diagnostic["after_cleanup"] == expected
 
 
 def _specification(temp_root: Path, identity: str):

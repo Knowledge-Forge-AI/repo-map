@@ -1579,3 +1579,13 @@ normal one-shot campaign caps51 application starts,21 native Rust invocations
 and46 existing wheel transfers; the spent CI140 grant is not reused. Final
 independent review and parent acceptance precede one staging push. No retry,
 CI142, main/tag/release, local build or model study is authorized.
+
+### CI141 repair prepared for CI142
+
+The resource milestone's first hosted attempt exposed an import cycle, a stale
+lineage expectation, an unversioned numeric libpq request and two synthetic
+worker settlement failures. ADR0189 and the CI141 repair exit record their
+forward corrections and scoped proof. Production worker/deadline policy and
+all source-identity/debt/coverage guards are preserved. Native execution and
+desired87/82 coverage cushions remain pending one newly bound CI142 campaign;
+this does not complete W5/W6/W7/W8 or grant release/image acceptance.

@@ -9,13 +9,12 @@ from common_lore_index.graph.multi_source_pipeline import SealedSourceBinding
 
 def sealed_bindings(
     manifest: PortableSnapshotManifest, roots: Mapping[str, Path],
+    *, error_type: type[ValueError],
 ) -> tuple[SealedSourceBinding, ...]:
-    from common_lore_index.coordinator._portable_semantic_adapter import PortableExecutionError
-
     result = []
     for binding in manifest.bindings:
         if binding.alias is None:
-            raise PortableExecutionError("unsupported_contract")
+            raise error_type("unsupported_contract")
         result.append(
             SealedSourceBinding(
                 binding_id=binding.binding_id,

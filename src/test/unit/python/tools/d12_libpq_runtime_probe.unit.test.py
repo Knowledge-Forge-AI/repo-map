@@ -82,8 +82,9 @@ class World:
             owned = self.installed and c[2].startswith(f"{LIBDIR}/libpq.so")
             return (0, f"{'other' if self.case == 'owner' else 'libpq5'}:arm64: {c[2]}\n") if owned else (1, "")
         if c[:3] == ["apt-get", "install", "--simulate"]:
+            selected = [(n, "18.7-1.pgdg13+2" if n == "libpq5" else v) for n, v in self.selection] if self.case == "newer-libpq" and c[-1] == "libpq5" else self.selection
             return 0, "".join(
-                f"{k} {n} ({v} PG:13/trixie-pgdg [arm64])\n" for k in ("Inst", "Conf") for n, v in self.selection)
+                f"{k} {n} ({v} PG:13/trixie-pgdg [arm64])\n" for k in ("Inst", "Conf") for n, v in selected)
         if c[0] == "/usr/lib/apt/apt-helper":
             return 0, "".join(f"Package: {n}\nVersion: {v}\nArchitecture: arm64\nSize: {len(_deb(n, v))}\n"
                               f"Filename: pool/{n}.deb\nSHA256: {_sha(_deb(n, v))}\n\n" for n, v in self.selection)
@@ -252,7 +253,7 @@ def test_guard_refuses_unknown_repeated_reordered_or_inexact_commands_before_dis
 
 _MISMATCH = "reports a mismatch"
 @pytest.mark.parametrize("case, api, message", [
-    ("", API, None), ("verify-filtered", API, None), ("bytes", API, "differ from the server library"),
+    ("", API, None), ("newer-libpq", API, None), ("verify-filtered", API, None), ("bytes", API, "differ from the server library"),
     ("copy", API, "not exactly the one owned"), ("owner", API, "not all owned by libpq5"), ("verify", API, _MISMATCH),
     ("verify-include", API, _MISMATCH), ("verify-unfiltered", API, _MISMATCH),
     ("verify-sum", API, _MISMATCH), ("verify-lib", API, _MISMATCH), ("verify-empty1", API, _MISMATCH),

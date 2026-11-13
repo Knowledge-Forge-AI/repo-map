@@ -120,6 +120,8 @@ class CreateFailureReceiptUnitTests(unittest.TestCase):
 
         with self.assertRaises(psa.PortableExecutionError) as caught:
             psa._sealed_bindings(manifest, {})
+        self.assertIs(type(caught.exception), psa.PortableExecutionError)
+        self.assertEqual(str(caught.exception), "unsupported_contract")
         self.assertEqual(caught.exception.category, "unsupported_contract")
 
 

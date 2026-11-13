@@ -104,7 +104,7 @@ def selected_rows(manifest: Any, expected: Mapping[str, Any]) -> list[tuple[str,
     return members([[p.get(k) for k in ("name", "version", "architecture", "sha256")] for p in packages], expected)
 
 class Guard:
-    """The probe's only runner (C1): the hash-bound helper's exact command shapes, in order, with the C2 gate."""
+    """Exact helper argv grammar and sequence (C1); simulation pins the bound version before dispatch (C2)."""
     def __init__(self, execute: Callable[..., Any], inputs: Mapping[str, Any], cache: Path) -> None:
         self.execute, self.inputs, self.cache, self.installed, self.code = execute, inputs, cache, False, 0
         self.held, self.done, self.pins = list[str](), list[str](), list[str]()
@@ -121,7 +121,7 @@ class Guard:
             if step == "mark" and not (self.installed and argv[2:] and argv[2:] == self.dependencies()):
                 raise ProbeRefused("apt-mark auto is not exactly the manifest's dependency names after the one install")
             self.done.append(step)
-        completed = self.execute(argv, **options)
+        completed = self.execute([*argv[:-1], f"libpq5={self.inputs['libpq5_version']}"] if step == "simulate" else argv, **options)
         self.code = completed.returncode
         self.installed = self.installed or step == "install" and completed.returncode == 0
         return completed

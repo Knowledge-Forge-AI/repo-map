@@ -1015,7 +1015,7 @@
       },
       {
         "path": "tools/ci/d12_system_grant.py",
-        "sha256": "1bdc9a6400bdd0e3a41475d695007ee2851ce8dcb24e6e3d0e64cf38bac88e26"
+        "sha256": "7453eb9ee0216a991a00c61f2803aec2e5cc79b1962da52dd1d5b033eae8af60"
       },
       {
         "path": "tools/ci/d12_system_grant_io.py",
@@ -1067,7 +1067,7 @@
       },
       {
         "path": "tools/d12_libpq_runtime_probe.py",
-        "sha256": "abd9c87ff9d059294839e2fbb8ae6f55dac4f4ba51f73c4624040f32fb22c540"
+        "sha256": "e1f44319d37a2da1c35479cc161f3052aace0ae4a120c2a07cff5378dc65c184"
       },
       {
         "path": "tools/d12_python_closure.py",

@@ -28,7 +28,7 @@ from scale28_preparation_values import (
     PreparationDeadlinePolicy,
     PreparationRequest,
 )
-from scale28_preparation_worker import PreparationWorkerAttempt
+from repomap_test_support.scale28_preparation_worker_fixtures import ObservedPreparationWorkerAttempt
 
 
 ObservedTuple: TypeAlias = tuple[tuple[str, object], ...]
@@ -240,16 +240,16 @@ def _preparation_owner_call(temp_root: Path) -> None:
     }
     expectations = PreparationAttemptExpectations("a" * 32, 1, digests)
     policy = PreparationDeadlinePolicy(
-        attempt_timeout_ms=3_400,
-        total_timeout_ms=8_900,
+        attempt_timeout_ms=2_900,
+        total_timeout_ms=9_900,
         final_release_timeout_ms=600,
         observation_transfer_reserve_ms=100,
         acknowledgement_timeout_ms=150,
         receipt_timeout_ms=300,
-        process_settlement_timeout_ms=300,
+        process_settlement_timeout_ms=800,
         freshness_lease_ms=3_000,
     )
-    result = PreparationWorkerAttempt(
+    result = ObservedPreparationWorkerAttempt(
         PreparationRequest.create(expectations, specification.digest),
         specification,
         policy,

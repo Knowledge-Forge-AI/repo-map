@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from pathlib import Path
 import signal
@@ -12,6 +13,8 @@ import psutil
 import scale28_preparation_worker
 from repomap_test_support.staging_abrupt_launch import observe_scale28_crash
 from repomap_test_support.scale28_preparation_worker_fixtures import (
+    DelayedExitPreparer,
+    ObservedPreparationWorkerAttempt,
     exit_with_synthetic_descendant,
     fail_synthetic_resources,
     prepare_synthetic_resources,
@@ -35,13 +38,13 @@ def _digest(label: str) -> str:
 
 def _policy() -> PreparationDeadlinePolicy:
     return PreparationDeadlinePolicy(
-        attempt_timeout_ms=3_400,
-        total_timeout_ms=8_900,
+        attempt_timeout_ms=2_900,
+        total_timeout_ms=9_900,
         final_release_timeout_ms=600,
         observation_transfer_reserve_ms=100,
         acknowledgement_timeout_ms=150,
         receipt_timeout_ms=300,
-        process_settlement_timeout_ms=300,
+        process_settlement_timeout_ms=800,
         freshness_lease_ms=3_000,
     )
 
@@ -50,6 +53,7 @@ def _attempt(
     preparer,
     *,
     pgdata_root: Path = Path("/private/tmp"),
+    observed: bool = False,
 ) -> PreparationWorkerAttempt:
     specification = PreparationResourceSpecification.create(
         pgdata_root=pgdata_root,
@@ -64,7 +68,8 @@ def _attempt(
         1,
         {name: _digest(name) for name in BINDING_FIELDS},
     )
-    return PreparationWorkerAttempt(
+    attempt_type = ObservedPreparationWorkerAttempt if observed else PreparationWorkerAttempt
+    return attempt_type(
         PreparationRequest.create(expectations, specification.digest),
         specification,
         _policy(),
@@ -89,6 +94,25 @@ def test_spawned_preparation_worker_failure_settles_without_partial_result() -> 
         _attempt(fail_synthetic_resources).run()
     assert captured.value.category == "worker_failed"
     assert captured.value.boundary == "worker"
+
+
+def test_fixture_notes_preserve_failure_and_final_cleanup_state() -> None:
+    with pytest.raises(PreparationWorkerError) as captured:
+        _attempt(fail_synthetic_resources, observed=True).run()
+    assert (captured.value.category, captured.value.boundary) == ("worker_failed", "worker")
+    notes = [note.removeprefix("preparation-settlement: ") for note in captured.value.__notes__ if note.startswith("preparation-settlement: ")]
+    assert len(notes) == 1
+    diagnostic = json.loads(notes[0])
+    after = diagnostic["after_cleanup"]
+    assert after["alive"] is False and type(after["exit_code"]) is int and after["exit_code"] != 0
+    assert diagnostic["cleanup_elapsed_ms"] >= 0
+
+
+def test_success_waits_for_bounded_interpreter_finalization() -> None:
+    result = _attempt(DelayedExitPreparer(0.35), observed=True).run()
+    result.evidence.assert_canonical()
+    assert result.attempt_elapsed_parent_ns >= 350_000_000
+    assert not scale28_preparation_worker._process_group_exists(result.worker_pid)
 
 
 @pytest.mark.parametrize("unsupported_platform", ("nt", "java"))

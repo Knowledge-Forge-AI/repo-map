@@ -13,7 +13,7 @@ from common_lore_index.artifacts.source_sealer import seal_configured_sources
 from common_lore_index.artifacts.store import FileSystemArtifactStore
 from common_lore_index.artifacts.validator import PublisherBundleValidator
 from common_lore_index.coordinator._portable_capability import PortableExecutionCapability, create_portable_capability
-from common_lore_index.coordinator._portable_semantic_adapter import execute_portable_extraction
+from common_lore_index.coordinator._portable_semantic_adapter import PortableExecutionError, _sealed_bindings, execute_portable_extraction
 from common_lore_index.coordinator._portable_worker_launch import run_portable_worker
 from common_lore_index.graph import _discovery_classify, multi_source_capture
 from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
@@ -41,6 +41,13 @@ def test_worker_bundle_matches_non_elided_reference_and_owns_cleanup(
     )
     assert manifest.snapshot_vector == reference.candidate.snapshot_vector
     assert candidate_id == reference.candidate.candidate_id
+    invalid = replace(manifest, bindings=tuple(replace(
+        binding, alias=None, logical_root=None, evidence_retention_policy=None,
+        extractor_profile=None, resolution_policy=None, repository_scope=None,
+    ) for binding in manifest.bindings))
+    with pytest.raises(PortableExecutionError, match="unsupported_contract") as refusal:
+        _sealed_bindings(invalid, {})
+    assert refusal.value.category == "unsupported_contract"
     workspace = tmp_path / "workspace"
     workspace.mkdir(mode=0o700)
     sentinel = workspace / "unrelated-sentinel"

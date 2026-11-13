@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections.abc import Mapping
+from pathlib import Path
 import threading
 from typing import Callable
 
@@ -20,10 +22,11 @@ from common_lore_index.artifacts.store import (
 )
 from common_lore_index.coordinator._portable_capability import PortableExecutionCapability
 from common_lore_index.coordinator._portable_materialization import MaterializedWorkspace
-from common_lore_index.coordinator._portable_sealed_bindings import sealed_bindings as _sealed_bindings
+from common_lore_index.coordinator._portable_sealed_bindings import sealed_bindings as _project_sealed_bindings
 from common_lore_index.artifacts._bundle_cancellation import BundleEncodingCancelled, closing_bundle_resource
 from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError,
+    SealedSourceBinding,
     capture_sealed_multi_source_candidate,
 )
 from common_lore_index.storage.staged_rows import build_staged_rows
@@ -38,6 +41,12 @@ class PortableExecutionError(ValueError):
     def __init__(self, category: str) -> None:
         self.category = category
         super().__init__(category)
+
+
+def _sealed_bindings(
+    manifest: PortableSnapshotManifest, roots: Mapping[str, Path],
+) -> tuple[SealedSourceBinding, ...]:
+    return _project_sealed_bindings(manifest, roots, error_type=PortableExecutionError)
 
 
 @dataclass(frozen=True)

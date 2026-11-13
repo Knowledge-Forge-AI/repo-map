@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import atexit
 import json
 import os
 from pathlib import Path
@@ -11,7 +12,41 @@ import sys
 import time
 
 from scale28_preparation_values import ResourceBaseline
+from scale28_preparation_worker import PreparationWorkerAttempt, PreparationWorkerError, PreparationWorkerResult
+from scale28_preparation_worker_process import _TerminableProcess
 from runner_coverage_execution import prepare_child_coverage_environment
+
+
+class ObservedPreparationWorkerAttempt(PreparationWorkerAttempt):
+    """Retain bounded failure facts without changing the production worker."""
+
+    settlement_diagnostic: dict[str, object] | None = None
+
+    @staticmethod
+    def _state(process: _TerminableProcess) -> dict[str, object]:
+        try:
+            return {"alive": process.is_alive(), "exit_code": getattr(process, "exitcode", None)}
+        except Exception as error:
+            return {"observation_error": type(error).__name__}
+
+    def _settle_failed_process(
+        self, process: _TerminableProcess, *, natural_settlement_grace_seconds: float = 0.0,
+    ) -> None:
+        self.settlement_diagnostic = {"before_cleanup": self._state(process),
+                                      "natural_grace_seconds": natural_settlement_grace_seconds}
+        started = time.monotonic_ns()
+        try:
+            super()._settle_failed_process(process, natural_settlement_grace_seconds=natural_settlement_grace_seconds)
+        finally:
+            self.settlement_diagnostic["after_cleanup"] = self._state(process)
+            self.settlement_diagnostic["cleanup_elapsed_ms"] = (time.monotonic_ns() - started) // 1_000_000
+
+    def run(self) -> PreparationWorkerResult:
+        try:
+            return super().run()
+        except PreparationWorkerError as error:
+            error.add_note("preparation-settlement: " + json.dumps(self.settlement_diagnostic, sort_keys=True))
+            raise
 
 
 @dataclass(slots=True)
@@ -74,6 +109,17 @@ class SlowSemanticPreparer:
         return prepare_synthetic_resources(specification)
 
 
+class DelayedExitPreparer:
+    """Model bounded interpreter finalization after the terminal receipt."""
+
+    def __init__(self, delay_seconds: float) -> None:
+        self.delay_seconds = delay_seconds
+
+    def __call__(self, specification) -> SyntheticPreparedResources:
+        atexit.register(time.sleep, self.delay_seconds)
+        return prepare_synthetic_resources(specification)
+
+
 def exit_with_synthetic_descendant(specification) -> None:
     """Crash the worker leader after creating one same-group descendant."""
 
@@ -108,4 +154,6 @@ __all__ = [
     "prepare_synthetic_resources",
     "SlowBootstrapPreparer",
     "SlowSemanticPreparer",
+    "DelayedExitPreparer",
+    "ObservedPreparationWorkerAttempt",
 ]
