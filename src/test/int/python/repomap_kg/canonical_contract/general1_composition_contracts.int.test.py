@@ -18,7 +18,7 @@ from common_lore_index.graph.multi_source_pipeline import (
     MultiSourceCaptureError, SealedSourceBinding, capture_multi_source_candidate,
     capture_sealed_multi_source_candidate,
 )
-from common_lore_index.graph import multi_source_pipeline as pipeline
+from common_lore_index.graph import _capture_candidate as capture_engine
 from common_lore_index.ops.config_binding_records import OpsGraphSourceBindingConfig
 from common_lore_index.ops.config_records import OpsGraphConfig
 
@@ -175,17 +175,20 @@ def test_public_capture_refuses_tampered_extractor_provenance(tmp_path, monkeypa
     root.mkdir()
     (root / "a.txt").write_text("fixture content", encoding="utf-8")
     graph = _make_graph(_make_binding(root, "site"))
-    original = pipeline._namespaced_observation
+    original = capture_engine._namespaced_observation
+    routed_observations = []
 
     def tamper(observation, source):
         routed = original(observation, source)
+        routed_observations.append(routed)
         if field in {"path", "source_id"}:
             return replace(routed, **{field: value})
         return replace(routed, metadata={**routed.metadata, field: value})
 
-    # Alter one extractor result; keep capture, inventory and validation real.
-    monkeypatch.setattr(pipeline, "_namespaced_observation", tamper)
+    # Inject at the assembly owner's lookup; keep public capture and validation real.
+    monkeypatch.setattr(capture_engine, "_namespaced_observation", tamper)
     with pytest.raises(MultiSourceCaptureError, match="provenance is invalid") as exc:
         capture_multi_source_candidate(graph)
     assert exc.value.category == "source_capture"
+    assert routed_observations
     assert (root / "a.txt").read_text() == "fixture content"

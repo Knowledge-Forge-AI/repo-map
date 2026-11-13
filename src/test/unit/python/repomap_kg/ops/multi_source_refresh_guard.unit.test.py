@@ -12,7 +12,7 @@ from common_lore_index.coordinator.configured_refresh import ConfiguredRefreshRe
 from common_lore_index.coordinator._refresh_generation import validate_configured_generations
 from common_lore_index.graph.multi_source import graph_source_binding_id
 from common_lore_index.graph.multi_source_pipeline import capture_multi_source_candidate
-from common_lore_index.graph import multi_source_pipeline
+from common_lore_index.graph import _capture_identity as capture_identity, multi_source_pipeline
 from common_lore_index.ops.config import load_ops_config
 from common_lore_index.ops.generations import source_generation
 from common_lore_index.ops.refresh import preflight_graph, refresh_enabled_graphs, refresh_graph
@@ -290,13 +290,13 @@ def test_multi_source_fence_binds_snapshot_resolver_and_semantic_identities(tmp_
     assert snapshot_changed.config_generation == baseline.config_generation
 
     with patch.object(
-        multi_source_pipeline,
+        capture_identity,
         "_MULTI_SOURCE_RESOLVER_VERSION",
         "nix-static-v2-fixture",
     ):
         resolver_changed = multi_source_pipeline.scan_multi_source_generations(graph)
     with patch.object(
-        multi_source_pipeline,
+        capture_identity,
         "_MULTI_SOURCE_SEMANTIC_IDENTITY",
         "semantic1:multi-source-fixture",
     ):
